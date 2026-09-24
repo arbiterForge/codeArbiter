@@ -1397,8 +1397,11 @@ async function fileHash(p) {
   }
 }
 async function resetWorktree(wt) {
-  await git(["reset", "--hard", "HEAD"], wt);
-  await git(["clean", "-fd"], wt);
+  for (const args of [["reset", "--hard", "HEAD"], ["clean", "-fd"]]) {
+    const result = await git(args, wt);
+    if (result.code !== 0)
+      throw new Error(`worktree reset failed: ${redactSecrets(result.out).slice(0, 300)}`);
+  }
 }
 async function setupFingerprint(wt, t, deps) {
   const parts = [JSON.stringify(t.setup ?? [])];
@@ -1680,7 +1683,7 @@ async function writeFilesInto(wt, files) {
     await writeWorktreeFile(wt, f.path, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
   }
 }
-async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps, evaluation) {
+async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps, qualify, evaluation) {
   const taskBranch = evaluation?.baseCommit ?? `farm/${t.id}`;
   const runSample = (k) => workerLimit.run(async () => {
     const branch = evaluation?.baseCommit ?? `farm/${t.id}__s${k}`;
@@ -1704,6 +1707,8 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
       const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
       const pt = w.promptTokens ?? 0;
       const ct = w.completionTokens ?? 0;
+      base.promptTokens = pt;
+      base.completionTokens = ct;
       if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
       const sweep = postApplySweep(wt, w.filesWritten, forbidden);
       if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
@@ -1720,20 +1725,47 @@ ${gate.tail}`), promptTokens: pt, completionTokens: ct };
       const inScope = await captureInScope(wt, t);
       return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
     } catch (e) {
-      return { ...base, note: `sample error: ${e instanceof Error ? e.message : String(e)}` };
+      return { ...base, note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
     }
   });
   const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
   const promptTokens = outcomes.reduce((s, o) => s + o.promptTokens, 0);
   const completionTokens = outcomes.reduce((s, o) => s + o.completionTokens, 0);
-  const winner = outcomes.find((o) => o.green) ?? null;
-  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
+  let winner = null;
+  let fatal = null;
   const cleanup = [];
-  for (const o of outcomes) {
-    cleanup.push(await removeWorktreeVerified(deps.git, o.wt));
-    if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, o.branch));
+  try {
+    for (const outcome of outcomes) {
+      if (!outcome.green) continue;
+      try {
+        outcome.assessment = await qualify(outcome);
+      } catch (error) {
+        outcome.assessment = {
+          kind: "fatal",
+          note: `candidate qualification failed: ${redactSecrets(msgOf(error)).slice(0, 300)}`,
+          unsafe: isUnsafeWorktreePathError(error)
+        };
+        if (outcome.assessment.unsafe) outcome.assessment.note = msgOf(error);
+      }
+      if (outcome.assessment.kind === "pass") {
+        winner = outcome;
+        break;
+      }
+      outcome.green = false;
+      outcome.note = outcome.assessment.note;
+      if (outcome.assessment.kind === "fatal") {
+        fatal = outcome;
+        break;
+      }
+    }
+  } finally {
+    for (const outcome of outcomes) {
+      cleanup.push(await removeWorktreeVerified(deps.git, outcome.wt));
+      if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, outcome.branch));
+    }
   }
-  return { winner, bestFailure, promptTokens, completionTokens, cleanup };
+  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
+  return { winner, fatal, bestFailure, promptTokens, completionTokens, cleanup };
 }
 async function prepareEvaluationWorktree(wt, from, gitFn) {
   try {
@@ -1775,6 +1807,52 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   let lastWarning;
   let mutationScore = null;
   const setupState = { key: null };
+  const assessOutput = async (filesWritten) => {
+    const sweep = postApplySweep(wt, filesWritten, forbidden);
+    if (sweep) return { kind: "fatal", note: sweep };
+    const after = await deps.fileHash(path3.resolve(wt, t.test.path));
+    if (testHashBefore !== null && after !== testHashBefore)
+      return { kind: "fatal", note: `tampered test: ${t.test.path}` };
+    const drift = await deps.checkDrift(wt, allowed);
+    if (drift.length) return { kind: "drift", drift, note: `drift: ${drift.join(", ")}` };
+    const gate = await deps.runGate(wt, t.gate.commands);
+    if (!gate.ok)
+      return { kind: "gate", note: redactSecrets(`failed: ${gate.failed}
+${gate.tail}`) };
+    const gaming = await deps.antiGamingCheck(wt, t);
+    let risk = gaming.risk;
+    let note = gaming.note;
+    let score = null;
+    if (risk !== "high") {
+      let mut;
+      try {
+        mut = await deps.mutationCheck(wt, t);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error))
+          return { kind: "fatal", note: error.message, unsafe: true };
+        throw error;
+      }
+      if (mut && "score" in mut) {
+        score = mut.score;
+        if (mut.score <= MUT.escalateBelow && mut.evaluated !== void 0 && mut.evaluated >= 5) {
+          risk = "high";
+          note = `gaming: mutation ${mutationSurvivalNote(mut)} \u2014 the test does not constrain the implementation`;
+        } else if (mut.score < MUT.warnBelow && risk !== "warn") {
+          risk = "warn";
+          note = `mutation-risk: ${mutationSurvivalNote(mut)} \u2014 weak test or under-implemented logic`;
+        }
+      } else if (mut && "failed" in mut) {
+        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}
+`);
+        if (risk === "none") {
+          risk = "warn";
+          note = `mutation-hook-failed: ${mut.detail}`;
+        }
+      }
+    }
+    if (risk === "high") return { kind: "risk", note: note ?? "high implementation risk", mutationScore: score };
+    return { kind: "pass", warning: risk === "warn" ? note : void 0, mutationScore: score };
+  };
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) {
       if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
@@ -1787,6 +1865,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
     const forbiddenExtra = driftedOnce ? lastFilesWritten.filter((f) => !allowed.has(f)) : void 0;
     const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
     let worker;
+    let assessment;
     if (samples <= 1) {
       worker = await workerLimit.run(
         () => deps.worker.apply({ cwd: wt, prompt, model: effectiveModel, apiBaseUrl, apiKey, forbidden, sampling })
@@ -1801,91 +1880,114 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
         continue;
       }
     } else {
-      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps, evaluation);
+      let materialized = false;
+      const sel = await bestOfN(
+        t,
+        prompt,
+        effectiveModel,
+        apiBaseUrl,
+        apiKey,
+        sampling,
+        forbidden,
+        allowed,
+        samples,
+        deps,
+        async (candidate) => {
+          if (materialized) {
+            await deps.resetWorktree(wt);
+            const setup = await runSetupPhases(wt, t, deps, setupState);
+            if (setup) return { kind: "fatal", note: setup };
+          }
+          materialized = true;
+          await writeFilesInto(wt, candidate.files);
+          return assessOutput(candidate.filesWritten);
+        },
+        evaluation
+      );
       noteCleanup(...sel.cleanup);
       promptTokens += sel.promptTokens;
       completionTokens += sel.completionTokens;
       acceptedPromptTokens = sel.winner?.promptTokens ?? 0;
       acceptedCompletionTokens = sel.winner?.completionTokens ?? 0;
+      if (sel.fatal) {
+        const fatal = sel.fatal.assessment;
+        return finish({
+          id: t.id,
+          status: "escalate",
+          attempts: attempt,
+          branch,
+          worktree: wt,
+          note: sel.fatal.note,
+          filesWritten: fatal?.kind === "fatal" && fatal.unsafe ? [] : sel.fatal.filesWritten,
+          promptTokens,
+          completionTokens
+        });
+      }
       if (!sel.winner) {
         lastFilesWritten = sel.bestFailure?.filesWritten ?? [];
         priorInScope = sel.bestFailure?.inScope ?? [];
-        priorFailure = sel.bestFailure?.note ?? "all samples failed the gate";
+        priorFailure = redactSecrets(sel.bestFailure?.note ?? "all samples failed qualification");
+        mutationScore = sel.bestFailure?.assessment?.kind === "risk" ? sel.bestFailure.assessment.mutationScore : null;
         continue;
       }
-      try {
-        await writeFilesInto(wt, sel.winner.files);
-      } catch (error) {
-        if (isUnsafeWorktreePathError(error)) {
-          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
-        }
-        throw error;
-      }
+      assessment = sel.winner.assessment;
       worker = { ok: true, filesWritten: sel.winner.filesWritten };
       lastFilesWritten = worker.filesWritten;
     }
-    const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
-    if (sweepErr) {
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-    }
-    const testHashAfter = await deps.fileHash(path3.resolve(wt, t.test.path));
-    if (testHashBefore !== null && testHashAfter !== testHashBefore) {
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-    }
-    const driftFiles = await deps.checkDrift(wt, allowed);
-    if (driftFiles.length > 0) {
+    const checked = assessment ?? await assessOutput(worker.filesWritten);
+    if (checked.kind === "fatal")
+      return finish({
+        id: t.id,
+        status: "escalate",
+        attempts: attempt,
+        branch,
+        worktree: wt,
+        note: checked.note,
+        filesWritten: checked.unsafe ? [] : worker.filesWritten,
+        promptTokens,
+        completionTokens
+      });
+    if (checked.kind === "drift") {
       if (!driftedOnce && attempt <= limit) {
         driftedOnce = true;
-        priorFailure = `drift: you wrote outside the allowed files: ${driftFiles.join(", ")}`;
+        priorFailure = `drift: you wrote outside the allowed files: ${checked.drift.join(", ")}`;
         continue;
       }
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
+      return finish({
+        id: t.id,
+        status: "escalate",
+        attempts: attempt,
+        branch,
+        worktree: wt,
+        note: checked.note,
+        filesWritten: worker.filesWritten,
+        promptTokens,
+        completionTokens
+      });
     }
-    const gate = await deps.runGate(wt, t.gate.commands);
-    if (!gate.ok) {
-      priorFailure = redactSecrets(`failed: ${gate.failed}
-${gate.tail}`);
+    if (checked.kind === "gate") {
+      priorFailure = checked.note;
       continue;
     }
-    const gaming = await deps.antiGamingCheck(wt, t);
-    let risk = gaming.risk;
-    let riskNote = gaming.note;
-    if (risk !== "high") {
-      let mut;
-      try {
-        mut = await deps.mutationCheck(wt, t);
-      } catch (error) {
-        if (isUnsafeWorktreePathError(error)) {
-          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
-        }
-        throw error;
-      }
-      if (mut && "score" in mut) {
-        mutationScore = mut.score;
-        if (mut.score <= MUT.escalateBelow && mut.evaluated !== void 0 && mut.evaluated >= 5) {
-          risk = "high";
-          riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} \u2014 the test does not constrain the implementation`;
-        } else if (mut.score < MUT.warnBelow) {
-          if (risk !== "warn") {
-            risk = "warn";
-            riskNote = `mutation-risk: ${mutationSurvivalNote(mut)} \u2014 weak test or under-implemented logic`;
-          }
-        }
-      } else if (mut && "failed" in mut) {
-        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}
-`);
-        if (risk === "none") {
-          risk = "warn";
-          riskNote = `mutation-hook-failed: ${mut.detail}`;
-        }
-      }
-    }
-    if (risk === "high") {
-      priorFailure = `${riskNote}. Implement real logic; do not hard-code or special-case the asserted value.`;
+    if (checked.kind === "risk") {
+      mutationScore = checked.mutationScore;
+      priorFailure = redactSecrets(`${checked.note}. Implement real logic; do not hard-code or special-case the asserted value.`);
       if (attempt <= limit) continue;
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
+      return finish({
+        id: t.id,
+        status: "escalate",
+        attempts: attempt,
+        branch,
+        worktree: wt,
+        note: checked.note,
+        filesWritten: worker.filesWritten,
+        promptTokens,
+        completionTokens,
+        mutationScore
+      });
     }
-    if (risk === "warn") lastWarning = riskNote;
+    mutationScore = checked.mutationScore;
+    lastWarning = checked.warning;
     if (evaluation) {
       return finish({
         id: t.id,

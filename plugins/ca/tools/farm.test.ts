@@ -1451,6 +1451,107 @@ describe("farm.ts smoke tests", () => {
     };
   }
 
+
+  for (const entry of ["source", "bundle"] as const) {
+    for (const mode of ["literal", "mutation", "materialized-gate", "all-rejected"] as const) {
+      it(`qualified candidate selection retains alternatives through ${mode} (${entry})`, async () => {
+        const task = identityFixture();
+        const baseHead = gitIn(tmpDir, "rev-parse", "HEAD");
+        const seen: string[] = [];
+        ({ server: mockServer, port } = await startMockServer(() => {
+          const k = seen.length;
+          seen.push(`sample-${k}`);
+          const rejected = k === 0 || mode === "all-rejected";
+          const impl = (mode === "literal" || mode === "all-rejected") && rejected
+            ? "module.exports = () => 'fixture input';"
+            : identityImpl + (rejected ? "\n// CANDIDATE_REJECT\n" : "\n// CANDIDATE_QUALIFIED\n");
+          return fileBlock("src/identity.cjs", impl) +
+            (rejected ? "\n" + fileBlock("src/rejected-only.cjs", "module.exports = 'discard';") : "");
+        }));
+        if (mode === "materialized-gate") {
+          writeFileSync(join(tmpDir, "src/task-context-gate.cjs"), [
+            "const fs = require('node:fs');",
+            "const path = require('node:path');",
+            "require('./identity.test.cjs');",
+            "if (path.basename(process.cwd()) === 'identity' &&",
+            "    fs.readFileSync('src/identity.cjs','utf8').includes('CANDIDATE_REJECT')) {",
+            "  throw new Error('rejected only in the materialized task context');",
+            "}",
+          ].join("\n"));
+          task.gate.commands = ["node src/task-context-gate.cjs"];
+        }
+        if (mode === "mutation") {
+          writeFileSync(join(tmpDir, "src/fixture-mutation.cjs"), [
+            "const fs = require('node:fs');",
+            "const rejected = fs.readFileSync('src/identity.cjs','utf8').includes('CANDIDATE_REJECT');",
+            "console.log(JSON.stringify({score: rejected ? 0 : 1, total: 5}));",
+          ].join("\n"));
+        }
+        gitIn(tmpDir, "add", "--", "src");
+        if (mode === "materialized-gate" || mode === "mutation") gitIn(tmpDir, "commit", "-m", "qualification fixture");
+        const frozen = gitIn(tmpDir, "rev-parse", "HEAD");
+        const plan = { meta: { name: "retain existing candidates", model: "fixture" }, tasks: [
+          { ...task, filesInScope: [...task.filesInScope, "src/rejected-only.cjs"] },
+        ] };
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify(plan));
+        const result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+          FARM_SAMPLES: "2", FARM_CONCURRENCY: "1", FARM_TEMPERATURE: "0",
+          FARM_API_MAX_RETRIES: "0",
+          ...(mode === "mutation" ? { FARM_MUTATION_CMD: "node src/fixture-mutation.cjs" } : {}),
+        }, mode === "mutation" ? [] : ["FARM_MUTATION_CMD"], entry);
+        expect(seen).toEqual(["sample-0", "sample-1"]);
+        const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+        expect(report.results[0].attempts).toBe(1);
+        if (mode === "all-rejected") {
+          expect(result.code, result.out).toBe(2);
+          expect(report.results[0].status).toBe("escalate");
+          expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(frozen);
+        } else {
+          expect(result.code, result.out).toBe(0);
+          expect(report.results[0].status).toBe("green");
+          expect(gitIn(tmpDir, "show", "farm/integration:src/identity.cjs")).toContain("CANDIDATE_QUALIFIED");
+          expect(gitIn(tmpDir, "ls-tree", "-r", "--name-only", "farm/integration")).not.toContain("rejected-only");
+          if (mode === "mutation") expect(report.results[0].mutationScore).toBe(1);
+        }
+        expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(frozen);
+        expect(frozen.length).toBe(baseHead.length);
+        for (const suffix of ["__s0", "__s1"]) {
+          expect(existsSync(join(tmpDir, ".farm/worktrees/identity" + suffix))).toBe(false);
+          expect(gitIn(tmpDir, "branch", "--list", "farm/identity" + suffix)).toBe("");
+        }
+      });
+    }
+
+    it(`qualified candidate selection also applies to detached canary evaluation (${entry})`, async () => {
+      const task = identityFixture();
+      const frozen = gitIn(tmpDir, "rev-parse", "HEAD");
+      let probes = 0, calls = 0;
+      ({ server: mockServer, port } = await startMockServer(raw => {
+        if ((raw as { max_tokens?: number }).max_tokens === 1) { probes++; return "ready"; }
+        return fileBlock("src/identity.cjs", calls++ === 0
+          ? "module.exports = () => 'fixture input';" : identityImpl);
+      }));
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "canary alternatives" }, tasks: [task] }));
+      const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+        FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+        FARM_CANDIDATE_MODELS: "candidate", FARM_CONCURRENCY: "1",
+        FARM_SAMPLES: "2", FARM_API_MAX_RETRIES: "0",
+      }, ["FARM_MUTATION_CMD"], entry);
+      expect(result.code, result.out).toBe(0);
+      expect(probes).toBe(1);
+      expect(calls).toBe(2);
+      const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+      expect(report.baseCommit).toBe(frozen);
+      expect(report.results[0].green).toBe(true);
+      expect(report.results[0].cleanup).toEqual([]);
+      expect(gitIn(tmpDir, "branch", "--list", "farm/*")).toBe("");
+      expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(frozen);
+    });
+  }
+
   it.each(["source", "bundle"] as const)("dependency-ready predecessor wins over an unready lower ID (%s)", async (entry) => {
     const first = { ...identityFixture(), id: "task-z" };
     writeFileSync(join(tmpDir, "src/follow.test.cjs"),

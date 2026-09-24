@@ -2998,6 +2998,85 @@ class SiteBrowserDependencyContractTest(unittest.TestCase):
 class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
     """AC-05/06: the browser verdict blocks publication without local setup or PR writes."""
 
+    def _assert_build_control_flow(self, build: str) -> None:
+        """Permit only bounded diagnostic uploads to run after a failed browser gate."""
+        control = r"(?m)^\s+(?:- )?(?:if|continue-on-error):"
+        self.assertNotRegex(build, r"(?m)^\s+(?:- )?continue-on-error:")
+        parts = re.split(r"(?m)(?=^      - )", build)
+        self.assertNotRegex(parts[0], control, "the build job must not be conditional")
+        diagnostics = {
+            "Retain browser review evidence": (
+                "${{ !cancelled() }}", "site-browser-evidence",
+                "site/.astro/browser-evidence/", 5),
+            "Retain browser failure diagnostics": (
+                "${{ failure() && steps.browser-gate.outcome == 'failure' }}",
+                "site-browser-failures", "site/.astro/playwright/", 3),
+        }
+        seen = []
+        names = []
+        for step in parts[1:]:
+            match = re.match(r"      - name: ([^\n]+)\n", step)
+            name = match.group(1) if match else None
+            names.append(name)
+            if name not in diagnostics:
+                self.assertNotRegex(step, control,
+                                    "validation and Pages upload must remain success-gated")
+                continue
+            seen.append(name)
+            condition, artifact, path, retention = diagnostics[name]
+            expected = (
+                f"      - name: {name}\n"
+                f"        if: {condition}\n"
+                "        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a\n"
+                "        with:\n"
+                f"          name: {artifact}\n"
+                f"          path: {path}\n"
+                "          if-no-files-found: ignore\n"
+                f"          retention-days: {retention}\n"
+            )
+            self.assertEqual(step.rstrip(), expected.rstrip(),
+                             "diagnostic exceptions may only upload their bounded evidence")
+        self.assertCountEqual(seen, list(diagnostics),
+                              "both diagnostic uploads must occur exactly once")
+        for name in ("Browser publication gate", "Upload Pages artifact"):
+            self.assertEqual(names.count(name), 1, f"missing or duplicate {name}")
+        gate = next(step for step in parts[1:]
+                    if step.startswith("      - name: Browser publication gate\n"))
+        self.assertRegex(gate, r"(?m)^        id: browser-gate$")
+
+    def test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads(self):
+        """Mutations must not turn evidence retention into publication authorization."""
+        build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
+            DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"])
+        self._assert_build_control_flow(build)
+        evidence = next(step for step in re.split(r"(?m)(?=^      - )", build)
+                        if step.startswith("      - name: Retain browser review evidence\n"))
+        mutations = {
+            "conditional job": build.replace("  build:\n", "  build:\n    if: always()\n", 1),
+            "conditional browser": build.replace("        id: browser-gate\n",
+                                                 "        id: browser-gate\n        if: false\n", 1),
+            "tolerated browser failure": build.replace("        id: browser-gate\n",
+                "        id: browser-gate\n        continue-on-error: true\n", 1),
+            "unconditional Pages upload": build.replace("      - name: Upload Pages artifact\n",
+                "      - name: Upload Pages artifact\n        if: always()\n", 1),
+            "unbounded diagnostic condition": build.replace("if: ${{ !cancelled() }}", "if: always()", 1),
+            "wrong diagnostic action": build.replace(evidence, evidence.replace(
+                "actions/upload-artifact@", "actions/upload-pages-artifact@", 1), 1),
+            "wrong diagnostic directory": build.replace("path: site/.astro/browser-evidence/",
+                                                         "path: site/dist", 1),
+            "unbounded retention": build.replace("retention-days: 3", "retention-days: 90", 1),
+            "executable diagnostic step": build.replace(evidence,
+                evidence.rstrip() + "\n        run: npm run deploy\n", 1),
+            "missing diagnostic step": build.replace(evidence, "", 1),
+            "duplicate diagnostic step": build.replace(evidence, evidence + evidence, 1),
+            "wrong browser identity": build.replace("id: browser-gate", "id: renamed-gate", 1),
+        }
+        for mutation, candidate in mutations.items():
+            with self.subTest(mutation=mutation):
+                self.assertNotEqual(candidate, build, "mutation must alter the real workflow")
+                with self.assertRaises(AssertionError):
+                    self._assert_build_control_flow(candidate)
+
     def test_browser_gate_blocks_artifact_upload_and_keeps_pr_execution_read_only(self):
         workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(workflow)
@@ -3013,7 +3092,7 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertLess(build.index("run: npm run test:browser"),
                         build.index("uses: actions/upload-pages-artifact@"))
         self.assertRegex(build, r"(?m)^    runs-on: ubuntu-latest$")
-        self.assertNotRegex(build, r"(?m)^\s+(?:if|continue-on-error):")
+        self._assert_build_control_flow(build)
         for boundary in ("GitHub runner image", "No exact hosted Chrome version",
                          "npm lockfile does not authenticate browser bytes"):
             self.assertIn(boundary, jobs["build"])
@@ -3518,6 +3597,28 @@ class SiteBrowserBehaviorContractTest(unittest.TestCase):
             self.assertIn(obligation, responsive)
         self.assertGreaterEqual(responsive.count("await expectNoHorizontalOverflow()"), 2,
                                 "check geometry both before and during visible search results")
+
+
+class NativeQualificationTimeBudgetTest(unittest.TestCase):
+    def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
+        source = CI_WORKFLOW.read_text(encoding="utf-8")
+        block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
+        # The inspected macOS cell passed product suites but was cancelled at
+        # the old 15-minute job deadline during final conformance. Retain every
+        # qualification layer and the bounded job rather than skipping a proof.
+        self.assertRegex(block, r"(?m)^    timeout-minutes: 30$")
+        for script in ("test_artifact_native.py", "test_artifact_bridge.py",
+                       "test_artifact_approval_adapter.py", "test_artifact_authority_adapter.py",
+                       "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",
+                       "test_artifact_authoring.py", "test_artifact_workflow.py",
+                       "test_artifact_farm.py", "test_artifact_package.py",
+                       "test_artifact_conformance.py"):
+            self.assertIn(script, block)
+        self.assertNotIn("continue-on-error:", block)
+        self.assertIn("fail-fast: false", block)
+        for platform in ("linux/amd64", "linux/arm64", "windows/amd64",
+                         "windows/arm64", "darwin/amd64", "darwin/arm64"):
+            self.assertIn("expected_platform: " + platform, block)
 
 
 if __name__ == "__main__":

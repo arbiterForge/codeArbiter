@@ -433,7 +433,10 @@ jobs:
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    # macOS exhausted 15 minutes after passing package tests while final
+    # conformance still ran (PR854/run35963335302). Keep every native
+    # qualification step and a bounded cap; do not weaken per-operation limits.
+    timeout-minutes: 30
     permissions:
       contents: read
     env:

@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Qualify retained farm candidates before discarding alternatives or retrying.
+  Preserve complete native CI qualification within a bounded 30-minute job budget.
 - Resolve farm dependencies before overlapping-file arbitration, so an unready
   lower-ID task cannot block its own prerequisite. Preserve ready-sibling ordering.
 - Evaluate canary models and samples on one frozen commit in isolated detached

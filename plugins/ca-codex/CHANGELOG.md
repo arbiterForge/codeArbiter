@@ -10,6 +10,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Clarify retained-candidate farm qualification in the shared private procedure;
+  no Codex farm backend is added.
 - Synchronize shared runtime identity with the current candidate cohort and
   document the isolated farm evaluation contract in the private resource. This
   does not add a packaged Codex farm backend or enable HTML farm execution.

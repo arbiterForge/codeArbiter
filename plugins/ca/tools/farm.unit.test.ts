@@ -3143,3 +3143,227 @@ describe("dependency-ready scope batching", () => {
     expect(cases).toBe(3072);
   });
 });
+
+// F09: the TASK worktree must qualify a retained candidate before siblings are
+// discarded. These are real contained file fixtures with injected worker/Git
+// boundaries, not externally billed model calls or real project commits.
+describe("qualified best-of-N alternatives", () => {
+  const roots: string[] = [];
+  const savedSamples = process.env.FARM_SAMPLES;
+  const savedTemperature = process.env.FARM_TEMPERATURE;
+  afterEach(async () => {
+    if (savedSamples === undefined) delete process.env.FARM_SAMPLES;
+    else process.env.FARM_SAMPLES = savedSamples;
+    if (savedTemperature === undefined) delete process.env.FARM_TEMPERATURE;
+    else process.env.FARM_TEMPERATURE = savedTemperature;
+    for (const root of roots.splice(0)) await fsRm(root, { recursive: true, force: true });
+  });
+
+  async function fixture() {
+    process.env.FARM_SAMPLES = "2";
+    process.env.FARM_TEMPERATURE = "0";
+    const id = `qualify-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const task: Task = { id, description: "qualify actual retained alternatives",
+      filesInScope: ["src/impl.ts", "src/rejected-only.ts"],
+      test: { path: "test.txt" }, gate: { commands: ["test"] }, maxRetries: 0 };
+    const wt = path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+    roots.push(wt, wt + "__s0", wt + "__s1");
+    let calls = 0;
+    const gitCalls: string[][] = [];
+    const quality: string[] = [];
+    const deps: RunTaskDeps = {
+      prepareWorktree: async (_branch, dir) => {
+        await fsMkdir(path.join(dir, "src"), { recursive: true });
+        await fsWriteFile(path.join(dir, "test.txt"), "immutable test");
+        return null;
+      },
+      resetWorktree: async (dir) => {
+        await fsRm(path.join(dir, "src"), { recursive: true, force: true });
+        await fsMkdir(path.join(dir, "src"), { recursive: true });
+        await fsWriteFile(path.join(dir, "test.txt"), "immutable test");
+      },
+      worker: { async apply(ctx) {
+        calls++;
+        const k = ctx.cwd.endsWith("__s0") ? 0 : 1;
+        const written = ["src/impl.ts"];
+        await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"), `candidate-${k}\n`);
+        if (k === 0) {
+          await fsWriteFile(path.join(ctx.cwd, "src/rejected-only.ts"), "must not leak\n");
+          written.push("src/rejected-only.ts");
+        }
+        return { ok: true, filesWritten: written, promptTokens: 10 + k, completionTokens: 20 + k };
+      } },
+      fileHash: async (file) => fsReadFile(file, "utf8").catch(() => null),
+      checkDrift: async () => [],
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async (dir) => {
+        quality.push(await fsReadFile(path.join(dir, "src/impl.ts"), "utf8"));
+        return { risk: "none" as const };
+      },
+      mutationCheck: async () => null,
+      git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+    return { task, wt, deps, gitCalls, quality, calls: () => calls };
+  }
+
+  it("uses the next retained candidate after high risk with no new worker round", async () => {
+    const f = await fixture();
+    f.deps.antiGamingCheck = async dir => {
+      const text = await fsReadFile(path.join(dir, "src/impl.ts"), "utf8");
+      return text.startsWith("candidate-0") ? { risk: "high", note: "literal risk" } : { risk: "none" };
+    };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.attempts).toBe(1);
+    expect(f.calls()).toBe(2);
+    expect(r.promptTokens).toBe(21);
+    expect(r.completionTokens).toBe(41);
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(r.acceptedCompletionTokens).toBe(21);
+    expect(await fsReadFile(path.join(f.wt, "src/impl.ts"), "utf8")).toBe("candidate-1\n");
+    await expect(fsStat(path.join(f.wt, "src/rejected-only.ts"))).rejects.toThrow();
+    expect(f.gitCalls.filter(args => args.includes("commit"))).toHaveLength(1);
+  });
+
+  it("retains an alternative until the materialized task gate passes", async () => {
+    const f = await fixture();
+    f.deps.runGate = async dir => dir === f.wt &&
+      (await fsReadFile(path.join(dir, "src/impl.ts"), "utf8")).startsWith("candidate-0")
+        ? { ok: false, failed: "test", tail: "task-context rejection" } : { ok: true };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(f.calls()).toBe(2);
+  });
+
+  it("applies the unchanged mutation evidence floor before accepting an alternative", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async dir =>
+      (await fsReadFile(path.join(dir, "src/impl.ts"), "utf8")).startsWith("candidate-0")
+        ? { score: 0, evaluated: 5, survivors: ["fixture survivor"] } : { score: 1, evaluated: 5, survivors: [] };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.mutationScore).toBe(1);
+    expect(r.warning).toBeUndefined();
+    expect(f.calls()).toBe(2);
+  });
+
+  it("checks both candidates before spending the configured next retry", async () => {
+    const f = await fixture();
+    const attempts: string[] = [];
+    f.deps.antiGamingCheck = async dir => {
+      attempts.push(await fsReadFile(path.join(dir, "src/impl.ts"), "utf8"));
+      return { risk: "high", note: "still rejected" };
+    };
+    const r = await runTask({ ...f.task, maxRetries: 1 }, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.attempts).toBe(2);
+    expect(attempts).toEqual(["candidate-0\n", "candidate-1\n", "candidate-0\n", "candidate-1\n"]);
+    expect(f.calls()).toBe(4);
+    expect(r.promptTokens).toBe(42);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("does not penalize a candidate for missing mutation count beyond the existing warning policy", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ score: 0 });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.acceptedPromptTokens).toBe(10);
+    expect(r.warning).toContain("mutation-risk");
+    expect(f.quality).toEqual(["candidate-0\n"]);
+  });
+
+  it("retains mutation-hook infrastructure warnings rather than inventing an escalation rule", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ failed: true, detail: "fixture unavailable" });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.warning).toContain("mutation-hook-failed");
+    expect(r.mutationScore).toBeNull();
+    expect(f.quality).toEqual(["candidate-0\n"]);
+  });
+
+  it("records known tokens and cleans all sample resources when qualification throws", async () => {
+    const f = await fixture();
+    f.deps.antiGamingCheck = async () => { throw new Error("qualification fixture unavailable"); };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("qualification");
+    expect(r.promptTokens).toBe(21);
+    expect(f.calls()).toBe(2);
+    expect(new Set(f.gitCalls.filter(args => args[0] === "worktree" && args[1] === "remove")
+      .map(args => args[args.length - 1]))).toEqual(new Set([f.wt + "__s0", f.wt + "__s1"]));
+    // Stub Git does not remove real fixture directories: verified teardown
+    // honestly reports both leftovers rather than equating exit zero with clean.
+    expect(r.cleanup?.filter(c => !c.ok)).toHaveLength(2);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("does not switch candidates across an unresolved task reset failure", async () => {
+    const f = await fixture();
+    f.deps.antiGamingCheck = async () => ({ risk: "high", note: "reject" });
+    f.deps.resetWorktree = async () => { throw new Error("reset unavailable"); };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("reset unavailable");
+    expect(f.calls()).toBe(2);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+    expect(new Set(f.gitCalls.filter(args => args[0] === "worktree" && args[1] === "remove")
+      .map(args => args[args.length - 1]))).toEqual(new Set([f.wt + "__s0", f.wt + "__s1"]));
+    // Stub Git does not remove real fixture directories: verified teardown
+    // honestly reports both leftovers rather than equating exit zero with clean.
+    expect(r.cleanup?.filter(c => !c.ok)).toHaveLength(2);
+  });
+
+  it("does not try a sibling after the task's immutable test changes", async () => {
+    const f = await fixture();
+    let reads = 0;
+    f.deps.fileHash = async file => {
+      const content = await fsReadFile(file, "utf8").catch(() => null);
+      if (file === path.join(f.wt, "test.txt") && ++reads > 1) return "changed test";
+      return content;
+    };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("tampered test");
+    expect(f.quality).toEqual([]);
+    expect(f.calls()).toBe(2);
+    expect(r.promptTokens).toBe(21);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("does not replace a failed between-candidate setup with a green sibling", async () => {
+    const f = await fixture();
+    let taskSetup = 0;
+    f.deps.runGate = async (dir, commands) => {
+      if (dir === f.wt && commands[0] === "setup" && ++taskSetup > 1)
+        return { ok: false, failed: "setup", tail: "required environment unavailable" };
+      return { ok: true };
+    };
+    f.deps.antiGamingCheck = async () => ({ risk: "high", note: "reject first" });
+    const r = await runTask({ ...f.task, setupEachAttempt: ["setup"] },
+      "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("setup");
+    expect(taskSetup).toBe(2);
+    expect(f.calls()).toBe(2);
+    expect(r.promptTokens).toBe(21);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("retains known sample usage when a later sample check throws", async () => {
+    const f = await fixture();
+    f.deps.checkDrift = async dir => {
+      if (dir.endsWith("__s0")) throw new Error("sample inspection unavailable");
+      return [];
+    };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.promptTokens).toBe(21);
+    expect(r.completionTokens).toBe(41);
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(f.calls()).toBe(2);
+  });
+});

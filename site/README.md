@@ -115,3 +115,21 @@ results.
 `.github/workflows/docs.yml` builds the site from `site/` and deploys GitHub Pages when relevant
 changes land on `main`, or when started manually. The site and deployment use only repository and
 GitHub Pages resources; no paid service is required.
+
+
+### Guide discovery and review-to-delivery guidance
+
+`src/components/GuideDirectory.astro` renders the complete guide collection at `/guides/`.
+`scripts/guide-directory.ts` assigns task groups and reading order; the authored pages remain the
+source of titles, descriptions and journey metadata. Register a new guide once in that order map.
+Unknown, duplicate, missing or incomplete entries fail the build.
+
+`src/scripts/guide-filter.ts` provides bounded literal matching for the optional in-page filters.
+There is no network request, browser storage or URL query written by this finder. Without JavaScript,
+all guides and task-group anchors remain available. Main Pagefind search still owns full-text lookup.
+
+The review-and-ship guide explains diff review versus persisted reports and the separate commit, PR,
+merge and cleanup boundaries. Edit its authored source, not the generated command pages.
+Tests live in `scripts/guide-directory.test.ts`, `test/content/review-delivery.test.ts` and
+`test/browser/guide-discovery.spec.ts`. The browser suite captures desktop/mobile layouts and
+checks the actual filtered geometry, keyboard targets, print and client-navigation lifecycle.

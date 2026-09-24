@@ -66,19 +66,30 @@ would be too slow).
 
 ### Best-of-N sampling and iterative retries
 
-By default the farm draws one worker completion per task attempt (`FARM_SAMPLES=1` — unchanged
-behavior). Because the gate is a deterministic pass/fail oracle and each task runs in an isolated
-worktree, you can instead draw **N candidates in parallel** and accept the first that passes the gate:
-set `FARM_SAMPLES=N`. Each sample runs in its own scratch worktree cut from the integration HEAD; the
-winner's files are taken into the task worktree and merged, the losers discarded. Total in-flight
-worker calls never exceed `FARM_CONCURRENCY` — sampling **shares** that budget, it does not multiply
-it. The cost is up to N× worker tokens (the cheap axis) for a higher first-time-go rate;
-`farm-report.json` records both the summed sample-token spend (`promptTokens`/`completionTokens`) and
-the accepted candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`) so the
-trade-off is visible. With `FARM_SAMPLES>1` the worker temperature is auto-bumped off 0 (to 0.7) so the
-samples actually diversify; set `FARM_TEMPERATURE` to control it.
+By default the farm draws one worker completion per task attempt (`FARM_SAMPLES=1`). With
+`FARM_SAMPLES=N`, it draws **N candidates** in isolated scratch worktrees from the task's frozen
+baseline. Total in-flight worker calls share `FARM_CONCURRENCY`; sampling does not multiply that cap.
 
-On a **retry** — a failed gate, or a sampling round with no green — the worker is shown its own previous
+Sample gate success is only a shortlist. In deterministic sample-index order, each shortlisted
+candidate is materialized into the task worktree and receives the same containment, immutable-test,
+drift, task-gate, literal-risk and mutation checks as the single-worker path. Alternatives remain
+available until one passes those checks. A gate or high-risk rejection tries the next existing
+candidate before spending another model round. An integrity failure or an unusable reset/setup
+stops that task rather than disguising the failure with an unrelated passing candidate.
+
+Between candidates, tracked and non-ignored worker changes are reset to the task baseline and the
+existing setup phases are reapplied. Ignored dependency caches retain their existing policy. Cleanup
+is attempted for every sample, including exception paths; unresolved cleanup is reported. The same
+selection applies to detached canary work, which still stops before commit or merge.
+
+`farm-report.json` records total sample spend (`promptTokens`/`completionTokens`) separately from
+the selected candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`). Qualification
+makes no additional model requests, but can run local gates and mutation checks for multiple
+candidates. It is not comparative quality ranking or a measured savings claim. Normal independent
+reviews and acceptance still follow. With `FARM_SAMPLES>1` and no explicit temperature, sampling
+defaults to `0.7`; `FARM_TEMPERATURE` remains the operator override.
+
+On a **retry** — a failed gate, or a sampling round with no qualified candidate — the worker is shown its own previous
 in-scope output, not just the gate-failure tail, so it refines rather than restarts blind. That prior
 output rides the same byte-cap (`FARM_ENRICH_MAX_BYTES`) and secret-redaction chokepoint as all other
 injected context; out-of-scope drift is never carried forward.
@@ -140,7 +151,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_API_BASE_URL` | `https://opencode.ai/zen/v1` | Endpoint URL (env → plan.json → this default). |
 | `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
 | `FARM_CONCURRENCY` | `4` | Max concurrent task workers — and the shared ceiling on TOTAL in-flight worker calls, including best-of-N samples. |
-| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per task attempt; first to pass the gate wins. `1` = today's single-candidate path. N>1 trades up to N× worker tokens for higher first-time-go; shares the `FARM_CONCURRENCY` budget (never N× it). |
+| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per attempt; first in index order to pass task-worktree gates and risk qualification is selected. `1` keeps the single-worker path. Shares `FARM_CONCURRENCY`; all candidates' token spend is reported. |
 | `FARM_TEMPERATURE` | `0` | Sampling temperature sent to the worker. Auto-bumped to `0.7` when `FARM_SAMPLES>1` and left at `0` (so samples diversify); set explicitly to override. |
 | `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |

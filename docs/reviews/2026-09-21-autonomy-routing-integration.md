@@ -377,3 +377,67 @@ enablement. HTML farm remains disabled and real provider/resource authority is
 unchanged. This source correction alone supplies no new promotion evidence.
 Rollback the runtime and rebuilt bundle together with their projections/metadata;
 preserve unrelated worktrees, typed authority records and published-tag history.
+
+
+## 2026-09-24: PR854 conflict repair and retained-candidate qualification
+
+This continues the same PR from `6bf1be69352369e07f9c97a221605224d968a4e2`.
+Main advanced to `29f84168ab7592a5d7bb0550cb1f25cf29608a9d` with the guide
+discovery work. Its unrelated changes are retained through a preserving merge.
+The sole conflict was key ordering in `.github/published-tags.json`: parsed
+publication identities and all earlier records were equal. Retain main's bytes
+rather than duplicate an original receipt or change an authenticated identity.
+
+F09 is addressed inside the existing task runner. Best-of-N still shortlists
+candidates using their isolated sample gates, then materializes them in stable
+index order into the actual task worktree. One shared checker owns containment,
+immutable-test identity, drift, the task gate and the existing literal/mutation
+policy for both single-sample execution and retained alternatives. A rejected
+gate/risk candidate can consume a generated alternative before another model
+round. The selected result is already qualified before siblings are removed.
+This is first-qualified selection, not a new comparative quality ranking.
+
+Between alternatives the runner verifies reset/clean and reapplies the existing
+setup contract; a failed reset/setup or task integrity check ends selection,
+rather than concealing the failure with another sibling. Rejected-only
+nonignored output cannot leak to the chosen result. Ignored setup caches retain
+their existing contract. All sample teardowns are attempted even when a
+qualification throws, and cleanup failures remain explicit. Known usage survives
+post-response exceptions; total and selected-candidate usage remain separate.
+A later retry consumes the configured retry allowance only after the retained
+alternatives are exhausted. Existing mutation evidence floors and
+infrastructure-warning semantics remain unchanged.
+
+The actual source and rebuilt CLI fixtures cover literal rejection, mutation
+rejection, a gate that fails only after task materialization, all-rejected
+results, and detached canaries. In-process tests cover selected usage, stale-file
+reset, actual evidence floors, unchanged warning policies, missing setup, task
+test tampering, thrown qualification, cleanup outcomes and post-response usage.
+They use temporary Git/filesystem fixtures and local provider stubs, not a paid
+model or a new authority producer. Normal acceptance, caller review and the HTML
+farm block remain unchanged.
+
+The prior normal run `35963335302` passed the farm execution suites. Its inspected
+macOS native qualification job reached passing package tests, then was cancelled
+at the 15-minute job deadline during final cross-kind conformance. The narrow CI
+repair changes that complete six-cell job budget to 30 minutes and adds a
+contract test retaining every qualification stage, platform, fail-closed result
+and independent matrix cell. It removes no assertion or required check and
+does not change production operation deadlines. Normal final-head CI, not a
+preparation run or a time-limit edit alone, must establish completion.
+
+Coverage remains a distinct evidence obligation. The earlier Windows/Linux
+union was 68.97% lines and 64.13% branches, below the declared stage-2 floor even
+though the current union job reported it advisorially. Do not claim a floor pass
+from test counts or child CLI execution. Re-measure the final candidate and
+retain any remaining gap without lowering thresholds or excluding source.
+
+Candidate .13 coordinates remain the same unmerged release targets. No
+publication fact, permission, public registration, resident context, protected
+artifact schema or pipeline-acceptance rule changes here. Testing may consume
+additional bounded local gate/mutation work for each retained candidate; no
+realized token, total-cost or output-quality gain is asserted. Roll back the
+runtime, rebuilt bundle, private card and projections together if rejected;
+preserve unrelated main changes, current artifact authority and publication
+history. Farm process resume, heuristic redesign, broader command migration
+and HTML farm enablement remain separate.

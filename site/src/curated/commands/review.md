@@ -1,10 +1,10 @@
 ---
 entity: commands/review
-related: [skills/dispatching-parallel-agents, pr, preview]
+related: [skills/dispatching-parallel-agents, pr, preview, checkpoint]
 gates:
   - gate: severity block
-    when: any CRITICAL or HIGH finding surfaces
-    effect: must be resolved before /ca:pr — the aggregated verdict is not advisory at that severity
+    when: a CRITICAL or HIGH finding surfaces on your own change
+    effect: must be resolved before /ca:pr; an inbound PR receives a local verdict, not a block on unrelated local work
 ---
 
 ## What it does
@@ -34,10 +34,17 @@ differences](/getting-started/claude-code-and-codex/#intentional-host-difference
 ## Usage
 
 ```
-/ca:review [path]
+/ca:review [path | #<pr> | <pr-url>]
 ```
 
-Defaults to the current uncommitted diff when no path is given.
+Defaults to the current uncommitted diff when no target is given. A PR number or URL targets
+an inbound change. The diff is fetched once and the review does not check out its branch.
+Missing or unauthenticated `gh` stops the PR path; it does not fall back to the working diff.
+
+For an inbound PR, the local verdict is the deliverable. Posting a comment requires separate
+confirmation. This route does not submit GitHub Approve or Request changes decisions.
+See [Review and ship a change](/guides/review-and-ship/) for target selection, finding review,
+commit/PR boundaries and post-merge cleanup.
 
 ## Example
 

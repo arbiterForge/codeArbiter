@@ -1360,8 +1360,11 @@ async function fileHash(p: string): Promise<string | null> {
 // once-per-attempt). Tracked changes and non-ignored untracked worker output are
 // still wiped, so nothing stale carries into the next attempt.
 async function resetWorktree(wt: string) {
-  await git(["reset", "--hard", "HEAD"], wt);
-  await git(["clean", "-fd"], wt);
+  for (const args of [["reset", "--hard", "HEAD"], ["clean", "-fd"]]) {
+    const result = await git(args, wt);
+    if (result.code !== 0)
+      throw new Error(`worktree reset failed: ${redactSecrets(result.out).slice(0, 300)}`);
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -2084,9 +2087,9 @@ function effectiveSampling(samples: number): Sampling {
 }
 
 // F1 — materialize the winning sample's in-scope files into the task worktree,
-// so the unchanged post-selection pipeline (sweep/tamper/drift/gate/anti-gaming/
-// commit/merge) runs against `wt` exactly as in the single-sample path. Only
-// in-scope impl files are written (the test is already present in `wt`); a path
+// so the shared task-worktree checks run before candidate selection is final.
+// The selected files reach the existing commit/merge path only after all checks.
+// Only in-scope impl files are written (the test is already present in `wt`); a path
 // that would escape the worktree is refused (defense-in-depth — winner files are
 // in-scope already).
 export async function writeFilesInto(wt: string, files: Array<{ path: string; contents: string }>): Promise<void> {
@@ -2102,6 +2105,16 @@ export async function writeFilesInto(wt: string, files: Array<{ path: string; co
 // integration HEAD. Drawn through the shared worker-call limiter (AC-F1.4). On
 // green it captures the in-scope impl files so the winner can be materialized
 // into the task worktree.
+// The shared task-worktree checks distinguish repairable candidate rejection
+// from a containment/integrity failure. These are internal outcomes, not a new
+// acceptance receipt or a plan-controlled bypass.
+type OutputAssessment =
+  | { kind: "pass"; warning?: string; mutationScore: number | null }
+  | { kind: "fatal"; note: string; unsafe?: boolean }
+  | { kind: "drift"; note: string; drift: string[] }
+  | { kind: "gate"; note: string }
+  | { kind: "risk"; note: string; mutationScore: number | null };
+
 type SampleOutcome = {
   green: boolean;
   filesWritten: string[];
@@ -2112,6 +2125,7 @@ type SampleOutcome = {
   completionTokens: number;
   wt: string;
   branch: string;
+  assessment?: OutputAssessment;
 };
 
 async function bestOfN(
@@ -2125,9 +2139,11 @@ async function bestOfN(
   allowed: Set<string>,
   n: number,
   deps: RunTaskDeps,
+  qualify: (sample: SampleOutcome) => Promise<OutputAssessment>,
   evaluation?: EvaluationContext,
 ): Promise<{
   winner: SampleOutcome | null;
+  fatal: SampleOutcome | null;
   bestFailure: SampleOutcome | null;
   promptTokens: number;
   completionTokens: number;
@@ -2166,6 +2182,9 @@ async function bestOfN(
         const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
         const pt = w.promptTokens ?? 0;
         const ct = w.completionTokens ?? 0;
+        // A later filesystem/gate exception must not erase known billed usage.
+        base.promptTokens = pt;
+        base.completionTokens = ct;
         if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
         const sweep = postApplySweep(wt, w.filesWritten, forbidden);
         if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
@@ -2185,30 +2204,53 @@ async function bestOfN(
         // failure OUTCOME, not reject — so Promise.all below never rejects and the
         // cleanup loop always removes every scratch worktree (M1: no leak on the
         // exception path). `base` already carries this sample's wt/branch.
-        return { ...base, note: `sample error: ${e instanceof Error ? e.message : String(e)}` };
+        return { ...base, note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
       }
     });
 
   const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
   const promptTokens = outcomes.reduce((s, o) => s + o.promptTokens, 0);
   const completionTokens = outcomes.reduce((s, o) => s + o.completionTokens, 0);
-  // First green by sample index wins (deterministic; avoids a wall-clock race).
-  const winner = outcomes.find((o) => o.green) ?? null;
-  // Best failure to seed the retry: prefer one that reached the gate (has its
-  // in-scope output for F2), else any failure.
-  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
-  // Discard every sample worktree — the winner's files are already captured.
-  // #398: verified, and EVERY sample is attempted even after one fails. The old
-  // loop swallowed each failure, so one stuck sample was indistinguishable from
-  // a clean sweep; worse, a leaked sample worktree keeps its branch checked out,
-  // which then makes the branch delete fail too. Both outcomes are returned so
-  // the task result can carry the full list of what is still on disk.
+  let winner: SampleOutcome | null = null;
+  let fatal: SampleOutcome | null = null;
   const cleanup: CleanupOutcome[] = [];
-  for (const o of outcomes) {
-    cleanup.push(await removeWorktreeVerified(deps.git, o.wt));
-    if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, o.branch));
+  try {
+    // Qualify in deterministic index order against the actual TASK worktree.
+    // Keep every alternative until materialization, gate and risk checks pass,
+    // not just until a sample's narrower gate is green. A rejected candidate
+    // does not purchase another model round while a usable alternative remains.
+    for (const outcome of outcomes) {
+      if (!outcome.green) continue;
+      try {
+        outcome.assessment = await qualify(outcome);
+      } catch (error) {
+        outcome.assessment = { kind: "fatal",
+          note: `candidate qualification failed: ${redactSecrets(msgOf(error)).slice(0, 300)}`,
+          unsafe: isUnsafeWorktreePathError(error) };
+        if (outcome.assessment.unsafe) outcome.assessment.note = msgOf(error);
+      }
+      if (outcome.assessment.kind === "pass") {
+        winner = outcome;
+        break;
+      }
+      outcome.green = false;
+      outcome.note = outcome.assessment.note;
+      if (outcome.assessment.kind === "fatal") {
+        fatal = outcome;
+        break; // Do not mask an integrity/containment failure with a sibling.
+      }
+    }
+  } finally {
+    // Attempt EVERY owned sample's verified cleanup even when qualification
+    // throws. Keep all failure records; teardown is not qualification evidence.
+    for (const outcome of outcomes) {
+      cleanup.push(await removeWorktreeVerified(deps.git, outcome.wt));
+      if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, outcome.branch));
+    }
   }
-  return { winner, bestFailure, promptTokens, completionTokens, cleanup };
+  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0)
+    ?? outcomes.find((o) => !o.green) ?? null;
+  return { winner, fatal, bestFailure, promptTokens, completionTokens, cleanup };
 }
 
 // Internal canary context, not a plan field or a new CLI capability. Each caller
@@ -2298,6 +2340,58 @@ export async function runTask(
   // installed" verdict from another task.
   const setupState: SetupState = { key: null };
 
+  // The same output checks govern a single worker and every materialized
+  // alternative. Selection never changes thresholds, mutation-count floors,
+  // warning policy or the independent scope/spec/quality review requirement.
+  const assessOutput = async (filesWritten: string[]): Promise<OutputAssessment> => {
+    const sweep = postApplySweep(wt, filesWritten, forbidden);
+    if (sweep) return { kind: "fatal", note: sweep };
+    const after = await deps.fileHash(path.resolve(wt, t.test.path));
+    if (testHashBefore !== null && after !== testHashBefore)
+      return { kind: "fatal", note: `tampered test: ${t.test.path}` };
+    const drift = await deps.checkDrift(wt, allowed);
+    if (drift.length) return { kind: "drift", drift, note: `drift: ${drift.join(", ")}` };
+    const gate = await deps.runGate(wt, t.gate.commands);
+    if (!gate.ok)
+      return { kind: "gate", note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`) };
+
+    const gaming = await deps.antiGamingCheck(wt, t);
+    let risk = gaming.risk;
+    let note = gaming.note;
+    let score: number | null = null;
+    if (risk !== "high") {
+      let mut: Awaited<ReturnType<typeof mutationCheck>>;
+      try {
+        mut = await deps.mutationCheck(wt, t);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error))
+          return { kind: "fatal", note: error.message, unsafe: true };
+        throw error;
+      }
+      if (mut && "score" in mut) {
+        score = mut.score;
+        // #525: only a reported usable count clears the hard-rejection floor.
+        // Missing/invalid count remains thin evidence, not an invented count.
+        if (mut.score <= MUT.escalateBelow && mut.evaluated !== undefined && mut.evaluated >= 5) {
+          risk = "high";
+          note = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
+        } else if (mut.score < MUT.warnBelow && risk !== "warn") {
+          risk = "warn";
+          note = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
+        }
+      } else if (mut && "failed" in mut) {
+        // Preserve the existing infrastructure-warning policy, not a new stop.
+        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}\n`);
+        if (risk === "none") {
+          risk = "warn";
+          note = `mutation-hook-failed: ${mut.detail}`;
+        }
+      }
+    }
+    if (risk === "high") return { kind: "risk", note: note ?? "high implementation risk", mutationScore: score };
+    return { kind: "pass", warning: risk === "warn" ? note : undefined, mutationScore: score };
+  };
+
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) {
       // F2: snapshot the failed attempt's in-scope output BEFORE the reset wipes
@@ -2305,7 +2399,7 @@ export async function runTask(
       // restarting from the baseline blind. Out-of-scope drift is not captured.
       // Only meaningful for the single-sample path (which writes into `wt`); under
       // best-of-N `priorInScope` is seeded explicitly from the best failing sample
-      // below, so the task worktree (never sample-written) must not clobber it.
+      // below, so the task worktree (which may hold a different rejected\n      // alternative) must not clobber it.
       // And only re-show output the worker ACTUALLY wrote: if the prior attempt
       // failed at the API level (no files written), captureInScope would return the
       // inherited baseline, which must not be mislabeled "your previous attempt".
@@ -2333,6 +2427,7 @@ export async function runTask(
     const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
 
     let worker: WorkerResult;
+    let assessment: OutputAssessment | undefined;
     if (samples <= 1) {
       // Single-sample path — identical to today (one worker call into the task
       // worktree), now drawn through the shared limiter (a no-op at N=1).
@@ -2349,144 +2444,75 @@ export async function runTask(
         continue;
       }
     } else {
-      // Best-of-N (AC-F1.2): draw `samples` candidates concurrently in isolated
-      // scratch worktrees, gate each, accept the first green. The winner's files
-      // are materialized into `wt`; the post-selection pipeline below then runs
-      // against `wt` UNCHANGED. No green → seed the retry from the best failure
-      // (its in-scope output, per F2) and loop (AC-F1.5). Token spend across ALL
-      // samples is summed; the winner's own tokens are recorded separately (AC-F1.6).
-      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps, evaluation);
+      // Retain gate-green alternatives until one passes the SAME task-worktree
+      // checks as a single worker. Rejections consume candidates, not retries.
+      let materialized = false;
+      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps,
+        async (candidate) => {
+          if (materialized) {
+            // Restore the task's frozen HEAD and ordinary setup contract before
+            // trying another candidate; rejected-only tracked/untracked files
+            // cannot contaminate it. Ignored setup caches retain existing policy.
+            await deps.resetWorktree(wt);
+            const setup = await runSetupPhases(wt, t, deps, setupState);
+            if (setup) return { kind: "fatal", note: setup };
+          }
+          materialized = true;
+          await writeFilesInto(wt, candidate.files);
+          return assessOutput(candidate.filesWritten);
+        }, evaluation);
       noteCleanup(...sel.cleanup); // #398: sample worktrees/branches left behind
       promptTokens += sel.promptTokens;
       completionTokens += sel.completionTokens;
       acceptedPromptTokens = sel.winner?.promptTokens ?? 0;
       acceptedCompletionTokens = sel.winner?.completionTokens ?? 0;
+      if (sel.fatal) {
+        const fatal = sel.fatal.assessment;
+        return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+          note: sel.fatal.note, filesWritten: fatal?.kind === "fatal" && fatal.unsafe ? [] : sel.fatal.filesWritten,
+          promptTokens, completionTokens });
+      }
       if (!sel.winner) {
         lastFilesWritten = sel.bestFailure?.filesWritten ?? [];
         priorInScope = sel.bestFailure?.inScope ?? [];
-        priorFailure = sel.bestFailure?.note ?? "all samples failed the gate";
+        priorFailure = redactSecrets(sel.bestFailure?.note ?? "all samples failed qualification");
+        mutationScore = sel.bestFailure?.assessment?.kind === "risk"
+          ? sel.bestFailure.assessment.mutationScore : null;
         continue;
       }
-      try {
-        await writeFilesInto(wt, sel.winner.files);
-      } catch (error) {
-        if (isUnsafeWorktreePathError(error)) {
-          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
-        }
-        throw error;
-      }
+      // Already materialized and fully checked; no second risk decision after
+      // discarding siblings. Commit/merge (or no-commit canary) remains below.
+      assessment = sel.winner.assessment;
       worker = { ok: true, filesWritten: sel.winner.filesWritten };
       lastFilesWritten = worker.filesWritten;
     }
 
-    // Post-apply containment sweep (D6) — task-level enforcement over the
-    // worker's REPORTED writes (see postApplySweep header). Inspects the
-    // `filesWritten` the worker returned, so an escape or a read-only-test write
-    // is rejected even when the worker bypassed runWorker's inline guard —
-    // provided the path was reported. A NON-REPORTING worker that writes outside
-    // its reported set is NOT covered here ([NEEDS-TRIAGE], deferred to the
-    // item-3 sandbox). Runs alongside the checkDrift allowlist sweep below; the
-    // inline guards remain defense-in-depth.
-    const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
-    if (sweepErr) {
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-    }
-
-    // The failing test must be untouched (defence in depth — the write path
-    // already refuses test.path, this catches a sneaky in-scope edit too).
-    const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
-    if (testHashBefore !== null && testHashAfter !== testHashBefore) {
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-    }
-
-    // Drift: on the FIRST drift, retry once with a hardened prompt naming the
-    // offending paths — usually the cheap model is just being dumb, not the
-    // spec being ambiguous. Only escalate as drift after that retry.
-    const driftFiles = await deps.checkDrift(wt, allowed);
-    if (driftFiles.length > 0) {
+    const checked = assessment ?? await assessOutput(worker.filesWritten);
+    if (checked.kind === "fatal")
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+        note: checked.note, filesWritten: checked.unsafe ? [] : worker.filesWritten, promptTokens, completionTokens });
+    if (checked.kind === "drift") {
       if (!driftedOnce && attempt <= limit) {
         driftedOnce = true;
-        priorFailure = `drift: you wrote outside the allowed files: ${driftFiles.join(", ")}`;
+        priorFailure = `drift: you wrote outside the allowed files: ${checked.drift.join(", ")}`;
         continue;
       }
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+        note: checked.note, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
-
-    const gate = await deps.runGate(wt, t.gate.commands);
-    if (!gate.ok) {
-      // FINDING 2: redact the WHOLE priorFailure that reaches the next worker
-      // prompt — not just the gate.tail (already redacted in runGate). The
-      // failing command line (gate.failed) is echoed verbatim too, so a secret
-      // embedded in a gate command would otherwise cross the trust boundary.
-      // redactSecrets is idempotent, so re-running it over the already-redacted
-      // tail is safe.
-      priorFailure = redactSecrets(`failed: ${gate.failed}\n${gate.tail}`);
+    if (checked.kind === "gate") {
+      priorFailure = checked.note;
       continue;
     }
-
-    // Zero-token anti-gaming guard: fast literal-leak pass, then the deeper
-    // mutation pass (skipped if the leak pass already says "high").
-    const gaming = await deps.antiGamingCheck(wt, t);
-    let risk = gaming.risk;
-    let riskNote = gaming.note;
-    if (risk !== "high") {
-      let mut: Awaited<ReturnType<typeof mutationCheck>>;
-      try {
-        mut = await deps.mutationCheck(wt, t);
-      } catch (error) {
-        if (isUnsafeWorktreePathError(error)) {
-          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
-        }
-        throw error;
-      }
-      if (mut && "score" in mut) {
-        mutationScore = mut.score;
-        // #525: the unknown-count sentinel is GONE, and this is a deliberate,
-        // narrow behaviour change. This floor exists to refuse hard-rejecting a
-        // task on thin evidence; an unreported mutant count is the thinnest
-        // evidence there is, so it no longer clears the floor. Such a run warns
-        // instead of escalating.
-        //
-        // The alternative — keeping `?? 99` here — was measured and is worse.
-        // Before #525 the sentinel only applied to a NULLISH count, so a hook
-        // that reported an unusable one ("total":"4" from a shell hook that
-        // quotes its numbers, -5, 2.5, true) kept that value and failed the
-        // comparison, landing on warn. Routing every unusable value through the
-        // sentinel flipped twelve such shapes to escalate — false rejections in
-        // exactly the direction this floor guards. Requiring a reported count
-        // restores all twelve AND resolves the unreported case the same way.
-        if (mut.score <= MUT.escalateBelow && mut.evaluated !== undefined && mut.evaluated >= 5) {
-          risk = "high";
-          riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
-        } else if (mut.score < MUT.warnBelow) {
-          if (risk !== "warn") {
-            risk = "warn";
-            riskNote = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
-          }
-        }
-      } else if (mut && "failed" in mut) {
-        // observability-002 (#187): mutationCheck's pluggable-hook branch
-        // distinguishes "configured but failed" (non-zero exit, timeout,
-        // unparseable output) from "not configured" (both previously
-        // collapsed to `null`, so a broken FARM_MUTATION_CMD integration
-        // produced a report indistinguishable from one that never ran mutation
-        // checking). Surface it — mirroring the diagnostic discipline the
-        // primary API path already uses (callApi's stderr body dump) — without
-        // escalating or blocking the task on a hook-infrastructure failure.
-        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}\n`);
-        if (risk === "none") {
-          risk = "warn";
-          riskNote = `mutation-hook-failed: ${mut.detail}`;
-        }
-      }
+    if (checked.kind === "risk") {
+      mutationScore = checked.mutationScore;
+      priorFailure = redactSecrets(`${checked.note}. Implement real logic; do not hard-code or special-case the asserted value.`);
+      if (attempt <= limit) continue;
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+        note: checked.note, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
     }
-    if (risk === "high") {
-      priorFailure = `${riskNote}. Implement real logic; do not hard-code or special-case the asserted value.`;
-      if (attempt <= limit) continue; // give it a chance to fix
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
-    }
-    if (risk === "warn") lastWarning = riskNote;
-
+    mutationScore = checked.mutationScore;
+    lastWarning = checked.warning;
     if (evaluation) {
       // Worker, containment, immutable-test, drift, gate and risk checks above
       // are identical to normal authoring. Qualification stops BEFORE staging,

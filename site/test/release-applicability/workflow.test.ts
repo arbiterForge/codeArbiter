@@ -94,3 +94,34 @@ describe("documentation release-applicability workflow contract", () => {
     },
   );
 });
+
+
+describe("browser failure evidence does not bypass publication", () => {
+  const workflow = readFileSync(workflowPath, "utf8").replaceAll("\r\n", "\n");
+  const build = jobBody(workflow, "build");
+
+  /** Isolate the exact named step without matching a later step's condition. */
+  function step(name: string): string {
+    const parts = build.split(`      - name: ${name}\n`);
+    if (parts.length !== 2) throw new Error(`missing or duplicate step: ${name}`);
+    return parts[1].split(/\n      - /)[0];
+  }
+
+  test("retains completed captures and bounded failure diagnostics", () => {
+    expect(step("Retain browser review evidence")).toContain("if: ${{ !cancelled() }}");
+    const diagnostics = step("Retain browser failure diagnostics");
+    expect(diagnostics).toContain("if: ${{ failure() && steps.browser-gate.outcome == 'failure' }}");
+    expect(diagnostics).toContain("path: site/.astro/playwright/");
+    expect(diagnostics).toContain("retention-days: 3");
+  });
+
+  test("a failed browser gate still blocks Pages upload and deployment", () => {
+    const gate = step("Browser publication gate");
+    expect(gate).toContain("id: browser-gate");
+    expect(gate).toContain("run: npm run test:browser");
+    expect(build).not.toContain("continue-on-error:");
+    expect(step("Upload Pages artifact")).not.toContain("if:");
+    expect(workflow).toContain("needs: [build, site-check]");
+    expect(workflow).toContain("if: github.event_name != 'pull_request'");
+  });
+});
