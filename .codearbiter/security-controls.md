@@ -152,7 +152,12 @@ The Codex npm tarball is a deterministic projection of the exact retained,
 qualified Codex cohort member; no checkout rebuild, lifecycle script, or runtime
 download participates. Publication is fixed to `@arbiterforge/ca-codex`, an
 exact stable version, and `https://registry.npmjs.org/`, uses npm provenance and
-scripts-disabled publication, and receives GitHub OIDC only for that provenance.
+scripts-disabled publication. The protected release jobs grant `id-token: write`
+at job scope, so GitHub OIDC is available to every step in those jobs, including
+registry readback and the token-free cold-install steps that execute npm and Codex
+code. That broader-than-publish availability is an explicit residual risk; the
+workflow requests an OIDC token only for npm provenance, but step-level isolation
+is not enforced by GitHub permissions.
 The marketplace channel cannot advance until registry integrity, npm's supported
 signature verifier, the SLSA subject/source commit, the independently trusted
 cohort receipt digest, and source archive digest all agree. After readback, a

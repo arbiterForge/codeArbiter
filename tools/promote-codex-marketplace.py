@@ -16,13 +16,32 @@ def _catalog_version(raw: bytes) -> str:
         plugins = catalog["plugins"]
         matches = [entry for entry in plugins if entry.get("name") == "ca-codex"]
         source = matches[0]["source"] if len(matches) == 1 else None
+        source_type = source.get("source") if isinstance(source, dict) else None
+        source_keys = set(source) if isinstance(source, dict) else set()
         package = source.get("package") if isinstance(source, dict) else None
         version = source.get("version") if isinstance(source, dict) else None
+        registry = source.get("registry") if isinstance(source, dict) else None
+        url = source.get("url") if isinstance(source, dict) else None
+        ref = source.get("ref") if isinstance(source, dict) else None
+        path = source.get("path") if isinstance(source, dict) else None
+        sha = source.get("sha") if isinstance(source, dict) else None
     except (KeyError, TypeError, ValueError) as exc:
         raise ValueError("current Codex marketplace catalog is malformed") from exc
-    if package != "@arbiterforge/ca-codex" or PACKAGER.semver_key(version) is None:
-        raise ValueError("current Codex marketplace version is not a qualified SemVer ref")
-    return version
+    if (source_keys == {"source", "package", "version", "registry"}
+            and source_type == "npm" and package == "@arbiterforge/ca-codex"
+            and registry == "https://registry.npmjs.org"
+            and PACKAGER.semver_key(version) is not None):
+        return version
+    legacy = re.fullmatch(r"refs/tags/ca-codex-dist-v(.+)", ref or "")
+    legacy_version = legacy.group(1) if legacy else None
+    if (source_keys == {"source", "url", "path", "ref", "sha"}
+            and source_type == "git-subdir"
+            and url == "https://github.com/arbiterForge/codeArbiter.git"
+            and path == "plugins/ca-codex"
+            and re.fullmatch(r"[0-9a-f]{40}", sha or "") is not None
+            and PACKAGER.semver_key(legacy_version) is not None):
+        return legacy_version
+    raise ValueError("current Codex marketplace version is not a qualified SemVer ref")
 
 def _git(repo: Path, *args: str, env=None, check=True, text=True):
     return subprocess.run(["git", *args], cwd=repo, env=env, check=check,

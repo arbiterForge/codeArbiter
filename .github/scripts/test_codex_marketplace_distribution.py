@@ -488,6 +488,108 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                 registry="https://registry.npmjs.org",
             )
 
+    def test_first_npm_advance_accepts_only_the_qualified_legacy_catalog(self):
+        legacy = json.loads(self.catalog)
+        legacy["plugins"][0]["source"] = {
+            "source": "git-subdir",
+            "url": "https://github.com/arbiterForge/codeArbiter.git",
+            "path": "plugins/ca-codex",
+            "ref": "refs/tags/ca-codex-dist-v0.13.12",
+            "sha": "4" * 40,
+        }
+        self.assertEqual(
+            "0.13.12",
+            PROMOTER._catalog_version(json.dumps(legacy).encode()),
+        )
+        for source_update in (
+            {"url": "https://example.invalid/substitute.git"},
+            {"path": "plugins/other"},
+            {"ref": "refs/tags/ca-codex-dist-vlatest"},
+            {"sha": "not-a-commit"},
+            {"source": "git"},
+            {"package": "@arbiterforge/ca-codex"},
+            {"unexpected": "field"},
+        ):
+            with self.subTest(source_update=source_update):
+                malformed = json.loads(json.dumps(legacy))
+                malformed["plugins"][0]["source"].update(source_update)
+                with self.assertRaisesRegex(ValueError, "qualified SemVer"):
+                    PROMOTER._catalog_version(json.dumps(malformed).encode())
+
+        npm_catalog = json.loads(self.catalog)
+        npm_catalog["plugins"][0]["source"] = {
+            "source": "npm",
+            "package": "@arbiterforge/ca-codex",
+            "version": "0.13.14",
+            "registry": "https://registry.npmjs.org",
+        }
+        self.assertEqual(
+            "0.13.14",
+            PROMOTER._catalog_version(json.dumps(npm_catalog).encode()),
+        )
+        for source_update in (
+            {"registry": "https://registry.example.invalid"},
+            {"unexpected": "field"},
+        ):
+            with self.subTest(source_update=source_update):
+                malformed = json.loads(json.dumps(npm_catalog))
+                malformed["plugins"][0]["source"].update(source_update)
+                with self.assertRaisesRegex(ValueError, "qualified SemVer"):
+                    PROMOTER._catalog_version(json.dumps(malformed).encode())
+
+    def test_first_npm_advance_replaces_the_live_legacy_catalog_shape(self):
+        remote = self.root / "legacy-remote.git"
+        seed = self.root / "legacy-seed"
+        git_run(["git", "init", "--bare", str(remote)], check=True,
+                capture_output=True)
+        git_run(["git", "init", "--quiet", str(seed)], check=True)
+        legacy_catalog = json.loads(self.catalog)
+        legacy_catalog["plugins"][0]["source"] = {
+            "source": "git-subdir",
+            "url": "https://github.com/arbiterForge/codeArbiter.git",
+            "path": "plugins/ca-codex",
+            "ref": "refs/tags/ca-codex-dist-v0.13.12",
+            "sha": self.source_commit,
+        }
+        catalog_path = seed / ".agents/plugins/marketplace.json"
+        catalog_path.parent.mkdir(parents=True)
+        catalog_path.write_text(json.dumps(legacy_catalog) + "\n", encoding="utf-8")
+        git_run(["git", "add", "."], cwd=seed, check=True)
+        environment = {**os.environ, "GIT_AUTHOR_NAME": "test",
+            "GIT_AUTHOR_EMAIL": "test@example.invalid", "GIT_COMMITTER_NAME": "test",
+            "GIT_COMMITTER_EMAIL": "test@example.invalid"}
+        git_run(["git", "commit", "--quiet", "-m", "legacy catalog"], cwd=seed,
+                env=environment, check=True)
+        legacy_head = git_run(["git", "rev-parse", "HEAD"], cwd=seed, check=True,
+            capture_output=True, text=True).stdout.strip()
+        git_run(["git", "remote", "add", "publication", str(remote)], cwd=seed,
+                check=True)
+        git_run(["git", "push", "publication",
+            f"HEAD:{PROMOTER.MARKETPLACE_REF}"], cwd=seed, check=True,
+            capture_output=True)
+
+        staged = PROMOTER.promote(
+            package_root=self.package_root, cohort_sha256=self.receipt_sha256,
+            source_repo=self.source, source_commit=self.source_commit,
+            remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
+            version="9.8.7", work=self.root / "legacy-staged", push=True,
+        )
+        result = PROMOTER.promote(
+            package_root=self.package_root, cohort_sha256=self.receipt_sha256,
+            source_repo=self.source, source_commit=self.source_commit,
+            remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
+            version="9.8.7", work=self.root / "legacy-advanced", push=True,
+            advance_channel=True, expected_marketplace_head=legacy_head,
+            expected_npm_integrity=staged["npm_integrity"],
+            expected_npm_sha256=staged["npm_sha256"],
+        )
+        promoted = json.loads(git_run([
+            "git", "--git-dir", str(remote), "show",
+            f'{result["marketplace_commit"]}:.agents/plugins/marketplace.json',
+        ], check=True, capture_output=True, text=True, encoding="utf-8").stdout)
+        self.assertEqual("npm", promoted["plugins"][0]["source"]["source"])
+        self.assertEqual("9.8.7", promoted["plugins"][0]["source"]["version"])
+
     def test_rejects_substituted_package_cohort_receipt(self):
         with self.assertRaisesRegex(ValueError, "cohort digest"):
             PACKAGER.stage_codex_marketplace_distribution(
