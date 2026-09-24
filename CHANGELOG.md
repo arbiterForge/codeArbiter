@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Keep built-in mutation nonzero exits as unclassified rejection evidence, not
+  measured kills; preserve adverse bounds, diagnostics and autonomous review.
 - Match whole, same-kind farm literals rather than substrings or conventional comments;
   retain existing rejection thresholds and name the actual small-file risk evidence.
 

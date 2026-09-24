@@ -3360,6 +3360,41 @@ describe("qualified best-of-N alternatives", () => {
     });
   }
 
+  for (const samples of [1, 2]) {
+    it(`keeps unclassified nonzero outcomes diagnostic with ${samples} candidate(s)`, async () => {
+      const f = await fixture();
+      process.env.FARM_SAMPLES = String(samples);
+      f.deps.mutationCheck = async () => ({ failed: true, source: "builtin",
+        detail: "3 unclassified nonzero rerun(s); upper bound 1.000 is not a measured score",
+        unverified: {score:1,evaluated:3,survivors:[]} });
+      const r = await runTask({...f.task,maxRetries:1},"stub","https://example.invalid","placeholder",f.deps);
+      expect(r.status).toBe("green");
+      expect(r.mutationScore).toBeNull();
+      expect(r.warning).toContain("unclassified nonzero");
+      expect(r.attempts).toBe(1);
+      expect(f.calls()).toBe(samples);
+      expect(f.quality).toHaveLength(1);
+      expect(f.gitCalls.filter(args => args.includes("commit"))).toHaveLength(1);
+    });
+  }
+
+  for (const [score, evaluated, rejected] of [[0.1,10,true],[0.2,5,false],[0,4,false]] as const) {
+    it(`retains the upper-bound/count policy (${score}, ${evaluated}) before buying another sample round`, async () => {
+      const f = await fixture();
+      f.deps.mutationCheck = async dir =>
+        (await fsReadFile(path.join(dir,"src/impl.ts"),"utf8")).startsWith("candidate-0")
+          ? {failed:true,source:"builtin",detail:"unclassified rejection; upper bound",unverified:{score,evaluated}}
+          : null;
+      const r = await runTask(f.task,"stub","https://example.invalid","placeholder",f.deps);
+      expect(r.status).toBe("green");
+      expect(r.mutationScore).toBeNull();
+      expect(f.calls()).toBe(2);
+      expect(f.quality).toHaveLength(rejected ? 2 : 1);
+      expect(r.acceptedPromptTokens).toBe(rejected ? 11 : 10);
+      if (!rejected) expect(r.warning).toContain("builtin-mutation-failed");
+    });
+  }
+
   it("keeps a clean built-in timeout diagnostic without spending another model round", async () => {
     const f = await fixture();
     f.deps.mutationCheck = async () => ({ failed: true, source: "builtin", detail: "trial timed out" });

@@ -679,9 +679,11 @@ async function mutationCheck(wt, task) {
   candidates = shuffle(candidates).slice(0, MUT.sample);
   const start = performance.now();
   const remainingMs = () => MUT.budgetMs - (performance.now() - start);
-  let killed = 0;
+  let rejected = 0;
   let evaluated = 0;
   const survivors = [];
+  let firstRejection;
+  const unverified = () => evaluated >= 3 ? { score: rejected / evaluated, evaluated, survivors } : void 0;
   try {
     for (const c of candidates) {
       if (remainingMs() <= 0) break;
@@ -700,14 +702,16 @@ async function mutationCheck(wt, task) {
           source: "builtin",
           detail: `built-in mutation ${r.cleanupFailed ? "cleanup unverified" : "trial timed out"} after ${evaluated} completed rerun(s)${tail ? `: ${tail}` : ""}`,
           ...r.cleanupFailed ? { cleanupFailed: true } : {},
-          ...evaluated >= 3 ? { unverified: { score: killed / evaluated, evaluated, survivors } } : {}
+          ...evaluated >= 3 ? { unverified: unverified() } : {}
         };
       }
       const orig = originals.get(c.file);
       if (orig !== void 0) await writeWorktreeFile(wt, c.file, orig);
       evaluated++;
-      if (r.code !== 0) killed++;
-      else survivors.push(c.tag);
+      if (r.code !== 0) {
+        rejected++;
+        firstRejection ??= redactSecrets(`${c.tag}: exit ${r.code}${r.out ? `: ${r.out}` : ""}`).slice(0, 300);
+      } else survivors.push(c.tag);
     }
   } finally {
     for (const [f, src] of originals) {
@@ -718,8 +722,16 @@ async function mutationCheck(wt, task) {
       }
     }
   }
+  if (rejected > 0) {
+    return {
+      failed: true,
+      source: "builtin",
+      detail: `built-in mutation: ${rejected} unclassified nonzero rerun(s), ${survivors.length} passed, ${evaluated} completed; gate-rejection upper bound ${(rejected / evaluated).toFixed(3)} is not a measured score; ${firstRejection}`,
+      ...evaluated >= 3 ? { unverified: unverified() } : {}
+    };
+  }
   if (evaluated < 3) return null;
-  return { score: killed / evaluated, evaluated, survivors };
+  return { score: 0, evaluated, survivors };
 }
 
 // farm.ts

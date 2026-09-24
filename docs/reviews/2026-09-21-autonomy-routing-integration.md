@@ -609,3 +609,50 @@ Run the normal exact-head CI and independent review in addition to both platform
 fixture runs. Preserve historical reports and coverage targets; no advisory green
 status is a target achievement. Roll back the owning module and rebuilt bundle
 with its private documentation/projections if rejected, retaining unrelated work.
+
+
+## 2026-09-24 continuation: nonzero mutation exits are not assertion proof
+
+Baseline: `01e91f4d053a531a62a7fc3ee085ffafb25440bf`. Re-read the
+built-in mutation loop and the existing failed-evidence consumer. A completed
+nonzero test command still incremented a killed-mutant counter and could publish
+1.0 when every generated mutant failed to parse. Actual Node syntax and assertion
+fixtures demonstrate that the same exit code cannot safely distinguish phases.
+
+Keep the existing private mutator and failure envelope. Do not add language
+runtimes, configuration, phase-name inference, an AST service or another public
+operation. Count completed nonzero reruns as unclassified rejections, retain the
+first bounded/redacted witness, restore the worker output and report the missing
+measurement without a positive mutationScore. The existing external framework
+hook remains available for a real operator-configured language-aware measurement.
+Do not classify diagnostic words, code 124, or score-looking stdout as proof.
+
+Preserve adverse completed evidence: R/(S+R) is an unverified upper bound under the
+existing gate-outcome accounting, not a semantic framework score. Removing invalid
+rejections can only reduce that fraction; equivalence and unexercised changes are
+not classified. The current near-zero threshold and five-completed count still
+reject a sufficiently adverse bound. Otherwise follow the existing warning and
+independent review path, not another model round or user question. All-pass runs
+with at least three reruns retain the existing zero-score weak-test signal.
+Timeout and unverified-cleanup paths keep their own existing meaning; no interrupted
+trial enters the completed denominator, and no containment limit is relaxed.
+
+Preservation tests keep genuine low-result rejection, thin counts, external-hook
+measurements, candidate retention, accumulated usage and guarded restoration. New
+real source/bundle CLI fixtures exercise syntax failures, assertion failures,
+a near-zero mixed upper bound and all-pass weak-test evidence in disposable Git
+worktrees using loopback providers. They require one worker call, unchanged main
+and immutable tests, and restored output for continued work. Injected terminal
+cases are unit evidence, not live language qualification. Existing tests that
+asserted 1.0 from a bare false command now assert the unverified result instead;
+their completed counts, exact survivor tags and budget checks remain.
+
+The dispatcher and its authority/acceptance/retry rules are unchanged. Keep HTML
+farm disabled, literal thresholds and scanner behavior intact, and existing
+versions, publication history, lockfiles, CI budgets and coverage floors unchanged.
+No public surface or startup-context registry is added. Qualify the rebuilt bundle
+and both supported test platforms, then observe ordinary current-head CI and
+independent review separately. Roll back the owning mutation module, bundle and
+private generated cards together if rejected, preserving unrelated work and
+actual artifact authority. This fixes false score attribution without claiming
+that a generic shell runner can classify arbitrary compiler/assertion semantics.

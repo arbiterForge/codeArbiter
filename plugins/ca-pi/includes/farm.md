@@ -54,11 +54,12 @@ capable of the slice).
    rejection names the actual small-file match, not an earlier substantial-file match.
 2. **Mutation** — after the gate is green, mutates the worker's in-scope impl (operator flips, return
    replacement, boolean inversion) and re-runs **only the task's narrow test** (`gate.commands[0]`). A
-   surviving mutant is code the test does not constrain — gaming, dead code, or a weak test. The score
-   is **bounded by test strength**: a low score is a strong red flag, a high score is necessary but not
-   sufficient (Phases 3–5 remain the real quality gate). A low score attaches a **warning that rides
-   into Phase 3** for Claude to judge (worker gaming vs. weak test); only a near-zero score on a
-   non-trivial impl hard-escalates. Sampled and time-boxed so it never balloons wall-clock. Set
+   surviving mutant is an implementation change the test command did not reject. It can indicate
+   weak tests, dead code or an equivalent change; it does not by itself prove gaming. Bare nonzero
+   exits do not establish valid, assertion-killed mutants. Built-in positive rejection ratios remain
+   unverified bounds, not measured scores; see the accounting rule below. A low result attaches a
+   **warning that rides into Phase 3** for independent review; only the existing near-zero result
+   with sufficient evaluated evidence rejects the candidate. Screening is sampled and time-boxed. Set
    `FARM_MUTATION_CMD` to swap the built-in text mutator for a real per-language framework (Stryker,
    mutmut, …); it runs in the worktree with `FARM_MUTATION_FILES` / `FARM_MUTATION_TEST_PATH` /
    `FARM_MUTATION_TEST_CMD` set. A measured hook score requires successful completion (exit 0,
@@ -99,10 +100,28 @@ explicitly unverified; the existing near-zero/five-completed-reruns floor still 
 candidate. A clean timeout otherwise warns through independent review, without another default
 user checkpoint. Unverified process cleanup retains the fatal containment boundary above.
 
-A budget ending between completed trials can still return their heuristic score, subject to the
-existing minimum of three completed reruns. Completed nonzero exits still do not distinguish compiler
-errors from assertion failures. Language-aware mutant validity and semantic interpretation of literal overlap remain
-separate work; these timeout corrections do not make the built-in score acceptance proof.
+A completed nonzero rerun is an **unclassified gate rejection**, not a proved mutant kill. The
+built-in runner cannot distinguish a compiler, loader, infrastructure or assertion failure from an
+arbitrary command's exit status. Diagnostic wording and printed score-like JSON do not grant that
+classification. Preserve a bounded, redacted first-rejection witness and completed/pass counts;
+do not publish a positive `mutationScore` from these exits. For real language-specific measurements,
+use the existing explicitly configured external framework hook rather than another public command.
+
+For at least three completed reruns, retain `R / (S + R)` as an **unverified gate-rejection upper
+bound**, where `R` is completed nonzero reruns and `S` is successful reruns. Treating every rejected
+trial as a valid kill is the most favorable interpretation of those observations; excluding invalid
+rejections cannot increase that fraction. This is not a language-aware mutation score and does not
+classify equivalent or unexercised changes. Preserve the existing near-zero/five-completed-reruns
+rejection floor even on this bound: uncertainty cannot erase an already adverse result. Otherwise
+retain the ordinary warning and independent review, without spending another model round or adding a
+user checkpoint solely because the measurement is unavailable.
+
+With no rejected or interrupted trial, at least three successful reruns still produce the existing
+zero screening score and survivor list. A shorter all-pass run stays too thin to score; a short
+nonzero run reports its diagnostic without inventing a usable evaluated count. A budget ending
+between trials follows these same rules; interruption never publishes a partial measured score.
+Language-aware validity and semantic interpretation of literal overlap remain separate work. None
+of these screening outcomes is task or scope acceptance proof.
 
 Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
 the mutation guard runs `gate.commands[0]` as the per-mutant test (running an exhaustive suite per mutant

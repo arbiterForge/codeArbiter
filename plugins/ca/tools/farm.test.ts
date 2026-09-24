@@ -636,8 +636,9 @@ describe("farm.ts smoke tests", () => {
   }
 
   it("mutation guard — flags an impl whose branches the narrow test does not constrain", async () => {
-    // Worker returns a multi-branch impl; the narrow test only exercises one path,
-    // so mutating the unexercised branch/operator survives → low mutation score.
+    // The narrow test misses two changes and rejects one. Bare exits cannot
+    // establish why that rerun failed; preserve the adverse upper bound, not a
+    // measured score. The task still enters independent review with a warning.
     ({ server: mockServer, port } = await startMockServer(() =>
       [
         "```javascript",
@@ -671,14 +672,17 @@ describe("farm.ts smoke tests", () => {
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
 
-    // Score is low but not near-zero (the "small" return IS killed), so it warns
-    // into Phase 3 rather than hard-escalating: task stays green with a warning.
+    // Two passes and one nonzero exit bound the rejection rate at 1/3. This is
+    // below the warning threshold, but neither near-zero nor five evaluated
+    // reruns: preserve the existing green authoring + independent-review route.
     expect(result.code).toBe(0);
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
     const r = report.results[0];
     expect(r.status).toBe("green");
-    expect(r.mutationScore).toBeLessThan(0.5);
-    expect(r.warning).toMatch(/mutation-risk/);
+    expect(r.mutationScore).toBeNull();
+    expect(r.warning).toMatch(/^builtin-mutation-failed:/);
+    expect(r.warning).toContain("1 unclassified nonzero rerun(s), 2 passed, 3 completed");
+    expect(r.warning).toContain("upper bound 0.333 is not a measured score");
   });
 
   it("mutation guard — near-zero score on a non-trivial impl hard-escalates", async () => {
@@ -1339,6 +1343,58 @@ describe("farm.ts smoke tests", () => {
         expect(gitIn(tmpDir, "status", "--porcelain")).toBe("");
         // Authoring green carries the diagnostic into independent review; it
         // is not a false perfect mutation score or another request to the user.
+      });
+    }
+  }
+
+
+  for (const entry of ["source", "bundle"] as const) {
+    for (const mode of ["syntax", "assertion", "low-upper-bound", "survivors"] as const) {
+      it(`keeps built-in ${mode} evidence honest in the ${entry} CLI without extra authoring`, async () => {
+        const implementation = mode === "syntax" ? [
+          'module.exports.first = function () {', '  return "alpha;beta";', '};',
+          'module.exports.second = function () {', '  return "gamma;delta";', '};',
+          'module.exports.third = function () {', '  return "epsilon;zeta";', '};',
+        ].join("\n") + "\n" : "module.exports = {\n" +
+          Array.from({length: mode === "low-upper-bound" ? 10 : mode === "survivors" ? 5 : 3},
+            (_, i) => `  fn${i}: value => value + 1,`).join("\n") + "\n};\n";
+        const test = 'const assert = require("node:assert/strict");\nconst values = require("./value.cjs");\n' +
+          (mode === "syntax" ? 'for (const fn of Object.values(values)) assert.equal(fn().split(String.fromCharCode(59)).length, 2);\n'
+            : mode === "assertion" ? 'for (const fn of Object.values(values)) assert.equal(fn(7), 8);\n'
+            : mode === "low-upper-bound" ? 'assert.equal(values.fn0(7), 8);\n'
+            : 'assert.equal(Object.values(values).length, 5);\n');
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return ['```javascript', '// path: src/value.cjs', implementation, '```'].join("\n");
+        }, {prompt_tokens:19,completion_tokens:13}));
+        writeFileSync(join(tmpDir,"src/value.test.cjs"),test);
+        gitIn(tmpDir,"add","src/value.test.cjs");
+        gitIn(tmpDir,"commit","-m","declare narrow mutation validity fixture");
+        const before = gitIn(tmpDir,"rev-parse","main");
+        const planPath = join(tmpDir,"plan.json");
+        writeFileSync(planPath,JSON.stringify({meta:{name:"mutation validity",model:"fixture",apiBaseUrl:`http://127.0.0.1:${port}`},
+          tasks:[{id:"validity",description:"Implement the existing behavioral obligation",deps:[],
+            filesInScope:["src/value.cjs"],test:{path:"src/value.test.cjs"},gate:{commands:["node src/value.test.cjs"]},maxRetries:0}]}));
+        const done = await runFarmWithArgs(tmpDir,[],planPath,{FARM_API_KEY:"test-key",FARM_SAMPLES:"1",FARM_MUTATION:"on",
+          FARM_MUTATION_SAMPLE:"20",FARM_MUTATION_BUDGET_MS:"15000"},[],entry);
+        const adverse = mode === "low-upper-bound" || mode === "survivors";
+        expect(done.code,done.out).toBe(adverse ? 2 : 0);
+        const result = JSON.parse(readFileSync(join(tmpDir,".farm/farm-report.json"),"utf8")).results[0];
+        expect(result).toMatchObject({status:adverse ? "escalate" : "green",attempts:1,promptTokens:19,completionTokens:13});
+        expect(calls).toBe(1);
+        expect(result.mutationScore).toBe(mode === "survivors" ? 0 : null);
+        if (mode === "survivors") expect(result.note).toContain("gaming: mutation");
+        else if (adverse) {
+          expect(result.note).toContain("builtin-mutation-failed");
+          expect(result.note).toContain("adverse completed reruns");
+        } else {
+          expect(result.warning).toContain("unclassified nonzero rerun(s)");
+          expect(result.warning).toContain("upper bound 1.000 is not a measured score");
+          expect(gitIn(tmpDir,"show","farm/integration:src/value.cjs") + "\n").toBe(implementation);
+        }
+        expect(gitIn(tmpDir,"rev-parse","main")).toBe(before);
+        expect(readFileSync(join(tmpDir,"src/value.test.cjs"),"utf8")).toBe(test);
       });
     }
   }

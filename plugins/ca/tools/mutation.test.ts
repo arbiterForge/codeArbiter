@@ -506,23 +506,23 @@ describe("mutationCheck — built-in text mutation", () => {
     MUT.sample = 3;
     const result = await mutationCheck(wt, task({ gate: { commands: [SHELL_FALSE] } }));
     expect(result).not.toBeNull();
-    expect((result as { evaluated: number }).evaluated).toBe(3);
+    expect(result).toMatchObject({ failed: true, source: "builtin", unverified: { evaluated: 3 } });
   });
 
   it("returns null when the in-scope file does not exist", async () => {
     expect(await mutationCheck(wt, task({ filesInScope: ["src/absent.ts"] }))).toBeNull();
   });
 
-  it("scores 1 and reports no survivors when the gate catches every mutant", async () => {
+  it("keeps all completed rejections unverified rather than claiming every mutant was killed", async () => {
     await write("src/impl.ts", IMPL);
     MUT.sample = 6;
 
     const result = await mutationCheck(wt, task({ gate: { commands: [SHELL_FALSE] } }));
     expect(result).not.toBeNull();
-    const { score, evaluated, survivors } = result as { score: number; evaluated: number; survivors: string[] };
-    expect(score).toBe(1);
-    expect(evaluated).toBe(6);
-    expect(survivors).toEqual([]);
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 6, survivors: [] } });
+    expect(result).not.toHaveProperty("score");
+    expect(result && "detail" in result && result.detail).toContain("6 unclassified nonzero rerun(s)");
   });
 
   it("scores 0 and names every survivor when the gate catches none", async () => {
@@ -542,8 +542,8 @@ describe("mutationCheck — built-in text mutation", () => {
 
   it("actually MUTATES the file, re-runs the gate, and classifies by the result", async () => {
     // The engine's whole contract, and the only test here that can observe it.
-    // The gate passes iff `>= 10` is still present, so the mutant that rewrites
-    // that operator MUST be killed while mutants on other lines survive.
+    // The gate passes iff `>= 10` is still present. Observe that rejection,
+    // without pretending an arbitrary exit code identifies an assertion kill.
     //
     // Measured against this test: writing the original instead of the mutant,
     // dropping the mutant write entirely, and having generateMutants emit
@@ -554,17 +554,20 @@ describe("mutationCheck — built-in text mutation", () => {
 
     const result = await mutationCheck(wt, task({ gate: { commands: [gate] } }));
     expect(result).not.toBeNull();
-    const { score, evaluated, survivors } = result as { score: number; evaluated: number; survivors: string[] };
+    expect(result).toMatchObject({ failed: true, source: "builtin" });
+    expect(result).not.toHaveProperty("score");
+    const { score, evaluated, survivors } = (result as { unverified:
+      { score: number; evaluated: number; survivors: string[] } }).unverified;
 
-    // Some mutants died and some lived — a 0 or a 1 here would mean the gate
-    // ignored the file, which is exactly the failure this test exists to catch.
+    // Some reruns were rejected and others passed. Only the upper bound is
+    // known; 0 or 1 would mean this content-sensitive gate was not observed.
     expect(score).toBeGreaterThan(0);
     expect(score).toBeLessThan(1);
     expect(survivors.length).toBeGreaterThan(0);
     expect(survivors.length).toBeLessThan(evaluated);
 
-    // The `>=` mutant on line 2 rewrites the needle, so the gate fails and it is
-    // KILLED — it must not appear among the survivors.
+    // The `>=` mutant on line 2 rewrites the needle and is rejected. It must
+    // not appear among the successful-command survivors.
     expect(survivors).not.toContain("src/impl.ts:2 >=>");
     // ...while line 8's `>` mutant leaves the needle intact and survives. The
     // EXACT tag is asserted, not a shape: it pins the file, the 1-indexed line,
@@ -616,7 +619,7 @@ describe("mutationCheck — built-in text mutation", () => {
     expect(await mutationCheck(wt, task({ gate: { commands: [SHELL_TRUE] } }))).toBeNull();
   });
 
-  it("scores completed reruns only when the budget expires between launches", async () => {
+  it("retains completed rejection evidence when the budget expires between launches", async () => {
     // Deterministic elapsed-time unit test. Real timeout/cleanup behavior is
     // exercised separately, not inferred from this injected terminal result.
     await write("src/impl.ts", IMPL);
@@ -629,7 +632,9 @@ describe("mutationCheck — built-in text mutation", () => {
     MUT.sample = 8;
     MUT.budgetMs = 600;
     const result = await mutationCheck(wt, task());
-    expect(result).toMatchObject({ score: 1, evaluated: 3, survivors: [] });
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 3, survivors: [] } });
+    expect(result).not.toHaveProperty("score");
     expect(runner).toHaveBeenCalledTimes(3);
     expect(runner.mock.calls.map(args => args[4])).toEqual([600, 400, 200]);
     expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(IMPL);
@@ -858,8 +863,145 @@ describe("built-in mutation deadline and terminal evidence", () => {
     await write("src/impl.ts", SOURCE);
     MUT.sample = 3;
     vi.spyOn(execution, "run").mockResolvedValue({ code: 124, out: "ordinary nonzero", stdout: "", stderr: "" });
-    // Existing completed-rejection heuristic, not evidence of language-aware
-    // compiler validity. Only the shared runner owns its timeout/cleanup flags.
-    expect(await mutationCheck(wt, task())).toMatchObject({ score: 1, evaluated: 3 });
+    // Only the shared runner owns timeout/cleanup flags. A completed 124 is
+    // unclassified rejection evidence, not an inferred timeout or a proved kill.
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 3 } });
+    expect(result).not.toHaveProperty("score");
+    expect(result).not.toHaveProperty("cleanupFailed");
+    expect(result && "detail" in result && result.detail).not.toContain("timed out");
   });
+});
+
+
+// F10: a shell exit cannot establish which phase failed or whether the mutant
+// was valid. These are observed outcomes, not guessed language classifications.
+describe("built-in rejection evidence is not a measured kill score", () => {
+  const SOURCE = [
+    "module.exports = {",
+    "  first: value => value + 1,",
+    "  second: value => value + 1,",
+    "  third: value => value + 1,",
+    "};",
+  ].join("\n");
+
+  for (const [code, output] of [
+    [1, "SyntaxError: invalid mutant"],
+    [2, "error TS2322: invalid type"],
+    [127, "test runner not found"],
+    [1, "AssertionError: expected value"],
+    [137, 'killed\n{"score":1,"total":99}'],
+  ] as const) {
+    it(`does not infer a killed mutant from exit ${code} and diagnostic ${output}`, async () => {
+      await write("src/impl.ts", SOURCE);
+      MUT.sample = 3;
+      const runner = vi.spyOn(execution, "run").mockResolvedValue({ code, out: output, stdout: output, stderr: "" });
+      const result = await mutationCheck(wt, task());
+      expect(result).toMatchObject({ failed: true, source: "builtin",
+        unverified: { score: 1, evaluated: 3, survivors: [] } });
+      expect(result).not.toHaveProperty("score");
+      expect(result).not.toHaveProperty("cleanupFailed");
+      expect(result && "detail" in result && result.detail).toContain("3 unclassified nonzero rerun(s)");
+      expect(result && "detail" in result && result.detail).toContain("upper bound 1.000 is not a measured score");
+      expect(runner).toHaveBeenCalledTimes(3);
+      expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+    });
+  }
+
+  it("records too-few completed rejections without inventing a usable count/score", async () => {
+    await write("src/impl.ts", SOURCE);
+    MUT.sample = 2;
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 1, out: "failed", stdout: "", stderr: "failed" });
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin" });
+    expect(result).not.toHaveProperty("score");
+    expect(result).not.toHaveProperty("unverified");
+    expect(result && "detail" in result && result.detail).toContain("2 completed");
+  });
+
+  it("preserves a low completed upper bound and exact successful survivor identities", async () => {
+    const src = "module.exports = {\n" + Array.from({length: 10}, (_, i) => `  fn${i}: n => n + 1,`).join("\n") + "\n};";
+    await write("src/impl.ts", src);
+    MUT.sample = 10;
+    let calls = 0;
+    vi.spyOn(execution, "run").mockImplementation(async () => ({
+      code: ++calls === 1 ? 1 : 0, out: "", stdout: "", stderr: "",
+    }));
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 0.1, evaluated: 10 } });
+    expect(result).not.toHaveProperty("score");
+    const evidence = result && "unverified" in result && result.unverified;
+    expect(evidence && evidence.survivors).toHaveLength(9);
+    expect(new Set(evidence ? evidence.survivors : undefined).size).toBe(9);
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(src);
+  });
+
+  it("keeps a timeout's earlier unclassified rejections out of the measured channel", async () => {
+    const src = SOURCE.replace("};", "  fourth: value => value + 1,\n};");
+    await write("src/impl.ts", src);
+    MUT.sample = 4;
+    let calls = 0;
+    vi.spyOn(execution, "run").mockImplementation(async () => ++calls <= 3
+      ? { code: 1, out: "SyntaxError", stdout: "", stderr: "SyntaxError" }
+      : { code: 124, timedOut: true, out: "interrupted", stdout: "", stderr: "interrupted" });
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 3, survivors: [] } });
+    expect(result).not.toHaveProperty("score");
+    expect(result && "detail" in result && result.detail).toContain("trial timed out");
+    expect(calls).toBe(4);
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(src);
+  });
+
+  it("redacts the rejected-trial witness before truncation", async () => {
+    await write("src/impl.ts", SOURCE);
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 1,
+      out: "api_key=sk-ant-" + "x".repeat(700), stdout: "", stderr: "" });
+    const result = await mutationCheck(wt, task());
+    const detail = result && "detail" in result && result.detail;
+    expect(detail).toContain("[REDACTED");
+    expect(detail).not.toContain("x".repeat(40));
+    expect(detail && detail.length).toBeLessThan(600);
+  });
+
+  for (const mode of ["syntax", "assertion"] as const) {
+    it(`does not turn actual Node ${mode} failures into a positive built-in score`, async () => {
+      const src = mode === "syntax" ? [
+        'module.exports.first = function () {', '  return "alpha;beta";', '};',
+        'module.exports.second = function () {', '  return "gamma;delta";', '};',
+        'module.exports.third = function () {', '  return "epsilon;zeta";', '};',
+      ].join("\n") : SOURCE;
+      await write("src/value.cjs", src);
+      await write("src/value.test.cjs", [
+        'const assert = require("node:assert/strict");',
+        'const values = require("./value.cjs");',
+        mode === "syntax"
+          ? 'for (const fn of Object.values(values)) assert.equal(fn().split(String.fromCharCode(59)).length, 2);'
+          : 'for (const fn of Object.values(values)) assert.equal(fn(7), 8);',
+      ].join("\n"));
+      const t = task({filesInScope:["src/value.cjs"], test:{path:"src/value.test.cjs"}, gate:{commands:["node src/value.test.cjs"]}});
+      const baseline = await execution.run(execution.SHELL_BIN, [execution.SHELL_FLAG, t.gate.commands[0]], wt, execution.SHELL_OPTS, 5000);
+      expect(baseline.code, baseline.out).toBe(0);
+      MUT.sample = 15;
+      const actualRun = execution.run;
+      const outputs: string[] = [];
+      vi.spyOn(execution, "run").mockImplementation(async (...args) => {
+        const result = await actualRun(...args);
+        outputs.push(result.out);
+        return result;
+      });
+      const result = await mutationCheck(wt, t);
+      expect(result).toMatchObject({failed:true, source:"builtin", unverified:{score:1,evaluated:3,survivors:[]}});
+      expect(result).not.toHaveProperty("score");
+      // The shared redactor may redact diagnostic prose as well as secrets.
+      // Verify the actual child outcome separately, without weakening redaction.
+      expect(outputs).toHaveLength(3);
+      for (const output of outputs) expect(output).toContain(mode === "syntax" ? "SyntaxError" : "AssertionError");
+      expect(await readFile(path.join(wt,"src/value.cjs"),"utf8")).toBe(src);
+      const restored = await execution.run(execution.SHELL_BIN,[execution.SHELL_FLAG,t.gate.commands[0]],wt,execution.SHELL_OPTS,5000);
+      expect(restored.code,restored.out).toBe(0);
+    });
+  }
 });

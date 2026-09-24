@@ -34,8 +34,9 @@ import type { Task } from "./farm.ts";
 // mutate the worker's in-scope impl and re-run ONLY the task's narrow test
 // (gate.commands[0]); a mutant the test fails to catch ("survivor") is code the
 // test does not constrain — gaming, dead code, or a weak test. Bounded by test
-// strength, so a LOW score is a strong red flag but a high one is only
-// necessary-not-sufficient. Low score → warning into Phase 3; only a near-zero
+// strength. Bare nonzero exits cannot establish assertion kills rather than
+// compiler/loader failures, so built-in positive ratios are unverified upper
+// bounds, never measured scores. Low score → warning into Phase 3; only a near-zero
 // score on a non-trivial impl hard-escalates. Pluggable: set FARM_MUTATION_CMD
 // to a real per-language framework (it runs in the worktree with
 // FARM_MUTATION_FILES / FARM_MUTATION_TEST_PATH / FARM_MUTATION_TEST_CMD set,
@@ -204,9 +205,10 @@ function shuffle<T>(a: T[]): T[] {
 }
 
 // Single-point text mutants. Space-padded operators bias toward real code (not
-// string/generic content). Completed nonzero reruns still count as rejected
-// mutants: this language-agnostic heuristic cannot distinguish compiler errors
-// from assertion failures. Timeout/containment outcomes are NOT such evidence.
+// string/generic content). A completed nonzero rerun is an unclassified gate
+// rejection, NOT a proved assertion kill. Do not guess compiler/loader/test
+// semantics from exit numbers or diagnostic words. A per-language framework
+// can supply measurements through the existing external hook.
 function generateMutants(file: string, src: string): Array<{ file: string; mutated: string; tag: string }> {
   const lines = src.split("\n");
   const rules: Array<[RegExp, string, string]> = [
@@ -251,7 +253,7 @@ function generateMutants(file: string, src: string): Array<{ file: string; mutat
 // could not express "the producer did not say", so every reader had to guess.
 // Optional makes the absence representable and lets the compiler force each
 // consumer to decide what to do about it. The built-in path always populates
-// both.
+// both when reporting completed observations.
 export type MutationResult = { score: number; evaluated?: number; survivors?: string[] };
 
 // observability-002 (#187): the pluggable-hook branch of mutationCheck used to
@@ -271,9 +273,10 @@ export type MutationHookFailure = {
   source?: "builtin";
   detail: string;
   cleanupFailed?: true;
-  // Diagnostic-only stdout report, or already completed built-in observations
-  // from interrupted screening. Never copy this into mutationScore. Retain
-  // adverse evidence so a threshold exit or interruption cannot clear a block.
+  // Diagnostic-only external stdout report, or a built-in gate-rejection upper
+  // bound over completed reruns. Nonzero is not proof of a valid/assertion-killed
+  // mutant. Never copy this into mutationScore. A low upper bound still retains
+  // adverse evidence; an interrupted run cannot erase completed observations.
   unverified?: MutationResult;
 };
 export type MutationCheckResult = MutationResult | MutationHookFailure | null;
@@ -449,9 +452,17 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
   // they must finish (or refuse safely) before any candidate can advance.
   const start = performance.now();
   const remainingMs = () => MUT.budgetMs - (performance.now() - start);
-  let killed = 0;
+  let rejected = 0;
   let evaluated = 0;
   const survivors: string[] = [];
+  let firstRejection: string | undefined;
+  // At most every completed rejection could be a valid assertion kill. Treating
+  // them all that way gives an upper bound R/(S+R); excluding invalid rejections
+  // cannot increase that rate. This preserves a genuinely adverse upper bound
+  // without crediting compiler/loader failures as measured kills. Timed-out
+  // trials are not included. The existing explicit-count floor stays intact.
+  const unverified = () => evaluated >= 3
+    ? { score: rejected / evaluated, evaluated, survivors } : undefined;
   try {
     for (const c of candidates) {
       if (remainingMs() <= 0) break;
@@ -473,7 +484,7 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
           detail: `built-in mutation ${r.cleanupFailed ? "cleanup unverified" : "trial timed out"}` +
             ` after ${evaluated} completed rerun(s)${tail ? `: ${tail}` : ""}`,
           ...(r.cleanupFailed ? { cleanupFailed: true as const } : {}),
-          ...(evaluated >= 3 ? { unverified: { score: killed / evaluated, evaluated, survivors } } : {}) };
+          ...(evaluated >= 3 ? { unverified: unverified() } : {}) };
       }
       // T-08 (dx-003): skip the restore on a Map miss rather than writing the
       // literal string "undefined" into the worktree file. The invariant
@@ -482,8 +493,12 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
       const orig = originals.get(c.file);
       if (orig !== undefined) await writeWorktreeFile(wt, c.file, orig); // restore
       evaluated++;
-      if (r.code !== 0) killed++;
-      else survivors.push(c.tag);
+      if (r.code !== 0) {
+        rejected++;
+        // Preserve a bounded witness, not a language verdict. Redact before
+        // truncation, including credentials that extend beyond the limit.
+        firstRejection ??= redactSecrets(`${c.tag}: exit ${r.code}${r.out ? `: ${r.out}` : ""}`).slice(0, 300);
+      } else survivors.push(c.tag);
     }
   } finally {
     // defensive: guarantee every impl file is back to the worker's output
@@ -495,6 +510,19 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
       }
     }
   }
-  if (evaluated < 3) return null; // too few mutants to judge fairly
-  return { score: killed / evaluated, evaluated, survivors };
+  if (rejected > 0) {
+    // The command finished, but its exit status alone cannot validate a mutant
+    // or identify the failing phase. No positive measured score is fabricated.
+    // Report even a short failed screening while leaving thin evidence below
+    // the existing count floor. Do not buy another model round just for this.
+    return { failed: true, source: "builtin",
+      detail: `built-in mutation: ${rejected} unclassified nonzero rerun(s), ` +
+        `${survivors.length} passed, ${evaluated} completed; gate-rejection upper bound ` +
+        `${(rejected / evaluated).toFixed(3)} is not a measured score; ${firstRejection}`,
+      ...(evaluated >= 3 ? { unverified: unverified() } : {}) };
+  }
+  if (evaluated < 3) return null; // too few completed reruns to judge fairly
+  // Every observed rerun passed: no rejection was credited as a kill. This is
+  // the existing weak-test signal, not language-aware mutant validity proof.
+  return { score: 0, evaluated, survivors };
 }
