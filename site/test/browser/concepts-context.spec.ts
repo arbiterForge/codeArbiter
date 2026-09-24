@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import capture from '../../src/data/context-examples.json';
+import capture from '../../src/data/context-examples.json' with { type: 'json' };
 
 const concepts = ['provenance-drift', 'jit-context-injection', 'persona-and-context'];
 const roots = 'ca-context-explorer, ca-execution-map';
