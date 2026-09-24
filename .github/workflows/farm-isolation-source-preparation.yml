@@ -117,7 +117,7 @@ jobs:
           jobs += [('.', [sys.executable,'tools/'+name+'.py','--check']) for name in ['sync-core','build-surface','build-host-packages']]
           jobs += [('.', [sys.executable,'.github/scripts/check-plugin-refs.py',host]) for host in ['ca','ca-codex','ca-pi']]
           jobs += [('.', [sys.executable,'.github/scripts/payload_version_gate.py','--plugin',host,'--base',base]) for host in ['plugins/ca','plugins/ca-codex']]
-          jobs += [('.', [sys.executable,'tools/build-host-packages.py','--release-guard-base',base]),('.', [sys.executable,'.github/scripts/test_public_codex_docs.py','--require-current-candidate'])]
+          jobs += [('.', [sys.executable,'tools/build-host-packages.py','--release-guard-base',base]),('.', [sys.executable,'.github/scripts/test_auto_release_candidate.py']),('.', [sys.executable,'.github/scripts/check_auto_release_candidate.py','--candidate','HEAD','--run-pre-tag'])]
           results=[];env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',GOTOOLCHAIN='local')
           for index,(cwd,args) in enumerate(jobs):
               label=pathlib.Path(args[1]).stem
