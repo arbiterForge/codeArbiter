@@ -149,13 +149,13 @@
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.14), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.15), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "573ee206a91f038aec0518e7e79e1b14ef6baeac",
+      "hash": "5b019ca0d0854bd9a7787b13130cceeb1ca367a5",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
@@ -419,7 +419,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "7daf7b030600555359f500bd25c7837b7aec48e9",
+      "hash": "6893a75ed2568f100020db07658328ee072b6623",
       "path": ".github/workflows/release.yml"
     }
   ],

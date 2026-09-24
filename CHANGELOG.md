@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Preserve valid provider-reported tokens when worker output is rejected; validate
+  response shapes and counters without coercion, extra requests or weaker gates.
 - Keep built-in mutation nonzero exits as unclassified rejection evidence, not
   measured kills; preserve adverse bounds, diagnostics and autonomous review.
 - Match whole, same-kind farm literals rather than substrings or conventional comments;

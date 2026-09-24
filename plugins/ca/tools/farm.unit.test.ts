@@ -3588,3 +3588,137 @@ describe("qualified best-of-N alternatives", () => {
     expect(f.calls()).toBe(2);
   });
 });
+
+
+// F12: provider accounting is evidence about a completed response, not a
+// reward for accepting its output. Validate untrusted shapes before decoding.
+describe("worker response evidence", () => {
+  const endpoint = "https://user:private-password@provider.example/v1?key=private-query";
+  const usage = { prompt_tokens: 7, completion_tokens: 11 };
+
+  it.each([
+    ["missing choices", { usage }],
+    ["non-array choices", { choices: {}, usage }],
+    ["null choice", { choices: [null], usage }],
+    ["missing message", { choices: [{}], usage }],
+    ["scalar message", { choices: [{ message: 42 }], usage }],
+    ["array message", { choices: [{ message: [] }], usage }],
+    ["object content", { choices: [{ message: { content: { opaque: "private-response" } } }], usage }],
+    ["numeric content", { choices: [{ message: { content: 42 } }], usage }],
+    ["array content", { choices: [{ message: { content: ["private-response"] } }], usage }],
+    ["boolean content", { choices: [{ message: { content: true } }], usage }],
+  ])("retains validated counters on %s without reflecting the body", (_name, body) => {
+    const result = parseChatCompletion(JSON.stringify(body), endpoint);
+    expect(result.ok).toBe(false);
+    expect(result.usage).toEqual(usage);
+    if (!result.ok) {
+      expect(result.error).toContain("https://provider.example");
+      expect(result.error).not.toMatch(/private-(?:password|query|response)/);
+    }
+  });
+
+  it.each([undefined, null, ""])("keeps absent or empty text %s on the no-output path", (content) => {
+    expect(parseChatCompletion(JSON.stringify({ choices: [{ message: { content } }], usage }), endpoint))
+      .toEqual({ ok: true, content: "", usage });
+  });
+
+  it("preserves empty-choice and explicit-zero semantics", () => {
+    expect(parseChatCompletion(JSON.stringify({ choices: [], usage: { prompt_tokens: 0, completion_tokens: 0 } }), endpoint))
+      .toEqual({ ok: true, content: "", usage: { prompt_tokens: 0, completion_tokens: 0 } });
+  });
+
+  it.each([-1, 1.5, "3", true, null, {}, [], Number.MAX_SAFE_INTEGER + 1].map((value) => [value]))(
+    "does not coerce an invalid reported count %j or discard its valid sibling", (invalid) => {
+      const result = parseChatCompletion(JSON.stringify({ choices: [{ message: { content: "hello" } }],
+        usage: { prompt_tokens: invalid, completion_tokens: 11, provider_extra: "private-usage" } }), endpoint);
+      expect(result.ok).toBe(true);
+      expect(result.usage).toEqual({ completion_tokens: 11 });
+      expect(result.usage).not.toHaveProperty("prompt_tokens");
+      expect(result.usage).not.toHaveProperty("provider_extra");
+    });
+
+  it("rejects infinite JSON counters independently in both directions", () => {
+    const result = parseChatCompletion('{"choices":[{"message":{"content":"hello"}}],"usage":{"prompt_tokens":9,"completion_tokens":1e309}}', endpoint);
+    expect(result.usage).toEqual({ prompt_tokens: 9 });
+  });
+
+  it.each([undefined, null, [], "unknown", {}].map((value) => [value]))("leaves absent/malformed usage %j unknown", (counts) => {
+    const result = parseChatCompletion(JSON.stringify({ choices: [], usage: counts }), endpoint);
+    expect(result.usage).toBeUndefined();
+  });
+
+  it("does not infer usage from an undecodable body", () => {
+    const result = parseChatCompletion('{"usage":{"prompt_tokens":7}', endpoint);
+    expect(result.ok).toBe(false);
+    expect(result.usage).toBeUndefined();
+  });
+});
+
+describe("worker rejection accounting", () => {
+  let cwd: string;
+  const realFetch = global.fetch;
+  beforeEach(async () => { cwd = await mkdtemp(path.join(tmpdir(), "farm-response-evidence-")); });
+  afterEach(async () => {
+    global.fetch = realFetch;
+    vi.restoreAllMocks();
+    await fsRm(cwd, { recursive: true, force: true });
+  });
+  const block = (p: string) => "```text:" + p + "\nfixture contents\n```";
+  const apply = (content: unknown, usage: unknown = { prompt_tokens: 7, completion_tokens: 11 }) => {
+    global.fetch = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content } }], usage,
+    }), { status: 200 })) as unknown as typeof fetch;
+    return httpWorker.apply({ cwd, prompt: "fixture", model: "fixture", apiBaseUrl: "https://provider.example/v1",
+      apiKey: "fixture-key", forbidden: new Set(["readonly.txt"]) });
+  };
+
+  it.each(["readonly.txt", "../outside.txt", "/absolute-outside.txt"])("preserves usage when refusing %s", async (target) => {
+    const result = await apply(block(target));
+    expect(result.ok).toBe(false);
+    expect(result.filesWritten).toEqual([]);
+    expect(result.promptTokens).toBe(7);
+    expect(result.completionTokens).toBe(11);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(await fsReaddir(cwd)).toEqual([]);
+  });
+
+  it("returns partial-write evidence and usage when a later block is read-only", async () => {
+    const result = await apply(block("first.txt") + "\n" + block("readonly.txt"));
+    expect(result).toMatchObject({ ok: false, filesWritten: ["first.txt"], promptTokens: 7, completionTokens: 11 });
+    expect(await fsReadFile(path.join(cwd, "first.txt"), "utf8")).toBe("fixture contents\n");
+    expect(await fsReaddir(cwd)).toEqual(["first.txt"]);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves the guarded-writer refusal and reported counters", async () => {
+    await fsMkdir(path.join(cwd, "directory.txt"));
+    const result = await apply(block("directory.txt"));
+    expect(result).toMatchObject({ ok: false, filesWritten: [], promptTokens: 7, completionTokens: 11 });
+    expect(result.error).toMatch(/unsafe|regular|directory/i);
+    expect((await fsStat(path.join(cwd, "directory.txt"))).isDirectory()).toBe(true);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns malformed text as a worker failure instead of throwing away usage", async () => {
+    const result = await apply({ private: "opaque" });
+    expect(result).toMatchObject({ ok: false, filesWritten: [], promptTokens: 7, completionTokens: 11 });
+    expect(result.error).toMatch(/non-text/);
+    expect(result.error).not.toContain("opaque");
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(await fsReaddir(cwd)).toEqual([]);
+  });
+
+  it("preserves no-output failure and exact zero counts", async () => {
+    const result = await apply("ordinary prose", { prompt_tokens: 0, completion_tokens: 0 });
+    expect(result).toMatchObject({ ok: false, filesWritten: [], promptTokens: 0, completionTokens: 0 });
+    expect(result.error).toMatch(/no parseable file blocks/);
+  });
+
+  it("does not mark unknown usage as measured zero on a successful write", async () => {
+    const result = await apply(block("first.txt"), { prompt_tokens: "7", completion_tokens: -1 });
+    expect(result).toMatchObject({ ok: true, filesWritten: ["first.txt"] });
+    expect(result.promptTokens).toBeUndefined();
+    expect(result.completionTokens).toBeUndefined();
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+});

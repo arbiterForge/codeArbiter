@@ -1018,34 +1018,62 @@ function diagnosticApiOrigin(apiBaseUrl: string): string {
   }
 }
 
-export function parseChatCompletion(
-  text: string,
-  apiBaseUrl: string,
-):
-  | { ok: true; content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } }
-  | { ok: false; error: string } {
-  let data: { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
+// Usage belongs to the completed provider response, not to whether its output
+// was acceptable. Preserve only explicitly reported safe nonnegative integers;
+// omitted/invalid counters remain unknown rather than coerced to zero or parsed
+// from provider diagnostics. These are reported tokens, not verified billing.
+type ChatUsage = { prompt_tokens?: number; completion_tokens?: number };
+type ChatCompletionResult =
+  | { ok: true; content: string; usage?: ChatUsage }
+  | { ok: false; error: string; usage?: ChatUsage };
+
+function reportedUsage(value: unknown): ChatUsage | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const input = value as Record<string, unknown>;
+  const usage: ChatUsage = {};
+  for (const field of ["prompt_tokens", "completion_tokens"] as const) {
+    const count = input[field];
+    if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) usage[field] = count;
+  }
+  return Object.keys(usage).length ? usage : undefined;
+}
+
+export function parseChatCompletion(text: string, apiBaseUrl: string): ChatCompletionResult {
+  let data: unknown;
   try {
-    data = JSON.parse(text) as typeof data;
+    data = JSON.parse(text);
   } catch {
     return {
       ok: false,
       error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned a non-JSON body — check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`,
     };
   }
-  // dx-001 (T-08a): the `as typeof data` cast is unsound — valid JSON of an
-  // UNEXPECTED shape (an array, a non-object, or `{error: ...}`) passes the cast
-  // and then yields a silent `ok:true content:""`, exhausting retries without
-  // signalling the real cause (the #90 class of misconfiguration). Verify the
-  // chat-completions shape (a `choices` array) before trusting it; on a mismatch
-  // return an actionable, endpoint-naming error.
-  if (!data || typeof data !== "object" || !Array.isArray((data as { choices?: unknown }).choices)) {
+  const record = data && typeof data === "object" && !Array.isArray(data)
+    ? data as Record<string, unknown> : undefined;
+  const usage = reportedUsage(record?.usage);
+  if (!record || !Array.isArray(record.choices)) {
     return {
-      ok: false,
+      ok: false, usage,
       error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected shape (no 'choices' array) — check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`,
     };
   }
-  return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
+  // Empty choices / absent text retain the no-file-output path. Do not coerce
+  // structured or scalar content into text, nor let it throw inside the fence
+  // parser and discard the usage already reported by this response.
+  if (record.choices.length === 0) return { ok: true, content: "", usage };
+  const first: unknown = record.choices[0];
+  const message = first && typeof first === "object" && !Array.isArray(first)
+    ? (first as Record<string, unknown>).message : undefined;
+  if (!message || typeof message !== "object" || Array.isArray(message)) {
+    return { ok: false, usage,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected first-choice message — expected a chat-completion object` };
+  }
+  const content = (message as Record<string, unknown>).content;
+  if (content !== undefined && content !== null && typeof content !== "string") {
+    return { ok: false, usage,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned non-text message content — expected text file blocks` };
+  }
+  return { ok: true, content: content ?? "", usage };
 }
 
 // --------------------------------------------------------------------------
@@ -1085,7 +1113,7 @@ async function callApi(
   apiBaseUrl: string,
   apiKey: string,
   sampling: Sampling = readSampling(),
-): Promise<{ ok: true; content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } } | { ok: false; error: string }> {
+): Promise<ChatCompletionResult> {
   // Validate at the fetch-producing boundary as well as at CLI config
   // resolution. Exported callers (for example httpWorker/runTask) must not be
   // able to bypass the transport rule by supplying their own base URL.
@@ -1189,7 +1217,8 @@ async function runWorker(
   sampling?: Sampling,
 ): Promise<WorkerResult> {
   const api = await callApi(prompt, model, apiBaseUrl, apiKey, sampling ?? readSampling());
-  if (!api.ok) return { ok: false, filesWritten: [], error: api.error };
+  const tokens = { promptTokens: api.usage?.prompt_tokens, completionTokens: api.usage?.completion_tokens };
+  if (!api.ok) return { ok: false, filesWritten: [], error: api.error, ...tokens };
 
   const blocks = extractFileBlocks(api.content);
   const filesWritten: string[] = [];
@@ -1198,20 +1227,23 @@ async function runWorker(
     const absPath = path.resolve(cwd, cleanPath);
     // Containment: untrusted output may not escape the worktree.
     if (!isInside(cwd, absPath)) {
-      return { ok: false, filesWritten, error: `path escapes worktree: ${cleanPath}` };
+      return { ok: false, filesWritten, error: redactSecrets(`path escapes worktree: ${cleanPath}`), ...tokens };
     }
     // The failing test is read-only — refuse to let the worker touch it.
     // Normalize to forward slashes: plan paths are POSIX-style, but
     // path.relative emits backslashes on Windows and the guard would miss.
     const rel = path.relative(cwd, absPath).split(path.sep).join("/");
     if (forbidden.has(rel)) {
-      return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
+      return { ok: false, filesWritten, error: redactSecrets(`worker tried to write read-only path: ${rel}`), ...tokens };
     }
     try {
       await writeWorktreeFile(cwd, rel, body.endsWith("\n") ? body : body + "\n");
     } catch (error) {
-      if (isUnsafeWorktreePathError(error)) return { ok: false, filesWritten, error: error.message };
-      throw error;
+      // Do not let even an ordinary I/O refusal erase a completed response's
+      // usage or the list of files already written. The existing task policy
+      // still owns rejection, reset/retry and eventual verification.
+      return { ok: false, filesWritten, ...tokens, error: isUnsafeWorktreePathError(error)
+        ? error.message : `worker output write failed: ${redactSecrets(msgOf(error)).slice(0, 300)}` };
     }
     filesWritten.push(rel);
   }
@@ -1221,15 +1253,13 @@ async function runWorker(
       ok: false,
       filesWritten: [],
       error: "no parseable file blocks in response",
-      promptTokens: api.usage?.prompt_tokens,
-      completionTokens: api.usage?.completion_tokens,
+      ...tokens,
     };
   }
   return {
     ok: true,
     filesWritten,
-    promptTokens: api.usage?.prompt_tokens,
-    completionTokens: api.usage?.completion_tokens,
+    ...tokens,
   };
 }
 

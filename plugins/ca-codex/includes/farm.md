@@ -145,7 +145,7 @@ existing setup phases are reapplied. Ignored dependency caches retain their exis
 is attempted for every sample, including exception paths; unresolved cleanup is reported. The same
 selection applies to detached canary work, which still stops before commit or merge.
 
-`farm-report.json` records total sample spend (`promptTokens`/`completionTokens`) separately from
+`farm-report.json` records summed known sample usage (`promptTokens`/`completionTokens`) separately from
 the selected candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`). Qualification
 makes no additional model requests, but can run local gates and mutation checks for multiple
 candidates. It is not comparative quality ranking or a measured savings claim. Normal independent
@@ -162,6 +162,20 @@ injected context; out-of-scope drift is never carried forward.
 If the retry cannot reset its worktree, the task escalates without another model call.
 Its report retains the completed attempts' known token usage, last output/risk evidence,
 and any unresolved sample cleanup outcomes; a failed reset cannot erase them.
+
+A decoded provider response can contain reported usage even when its output is
+rejected. The worker preserves valid counters through malformed message content,
+read-only or escaping paths, and guarded-write refusals, including any already
+written file list. A malformed non-text response becomes an ordinary worker
+failure under the existing retry/selection policy, not an unhandled parser error.
+Counters must be explicitly reported nonnegative safe integers; validate prompt
+and completion independently. Explicit zero is valid; missing, invalid or
+undecodable counts stay absent at the worker boundary. The existing report sums
+known counts, so its total is not proof of complete usage or verified billing.
+No extra provider request is made to recover a missing counter. HTTP failures,
+transport retries without usable usage and provider pricing remain outside this
+accounting correction. Output rejection still enforces the original write,
+test, gate and independent-review requirements.
 
 ## Required
 
@@ -214,7 +228,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_API_BASE_URL` | `https://opencode.ai/zen/v1` | Endpoint URL (env → plan.json → this default). |
 | `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
 | `FARM_CONCURRENCY` | `4` | Max concurrent task workers — and the shared ceiling on TOTAL in-flight worker calls, including best-of-N samples. |
-| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per attempt; first in index order to pass task-worktree gates and risk qualification is selected. `1` keeps the single-worker path. Shares `FARM_CONCURRENCY`; all candidates' token spend is reported. |
+| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per attempt; first in index order to pass task-worktree gates and risk qualification is selected. `1` keeps the single-worker path. Shares `FARM_CONCURRENCY`; known reported usage from all candidates is summed. |
 | `FARM_TEMPERATURE` | `0` (one sample); `0.7` (multiple, unset) | Sampling temperature sent to the worker. Defaults to `0` when `FARM_SAMPLES=1` and `0.7` when `FARM_SAMPLES>1`. Any explicit value, including `0`, overrides the automatic default. |
 | `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
@@ -303,7 +317,7 @@ Every run owns an artifact directory keyed by its run id — `<project-root>/.fa
 that directory is the **durable receipt**, written by that run alone. Two farm processes against one
 repository therefore cannot overwrite each other's *evidence* (see the concurrency caveat below — the
 receipts are isolated, the git state is not):
-- `farm-report.json` — structured results: per-task status, attempts, files written, worker token spend,
+- `farm-report.json` — structured results: per-task status, attempts, files written, known reported worker usage,
   warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons, and an
   `artifacts` block stating whether the streaming rail was complete and which tasks' diff evidence is
   unavailable.

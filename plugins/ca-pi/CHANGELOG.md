@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Preserve known rejected-response usage in the shared farm backend and document
+  its limits; existing preview authority and HTML farm restrictions remain.
 - Keep built-in mutation nonzero exits as unclassified rejection evidence, not
   measured kills; preserve adverse bounds, diagnostics and autonomous review.
 - Match whole, same-kind farm literals rather than substrings or conventional comments;

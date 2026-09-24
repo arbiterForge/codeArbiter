@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 from contextlib import contextmanager
 import gzip
 import hashlib
@@ -664,16 +665,9 @@ def _codex_catalog(source: bytes, installer) -> bytes:
     return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
-def promoted_codex_catalog(source: bytes, *, distribution_url: str,
-                           distribution_ref: str,
-                           distribution_commit: str) -> bytes:
-    """Bind the public Codex entry to one immutable assembled Git tree.
-
-    The distribution commit is intentionally supplied only after the qualified
-    archive has been materialized as a Git tree.  Source checkouts therefore do
-    not masquerade as the installable payload, and the host receives both a
-    human-readable promotion ref and the exact commit it must resolve.
-    """
+def promoted_codex_catalog(source: bytes, *, package: str, version: str,
+                           registry: str) -> bytes:
+    """Bind the public Codex entry to one exact verified npm package."""
     installer = _artifact_installer_module()
     document = json.loads(source, object_pairs_hook=installer._pairs)
     plugins = document.get("plugins") if isinstance(document, dict) else None
@@ -682,22 +676,18 @@ def promoted_codex_catalog(source: bytes, *, distribution_url: str,
     expected_source = {"source": "local", "path": "./plugins/ca-codex"}
     if len(selected) != 1 or selected[0].get("source") != expected_source:
         raise ValueError("source Codex marketplace does not identify one canonical ca-codex package")
-    if re.fullmatch(r"[0-9a-f]{40}", distribution_commit) is None:
-        raise ValueError("Codex distribution commit must be a full lowercase commit id")
-    if (not isinstance(distribution_url, str)
-            or not distribution_url.startswith("https://")
-            or not distribution_url.endswith(".git")):
-        raise ValueError("Codex distribution URL must be an explicit HTTPS Git URL")
-    if (not isinstance(distribution_ref, str) or not distribution_ref
-            or any(character.isspace() for character in distribution_ref)):
-        raise ValueError("Codex distribution ref must be a non-empty Git ref")
+    if package != "@arbiterforge/ca-codex":
+        raise ValueError("Codex npm package identity is not approved")
+    if SEMVER.fullmatch(version) is None:
+        raise ValueError("Codex npm marketplace version must be exact stable SemVer")
+    if registry != "https://registry.npmjs.org":
+        raise ValueError("Codex npm registry is not approved")
     entry = dict(selected[0])
     entry["source"] = {
-        "source": "git-subdir",
-        "url": distribution_url,
-        "path": "plugins/ca-codex",
-        "ref": distribution_ref,
-        "sha": distribution_commit,
+        "source": "npm",
+        "package": package,
+        "version": version,
+        "registry": registry,
     }
     output = {key: value for key, value in document.items() if key != "plugins"}
     output["plugins"] = [entry]
@@ -767,6 +757,102 @@ def stage_codex_marketplace_distribution(*, package_root: Path,
         "catalog_sha256": hashlib.sha256(files[catalog_name][0]).hexdigest(),
         "members": sorted(files),
         "source_commit": receipt.get("source_commit"),
+    }
+
+
+def build_codex_npm_package(*, package_root: Path,
+                            package_cohort_sha256: str,
+                            output: Path) -> dict[str, object]:
+    """Project the exact qualified Codex plugin subtree into an npm tarball.
+
+    No checkout bytes, install script, compiler, or network input participates.
+    Every npm payload member is an exact member of the already-qualified Codex
+    archive, with only the archive-root prefix changed from
+    ``plugins/ca-codex/`` to npm's required ``package/``.
+    """
+    package_root = package_root.absolute()
+    if (package_root.is_symlink() or not package_root.is_dir()
+            or os.path.normcase(str(package_root.resolve(strict=True))) !=
+            os.path.normcase(str(package_root))):
+        raise ValueError("artifact package root must be a real directory")
+    installer = _artifact_installer_module()
+    receipt_bytes = installer.read_regular(
+        package_root / "artifact-package-cohort.json", 8 << 20
+    )
+    if (re.fullmatch(r"[0-9a-f]{64}", package_cohort_sha256) is None
+            or hashlib.sha256(receipt_bytes).hexdigest() != package_cohort_sha256):
+        raise ValueError("Codex npm package cohort digest drifted")
+    receipt = json.loads(receipt_bytes, object_pairs_hook=installer._pairs)
+    packages = receipt.get("packages") if isinstance(receipt, dict) else None
+    package = packages.get("codex") if isinstance(packages, dict) else None
+    required = {"file", "version", "size", "sha256", "members"}
+    if (receipt.get("format") != ARTIFACT_PACKAGE_FORMAT
+            or not isinstance(package, dict) or set(package) != required
+            or not isinstance(package.get("file"), str)
+            or Path(package["file"]).name != package["file"]
+            or not isinstance(package.get("members"), dict)):
+        raise ValueError("Codex npm package cohort entry is malformed")
+    archive = package_root / package["file"]
+    archive_bytes = installer.read_regular(archive, 256 << 20)
+    if (package.get("size") != len(archive_bytes)
+            or package.get("sha256") != hashlib.sha256(archive_bytes).hexdigest()):
+        raise ValueError("Codex npm source archive digest or size drifted")
+    files = _read_archive(archive, expected_members=package["members"])
+    prefix = "plugins/ca-codex/"
+    plugin_files = {
+        name.removeprefix(prefix): value
+        for name, value in files.items()
+        if name.startswith(prefix)
+    }
+    if not plugin_files or len(plugin_files) + 1 != len(files):
+        raise ValueError("Codex qualified archive has an unexpected npm source shape")
+    try:
+        metadata = json.loads(
+            plugin_files["package.json"][0], object_pairs_hook=installer._pairs
+        )
+        manifest = json.loads(
+            plugin_files[".codex-plugin/plugin.json"][0],
+            object_pairs_hook=installer._pairs,
+        )
+    except (KeyError, TypeError, json.JSONDecodeError) as error:
+        raise ValueError("Codex npm package identity is missing or malformed") from error
+    expected_repository = {
+        "type": "git",
+        "url": "git+https://github.com/arbiterForge/codeArbiter.git",
+    }
+    if (not isinstance(metadata, dict)
+            or metadata.get("name") != "@arbiterforge/ca-codex"
+            or metadata.get("version") != package.get("version")
+            or manifest.get("version") != package.get("version")
+            or metadata.get("license") != "AGPL-3.0-only"
+            or metadata.get("repository") != expected_repository
+            or metadata.get("publishConfig") != {
+                "access": "public", "provenance": True,
+            }
+            or "scripts" in metadata or "dependencies" in metadata):
+        raise ValueError("Codex npm package identity does not match the qualified release")
+    npm_members = {
+        f"package/{name}": (data, mode, "qualified-package", f"{prefix}{name}")
+        for name, (data, mode) in plugin_files.items()
+    }
+    npm_bytes = _archive_bytes(npm_members)
+    filename = f"arbiterforge-ca-codex-{package['version']}.tgz"
+    with _pinned_artifact_stage(output.absolute()) as stage:
+        stage.write_root_file(filename, npm_bytes)
+    return {
+        "package": "@arbiterforge/ca-codex",
+        "version": package["version"],
+        "file": filename,
+        "size": len(npm_bytes),
+        "sha256": hashlib.sha256(npm_bytes).hexdigest(),
+        "integrity": "sha512-" + base64.b64encode(
+            hashlib.sha512(npm_bytes).digest()
+        ).decode("ascii"),
+        "cohort_sha256": package_cohort_sha256,
+        "source_commit": receipt.get("source_commit"),
+        "source_archive": package["file"],
+        "source_archive_sha256": package["sha256"],
+        "members": _member_receipt(npm_members),
     }
 
 
@@ -1770,7 +1856,42 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--codex-distribution-package-root", type=Path)
     parser.add_argument("--codex-distribution-cohort-sha256")
     parser.add_argument("--codex-distribution-output", type=Path)
+    parser.add_argument("--codex-npm-package-root", type=Path)
+    parser.add_argument("--codex-npm-cohort-sha256")
+    parser.add_argument("--codex-npm-output", type=Path)
     args = parser.parse_args(argv)
+    codex_npm_mode = any((
+        args.codex_npm_package_root,
+        args.codex_npm_cohort_sha256,
+        args.codex_npm_output,
+    ))
+    if codex_npm_mode:
+        if (args.check or args.release_guard_base or args.artifact_candidate
+                or args.artifact_qualification or args.artifact_stage
+                or args.require_platform or args.trusted_source_commit
+                or args.trusted_workflow or args.trusted_workflow_run
+                or args.release_package_stage or args.release_package_output
+                or args.source_repo or args.npm_executable
+                or args.npm_package_integrity or args.promotion_receipt_sha256
+                or args.cold_package_root or args.cold_host or args.cold_platform
+                or args.cold_promotion_receipt_sha256 or args.cold_receipt
+                or args.codex_distribution_package_root
+                or args.codex_distribution_cohort_sha256
+                or args.codex_distribution_output):
+            parser.error("Codex npm packaging cannot be combined with other modes")
+        if (args.codex_npm_package_root is None
+                or not args.codex_npm_cohort_sha256
+                or args.codex_npm_output is None):
+            parser.error(
+                "Codex npm packaging requires package root, cohort digest, and output"
+            )
+        result = build_codex_npm_package(
+            package_root=args.codex_npm_package_root,
+            package_cohort_sha256=args.codex_npm_cohort_sha256,
+            output=args.codex_npm_output,
+        )
+        print(json.dumps(result, indent=2))
+        return 0
     distribution_mode = any((
         args.codex_distribution_package_root,
         args.codex_distribution_cohort_sha256,

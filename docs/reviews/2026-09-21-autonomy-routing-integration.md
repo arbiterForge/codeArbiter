@@ -656,3 +656,50 @@ independent review separately. Roll back the owning mutation module, bundle and
 private generated cards together if rejected, preserving unrelated work and
 actual artifact authority. This fixes false score attribution without claiming
 that a generic shell runner can classify arbitrary compiler/assertion semantics.
+
+
+## 2026-09-24 continuation: preserve usage at the HTTP worker boundary (partial F12)
+
+Baseline: `76fd953c605b20b140de826406833da190d32aa1`. A decoded response's
+provider-reported usage was lost on invalid shape, a forbidden or escaping file
+block, and guarded-write refusal. Non-text content could escape as an exception
+before worker evidence reached the task finalizer. Reported string, negative or
+non-integral counters also crossed the response boundary without validation.
+
+Parse the untrusted response before the file-block reader. Keep only independently
+validated nonnegative safe-integer prompt/completion counters; explicit zero is
+valid and absent/invalid data remains unknown. Return a sanitized ordinary worker
+failure for malformed first-choice/message/text shapes and carry known usage on
+all response-derived exits. Empty choices or missing text retain the established
+no-file-output failure. Preserve partial written-file lists and the original
+worktree/read-only guards. Do not echo response content or private endpoint fields
+in shape diagnostics. Retain the existing task retry limit, candidate selection,
+acceptance, authority and containment contracts; no request is made solely to
+recover a counter.
+
+The current task/report reducers sum known fields. This slice does not establish
+complete billing, price, transport-retry usage, absent-provider usage or a new
+aggregate completeness schema. It adds no public operation, configuration,
+dependency, model call or resident context. Independent verification and quality
+checks still determine acceptance, not output shape or reported token counts.
+
+Tests cover parsing and worker exits plus real source-and-rebuilt-bundle CLI
+failures, bounded retry and retained-candidate accounting. Assert exact request
+counts, accumulated known usage, winner-only counters where applicable, immutable
+tests/main and no integration after failure. Exercise false/empty/zero controls
+separately from malformed responses. A selected old-source run is regression
+sensitivity, not current qualification; record exact outcomes in the PR. Qualify
+both supported platforms and normal final-head CI, and preserve coverage floors.
+
+The contemporaneous main merge includes Codex marketplace publication from #855.
+Keep its npm package, pipeline, tests and .14-and-older Codex changelog intact.
+Only the Codex candidate advances to .15 because .14 is already on main; CA and Pi
+retain their independent .14 candidates. Synchronize manifest/runtime identity
+and actual changed provenance hashes without changing authenticated tag records.
+This is source/candidate preparation, not proof of new registry publication.
+
+Rollback the isolated HTTP-worker parsing/accounting change with its rebuilt
+bundle, tests and generated private cards if rejected. Preserve upstream release
+work, actual artifact authority, unrelated worktrees and historical evidence.
+Process resume, complete spend accounting, HTML farm qualification, remaining
+command migrations and measured production improvement remain separate work.

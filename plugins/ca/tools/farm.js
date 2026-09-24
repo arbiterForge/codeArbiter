@@ -1365,6 +1365,16 @@ function diagnosticApiOrigin(apiBaseUrl) {
     return "<configured endpoint>";
   }
 }
+function reportedUsage(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return void 0;
+  const input = value;
+  const usage = {};
+  for (const field of ["prompt_tokens", "completion_tokens"]) {
+    const count = input[field];
+    if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) usage[field] = count;
+  }
+  return Object.keys(usage).length ? usage : void 0;
+}
 function parseChatCompletion(text, apiBaseUrl) {
   let data;
   try {
@@ -1375,13 +1385,34 @@ function parseChatCompletion(text, apiBaseUrl) {
       error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned a non-JSON body \u2014 check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`
     };
   }
-  if (!data || typeof data !== "object" || !Array.isArray(data.choices)) {
+  const record = data && typeof data === "object" && !Array.isArray(data) ? data : void 0;
+  const usage = reportedUsage(record?.usage);
+  if (!record || !Array.isArray(record.choices)) {
     return {
       ok: false,
+      usage,
       error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected shape (no 'choices' array) \u2014 check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`
     };
   }
-  return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
+  if (record.choices.length === 0) return { ok: true, content: "", usage };
+  const first = record.choices[0];
+  const message = first && typeof first === "object" && !Array.isArray(first) ? first.message : void 0;
+  if (!message || typeof message !== "object" || Array.isArray(message)) {
+    return {
+      ok: false,
+      usage,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected first-choice message \u2014 expected a chat-completion object`
+    };
+  }
+  const content = message.content;
+  if (content !== void 0 && content !== null && typeof content !== "string") {
+    return {
+      ok: false,
+      usage,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned non-text message content \u2014 expected text file blocks`
+    };
+  }
+  return { ok: true, content: content ?? "", usage };
 }
 function readSampling() {
   return {
@@ -1457,24 +1488,24 @@ async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSamplin
 }
 async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, sampling) {
   const api = await callApi(prompt, model, apiBaseUrl, apiKey, sampling ?? readSampling());
-  if (!api.ok) return { ok: false, filesWritten: [], error: api.error };
+  const tokens = { promptTokens: api.usage?.prompt_tokens, completionTokens: api.usage?.completion_tokens };
+  if (!api.ok) return { ok: false, filesWritten: [], error: api.error, ...tokens };
   const blocks = extractFileBlocks(api.content);
   const filesWritten = [];
   for (const { path: filePath, body } of blocks) {
     const cleanPath = filePath.trim();
     const absPath = path3.resolve(cwd, cleanPath);
     if (!isInside(cwd, absPath)) {
-      return { ok: false, filesWritten, error: `path escapes worktree: ${cleanPath}` };
+      return { ok: false, filesWritten, error: redactSecrets(`path escapes worktree: ${cleanPath}`), ...tokens };
     }
     const rel = path3.relative(cwd, absPath).split(path3.sep).join("/");
     if (forbidden.has(rel)) {
-      return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
+      return { ok: false, filesWritten, error: redactSecrets(`worker tried to write read-only path: ${rel}`), ...tokens };
     }
     try {
       await writeWorktreeFile(cwd, rel, body.endsWith("\n") ? body : body + "\n");
     } catch (error) {
-      if (isUnsafeWorktreePathError(error)) return { ok: false, filesWritten, error: error.message };
-      throw error;
+      return { ok: false, filesWritten, ...tokens, error: isUnsafeWorktreePathError(error) ? error.message : `worker output write failed: ${redactSecrets(msgOf(error)).slice(0, 300)}` };
     }
     filesWritten.push(rel);
   }
@@ -1483,15 +1514,13 @@ async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, samp
       ok: false,
       filesWritten: [],
       error: "no parseable file blocks in response",
-      promptTokens: api.usage?.prompt_tokens,
-      completionTokens: api.usage?.completion_tokens
+      ...tokens
     };
   }
   return {
     ok: true,
     filesWritten,
-    promptTokens: api.usage?.prompt_tokens,
-    completionTokens: api.usage?.completion_tokens
+    ...tokens
   };
 }
 var httpWorker = {

@@ -364,6 +364,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      id-token: write
     environment: codex-distribution
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -424,6 +425,7 @@ jobs:
           codex-publisher-actor-id: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
           codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}
           codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
+          npm-token: ${{ secrets.NPMJS_TOKEN }}
 
   release-sandbox:
     name: CA-Sandbox | [Release] - Publish
@@ -1119,6 +1121,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      id-token: write
     environment: codex-distribution
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1184,6 +1187,7 @@ jobs:
           codex-publisher-actor-id: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
           codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}
           codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
+          npm-token: ${{ secrets.NPMJS_TOKEN }}
 
   auto-codex-cohort-gate:
     name: "[GATE ] | [COHORT] | Codex publication complete"

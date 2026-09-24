@@ -2460,3 +2460,101 @@ describe("farm artifact publication (#397 / #387)", () => {
     expect(md).toMatch(/12 task\(s\) have no diff evidence/i);
   }, process.platform === "win32" ? 60_000 : 30_000);
 });
+
+
+// The actual source and shipped bundle must preserve already-reported usage
+// through rejected output, bounded retry and best-of-N accounting. No provider
+// beyond this loopback fixture is contacted and no gate is stubbed out.
+describe("worker response evidence CLI", () => {
+  const gitIn = (dir: string, ...args: string[]) =>
+    execFileSync("git", args, { cwd: dir, env: fixtureEnv(), encoding: "utf8" }).trim();
+  let root: string;
+  let server: Server | undefined;
+  beforeEach(() => {
+    root = join(tmpdir(), `farm-response-cli-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    createTempRepo(root);
+    writeFileSync(join(root, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(root, "src/identity.test.cjs"),
+      'const assert = require("node:assert/strict");\nconst identity = require("./identity.cjs");\nassert.equal(identity("fixture"), "fixture");\n');
+    gitIn(root, "add", ".gitignore", "src/identity.test.cjs");
+    gitIn(root, "commit", "-m", "immutable test fixture");
+  });
+  afterEach(async () => {
+    await reapStrayChildren();
+    if (server) {
+      server.closeAllConnections();
+      await new Promise<void>((resolve) => server!.close(() => resolve()));
+      server = undefined;
+    }
+    rmWithRetry(root);
+  });
+  const code = ["module.exports = function identity(value) {", "  // Keep the exact input.",
+    "  const unchanged = value;", "  return unchanged;", "};", ""].join("\n");
+  const block = (p: string) => "```javascript:" + p + "\n" + code + "```";
+  const completion = (content: unknown, p = 7, c = 11) => ({ choices: [{ message: { content } }],
+    usage: { prompt_tokens: p, completion_tokens: c } });
+
+  for (const entry of ["source", "bundle"] as const) {
+    it.each(["readonly", "escape", "object-content", "missing-message"])(`${entry}: preserves rejected %s evidence without another request`, async (kind) => {
+      let calls = 0;
+      server = createServer((_req, res) => {
+        _req.resume();
+        _req.on("end", () => {
+          calls++;
+          const response = kind === "missing-message" ? { choices: [{}], usage: { prompt_tokens: 7, completion_tokens: 11 } }
+            : completion(kind === "readonly" ? block("src/identity.test.cjs") : kind === "escape" ? block("../outside.cjs") : { opaque: "private-response" });
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(response));
+        });
+      });
+      await new Promise<void>((resolve) => server!.listen(0, "127.0.0.1", () => resolve()));
+      const port = (server.address() as { port: number }).port;
+      writeFileSync(join(root, "plan.json"), JSON.stringify({ meta: { name: "response-evidence", model: "fixture-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: [{ id: "identity", description: "Implement identity without changing tests", deps: [], filesInScope: ["src/identity.cjs"],
+          test: { path: "src/identity.test.cjs" }, gate: { commands: ["node src/identity.test.cjs"] }, maxRetries: 0 }] }));
+      const before = gitIn(root, "rev-parse", "main");
+      const testBytes = readFileSync(join(root, "src/identity.test.cjs"));
+      const run = await runFarmWithArgs(root, [], join(root, "plan.json"), { FARM_API_KEY: "fixture-key", FARM_API_MAX_RETRIES: "0" }, [], entry);
+      expect(run.code, run.out).toBe(2);
+      expect(calls).toBe(1);
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "escalate", attempts: 1, promptTokens: 7, completionTokens: 11 });
+      expect(report.results[0].note).not.toContain("private-response");
+      expect(report.tokens).toEqual({ prompt: 7, completion: 11 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before);
+      expect(gitIn(root, "rev-parse", "farm/integration")).toBe(before);
+      expect(readFileSync(join(root, "src/identity.test.cjs"))).toEqual(testBytes);
+      expect(existsSync(join(root, "src/identity.cjs"))).toBe(false);
+    });
+
+    it.each(["retry", "samples"])(`${entry}: accounts for rejected and accepted responses across %s`, async (mode) => {
+      let calls = 0;
+      server = createServer((req, res) => {
+        req.resume();
+        req.on("end", () => {
+          const first = calls++ === 0;
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(completion(first ? { opaque: "private-response" } : block("src/identity.cjs"), first ? 7 : 13, first ? 11 : 17)));
+        });
+      });
+      await new Promise<void>((resolve) => server!.listen(0, "127.0.0.1", () => resolve()));
+      const port = (server.address() as { port: number }).port;
+      writeFileSync(join(root, "plan.json"), JSON.stringify({ meta: { name: "response-recovery", model: "fixture-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: [{ id: "identity", description: "Implement identity without changing tests", deps: [], filesInScope: ["src/identity.cjs"],
+          test: { path: "src/identity.test.cjs" }, gate: { commands: ["node src/identity.test.cjs"] }, maxRetries: mode === "retry" ? 1 : 0 }] }));
+      const before = gitIn(root, "rev-parse", "main");
+      const testBytes = readFileSync(join(root, "src/identity.test.cjs"));
+      const run = await runFarmWithArgs(root, [], join(root, "plan.json"), { FARM_API_KEY: "fixture-key", FARM_API_MAX_RETRIES: "0",
+        FARM_SAMPLES: mode === "samples" ? "2" : "1", FARM_CONCURRENCY: "2" }, [], entry);
+      expect(run.code, run.out).toBe(0);
+      expect(calls).toBe(2);
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "green", attempts: mode === "retry" ? 2 : 1, promptTokens: 20, completionTokens: 28 });
+      expect(report.tokens).toEqual({ prompt: 20, completion: 28 });
+      if (mode === "samples") expect(report.results[0]).toMatchObject({ acceptedPromptTokens: 13, acceptedCompletionTokens: 17 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before);
+      expect(readFileSync(join(root, "src/identity.test.cjs"))).toEqual(testBytes);
+      expect(gitIn(root, "show", "farm/integration:src/identity.cjs")).toBe(code.trim());
+    });
+  }
+});
