@@ -129,9 +129,22 @@ codex plugin add ca-codex@codearbiter
 ```
 
 The `ca-codex-marketplace` branch is the promoted catalog. Each entry pins the
-exact immutable Git commit assembled from the same qualified member set as the
-release archive; `main` remains the development source tree and is not a
-substitute for the promoted binary-bearing distribution.
+exact verified `@arbiterforge/ca-codex` npm version assembled from the same
+qualified member set as the release archive; `main` remains the development
+source tree and is not a substitute for the promoted binary-bearing
+distribution.
+
+If `codearbiter` was previously registered without
+`--ref ca-codex-marketplace`, `marketplace upgrade` keeps that default-branch
+registration and does not migrate it to the npm-backed channel. Remove and
+re-add the marketplace once, then reinstall the plugin:
+
+```text
+codex plugin remove ca-codex@codearbiter
+codex plugin marketplace remove codearbiter
+codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace
+codex plugin add ca-codex@codearbiter
+```
 
 Open `/hooks`, review and trust the `ca-codex` handlers, then start a fresh task. Run `$ca-init` and
 `$ca-doctor`.

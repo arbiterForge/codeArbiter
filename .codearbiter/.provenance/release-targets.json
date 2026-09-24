@@ -14,12 +14,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "46c4d40593c5c31ff235fffe3722f5e83ede9c0e",
+      "hash": "573ee206a91f038aec0518e7e79e1b14ef6baeac",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "4c63baefe6a2f684618a28f4a075445184eeb0a4",
+      "hash": "72f85111e7da780a425a3afee239cb62e0c4f510",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
