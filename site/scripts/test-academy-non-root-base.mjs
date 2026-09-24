@@ -137,6 +137,22 @@ try {
   if (deliveryLinks.length !== 4 || deliveryLinks.some(href => !href.startsWith("/docs/"))) {
     throw new Error("The review-to-delivery map escaped the /docs/ base");
   }
+  const dependency = readFileSync(join(outputRoot, "guides", "adding-a-dependency", "index.html"), "utf8");
+  const dependencyMap = dependency.match(/<section[^>]*data-reader-journey="dependency-decision-map"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const dependencyLinks = [...dependencyMap.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+  if (dependencyLinks.length !== 4 || dependencyLinks.some(href => !href.startsWith("/docs/")) ||
+      !dependency.includes('src="/docs/diagrams/lane-add-dep.svg"') ||
+      !dependency.includes('id="one-time-inspection-nothing-adopted"') ||
+      !dependency.includes('data-ca-table="stacked"') ||
+      !dependency.includes('No package was downloaded or executed')) {
+    throw new Error("The dependency guide lost its base-prefixed reading map, diagram, decision or example boundary");
+  }
+  const dependencyReference = readFileSync(join(outputRoot, "reference", "commands", "add-dep", "index.html"), "utf8");
+  if (!dependencyReference.includes('href="/docs/guides/adding-a-dependency/"') ||
+      !dependencyReference.includes('One-time inspection')) {
+    throw new Error("The dependency reference lost the bounded one-time path or its non-root guide link");
+  }
+  process.stdout.write("Dependency guide: all four map links, bounded-tool decision and retained diagram remain beneath /docs/.\n");
   // Verify table enhancement on actual MDX output, not only the AST unit fixture.
   for (const slug of ["review-and-ship", "investigate-and-fix"]) {
     const html = readFileSync(join(outputRoot, "guides", slug, "index.html"), "utf8");

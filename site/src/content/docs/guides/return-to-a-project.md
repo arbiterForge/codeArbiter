@@ -51,6 +51,7 @@ summary. See [the artifact model](/concepts/artifacts/).
 | Repair a reproduced defect | Fix, with a regression obligation |
 | Add caller-visible behavior | Feature, or sprint for an explicitly bounded autonomous package |
 | Preserve behavior while changing structure | Refactor, with parity obligations |
+| Adopt a package or run a named inspection tool once | [Dependency decisions](/guides/adding-a-dependency/), with separate scope and confirmation checks |
 | Explore an uncertain approach | A time-boxed spike with a findings-only exit |
 | Inspect a diff without creating a report | Review |
 | Persist a periodic cross-cutting review | Checkpoint; tribunal is the separate deeper review |

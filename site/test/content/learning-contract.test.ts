@@ -85,7 +85,7 @@ describe("hand-authored learning contract", () => {
       "getting-started/pi.md",
       "getting-started/quickstart.md",
       "feature-forge/using-preview-features.md",
-      "guides/adding-a-dependency.md",
+      "guides/adding-a-dependency.mdx",
       "guides/autonomous-sprints.mdx",
       "guides/ca-sandbox.md",
       "guides/feature-lane.mdx",
