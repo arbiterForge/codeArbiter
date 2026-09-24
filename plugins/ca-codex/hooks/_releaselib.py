@@ -137,8 +137,10 @@
 from __future__ import annotations
 
 import hashlib
+import datetime
 import json
 import os
+import stat
 import posixpath
 import re
 import shlex
@@ -431,7 +433,8 @@ _LEGACY_DATE_H2_RE = re.compile(
     r"^##[ \t]+\[[0-9]{4}-[0-9]{2}-[0-9]{2}\]"
     r"(?:[ \t]+[^\r\n]*)?[ \t]*$")
 _CHANGELOG_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})[ \t]*$")
-_RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
+_RELEASED_AT_RE = re.compile(
+    r"^Released-at:[ \t]*(\d{4}-\d{2}-\d{2})[ \t]*$", re.MULTILINE)
 _BARE_RELEASE_VERSION_RE = re.compile(r"^" + _PLAIN_SEMVER_PATTERN + r"$")
 
 _SECTION_OK = "ok"
@@ -708,9 +711,13 @@ def version_greater(current, base, policy="semver", initial_version=None):
     if policy != "numeric-sequence":
         return False
     current_key = numeric_sequence_key(current, initial_version)
-    base_key = numeric_sequence_key(base, initial_version)
     initial_key = numeric_sequence_key(initial_version, initial_version)
-    if current_key is None or base_key is None or initial_key is None:
+    if current_key is None or initial_key is None:
+        return False
+    if base == NONE_SENTINEL:
+        return current_key >= initial_key
+    base_key = numeric_sequence_key(base, initial_version)
+    if base_key is None:
         return False
     return current_key >= initial_key and current_key > base_key
 
@@ -878,10 +885,19 @@ def release_dates_consistent(changelog_section, tag_message, policy="semver",
                 heading.group(0), policy, initial_version) in (None, "Unreleased")):
         return False
     cm = _CHANGELOG_DATE_RE.search(heading.group(0))
-    tm = _RELEASED_AT_RE.search(tag_message)
-    if not cm or not tm:
+    released_at = list(_RELEASED_AT_RE.finditer(tag_message))
+    trimmed_message = tag_message.rstrip("\r\n")
+    if (not cm or len(released_at) != 1
+            or released_at[0].end() != len(trimmed_message)):
         return False
-    return cm.group(1) == tm.group(1)
+    changelog_date = cm.group(1)
+    tag_date = released_at[0].group(1)
+    try:
+        datetime.date.fromisoformat(changelog_date)
+        datetime.date.fromisoformat(tag_date)
+    except ValueError:
+        return False
+    return changelog_date == tag_date
 
 
 def changelog_section(changelog_text, version, policy="semver",
@@ -1025,8 +1041,12 @@ def _committed_changelog_text(repo_root, revision, changelog_path):
     except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
         return None, f"cannot resolve committed changelog: {exc}"
     records = [record for record in entry_probe.stdout.split(b"\0") if record]
-    if entry_probe.returncode != 0 or len(records) != 1:
-        return None, "committed changelog path is absent or ambiguous"
+    if entry_probe.returncode != 0:
+        return None, "committed changelog tree inspection failed"
+    if not records:
+        return None, "committed changelog path is absent"
+    if len(records) != 1:
+        return None, "committed changelog path is ambiguous"
     try:
         metadata, encoded_path = records[0].split(b"\t", 1)
         mode, object_type, oid = metadata.split(b" ", 2)
@@ -1235,7 +1255,8 @@ _CC_SUBJECT_RE = re.compile(r"^(?P<type>[a-zA-Z]+)(?:\((?P<scope>[^)]*)\))?(?P<b
 # a FOOTER -- at the start of its own line, never mid-sentence, so prose
 # that merely discusses a breaking change does not silently bump a major.
 _BREAKING_FOOTER_RE = re.compile(r"^BREAKING[ -]CHANGE:", re.MULTILINE)
-_CHANGELOG_FOOTER_RE = re.compile(r"^CHANGELOG:", re.MULTILINE)
+_CHANGELOG_FOOTER_RE = re.compile(
+    r"^CHANGELOG:[ \t]*(.*?)[ \t]*$", re.MULTILINE)
 
 # Which types bump, and to what. `refactor` bumps patch and IS harvested
 # (see the changelog-grouping rule); `docs`/`chore`/`test`/`ci` bump
@@ -1243,6 +1264,14 @@ _CHANGELOG_FOOTER_RE = re.compile(r"^CHANGELOG:", re.MULTILINE)
 _BUMPING_TYPES = {"feat": "minor", "fix": "patch", "perf": "patch",
                   "refactor": "patch"}
 _BUMP_RANK = {"none": 0, "patch": 1, "minor": 2, "major": 3}
+
+
+def _terminal_footer_text(body):
+    """Return only the final commit-message paragraph eligible as footers."""
+    if not isinstance(body, str):
+        return ""
+    paragraphs = re.split(r"(?:\r?\n)[ \t]*(?:\r?\n)+", body.rstrip())
+    return paragraphs[-1] if paragraphs else ""
 
 
 def row_assertions(row):
@@ -1458,12 +1487,19 @@ def classify_commit(subject, body=""):
         subject = ""
     if not isinstance(body, str):
         body = ""
+    footer_text = _terminal_footer_text(body)
+    changelog_matches = list(_CHANGELOG_FOOTER_RE.finditer(footer_text))
+    changelog = (changelog_matches[0].group(1).strip()
+                 if len(changelog_matches) == 1 else "")
+    has_changelog_footer = bool(changelog)
     match = _CC_SUBJECT_RE.match(subject)
     if match is None:
         return {"type": "", "scope": "", "breaking": False, "bump": "none",
-                "has_changelog_footer": bool(_CHANGELOG_FOOTER_RE.search(body))}
+                "has_changelog_footer": has_changelog_footer,
+                "changelog": changelog}
     ctype = match.group("type").lower()
-    breaking = bool(match.group("bang")) or bool(_BREAKING_FOOTER_RE.search(body))
+    breaking = bool(match.group("bang")) or bool(
+        _BREAKING_FOOTER_RE.search(footer_text))
     if breaking:
         bump = "major"
     else:
@@ -1473,7 +1509,8 @@ def classify_commit(subject, body=""):
         "scope": match.group("scope") or "",
         "breaking": breaking,
         "bump": bump,
-        "has_changelog_footer": bool(_CHANGELOG_FOOTER_RE.search(body)),
+        "has_changelog_footer": has_changelog_footer,
+        "changelog": changelog,
     }
 
 
@@ -1515,7 +1552,7 @@ def classify_window(commits, reconciliations=None, published_shas=None):
         verdict["subject"] = str(entry.get("subject", ""))
         sha = verdict["sha"]
         reconciled = (
-            re.fullmatch(r"[0-9a-f]{40}", sha) is not None
+            re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", sha) is not None
             and not verdict["has_changelog_footer"]
             and sha in published_shas
             and isinstance(reconciliations.get(sha), str)
@@ -1524,7 +1561,8 @@ def classify_window(commits, reconciliations=None, published_shas=None):
             and "\r" not in reconciliations[sha]
         )
         verdict["footer_reconciled"] = reconciled
-        verdict["changelog"] = reconciliations[sha].strip() if reconciled else ""
+        if reconciled:
+            verdict["changelog"] = reconciliations[sha].strip()
         rows.append(verdict)
     bump = "none"
     for row in rows:
@@ -1587,10 +1625,12 @@ def parse_changelog_reconciliations(text, target):
                     f"entry {index} field {key!r} must be a non-empty "
                     "single-line string of at most 4096 characters")
             values[key] = value
-        if re.fullmatch(r"[A-Za-z0-9._-]+", values["target"]) is None:
+        if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*",
+                        values["target"]) is None:
             raise ChangelogReconciliationError(
                 f"entry {index} target is not a valid release target name")
-        if re.fullmatch(r"[0-9a-f]{40}", values["commit_sha"]) is None:
+        if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})",
+                        values["commit_sha"]) is None:
             raise ChangelogReconciliationError(
                 f"entry {index} commit_sha must be a full lowercase Git SHA")
         identity = (values["target"], values["commit_sha"])
@@ -1605,25 +1645,28 @@ def parse_changelog_reconciliations(text, target):
 
 
 def parse_window_log(text):
-    """`git log --pretty=format:%H%n%s%n%b%n----` output -> the
+    """`git log --format=%H%x00%s%x00%b%x00` output -> the
     `[{sha, subject, body}]` shape `classify_window` consumes.
 
-    The separator is the one the release skill already prescribes, so the
-    prose and this parser cannot drift apart into two different readings
-    of the same command's output.
+    Git commit messages cannot contain NUL, so the three-field framing cannot
+    be forged by a subject or body line. A printable separator is unsafe here:
+    a body can contain any such line and silently turn a breaking footer into
+    a phantom record.
     """
     if not isinstance(text, str):
-        return []
+        return None
+    fields = text.split("\0")
+    if fields and not fields[-1].strip():
+        fields.pop()
+    if not fields or len(fields) % 3:
+        return None
     entries = []
-    for chunk in text.split("\n----"):
-        lines = [ln for ln in chunk.split("\n")]
-        while lines and not lines[0].strip():
-            lines.pop(0)
-        if not lines or not lines[0].strip():
-            continue
-        sha = lines[0].strip()
-        subject = lines[1] if len(lines) > 1 else ""
-        body = "\n".join(lines[2:])
+    for index in range(0, len(fields), 3):
+        sha = fields[index].strip()
+        if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", sha) is None:
+            return None
+        subject = fields[index + 1]
+        body = fields[index + 2]
         entries.append({"sha": sha, "subject": subject, "body": body})
     return entries
 
@@ -1863,7 +1906,7 @@ def _resolve_posix_shell():
 
 _OPEN_RE = re.compile(r"<!--\s*release-targets\s*-->")
 _CLOSE_RE = re.compile(r"<!--\s*/release-targets\s*-->")
-_HEADER_RE = re.compile(r"^\[([A-Za-z0-9._-]+)\]$")
+_HEADER_RE = re.compile(r"^\[([A-Za-z0-9][A-Za-z0-9._-]*)\]$")
 
 # A key not in _LIST_KEYS is scalar: exactly one value per target block, a
 # second occurrence of the same key within one block is a DuplicateKeyError.
@@ -1978,6 +2021,22 @@ def _finish_row(row):
             f"target {row['target']!r} is missing required key(s): "
             + ", ".join(missing)
         )
+    prefix = row["prefix"]
+    forbidden = " ~^:?*[\\"
+    unsafe_prefix = (
+        prefix.startswith(("-", "/", ".", "refs/"))
+        or prefix.endswith(("/", "."))
+        or ".." in prefix
+        or "@{" in prefix
+        or "//" in prefix
+        or any(ord(char) < 32 or ord(char) == 127 or char in forbidden
+               for char in prefix)
+        or any(not part or part.startswith(".") or part.endswith(".lock")
+               for part in prefix.split("/"))
+    )
+    if unsafe_prefix:
+        raise MalformedBlockError(
+            f"target {row['target']!r} prefix is not a safe Git tag prefix")
     policy = row["version_policy"]
     initial_version = row["initial_version"]
     if policy not in ("semver", "numeric-sequence"):
@@ -1993,6 +2052,21 @@ def _finish_row(row):
         raise MalformedBlockError(
             f"target {row['target']!r} numeric-sequence policy requires an "
             "initial-version of two or more canonical dotted numeric components")
+    writable_surfaces = [row["changelog"], row["provenance_manifest"]]
+    for field in ("manifest", "generated_manifest", "artifacts"):
+        writable_surfaces.extend(row[field])
+    if any(_normalised_release_path(path) in (None, ".")
+           for path in writable_surfaces if path is not None):
+        raise MalformedBlockError(
+            f"target {row['target']!r} declares a writable release surface "
+            "outside the repository or at its root")
+    payload_surfaces = [row["payload"], *row["payload_exclude"]]
+    if any(not isinstance(path, str)
+           or any(ord(char) < 32 or ord(char) == 127 for char in path)
+           for path in payload_surfaces):
+        raise MalformedBlockError(
+            f"target {row['target']!r} declares a payload path containing "
+            "a control byte")
     build_declared = row["release_build"] is not None
     assets_declared = bool(row["release_assets"])
     if build_declared != assets_declared:
@@ -2034,7 +2108,9 @@ def _normalised_release_path(value):
     """
     if not isinstance(value, str):
         return None
-    if value != value.strip() or any(char.isspace() for char in value):
+    if (value != value.strip()
+            or any(char.isspace() or ord(char) < 32 or ord(char) == 127
+                   for char in value)):
         return None
     raw = value.replace("\\", "/")
     if (not raw or raw.startswith(('/', ':'))
@@ -2115,7 +2191,7 @@ def governance_scratch_exclusions(row):
     return [path for path in _GOVERNANCE_SCRATCH_PATHS if not overlaps(path)]
 
 
-def release_tree_status(row, project_root):
+def release_tree_status(row, project_root, nul=False):
     """Run the target-aware repository-wide clean-tree probe.
 
     Bounded with `timeout=30`, matching every other internal Git-probe call
@@ -2132,16 +2208,50 @@ def release_tree_status(row, project_root):
         f":(exclude,top){path}"
         for path in governance_scratch_exclusions(row)
     ]
-    args = [git_executable(), "status", "--porcelain", "--", ":/",
+    args = [git_executable(), "status", "--porcelain", *(["-z"] if nul else []),
+            "--", ":/",
             *scratch_pathspecs]
     try:
-        return subprocess.run(
-            args, capture_output=True, text=True, cwd=project_root,
+        status_probe = subprocess.run(
+            args, capture_output=True, text=not nul, cwd=project_root,
             timeout=30, env=_sanitized_git_environment())
+        if status_probe.returncode != 0:
+            return status_probe
+        flags_probe = subprocess.run(
+            [git_executable(), "ls-files", "-v", "-z", "--", ":/",
+             *scratch_pathspecs],
+            capture_output=True, cwd=project_root, timeout=30,
+            env=_sanitized_git_environment())
+        if flags_probe.returncode != 0:
+            return subprocess.CompletedProcess(
+                args, flags_probe.returncode,
+                b"" if nul else "",
+                (flags_probe.stderr if nul else
+                 flags_probe.stderr.decode("utf-8", errors="replace")))
+        hidden = []
+        for record in flags_probe.stdout.split(b"\0"):
+            if not record:
+                continue
+            marker = record[:1]
+            if marker == b"S" or marker.islower():
+                try:
+                    rel = record[2:].decode("utf-8")
+                except UnicodeDecodeError:
+                    rel = "<non-UTF-8-path>"
+                hidden.append(f"!! hidden-index-state {rel}")
+        if hidden:
+            if nul:
+                extra = b"\0".join(
+                    line.encode("utf-8") for line in hidden) + b"\0"
+                status_probe.stdout += extra
+            else:
+                status_probe.stdout += "".join(line + "\n" for line in hidden)
+        return status_probe
     except subprocess.TimeoutExpired:
         return subprocess.CompletedProcess(
-            args, 1, "",
-            "git status probe timed out after 30 seconds")
+            args, 1, b"" if nul else "",
+            (b"git status probe timed out after 30 seconds" if nul else
+             "git status probe timed out after 30 seconds"))
 
 
 def parse_release_targets(text):
@@ -2279,6 +2389,11 @@ def parse_release_targets(text):
                 "build invocation")
 
         if key in _LIST_KEYS:
+            if key != "pre-tag" and "," in value:
+                raise MalformedBlockError(
+                    f"list-valued key {key!r} in target "
+                    f"{row['target']!r} cannot contain a literal comma; "
+                    "comma is the declared show-row field separator")
             row[field].append(value)
             continue
 
@@ -2302,6 +2417,23 @@ def parse_release_targets(text):
     if row is not None:
         _finish_row(row)
         rows.append(row)
+
+    for index, declared in enumerate(rows):
+        prefix = declared["prefix"]
+        for other in rows[:index]:
+            other_prefix = other["prefix"]
+            if (prefix.startswith(other_prefix)
+                    or other_prefix.startswith(prefix)):
+                raise MalformedBlockError(
+                    f"targets {other['target']!r} and {declared['target']!r} "
+                    f"declare overlapping tag prefixes {other_prefix!r} "
+                    f"and {prefix!r}")
+    latest_targets = [declared["target"] for declared in rows
+                      if declared["latest_eligible"]]
+    if len(latest_targets) > 1:
+        raise MalformedBlockError(
+            "latest-eligible may be true for at most one release target; "
+            "declared by " + ", ".join(repr(name) for name in latest_targets))
 
     return rows
 
@@ -2345,6 +2477,9 @@ def load_targets(path):
     except OSError as exc:
         raise UnreadableTargetsFileError(
             f"could not read release-targets file {path!r}: {exc}") from exc
+    except UnicodeError as exc:
+        raise UnreadableTargetsFileError(
+            f"release-targets file {path!r} is not UTF-8: {exc}") from exc
     try:
         return parse_release_targets(text)
     except AbsentBlockError as exc:
@@ -2625,7 +2760,8 @@ def _load_declared_changelog_reconciliations(
             "changelog-reconciliations must be one regular file committed on "
             "the fetched default branch")
     match = re.fullmatch(
-        rb"(100644|100755) blob ([0-9a-f]{40})\t(.+)", entries[0])
+        rb"(100644|100755) blob ([0-9a-f]{40}|[0-9a-f]{64})\t(.+)",
+        entries[0])
     if match is None:
         raise ChangelogReconciliationError(
             "changelog-reconciliations must be a committed regular blob")
@@ -2787,7 +2923,7 @@ def main(argv):
                                   version comparison (run 12).
       classify-window [<target> <default-branch>]
                                   stdin = `git log $WINDOW --pretty=format:
-                                  %H%n%s%n%b%n---- -- $PAYLOAD` -> prints the
+                                  %H%x00%s%x00%b%x00 -- $PAYLOAD` -> prints the
                                   derived bump, then accepted `[RECONCILED]`
                                   rows and one
                                   `[NEEDS-TRIAGE] <sha> <subject>` line per
@@ -2901,11 +3037,20 @@ def main(argv):
                                   `classify-window` ancestry proof owns that.
       show-row <target> [--field NAME]
                                   prints every field the row declares, one
-                                  `name: value` line each (multi-valued
-                                  fields comma-separated), or just NAME's raw
+                                  shell-quoted `NAME=value` line each
+                                  (multi-valued fields comma-separated), or
+                                  just NAME's raw
                                   value with `--field`. Reads via
                                   `default_targets_path()` only, no
                                   `--targets-file` override.
+      list-field <target> <field> prints one exact item per line for a
+                                  declared multi-valued field. The accepted
+                                  field names are manifest,
+                                  generated-manifest, artifacts, pre-tag,
+                                  payload-exclude, and release-assets. This
+                                  is the argument-preserving interface for
+                                  values such as shell commands containing
+                                  commas.
       payload-pathspec <target>  prints the row's `payload`, minus its
                                   `payload-exclude` entries, as verbatim git
                                   pathspec arguments (`:(exclude)` forms
@@ -2924,11 +3069,11 @@ def main(argv):
                                   failure.
 
     `--targets-file PATH` overrides `default_targets_path()` for `tag-prefix`
-    and `list-targets` only; `show-row`, `payload-pathspec`, and
+    and `list-targets` only; `show-row`, `list-field`, `payload-pathspec`, and
     `clean-tree-status` always resolve the declared file through
     `default_targets_path()` with no override, and every remaining subcommand
     needs no declared file at all. `tag-prefix`, `list-targets`, `show-row`,
-    `payload-pathspec`, and `clean-tree-status` all exit 3 when the declared
+    `list-field`, `payload-pathspec`, and `clean-tree-status` all exit 3 when the declared
     file is genuinely absent and 4 for every other declared-file error
     (HIGH-1, `_targets_error_exit_code`); every other subcommand
     prints a value/label and exits 0, or writes a short cause to stderr and
@@ -2937,7 +3082,7 @@ def main(argv):
     code."""
     if not argv:
         sys.stderr.write(
-            "usage: _releaselib.py {tag-prefix|list-targets|show-row|"
+            "usage: _releaselib.py {tag-prefix|list-targets|show-row|list-field|"
             "payload-pathspec|clean-tree-status|last-tag|last-tag-for-policy|"
             "verify-tag-ancestor|notes-match|"
             "changelog-section|dates-match|semver-greater|version-greater|"
@@ -2980,7 +3125,7 @@ def main(argv):
         print(row["prefix"])
         return 0
 
-    if cmd in ("show-row", "payload-pathspec"):
+    if cmd in ("show-row", "payload-pathspec", "list-field"):
         # Blind-exercise HIGH (run 14). The lane's own rule is that the
         # declared file must be read "through the same tested grammar", not
         # "by-eye scan of the delimiter block" -- but only `prefix` and the
@@ -2998,7 +3143,15 @@ def main(argv):
         # window for a row that declares one. This prints the pathspec
         # arguments to pass verbatim, `:(exclude)` forms included.
         field = None
-        if "--field" in rest:
+        list_field = None
+        if cmd == "list-field":
+            if len(rest) != 2:
+                sys.stderr.write(
+                    "list-field requires exactly <target> <field>\n")
+                return 2
+            list_field = rest[1]
+            rest = rest[:1]
+        elif "--field" in rest:
             idx = rest.index("--field")
             if idx + 1 >= len(rest):
                 sys.stderr.write("--field requires a value\n")
@@ -3029,6 +3182,23 @@ def main(argv):
             # The release skill loads these records into quoted positional
             # parameters; shell words cannot represent this boundary safely.
             print("\n".join(parts))
+            return 0
+
+        if cmd == "list-field":
+            list_fields = {
+                "manifest": "manifest",
+                "generated-manifest": "generated_manifest",
+                "artifacts": "artifacts",
+                "pre-tag": "pre_tag",
+                "payload-exclude": "payload_exclude",
+                "release-assets": "release_assets",
+            }
+            row_field = list_fields.get(list_field)
+            if row_field is None:
+                sys.stderr.write(
+                    f"unknown list-valued release field: {list_field}\n")
+                return 2
+            print("\n".join(str(item) for item in row.get(row_field, [])))
             return 0
 
         # Emitted as SHELL-QUOTED `NAME='value'` pairs, and named for the
@@ -3067,12 +3237,13 @@ def main(argv):
                   ("LATEST_ELIGIBLE", "latest_eligible"),
                   ("CHANGELOG_RECONCILIATIONS", "changelog_reconciliations"),
                   ("DISPLAY_NAME", "display_name")]
-        query_fields = fields + [
+        fields += [
             ("VERSION_POLICY", "version_policy"),
             ("INITIAL_VERSION", "initial_version"),
             ("RELEASE_BUILD", "release_build"),
             ("RELEASE_ASSETS", "release_assets"),
         ]
+        query_fields = fields
 
         def _flatten(value):
             if isinstance(value, (list, tuple)):
@@ -3201,10 +3372,13 @@ def main(argv):
                 notes_text = fh.read()
         except OSError:
             notes_text = ""
+        except UnicodeError:
+            sys.stderr.write("notes-match: notes file is not UTF-8\n")
+            return 4
         return 0 if notes_heading_matches(
             notes_text, tag, policy, initial) else 1
 
-    if cmd == "changelog-section" and len(rest) in (4, 6):
+    if cmd == "changelog-section" and len(rest) in (4, 6, 7):
         # Mechanical reconstruction of Phase 1's composed section, for
         # `resume_publish` -- see `changelog_section`'s docstring. Exit 0
         # with the section on stdout - 1 the changelog has no heading for
@@ -3215,7 +3389,11 @@ def main(argv):
         # current HEAD move or dirty/deleted working file cannot change the
         # notes selected for an already-composed tag.
         repo_root, revision, changelog_path, version = rest[:4]
-        policy, initial = (rest[4], rest[5] or None) if len(rest) == 6 else (
+        allow_absent_path = len(rest) == 7 and rest[6] == "--allow-absent-path"
+        if len(rest) == 7 and not allow_absent_path:
+            sys.stderr.write("changelog-section: invalid optional flag\n")
+            return 2
+        policy, initial = (rest[4], rest[5] or None) if len(rest) >= 6 else (
             "semver", None)
         if not _policy_declaration_valid(policy, initial):
             sys.stderr.write(
@@ -3224,6 +3402,12 @@ def main(argv):
         changelog_text, source_error = _committed_changelog_text(
             repo_root, revision, changelog_path)
         if source_error is not None:
+            if (allow_absent_path
+                    and source_error == "committed changelog path is absent"):
+                sys.stderr.write(
+                    f"changelog-section: no committed {changelog_path!r} "
+                    "exists at the exact revision\n")
+                return 1
             sys.stderr.write(
                 f"changelog-section: cannot read committed "
                 f"{changelog_path!r}: {source_error}\n")
@@ -3313,7 +3497,7 @@ def main(argv):
         return 1 if mismatched else 0
 
     if cmd == "classify-window" and len(rest) in (0, 2):
-        # stdin = `git log $WINDOW --pretty=format:%H%n%s%n%b%n---- --
+        # stdin = `git log $WINDOW --format=%H%x00%s%x00%b%x00 --
         # $PAYLOAD`. Prints the derived bump on the first line, then one
         # `[NEEDS-TRIAGE] <short-sha> <subject>` line per BUMPING commit
         # with no CHANGELOG: footer -- the exact report shape Phase 1
@@ -3327,7 +3511,17 @@ def main(argv):
         # skill keeps the BLOCK. A helper returning proceed/stop would put
         # a governance decision inside a library, which is the wrong side
         # of ADR-0010's cooperative-agent line.
-        commits = parse_window_log(sys.stdin.read())
+        try:
+            window_text = sys.stdin.read()
+        except UnicodeDecodeError:
+            sys.stderr.write(
+                "classify-window: git log input is not UTF-8\n")
+            return 4
+        commits = parse_window_log(window_text)
+        if commits is None:
+            sys.stderr.write(
+                "classify-window: malformed NUL-framed git log input\n")
+            return 4
         reconciliations = {}
         published_shas = set()
         if rest:
@@ -3377,7 +3571,8 @@ def main(argv):
                 published_commit = published_probe.stdout.strip()
                 if (published_probe.returncode != 0
                         or re.fullmatch(
-                            r"[0-9a-f]{40}", published_commit) is None):
+                            r"(?:[0-9a-f]{40}|[0-9a-f]{64})",
+                            published_commit) is None):
                     sys.stderr.write(
                         f"classify-window: could not resolve exact published "
                         f"ref {published_ref!r}\n")
@@ -3421,6 +3616,17 @@ def main(argv):
             reconciliations=reconciliations,
             published_shas=published_shas)
         print(window["bump"])
+        for row in window["commits"]:
+            print("[CLASSIFIED] " + json.dumps({
+                "sha": row["sha"],
+                "subject": row["subject"],
+                "type": row["type"],
+                "scope": row["scope"],
+                "breaking": row["breaking"],
+                "bump": row["bump"],
+                "changelog": row["changelog"],
+                "footer_reconciled": row["footer_reconciled"],
+            }, sort_keys=True, separators=(",", ":")))
         for row in window["commits"]:
             if row["footer_reconciled"]:
                 print(
@@ -3562,62 +3768,73 @@ def main(argv):
             return 9
 
         def _tree_state():
-            """(paths -> content digest, failure). Content, not just the
-            porcelain LINE (HIGH, adversarial review run 10).
-
-            A porcelain-line set alone cannot see a command that mutates a
-            file which was ALREADY modified: the line is byte-identical
-            (` M CHANGELOG.md` before and after), so the change falls out
-            of the set difference and the command exits 0. That blind spot
-            covered exactly `$CHANGELOG` and `$MANIFEST` -- the two files
-            Phase 1 touches immediately before this step, and the two an
-            injected line would actually damage, since both ship: one into
-            the tag message and the Release notes, the other as the
-            version the tag claims. Demonstrated with a changed sha256 and
-            an `INJECTED` line surviving to exit 0.
-
-            Digesting every path git reports as changed closes it. Paths
-            git lists but that do not exist (a deletion, or a rename's old
-            side) get a sentinel rather than being skipped, so a delete is
-            a state change like any other.
+            """Snapshot tracked/untracked paths and index state without
+            following links. Hash content so edits to already-dirty files
+            and skip-worktree paths remain visible.
             """
-            # `git_executable()`, not a bare "git": Pi-reachable modules
-            # must resolve git through the trusted-path seam, because a
-            # host that has no `git` on PATH (or a PATH an attacker can
-            # prepend to) would otherwise silently run the wrong binary or
-            # none at all. Enforced by test_pi_package's
-            # `test_shared_python_contains_no_direct_bare_git_subprocess`.
-            # `--` plus the same `:/` + `,top`-exclusion pathspec the
-            # release skill's own Pre-flight and step-7 clean-tree checks
-            # are required to spell (#584 MEDIUM-1): the hooks append to
-            # `gate-events.log` on essentially every command, INCLUDING the
-            # commands this probe's own caller (`run-pre-tag`) runs, so a
-            # mid-window append between the baseline snapshot and a
-            # post-command probe put a blameless audit log in the changed
-            # set -- and exit 6's remedy tells the operator to permanently
-            # delete a release gate for it. `.markers/` is exempted for the
-            # same reason the skill exempts it: a per-machine confirmation
-            # marker minted by this same run is not a release surface.
-            probe = release_tree_status(row, project_root)
+            # Exclude only local governance scratch, not release payloads.
+            scratch_pathspecs = [
+                f":(exclude,top){path}"
+                for path in governance_scratch_exclusions(row)
+            ]
+            git = git_executable()
+            env = _sanitized_git_environment()
+            try:
+                probe = subprocess.run(
+                    [git, "ls-files", "-z", "--cached",
+                     "--others", "--exclude-standard", "--", ":/",
+                     *scratch_pathspecs],
+                    cwd=project_root, capture_output=True, timeout=30,
+                    env=env)
+                index_probe = subprocess.run(
+                    [git, "ls-files", "-v", "--stage", "-z", "--", ":/",
+                     *scratch_pathspecs],
+                    cwd=project_root, capture_output=True, timeout=30,
+                    env=env)
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                return None, f"git file inventory failed: {exc}"
             if probe.returncode != 0:
-                return None, (probe.stderr.strip() or "git status failed")
-            state = {}
-            for line in probe.stdout.splitlines():
-                # Porcelain v1: XY then a space then the path. A rename
-                # carries `old -> new`; take the destination, which is the
-                # path that exists on disk.
-                rel = line[3:].strip().strip('"')
-                if " -> " in rel:
-                    rel = rel.split(" -> ", 1)[1].strip().strip('"')
-                if not rel:
+                stderr = probe.stderr.decode("utf-8", errors="replace").strip()
+                return None, (stderr or "git file inventory failed")
+            if index_probe.returncode != 0:
+                stderr = index_probe.stderr.decode("utf-8", errors="replace").strip()
+                return None, (stderr or "git index inspection failed")
+            index_state = {}
+            for record in index_probe.stdout.split(b"\0"):
+                if not record:
                     continue
+                header, separator, raw_rel = record.partition(b"\t")
+                if not separator:
+                    return None, "git index inspection returned a malformed record"
+                try:
+                    rel = raw_rel.decode("utf-8")
+                except UnicodeDecodeError:
+                    return None, "git index inspection returned a non-UTF-8 path"
+                index_state.setdefault(rel, []).append(header)
+            state = {}
+            for raw_rel in probe.stdout.split(b"\0"):
+                if not raw_rel:
+                    continue
+                try:
+                    rel = raw_rel.decode("utf-8")
+                except UnicodeDecodeError:
+                    return None, "git file inventory returned a non-UTF-8 path"
                 absolute = os.path.join(project_root, *rel.split("/"))
                 try:
-                    with open(absolute, "rb") as fh:
-                        digest = hashlib.sha256(fh.read()).hexdigest()
+                    mode = os.lstat(absolute).st_mode
+                    if stat.S_ISLNK(mode):
+                        digest = ("link", os.readlink(absolute))
+                    elif stat.S_ISREG(mode):
+                        hasher = hashlib.sha256()
+                        with open(absolute, "rb") as fh:
+                            for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+                                hasher.update(chunk)
+                        digest = ("file", hasher.hexdigest())
+                    else:
+                        digest = ("other", stat.S_IFMT(mode))
                 except OSError:
-                    digest = "<absent-or-unreadable>"
-                state[rel] = digest
+                    digest = ("absent-or-unreadable",)
+                state[rel] = (digest, tuple(index_state.get(rel, ())))
             return state, None
 
         # The assertion is "this command changed NOTHING NEW", not "the
@@ -3647,7 +3864,7 @@ def main(argv):
                 f"run-pre-tag: the tree-state PROBE itself failed: {failure}\n"
                 "  This is not a verdict about any declared command -- no "
                 "command has run yet, so nothing has been checked or "
-                "mutated. Investigate why `git status` failed in this tree "
+                    "mutated. Investigate why Git could not inventory this tree "
                 "(not a git repository, no readable .git, etc.) before "
                 "re-running.\n")
             return 8
@@ -3815,10 +4032,12 @@ def main(argv):
                 return 2
         elif policy == "numeric-sequence":
             candidate_key = numeric_sequence_key(candidate, initial)
-            floor_key = numeric_sequence_key(floor, initial)
             initial_key = numeric_sequence_key(initial, initial)
-            if (candidate_key is None or floor_key is None
-                    or initial_key is None or candidate_key < initial_key):
+            floor_key = (None if floor == NONE_SENTINEL
+                         else numeric_sequence_key(floor, initial))
+            if (candidate_key is None or initial_key is None
+                    or (floor != NONE_SENTINEL and floor_key is None)
+                    or candidate_key < initial_key):
                 sys.stderr.write(
                     "version-greater: invalid numeric-sequence comparison\n")
                 return 2
@@ -3917,11 +4136,21 @@ def main(argv):
                     texts.append(fh.read())
             except OSError:
                 texts.append("")
+            except UnicodeError:
+                sys.stderr.write(
+                    f"dates-match: input file {path!r} is not UTF-8\n")
+                return 4
         return 0 if release_dates_consistent(
             texts[0], texts[1], policy, initial) else 1
 
     if cmd == "classify" and len(rest) == 6:
-        as_bool = lambda s: str(s).lower() == "true"
+        if rest[0] not in ("true", "false") or rest[5] not in (
+                "true", "false"):
+            sys.stderr.write(
+                "classify: boolean evidence must be exact lowercase "
+                "true or false\n")
+            return 2
+        as_bool = lambda s: s == "true"
         print(classify_publish_state(
             tag_exists=as_bool(rest[0]), tag_sha=rest[1], head_sha=rest[2],
             tag_version=rest[3], manifest_version=rest[4],
@@ -3991,7 +4220,8 @@ if __name__ == "__main__":
     # the carriage return, corrupting pathspecs, target names, and asset paths.
     # Force the wire format to LF once at the executable boundary.  Imported
     # library calls retain their caller-owned stream configuration.
-    reconfigure = getattr(sys.stdout, "reconfigure", None)
-    if callable(reconfigure):
-        reconfigure(newline="\n")
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8", errors="strict", newline="\n")
     sys.exit(main(sys.argv[1:]))

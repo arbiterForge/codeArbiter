@@ -214,7 +214,7 @@ class ReleaseWorkflowFollowupTest(unittest.TestCase):
                 ready = self.run_definition(c, "release_window_state", env=selected, args=c.pathspecs)
                 self.assertEqual(ready.returncode, 0, ready.stderr)
                 self.assertEqual(ready.stdout.strip(), "ready")
-                log = c.git("log", "HEAD", "--pretty=format:%H%n%s%n%b%n----", "--",
+                log = c.git("log", "HEAD", "--format=%H%x00%s%x00%b%x00", "--",
                             *c.pathspecs).stdout
                 classified = c.helper("classify-window", "app", "main", input=log)
                 self.assertEqual(classified.returncode, 0, classified.stderr)
@@ -227,7 +227,7 @@ class ReleaseWorkflowFollowupTest(unittest.TestCase):
         ready = self.run_definition(c, "release_window_state", env={"EFFECTIVE_WINDOW": "HEAD"},
                                     args=c.pathspecs)
         self.assertEqual(ready.stdout.strip(), "ready")
-        log = c.git("log", "HEAD", "--pretty=format:%H%n%s%n%b%n----", "--", *c.pathspecs).stdout
+        log = c.git("log", "HEAD", "--format=%H%x00%s%x00%b%x00", "--", *c.pathspecs).stdout
         before = c.fingerprint()
         verdict = c.helper("classify-window", "app", "main", input=log)
         self.assertEqual(verdict.returncode, 1, verdict.stderr)
