@@ -5331,7 +5331,8 @@ class CoreCLITest(unittest.TestCase):
             fh.write('{"version": "1.0.0"}\n')
         with open(os.path.join(root, "CHANGELOG.md"), "w") as fh:
             fh.write("# Changelog\n")
-        with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                  "w", encoding="utf-8") as fh:
             fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
                      "changelog: CHANGELOG.md\npayload: .\n"
                      + "".join(f"pre-tag: {c}\n" for c in commands)
@@ -5502,7 +5503,7 @@ class CoreCLITest(unittest.TestCase):
                 os.path.join(root, "CHANGELOG-é.md"))
             targets_path = os.path.join(
                 root, ".codearbiter", "release-targets.md")
-            with open(targets_path, encoding="cp1252") as handle:
+            with open(targets_path, encoding="utf-8") as handle:
                 targets = handle.read()
             with open(targets_path, "w", encoding="utf-8", newline="\n") as handle:
                 handle.write(targets.replace(
