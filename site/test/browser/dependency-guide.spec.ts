@@ -77,6 +77,20 @@ for (const forcedColors of ['none', 'active'] as const) {
   });
 }
 
+test('every shared reader map retains contrast and readable labels in forced colors', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.emulateMedia({ forcedColors: 'active' });
+  for (const slug of ['opt-in-a-repo', 'feature-lane', 'autonomous-sprints', 'review-and-ship', 'investigate-and-fix', 'adding-a-dependency']) {
+    await page.goto(`/guides/${slug}/`);
+    const map = page.locator('[data-reader-journey]');
+    await expect(map.locator('ol > li')).toHaveCount(4);
+    await expect(map.getByText('What you get', { exact: true })).toHaveCount(4);
+    await expect(map.getByText('Before moving on', { exact: true })).toHaveCount(4);
+    const result = await new AxeBuilder({ page }).include('[data-reader-journey]').analyze();
+    expect(result.violations, slug).toEqual([]);
+  }
+});
+
 test('capture the dependency guide with exact source identity and table geometry', async ({ page }) => {
   const directory = join(process.cwd(), '.astro', 'browser-evidence'); mkdirSync(directory, { recursive: true });
   const evidence: Record<string, unknown> = {
