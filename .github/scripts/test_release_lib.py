@@ -736,12 +736,12 @@ class SkillPortabilityTest(unittest.TestCase):
         self.assertIn("provenance-manifest", self.text)
         self.assertIn("$PROVENANCE_MANIFEST", self.text)
         self.assertNotIn(".github/published-tags.json", self.text)
-        # The absent-row-field skip must be documented explicitly in the
-        # report, not silent (A-3.5).
-        idx = self.text.index("Record the tag's provenance")
+        # The absent-row-field receipt skip must be documented explicitly in
+        # the report, not silent (A-3.5). Remote identity is checked anyway.
+        idx = self.text.index("Capture the tag's provenance")
         window = self.text[idx:idx + 1200]
-        self.assertIn("skips this step", window)
-        self.assertIn("say so explicitly in the report", window)
+        self.assertIn("skip only the receipt", self.text[idx:idx + 1900])
+        self.assertIn("say so explicitly in the report", self.text[idx:idx + 1900])
 
     # -- T-41d: hosted publication is mandatory; immutability prose conditional
 
@@ -9480,7 +9480,7 @@ _GOVERNANCE_RULES = {
     "MEDIUM (runs 5+7): manifest_version is parsed by the file's own format": (
         "FORMAT'S OWN parser rather than a line-grep",),
     "LOW (run 5): the round-trip check reads the raw object, not a reconstruction": (
-        'git cat-file tag "$RELEASE_TAG"',),
+        'git cat-file tag "$RELEASE_TAG" > <stored-file>',),
     # Run 6 (2026-07-31).
     "HIGH (runs 6+7): one base version, the max of tag and every manifest": (
         "one base, computed the same way in every case",
@@ -9679,6 +9679,70 @@ class GovernanceRuleCheckerTest(unittest.TestCase):
         self.assertEqual(
             sorted(_missing_governance_rules("")),
             sorted(_GOVERNANCE_RULES))
+
+
+class ReleaseProvenanceHandoffTest(unittest.TestCase):
+    def test_historical_receipt_recovery_does_not_require_current_head(self):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as handle:
+            skill = handle.read()
+        self.assertIn("Receipt-only closeout", skill.split("## Targets", 1)[0])
+        recovery = skill.split("### Receipt-only closeout", 1)[1].split(
+            "## Recovering from a bad release", 1)[0]
+        normalized = " ".join(recovery.split())
+        self.assertIn("historical released commit", normalized)
+        self.assertIn("does not run Phase 1 or Phase 2", normalized)
+        self.assertIn("never pushes the tag or creates another Release", normalized)
+
+    def test_phase3_reconstructs_tag_message_after_restart(self):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as handle:
+            skill = handle.read()
+        phase_three = skill.split("## Phase 3 — Publish", 1)[1].split(
+            "### Asset recovery", 1)[0]
+        self.assertIn('git cat-file tag "$RELEASE_TAG" > "$PUBLISH_TAG_FILE"', phase_three)
+        self.assertIn('dates-match "$PUBLISH_SECTION_FILE" "$PUBLISH_TAG_FILE"', phase_three)
+        self.assertIn('cmp -s "$PUBLISH_TAG_SECTION_FILE" "$PUBLISH_SECTION_FILE"', phase_three)
+        self.assertIn('git rev-parse "$RELEASE_TAG^{commit}"', phase_three)
+        self.assertIn('"$PUBLISH_TAG_COMMIT" = "$HOSTED_HEAD"', phase_three)
+
+    def test_already_published_requires_receipt_recovery(self):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as handle:
+            skill = handle.read()
+        phase_two = skill.split("### 2.11 Handle the remaining classification outcomes", 1)[1].split(
+            "## Phase 3", 1)[0]
+        self.assertIn("already_published", phase_two)
+        self.assertIn("Receipt-only closeout", phase_two)
+        self.assertNotIn("→ nothing to do", phase_two)
+
+    def test_remote_tag_object_must_match_the_pushed_local_tag(self):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as handle:
+            skill = handle.read()
+        phase_three = skill.split("## Phase 3 — Publish", 1)[1].split(
+            "### Asset recovery", 1)[0]
+        receipt_step = phase_three.split("5. **Capture the tag's provenance", 1)[1]
+        self.assertIn('git rev-parse "refs/tags/$RELEASE_TAG^{tag}"', phase_three)
+        self.assertIn("print its SHA to the hosted job log before the push", phase_three)
+        self.assertIn('TAG_OBJECT_SHA` to equal `LOCAL_TAG_OBJECT_SHA', receipt_step)
+        self.assertIn("for every row, including one without a provenance manifest", receipt_step)
+
+    def test_post_publication_receipt_requires_a_separate_merged_pr(self):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as handle:
+            skill = handle.read()
+        phase_three = skill.split("## Phase 3 — Publish", 1)[1].split(
+            "### Asset recovery", 1)[0]
+        receipt_step = phase_three.split("5. **Capture the tag's provenance", 1)[1]
+        self.assertIn("new non-default branch based on the fetched default branch", receipt_step)
+        self.assertIn("merge the receipt through a pull request", receipt_step)
+        self.assertIn("provenance closeout remains pending until that PR merges", receipt_step)
 
 
 class GovernanceSurvivalTest(unittest.TestCase):
@@ -11310,7 +11374,7 @@ test -z "$TAG_SHA"
         phase3 = self.skill[
             self.skill.index("## Phase 3") :
             self.skill.index("### Asset recovery for `resume_publish`")]
-        step5 = phase3[phase3.index("5. **Record the tag's provenance") :]
+        step5 = phase3[phase3.index("5. **Capture the tag's provenance") :]
         self.assertIn("REMOTE_TAG_REFS", step5)
         self.assertIn("peel-tag", step5)
         self.assertNotIn("git rev-parse ${TAG_PREFIX}", step5)
