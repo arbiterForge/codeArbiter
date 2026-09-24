@@ -1,0 +1,102 @@
+name: PR854 temperature documentation validation (temporary)
+on:
+  push:
+    branches: [codex/farm-readiness-canary-isolation]
+    paths: [.github/workflows/pr854-temperature-docs.yml]
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 473eee5b54aefddc5e677daaaa8225de2a64356a
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Correct one canonical table row and verify generated derivatives
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,sys,zipfile
+          root=pathlib.Path.cwd();out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-temperature-docs';out.mkdir()
+          base='473eee5b54aefddc5e677daaaa8225de2a64356a'
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==base
+          expected={
+              'core/surface/includes/farm.md':('c0ce5d723626c9701bc76e5d5e158cb31c0265ba','e67237f292b3375169a21338caad3f539784bd1e'),
+              'plugins/ca/includes/farm.md':('442b0ebe71107d96168af8ee3d840dc4cca3d1a4','63b77380c81931276c7f2460619433b2872e00a5'),
+              'plugins/ca-codex/includes/farm.md':('ffbd81ce9d731a59c9540420cfe50e4e6b170ada','f98b888cdc8af0868e9960243264abf065803e2c'),
+              'plugins/ca-pi/includes/farm.md':('325356027acac88577f2ad7f1695933c48734ff8','28bcbe972e1160188e9052bcd8cfbf334492489a'),
+          }
+          def oid(name):
+              b=(root/name).read_bytes();return hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+          for name,(before,after) in expected.items(): assert oid(name)==before,name
+          path=root/'core/surface/includes/farm.md';text=path.read_text()
+          old='| `FARM_TEMPERATURE` | `0` | Sampling temperature sent to the worker. Auto-bumped to `0.7` when `FARM_SAMPLES>1` and left at `0` (so samples diversify); set explicitly to override. |'
+          new='| `FARM_TEMPERATURE` | `0` (one sample); `0.7` (multiple, unset) | Sampling temperature sent to the worker. Defaults to `0` when `FARM_SAMPLES=1` and `0.7` when `FARM_SAMPLES>1`. Any explicit value, including `0`, overrides the automatic default. |'
+          assert text.count(old)==1
+          path.write_text(text.replace(old,new),encoding='utf-8',newline='\n')
+          subprocess.run([sys.executable,'tools/build-surface.py'],check=True)
+          assert set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())==set(expected)
+          for name,(before,after) in expected.items():
+              assert oid(name)==after,name
+              prior=subprocess.check_output(['git','show',base+':'+name],text=True)
+              assert (root/name).read_text()==prior.replace(old,new),name
+          commands=[[sys.executable,'tools/build-surface.py','--check'],[sys.executable,'.github/scripts/test_host_descriptors.py'],[sys.executable,'.github/scripts/check_docs_contract.py']]
+          commands += [[sys.executable,'.github/scripts/check-plugin-refs.py',host] for host in ['ca','ca-codex','ca-pi']]
+          results=[]
+          for i,args in enumerate(commands):
+              done=subprocess.run(args,capture_output=True,text=True,timeout=120,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+              name=f'{i:02d}-'+pathlib.Path(args[1]).stem+'.log';(out/name).write_text(done.stdout+done.stderr)
+              results.append({'command':args,'exit_code':done.returncode,'log':name})
+              (out/'tests.json').write_text(json.dumps(results,indent=2))
+              print(done.returncode,' '.join(args),flush=True)
+          for name,(before,after) in expected.items(): assert oid(name)==after,name
+          subprocess.run(['git','diff','--check'],check=True)
+          subprocess.run(['git','add','--',*sorted(expected)],check=True)
+          tree=subprocess.check_output(['git','write-tree'],text=True).strip()
+          files=[{'path':name,'mode':'100644','type':'blob','sha':after} for name,(before,after) in expected.items()]
+          (out/'manifest.json').write_text(json.dumps({'source_parent':base,'workflow_head':os.environ['GITHUB_SHA'],'tree':tree,'files':files,'all_commands_passed':all(r['exit_code']==0 for r in results)},indent=2))
+          (out/'candidate.diff').write_bytes(subprocess.check_output(['git','diff','--cached','--binary','--full-index']))
+          with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for row in files:z.write(root/row['path'],row['path'])
+          assert all(r['exit_code']==0 for r in results),'Inspect retained results; no passing claim or blob upload.'
+          PY
+      - name: Store only exact verified blob objects
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-temperature-docs';manifest=json.loads((out/'manifest.json').read_text())
+          assert manifest['all_commands_passed'] and manifest['workflow_head']==os.environ['GITHUB_SHA']
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
+          def api(method,path,data=None):
+              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=json.dumps(data).encode() if data is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response:return json.load(response)
+          assert api('GET','/git/ref/heads/codex/farm-readiness-canary-isolation')['object']['sha']==manifest['workflow_head']
+          for row in manifest['files']:
+              data=pathlib.Path(row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+              assert api('POST','/git/blobs',{'content':data.decode(),'encoding':'utf-8'})['sha']==row['sha']
+          (out/'uploaded-blobs.json').write_text(json.dumps({'tree_entries':manifest['files'],'branch_updated':False,'commit_created':False},indent=2))
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pr854-temperature-docs-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-temperature-docs/
+          if-no-files-found: error
+          retention-days: 3
