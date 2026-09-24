@@ -160,3 +160,20 @@ Verify peer geometry from computed browser styles at desktop, tablet and narrow
 widths, including expanded Academy lists and every selectable exhibit state.
 Check reading order, keyboard disclosure, no-script access, forced colors, print,
 and non-root links. Inspect actual captures, not only a green overflow test.
+
+
+## Task-oriented guide discovery
+
+The guide directory reads titles, descriptions, outcomes, levels and estimates from the same
+content collection that renders each guide. `scripts/guide-directory.ts` owns only task grouping
+and reading order. Add each new guide there; missing, duplicate and unclassified routes fail the
+build rather than silently disappearing. Retain section anchors when reorganizing the landing page.
+
+Filtering is a progressive enhancement over the complete static directory. It makes no request
+and persists no query or selection. Hidden results must leave keyboard navigation as well as the
+visual layout; clearing restores the full list and input focus. Printing restores all guides, even
+when the screen is filtered. Keep main site search distinct from this metadata-only finder.
+
+Reuse peer spacing, tokens and content-sized cards. Verify combined filters, empty results,
+client-navigation reattachment, no JavaScript, keyboard, print and non-root paths against rendered
+output. Card labels and estimates are guidance, not release or compatibility claims.

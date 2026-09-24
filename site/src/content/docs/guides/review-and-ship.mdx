@@ -1,0 +1,227 @@
+---
+title: Review and Ship a Change
+description: "Choose diff review or a persisted checkpoint, review an inbound pull request safely, and carry your own change through commit, PR, current checks and post-merge cleanup."
+journey:
+  level: Practitioner
+  time: "Follow your project's gates"
+  outcome: "A reviewed change with a commit, a pull request and an explicit handoff, or a read-only verdict on someone else's PR."
+  prerequisites:
+    - An initialized repository in a supported host
+    - A specific change or pull request to review
+    - Authenticated GitHub CLI for GitHub pull-request operations
+  proof: "You can identify the reviewed scope, current source identity, unresolved findings and the permission still needed before the next action."
+---
+
+import ReaderJourney from '../../../components/ReaderJourney.astro';
+
+A review answers what is wrong with a change. A commit records selected work. A pull request
+asks for that work to land. They have different outputs and approval boundaries.
+**Asking for a review does not authorize edits, posting a public comment, committing or merging.**
+
+Use this guide to review someone else's PR without adopting its code, or to finish your own
+change. It is not a requirement to run every review route before delivery. The PR lane already
+dispatches the reviewers its path matrix requires.
+
+<ReaderJourney
+  id="review-delivery-map"
+  title="Scope → verdict → commit → pull request"
+  boundary="For your own change. For an inbound PR, stop at the local verdict unless you explicitly ask to post a comment. Typed completion still requires the applicable installed-host authority."
+  steps={[
+    { actor: 'You choose the target', title: 'Confirm the scope',
+      artifact: 'The named working diff, path or inbound PR diff, with its current source identity.',
+      review: 'Check the repository and branch. A failed PR fetch must stop, not silently review a different diff.',
+      href: '/reference/commands/review/', linkLabel: 'Inspect review targets' },
+    { actor: 'codeArbiter reviews; you decide', title: 'Read the verdict',
+      artifact: 'One triaged finding list with severity, file location and remediation guidance.',
+      review: 'Resolve blocking findings on your change. A periodic checkpoint is a different, persisted report, not delivery sign-off.',
+      href: '/reference/commands/checkpoint/', linkLabel: 'Compare a saved checkpoint' },
+    { actor: 'You authorize persistence', title: 'Check the commit receipt',
+      artifact: 'A commit SHA, explicit changed-file list and fresh local verification results.',
+      review: 'Keep unrelated work out. A prose verdict or a rendered checkbox does not establish typed-plan acceptance.',
+      href: '/reference/commands/commit/', linkLabel: 'Inspect the commit gate' },
+    { actor: 'You retain merge authority', title: 'Inspect the PR handoff',
+      artifact: 'A PR URL, its current head, verification scope and any unresolved follow-ups.',
+      review: 'Opening is not merging. Require the applicable exact-head hosted checks and a separate merge decision.',
+      href: '/reference/commands/pr/', linkLabel: 'Inspect PR and cleanup modes' },
+  ]}
+/>
+
+## Choose the output you actually need
+
+| Your question | Route | What changes or remains |
+|---|---|---|
+| Is this working diff, path or inbound PR ready? | `review` | A local, in-memory verdict. The review itself does not modify files or check out another branch. |
+| What issues need attention across this repository? | `checkpoint` | A dated report under `.codearbiter/checkpoints/` and an override-count baseline in `.codearbiter/last-checkpoint`. Source code stays unchanged. |
+| Do we need a deeper, resumable codebase audit? | `tribunal` | A persisted run under `.codearbiter/reports/`. It estimates cost and waits for acknowledgement before dispatch. Issue filing and optional KPI submission require their own approvals. |
+| Can this selected work be recorded in Git? | `commit` | A selectively staged commit, after permission and the applicable verification gates. |
+| Can this branch be proposed for integration? | `pr` | Additional required review, then a PR and its handoff. It is not permission to merge. |
+
+A periodic checkpoint is not a promotion gate or sign-off. Its `last-checkpoint` value is an
+integer override-count baseline, not proof that the commit gate passed. It is also different from
+the execution checkpoints used to accept a batch of typed-plan work.
+
+For a pre-implementation security analysis, use [threat modeling](/reference/commands/threat-model/)
+rather than pretending a diff review covers a design that has not been built.
+
+## 1. Confirm the repository, branch and target
+
+In your native terminal, use these read-only checks:
+
+```sh
+git rev-parse --show-toplevel
+git branch --show-current
+git status --short
+git diff --stat
+git diff --cached --stat
+```
+
+The first two identify the checkout and branch. Status shows changed and untracked paths.
+The two diff summaries distinguish unstaged and staged changes. An empty summary does not prove
+there is no work: check both summaries and status. Confirm that your coding host has this same
+checkout open. Do not switch branches, reset files or discard unrelated work to resemble an example.
+
+For an inbound PR, provide its actual number or URL. The installed route requires authenticated
+`gh`; `gh auth status` checks that prerequisite. A missing CLI, authentication failure or unreadable
+PR is a stop. It must not fall back to your local diff under the PR's name.
+
+### Host entries
+
+Enter these in your coding host, not in the native shell. Replace `123` with the actual PR number.
+
+| Intent | Claude Code | Codex | Pi |
+|---|---|---|---|
+| Review the current diff | `/ca:review` | `$ca-review` | `/ca-review` |
+| Review an inbound PR | `/ca:review #123` | `$ca-review #123` | `/ca-review #123` |
+| Save a periodic sweep | `/ca:checkpoint` | `$ca-checkpoint` | `/ca-checkpoint` |
+| Commit selected work | `/ca:commit` | `$ca-commit` | `/ca-commit` |
+| Open a PR | `/ca:pr` | `$ca-pr` | `/ca-pr` |
+| Watch an existing PR | `/ca:pr --watch 123` | `$ca-pr --watch 123` | `/ca-pr --watch 123` |
+| Clean up after merge | `/ca:pr --cleanup` | `$ca-pr --cleanup` | `/ca-pr --cleanup` |
+
+Entry syntax does not establish equivalent host capability. For completed typed HTML work,
+[check the installed host's authority support](/guides/review-artifacts/#check-your-hosts-authority-capability)
+first. Current implementation has Codex-only production verification/review authority; Pi lacks
+the qualified prompt-approval seam. A successful ordinary diff review does not supply those missing
+capabilities, create an acceptance receipt, or make a draft executable.
+
+## 2. Read the verdict before requesting a fix
+
+The reviewer fleet is selected by changed paths. Findings are deduplicated and triaged before
+one read-only verdict is returned. For an inbound PR, the diff is fetched once for the review,
+so parallel reviewers do not accidentally inspect different revisions.
+
+Check that each material finding identifies a location, the problem, its consequence and a proposed
+correction. Security findings should name the applicable project control. Resolve numbered
+`[CONFIRM-NN]` questions with the actual decision owner rather than letting the agent guess.
+An out-of-scope `[NEEDS-TRIAGE]` item is a follow-up to evaluate, not an automatic scope expansion.
+
+For example, a saved-search export review might identify a newline-handling defect:
+
+```text
+Illustrative review excerpt, not captured execution:
+Target: saved-search CSV change
+Finding: a field containing a newline is emitted without CSV quoting.
+Consequence: one saved search becomes two records for the receiving application.
+Correction: add a regression for the newline field and use the agreed serializer.
+Decision: repair this defect within the export change; keep an unrelated UI request separate.
+```
+
+The useful review is specific enough to reproduce. “Improve robustness” alone is not an executable
+finding. After a correction, rerun the relevant proof and review the changed diff; the old verdict
+does not automatically cover new code. The [first-feature example](/guides/first-feature/) contains
+real local test results, separately labelled from its illustrative conversations.
+
+### Someone else's PR: stop here unless asked to post
+
+A local inbound-PR verdict is the deliverable. Do not check out, merge or execute the PR's code to
+complete this read-only route. If the author updates the PR after the review, identify the earlier
+scope and re-review the new diff before presenting the verdict as current.
+
+Posting is a separate, explicit instruction. Inspect the proposed comment before sending it;
+remove credentials, internal URLs and sensitive repository details. The review route can post a
+comment after confirmation, but does not issue GitHub **Approve** or **Request changes** decisions.
+Those carry different authority. A CRITICAL or HIGH finding on an inbound PR is reported, not a
+reason to modify or block unrelated local work.
+
+## 3. Commit your own change with fresh evidence
+
+Request the smallest correction through the appropriate change lane. For your own work,
+unresolved CRITICAL or HIGH findings block the PR path. Do not disable a gate to dispose of them.
+
+Before authorizing the commit, inspect the complete staged diff and exact file list. Tests, lint
+and secret scans come from `.codearbiter/tech-stack.md`; missing commands must be surfaced, not
+invented. Run the applicable impact-bounded local verification. Exhaustive repository and platform
+checks belong to the exact-head hosted-CI merge boundary, not an improvised demand to run every
+platform locally.
+
+For a typed pair, the installed engine must establish `all_accepted_and_current: true` for the
+selected specification and plan, with current acceptance receipts. Neither this guide's map nor a
+periodic checkpoint report establishes that result. Stop at unsupported or stale authority and use
+[Resume and recover](/guides/resume-and-recover/).
+
+**Expected result:** the commit receipt gives the SHA, branch, explicit file list, message and fresh
+gate results. Inspect any remaining uncommitted work rather than calling it clean by assumption.
+A failed hook is a stop to repair and rerun, not permission to bypass verification.
+
+## 4. Open the PR and inspect its handoff
+
+The PR path confirms that the commit gate cleared in the current session, then applies its reviewer
+matrix. A standalone review is useful before this point but is not required as a redundant ceremony.
+Do not open the PR while a BLOCK-level finding remains.
+
+Read the PR body as a deliverable: what changed and why, how it was tested, what remains, and any
+applicable decision or tradeoff. Ask for source identities rather than “all green” without a scope.
+The returned URL proves that a PR exists. It does not prove merge, deployment or publication.
+
+**Useful handoff fields:** PR URL and base branch; current head SHA; the specification/plan paths
+when applicable; observed local checks; exact-head hosted checks and their current state; open
+findings; and the next decision. Omit claimed evidence that was not actually observed.
+
+`pr --watch` can observe existing checks. Automatic attachment is a separate opt-in setting and
+must not be enabled on your behalf. On red, inspect the failed job and keep diagnosis separate from
+authorized remediation. On green, the watcher offers a merge; it does not merge.
+
+## 5. Merge is a separate decision
+
+Require the repository's applicable merge-readiness evidence for the PR's **current exact head**.
+A missing, pending, cancelled, stale, mismatched or failing result is not a pass. A newer commit
+requires current evidence. Impact-skipped checks are not tests that ran.
+
+Under the attended feature path, opening a PR and merging through a PR are distinct choices.
+Sprint autonomy ends with opening the PR. An owner-authorized merge still goes through the PR
+and its protection rules. Where ADR lifecycle evidence binds source commits, preserve the merge
+method selected by the installed verifier; do not casually squash away required ancestry.
+
+A merged PR is still not a release. Follow [Release your project](/guides/releasing-a-version/)
+for version derivation, dry run and publication permission.
+
+## 6. Clean up only after proving the work landed
+
+Use `pr --cleanup` after merge. Expect it to fetch the default branch and establish containment,
+including the applicable PR-record proof for a squash merge. A gone upstream label alone is not
+proof. It then classifies leftover work as unique, redundant or superseded and asks about removals
+individually. Unknown residue remains unique; stashes are reported, not dropped.
+
+Review each named removal and the separate local-branch deletion. Keeping an item or declining
+deletion is a valid outcome. A branch checked out in another worktree, a divergent local default
+branch or unproven containment should produce an explanation and stop, not a reset or broad clean.
+The remote branch is not deleted by this cleanup path.
+
+**Expected result:** a receipt states what landed, what was kept or removed, and where HEAD now is.
+A clean exit preserves unrelated work and makes the next repository session understandable.
+
+## When the path stops
+
+| Observation | Next safe action |
+|---|---|
+| Inbound PR cannot be read | Restore the CLI/authentication prerequisite or supply an accessible target. Keep the original scope visible. |
+| A verdict concerns the wrong revision | Resolve the current target and review that diff again. Do not reuse the old verdict as current proof. |
+| A blocking finding remains on your change | Make the bounded correction, rerun its proof, then return through commit and PR review. |
+| Typed authority is missing or stale | Use the supported host path and artifact recovery guidance. Do not edit receipts or acceptance labels. |
+| Hosted checks are pending or red | Inspect the actual current-head run. Do not substitute a prior green SHA or an unrelated job. |
+| Cleanup would lose unique work | Keep or move the named item, or stop cleanup. Do not treat an override as ordinary lifecycle work. |
+
+For exact contracts, read [review](/reference/commands/review/),
+[checkpoint](/reference/commands/checkpoint/), [tribunal](/reference/commands/tribunal/),
+[commit](/reference/commands/commit/), [PR](/reference/commands/pr/), and
+[post-merge cleanup](/reference/skills/post-merge-cleanup/).

@@ -103,6 +103,32 @@ try {
   }
   process.stdout.write("Reader maps: all twelve links and three retained diagrams remain beneath /docs/.\n");
 
+  const guideIndex = readFileSync(join(outputRoot, "guides", "index.html"), "utf8");
+  // Validate the component's actual substantive content, not just its short MDX shell.
+  const directoryHtml = guideIndex.match(/<ca-guide-directory\b[\s\S]*?<\/ca-guide-directory>/)?.[0] ?? "";
+  const sectionIds = [...directoryHtml.matchAll(/<h2\b[^>]*id="([^"]+)"/g)].map(match => match[1]);
+  const expectedSections = ["initialize-and-understand", "make-a-change", "review-and-ship", "operate-and-recover", "practice-and-advanced-tooling"];
+  const visibleDirectoryText = directoryHtml.replace(/<script\b[\s\S]*?<\/script>/g, "").replace(/<[^>]+>/g, " ");
+  const cardContent = [...directoryHtml.matchAll(/<li\b[^>]*data-guide-entry="([^"]+)"[\s\S]*?<\/li>/g)];
+  if (JSON.stringify(sectionIds) !== JSON.stringify(expectedSections) ||
+      (visibleDirectoryText.match(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*\b/gu)?.length ?? 0) < 250 ||
+      cardContent.length !== 18 || cardContent.some(([card]) =>
+        !/<p\b[^>]*>[^<]+<\/p>/.test(card) || !card.includes("Guide estimate") || !card.includes("Level"))) {
+    throw new Error("The rendered guide directory lost substantive sections, outcomes or context");
+  }
+  const guideCards = [...guideIndex.matchAll(/data-guide-entry="([^"]+)"[\s\S]*?<h3\b[^>]*><a\b[^>]*href="([^"]+)"/g)];
+  if (guideCards.length !== 18 || guideCards.some(([, id, href]) => href !== `/docs/${id}/`)) {
+    throw new Error("The guide finder lost an entry or escaped the /docs/ base");
+  }
+  for (const [, id] of guideCards) readFileSync(join(outputRoot, id, "index.html"));
+  const delivery = readFileSync(join(outputRoot, "guides", "review-and-ship", "index.html"), "utf8");
+  const deliveryMap = delivery.match(/<section[^>]*data-reader-journey="review-delivery-map"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const deliveryLinks = [...deliveryMap.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+  if (deliveryLinks.length !== 4 || deliveryLinks.some(href => !href.startsWith("/docs/"))) {
+    throw new Error("The review-to-delivery map escaped the /docs/ base");
+  }
+  process.stdout.write("Guide discovery: 18 guides and four delivery-map links remain beneath /docs/.\n");
+
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });

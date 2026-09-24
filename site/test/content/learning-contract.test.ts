@@ -54,6 +54,15 @@ describe("hand-authored learning contract", () => {
     const failures = handPages.flatMap((path) => {
       const source = readFileSync(path, "utf8");
       const route = relative(docsRoot, path).replaceAll("\\", "/");
+      // This one index renders its substantive sections from the content collection.
+      // Its complete H2/card/outcome structure is asserted against the actual /docs/ build
+      // by test-academy-non-root-base.mjs, not measured from an MDX component tag.
+      if (route === "guides/index.mdx") {
+        expect(source).toContain("import GuideDirectory from '../../../components/GuideDirectory.astro'");
+        expect(source).toContain("<GuideDirectory />");
+        expect(source).toContain("/guides/review-and-ship/");
+        return [];
+      }
       const body = source.replace(/^---\r?\n[\s\S]*?\r?\n---/, "");
       const wordCount = body.match(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*\b/gu)?.length ?? 0;
       const h2Count = body.match(/^## /gm)?.length ?? 0;
@@ -83,6 +92,7 @@ describe("hand-authored learning contract", () => {
       "guides/opt-in-a-repo.mdx",
       "guides/overriding-a-gate.md",
       "guides/recording-adrs.md",
+      "guides/review-and-ship.mdx",
       "guides/releasing-a-version.md",
       "guides/the-statusline.md",
       "guides/troubleshooting.md",

@@ -83,3 +83,6 @@ actually reached disk. A conversation summary is useful orientation, not durable
 Use the task command for board transitions; use the owning lane for typed-plan transitions.
 Do not hand-edit protected records to make them match a desired completion claim.
 For a complete example, follow [Your first feature](/guides/first-feature/).
+
+For the handoff from a verdict through commit, PR, current checks and safe cleanup, use
+[Review and ship a change](/guides/review-and-ship/).
