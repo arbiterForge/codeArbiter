@@ -1,0 +1,31 @@
+name: Concepts C02 source inputs
+on:
+  push:
+    branches: [docs/concepts-decisions-evidence]
+    paths: [.github/workflows/concepts-c02-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture fixed source objects without running product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/concepts-inputs"
+          git bundle create "$RUNNER_TEMP/concepts-inputs/source.bundle" HEAD --tags
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/concepts-inputs/identity.txt"
+          cd "$RUNNER_TEMP/concepts-inputs"
+          sha256sum source.bundle identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: concepts-c02-source
+          path: ${{ runner.temp }}/concepts-inputs/
+          retention-days: 1
+          if-no-files-found: error
