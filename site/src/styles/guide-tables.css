@@ -55,7 +55,16 @@
 }
 @media (forced-colors: active) {
   .ca-table-shell--stackable {
+    /* The base table rules color first-column cells through --ca-ink. Pair
+       every inherited ink token with the forced canvas, not just the label. */
+    --ca-bg: Canvas;
+    --ca-bg-raised: Canvas;
+    --ca-bg-panel: Canvas;
+    --ca-ink: CanvasText;
+    --ca-ink-soft: CanvasText;
+    --ca-ink-muted: CanvasText;
     --ca-brand-bright: CanvasText;
+    --ca-line: CanvasText;
     --ca-line-strong: CanvasText;
     border-color: CanvasText;
     background: Canvas;

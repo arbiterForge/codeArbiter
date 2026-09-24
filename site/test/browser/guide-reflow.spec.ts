@@ -9,6 +9,38 @@ const targets = ['review-and-ship', 'investigate-and-fix'];
 const tables = (page: Page) => page.locator('table[data-ca-table="stacked"]');
 const values = (page: Page) => page.locator('.ca-table-cell-value').allTextContents();
 
+/** Compare the layout with its content-box query, not the outer viewport width. */
+async function assertPresentation(page: Page) {
+  const layouts = await page.locator('.ca-table-shell--stackable').evaluateAll(shells => shells.map(shell => {
+    const style = getComputedStyle(shell);
+    const width = shell.getBoundingClientRect().width - parseFloat(style.borderLeftWidth) -
+      parseFloat(style.borderRightWidth) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const stacked = width <= 40 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return { stacked, display: getComputedStyle(shell.querySelector('table')!).display,
+      labels: Array.from(shell.querySelectorAll<HTMLElement>('.ca-table-cell-label'))
+        .map(label => label.checkVisibility()) };
+  }));
+  expect(layouts.length).toBeGreaterThan(0);
+  for (const layout of layouts) {
+    expect(layout.display).toBe(layout.stacked ? 'block' : 'table');
+    expect(layout.labels.length).toBeGreaterThan(0);
+    expect(layout.labels.every(visible => visible === layout.stacked)).toBe(true);
+  }
+  return layouts;
+}
+
+/** Enlarge actual text through DevTools without waiting on disabled page-script events. */
+async function enlargeText(page: Page) {
+  const value = page.locator('.ca-table-cell-value').first();
+  const before = await value.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+  await page.evaluate(() => {
+    const root = document.documentElement;
+    root.style.fontSize = `${2 * parseFloat(getComputedStyle(root).fontSize)}px`;
+  });
+  const after = await value.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+  expect(after).toBeCloseTo(before * 2, 1);
+}
+
 /** Page width alone misses text cut off inside a nested scroll container. */
 async function inspectCells(page: Page) {
   return page.locator('.ca-table-shell--stackable').evaluateAll(shells => shells.map(shell => {
@@ -23,6 +55,7 @@ async function inspectCells(page: Page) {
         const range = document.createRange(); range.selectNodeContents(node);
         for (const rect of Array.from(range.getClientRects())) {
           if (rect.width && (rect.left < box.left - 1 || rect.right > box.right + 1 ||
+              rect.top < box.top - 1 || rect.bottom > box.bottom + 1 ||
               rect.left < -1 || rect.right > window.innerWidth + 1)) {
             clips.push(node.textContent!.slice(0, 100));
           }
@@ -53,7 +86,7 @@ async function assertReadable(page: Page, examples = true) {
 
 for (const slug of targets) {
   for (const width of [320, 390, 768]) {
-    test(`${slug}: every table cell reflows at ${width}px with all content retained`, async ({ page }) => {
+    test(`${slug}: every table cell remains readable at ${width}px with all content retained`, async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 1000 });
       await page.goto(`/guides/${slug}/`); await page.evaluate(() => document.fonts.ready);
       const original = await values(page);
@@ -62,10 +95,30 @@ for (const slug of targets) {
       await page.setViewportSize({ width, height: 1000 });
       expect(await values(page)).toEqual(original);
       await assertReadable(page);
-      await expect(page.locator('.ca-table-cell-label').first()).toBeVisible();
+      await assertPresentation(page);
     });
   }
 }
+
+test('the same viewport supports both sides of the table container breakpoint', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/guides/review-and-ship/');
+  const original = await values(page);
+  for (const rem of [39, 40, 41]) {
+    // Change only the containing box, keeping viewport and original cell nodes fixed.
+    await page.locator('.ca-table-shell--stackable').evaluateAll((shells, size) => {
+      for (const shell of shells as HTMLElement[]) {
+        shell.style.boxSizing = 'content-box';
+        shell.style.width = `${size}rem`;
+        shell.style.maxWidth = 'none';
+      }
+    }, rem);
+    const layouts = await assertPresentation(page);
+    expect(layouts.every(layout => layout.stacked === (rem <= 40))).toBe(true);
+    expect(await values(page)).toEqual(original);
+    await assertReadable(page);
+  }
+});
 
 test('review host entries include readable Pi and every full command at 390px', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 1000 });
@@ -100,34 +153,52 @@ test('table content stays readable with enlarged text and without JavaScript', a
   for (const slug of targets) {
     await page.goto(`http://127.0.0.1:4322/guides/${slug}/`);
     await assertReadable(page);
-    await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+    const original = await values(page);
+    await enlargeText(page);
+    expect(await values(page)).toEqual(original);
+    await assertPresentation(page);
     await assertReadable(page);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   }
   await context.close();
 });
 
-test('table associations, links and full content survive forced colors and printing', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 1000 });
-  await page.goto('/guides/review-and-ship/');
-  const original = await values(page);
+for (const slug of targets) {
   for (const forcedColors of ['none', 'active'] as const) {
-    await page.emulateMedia({ forcedColors });
-    await assertReadable(page);
-    const result = await new AxeBuilder({ page }).include('.ca-table-shell--stackable')
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-    expect(result.violations).toEqual([]);
+    test(`${slug}: readable table contrast and associations in ${forcedColors} forced colors`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 1000 });
+      await page.emulateMedia({ forcedColors });
+      await page.goto(`/guides/${slug}/`);
+      await assertReadable(page);
+      await assertPresentation(page);
+      const result = await new AxeBuilder({ page }).include('.ca-table-shell--stackable')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      expect(result.violations).toEqual([]);
+    });
   }
+}
+
+test('table links remain keyboard-operable after navigating back', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page.emulateMedia({ forcedColors: 'active' });
   await page.goto('/guides/investigate-and-fix/');
   const continuation = tables(page).last().getByRole('link', { name: 'Resume and recover', exact: true });
   await continuation.focus(); await expect(continuation).toBeFocused();
   await continuation.press('Enter'); await expect(page).toHaveURL(/\/guides\/resume-and-recover\/$/);
   await page.goBack(); await assertReadable(page);
-  await page.goto('/guides/review-and-ship/');
-  await page.emulateMedia({ media: 'print', forcedColors: 'none' });
-  expect(await values(page)).toEqual(original);
-  await expect(page.locator('.ca-table-cell-value')).toHaveCount(original.length);
-  await assertReadable(page);
+});
+
+test('printing retains all table values and does not clip their text', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 1000 });
+  for (const slug of targets) {
+    await page.emulateMedia({ media: 'screen' });
+    await page.goto(`/guides/${slug}/`);
+    const original = await values(page);
+    await page.emulateMedia({ media: 'print' });
+    expect(await values(page)).toEqual(original);
+    await expect(page.locator('.ca-table-cell-value')).toHaveCount(original.length);
+    await assertReadable(page);
+  }
 });
 
 test('capture complete corrected tables and the investigation guide at desktop and mobile widths', async ({ page }) => {
@@ -153,5 +224,9 @@ test('capture complete corrected tables and the investigation guide at desktop a
   await page.emulateMedia({ forcedColors: 'active' }); await page.goto('/guides/review-and-ship/');
   await assertReadable(page);
   await page.screenshot({ path: join(directory, 'review-and-ship-reflow-forced-colors-390.png'), fullPage: true });
+  await page.emulateMedia({ forcedColors: 'none' });
+  await enlargeText(page);
+  evidence['review-and-ship-enlarged-390'] = await assertReadable(page);
+  await page.locator('.ca-table-shell--stackable').nth(1).screenshot({ path: join(directory, 'review-host-entries-enlarged-390.png') });
   writeFileSync(join(directory, 'guide-reflow-evidence.json'), JSON.stringify(evidence, null, 2));
 });
