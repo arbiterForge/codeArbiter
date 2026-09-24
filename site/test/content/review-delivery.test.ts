@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildJourneySidebar } from '../../scripts/journey-navigation';
+import { guideGroups } from '../../scripts/guide-directory';
 
 const site = new URL('../../', import.meta.url);
 const read = (path: string) => readFileSync(new URL(path, site), 'utf8');
@@ -11,9 +12,22 @@ describe('review-to-delivery guidance', () => {
     const guides = buildJourneySidebar([], [])[1];
     const group = guides.items.find(item => item.label === 'Review and ship');
     expect(group && 'items' in group ? group.items.map(item => 'slug' in item && item.slug) : []).toEqual([
-      'guides/review-and-ship', 'reference/commands/review', 'reference/commands/commit',
+      'guides/review-and-ship', 'guides/adding-a-dependency', 'guides/recording-adrs',
+      'reference/commands/review', 'reference/commands/commit',
       'reference/commands/pr', 'guides/releasing-a-version',
     ]);
+  });
+  it('keeps Review and ship guide membership consistent with the task directory', () => {
+    const sidebar = buildJourneySidebar([], [])[1];
+    const review = sidebar.items.find(item => item.label === 'Review and ship');
+    const change = sidebar.items.find(item => item.label === 'Make a change');
+    const directory = guideGroups.find(group => group.id === 'review-and-ship')!;
+    const expected = directory.slugs.map(slug => `guides/${slug}`);
+    const reviewGuides = review && 'items' in review
+      ? review.items.flatMap(item => 'slug' in item && item.slug.startsWith('guides/') ? [item.slug] : []) : [];
+    expect(reviewGuides).toEqual(expected);
+    expect(change && 'items' in change
+      ? change.items.some(item => 'slug' in item && expected.includes(item.slug)) : true).toBe(false);
   });
   it('preserves the read-only inbound scope and separate outward-facing permission', () => {
     const source = read('../core/surface/commands/review.md');
