@@ -83,8 +83,16 @@ test('all evidence selections remain labelled, complete and read-only across nav
   }
   await page.goto('/concepts/adrs/');
   await page.locator('[data-evidence-case="accepted"] a').first().click();
+  // Astro's client navigation completes after the click. Back must leave the
+  // actual destination, not race against history insertion on the origin page.
+  await expect(page).toHaveURL(/\/reference\/skills\/decision-lifecycle\/$/);
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await page.goBack();
-  await page.locator('ca-decision-evidence').getByRole('button',{name:'Verified',exact:true}).click();
+  await expect(page).toHaveURL(/\/concepts\/adrs\/$/);
+  const restored = page.locator('ca-decision-evidence').getByRole('button',{name:'Verified',exact:true});
+  await expect(restored).toBeVisible();
+  await restored.click();
+  await expect(restored).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('[data-evidence-case="verified"]')).toBeVisible();
 });
 
@@ -107,21 +115,34 @@ test('every view preserves contrast and keyboard focus in normal and forced colo
   }
 });
 
-test('no-script, doubled text and printing retain the entire reading path', async ({ browser }) => {
-  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:1000}});
-  const page=await context.newPage();
-  for (const slug of pages) {
+for (const slug of pages) test(`${slug}: no-script, doubled text and printing retain the entire reading path`, async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 1000 } });
+  try {
+    const page = await context.newPage();
     await page.goto(`http://127.0.0.1:4322/concepts/${slug}/`);
-    if (slug==='adrs') await expect(page.locator('[data-evidence-case]:visible')).toHaveCount(4);
-    if (slug==='auditability') await expect(page.locator('[data-evidence-case]:visible')).toHaveCount(5);
+    const cases = page.locator('[data-evidence-case]:visible');
+    if (slug === 'adrs') await expect(cases).toHaveCount(adrCases.length);
+    if (slug === 'auditability') await expect(cases).toHaveCount(auditCases.length);
+    await expect(page.locator('[data-evidence-select]:visible')).toHaveCount(0);
+    const originalText = await page.locator(roots).allTextContents();
+    await readable(page);
+    // The test driver can change a DOM style with site JavaScript disabled.
+    // Avoid addStyleTag's load-event wait, and prove the computed size doubled.
+    const originalSize = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
+    await page.evaluate(size => { document.documentElement.style.fontSize = `${size * 2}px`; }, originalSize);
+    expect(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize))).toBeCloseTo(originalSize * 2, 2);
+    expect(await page.locator(roots).allTextContents()).toEqual(originalText);
+    await readable(page);
+    await page.emulateMedia({ media: 'print' });
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    if (slug === 'adrs') await expect(cases).toHaveCount(adrCases.length);
+    if (slug === 'auditability') await expect(cases).toHaveCount(auditCases.length);
+    expect(await page.locator(roots).allTextContents()).toEqual(originalText);
     await expect(page.locator('[data-evidence-select]:visible')).toHaveCount(0);
     await readable(page);
-    await page.addStyleTag({content:'html { font-size: 200%; }'}); await readable(page);
-    await page.emulateMedia({media:'print'});
-    await expect(page.getByRole('heading',{level:1})).toBeVisible();
-    await page.emulateMedia({media:'screen'});
+  } finally {
+    await context.close();
   }
-  await context.close();
 });
 
 test('printing a selected evidence view restores the others', async ({ page }) => {
