@@ -1,0 +1,31 @@
+name: Mobile slice inputs
+on:
+  push:
+    branches: [docs/guide-discovery-and-review-journey]
+    paths: [.github/workflows/mobile-slice-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture the exact pre-slice source without executing product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mobile-source"
+          git branch captured-mobile-baseline d504cb12a868d4f608f5357f2be77b3a5b264053
+          git bundle create "$RUNNER_TEMP/mobile-source/source.bundle" captured-mobile-baseline ^b41d9803eacb3acf4b93c8bec81e1aa2f086aec7
+          git rev-parse captured-mobile-baseline captured-mobile-baseline^{tree} > "$RUNNER_TEMP/mobile-source/identity.txt"
+          cd "$RUNNER_TEMP/mobile-source"
+          sha256sum source.bundle identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: mobile-slice-inputs
+          path: ${{ runner.temp }}/mobile-source/
+          retention-days: 1
+          if-no-files-found: error
