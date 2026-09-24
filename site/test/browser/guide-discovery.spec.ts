@@ -37,6 +37,8 @@ test('directory contains every guide and filters by both task and literal words'
   await page.goto('/guides/');
   await expect(page.getByRole('search', { name: 'Find a guide' })).toBeVisible();
   await expect(page.locator('.ca-page-context')).toHaveCount(0);
+  await expect(page.locator('ca-toc')).toHaveCount(0);
+  await expect(page.locator('a[rel="prev"], a[rel="next"]')).toHaveCount(0);
   expect(await entries(page).evaluateAll(nodes => nodes.map(node => node.getAttribute('data-guide-entry')))).toEqual(expectedIds);
   await page.getByLabel('Task group', { exact: true }).selectOption('review-and-ship');
   await expect(entries(page)).toHaveCount(4);
