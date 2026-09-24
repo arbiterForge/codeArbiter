@@ -19,18 +19,18 @@ and asserts that every hook script the installed manifest declares actually exis
 install. An advisory lane repeats it against npm `latest`, so upstream drift is reported
 rather than discovered at the next pin bump.
 
-**By hand, per release, here**: that a hook *fires*. Live persona injection and a live block
-happen inside a turn, a turn needs a model, and a provider credential cannot be a required
-check on fork pull requests. So this half is manual by decision — and the manifest now says
-exactly that, instead of implying continuous coverage.
+**By hand, after publication, here**: that a hook *fires* for the published version. Live
+persona injection and a live block happen inside a turn, a turn needs a model, and a provider
+credential cannot be a required release check. This half is a manual post-publication
+follow-up, as ADR-0032 specifies; it does not authorize or block a tag or release.
 
-**The failure mode of "manual per release" is that it quietly becomes "manual once."** It
+**The failure mode of a manual follow-up is that it quietly becomes "manual once."** It
 already did: the initial baseline recorded `ca-codex` 0.2.4 and went unrefreshed across four
-minor versions. Re-run this procedure for every `ca-codex` release. Ordinary pull-request CI
-validates the last verified marker against its immutable candidate commit, so development can move
-forward without rewriting historical evidence. The declared pre-tag check additionally requires
-that marker's version and digest to match the exact current candidate; a mismatch blocks release,
-and neither check rewrites evidence.
+minor versions. Re-run this procedure after every `ca-codex` publication. Ordinary pull-request
+CI validates the retained marker against its immutable candidate commit, so development and
+publication can move forward without rewriting historical evidence. The optional
+`--require-current-candidate` mode checks a candidate against that marker when specifically
+requested; no pre-tag, merge-readiness, or publication workflow invokes it.
 
 <!-- CODEX-LIVE-BASELINE -->
 <!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.11","candidate_commit":"5fd28f7f6d38b6229293aaddcb065b2b3abea3c6","candidate_source_tree":"37b719bd7147a5ce15cae23826fc280f59254bca","candidate_package_sha256":"76343d02afc461d7e8e47056cf0b09ca04649df12ca072cd2e8a98a754343c04","candidate_ci_run_id":35821596966,"candidate_ci_run_attempt":1,"candidate_artifact_id":10734185200,"candidate_artifact_sha256":"9df36884ece143d740cd793f2e5132de6528268754fc531fc2c5993b6f8afacb","candidate_archive_sha256":"cb66f438de4b776953376c640de920fbf4b873b93a49ffd9137015d338797c05","run_head_sha":"1ce1cdb13d1c75ab215dd0af557c115c7232dd1e","pr_number":844,"pr_head_sha":"1ce1cdb13d1c75ab215dd0af557c115c7232dd1e","pr_head_ref":"codex/artifact-production-authority","pr_base_sha":"3e3286362847f54c87dd49f792e2eeccec69b501","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-23","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
@@ -311,8 +311,9 @@ records one exact installed-charter host-thread review and its explicit limits.
 
 Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.143.0** (the source-verified
 structured-deny baseline; plugin-bundled hooks came on by default earlier, at 0.134.0),
-this repo checked out on `main` or the exact candidate under review, and Claude Code with the
-`ca` plugin installed for the side-by-side comparison.
+this repo checked out for the fixture generator, a published `ca-codex` version promoted to
+`ca-codex-marketplace`, and Claude Code with the `ca` plugin installed for the side-by-side
+comparison. A local candidate is suitable for rehearsal, not post-publication proof.
 
 Everything below runs against **throwaway fixture repos**, never this repo or a real project.
 
@@ -352,11 +353,21 @@ own untouched copy.
 
 ## 2. Install ca-codex in Codex — and TRUST it
 
-ca-codex ships in this repo at `plugins/ca-codex/` (manifest `.codex-plugin/plugin.json`),
-and the local marketplace catalog is `.agents/plugins/marketplace.json`. Install it into
-your Codex CLI from this local checkout (Codex's plugin/marketplace system is
-Claude-compatible — the exact command is the **first thing to confirm from `codex --help` /
-Codex's plugin docs; if the documented flow differs from Claude's, note that as finding #1**).
+For post-publication proof, install or refresh the **promoted** marketplace distribution,
+not this checkout's `main` catalog or an unpublished candidate:
+
+```text
+codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace
+codex plugin add ca-codex@codearbiter
+```
+
+If the marketplace is already registered, refresh it through Codex's supported update path
+before selecting the plugin. Confirm the installed, enabled version is the version just
+published; stop if Codex selects an older or local checkout package. Review and trust its
+handlers in `/hooks`, then start a **fresh task** and run `$ca-doctor` against that installed
+version before the parity scenarios. Record the published tag/version and installed package
+identity with the observations. Local-checkout installation remains a separate development
+rehearsal and must not be reported as post-publication verification.
 
 > **The #1 gotcha — the trust gate.** Codex runs plugin hooks **only after you approve the
 > handler hash** (source: `hooks/src/engine/discovery.rs`). If nothing below blocks, the
