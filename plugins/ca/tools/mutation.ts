@@ -11,6 +11,7 @@
  * stdout, while failure diagnostics are bounded and distinct from scores.
  */
 import { spawn } from "node:child_process";
+import { performance } from "node:perf_hooks";
 import {
   run,
   treeKill,
@@ -115,8 +116,9 @@ function shuffle<T>(a: T[]): T[] {
 }
 
 // Single-point text mutants. Space-padded operators bias toward real code (not
-// string/generic content); invalid mutants that break compilation just fail the
-// test and count as "killed" — the lenient direction (no false escalation).
+// string/generic content). Completed nonzero reruns still count as rejected
+// mutants: this language-agnostic heuristic cannot distinguish compiler errors
+// from assertion failures. Timeout/containment outcomes are NOT such evidence.
 function generateMutants(file: string, src: string): Array<{ file: string; mutated: string; tag: string }> {
   const lines = src.split("\n");
   const rules: Array<[RegExp, string, string]> = [
@@ -176,11 +178,14 @@ export type MutationResult = { score: number; evaluated?: number; survivors?: st
 // dump on a callApi failure).
 export type MutationHookFailure = {
   failed: true;
+  // The built-in runner shares this failure envelope, not the external-hook
+  // measurement channel. Preserve its origin in diagnostics.
+  source?: "builtin";
   detail: string;
   cleanupFailed?: true;
-  // Diagnostic-only stdout report from an unsuccessful invocation. Never copy
-  // this into mutationScore. Retain adverse evidence so a threshold-exit hook
-  // cannot turn a formerly blocked candidate green just by failing to exit 0.
+  // Diagnostic-only stdout report, or already completed built-in observations
+  // from interrupted screening. Never copy this into mutationScore. Retain
+  // adverse evidence so a threshold exit or interruption cannot clear a block.
   unverified?: MutationResult;
 };
 export type MutationCheckResult = MutationResult | MutationHookFailure | null;
@@ -350,19 +355,38 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
   if (candidates.length === 0) return null;
   candidates = shuffle(candidates).slice(0, MUT.sample);
 
-  const start = Date.now();
+  // A monotonic elapsed budget caps EACH launch, including the first. A gate
+  // timeout of zero disables the shared runner limit, not this mutation budget.
+  // Verified process teardown and defensive restoration can outlast the timer;
+  // they must finish (or refuse safely) before any candidate can advance.
+  const start = performance.now();
+  const remainingMs = () => MUT.budgetMs - (performance.now() - start);
   let killed = 0;
   let evaluated = 0;
   const survivors: string[] = [];
   try {
     for (const c of candidates) {
-      if (Date.now() - start > MUT.budgetMs) break;
+      if (remainingMs() <= 0) break;
       await writeWorktreeFile(wt, c.file, c.mutated);
-      // T-06: bound the mutant re-run by the wall-clock timeout. A hung test
-      // here (a mutant that turns the test into an infinite loop, say) would
-      // otherwise wedge the worker; the killed result counts as a "killed"
-      // mutant (code!=0), the lenient direction.
-      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
+      // Include the write in the remaining budget. If it consumes the budget,
+      // finally still restores the worker's bytes without launching a test.
+      const remaining = remainingMs();
+      if (remaining <= 0) break;
+      const timeout = Math.max(1, Math.ceil(Math.min(remaining,
+        GATE_TIMEOUT_MS > 0 ? GATE_TIMEOUT_MS : remaining)));
+      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, timeout);
+      if (r.timedOut || r.cleanupFailed) {
+        // A killed PROCESS is not a killed MUTANT. Stop this screening run,
+        // restore through finally, and leave no published score from an
+        // incomplete trial. Retain already completed adverse observations so
+        // an interruption cannot erase the existing low-score/count floor.
+        const tail = redactSecrets(r.out).slice(-400).trim();
+        return { failed: true, source: "builtin",
+          detail: `built-in mutation ${r.cleanupFailed ? "cleanup unverified" : "trial timed out"}` +
+            ` after ${evaluated} completed rerun(s)${tail ? `: ${tail}` : ""}`,
+          ...(r.cleanupFailed ? { cleanupFailed: true as const } : {}),
+          ...(evaluated >= 3 ? { unverified: { score: killed / evaluated, evaluated, survivors } } : {}) };
+      }
       // T-08 (dx-003): skip the restore on a Map miss rather than writing the
       // literal string "undefined" into the worktree file. The invariant
       // (every candidate's file is a key in `originals`) holds for the built-in

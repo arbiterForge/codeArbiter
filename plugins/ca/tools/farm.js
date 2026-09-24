@@ -263,6 +263,7 @@ function redactSecrets(contents) {
 
 // mutation.ts
 import { spawn as spawn2 } from "node:child_process";
+import { performance } from "node:perf_hooks";
 
 // worktree-fs.ts
 import { constants } from "node:fs";
@@ -596,15 +597,32 @@ async function mutationCheck(wt, task) {
   }
   if (candidates.length === 0) return null;
   candidates = shuffle(candidates).slice(0, MUT.sample);
-  const start = Date.now();
+  const start = performance.now();
+  const remainingMs = () => MUT.budgetMs - (performance.now() - start);
   let killed = 0;
   let evaluated = 0;
   const survivors = [];
   try {
     for (const c of candidates) {
-      if (Date.now() - start > MUT.budgetMs) break;
+      if (remainingMs() <= 0) break;
       await writeWorktreeFile(wt, c.file, c.mutated);
-      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, GATE_TIMEOUT_MS);
+      const remaining = remainingMs();
+      if (remaining <= 0) break;
+      const timeout = Math.max(1, Math.ceil(Math.min(
+        remaining,
+        GATE_TIMEOUT_MS > 0 ? GATE_TIMEOUT_MS : remaining
+      )));
+      const r = await run(SHELL_BIN, [SHELL_FLAG, testCmd], wt, SHELL_OPTS, timeout);
+      if (r.timedOut || r.cleanupFailed) {
+        const tail = redactSecrets(r.out).slice(-400).trim();
+        return {
+          failed: true,
+          source: "builtin",
+          detail: `built-in mutation ${r.cleanupFailed ? "cleanup unverified" : "trial timed out"} after ${evaluated} completed rerun(s)${tail ? `: ${tail}` : ""}`,
+          ...r.cleanupFailed ? { cleanupFailed: true } : {},
+          ...evaluated >= 3 ? { unverified: { score: killed / evaluated, evaluated, survivors } } : {}
+        };
+      }
       const orig = originals.get(c.file);
       if (orig !== void 0) await writeWorktreeFile(wt, c.file, orig);
       evaluated++;
@@ -1867,19 +1885,21 @@ ${gate.tail}`) };
           note = `mutation-risk: ${mutationSurvivalNote(mut)} \u2014 weak test or under-implemented logic`;
         }
       } else if (mut && "failed" in mut) {
+        const failureLabel = mut.source === "builtin" ? "builtin-mutation-failed" : "mutation-hook-failed";
         if (mut.cleanupFailed)
           return { kind: "fatal", note: redactSecrets(`mutation containment failed: ${mut.detail}`).slice(0, 500) };
         if (mut.unverified && mut.unverified.score <= MUT.escalateBelow && mut.unverified.evaluated !== void 0 && mut.unverified.evaluated >= 5)
           return {
             kind: "risk",
             mutationScore: null,
-            note: redactSecrets(`mutation-hook-failed: ${mut.detail}; adverse stdout report requires successful remeasurement`).slice(0, 600)
+            note: redactSecrets(`${failureLabel}: ${mut.detail}; adverse ${mut.source === "builtin" ? "completed reruns" : "stdout report"}; successful remeasurement required`).slice(0, 600)
           };
-        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}
+        const diagnosticLabel = mut.source === "builtin" ? "built-in mutation failed" : "mutation hook failed";
+        process.stderr.write(`[FARM] ${diagnosticLabel} for task ${t.id}: ${mut.detail}
 `);
         if (risk === "none") {
           risk = "warn";
-          note = `mutation-hook-failed: ${mut.detail}`;
+          note = `${failureLabel}: ${mut.detail}`;
         }
       }
     }

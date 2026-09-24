@@ -77,11 +77,20 @@ for that task: no further candidate, retry, commit or integration may run agains
 writer. Existing task reporting retains known spend and cleanup diagnostics. Neither an adverse
 report nor failed process containment can be converted into acceptance by scoring prose.
 
-The built-in text mutator is unchanged by this hook-result contract. It does not classify compiler
-errors separately from test failures; its score remains a limited heuristic, not proof that every
-mutant was valid or that a task is accepted. Language-aware mutation validity and the literal-leak
-heuristic require their own qualification. Do not infer that these limitations were fixed by
-correctly reporting external-hook results.
+The built-in text mutator bounds each test launch by the remaining mutation budget and any shorter
+configured gate timeout. Zero mutation budget launches no tests; disabling the general gate timeout
+does not disable this budget. Mutant writes count against the trial budget. Verified process teardown
+and defensive restoration can take additional time and must finish or refuse safely before work
+advances. An interrupted trial is not a killed mutant: stop screening, restore the worker's output,
+and return diagnostics without a measured score. Completed observations before the interruption stay
+explicitly unverified; the existing near-zero/five-completed-reruns floor still rejects an adverse
+candidate. A clean timeout otherwise warns through independent review, without another default
+user checkpoint. Unverified process cleanup retains the fatal containment boundary above.
+
+A budget ending between completed trials can still return their heuristic score, subject to the
+existing minimum of three completed reruns. Completed nonzero exits still do not distinguish compiler
+errors from assertion failures. Language-aware mutant validity and the literal-leak heuristic remain
+separate work; these timeout corrections do not make the built-in score acceptance proof.
 
 Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
 the mutation guard runs `gate.commands[0]` as the per-mutant test (running an exhaustive suite per mutant

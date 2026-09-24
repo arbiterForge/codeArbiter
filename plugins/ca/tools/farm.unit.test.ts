@@ -3328,6 +3328,60 @@ describe("qualified best-of-N alternatives", () => {
     });
   }
 
+  it("keeps a clean built-in timeout diagnostic without spending another model round", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ failed: true, source: "builtin", detail: "trial timed out" });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.warning).toContain("builtin-mutation-failed");
+    expect(r.mutationScore).toBeNull();
+    expect(f.calls()).toBe(2);
+    expect(f.quality).toHaveLength(1);
+    expect(f.gitCalls.filter(args => args.includes("commit"))).toHaveLength(1);
+  });
+
+  it("retains a low completed built-in result before interruption and tries its sibling", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async dir =>
+      (await fsReadFile(path.join(dir, "src/impl.ts"), "utf8")).startsWith("candidate-0")
+        ? { failed: true, source: "builtin", detail: "trial timed out", unverified: {score: 0, evaluated: 5} }
+        : { score: 1, evaluated: 5 };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(r.mutationScore).toBe(1);
+    expect(f.quality).toEqual(["candidate-0\n", "candidate-1\n"]);
+    expect(f.calls()).toBe(2);
+  });
+
+  it("does not invent an adequate completed count for interrupted built-in screening", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ failed: true, source: "builtin", detail: "trial timed out",
+      unverified: {score: 0, evaluated: 4} });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.warning).toContain("builtin-mutation-failed");
+    expect(r.mutationScore).toBeNull();
+    expect(f.quality).toHaveLength(1);
+  });
+
+  for (const samples of [1, 2]) {
+    it(`retains the built-in containment refusal with ${samples} candidate(s)`, async () => {
+      const f = await fixture();
+      process.env.FARM_SAMPLES = String(samples);
+      f.deps.mutationCheck = async () => ({ failed: true, source: "builtin",
+        cleanupFailed: true, detail: "cleanup unverified" });
+      const r = await runTask({...f.task, maxRetries: 1}, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("escalate");
+      expect(r.note).toContain("mutation containment failed");
+      expect(r.mutationScore).toBeUndefined();
+      expect(f.calls()).toBe(samples);
+      expect(f.quality).toHaveLength(1);
+      expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+      expect(r.promptTokens).toBe(samples === 2 ? 21 : 11);
+    });
+  }
+
   it("records known tokens and cleans all sample resources when qualification throws", async () => {
     const f = await fixture();
     f.deps.antiGamingCheck = async () => { throw new Error("qualification fixture unavailable"); };

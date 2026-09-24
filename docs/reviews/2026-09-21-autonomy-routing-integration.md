@@ -524,3 +524,47 @@ command/skill/agent, HTML-farm capability or resource authority is added or rela
 No output-quality, cost or context reduction has been measured. Roll back the
 owning runtime, rebuilt bundle and private documentation/projections together if
 rejected; preserve unrelated fixture/production work and actual approval evidence.
+
+
+## 2026-09-24 continuation: built-in mutation deadlines and incomplete evidence
+
+Source baseline: `e7ed9490dfb1106a96294c7b573dcc56f1731389`. Re-read the
+built-in `mutationCheck` loop and shared writer/runner, not only the earlier
+external-hook findings. The loop credited a timed-out process as a killed mutant
+and checked its total budget only before launching a full gate timeout. A disabled
+general gate timeout could leave a trial unbounded despite a mutation budget.
+
+Use a monotonic elapsed budget, recalculate after each mutant write, and cap each
+launch by the remaining budget or a shorter configured gate timeout. A zero
+mutation budget launches nothing. A completed partial sample may still produce
+its existing heuristic score after three reruns; an interrupted trial instead
+returns a labeled failure without a measured score. Retain completed adverse
+observations separately so interruption cannot erase the existing five-rerun
+near-zero floor. Clean timeouts follow the warning/independent-review path;
+unverified process cleanup still stops authoring and integration for that task.
+No new user checkpoint, public entry, workflow state store or threshold change.
+
+Counterevidence matters: the shared `writeWorktreeFile` already converts write
+failures into unsafe-path refusals. Its restore guards and the task-level fatal
+handling remain unchanged. Do not report a new filesystem containment mechanism
+or claim the older catch swallowed arbitrary production restoration failures.
+Process-tree teardown and restoration can outlast the trial launch allowance;
+the budget is not permission to abandon either or claim they completed.
+
+New tests cover tagged timeout/cleanup outcomes, no next mutant, restoration of
+worker bytes, adverse-count preservation, zero/remaining budgets including write
+time, and ordinary nonzero exits without invented timeout flags. Injected clock
+and terminal-state tests are unit evidence, not live unkillable-process proof.
+Actual source and rebuilt-bundle CLI cases exercise a bounded slow mutant with
+general gate timeout disabled and enabled, preserve the implementation and Git
+state, retain diagnostics and use exactly the existing worker call. The existing
+unsafe-write/restore tests remain required preservation controls.
+
+Compiler-versus-assertion validity remains unresolved in the language-agnostic
+text mutator; the literal heuristic is not redesigned here. No completed nonzero
+exit is relabeled as compiler-aware proof. Keep HTML farm disabled, actual receipt
+and review authority, retry limits, candidate coordinates and shared process
+runner unchanged. Run normal exact-head cross-platform CI separately from local
+and preparation results; record platform skips and advisory coverage honestly.
+Rollback runtime and its rebuilt bundle together with the canonical private card
+and generated copies. Preserve previous evidence and unrelated repositories.

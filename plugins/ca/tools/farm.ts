@@ -2380,6 +2380,7 @@ export async function runTask(
           note = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
         }
       } else if (mut && "failed" in mut) {
+        const failureLabel = mut.source === "builtin" ? "builtin-mutation-failed" : "mutation-hook-failed";
         // A possibly live mutation process is not ordinary missing evidence.
         // Preserve the candidate and do not switch, retry, stage or integrate.
         if (mut.cleanupFailed)
@@ -2391,12 +2392,13 @@ export async function runTask(
         if (mut.unverified && mut.unverified.score <= MUT.escalateBelow &&
             mut.unverified.evaluated !== undefined && mut.unverified.evaluated >= 5)
           return { kind: "risk", mutationScore: null,
-            note: redactSecrets(`mutation-hook-failed: ${mut.detail}; adverse stdout report requires successful remeasurement`).slice(0, 600) };
+            note: redactSecrets(`${failureLabel}: ${mut.detail}; adverse ${mut.source === "builtin" ? "completed reruns" : "stdout report"}; successful remeasurement required`).slice(0, 600) };
         // Preserve the existing infrastructure-warning policy, not a new stop.
-        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}\n`);
+        const diagnosticLabel = mut.source === "builtin" ? "built-in mutation failed" : "mutation hook failed";
+        process.stderr.write(`[FARM] ${diagnosticLabel} for task ${t.id}: ${mut.detail}\n`);
         if (risk === "none") {
           risk = "warn";
-          note = `mutation-hook-failed: ${mut.detail}`;
+          note = `${failureLabel}: ${mut.detail}`;
         }
       }
     }

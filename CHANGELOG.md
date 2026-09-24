@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Bound built-in farm mutation trials by their remaining budget; retain timeout
+  diagnostics and completed adverse evidence without crediting an interrupted score.
 - Credit external farm mutation scores only from successful normalized stdout;
   preserve adverse failed-hook evidence and stop on unverified process cleanup.
 - Isolate farm regression Git and subprocess environments from the invoking shell.

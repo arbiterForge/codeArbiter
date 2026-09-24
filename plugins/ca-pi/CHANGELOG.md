@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Document bounded built-in mutation screening and incomplete-evidence handling
+  in the shared private farm procedure, without enabling HTML farm.
 - Credit external farm mutation scores only from successful normalized stdout;
   preserve adverse failed-hook evidence and stop on unverified process cleanup.
 - Isolate farm regression Git and subprocess environments from the invoking shell.

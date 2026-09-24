@@ -1248,6 +1248,61 @@ describe("farm.ts smoke tests", () => {
     expect(existsSync(join(tmpDir, ".farm/worktrees/task-a"))).toBe(false);
   });
 
+  for (const entry of ["source", "bundle"] as const) {
+    for (const gateTimeout of ["0", "3000"]) {
+      it(`bounds built-in mutation and reports incomplete evidence (${entry}, gate timeout ${gateTimeout})`, async () => {
+        const impl = [
+          "function classify(value) {", "  const enabled = true;", "  const disabled = false;",
+          "  const next = value + 1;", "  const selected = next > 0 && enabled;",
+          "  return selected || disabled;", "}", "module.exports = classify;", "",
+        ].join("\n");
+        writeFileSync(join(tmpDir, "original.txt"), impl);
+        writeFileSync(join(tmpDir, ".gitignore"), ".farm/\nplan.json\nmutation-probe.log\n");
+        writeFileSync(join(tmpDir, "src/probe.cjs"), [
+          'const fs = require("node:fs");',
+          'const actual = fs.readFileSync("src/impl.cjs", "utf8");',
+          'const original = fs.readFileSync("original.txt", "utf8");',
+          'if (actual === original) process.exit(0);',
+          'fs.appendFileSync("mutation-probe.log", "mutated\\n");',
+          // Old zero-timeout execution still exits eventually; no runaway
+          // process is needed to show the new budget and evidence boundary.
+          'setTimeout(() => process.exit(1), 2000);',
+        ].join("\n"));
+        gitIn(tmpDir, "add", ".");
+        gitIn(tmpDir, "commit", "-m", "built-in deadline fixture");
+        const before = gitIn(tmpDir, "rev-parse", "HEAD");
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return "```javascript\n// path: src/impl.cjs\n" + impl + "```";
+        }, {prompt_tokens: 13, completion_tokens: 17}));
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify({meta: {name: "built-in deadline", model: "fixture",
+          apiBaseUrl: `http://127.0.0.1:${port}`}, tasks: [{id: "task-a", description: "classify",
+          deps: [], filesInScope: ["src/impl.cjs"], test: {path: "src/probe.cjs"},
+          gate: {commands: ["node src/probe.cjs"]}, maxRetries: 0}]}));
+        const result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY: "fixture-only", FARM_BASE_BRANCH: "main", FARM_SAMPLES: "1",
+          FARM_MUTATION: "on", FARM_MUTATION_SAMPLE: "6", FARM_MUTATION_BUDGET_MS: "1000",
+          FARM_GATE_TIMEOUT_MS: gateTimeout,
+        }, ["FARM_MUTATION_CMD"], entry);
+        expect(result.code, result.out).toBe(0);
+        expect(calls).toBe(1);
+        const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+        expect(report.results).toHaveLength(1);
+        expect(report.results[0]).toMatchObject({status: "green", attempts: 1,
+          promptTokens: 13, completionTokens: 17, mutationScore: null});
+        expect(report.results[0].warning).toContain("builtin-mutation-failed");
+        expect(report.results[0].warning).toContain("trial timed out");
+        expect(gitIn(tmpDir, "show", "farm/integration:src/impl.cjs") + "\n").toBe(impl);
+        expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(before);
+        expect(gitIn(tmpDir, "status", "--porcelain")).toBe("");
+        // Authoring green carries the diagnostic into independent review; it
+        // is not a false perfect mutation score or another request to the user.
+      });
+    }
+  }
+
   it("is safe to run twice in a row (stale branches cleaned)", async () => {
     ({ server: mockServer, port } = await startMockServer((body) => {
       const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
