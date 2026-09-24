@@ -493,7 +493,7 @@ function parseMutationHookOutput(out) {
   try {
     const parsed = JSON.parse(j[0]);
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number") {
+    if (typeof parsed.score === "number" && Number.isFinite(parsed.score) && parsed.score >= 0 && parsed.score <= 1) {
       const label = (s) => {
         try {
           return typeof s === "string" ? s : String(s);
@@ -510,6 +510,17 @@ function parseMutationHookOutput(out) {
   } catch {
   }
   return null;
+}
+function interpretMutationHookResult(result) {
+  const parsed = parseMutationHookOutput(result.stdout);
+  if (result.code === 0 && !result.timedOut && !result.cleanupFailed && parsed !== null) return parsed;
+  const tail = redactSecrets(result.out).slice(-500).trim();
+  return {
+    failed: true,
+    detail: `exit ${result.code}${tail ? `: ${tail}` : " (no output)"}`,
+    ...result.cleanupFailed ? { cleanupFailed: true } : {},
+    ...parsed !== null ? { unverified: parsed } : {}
+  };
 }
 async function mutationCheck(wt, task) {
   if (!MUT.enabled) return null;
@@ -528,23 +539,40 @@ async function mutationCheck(wt, task) {
         detached: process.platform !== "win32"
       });
       let out = "";
+      let stdout = "";
       let settled = false;
       let killing = false;
       const finish = (res) => {
         if (settled) return;
         settled = true;
         clearTimeout(timer);
-        resolve(res);
+        resolve({ ...res, stdout });
       };
       const timer = setTimeout(() => {
         killing = true;
         void treeKill(c).then((k) => {
           const note = k.ok ? "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed" : `
 [FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout \u2014 killed, but CLEANUP UNVERIFIED: ${k.detail ?? "no detail"}`;
-          finish({ code: k.ok ? EXIT_TIMEOUT : EXIT_TIMEOUT_UNCLEAN, out: out + note });
+          finish({
+            code: k.ok ? EXIT_TIMEOUT : EXIT_TIMEOUT_UNCLEAN,
+            out: out + note,
+            timedOut: true,
+            ...k.ok ? {} : { cleanupFailed: true }
+          });
+        }, (error) => {
+          finish({
+            code: EXIT_TIMEOUT_UNCLEAN,
+            timedOut: true,
+            cleanupFailed: true,
+            out: `${out}
+[FARM] CLEANUP UNVERIFIED: ${String(error)}`
+          });
         });
       }, GATE_TIMEOUT_MS);
-      c.stdout.on("data", (d) => out += d);
+      c.stdout.on("data", (d) => {
+        stdout += d;
+        out += d;
+      });
       c.stderr.on("data", (d) => out += d);
       c.on("error", (e) => {
         if (killing) return;
@@ -555,10 +583,7 @@ async function mutationCheck(wt, task) {
         finish({ code: code ?? 1, out });
       });
     });
-    const parsed = parseMutationHookOutput(r.out);
-    if (parsed !== null) return parsed;
-    const tail = redactSecrets(r.out.slice(-500)).trim();
-    return { failed: true, detail: `exit ${r.code}${tail ? `: ${tail}` : " (no output)"}` };
+    return interpretMutationHookResult(r);
   }
   const originals = /* @__PURE__ */ new Map();
   let candidates = [];
@@ -1842,6 +1867,14 @@ ${gate.tail}`) };
           note = `mutation-risk: ${mutationSurvivalNote(mut)} \u2014 weak test or under-implemented logic`;
         }
       } else if (mut && "failed" in mut) {
+        if (mut.cleanupFailed)
+          return { kind: "fatal", note: redactSecrets(`mutation containment failed: ${mut.detail}`).slice(0, 500) };
+        if (mut.unverified && mut.unverified.score <= MUT.escalateBelow && mut.unverified.evaluated !== void 0 && mut.unverified.evaluated >= 5)
+          return {
+            kind: "risk",
+            mutationScore: null,
+            note: redactSecrets(`mutation-hook-failed: ${mut.detail}; adverse stdout report requires successful remeasurement`).slice(0, 600)
+          };
         process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}
 `);
         if (risk === "none") {

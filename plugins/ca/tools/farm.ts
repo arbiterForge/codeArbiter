@@ -2380,6 +2380,18 @@ export async function runTask(
           note = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
         }
       } else if (mut && "failed" in mut) {
+        // A possibly live mutation process is not ordinary missing evidence.
+        // Preserve the candidate and do not switch, retry, stage or integrate.
+        if (mut.cleanupFailed)
+          return { kind: "fatal", note: redactSecrets(`mutation containment failed: ${mut.detail}`).slice(0, 500) };
+        // Some frameworks intentionally exit nonzero when their score breaks a
+        // threshold. Do not publish a failed invocation as a measured score,
+        // but do not erase a previously blocking adverse report either. Apply
+        // the same explicit-count floor; a clean remeasurement is still needed.
+        if (mut.unverified && mut.unverified.score <= MUT.escalateBelow &&
+            mut.unverified.evaluated !== undefined && mut.unverified.evaluated >= 5)
+          return { kind: "risk", mutationScore: null,
+            note: redactSecrets(`mutation-hook-failed: ${mut.detail}; adverse stdout report requires successful remeasurement`).slice(0, 600) };
         // Preserve the existing infrastructure-warning policy, not a new stop.
         process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}\n`);
         if (risk === "none") {

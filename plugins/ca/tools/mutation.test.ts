@@ -21,7 +21,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtemp, mkdir, rm, writeFile, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { MUT, antiGamingCheck, mutationCheck } from "./mutation.ts";
+import { MUT, antiGamingCheck, mutationCheck, parseMutationHookOutput, interpretMutationHookResult } from "./mutation.ts";
 import type { Task } from "./farm.ts";
 
 const SHELL_TRUE = process.platform === "win32" ? "cmd /c exit 0" : "true";
@@ -642,5 +642,79 @@ describe("mutationCheck — built-in text mutation", () => {
 
     expect(await mutationCheck(wt, task({ gate: { commands: [SHELL_TRUE] } }))).toBeNull();
     expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(IMPL);
+  });
+});
+
+
+// F10: only completed, successful stdout is an external mutation measurement.
+// A failed process printing JSON must not become either perfect test coverage
+// or erase a formerly blocking adverse report by discarding its diagnostics.
+describe("mutation measurement validity", () => {
+  for (const score of ["1e309", "-0.01", "1.01"]) {
+    it(`rejects a non-normalized hook score ${score}`, () => {
+      expect(parseMutationHookOutput(`{"score":${score},"total":9}`)).toBeNull();
+    });
+  }
+
+  for (const score of [0, 1]) {
+    it(`rejects a failed hook even after stdout reports score ${score}`, async () => {
+      await write("hook.cjs", `console.log(JSON.stringify({score:${score},total:9})); process.exit(7);`);
+      MUT.cmd = "node hook.cjs";
+      const result = await mutationCheck(wt, task());
+      expect(result).toMatchObject({ failed: true });
+      expect(result).not.toHaveProperty("score");
+      expect((result as { detail: string }).detail).toContain("exit 7");
+    });
+  }
+
+  it("does not treat stderr score text as a measurement", async () => {
+    await write("hook.cjs", 'console.error(JSON.stringify({score:1,total:9}));');
+    MUT.cmd = "node hook.cjs";
+    expect(await mutationCheck(wt, task())).toMatchObject({ failed: true });
+  });
+
+  it("keeps valid stdout distinct from a misleading later stderr score", async () => {
+    await write("hook.cjs", [
+      'process.stdout.write(JSON.stringify({score:1,total:9}) + "\\n", () => {',
+      '  process.stderr.write(JSON.stringify({score:0,total:9}) + "\\n");',
+      '});',
+    ].join("\n"));
+    MUT.cmd = "node hook.cjs";
+    expect(await mutationCheck(wt, task())).toMatchObject({ score: 1, evaluated: 9 });
+  });
+});
+
+
+// Pure interpretation exercises reported outcomes, not an unkillable process.
+// Existing exec/tree-kill tests and real CLI timeout fixtures cover execution.
+describe("mutation hook terminal evidence", () => {
+  for (const outcome of [
+    {code: 7}, {code: 124, timedOut: true as const},
+    {code: 125, timedOut: true as const, cleanupFailed: true as const},
+    {code: 0, timedOut: true as const}, {code: 0, cleanupFailed: true as const},
+  ]) {
+    it(`never credits a positive score after ${JSON.stringify(outcome)}`, () => {
+      const result = interpretMutationHookResult({...outcome, out: "diagnostic", stdout: '{"score":1,"total":9}'});
+      expect(result).toMatchObject({failed:true, unverified:{score:1,evaluated:9}});
+      expect(result).not.toHaveProperty("score");
+      expect("cleanupFailed" in result && result.cleanupFailed).toBe("cleanupFailed" in outcome && outcome.cleanupFailed);
+    });
+  }
+
+  it("redacts complete diagnostics before taking a bounded tail", () => {
+    const key = "sk-ant-" + "x".repeat(700);
+    const result = interpretMutationHookResult({code:7,out:`api_key=${key}`,stdout:""});
+    expect(result).toMatchObject({failed:true});
+    const detail = (result as {detail:string}).detail;
+    expect(detail).toContain("REDACTED");
+    expect(detail).not.toContain("x".repeat(30));
+    expect(detail.length).toBeLessThan(520);
+  });
+
+  it("keeps genuine completed low score/count and absent count as reported", () => {
+    expect(interpretMutationHookResult({code:0,out:"",stdout:'{"score":0,"total":9}'}))
+      .toMatchObject({score:0,evaluated:9});
+    expect(interpretMutationHookResult({code:0,out:"",stdout:'{"score":0}'}))
+      .toEqual({score:0,evaluated:undefined,survivors:undefined});
   });
 });

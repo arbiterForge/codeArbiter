@@ -8,6 +8,9 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
 - Retain farm alternatives through task-worktree qualification before retrying;
   shared backend boundaries remain unchanged.
 - Synchronize shared runtime identity with the current candidate cohort and

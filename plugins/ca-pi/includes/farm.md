@@ -58,7 +58,30 @@ capable of the slice).
    non-trivial impl hard-escalates. Sampled and time-boxed so it never balloons wall-clock. Set
    `FARM_MUTATION_CMD` to swap the built-in text mutator for a real per-language framework (Stryker,
    mutmut, …); it runs in the worktree with `FARM_MUTATION_FILES` / `FARM_MUTATION_TEST_PATH` /
-   `FARM_MUTATION_TEST_CMD` set and must print a trailing JSON line with a numeric `score`.
+   `FARM_MUTATION_TEST_CMD` set. A measured hook score requires successful completion (exit 0,
+   no timeout, verified timeout cleanup when needed) and a trailing stdout JSON report with a finite
+   `score` in `[0, 1]`. A wrapper around a percentage-based framework must normalize its measurement;
+   stderr diagnostics are not the score channel. Optional counts and survivors remain absent unless
+   the hook actually reports them.
+
+A configured hook that fails, times out, or reports invalid output supplies diagnostics, not a
+measured `mutationScore`. Ordinary unavailable measurements retain the existing warning policy and
+continue through normal independent review; this does not add a user checkpoint. Do not hide adverse
+evidence: a failed hook's parseable stdout report at or below the existing near-zero floor, with at
+least five explicitly reported evaluated mutants, still rejects that candidate pending successful
+remeasurement. It is not published as a valid score. No evaluated count is invented from absence or a
+survivor list. A retained alternative can qualify under the same rules before another model round.
+
+If timeout cleanup cannot establish that the mutation process tree stopped, qualification is fatal
+for that task: no further candidate, retry, commit or integration may run against a possibly live
+writer. Existing task reporting retains known spend and cleanup diagnostics. Neither an adverse
+report nor failed process containment can be converted into acceptance by scoring prose.
+
+The built-in text mutator is unchanged by this hook-result contract. It does not classify compiler
+errors separately from test failures; its score remains a limited heuristic, not proof that every
+mutant was valid or that a task is accepted. Language-aware mutation validity and the literal-leak
+heuristic require their own qualification. Do not infer that these limitations were fixed by
+correctly reporting external-hook results.
 
 Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
 the mutation guard runs `gate.commands[0]` as the per-mutant test (running an exhaustive suite per mutant

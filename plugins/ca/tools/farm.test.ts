@@ -78,19 +78,40 @@ function startMockServer(
   });
 }
 
+/** Isolate test subprocesses from the developer's Git repository and farm settings.
+ * Explicit FARM_* fixture inputs are allowed; repository/config redirection is
+ * stripped last, including from caller extras and case variants on Windows.
+ * Real product Git behavior is not changed by this test-only boundary.
+ */
+function fixtureEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
+  const base = Object.fromEntries(Object.entries(process.env)
+    .filter(([key]) => !/^(?:GIT_|FARM_|CLAUDE_CODE_OAUTH_TOKEN$)/i.test(key)));
+  const env: NodeJS.ProcessEnv = { ...base, ...extra };
+  for (const key of Object.keys(env)) {
+    if (/^(?:GIT_|CLAUDE_CODE_OAUTH_TOKEN$)/i.test(key)) delete env[key];
+  }
+  // No inherited global hooks, include files, signing commands or config-count
+  // injection can escape the disposable repository selected by cwd.
+  Object.assign(env, {
+    GIT_CONFIG_NOSYSTEM: "1", GIT_CONFIG_GLOBAL: process.platform === "win32" ? "NUL" : "/dev/null",
+    GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "commit.gpgsign", GIT_CONFIG_VALUE_0: "false",
+  });
+  return env;
+}
+
 // --------------------------------------------------------------------------
 // Temp git repo setup
 // --------------------------------------------------------------------------
 function createTempRepo(dir: string) {
   mkdirSync(dir, { recursive: true });
-  execSync("git init -b main", { cwd: dir, stdio: "pipe" });
-  execSync("git config user.email test@test.com", { cwd: dir, stdio: "pipe" });
-  execSync("git config user.name Test", { cwd: dir, stdio: "pipe" });
-  execSync("git config commit.gpgsign false", { cwd: dir, stdio: "pipe" });
+  execSync("git init -b main", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git config user.email test@test.com", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git config user.name Test", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git config commit.gpgsign false", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
   // Initial commit so we have a HEAD on main
   writeFileSync(join(dir, "README.md"), "# test\n");
-  execSync("git add -A", { cwd: dir, stdio: "pipe" });
-  execSync("git commit -m init --no-gpg-sign", { cwd: dir, stdio: "pipe" });
+  execSync("git add -A", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
+  execSync("git commit -m init --no-gpg-sign", { cwd: dir, env: fixtureEnv(), stdio: "pipe" });
   mkdirSync(join(dir, "src"), { recursive: true });
 }
 
@@ -146,42 +167,13 @@ function rmWithRetry(target: string): void {
   }
 }
 
+/** Ordinary and option-bearing CLI tests share the same isolated launcher. */
 function runFarm(
   repoDir: string,
   planPath: string,
   env: Record<string, string>,
 ): Promise<{ code: number; out: string }> {
-  return new Promise((resolve) => {
-    // D-6: use spawn() with an explicit args array — no shell. Run farm.ts
-    // through Node's own tsx loader (process.execPath is an absolute path, no
-    // PATH lookup) rather than round-tripping the tsx.cmd shim through
-    // `cmd.exe /c`. The old path built a cmd.exe command line out of absolute
-    // file paths (TSX_BIN/farmTs/planPath), which mis-parses any path containing
-    // a space and is what CodeQL js/shell-command-injection-from-environment
-    // flagged. This form passes each path as a discrete argv entry, never as
-    // shell text, so spaced paths and metacharacters are inert.
-    const child = spawn(
-      process.execPath,
-      ["--import", TSX_LOADER, farmTs, planPath],
-      {
-        cwd: repoDir,
-        env: {
-          ...process.env,
-          // Disable commit signing in temp repos
-          GIT_CONFIG_COUNT: "1",
-          GIT_CONFIG_KEY_0: "commit.gpgsign",
-          GIT_CONFIG_VALUE_0: "false",
-          ...env,
-        },
-      },
-    );
-    trackChild(child);
-    let out = "";
-    child.stdout.on("data", (d: Buffer) => (out += d));
-    child.stderr.on("data", (d: Buffer) => (out += d));
-    child.on("close", (code: number | null) => resolve({ code: code ?? 1, out }));
-    child.on("error", (e: Error) => resolve({ code: 1, out: String(e) }));
-  });
+  return runFarmWithArgs(repoDir, [], planPath, env);
 }
 
 // coverage-003 (#183): same launcher as runFarm, but with an extra leading CLI
@@ -195,22 +187,14 @@ function runFarmWithArgs(
   planPath: string,
   env: Record<string, string>,
   // Some early-exit assertions (e.g. "FARM_API_KEY is not set") require the
-  // var to be ABSENT, not merely un-overridden — a dev/CI shell may already
-  // export a real FARM_API_KEY (this repo's one live secret), which would
-  // otherwise leak through the `...process.env` spread below and silently
-  // invalidate the "missing key" test case. `unset` deletes it from the
-  // child's env after the spread, regardless of the ambient shell.
+  // var to be ABSENT, not merely an empty string. The isolated environment
+  // already drops ambient FARM_* settings; `unset` also removes an explicitly
+  // supplied fixture variable before the child starts.
   unset: string[] = [],
   entry: "source" | "bundle" = "source",
 ): Promise<{ code: number; out: string }> {
   return new Promise((resolve) => {
-    const spawnEnv: NodeJS.ProcessEnv = {
-      ...process.env,
-      GIT_CONFIG_COUNT: "1",
-      GIT_CONFIG_KEY_0: "commit.gpgsign",
-      GIT_CONFIG_VALUE_0: "false",
-      ...env,
-    };
+    const spawnEnv = fixtureEnv(env);
     for (const k of unset) delete spawnEnv[k];
     const child = spawn(
       process.execPath,
@@ -264,8 +248,7 @@ describe("farm.ts smoke tests", () => {
     // real subprocesses, so it inherits the same abandoned-child teardown.
     await reapStrayChildren();
     rmWithRetry(tmpDir);
-    // Clean up any leftover farm worktrees
-    rmSync(join(tmpDir, "../.codearbiter-farm"), { recursive: true, force: true });
+    // All owned worktrees are below tmpDir; never remove a shared sibling.
   });
 
   it("fails immediately when FARM_MODEL is not set", async () => {
@@ -319,7 +302,7 @@ describe("farm.ts smoke tests", () => {
     expect(result.out).not.toMatch(/Cannot read properties|TypeError|is not iterable/);
     // No side effects.
     expect(existsSync(join(tmpDir, ".farm"))).toBe(false);
-    const branches = execSync("git branch --list", { cwd: tmpDir, stdio: "pipe" }).toString();
+    const branches = execSync("git branch --list", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" }).toString();
     expect(branches).not.toContain("farm/");
   });
 
@@ -584,8 +567,8 @@ describe("farm.ts smoke tests", () => {
 
     // Commit a test that asserts a specific literal, so it exists in the worktree.
     writeFileSync(join(tmpDir, "src", "answer.test.ts"), "expect(answer).toBe(42);\n");
-    execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add failing test" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add failing test" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     const plan = {
       meta: { name: "gaming-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -721,8 +704,8 @@ describe("farm.ts smoke tests", () => {
     ].join("\n");
     // Commit the probe so it lands in the ephemeral worktree the hook runs in.
     writeFileSync(join(tmpDir, "mut-probe.cjs"), probe);
-    execSync("git add mut-probe.cjs", { cwd: tmpDir, stdio: "pipe" });
-    execSync("git commit -m probe --no-gpg-sign", { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add mut-probe.cjs", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync("git commit -m probe --no-gpg-sign", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     ({ server: mockServer, port } = await startMockServer(() =>
       ["```javascript", "// path: src/m.js", "module.exports.f = (a, b) => a + b;", "```"].join("\n"),
@@ -786,8 +769,8 @@ describe("farm.ts smoke tests", () => {
       join(tmpDir, "src", "helper.ts"),
       `// ${SIBLING_MARKER}\nexport const helper = () => 0;\n`,
     );
-    execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add failing test + sibling" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add failing test + sibling" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     const plan = {
       meta: { name: "enrich-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -844,8 +827,8 @@ describe("farm.ts smoke tests", () => {
         "",
       ].join("\n"),
     );
-    execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add test + sibling with planted secrets" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + sibling with planted secrets" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     const plan = {
       meta: { name: "redact-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -908,8 +891,8 @@ describe("farm.ts smoke tests", () => {
         "",
       ].join("\n"),
     );
-    execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add test + sibling with planted PEM" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + sibling with planted PEM" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     const plan = {
       meta: { name: "pem-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -997,8 +980,8 @@ describe("farm.ts smoke tests", () => {
     writeFileSync(join(tmpDir, "src", "feature.test.ts"), `expect(feature()).toBe(1);\n`);
     // A denylisted filename whose body would otherwise be injected.
     writeFileSync(join(tmpDir, "src", ".env"), `SOME_VAR=${ENV_MARKER}\n`);
-    execSync("git add -A -f", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add test + denylisted .env" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A -f", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + denylisted .env" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     const plan = {
       meta: { name: "denylist-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -1045,8 +1028,8 @@ describe("farm.ts smoke tests", () => {
     // redaction would NOT catch it — only the filename denylist can. That makes
     // this an assertion on the denylist gap specifically, not on redactSecrets.
     writeFileSync(join(tmpDir, "src", "creds.pem"), `harmless looking body ${TESTPATH_MARKER}\n`);
-    execSync("git add -A -f", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add denylisted test.path source" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A -f", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add denylisted test.path source" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     const plan = {
       meta: { name: "denylist-testpath", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -1088,8 +1071,8 @@ describe("farm.ts smoke tests", () => {
     const big = "// filler line of in-scope source content\n".repeat(4000);
     writeFileSync(join(tmpDir, "src", "feature.test.ts"), `expect(feature()).toBe(1);\n`);
     writeFileSync(join(tmpDir, "src", "helper.ts"), `export const helper = () => 0;\n${big}\n// ${TAIL_MARKER}\n`);
-    execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add test + oversized sibling" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add test + oversized sibling" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     const plan = {
       meta: { name: "cap-test", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
@@ -1145,8 +1128,8 @@ describe("farm.ts smoke tests", () => {
     // Both tasks' failing tests exist on the baseline so enrichment can read them.
     writeFileSync(join(tmpDir, "src", "shared.test.ts"), `expect(shared).toBeDefined();\n`);
     writeFileSync(join(tmpDir, "src", "b.test.ts"), `expect(b).toBe(2);\n`);
-    execSync("git add -A", { cwd: tmpDir, stdio: "pipe" });
-    execSync(`git commit -m "add failing tests for overlap tasks" --no-gpg-sign`, { cwd: tmpDir, stdio: "pipe" });
+    execSync("git add -A", { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
+    execSync(`git commit -m "add failing tests for overlap tasks" --no-gpg-sign`, { cwd: tmpDir, env: fixtureEnv(), stdio: "pipe" });
 
     // task-b's gate proves it cut from the post-A-merge integration HEAD: it
     // requires src/shared.ts to exist AND to carry A's marker. If B ran before
@@ -1204,11 +1187,13 @@ describe("farm.ts smoke tests", () => {
     // from the post-A-merge HEAD and merged cleanly on top.
     const integShared = execSync("git show farm/integration:src/shared.ts", {
       cwd: tmpDir,
+      env: fixtureEnv(),
       encoding: "utf8",
     });
     expect(integShared).toContain(SHARED_MARKER);
     const integB = execSync("git show farm/integration:src/b-out.ts", {
       cwd: tmpDir,
+      env: fixtureEnv(),
       encoding: "utf8",
     });
     expect(integB).toContain("export const b = 2;");
@@ -1254,7 +1239,7 @@ describe("farm.ts smoke tests", () => {
     expect(report.results[0].samples).toBe(3);
 
     // The winning impl actually landed on the integration branch.
-    const integHello = execSync("git show farm/integration:src/hello.ts", { cwd: tmpDir, encoding: "utf8" });
+    const integHello = execSync("git show farm/integration:src/hello.ts", { cwd: tmpDir, env: fixtureEnv(), encoding: "utf8" });
     expect(integHello).toContain("export function hello()");
 
     // Scratch sample worktrees AND the task worktree are removed on success.
@@ -1430,7 +1415,7 @@ describe("farm.ts smoke tests", () => {
   // Follow-up to #850: execute both the TypeScript entry and the actually shipped
   // bundle. These tests use real Git refs/worktrees and loopback HTTP only.
   const gitIn = (dir: string, ...args: string[]) =>
-    execFileSync("git", args, { cwd: dir, encoding: "utf8", stdio: "pipe" }).trim();
+    execFileSync("git", args, { cwd: dir, env: fixtureEnv(), encoding: "utf8", stdio: "pipe" }).trim();
   const identityImpl = [
     "module.exports = function identity(value) {",
     "  const copied = value;",
@@ -1455,6 +1440,107 @@ describe("farm.ts smoke tests", () => {
     };
   }
 
+
+  // The hostile target is itself disposable. Even the pre-fix RED run can
+  // touch only these two owned fixtures, never the actual developer checkout.
+  for (const entry of ["source", "bundle"] as const) {
+    it(`isolates fixture Git and farm children from inherited repository context (${entry})`, async () => {
+      const external = join(tmpDir, "foreign-fixture");
+      createTempRepo(external);
+      writeFileSync(join(external, "not-staged.txt"), "must remain untracked");
+      const before = {
+        refs: gitIn(external, "show-ref"),
+        index: readFileSync(join(external, ".git/index")),
+        config: readFileSync(join(external, ".git/config")),
+        status: gitIn(external, "status", "--porcelain"),
+        worktrees: gitIn(external, "worktree", "list", "--porcelain"),
+      };
+      // Explicit repository, object database, index, and injected Git config
+      // must not override either the fixture setup or the farm subprocess cwd.
+      const poisoned = {
+        GIT_DIR: join(external, ".git"), GIT_WORK_TREE: external,
+        GIT_COMMON_DIR: join(external, ".git"),
+        GIT_INDEX_FILE: join(external, ".git/index"),
+        GIT_OBJECT_DIRECTORY: join(external, ".git/objects"),
+        GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "core.bare", GIT_CONFIG_VALUE_0: "true",
+      };
+      let result: { code: number; out: string } | undefined;
+      try {
+        for (const [key, value] of Object.entries(poisoned)) vi.stubEnv(key, value);
+        const created = join(tmpDir, "fresh-fixture");
+        createTempRepo(created);
+        expect(gitIn(created, "rev-parse", "--show-toplevel")).toBe(created.replaceAll("\\", "/"));
+        const task = identityFixture();
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return fileBlock("src/identity.cjs", identityImpl);
+        }));
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify({ meta: { name: "fixture isolation", model: "fixture" }, tasks: [task] }));
+        result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+          FARM_SAMPLES: "1", FARM_MUTATION: "off", ...poisoned,
+        }, [], entry);
+        expect(result.code, result.out).toBe(0);
+        expect(calls).toBe(1);
+        expect(gitIn(tmpDir, "show", "farm/integration:src/identity.cjs")).toBe(identityImpl);
+      } finally {
+        vi.unstubAllEnvs();
+      }
+      expect(gitIn(external, "show-ref")).toBe(before.refs);
+      expect(readFileSync(join(external, ".git/index"))).toEqual(before.index);
+      expect(readFileSync(join(external, ".git/config"))).toEqual(before.config);
+      expect(gitIn(external, "status", "--porcelain")).toBe(before.status);
+      expect(gitIn(external, "worktree", "list", "--porcelain")).toBe(before.worktrees);
+      expect(readFileSync(join(external, "not-staged.txt"), "utf8")).toBe("must remain untracked");
+    });
+
+    for (const mode of ["failed-low", "failed-high", "stderr-only", "stderr-decoy", "timeout-score"] as const) {
+      it(`mutation evidence respects ${mode} process outcome (${entry})`, async () => {
+        const task = identityFixture();
+        const rows = mode === "stderr-only"
+          ? ['console.error(JSON.stringify({score:1,total:9}));']
+          : ['console.log(JSON.stringify({score:' + (mode === "failed-low" ? 0 : 1) + ',total:9}));'];
+        if (mode.startsWith("failed")) rows.push("process.exitCode = 7;");
+        if (mode === "stderr-decoy") rows.push('console.error(JSON.stringify({score:0,total:9}));');
+        if (mode === "timeout-score") rows.push('setInterval(() => {}, 1000);');
+        writeFileSync(join(tmpDir, "src/mutation-fixture.cjs"), rows.join("\n"));
+        gitIn(tmpDir, "add", "--", "src/mutation-fixture.cjs");
+        gitIn(tmpDir, "commit", "-m", "mutation evidence fixture");
+        const originalHead = gitIn(tmpDir, "rev-parse", "HEAD");
+        let calls = 0;
+        ({ server: mockServer, port } = await startMockServer(() => {
+          calls++;
+          return fileBlock("src/identity.cjs", identityImpl);
+        }, {prompt_tokens: 12, completion_tokens: 7}));
+        const planPath = join(tmpDir, "plan.json");
+        writeFileSync(planPath, JSON.stringify({meta:{name:"mutation evidence",model:"fixture"},tasks:[task]}));
+        const result = await runFarmWithArgs(tmpDir, [], planPath, {
+          FARM_API_KEY:"fixture-key", FARM_API_BASE_URL:`http://127.0.0.1:${port}`,
+          FARM_MUTATION:"on", FARM_MUTATION_CMD:"node src/mutation-fixture.cjs",
+          FARM_SAMPLES:"1", FARM_GATE_TIMEOUT_MS: mode === "timeout-score" ? "3000" : "10000",
+        }, [], entry);
+        expect(result.code, result.out).toBe(mode === "failed-low" ? 2 : 0);
+        expect(calls).toBe(1);
+        const actual = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8")).results[0];
+        expect(actual.status).toBe(mode === "failed-low" ? "escalate" : "green"); // not scope acceptance
+        expect(actual.promptTokens).toBe(12);
+        expect(actual.completionTokens).toBe(7);
+        if (mode === "stderr-decoy") {
+          expect(actual.mutationScore).toBe(1);
+          expect(actual.warning).toBeUndefined();
+        } else {
+          expect(actual.mutationScore).toBeNull();
+          expect(actual.note ?? actual.warning).toContain("mutation-hook-failed");
+          if (mode === "timeout-score") expect(actual.warning).toContain("exit 124");
+        }
+        expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(originalHead);
+        if (mode === "failed-low") expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(originalHead);
+        else expect(gitIn(tmpDir, "show", "farm/integration:src/identity.cjs")).toBe(identityImpl);
+      });
+    }
+  }
 
   for (const entry of ["source", "bundle"] as const) {
     for (const mode of ["literal", "mutation", "materialized-gate", "all-rejected"] as const) {

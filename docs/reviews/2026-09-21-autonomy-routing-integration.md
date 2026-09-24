@@ -474,3 +474,53 @@ remain intact. Public registrations, authority, thresholds, version coordinates,
 input policies and the HTML farm block are unchanged. Coverage completion and
 broader process resume remain separate. Rebuild/revert runtime and bundle together
 with their owning private card; do not erase earlier proof or retained scratch.
+
+
+## 2026-09-24 continuation: external mutation evidence and fixture isolation
+
+Baseline: `a3e085c55d79a8bf8b253e2ccc783b66b00c967c` (normal CI run
+35977213239 passed). This is a bounded part of F10, plus revalidation of the
+reviewer's inherited-Git-environment finding; it does not finish F10 or the farm audit.
+
+### Confirmed and corrected contracts
+
+- An external mutation command could return a parseable score even after nonzero
+  exit/timeout, and stderr JSON could replace the real stdout report. Measured
+  results now require successful completion and finite normalized stdout scores.
+  Diagnostics are redacted before bounding. Missing optional counts stay absent.
+- Failed-hook stdout can contain important adverse evidence: some frameworks use
+  nonzero exits to report a threshold break. Retain that report as unverified,
+  never as `mutationScore`. The existing near-zero/explicit-five-evaluations floor
+  still rejects the candidate pending successful remeasurement. Ordinary unknown
+  measurements retain the warning policy, not another default user stop.
+- Unverified timeout cleanup is a distinct fatal qualification outcome. It cannot
+  be disguised by switching candidates, spending another retry or integrating
+  work while a mutation writer may still exist. This uses the existing finalizer
+  and candidate-selection flow, not another gate/state system.
+- The fixture-only environment drops inherited Git repository/configuration
+  redirection and real farm/provider settings, then pins signing/config behavior.
+  All fixture Git commands and both source/bundle farm launchers use that boundary.
+  Teardown only removes owned temporary trees, never a shared sibling directory.
+  Production Git environment handling is not changed by this test repair.
+
+### Verification obligations and boundaries
+
+The added cases exercise actual local mutation processes and source/rebuilt-bundle
+CLI runs using loopback providers and disposable Git repositories. They cover
+nonzero low/high scores, stderr-only output and misleading stderr, a timeout after
+printing a score, invalid numeric values, redaction before truncation, adverse
+count preservation, and single/multiple-candidate containment refusals. Hostile
+Git variables target only a separate disposable sentinel repository; its refs,
+index, config, worktree list and untracked files must remain unchanged.
+
+Run the complete current farm suite, official generators and relevant authority,
+resource and release checks against the exact committed candidate. Record actual
+results, platform skips, normal-head CI and advisory coverage separately in the
+PR; do not substitute historical tests or parser fixtures for model-backed work.
+
+The built-in text mutator's compiler-error/timeout classification and literal-leak
+heuristic are not fixed here. No threshold, test, source-input contract, public
+command/skill/agent, HTML-farm capability or resource authority is added or relaxed.
+No output-quality, cost or context reduction has been measured. Roll back the
+owning runtime, rebuilt bundle and private documentation/projections together if
+rejected; preserve unrelated fixture/production work and actual approval evidence.

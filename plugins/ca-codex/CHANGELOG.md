@@ -10,6 +10,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
 - Clarify retained-candidate farm qualification in the shared private procedure;
   no Codex farm backend is added.
 - Synchronize shared runtime identity with the current candidate cohort and

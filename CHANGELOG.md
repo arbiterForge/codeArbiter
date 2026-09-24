@@ -16,6 +16,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
 - Qualify retained farm candidates before discarding alternatives or retrying.
   Preserve complete native CI qualification within a bounded 30-minute job budget.
 - Resolve farm dependencies before overlapping-file arbitration, so an unready

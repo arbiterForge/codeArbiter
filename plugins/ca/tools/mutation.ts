@@ -7,8 +7,8 @@
  * single-point mutants, or are there survivors?). Extracted from farm.ts
  * (v2.rev.0020 / architecture-003); depends only on the shared exec layer
  * (./exec.ts) and imports the Task contract type-only from farm.ts, so there is
- * no runtime import cycle. This is a move, not a rewrite — behaviour is
- * identical to the prior in-farm.ts definitions.
+ * no runtime import cycle. External measurements require successful completed
+ * stdout, while failure diagnostics are bounded and distinct from scores.
  */
 import { spawn } from "node:child_process";
 import {
@@ -23,6 +23,7 @@ import {
   GATE_TIMEOUT_MS,
   EXIT_TIMEOUT,
   EXIT_TIMEOUT_UNCLEAN,
+  type RunResult,
 } from "./exec.ts";
 import { redactSecrets } from "./redactor.ts";
 import { isUnsafeWorktreePathError, writeWorktreeFile } from "./worktree-fs.ts";
@@ -173,7 +174,15 @@ export type MutationResult = { score: number; evaluated?: number; survivors?: st
 // narrow, explicit member the caller uses to distinguish "configured but
 // failed" and surface a diagnostic (mirrors the primary API path's stderr body
 // dump on a callApi failure).
-export type MutationHookFailure = { failed: true; detail: string };
+export type MutationHookFailure = {
+  failed: true;
+  detail: string;
+  cleanupFailed?: true;
+  // Diagnostic-only stdout report from an unsuccessful invocation. Never copy
+  // this into mutationScore. Retain adverse evidence so a threshold-exit hook
+  // cannot turn a formerly blocked candidate green just by failing to exit 0.
+  unverified?: MutationResult;
+};
 export type MutationCheckResult = MutationResult | MutationHookFailure | null;
 
 // dx-002 (T-08b): parse a pluggable FARM_MUTATION_CMD's stdout for its trailing
@@ -189,7 +198,7 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
   try {
     const parsed = JSON.parse(j[0]) as { score?: number; total?: number; evaluated?: number; survived?: string[] };
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    if (typeof parsed.score === "number") {
+    if (typeof parsed.score === "number" && Number.isFinite(parsed.score) && parsed.score >= 0 && parsed.score <= 1) {
       // #525: report only what the hook actually reported. Both fields are
       // optional in the contract, so an absent or unusable one stays ABSENT
       // rather than becoming a default that later reads as a measurement.
@@ -244,6 +253,24 @@ export function parseMutationHookOutput(out: string): MutationResult | null {
   return null;
 }
 
+/** Interpret completed hook stdout without turning failure diagnostics into proof.
+ * Count/survivor absence remains absence. Ordinary configured failures retain
+ * their existing warning policy; unverified process cleanup is distinct so the
+ * dispatcher can refuse further work against a possibly live writer.
+ */
+export function interpretMutationHookResult(
+  result: Pick<RunResult, "code" | "out" | "stdout" | "timedOut" | "cleanupFailed">,
+): MutationResult | MutationHookFailure {
+  const parsed = parseMutationHookOutput(result.stdout);
+  if (result.code === 0 && !result.timedOut && !result.cleanupFailed && parsed !== null) return parsed;
+  // Redact before bounding: trimming a credential's prefix first can make its
+  // remaining suffix unrecognizable to the shared detector.
+  const tail = redactSecrets(result.out).slice(-500).trim();
+  return { failed: true, detail: `exit ${result.code}${tail ? `: ${tail}` : " (no output)"}`,
+    ...(result.cleanupFailed ? { cleanupFailed: true as const } : {}),
+    ...(parsed !== null ? { unverified: parsed } : {}) };
+}
+
 export async function mutationCheck(wt: string, task: Task): Promise<MutationCheckResult> {
   if (!MUT.enabled) return null;
   const testCmd = task.gate.commands[0];
@@ -252,7 +279,7 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
 
   // Pluggable hook — hand off to a real per-language framework if configured.
   if (MUT.cmd) {
-    const r = await new Promise<{ code: number; out: string }>((resolve) => {
+    const r = await new Promise<Pick<RunResult, "code" | "out" | "stdout" | "timedOut" | "cleanupFailed">>((resolve) => {
       // Least-privilege parity with run(): the operator-authored mutation hook
       // is a child like any other and must not inherit the dispatcher's
       // secrets. Route its env through scrubbedEnv(), passing only the
@@ -267,32 +294,36 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
         detached: process.platform !== "win32",
       });
       let out = "";
+      let stdout = "";
       let settled = false;
       let killing = false;
-      const finish = (res: { code: number; out: string }) => {
+      const finish = (res: Pick<RunResult, "code" | "out" | "timedOut" | "cleanupFailed">) => {
         if (settled) return;
         settled = true;
         clearTimeout(timer);
-        resolve(res);
+        resolve({ ...res, stdout });
       };
       // T-06: bound the pluggable FARM_MUTATION_CMD by the same wall-clock
       // timeout. A hung mutation framework would otherwise wedge the worker; on
-      // timeout the child tree is killed and the result is treated as
-      // unparseable (score skipped leniently — no false escalation).
+      // timeout the child tree is killed. Any printed score is rejected because
+      // the hook did not finish, rather than crediting partial output as proof.
       // #395: the kill is now AWAITED and verified, and an unverified cleanup is
-      // reported in `out` — which observability-002 turns into the "configured
-      // but failed" detail, so a leaked mutation-hook tree is visible on the
-      // task result instead of being swallowed by a lenient score skip.
+      // reported as cleanupFailed as well as a redacted detail. The dispatcher
+      // must not continue authoring or integrate while a writer might survive.
       const timer = setTimeout(() => {
         killing = true;
         void treeKill(c).then((k) => {
           const note = k.ok
             ? "\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout — killed"
             : `\n[FARM] FARM_MUTATION_CMD exceeded the wall-clock timeout — killed, but CLEANUP UNVERIFIED: ${k.detail ?? "no detail"}`;
-          finish({ code: k.ok ? EXIT_TIMEOUT : EXIT_TIMEOUT_UNCLEAN, out: out + note });
+          finish({ code: k.ok ? EXIT_TIMEOUT : EXIT_TIMEOUT_UNCLEAN, out: out + note,
+            timedOut: true, ...(k.ok ? {} : { cleanupFailed: true as const }) });
+        }, (error: unknown) => {
+          finish({ code: EXIT_TIMEOUT_UNCLEAN, timedOut: true, cleanupFailed: true,
+            out: `${out}\n[FARM] CLEANUP UNVERIFIED: ${String(error)}` });
         });
       }, GATE_TIMEOUT_MS);
-      c.stdout.on("data", (d) => (out += d));
+      c.stdout.on("data", (d) => { stdout += d; out += d; });
       c.stderr.on("data", (d) => (out += d));
       c.on("error", (e) => {
         if (killing) return;
@@ -303,16 +334,7 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
         finish({ code: code ?? 1, out });
       });
     });
-    // dx-002 (T-08b): shape-guarded parse of the hook's trailing score line.
-    const parsed = parseMutationHookOutput(r.out);
-    if (parsed !== null) return parsed;
-    // observability-002 (#187): MUT.cmd WAS configured but produced no
-    // parseable score (non-zero exit, timeout, crash, or unparseable trailing
-    // output) — this is a "configured but failed" outcome, distinct from "not
-    // configured". redactSecrets guards the tail the same way runGate's
-    // failure tail is guarded before it can reach a report/log.
-    const tail = redactSecrets(r.out.slice(-500)).trim();
-    return { failed: true, detail: `exit ${r.code}${tail ? `: ${tail}` : " (no output)"}` };
+    return interpretMutationHookResult(r);
   }
 
   // Built-in text mutation.
