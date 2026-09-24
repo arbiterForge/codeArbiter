@@ -32,7 +32,7 @@ GitHub Actions run 35939912227, attempt 1, preparation commit 27339feccf50a64527
 
 The changed Python files compile. A separate local scan of added source/test text using the repository's _hooklib.SECRET_RE returned zero matches. This does not substitute for the required hosted secret scan.
 
-## Not qualified for merge or release yet
+## Initial PR qualification status (before slice 2)
 
 This is source-candidate evidence, not installed-host, publication, or independent agent-judgment proof. The archive portions of test_consumer_smoke.py read committed HEAD, which was the base during preparation; rerun them on the final committed PR candidate.
 
@@ -43,3 +43,66 @@ Before merge: prepare the required affected-host version/changelog/provenance up
 ## Rollback and issue disposition
 
 Before merge, retain or revise the PR rather than changing main. After an authorized merge, any rollback must use a reviewed revert and the repository's required new release identities; never move or delete a published tag. The original #570 deferred modes and policy questions remain open. This follow-up supplies no blanket closure for #570 or automatic issue-state changes.
+
+## Slice 2: release metadata and CI failure repair
+
+Date: 2026-09-23 (America/New_York; hosted timestamps use UTC on September 24).
+The user authorized fixing failed CI and adding this next slice to the same PR.
+Inspected PR head: `3261e140b4ff5a350ceb86bfd92931bd5d8df590`.
+The default branch remained `75b4d442ea42bdd19241608647419a390e1ee360`.
+
+### Observed failures and correction
+
+Normal PR CI run `35940274002`, attempt 1, completed with four root failures:
+CA, Codex, and Pi payload-version gates rejected changed payloads at their old
+versions; the release-candidate gate rejected the old Codex changelog intent
+because it no longer bound the changed payload. Merge readiness failed as a
+consequence. The other required job classes succeeded or were impact-skipped;
+this includes the committed consumer smoke checks and cross-platform hook checks.
+
+Advance only the changed adapters to candidate versions CA `2.21.12`, Codex
+`0.13.12`, and Pi `0.14.12`. Keep their runtime host identities synchronized,
+generate the root Pi manifest and shared hostapi copies from their owning sources,
+update the checked CA badge, and add matching intent-bearing changelog sections.
+Every prior changelog section and the existing Unreleased content remain unchanged.
+Rebaseline only the changed source hashes and corresponding version claims in the
+existing provenance records. Sandbox, release declarations, publisher workflows,
+confirmation policy, published tags, and all historical qualification records are
+unchanged. These are candidate identities, not a publication claim.
+
+### Exact source verification
+
+Preparation run `35942063422`, attempt 1, at preparation commit
+`dd01fe07656832792d7f3402873b7dd13d3db87a` passed all twelve declared command groups.
+The source candidate tree is `86105c836ab2a708caa1481503f5b2a1024e5601`, built on the
+inspected PR head. Artifact `10785810525` retains commands, exit statuses, source
+bytes, and blob identities. Its downloaded ZIP SHA-256 is
+`0186f983937c14afc1a55ecc0549dbddf293e532b9908548bb40fb4288c891fb`.
+The separately stored Git tree and every returned source byte matched the locally
+reviewed candidate. The preparation workflow is not part of this PR's tree or
+ancestry. Its read-only verification and write-permission object store were
+separate jobs; neither advanced a product branch or published a release.
+
+Verified: CA and Codex payload-version guards, Pi's committed-history release
+guard, automatic candidate-intent binding, 19 host-descriptor tests, badge
+consistency, 21 historical Codex documentation/proof tests, 125 provenance tests,
+core synchronization, surface generation, root package generation, and whitespace.
+The candidate-intent check deliberately did not claim the pre-tag suite passed.
+Separate local runs against the same metadata tree passed the 15 installed-shell
+release regressions and the 677-test release library suite (one expected skip).
+
+### Remaining qualification
+
+Version/changelog/provenance preparation is complete for this slice. The normal
+CI aggregate must still assess the new committed PR head. The unchanged rendered
+release skill still needs a fresh independent agent exercise against SHA-256
+`55d91f619fb23de12e5d5439b79e457a216596e3d7347fa67bb09b6be44da445`.
+Codex's exact `0.13.12` CI-assembled package needs its own live-host qualification;
+the retained `0.13.11` marker is historical evidence and was not relabeled.
+Ordinary historical documentation tests passing does not satisfy
+`test_public_codex_docs.py --require-current-candidate`.
+
+No independent actor, live model turn, authority receipt, approval, or proof hash
+was invented to clear either boundary. Keep the PR draft until those actual
+observations and the exact-head merge-readiness gate succeed. No merge,
+publication, issue closure, or tag mutation is included in this slice.

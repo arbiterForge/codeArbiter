@@ -12,6 +12,19 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.12] - 2026-09-23
+
+### Fixed
+
+- Correct first-release re-entry after a declaration lands through a normal
+  merge, squash, or fast-forward. An empty adoption-bounded payload window
+  now requires an explicit confirm-or-replace decision, never silent widening.
+- Require successful release-tree inspection and empty porcelain output at
+  every direct clean-tree gate. Failed or timed-out probes stop before the
+  next operation instead of being mistaken for a clean tree.
+- Exercise the installed release guards and declaration/ledger re-entry with
+  real consumer histories, and distinguish partial fixtures from full journeys.
+
 ## [2.21.11] - 2026-09-23
 
 ### Fixed
