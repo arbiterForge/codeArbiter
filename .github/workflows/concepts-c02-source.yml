@@ -1,0 +1,34 @@
+name: Concepts C02 source inputs
+on:
+  push:
+    branches: [docs/concepts-decisions-and-evidence]
+    paths: [.github/workflows/concepts-c02-source.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          persist-credentials: false
+      - name: Bundle tracked source and pinned Academy, not credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = 6860daa3c974ae32cd9584d3e60e0a51c185a613
+          mkdir -p /tmp/concepts-c02-inputs
+          git bundle create /tmp/concepts-c02-inputs/source.bundle HEAD --tags
+          git -C academy-source bundle create /tmp/concepts-c02-inputs/academy.bundle HEAD
+          git rev-parse HEAD HEAD^{tree} > /tmp/concepts-c02-inputs/identity.txt
+          cd /tmp/concepts-c02-inputs
+          sha256sum *.bundle identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: concepts-c02-source-inputs
+          path: /tmp/concepts-c02-inputs/
+          retention-days: 1
+          if-no-files-found: error
