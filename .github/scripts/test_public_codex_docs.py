@@ -623,8 +623,11 @@ class PublicCodexDocsTest(unittest.TestCase):
             "--ref ca-codex-marketplace", installation,
         )
         self.assertIn("codex plugin add ca-codex@codearbiter", installation)
+        self.assertIn("check its configured Git ref", installation)
+        self.assertIn("codex plugin marketplace upgrade codearbiter", installation)
+        self.assertIn("codex plugin marketplace remove codearbiter", installation)
         self.assertRegex(
-            installation, r"installed, enabled version is the version just\s+published"
+            installation, r"installed, enabled version\s+is the version just\s+published"
         )
         self.assertIn("fresh task", installation)
         self.assertIn("$ca-doctor", installation)

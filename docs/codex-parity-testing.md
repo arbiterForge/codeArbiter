@@ -361,8 +361,13 @@ codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace
 codex plugin add ca-codex@codearbiter
 ```
 
-If the marketplace is already registered, refresh it through Codex's supported update path
-before selecting the plugin. Confirm the installed, enabled version is the version just
+If `codearbiter` is already registered, check its configured Git ref before refreshing it.
+`codex plugin marketplace upgrade codearbiter` refreshes that ref; it does not switch a
+default-branch registration to `ca-codex-marketplace`. If the ref is not
+`ca-codex-marketplace` or cannot be confirmed, run
+`codex plugin marketplace remove codearbiter` and then re-run the `marketplace add` command
+above. Otherwise, upgrade the existing registration. Confirm the installed, enabled version
+is the version just
 published; stop if Codex selects an older or local checkout package. Review and trust its
 handlers in `/hooks`, then start a **fresh task** and run `$ca-doctor` against that installed
 version before the parity scenarios. Record the published tag/version and installed package
