@@ -108,7 +108,14 @@ try {
   const directoryHtml = guideIndex.match(/<ca-guide-directory\b[\s\S]*?<\/ca-guide-directory>/)?.[0] ?? "";
   const sectionIds = [...directoryHtml.matchAll(/<h2\b[^>]*id="([^"]+)"/g)].map(match => match[1]);
   const expectedSections = ["initialize-and-understand", "make-a-change", "review-and-ship", "operate-and-recover", "practice-and-advanced-tooling"];
-  const visibleDirectoryText = directoryHtml.replace(/<script\b[\s\S]*?<\/script>/g, "").replace(/<[^>]+>/g, " ");
+  // Measure only the generated component's plain text nodes. This is not an HTML
+  // sanitizer and its output is never rendered. Scripts are not valid directory
+  // content; reject them instead of attempting to strip or repair HTML.
+  if (/<\s*script\b/i.test(directoryHtml)) {
+    throw new Error("The guide directory must keep executable scripts outside its content");
+  }
+  const visibleDirectoryText = [...directoryHtml.matchAll(/<(?:h2|a|p|dt|dd)\b[^>]*>([^<>]+)</g)]
+    .map(([, text]) => text).join(" ");
   const cardContent = [...directoryHtml.matchAll(/<li\b[^>]*data-guide-entry="([^"]+)"[\s\S]*?<\/li>/g)];
   if (JSON.stringify(sectionIds) !== JSON.stringify(expectedSections) ||
       (visibleDirectoryText.match(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*\b/gu)?.length ?? 0) < 250 ||
