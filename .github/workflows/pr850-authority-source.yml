@@ -1,4 +1,4 @@
-name: PR850 authority source (temporary)
+name: PR850 authority integration (temporary)
 on:
   push:
     branches: [codex/spec-continuation-checkpoint-remediation]
@@ -6,47 +6,132 @@ on:
 permissions:
   contents: read
 jobs:
-  capture:
+  validate:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/spec-continuation-checkpoint-remediation'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version: '1.27.1'
           check-latest: false
           cache: false
           go-download-base-url: https://go.dev/dl
-      - name: Export exact source and public validation tools
+      - name: Acquire explicitly pinned authored inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64,hashlib,json,os,pathlib,urllib.request
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/spec-continuation-checkpoint-remediation'
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'authority-integration';out.mkdir()
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
+          rows=[
+            ('55863c2e8408dd41f8978ac613c68139e7e3b6bf','observation-sprint.go'),
+            ('d41beb207fbfd8e89ee6677bd1b5532375dd26f2','operations-sprint.go'),
+            ('80c0b4448120c585803082b1d1f844e63ee9669e','sprint-tests.go'),
+            ('d5b715afba8c7d1714add72980ff2f9c81feb554','pair-adapter.py'),
+            ('22ae37c8aaf6d24ecca788b6c03a21164001697d','pair-tests.py'),
+            ('16f525a313bf34736073ed2be42954c0cd261a6c','apply.py'),
+          ]
+          for sha,name in rows:
+              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response: record=json.load(response)
+              assert record['sha']==sha and record['encoding']=='base64'
+              data=base64.b64decode(record['content'])
+              assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
+              (out/name).write_bytes(data)
+          (out/'inputs.json').write_text(json.dumps(rows,indent=2))
+          PY
+      - name: Reconcile current main and apply bounded changes
         shell: bash
         run: |
-          set -euo pipefail
-          OUT="$RUNNER_TEMP/pr850-authority-source"
-          mkdir "$OUT"
-          test "$(go env GOVERSION)" = go1.27.1
-          git cat-file -e 75b4d442ea42bdd19241608647419a390e1ee360^{commit}
-          git cat-file -e dfcc5c778f136433c216d480207776a11bed3d1b^{commit}
-          git bundle create "$OUT/source.bundle" HEAD refs/remotes/origin/main
-          git archive --format=zip --output="$OUT/head.zip" dfcc5c778f136433c216d480207776a11bed3d1b
-          git archive --format=zip --output="$OUT/main.zip" 75b4d442ea42bdd19241608647419a390e1ee360
-          tar -czf "$OUT/go-toolchain.tar.gz" -C "$(go env GOROOT)" .
-          IMAGE=ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
-          docker pull "$IMAGE"
-          CID=$(docker create "$IMAGE")
-          trap 'docker rm "$CID" >/dev/null 2>&1 || true' EXIT
-          docker cp "$CID:/usr/bin/gitleaks" "$OUT/gitleaks"
-          go version > "$OUT/toolchain.txt"
-          printf '%s\n' "$IMAGE" >> "$OUT/toolchain.txt"
-          git rev-parse HEAD > "$OUT/capture-head.txt"
-          cd "$OUT"
-          sha256sum source.bundle head.zip main.zip go-toolchain.tar.gz gitleaks > SHA256SUMS
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+          python - <<'PY'
+          import json,os,pathlib,shutil,subprocess,sys
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'authority-integration'
+          base='313c445d4672e1a61ae6ccae7bfaa2e508121c42';main='75b4d442ea42bdd19241608647419a390e1ee360'
+          subprocess.run(['git','merge-base','--is-ancestor',base,'HEAD'],check=True)
+          assert subprocess.check_output(['git','diff','--name-only',base,'HEAD'],text=True).splitlines()==['.github/workflows/pr850-authority-source.yml']
+          subprocess.run(['git','config','user.name','Validation fixture'],check=True)
+          subprocess.run(['git','config','user.email','validation@example.invalid'],check=True)
+          merged=subprocess.run(['git','merge','--no-commit','--no-ff',main],capture_output=True,text=True)
+          (out/'merge.log').write_text(merged.stdout+merged.stderr)
+          if merged.returncode:
+              conflicts=subprocess.check_output(['git','diff','--name-only','--diff-filter=U'],text=True).splitlines()
+              assert conflicts==['.github/published-tags.json'],conflicts
+              path=conflicts[0]
+              a=subprocess.check_output(['git','show','HEAD:'+path]);b=subprocess.check_output(['git','show',main+':'+path])
+              assert json.loads(a)==json.loads(b),'Conflict changes authenticated publication data; stop rather than replace.'
+              pathlib.Path(path).write_bytes(b);subprocess.run(['git','add','--',path],check=True)
+          subprocess.run(['git','commit','-m','Merge current main into isolated validation fixture'],check=True)
+          (out/'merged-tree.txt').write_text(subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True))
+          targets={'observation-sprint.go':'core/artifacts/internal/observation/sprint.go','operations-sprint.go':'core/artifacts/internal/operations/sprint.go','sprint-tests.go':'core/artifacts/internal/operations/sprint_authority_test.go','pair-adapter.py':'core/pysrc/_sprintapprovallib.py'}
+          for source,target in targets.items():
+              p=pathlib.Path(target);assert not p.exists();shutil.copyfile(out/source,p)
+          recipe=(out/'apply.py').read_text()
+          recipe=recipe.replace('return e.sprintContext','return engine.sprintContext').replace('return e.sprintApprove','return engine.sprintApprove').replace('return e.smartsApply','return engine.smartsApply')
+          old="s=s.replace('import ', 'import importlib\\nimport ',1)"
+          new="s=s.replace('from __future__ import annotations\\n', 'from __future__ import annotations\\nimport importlib\\n',1)"
+          assert recipe.count(old)==1;recipe=recipe.replace(old,new)
+          (out/'apply-effective.py').write_text(recipe)
+          env=dict(os.environ,AUTHORITY_INPUTS=str(out),PYTHONDONTWRITEBYTECODE='1')
+          subprocess.run([sys.executable,str(out/'apply-effective.py')],env=env,check=True)
+          files=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()+list(targets.values())
+          gofiles=sorted({p for p in files if p.endswith('.go')})
+          subprocess.run(['gofmt','-w',*gofiles],check=True)
+          for tool in ['tools/sync-core.py','tools/build-surface.py','tools/build-host-packages.py']:
+              subprocess.run([sys.executable,tool],check=True)
+          subprocess.run(['git','diff','--check'],check=True)
+          PY
+      - name: Execute native and Python integration regressions
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,pathlib,subprocess,sys,time,zipfile
+          root=pathlib.Path.cwd();out=pathlib.Path(os.environ['RUNNER_TEMP'])/'authority-integration'
+          commands=[(['go','test','./...'],root/'core/artifacts'),(['go','vet','./...'],root/'core/artifacts')]
+          suites=['test_artifact_approval_adapter','test_artifact_authoring','test_artifact_workflow','test_artifact_authority_adapter','test_artifact_reconciliation_adapter','test_artifact_prerequisite_adapter','test_artifact_consumers','test_artifact_surface','test_artifact_bridge','test_routing_and_cleanup_surface','test_build_surface','test_host_descriptors','test_ci_impact']
+          commands += [([sys.executable,'.github/scripts/'+s+'.py'],root) for s in suites]
+          commands += [([sys.executable,t,'--check'],root) for t in ['tools/build-surface.py','tools/sync-core.py','tools/build-host-packages.py']]
+          results=[]
+          env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',GOTOOLCHAIN='local')
+          assert subprocess.check_output(['go','env','GOVERSION'],text=True).strip()=='go1.27.1'
+          for i,(args,cwd) in enumerate(commands):
+              log=f'{i:02d}-'+(pathlib.Path(args[1]).stem if args[0]!= 'go' else 'go-'+args[1])+'.log';start=time.monotonic()
+              try:
+                  done=subprocess.run(args,cwd=cwd,env=env,capture_output=True,text=True,timeout=360)
+                  code=done.returncode;content=done.stdout+done.stderr
+              except subprocess.TimeoutExpired:
+                  code=124;content='Timed out; not passing.'
+              (out/log).write_text(content)
+              results.append({'command':args,'cwd':str(cwd.relative_to(root)),'exit_code':code,'seconds':round(time.monotonic()-start,2),'log':log})
+              (out/'tests.json').write_text(json.dumps(results,indent=2))
+              print(code,' '.join(args),flush=True)
+              if code:print(content[-14000:],flush=True)
+          subprocess.run(['git','diff','--check'],check=True)
+          (out/'candidate.diff').write_bytes(subprocess.check_output(['git','diff','--binary','HEAD']))
+          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()
+          with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for p in sorted(set(changed+untracked)):
+                  if pathlib.Path(p).is_file():z.write(p,p)
+          assert all(r['exit_code']==0 for r in results),'Inspect recorded failures; no branch publication occurs in this diagnostic run.'
+          PY
+      - name: Retain source transformations and actual test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: pr850-authority-source-${{ github.run_id }}
-          path: ${{ runner.temp }}/pr850-authority-source/
+          name: pr850-authority-integration-${{ github.run_id }}
+          path: ${{ runner.temp }}/authority-integration/
           if-no-files-found: error
           retention-days: 3
