@@ -236,8 +236,8 @@ class TestTheGateRefusesTheOtherDirections(_Repo):
 
 class TestBasenameCollisionRefusal(unittest.TestCase):
     """AC-07 / #626 finding 2a: two declared payload rows that reduce to the
-    same basename must be refused before the map silently loses one of them —
-    whether the two rows agree or disagree on prefix."""
+    same basename must be refused before the map silently loses one of them.
+    The shared parser rejects overlapping prefixes before this map is built."""
 
     def _write_targets(self, tmp, sections):
         path = Path(tmp) / "release-targets.md"
@@ -256,21 +256,21 @@ class TestBasenameCollisionRefusal(unittest.TestCase):
         path.write_text("\n".join(lines), encoding="utf-8")
         return path
 
-    def test_equal_prefix_basename_collision_is_refused(self):
-        # Two rows, SAME prefix, same resulting basename. Even though the
-        # overwrite would today have produced an identical value, the
-        # collision itself — not its value — is the defect.
+    def test_equal_prefix_is_rejected_before_basename_collision(self):
+        # The parser refuses overlapping tag namespaces before this gate can
+        # build its basename map. The different-prefix case below still proves
+        # that the map refuses an otherwise valid declaration collision.
         with tempfile.TemporaryDirectory() as tmp:
             declared = self._write_targets(tmp, [
                 ("foo", "foo-v", "plugins/foo/"),
                 ("foo-tool", "foo-v", "tools/foo/"),
             ])
-            with self.assertRaises(gate.BasenameCollisionError) as ctx:
+            with self.assertRaises(gate.ReleaseTargetsError) as ctx:
                 gate.tag_prefixes(declared)
         message = str(ctx.exception)
-        self.assertIn("foo", message)
-        self.assertIn("plugins/foo", message)
-        self.assertIn("tools/foo", message)
+        self.assertIn("overlapping tag prefixes", message)
+        self.assertIn("'foo' and 'foo-tool'", message)
+        self.assertIn("'foo-v' and 'foo-v'", message)
 
     def test_different_prefix_basename_collision_is_refused_before_overwrite(self):
         # Two rows, DIFFERENT prefixes, same resulting basename — the shape

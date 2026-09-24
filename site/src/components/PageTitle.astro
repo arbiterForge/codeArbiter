@@ -16,6 +16,7 @@ const hasBespokeTitle = isHome || id === 'academy';
 const isAcademyTrack = id.startsWith('academy/tracks/');
 // The directory already presents orientation and per-guide outcomes in its content.
 const isGuideDirectory = id === 'guides';
+const isConceptIndex = id === 'concepts';
 const isGeneratedEntity = /^reference\/(?:commands|skills|agents)\//.test(id);
 const explicitJourney = entry.data.journey;
 const inferred = id.startsWith('reference/') || id === 'reference' || id === 'hooks' || id === 'glossary' || id === 'changelog'
@@ -36,7 +37,7 @@ const journey = explicitJourney ?? inferred;
   !hasBespokeTitle && (
     <>
       <Default><slot /></Default>
-      {!isAcademyTrack && !isGuideDirectory && !isGeneratedEntity && <PageContext {...journey} />}
+      {!isAcademyTrack && !isGuideDirectory && !isConceptIndex && !isGeneratedEntity && <PageContext {...journey} />}
     </>
   )
 }

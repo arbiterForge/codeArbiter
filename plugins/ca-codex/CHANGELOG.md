@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.13] - 2026-09-24
+## [0.13.14] - 2026-09-24
 
 ### Fixed
 
@@ -25,6 +25,20 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Synchronize shared runtime identity with the current candidate cohort and
   document the isolated farm evaluation contract in the private resource. This
   does not add a packaged Codex farm backend or enable HTML farm execution.
+
+
+## [0.13.13] - 2026-09-24
+
+### Fixed
+
+- Correct first-release re-entry after a declaration lands through a normal
+  merge, squash, or fast-forward. An empty adoption-bounded payload window
+  now requires an explicit confirm-or-replace decision, never silent widening.
+- Require successful release-tree inspection and empty porcelain output at
+  every direct clean-tree gate. Failed or timed-out probes stop before the
+  next operation instead of being mistaken for a clean tree.
+- Exercise the installed release guards and declaration/ledger re-entry with
+  real consumer histories, and distinguish partial fixtures from full journeys.
 
 ## [0.13.12] - 2026-09-23
 

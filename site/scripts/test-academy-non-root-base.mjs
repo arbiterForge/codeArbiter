@@ -162,6 +162,18 @@ try {
   }
   process.stdout.write(`Guide discovery: ${expectedGuideIds.length} guides, four delivery-map links and mobile table content remain beneath /docs/.\n`);
 
+  for (const route of ["concepts", "concepts/gated-lanes", "concepts/test-first"]) {
+    const html = readFileSync(join(outputRoot, route, "index.html"), "utf8");
+    const model = html.match(/<ca-execution-map\b[\s\S]*?<\/ca-execution-map>/)?.[0] ?? "";
+    const steps = [...model.matchAll(/data-map-step="([^"]+)"/g)];
+    const localLinks = [...model.matchAll(/href="(\/[^"]+)"/g)].map(match => match[1]);
+    if (steps.length !== 16 || new Set(steps.map(match => match[1])).size !== 16 ||
+        localLinks.length < 16 || localLinks.some(href => !href.startsWith("/docs/"))) {
+      throw new Error(`Concept execution map ${route} lost its complete reading path or base-prefixed links`);
+    }
+  }
+  process.stdout.write("Concepts: all three execution maps preserve 16 steps and /docs/ destinations.\n");
+
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
