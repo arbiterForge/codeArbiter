@@ -5,7 +5,7 @@
 - Approved by the product owner in the work-session conversation on 2026-09-24: "You just laid out the plan; approved; lock it in so it doesn't get lost and get started on the first PR".
 - Authorized repository: `arbiterForge/codeArbiter`.
 - Discovery baseline: `29f84168ab7592a5d7bb0550cb1f25cf29608a9d`, current main after merged PR #851.
-- This file is the durable program plan. The accompanying tracking issue and PRs link here rather than maintaining independent specifications.
+- This file is the durable program plan. Tracking issue [#856](https://github.com/arbiterForge/codeArbiter/issues/856) and implementation PR [#857](https://github.com/arbiterForge/codeArbiter/pull/857) link here rather than maintaining independent specifications.
 - Approval authorizes implementation and review PRs. It does not authorize merging, deployment, releases, changed runtime controls, invented host evidence, or organization-wide branding.
 - This record is not a native artifact-engine approval, an accepted ADR, or an execution/verification receipt.
 
@@ -33,7 +33,7 @@ Current implementation and owning canonical contracts must be read at each PR ba
 
 ### C01: orientation and execution-map foundation (first PR)
 
-Status: IN_PROGRESS. Branch: `docs/concepts-execution-foundation`.
+Status: IN_PROGRESS. Implementation PR: [#857](https://github.com/arbiterForge/codeArbiter/pull/857). Branch: `docs/concepts-execution-foundation`. Implementation exists; final verification, owner acceptance and merge remain separate.
 
 - Revalidate live main and the historical execution-map design.
 - Rebuild the Concepts landing/navigation around connected questions.

@@ -90,7 +90,7 @@ const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
   .ca-execution-map__header, .ca-execution-map footer { padding: var(--ca-space-5); }
   .ca-execution-map__header h3 { margin-block: var(--ca-space-3); font-size: var(--ca-text-xl); line-height: 1.35; }
   .ca-execution-map p { color: var(--ca-ink-soft); line-height: 1.7; font-size: var(--ca-text-sm); }
-  .ca-execution-map strong { color: var(--ca-ink); }
+  .ca-execution-map :is(h3,h4,h5,strong) { color: var(--ca-ink); }
   .ca-execution-map a { color: var(--ca-brand-bright); text-underline-offset: 3px; }
   .ca-execution-map :is(a,button,summary):focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 4px; }
   .ca-execution-map__controls { padding: 0 var(--ca-space-5) var(--ca-space-4); }

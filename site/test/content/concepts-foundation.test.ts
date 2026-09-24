@@ -8,6 +8,8 @@ describe('Concepts foundation', () => {
     expect(landing).toContain('<ExecutionMap');
     expect(landing).toContain('<ConceptNavigator');
     expect(landing).toContain('not a merge or deployment');
+    const component = readFileSync('src/components/ExecutionMap.astro', 'utf8');
+    expect(component).toContain('.ca-execution-map :is(h3,h4,h5,strong) { color: var(--ca-ink); }');
     const lanes = read('concepts/gated-lanes.mdx');
     expect(lanes).toContain('does not jump directly to commit');
     expect(lanes).toContain('H-18 activation protection has no in-session override path');

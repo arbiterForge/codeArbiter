@@ -13,28 +13,23 @@ journey:
 import ConceptNavigator from '../../components/ConceptNavigator.astro';
 import ExecutionMap from '../../components/ExecutionMap.astro';
 
-A coding conversation can contain a request, an implementation and a claim that it works.
-codeArbiter gives those events distinct owners and records. A **lane** determines the path for the
-kind of work. **Skills** define the procedures on that path. **Agents** take bounded author or
-reviewer roles. **Gates** require a decision or evidence before the next transition.
+A request, an implementation and a passing test establish different things. codeArbiter gives
+each stage an owner. A **lane** selects the path for the work; **skills** define its procedures;
+**agents** perform bounded author or reviewer roles. **Gates** require decisions or evidence before
+the next transition.
 
-The useful question is not how many pieces exist. It is **what permits this particular piece of
-work to advance, and what will remain to explain it later?** Concepts answers that question.
-[Guides](/guides/) gives the operating procedures; [Reference](/reference/) retains the exact entries
-and source contracts.
+Follow **who acts next, what they produce, and what permits continuation**. That is the mental model
+behind the operating [guides](/guides/) and exact [reference](/reference/).
 
 ## Follow one change from request to PR
 
-Consider a saved-search export. The request is a starting point, not a complete definition of CSV
-ordering, escaping or empty-result behavior. The specification makes those behaviors explicit.
-The plan turns them into tasks and verifications. Authors implement the tasks test-first;
-review and fresh verification challenge their results. The attended coordinator returns to the
-human between accepted scopes, then hands the complete work to commit and PR preparation.
+A saved-search export starts as an idea. Its specification defines ordering, escaping and empty
+results. A plan maps those criteria to tasks. Authors implement test-first, reviewers challenge the
+result, and fresh verification supports acceptance. The attended coordinator returns to you between
+scopes before handing complete work to commit and PR preparation.
 
-The map follows the full feature lane, choosing **Open a PR** at its end. Rows classify roles;
-arrows show execution order. The TDD procedure runs inside task authoring, and the task engine
-returns to its caller. Those relationships disappear in a diagram that merely groups every
-command in one box and every skill in another.
+This map follows the full feature lane and its **Open a PR** exit. Rows identify roles; arrows show
+execution order. TDD runs inside task authoring, and delegated work returns to its caller.
 
 <ExecutionMap id="concept-feature" />
 

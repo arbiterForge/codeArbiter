@@ -122,9 +122,12 @@ test('normal and forced-color controls preserve scoped accessibility and keyboar
     await task.focus(); await task.press('Enter');
     await expect(task).toHaveAttribute('aria-pressed', 'true');
     await expect(task).toBeFocused();
-    const result = await new AxeBuilder({ page }).include('ca-execution-map').include('.ca-concept-nav').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-    expect(result.violations).toEqual([]);
-    expect((await textGeometry(page)).clipped).toEqual([]);
+    for (const chapter of featureMap.chapters) {
+      await map(page).locator(`[data-map-select="${chapter.id}"]`).click();
+      const result = await new AxeBuilder({ page }).include('ca-execution-map').include('.ca-concept-nav').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      expect(result.violations).toEqual([]);
+      expect((await textGeometry(page)).clipped).toEqual([]);
+    }
   }
 });
 
@@ -152,25 +155,32 @@ test('doubled text retains the full mobile reading path', async ({ page }) => {
   expect((await textGeometry(page)).clipped).toEqual([]);
 });
 
+/** Capture from the top so sticky navigation cannot cover a mid-page paragraph in a full-page image. */
+async function capturePage(page: Page, path: string) {
+  await page.evaluate(async () => { await document.fonts.ready; window.scrollTo({ top: 0, behavior: 'instant' }); });
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await page.screenshot({ path, fullPage: true });
+}
+
 test('capture real Concepts and execution-map layouts', async ({ page }) => {
   const dir = join(process.cwd(), '.astro', 'browser-evidence'); mkdirSync(dir, { recursive: true });
   const evidence: Record<string, unknown> = { commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), tree: execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim(), browser: page.context().browser()?.version(), sourceReviewedAt: featureMap.reviewedAt };
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/concepts/'); await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: join(dir, `concepts-${width}.png`), fullPage: true });
+    await capturePage(page, join(dir, `concepts-${width}.png`));
     for (const chapter of featureMap.chapters) {
       await map(page).locator(`[data-map-select="${chapter.id}"]`).click();
       evidence[`${width}-${chapter.id}`] = await textGeometry(page);
-      await page.screenshot({ path: join(dir, `concepts-${chapter.id}-${width}.png`), fullPage: true });
+      await capturePage(page, join(dir, `concepts-${chapter.id}-${width}.png`));
     }
     for (const slug of ['artifacts', 'gated-lanes', 'test-first']) {
       await page.goto(`/concepts/${slug}/`); await page.evaluate(() => document.fonts.ready);
-      await page.screenshot({ path: join(dir, `concept-${slug}-${width}.png`), fullPage: true });
+      await capturePage(page, join(dir, `concept-${slug}-${width}.png`));
     }
   }
   await page.setViewportSize({ width: 390, height: 1000 });
   await page.emulateMedia({ forcedColors: 'active' }); await page.goto('/concepts/');
-  await page.screenshot({ path: join(dir, 'concepts-forced-colors-390.png'), fullPage: true });
+  await capturePage(page, join(dir, 'concepts-forced-colors-390.png'));
   writeFileSync(join(dir, 'concept-execution-evidence.json'), JSON.stringify(evidence, null, 2));
 });
