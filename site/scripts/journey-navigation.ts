@@ -1,4 +1,5 @@
 /** Reader journeys; reference ordering stays owned by the generated catalog. */
+import { conceptGroups, conceptBackground } from './concept-directory';
 import type { ReferenceSidebarGroup as Group, ReferenceSidebarLink as Link } from './reference-sidebar';
 
 export const primaryNavigation = [
@@ -13,6 +14,22 @@ export const primaryNavigation = [
 const link = (label: string, slug: string): Link => ({ label, slug });
 /** Group destinations under a collapsible journey heading. */
 const group = (label: string, items: Array<Group | Link>, collapsed = true): Group => ({ label, items, collapsed });
+
+
+/** Concise sidebar labels; group membership and order share the Concepts directory. */
+const conceptLabels: Record<string, string> = {
+  'concepts/gated-lanes': 'The Gated-Lane Model',
+  'concepts/artifacts': 'Project Knowledge and Artifacts',
+  'concepts/test-first': 'Test-First Evidence',
+  'concepts/smarts': 'SMARTS',
+  'concepts/adrs': 'ADRs and the Decision Log',
+  'concepts/provenance-drift': 'Provenance and Context Drift',
+  'concepts/jit-context-injection': 'Just-in-Time Context Injection',
+  'concepts/persona-and-context': 'The Persona-Register Split',
+  'concepts/checkpoints': 'Checkpoints',
+  'concepts/auditability': 'Auditability',
+  'enforcement': 'Enforcement & Security',
+};
 
 /** Order reader journeys while retaining the generated Academy and reference inventories. */
 export function buildJourneySidebar(reference: Group[], academy: Group[]): Group[] {
@@ -33,11 +50,10 @@ export function buildJourneySidebar(reference: Group[], academy: Group[]): Group
       group('Feature Forge', [link('What Is the Feature Forge', 'feature-forge/overview'), link("What's in the Forge", 'feature-forge/whats-in-the-forge'), link('Use a Preview Feature', 'feature-forge/using-preview-features'), link('Explore Untrusted Code', 'guides/ca-sandbox')]),
     ]),
     group('Concepts', [
-      link('Concept Map', 'concepts'), link('Project Context and Artifacts', 'concepts/artifacts'),
-      link('The Gated-Lane Model', 'concepts/gated-lanes'), link('SMARTS', 'concepts/smarts'),
-      link('ADRs and the Decision Log', 'concepts/adrs'), link('Provenance and Context Drift', 'concepts/provenance-drift'),
-      link('Checkpoints', 'concepts/checkpoints'), link('Auditability', 'concepts/auditability'),
-      group('Internal mechanisms', [link('Just-in-Time Context Injection', 'concepts/jit-context-injection'), link('The Persona-Register Split', 'concepts/persona-and-context'), link('The Evidence Behind the Persona', 'concepts/persona-research-basis'), link('Selected Hardening Notes', 'concepts/hardening-history')]),
+      link('Concept Map', 'concepts'),
+      ...conceptGroups.map(section => group(section.title,
+        section.items.map(item => link(conceptLabels[item.slug], item.slug)))),
+      group('Research and history', conceptBackground.map(item => link(item.title, item.slug))),
     ]),
     group('Academy', [link('Academy Overview', 'academy'), ...academy]),
     group('Reference', [link('All Reference', 'reference'), link('The .codearbiter/ Directory', 'codearbiter-directory'), link('Configuration', 'reference/configuration'), link('Glossary', 'glossary'), link('Hooks Reference', 'hooks'), link('Hook Gates', 'reference/hooks-gates'), ...reference]),

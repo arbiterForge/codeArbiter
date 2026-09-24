@@ -48,3 +48,7 @@ Reach for `/ca:fix` once the cause is known or you can name a precise repro. If 
 
 [Investigate and fix a defect](/guides/investigate-and-fix/) explains the evidence, regression
 review and handoff; [Review and ship](/guides/review-and-ship/) covers delivery after verification.
+
+For the connected operating model, read [gated lanes](/concepts/gated-lanes/) and
+[test-first evidence](/concepts/test-first/). The map distinguishes a routed procedure
+from a command you must type, and retains the caller’s review and delivery boundaries.

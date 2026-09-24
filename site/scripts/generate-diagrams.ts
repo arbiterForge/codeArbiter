@@ -1,3 +1,5 @@
+import { featureMap } from './execution-maps/model';
+import { renderExecutionSvg } from './execution-maps/render';
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -264,7 +266,7 @@ function horizontalFlow(
 
 function gateModel(): string {
   const title = "Soft gates surface; hard gates stop";
-  const desc = "Matched soft and hard gate paths. A soft gate waits for a human decision and then continues. A hard gate blocks until the user performs the required action.";
+  const desc = "An attended soft decision gate and a human-authority hard gate. This illustrates decision boundaries, not every possible validation failure or recovery path.";
   const body = [
     label(44, 50, "GATE BEHAVIOR", { size: 14, family: "mono", color: C.gold, weight: 750, letterSpacing: 2 }),
     label(44, 82, "The same approach. Two different outcomes.", { size: 20, color: C.white, weight: 750 }),
@@ -312,7 +314,7 @@ function gateModel(): string {
       kind: "copy",
       maxWidth: 452,
     }),
-    label(44, 436, "Frequent hard-gate trips indicate a thin specification, not a normal control loop.", {
+    label(44, 436, "Decision cases only. Failed checks follow their own correction and recovery contracts.", {
       size: 12,
       annotation: true,
       family: "mono",
@@ -528,7 +530,7 @@ function commitGatePhases(): string {
   body.push(multiline(1079, 289, ["5.5 · Provenance", "auto-heal"], { size: 14, color: C.white, weight: 700, anchor: "middle" }));
   body.push(label(1079, 334, "only on drift", { size: 12, annotation: true, family: "mono", color: C.muted, anchor: "middle" }));
   body.push(elbow([[636, 304], [956, 304]], C.gold, true));
-  body.push(label(1188, 508, "A BLOCK clears only through the logged /ca:override path.", {
+  body.push(label(1188, 508, "Correct failed conditions first. Only permitted bypasses use /ca:override.", {
     size: 12,
     annotation: true,
     family: "mono",
@@ -562,16 +564,7 @@ const diagrams: Record<string, string> = {
     ],
     "the ADR is numbered, dated, user-attributed, and governed",
   ),
-  "lane-feature.svg": laneDiagram(
-    "Feature lane",
-    "From approved intent to reviewed pull request.",
-    [
-      { heading: "Commands", tone: "gold", items: ["/ca:feature", "/ca:commit", "/ca:pr"] },
-      { heading: "Skills", tone: "info", items: ["brainstorming", "writing-plans", "tdd"] },
-      { heading: "Agents", tone: "positive", items: ["author agents", "reviewer agents"] },
-    ],
-    "execution order is governed; the default branch is never a direct write",
-  ),
+  "lane-feature.svg": renderExecutionSvg(featureMap),
   "lane-flow.svg": horizontalFlow(
     "Gated lane flow",
     "Intent routes to its owner, clears the applicable gates, and ships through a pull request.",
