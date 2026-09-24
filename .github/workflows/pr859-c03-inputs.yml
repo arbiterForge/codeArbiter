@@ -1,41 +1,102 @@
-name: PR859 C03 exact inputs
+name: PR859 checked correction objects
 on:
   push:
     branches: [prep/pr859-c03-inputs-20260924]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  inputs:
+  objects:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: 8c8bf0cb1ff3bbd5f4f2d4ef45224880a97957ac
-          fetch-depth: 0
-          submodules: recursive
+          fetch-depth: 1
           persist-credentials: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: '22'
-      - name: Install existing locked documentation tooling
-        working-directory: site
-        run: npm ci --ignore-scripts
-      - name: Archive fixed source and tooling without credentials
+      - name: Reconstruct fixed reviewed data and store an unreferenced tree
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = 8c8bf0cb1ff3bbd5f4f2d4ef45224880a97957ac
-          mkdir -p "$RUNNER_TEMP/pr859-inputs"
-          git bundle create "$RUNNER_TEMP/pr859-inputs/source.bundle" HEAD
-          git -C academy-source bundle create "$RUNNER_TEMP/pr859-inputs/academy.bundle" HEAD
-          tar -czf "$RUNNER_TEMP/pr859-inputs/site-tooling.tgz" site/node_modules
-          { git rev-parse HEAD HEAD^{tree}; git -C academy-source rev-parse HEAD; node --version; npm --version; } > "$RUNNER_TEMP/pr859-inputs/identity.txt"
-          cd "$RUNNER_TEMP/pr859-inputs"
-          sha256sum source.bundle academy.bundle site-tooling.tgz identity.txt > SHA256SUMS
+          python - <<'PY'
+          import base64, hashlib, json, os, pathlib, re, subprocess, urllib.request
+          BASE = '8c8bf0cb1ff3bbd5f4f2d4ef45224880a97957ac'
+          TREE = '50e86408b0ca7e7c7f36e361b1daa310d3704e6a'
+          REPO = 'arbiterForge/codeArbiter'
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          def api(path, value=None):
+              req = urllib.request.Request('https://api.github.com/repos/'+REPO+'/git/'+path,
+                  data=None if value is None else json.dumps(value).encode(),
+                  headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'], 'Accept':'application/vnd.github+json'},
+                  method='GET' if value is None else 'POST')
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  return json.load(response)
+          def replace(path, old, new, count=1):
+              p=pathlib.Path(path); s=p.read_text(); assert s.count(old)==count, path
+              p.write_text(s.replace(old,new))
+          assert git('rev-parse','HEAD')==BASE
+          ci=pathlib.Path('.github/workflows/ci.yml'); s=ci.read_text(); start=s.index('  artifact-engine:\n')
+          pos=s.index('    timeout-minutes: 15',start)
+          ci.write_text(s[:pos]+s[pos:].replace('    timeout-minutes: 15','    # Native macOS qualification can exceed 15 minutes before final evidence binding.\n    timeout-minutes: 30',1))
+          anchor='    def test_artifact_consumer_closure_selects_exactly_one_declared_native_cell(self):\n'
+          new='''    def test_native_qualification_has_a_bounded_thirty_minute_job_budget(self):
+                  # PR859's Intel macOS cell exhausted 15 minutes during conformance after
+                  # passing the preceding suites. Preserve the complete qualification path.
+                  jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+                  job = jobs["artifact-engine"]
+                  self.assertEqual(_JOB_TIMEOUT.findall(job), ["30"])
+                  self.assertIn("fail-fast: false", job)
+                  self.assertNotIn("continue-on-error:", job)
+                  for required in ("test_artifact_conformance.py", "test_artifact_package.py",
+                                   "Bind the candidate to this exact-host native result",
+                                   "Preserve the exact native candidate and qualification receipt"):
+                      self.assertIn(required, job)
+
+          '''
+          replace('.github/scripts/test_ci_impact.py',anchor,new+anchor)
+          p='site/scripts/execution-maps/render.ts'
+          replace(p,'const x1 = start.x + 169; const x2 = end.x - 7; const mid = (x1 + x2) / 2;', '''// A 9-unit head needs a straight approach longer than the head itself.
+              // Stroke-scaled markers previously overlaid the vertical elbow like a flag.
+              const x1 = start.x + 169; const x2 = end.x - 2; const mid = x2 - 13;''')
+          replace(p,'stroke-width="2.5"${edge.kind','stroke-width="2.5" stroke-linejoin="round"${edge.kind')
+          old='markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z"'
+          new='markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z"'
+          replace(p,old,new)
+          p='site/public/diagrams/lane-feature.svg'; replace(p,old,new,4)
+          replace(p,'stroke-width="2.5"','stroke-width="2.5" stroke-linejoin="round"',12)
+          s=pathlib.Path(p).read_text()
+          pattern=r'(<path data-map-edge="[^"]+"[^>]+d="M[\d.]+ [\d.]+H)([\d.]+)(V[\d.]+H)([\d.]+)(")'
+          s,n=re.subn(pattern,lambda m:m[1]+str(int(float(m[4]))+5-13)+m[3]+str(int(float(m[4]))+5)+m[5],s)
+          assert n==12,n; pathlib.Path(p).write_text(s)
+          new_files={
+              'site/test/content/execution-arrow-geometry.test.ts':'269a90f8e989dd5277a0b402e8e65cec58bd5761',
+              'site/test/browser/execution-arrows.spec.ts':'d1f55752fa59818af6044e64e345a3731905ba30',
+          }
+          for path, sha in new_files.items():
+              b=base64.b64decode(api('blobs/'+sha)['content'])
+              assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()==sha
+              p=pathlib.Path(path); assert not p.exists();p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b)
+          paths=['.github/scripts/test_ci_impact.py','.github/workflows/ci.yml','site/public/diagrams/lane-feature.svg','site/scripts/execution-maps/render.ts',*new_files]
+          subprocess.run(['git','add','--',*paths],check=True)
+          assert git('write-tree')==TREE,git('write-tree')
+          assert sorted(git('diff','--cached','--name-only').splitlines())==sorted(paths)
+          entries=[]
+          for path in paths:
+              b=pathlib.Path(path).read_bytes();sha=git('rev-parse',':'+path)
+              result=api('blobs',{'content':base64.b64encode(b).decode(),'encoding':'base64'})
+              assert result['sha']==sha
+              entries.append({'path':path,'mode':'100644','type':'blob','sha':sha})
+          result=api('trees',{'base_tree':git('rev-parse','HEAD^{tree}'),'tree':entries})
+          assert result['sha']==TREE
+          output=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr859-objects';output.mkdir()
+          (output/'objects.json').write_text(json.dumps({'base':BASE,'tree':TREE,'entries':entries},indent=2))
+          print('Checked complete tree:',TREE)
+          PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: pr859-c03-inputs
-          path: ${{ runner.temp }}/pr859-inputs/
+          name: pr859-c03-fix-objects
+          path: ${{ runner.temp }}/pr859-objects/
           retention-days: 1
           if-no-files-found: error
