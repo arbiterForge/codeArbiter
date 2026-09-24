@@ -1,0 +1,30 @@
+name: PR859 C03 resume inputs
+on:
+  push:
+    branches: [prep/pr859-c03-resume-20260924]
+    paths: [.github/workflows/pr859-c03-resume-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Package the exact already-published correction
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/c03-source"
+          git branch captured-c03-baseline aebee1bb753d29e34030ee22c98c9eb8fabb1752
+          git bundle create "$RUNNER_TEMP/c03-source/source.bundle" captured-c03-baseline ^8c8bf0cb1ff3bbd5f4f2d4ef45224880a97957ac
+          git rev-parse captured-c03-baseline captured-c03-baseline^{tree} > "$RUNNER_TEMP/c03-source/identity.txt"
+          cd "$RUNNER_TEMP/c03-source"
+          sha256sum source.bundle identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr859-c03-source-delta
+          path: ${{ runner.temp }}/c03-source/
+          retention-days: 1
+          if-no-files-found: error
