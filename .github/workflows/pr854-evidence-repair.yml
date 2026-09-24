@@ -10,6 +10,8 @@ jobs:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -114,6 +116,33 @@ jobs:
           report={'source_parent':base,'workflow_head':os.environ['GITHUB_SHA'],'tree':tree,'local_validation_commit':fixture,'files':payload['files'],'message':message,'all_commands_passed':all(r['exit_code']==0 for r in results),'command_count':len(results)}
           (out/'manifest.json').write_text(json.dumps(report,indent=2))
           assert report['all_commands_passed'],'Inspect retained failures; no passing result is inferred.'
+          PY
+      - name: Retain tested Git blob objects only, without a commit or ref update
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-evidence-repair'
+          record=json.loads((out/'manifest.json').read_text())
+          assert record['all_commands_passed'] and record['workflow_head']==os.environ['GITHUB_SHA']
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
+          def api(method,path,payload=None):
+              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=json.dumps(payload).encode() if payload is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response: return json.load(response)
+          assert api('GET','/git/ref/heads/codex/farm-readiness-canary-isolation')['object']['sha']==record['workflow_head']
+          uploaded=[]
+          for row in record['files']:
+              data=pathlib.Path(row['path']).read_bytes()
+              assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+              actual=api('POST','/git/blobs',{'content':data.decode('utf-8'),'encoding':'utf-8'})['sha']
+              assert actual==row['sha']
+              uploaded.append({'path':row['path'],'mode':row['mode'],'type':'blob','sha':actual})
+          (out/'uploaded-blobs.json').write_text(json.dumps({'tree_entries':uploaded,'branch_updated':False,'commit_created':False},indent=2))
           PY
       - name: Retain actual outcomes and candidate bytes
         if: always()
