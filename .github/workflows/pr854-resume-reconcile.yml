@@ -80,15 +80,21 @@ jobs:
           # representation may be replaced by its exact committed bytes in this
           # disposable source-replay workspace. Do not normalize unknown edits.
           materialized=[]
+          baseline_paths=sorted({r['path'] for r in payload['files']}|set(preserve))
           subprocess.run(['git','config','--local','core.autocrlf','false'],check=True)
           subprocess.run(['git','config','--local','core.eol','lf'],check=True)
-          for path in sorted({r['path'] for r in payload['files']}|set(preserve)):
+          for path in baseline_paths:
               raw=git('show',main+':'+path);p=root/path;before=p.read_bytes()
               assert before==raw or (os.name=='nt' and before.replace(b'\r\n',b'\n')==raw),path
               if before!=raw:materialized.append({'path':path,'checkout_sha256':hashlib.sha256(before).hexdigest(),'git_blob':oid(raw)})
               p.write_bytes(raw)
               assert oid(p.read_bytes())==git('rev-parse',main+':'+path).decode().strip(),path
           (out/'checkout-byte-replay.json').write_bytes(json.dumps(materialized,indent=2).encode('utf-8'))
+          # Refresh only the byte-verified baseline paths after rewriting them;
+          # git apply --index also consults index stat data. The whole index
+          # must still describe exactly the original main tree before edits.
+          subprocess.run(['git','add','--',*baseline_paths],check=True)
+          assert git('write-tree').strip()==git('rev-parse',main+'^{tree}').strip()
           for row in payload['files']:
               p=root/row['path'];assert oid(p.read_bytes())==row['base_blob'],row['path']
               assert git('ls-tree',main,'--',row['path']).decode().split()[0]==row['mode']
