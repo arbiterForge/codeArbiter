@@ -93,6 +93,7 @@ describe("hand-authored learning contract", () => {
       "guides/overriding-a-gate.md",
       "guides/recording-adrs.md",
       "guides/review-and-ship.mdx",
+      "guides/investigate-and-fix.mdx",
       "guides/releasing-a-version.md",
       "guides/the-statusline.md",
       "guides/troubleshooting.md",

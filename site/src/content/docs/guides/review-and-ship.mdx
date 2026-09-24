@@ -67,7 +67,7 @@ rather than pretending a diff review covers a design that has not been built.
 
 In your native terminal, use these read-only checks:
 
-```sh
+```sh wrap
 git rev-parse --show-toplevel
 git branch --show-current
 git status --short
@@ -117,7 +117,7 @@ An out-of-scope `[NEEDS-TRIAGE]` item is a follow-up to evaluate, not an automat
 
 For example, a saved-search export review might identify a newline-handling defect:
 
-```text
+```text wrap
 Illustrative review excerpt, not captured execution:
 Target: saved-search CSV change
 Finding: a field containing a newline is emitted without CSV quoting.

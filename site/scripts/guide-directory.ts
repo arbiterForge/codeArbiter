@@ -5,7 +5,7 @@ export const guideGroups = [
     slugs: ['opt-in-a-repo', 'plan-a-new-project', 'understand-an-existing-project'] },
   { id: 'make-a-change', title: 'Make a change',
     description: 'Define the behavior, review the artifacts, and choose attended or autonomous work.',
-    slugs: ['first-feature', 'feature-lane', 'review-artifacts', 'autonomous-sprints'] },
+    slugs: ['first-feature', 'feature-lane', 'investigate-and-fix', 'review-artifacts', 'autonomous-sprints'] },
   { id: 'review-and-ship', title: 'Review and ship',
     description: 'Distinguish findings, decisions, commits, pull requests and publication.',
     slugs: ['review-and-ship', 'adding-a-dependency', 'recording-adrs', 'releasing-a-version'] },

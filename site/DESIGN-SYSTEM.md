@@ -177,3 +177,23 @@ when the screen is filtered. Keep main site search distinct from this metadata-o
 Reuse peer spacing, tokens and content-sized cards. Verify combined filters, empty results,
 client-navigation reattachment, no JavaScript, keyboard, print and non-root paths against rendered
 output. Card labels and estimates are guidance, not release or compatibility claims.
+
+
+## Readable tables in guides
+
+Simple Markdown/MDX guide tables are enhanced at build time by `rehype-table-shell.ts`.
+Their presentation lives in `src/styles/guide-tables.css`, registered with the site styles.
+On content columns up to 40rem, each row stacks its labelled fields so the complete instruction
+and every host entry are visible without lateral scrolling. The original cell nodes exist once.
+Column headers retain native associations and explicit table roles; additional visible labels are
+hidden from assistive technology and search indexing. No JavaScript or saved preference is needed.
+
+Keep the existing scroll presentation for Academy, reference, complex headers, spans, nested tables
+and authored header associations. Do not flatten those relationships by guessing at labels.
+Desktop guide tables retain columns when space permits. Code/path values in stacked rows wrap
+without changing their copied text. Do not shrink fonts, clip values or omit a host to make them fit.
+
+Page-level overflow checks cannot establish cell readability. Test each rendered text range against
+its cell and viewport, compare desktop/mobile content, and inspect all table rows. Verify retained
+semantics, no-script reading, text enlargement, forced colors, print and base-prefixed links.
+Screenshots are reading evidence, not full screen-reader or cross-browser certification.

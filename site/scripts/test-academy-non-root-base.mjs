@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync, rmSync } from "node:fs";
+import { readFileSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -103,6 +103,9 @@ try {
   }
   process.stdout.write("Reader maps: all twelve links and three retained diagrams remain beneath /docs/.\n");
 
+  const expectedGuideIds = readdirSync(join(siteRoot, "src", "content", "docs", "guides"))
+    .filter(name => /\.mdx?$/.test(name) && !/^index\./.test(name))
+    .map(name => `guides/${name.replace(/\.mdx?$/, "")}`).sort();
   const guideIndex = readFileSync(join(outputRoot, "guides", "index.html"), "utf8");
   // Validate the component's actual substantive content, not just its short MDX shell.
   const directoryHtml = guideIndex.match(/<ca-guide-directory\b[\s\S]*?<\/ca-guide-directory>/)?.[0] ?? "";
@@ -119,12 +122,12 @@ try {
   const cardContent = [...directoryHtml.matchAll(/<li\b[^>]*data-guide-entry="([^"]+)"[\s\S]*?<\/li>/g)];
   if (JSON.stringify(sectionIds) !== JSON.stringify(expectedSections) ||
       (visibleDirectoryText.match(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*\b/gu)?.length ?? 0) < 250 ||
-      cardContent.length !== 18 || cardContent.some(([card]) =>
+      cardContent.length !== expectedGuideIds.length || cardContent.some(([card]) =>
         !/<p\b[^>]*>[^<]+<\/p>/.test(card) || !card.includes("Guide estimate") || !card.includes("Level"))) {
     throw new Error("The rendered guide directory lost substantive sections, outcomes or context");
   }
   const guideCards = [...guideIndex.matchAll(/data-guide-entry="([^"]+)"[\s\S]*?<h3\b[^>]*><a\b[^>]*href="([^"]+)"/g)];
-  if (guideCards.length !== 18 || guideCards.some(([, id, href]) => href !== `/docs/${id}/`)) {
+  if (JSON.stringify(guideCards.map(([, id]) => id).sort()) !== JSON.stringify(expectedGuideIds) || guideCards.some(([, id, href]) => href !== `/docs/${id}/`)) {
     throw new Error("The guide finder lost an entry or escaped the /docs/ base");
   }
   for (const [, id] of guideCards) readFileSync(join(outputRoot, id, "index.html"));
@@ -134,7 +137,14 @@ try {
   if (deliveryLinks.length !== 4 || deliveryLinks.some(href => !href.startsWith("/docs/"))) {
     throw new Error("The review-to-delivery map escaped the /docs/ base");
   }
-  process.stdout.write("Guide discovery: 18 guides and four delivery-map links remain beneath /docs/.\n");
+  // Verify table enhancement on actual MDX output, not only the AST unit fixture.
+  for (const slug of ["review-and-ship", "investigate-and-fix"]) {
+    const html = readFileSync(join(outputRoot, "guides", slug, "index.html"), "utf8");
+    if (!html.includes('data-ca-table="stacked"') || !html.includes('class="ca-table-cell-value"')) {
+      throw new Error(`The ${slug} guide lost its single-source mobile table presentation`);
+    }
+  }
+  process.stdout.write(`Guide discovery: ${expectedGuideIds.length} guides, four delivery-map links and mobile table content remain beneath /docs/.\n`);
 
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
 } finally {

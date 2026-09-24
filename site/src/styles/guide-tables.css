@@ -1,0 +1,71 @@
+/* Simple authored-guide tables read top-to-bottom on narrow content columns.
+ * Column headers remain in the accessibility tree; generated mobile labels are
+ * aria-hidden. Original cell content exists only once and is never truncated. */
+.ca-table-shell--stackable { container-type: inline-size; }
+.ca-table-cell-label { display: none; }
+.ca-table-cell-value { margin: 0; }
+
+@container (max-width: 40rem) {
+  .ca-table-shell--stackable table {
+    display: block;
+    min-inline-size: 0;
+    inline-size: 100%;
+  }
+  .ca-table-shell--stackable thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .ca-table-shell--stackable :is(tbody, tbody tr, td) {
+    display: block;
+    inline-size: auto;
+    min-inline-size: 0;
+  }
+  .ca-table-shell--stackable tbody tr + tr {
+    border-block-start: 2px solid var(--ca-line-strong);
+  }
+  .ca-table-shell--stackable td {
+    padding: var(--ca-space-3) var(--ca-space-4);
+    border-block-end: 0;
+    text-align: start;
+  }
+  .ca-table-shell--stackable td:first-child { padding-block-start: var(--ca-space-5); }
+  .ca-table-shell--stackable td:last-child { padding-block-end: var(--ca-space-5); }
+  .ca-table-shell--stackable .ca-table-cell-label {
+    display: block;
+    margin: 0 0 var(--ca-space-1);
+    color: var(--ca-brand-bright);
+    font: 700 var(--ca-text-xs)/1.5 var(--ca-font-mono);
+    letter-spacing: .06em;
+  }
+  .ca-table-shell--stackable .ca-table-cell-value {
+    margin: 0;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .ca-table-shell--stackable .ca-table-cell-value :is(code, a) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+@media (forced-colors: active) {
+  .ca-table-shell--stackable {
+    --ca-brand-bright: CanvasText;
+    --ca-line-strong: CanvasText;
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+  .ca-table-shell--stackable :is(th, td, .ca-table-cell-label) { color: CanvasText; background: Canvas; }
+  .ca-table-shell--stackable code { color: CanvasText; background: Canvas; }
+  .ca-table-shell--stackable a { color: LinkText; }
+}
+@media print {
+  .ca-table-shell--stackable { overflow: visible; box-shadow: none; }
+  .ca-table-shell--stackable tbody tr { break-inside: avoid; }
+}

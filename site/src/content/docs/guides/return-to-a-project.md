@@ -47,7 +47,7 @@ summary. See [the artifact model](/concepts/artifacts/).
 | Intent | Appropriate route or question |
 |---|---|
 | Understand something without changing files | Ask directly and state that the answer should remain read-only |
-| Investigate an unexplained failure | Debug/investigation first, then a bounded fix once the defect is understood |
+| Investigate an unexplained failure | [Investigate and fix](/guides/investigate-and-fix/) with a cited cause and regression obligation |
 | Repair a reproduced defect | Fix, with a regression obligation |
 | Add caller-visible behavior | Feature, or sprint for an explicitly bounded autonomous package |
 | Preserve behavior while changing structure | Refactor, with parity obligations |
