@@ -3985,22 +3985,13 @@ class BackfillBranchRefusalTest(unittest.TestCase):
 # `.codearbiter/reports/release-closure-journeys.md` for the full scenario
 # matrix and the #570-vs-#623 disposition. Three new classes:
 #
-#   ComposedFixLaneJourneyTest       one real consumer repo, driven through
-#                                     THREE #570 fixes in the sequence an
-#                                     operator would actually hit them
-#                                     (prerequisite refusal T-12, branch-
-#                                     scoped back-fill refusal T-13, ancestry
-#                                     refusal T-10/T-11), ending in a genuine
-#                                     clean pass that creates a real
-#                                     annotated tag through the
-#                                     #623-restructured Phase 2. Nothing
-#                                     elsewhere in this module chains these
-#                                     arms against a SINGLE repo in sequence
-#                                     -- each fix's own class (
-#                                     PrerequisiteRefusalTest,
-#                                     BackfillBranchRefusalTest,
-#                                     AncestryDocumentedFlowTest) proves it
-#                                     in isolation only.
+#   ComposedFixLaneJourneyTest       partial ancestry/tag command composition
+#                                     after explicit fixture setup. Its early
+#                                     file/branch assertions are premises,
+#                                     not release refusal evidence. The new
+#                                     test_release_workflow_followup.py suite
+#                                     executes the installed guards and the
+#                                     declaration/ledger/merge re-entry path.
 #   AncestryOldVsNewBehaviorTest      the OLD (pinned pre-sprint commit)
 #                                     lane run for real against the exact
 #                                     hazard #570 finding BODY-03 names,
@@ -4024,31 +4015,21 @@ class BackfillBranchRefusalTest(unittest.TestCase):
 
 
 class ComposedFixLaneJourneyTest(unittest.TestCase):
-    """T-20 (AC-09/AC-10/AC-11/AC-13): drives prerequisite refusal (T-12),
-    branch-scoped back-fill refusal (T-13), and ancestry refusal (T-10/
-    T-11) against ONE real consumer repository, in the order an actual
-    operator hits them, then a genuine clean pass that creates a real
-    annotated tag by re-running T-74/T-75's own `_execute_lane_sequence`
-    lane driver -- proving the #623-restructured Phase 2 still composes and
-    creates a tag at the end of this exact composed journey (cited, not a
-    second prose-structure check; `Phase2StructureTest`/T-17/T-18 already
-    hold the mutation-sensitive proof that the split is behavior-preserving
-    on its own).
+    """Partial ancestry/tag command composition after explicit fixture setup.
 
-    This is the composition proof item 3 of T-20's task description asks
-    for: each individual fix already has its own isolated class in this
-    module, but nothing before this class chains them against a single
-    repo -- proving an EARLIER refusal's fingerprint-preserving no-op
-    leaves the repo in a state the NEXT fix can still correctly act on, and
-    that a consumer who clears every refusal in order eventually reaches a
-    genuine, correctly-derived release.
+    The early stages establish missing-prerequisite and protected-branch
+    preconditions; they do not execute a release refusal or a commit gate.
+    Detection is executed read-only. Later stages exercise the extracted
+    ancestry and tag commands, not a hosted publisher or a complete release.
 
-    Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
-    `core/pysrc/_releaselib.py`/`_gitexec.py` directly -- never the
-    archived `_FIXTURE.plugin_root` (`git archive HEAD` bytes) -- for the same
-    reason `AncestryDocumentedFlowTest`/`PrerequisiteRefusalTest`/
-    `BackfillBranchRefusalTest` do: the canonical source is the immediate
-    candidate under test, while the archived fixture is commit-bound."""
+    Actual pre-write refusal and declaration-plus-ledger publication/re-entry
+    across fast-forward, squash, and merge histories are exercised by
+    plugins/ca/hooks/tests/test_release_workflow_followup.py. Those tests
+    execute the installed shell guards between before/after snapshots.
+
+    This class continues to read current canonical source for ancestry/tag
+    composition; separate archive fixtures establish committed resource closure.
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -4123,14 +4104,14 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
         verify_proc = _run_argv(argv, root)
         return last_tag, last_tag_proc, verify_proc
 
-    def test_fixes_compose_in_sequence_ending_in_a_genuine_clean_release(self):
+    def test_ancestry_and_tag_commands_compose_after_fixture_setup(self):
         root = self.consumer_root
         targets_path = os.path.join(root, ".codearbiter", "release-targets.md")
 
         # --- Stage 1: zero-state consumer -- prerequisite refusal precondition
-        #     (T-12, AC-10). The check itself (a file-existence test the agent
-        #     performs, not a runnable CLI) is proven for real against a
-        #     zero-state consumer by PrerequisiteRefusalTest; this stage
+        #     (T-12, AC-10). PrerequisiteRefusalTest establishes file-state
+        #     premises; the follow-up suite executes the current guard.
+        #     This stage
         #     confirms the SAME precondition holds on THIS repo before the
         #     journey proceeds, and that nothing has been written yet.
         rendered_tech_stack = self.prerequisite_path_template.replace(
@@ -4139,12 +4120,8 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
             os.path.isfile(rendered_tech_stack),
             "fixture premise: build_consumer_repo carries no tech-stack.md")
         self.assertFalse(os.path.isfile(targets_path))
-        before = self._fingerprint(root)
-        after = self._fingerprint(root)
-        self.assertEqual(
-            before, after,
-            "the unresolved prerequisite must not have mutated the repo "
-            "merely by being checked")
+        # These are fixture premises, not refusal evidence. The follow-up
+        # suite executes the real guard before a controlled write attempt.
 
         # --- Stage 2: clear the prerequisite ---------------------------------
         _write_text(
@@ -4179,8 +4156,9 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
             "the branch-refusal precondition must not mutate the repo it "
             "protects, mid-journey")
 
-        # --- Stage 4: move to a feature branch (clearing T-13) and declare
-        #     the targets file, as back-fill's own persist step would -------
+        # --- Stage 4: explicit fixture setup, not a Back-fill execution.
+        # The declaration/ledger/merge journey is covered by the follow-up
+        # suite; this fixture prepares only the later ancestry/tag commands.
         _git(["checkout", "-q", "-b", "feat/declare-release-targets"], root)
         current_branch = _git(["branch", "--show-current"], root).stdout.strip()
         self.assertNotIn(current_branch, self.protected_branch_names)

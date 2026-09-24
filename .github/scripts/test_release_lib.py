@@ -7554,13 +7554,14 @@ class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
             cls.text.index("## Phase 1"): cls.text.index("## Phase 2")]
 
     def test_step_0_names_the_backfill_canonical_shape_and_its_cause(self):
-        idx = self.phase1.index(
-            "On Back-fill's own canonical first-release path")
-        window = self.phase1[idx:idx + 1500]
-        self.assertIn("chore: declare release targets", window)
-        self.assertIn("payload-exclude: .codearbiter/", window)
+        start = self.phase1.index("On Back-fill's own canonical first-release path")
+        end = self.phase1.index("\n1. Reload", start)
+        window = self.phase1[start:end]
+        self.assertIn("excluded `.codearbiter/` state", window)
         self.assertIn("ORDINARY outcome", window)
-        self.assertIn("not a corner case", window)
+        for method in ("fast-forward", "squash", "normal merge"):
+            self.assertIn(method, window)
+        self.assertIn("never applied silently", window)
 
     def test_step_0_makes_the_widen_the_documented_default_but_still_confirmed(self):
         # The plan's own R-05 verification text: the escape-hatch behavior
@@ -7580,102 +7581,57 @@ class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
         self.assertIn("500-line", window)
 
     def test_step_1_checks_the_default_shape_BEFORE_the_stop_verdict(self):
-        # AC-13's own discipline ("no competing executable correction
-        # paragraph exists afterward") applies here too, even though
-        # Phase2StructureTest only pins it for Phase 2: a literal
-        # top-to-bottom executor must reach the shape check before it can
-        # ever reach the STOP verdict, not the other way around.
-        idx = self.phase1.index(
-            "Before treating empty output here as a genuine STOP")
-        window = self.phase1[idx:idx + 1000]
-        self.assertIn("${ADOPTED:-}", window)
-        self.assertIn("$(git rev-parse HEAD)", window)
-        self.assertIn("$LAST_TAG", window)
-        self.assertIn("EFFECTIVE_WINDOW=HEAD", window)
-        check_idx = self.phase1.index(
-            "Before treating empty output here as a genuine STOP")
-        verdict_idx = self.phase1.index(
-            "STOPs as nothing to release for `$TARGET`", check_idx)
-        self.assertLess(
-            check_idx, verdict_idx,
-            "the shape check must precede the STOP verdict it corrects, "
-            "not follow it")
+        start = self.phase1.index("Before treating empty output here as a genuine STOP")
+        end = self.phase1.index("\n2. ", start)
+        decision = self.phase1[start:end]
+        self.assertIn('merge-base --is-ancestor -- "$ADOPTED" HEAD', decision)
+        self.assertIn('"$EFFECTIVE_WINDOW" != "HEAD"', decision)
+        self.assertIn("confirm-first-release-window", decision)
+        self.assertNotIn('[ "${ADOPTED:-}" =', decision)
+        invocation = decision.index('WINDOW_STATE=$(release_window_state "$@") || exit "$?"')
+        stop = decision.index("STOPs as nothing to release for `$TARGET`")
+        self.assertLess(invocation, stop)
 
     def test_step_1_guards_ADOPTED_against_unbound_variable_on_non_backfill_paths(self):
-        # HIGH-class non-regression: `$ADOPTED` is only ever assigned
-        # inside step 0's first-release branch. An ordinary tagged
-        # release's genuinely-empty-payload STOP (the normal, correct
-        # case) must not dereference an unset `$ADOPTED` under the hosted
-        # `set -euo pipefail` contract (memory: the run-24 HIGH at line
-        # 358's own "Zero-tag correction" note lives under this same
-        # contract) -- `${ADOPTED:-}`, never a bare `$ADOPTED`, and gated
-        # on `$LAST_TAG` being `<none>` so the check never even evaluates
-        # on a tagged release.
-        idx = self.phase1.index(
-            "Before treating empty output here as a genuine STOP")
-        window = self.phase1[idx:idx + 400]
-        self.assertIn("${ADOPTED:-}", window)
-        self.assertNotIn("$ADOPTED equals", window)
-        self.assertIn("$LAST_TAG` is `<none>`", window)
+        function = self._documented_window_function()
+        self.assertIn('[ "$LAST_TAG" = "<none>" ] && [ -n "${ADOPTED:-}" ]', function)
+        self.assertNotIn('[ -n "$ADOPTED" ]', function)
 
     def test_step_1_shape_check_executes_under_pipefail_with_ADOPTED_unset(self):
-        # The literal shell shape step 1's new sentence describes, run for
-        # REAL under `set -euo pipefail` (mirrors `ReleaseSurfaceTest.
-        # test_guarded_zero_tag_probe_executes_under_pipefail`'s own
-        # established pattern for proving a prose conditional against the
-        # hosted Bash contract, not merely reading the words). Two
-        # sub-cases, both with `$ADOPTED` never assigned at all: (1) an
-        # ordinary tagged release (`$LAST_TAG` != `<none>`) -- the
-        # `$LAST_TAG` guard must short-circuit before `${ADOPTED:-}` is
-        # ever needed; (2) a zero-tag, never-adopted project (`$LAST_TAG`
-        # = `<none>`, `adoption-commit` found nothing) -- `${ADOPTED:-}`
-        # must expand to empty rather than raise `unbound variable`.
-        # Neither sub-case may abort with a nonzero exit for that reason;
-        # both must reach the ordinary STOP branch untouched.
+        # Execute the current source definition, not a transcription of the old
+        # ADOPTED==HEAD rule. Neither tagged nor zero-tag empty history can
+        # propose widening when there is no confirmed adoption boundary.
         bash = (core_releaselib._resolve_posix_shell()
                 if os.name == "nt" else working_bash())
         if bash is None:
             self.skipTest("no working POSIX shell")
-        script = r'''
-set -euo pipefail
-LAST_TAG="$1"
-HEAD_SHA=$(git -C "$2" rev-parse HEAD)
-REACHED_STOP=0
-if [ "$LAST_TAG" = "<none>" ] && [ "${ADOPTED:-}" = "$HEAD_SHA" ]; then
-  echo "widened"
-else
-  REACHED_STOP=1
-fi
-test "$REACHED_STOP" -eq 1
-'''
+        script = ('set -euo pipefail\n'
+                  'LAST_TAG="$1"\nPROJECT_ROOT="$2"\nEFFECTIVE_WINDOW=HEAD\n'
+                  'unset ADOPTED\n' + self._documented_window_function() +
+                  '\nrelease_window_state absent-payload/\n')
         with tempfile.TemporaryDirectory() as tmp:
-            repo = Path(tmp) / "repo"
-            subprocess.run(["git", "init", "-q", "-b", "trunk", str(repo)], check=True)
-            subprocess.run(["git", "-C", str(repo), "config", "user.name", "test"],
-                            check=True)
-            subprocess.run(["git", "-C", str(repo), "config", "user.email",
-                             "test@example.invalid"], check=True)
-            (repo / "f.txt").write_text("x\n", encoding="utf-8")
-            subprocess.run(["git", "-C", str(repo), "add", "f.txt"], check=True)
-            subprocess.run(["git", "-C", str(repo), "commit", "-qm", "chore: seed"],
-                            check=True)
-
+            repo = self._build_fixture(tmp)
             for last_tag in ("v1.2.3", "<none>"):
                 with self.subTest(last_tag=last_tag):
                     result = subprocess.run(
                         [bash, "-s", "--", last_tag, Path(repo).as_posix()],
                         input=script.encode(), capture_output=True, timeout=60)
-                    self.assertEqual(
-                        result.returncode, 0,
-                        (result.stdout + result.stderr).decode(errors="replace"))
+                    self.assertEqual(result.returncode, 0,
+                                     (result.stdout + result.stderr).decode(errors="replace"))
+                    self.assertEqual(result.stdout.decode().strip(), "empty")
+
+    def _documented_window_function(self):
+        matches = re.findall(
+            r"(?ms)^   release_window_state\(\) \(\n.*?^   \)\n", self.phase1)
+        self.assertEqual(len(matches), 1, "one executable window decision must own the rule")
+        return "\n".join(line[3:] for line in matches[0].splitlines()) + "\n"
 
     def test_a_mutated_copy_missing_the_new_default_is_detected(self):
         # Mutation-kill: deleting the new sentence must make the prose
         # tests above fail, proving they are not vacuously true.
         idx = self.phase1.index(
             "On Back-fill's own canonical first-release path")
-        end = self.phase1.index(
-            "This one value is then used consistently", idx)
+        end = self.phase1.index("\n1. Reload", idx)
         mutant = self.phase1[:idx] + self.phase1[end:]
         self.assertNotIn("ORDINARY outcome", mutant)
         self.assertNotIn("documented default is to propose", mutant)
@@ -10671,7 +10627,10 @@ class ReleaseSurfaceTest(unittest.TestCase):
             "git status --porcelain -- :/ "
             "':(exclude,top).codearbiter/gate-events.log'",
             self.skill)
-        self.assertGreaterEqual(self.skill.count("clean-tree-status"), 5)
+        self.assertGreaterEqual(
+            self.skill.count('release_require_clean_tree || exit "$?"'), 5)
+        self.assertIn('if [ "$tree_status" -ne 0 ]', self.skill)
+        self.assertIn('if [ -n "$tree_output" ]', self.skill)
 
     def test_asset_build_runs_only_in_hosted_prepublication_with_guards(self):
         checks = self.skill.index("run-pre-tag $TARGET")
@@ -10689,7 +10648,7 @@ class ReleaseSurfaceTest(unittest.TestCase):
         self.assertIn("verify-release-assets", self.skill)
         build_section = self.skill[build - 2500:build + 2500]
         self.assertGreaterEqual(build_section.count(
-            'clean-tree-status "$TARGET"'), 2)
+            'release_require_clean_tree || exit "$?"'), 2)
         self.assertIn("exact candidate", build_section)
 
     def test_publication_uploads_verified_paths_and_checks_remote_names(self):
@@ -10858,7 +10817,7 @@ test -z "$TAG_SHA"
         self.assertLess(hosted_build, push)
         prepush = phase3[hosted_build:push]
         for token in ("RELEASE_ASSET_DIR", 'eval "$RELEASE_BUILD"',
-                      "retained-cohort path", "clean-tree-status"):
+                      "retained-cohort path", 'release_require_clean_tree || exit "$?"'):
             self.assertIn(token, prepush)
 
     def test_release_publication_requires_merged_hosted_exact_head_evidence(self):
@@ -10910,10 +10869,10 @@ test -z "$TAG_SHA"
         self.assertNotIn("git tag -a", recovery)
         self.assertLess(recovery.index("git rev-parse HEAD"),
                         recovery.index('eval "$RELEASE_BUILD"'))
-        first_clean = recovery.index('clean-tree-status "$TARGET"')
+        first_clean = recovery.index('release_require_clean_tree || exit "$?"')
         confirmation = recovery.index("releasehash.py\" check")
         pre_tag = recovery.index("run-pre-tag")
-        second_clean = recovery.index("clean-tree-status", pre_tag)
+        second_clean = recovery.index('release_require_clean_tree || exit "$?"', pre_tag)
         build = recovery.index('eval "$RELEASE_BUILD"')
         self.assertLess(first_clean, confirmation)
         self.assertLess(confirmation, pre_tag)
