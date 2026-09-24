@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] artifacts.docs.0001 - Make the documented verify command and agent-directory limits match the wrapper selector  (from security-review:claude-artifact-authority fix pass F-3/F-4)
+  - Desc: The includes show verify commands with ${CLAUDE_PLUGIN_ROOT}/${PLUGIN_ROOT}, which the wrapper selector refuses as compound; have arm return the exact verify command line (or require literal absolute paths), consider a safe-character allowlist, confirm whether the Codex exec shell sets PLUGIN_ROOT, and document that linked agent subdirectories block Claude reviews.
+- [ ] artifacts.harden.0004 - Scope strict registry refusals to Claude review pointers and write pointers atomically  (from security-review:claude-artifact-authority fix pass F-2)
+  - Desc: One torn or version-skewed pointer in the shared per-user registry denies every SendMessage in every project until removed by hand. Write pointers atomically, record host and activity in the pointer, and escalate only for Claude review pointers.
+- [ ] artifacts.harden.0003 - Close the SendMessage skip when a live review's spool cannot be resolved  (from security-review:claude-artifact-authority fix pass F-1)
+  - Desc: Strict SendMessage enumeration escalates only INVALID_AUTHORITY_STATE; AUTHORITY_BUSY from a spool rev-parse timeout or UNSAFE_REPOSITORY still skips a live review, so steering passes. Classify by cause (stale only on FileNotFoundError or a vanished repo/spool) and test a patched _spool_root failure during a RUNNING review.
 - [ ] artifacts.chore.0001 - Prune stale Claude subagent start markers from the authority registry  (from security-review:claude-artifact-authority PR F-7)
   - Desc: Unbound claude-start markers accumulate in the per-user registry. Prune markers older than a bound, or when no Claude request is LAUNCHING.
 - [ ] artifacts.harden.0002 - Reject a Claude reviewer stop that arrives before its launch binds  (from security-review:claude-artifact-authority PR F-3)
