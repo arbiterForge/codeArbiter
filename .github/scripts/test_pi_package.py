@@ -2279,6 +2279,26 @@ class NpmPublishContractTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 helper.validate_project_registry(repo)
 
+    def test_release_readback_gates_integrity_but_attestation_is_advisory(self):
+        # ADR-0040: a published version with the expected integrity but no
+        # matching attestation is present-unattested (warn), never a hard stop;
+        # a version or integrity mismatch still raises.
+        helper = self._helper()
+        unattested = json.dumps({"version": "0.10.0", "dist": {"integrity": "sha512-ok"}})
+        self.assertEqual(
+            helper.classify_registry_lookup(0, unattested, "", "0.10.0", "sha512-ok",
+                                            require_attestation=False),
+            "present-unattested")
+        with self.assertRaises(ValueError):
+            helper.classify_registry_lookup(0, unattested, "", "0.10.0", "sha512-ok")
+        for document, version, integrity in (
+            ({"version": "0.10.0", "dist": {"integrity": "sha512-other"}}, "0.10.0", "sha512-ok"),
+            ({"version": "0.9.9", "dist": {"integrity": "sha512-ok"}}, "0.10.0", "sha512-ok"),
+        ):
+            with self.subTest(document=document), self.assertRaises(ValueError):
+                helper.classify_registry_lookup(0, json.dumps(document), "", version, integrity,
+                                                require_attestation=False)
+
     def test_registry_lookup_distinguishes_absence_from_failure_and_requires_proof(self):
         helper = self._helper()
         expected = "sha512-expected"

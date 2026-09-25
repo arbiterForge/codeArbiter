@@ -2055,3 +2055,28 @@ Reliable: a publication no longer requires a follow-up bookkeeping PR before any
 Run required CI and the release preflight without `--require-recorded`; bind the acceptance through `prepare_adr_acceptance.py` and a following lifecycle-ledger commit.
 
 ---
+
+## DECISION-0071 — adr-0040-record-correction — Correct DECISION-0069's supersession and stage ADR-0040 decision 2
+
+**Date:** 2026-09-25
+**Status:** accepted
+**Supersedes:** none (corrects the record of DECISION-0069; its text is left as written)
+**Decided by:** SUaDtL@users.noreply.github.com — directed fixing the PR #865 review findings ("majors from coderabite and 4 failing CI tests").
+**Decision category:** release architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0069 records `Supersedes: none`, while ADR-0040 declares `supersedes: 0039-publish-ca-codex-qualified-packages-to-npm`. ADR-0040 decision 2 states in the present tense that main's `.claude-plugin/marketplace.json` points `ca` at `ca-marketplace`.
+- **Scaffold position:** ADR-0040 supersedes ADR-0039's npm channel for ca-codex until npm publication resumes. PR #865 deliberately keeps main's `ca` entry at `./plugins/ca`: the catalog cannot reference a branch that does not exist yet.
+- **Status type:** divergent
+
+### Decision
+Read DECISION-0069 as superseding ADR-0039's npm channel for ca-codex (deferred, not withdrawn). Read ADR-0040 decision 2 as the end state, delivered in two steps: PR #865 creates the `ca-marketplace` channel on the first release, and a follow-up PR flips main's `ca` catalog entry to the `git-subdir` source once that branch has been read back. `.claude-plugin/marketplace.json` stays in ADR-0040's `governs` list for that follow-up. The accepted ADR bytes are not edited.
+
+### SMARTS rationale
+Maintainable: the audit trail states the true supersession and sequencing without rewriting an accepted, sealed ADR. Reliable: flipping the catalog before the branch exists would break every Claude install.
+
+### Implementation implication
+The follow-up catalog-flip PR cites ADR-0040 decision 2 and this entry.
+
+---

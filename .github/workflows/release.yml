@@ -60,6 +60,7 @@ jobs:
       ca-codex: ${{ steps.eligible.outputs.ca-codex }}
       ca-pi: ${{ steps.eligible.outputs.ca-pi }}
       ca-sandbox: ${{ steps.eligible.outputs.ca-sandbox }}
+      failed: ${{ steps.eligible.outputs.failed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -77,18 +78,24 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
+            # Release this run's own commit even if main has moved on: a later
+            # merge may start no CI run (path filters) or fail CI, and skipping
+            # here would lose this release. Overlap is safe: the planner refuses
+            # a spent tag, and each release job re-checks before publishing.
             SOURCE="$RUN_SHA"; CI_RUN_ID="$RUN_ID"
-            # A later merge supersedes this one; its own run releases main's tip.
-            if [ "$(git rev-parse HEAD)" != "$SOURCE" ]; then
-              echo "::notice::main moved past $SOURCE; the newer run releases it"
-              SOURCE=""
-            fi
           else
-            SOURCE=$(git rev-parse HEAD)
-            CI_RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$SOURCE&event=push&status=success&per_page=1" \
-              --jq '.workflow_runs[0].id // empty')
-            [ -n "$CI_RUN_ID" ] || { echo "::error::no successful push CI run for $SOURCE; re-run CI on main first"; exit 1; }
+            # Dispatch: the newest main commit with a successful push CI run
+            # (and therefore a retained package cohort), not necessarily HEAD.
+            read -r SOURCE CI_RUN_ID < <(gh api \
+              "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=1" \
+              --jq '.workflow_runs[0] | "\(.head_sha) \(.id)"')
+            [ -n "${SOURCE:-}" ] && [ "$SOURCE" != null ] || {
+              echo "::error::no successful push CI run on main; re-run CI on main first"; exit 1; }
           fi
+          git merge-base --is-ancestor "$SOURCE" HEAD || {
+            echo "::error::$SOURCE is not on main"; exit 1; }
+          # Plan from the release commit's own manifests and changelogs.
+          git checkout --quiet --detach "$SOURCE"
           echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "ci-run-id=${CI_RUN_ID:-}" >> "$GITHUB_OUTPUT"
 
@@ -113,6 +120,7 @@ jobs:
           set -euo pipefail
           git tag -l > "$RUNNER_TEMP/tags.txt"
           gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          FAILED=""
           for row in \
             "ca plugins/ca/.claude-plugin/plugin.json v" \
             "ca-codex plugins/ca-codex/.codex-plugin/plugin.json ca-codex-v" \
@@ -121,9 +129,14 @@ jobs:
           do
             set -- $row
             TARGET="$1"; MANIFEST="$2"; PREFIX="$3"
-            VERSION=$(node -p "require('./$MANIFEST').version")
-            ELIGIBLE=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
-              --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
+            # One plugin's planning error must not block the others: mark only
+            # that target ineligible and fail the run afterwards (ADR-0040).
+            if ! VERSION=$(node -p "require('./$MANIFEST').version") \
+              || ! ELIGIBLE=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
+                --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json"); then
+              echo "::error::$TARGET eligibility could not be decided; it will not release this run"
+              ELIGIBLE=false; FAILED="$FAILED $TARGET"
+            fi
             if [ -n "$DISPATCHED" ] && [ "$DISPATCHED" != "$TARGET" ]; then ELIGIBLE=false; fi
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"
@@ -133,6 +146,21 @@ jobs:
                 || echo "::warning::$TARGET pre-tag advisory checks did not pass (not blocking)"
             fi
           done
+          echo "failed=${FAILED# }" >> "$GITHUB_OUTPUT"
+
+  # Surfaces a per-target planning error as a red run without holding back
+  # the targets that planned cleanly.
+  eligibility-errors:
+    needs: preflight
+    if: needs.preflight.outputs.failed != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail for targets whose eligibility errored
+        env:
+          FAILED: ${{ needs.preflight.outputs.failed }}
+        run: |
+          echo "::error::eligibility errored for: $FAILED (see the preflight log)"
+          exit 1
 
   release-ca:
     name: CA | [Release]
@@ -150,7 +178,25 @@ jobs:
           ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
+      # A newer overlapping run may already have published this version;
+      # then there is nothing left to do (ADR-0040).
+      - name: Re-check that this version is still unpublished
+        id: recheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MANIFEST: plugins/ca/.claude-plugin/plugin.json
+          PREFIX: v
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./$MANIFEST').version")
+          git tag -l > "$RUNNER_TEMP/tags.txt"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
+            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
+        if: steps.recheck.outputs.go == 'true'
         with:
           target: ca
           manifest: plugins/ca/.claude-plugin/plugin.json
@@ -180,6 +226,15 @@ jobs:
           ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
+      # Static candidate provenance is advisory under ADR-0040; the package
+      # cohort verify inside publish-target is the consumer-safety gate.
+      - name: Verify the static Codex candidate provenance (advisory)
+        env:
+          CANDIDATE_SHA: ${{ needs.preflight.outputs.source }}
+        run: |
+          python3 .github/scripts/verify_codex_candidate_provenance.py \
+            --repo . --final-ref "$CANDIDATE_SHA" --json \
+            || echo "::warning::Codex candidate provenance check did not pass (not blocking)"
       # The ca-codex-marketplace branch and ca-codex-dist-v* tags are
       # ruleset-protected; only the dedicated distribution App may write them.
       - name: Mint Codex distribution publisher token
@@ -211,7 +266,25 @@ jobs:
           printf '%s' "$PRIVATE_KEY" > "$key"
           python3 .github/scripts/create_codex_distribution_token.py \
             --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
+      # A newer overlapping run may already have published this version;
+      # then there is nothing left to do (ADR-0040).
+      - name: Re-check that this version is still unpublished
+        id: recheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MANIFEST: plugins/ca-codex/.codex-plugin/plugin.json
+          PREFIX: ca-codex-v
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./$MANIFEST').version")
+          git tag -l > "$RUNNER_TEMP/tags.txt"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
+            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
+        if: steps.recheck.outputs.go == 'true'
         with:
           target: ca-codex
           manifest: plugins/ca-codex/.codex-plugin/plugin.json
@@ -243,7 +316,25 @@ jobs:
           ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
+      # A newer overlapping run may already have published this version;
+      # then there is nothing left to do (ADR-0040).
+      - name: Re-check that this version is still unpublished
+        id: recheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MANIFEST: plugins/ca-pi/package.json
+          PREFIX: ca-pi-v
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./$MANIFEST').version")
+          git tag -l > "$RUNNER_TEMP/tags.txt"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
+            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
+        if: steps.recheck.outputs.go == 'true'
         with:
           target: ca-pi
           manifest: plugins/ca-pi/package.json
@@ -272,7 +363,25 @@ jobs:
           ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
+      # A newer overlapping run may already have published this version;
+      # then there is nothing left to do (ADR-0040).
+      - name: Re-check that this version is still unpublished
+        id: recheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MANIFEST: plugins/ca-sandbox/.claude-plugin/plugin.json
+          PREFIX: ca-sandbox-v
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./$MANIFEST').version")
+          git tag -l > "$RUNNER_TEMP/tags.txt"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          GO=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
+            --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
+          [ "$GO" = true ] || echo "::notice::$PREFIX$VERSION is already published; nothing to do"
+          echo "go=$GO" >> "$GITHUB_OUTPUT"
       - uses: ./.github/actions/publish-target
+        if: steps.recheck.outputs.go == 'true'
         with:
           target: ca-sandbox
           manifest: plugins/ca-sandbox/.claude-plugin/plugin.json

@@ -72,8 +72,24 @@ class TriggerTest(unittest.TestCase):
         self.assertIn("(github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')",
                       jobs()["preflight"])
 
-    def test_stale_run_defers_to_the_newer_main_tip(self):
-        self.assertIn('if [ "$(git rev-parse HEAD)" != "$SOURCE" ]', jobs()["preflight"])
+    def test_each_run_releases_its_own_commit_from_its_own_manifests(self):
+        preflight = jobs()["preflight"]
+        # Never skip because main moved on: a later merge may start no CI run.
+        self.assertNotIn('SOURCE=""', preflight)
+        self.assertIn('SOURCE="$RUN_SHA"; CI_RUN_ID="$RUN_ID"', preflight)
+        self.assertIn('git merge-base --is-ancestor "$SOURCE" HEAD', preflight)
+        self.assertIn('git checkout --quiet --detach "$SOURCE"', preflight)
+
+    def test_dispatch_uses_the_newest_main_commit_with_successful_ci(self):
+        self.assertIn("branch=main&event=push&status=success&per_page=1", jobs()["preflight"])
+
+    def test_each_release_job_rechecks_before_publishing(self):
+        found = jobs()
+        for job in RELEASE_JOBS:
+            block = found[job]
+            self.assertIn("id: recheck", block, job)
+            self.assertIn("release_target.py eligible", block, job)
+            self.assertRegex(block, r"uses: \./\.github/actions/publish-target\n\s+if: steps\.recheck\.outputs\.go == 'true'", job)
 
     def test_dispatch_requires_a_successful_ci_run_for_the_commit(self):
         preflight = jobs()["preflight"]
@@ -92,6 +108,17 @@ class IndependenceTest(unittest.TestCase):
         for job, target in RELEASE_JOBS.items():
             condition = re.search(r"(?m)^    if: (.+)$", found[job]).group(1)
             self.assertEqual(condition, f"needs.preflight.outputs.{target} == 'true'", job)
+
+    def test_one_targets_planning_error_does_not_block_the_others(self):
+        found = jobs()
+        preflight = found["preflight"]
+        self.assertIn('ELIGIBLE=false; FAILED="$FAILED $TARGET"', preflight)
+        self.assertIn('echo "failed=${FAILED# }" >> "$GITHUB_OUTPUT"', preflight)
+        errors = found["eligibility-errors"]
+        self.assertIn("if: needs.preflight.outputs.failed != ''", errors)
+        self.assertIn("exit 1", errors)
+        for job in RELEASE_JOBS:
+            self.assertNotIn("eligibility-errors", found[job], job)
 
     def test_no_cohort_machinery_remains(self):
         for text in (release_text(), action_text()):
@@ -164,8 +191,11 @@ class ConsumerSafetyGateTest(unittest.TestCase):
 
     def test_npm_readback_requires_the_ci_built_integrity(self):
         readback = action_step("Read back the npm publication")
-        self.assertIn('state == "present"', readback)
+        self.assertIn('state.startswith("present")', readback)
         self.assertIn("classify_registry_lookup", readback)
+        # Integrity is the gate; attestation shape is advisory (ADR-0040).
+        self.assertIn("require_attestation=False", readback)
+        self.assertIn("require_attestation=False", action_step("Select the exact Pi npm tarball"))
 
     def test_release_goes_public_only_after_every_channel(self):
         publish = step_index("Publish the Release")

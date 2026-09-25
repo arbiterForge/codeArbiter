@@ -18,7 +18,9 @@ predate the plugin rewrite and are grouped by date.
 
 - Release every plugin independently and idempotently on merge; a failed
   plugin no longer blocks the others, and re-running the release job is the
-  recovery path. Provenance checks now warn instead of blocking (ADR-0040).
+  recovery path. Three provenance checks now warn instead of
+  blocking: npm attestation re-verification, the Codex ruleset audit, and the
+  release-skill pre-tag proof (ADR-0040).
 - Ship the native artifact engine to every Claude Code install: the qualified
   release archive is published to the `ca-marketplace` distribution branch and
   the marketplace catalog installs `ca` from it (ADR-0040).

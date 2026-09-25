@@ -353,7 +353,11 @@ def classify_registry_lookup(
     expected_integrity: str,
     *,
     package: str = PACKAGE,
+    require_attestation: bool = True,
 ) -> str:
+    """Classify one registry lookup as absent, present, or (when attestation is
+    advisory, ADR-0040) present-unattested. Version or integrity mismatch always
+    raises."""
     if returncode != 0:
         codes = {
             code.upper()
@@ -403,11 +407,16 @@ def classify_registry_lookup(
         "https://registry.npmjs.org/-/npm/v1/attestations/"
         f"{package.replace('/', '%2f')}@{expected_version}"
     )
+    problem = None
     if not isinstance(attestations, dict) or attestations.get("url") != expected_attestation_url:
-        raise ValueError("npm provenance attestation URL is missing or untrusted")
-    if not isinstance(provenance, dict) or provenance.get("predicateType") != PROVENANCE_PREDICATE:
-        raise ValueError("npm registry has no matching SLSA provenance attestation")
-    return "present"
+        problem = "npm provenance attestation URL is missing or untrusted"
+    elif not isinstance(provenance, dict) or provenance.get("predicateType") != PROVENANCE_PREDICATE:
+        problem = "npm registry has no matching SLSA provenance attestation"
+    if problem is None:
+        return "present"
+    if require_attestation:
+        raise ValueError(problem)
+    return "present-unattested"
 
 
 def _integrity_hex(integrity: str) -> str:

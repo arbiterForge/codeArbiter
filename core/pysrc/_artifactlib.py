@@ -376,8 +376,10 @@ def _require_host_workflow(client: "ArtifactClient") -> None:
 # channel". Named concretely so the user is not left to guess (ADR-0040).
 PAYLOAD_REPAIR_HINT = (
     "Claude Code: /plugin marketplace update codearbiter, then /plugin update ca@codearbiter; "
-    "Codex: codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace, "
-    "then reinstall ca-codex@codearbiter; Pi: pi install npm:@arbiterforge/ca-pi"
+    "Codex (registered without --ref): codex plugin remove ca-codex@codearbiter, "
+    "codex plugin marketplace remove codearbiter, "
+    "codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace, "
+    "then codex plugin add ca-codex@codearbiter; Pi: pi install npm:@arbiterforge/ca-pi"
 )
 
 

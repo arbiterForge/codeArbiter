@@ -384,10 +384,15 @@ runs:
             cohort, root / name, version=os.environ["VERSION"],
             expected_sha=os.environ["SOURCE_COMMIT"], ci_run_id=os.environ["CI_RUN_ID"])
         lookup = lib.registry_lookup(os.environ["NPM_CLI"], os.environ["VERSION"])
+        # Hard gate: version + integrity. Attestation shape only warns (ADR-0040).
         state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout, lookup.stderr,
-                                             os.environ["VERSION"], integrity)
+                                             os.environ["VERSION"], integrity,
+                                             require_attestation=False)
+        if state == "present-unattested":
+            print("::warning::npm version is published with the expected integrity but without "
+                  "a matching provenance attestation", file=sys.stderr)
         print(f"tarball={tarball}"); print(f"integrity={integrity}")
-        print(f"skip={'true' if state == 'present' else 'false'}")
+        print(f"skip={'true' if state.startswith('present') else 'false'}")
         PY
 
     - name: Configure npm authentication
@@ -426,10 +431,13 @@ runs:
             try:
                 lookup = lib.registry_lookup(npm, version)
                 state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout,
-                                                     lookup.stderr, version, integrity)
+                                                     lookup.stderr, version, integrity,
+                                                     require_attestation=False)
             except lib.RegistryUnavailable:
                 state = "unavailable"
-            if state == "present":
+            if state.startswith("present"):
+                if state == "present-unattested":
+                    print("::warning::npm provenance attestation is missing or unmatched (advisory)")
                 print(f"read back {lib.PACKAGE}@{version} with the expected integrity"); break
             if time.monotonic() > deadline:
                 raise SystemExit(f"npm publication not observable with expected integrity (last: {state})")
