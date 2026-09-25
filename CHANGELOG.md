@@ -22,6 +22,10 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Consolidate ADR authoring and read-only status under one concise owner; load
+  authoring and acceptance details only on demand, preserving explicit entries
+  and full-stem identity without creating records during a status request.
+
 - Consolidate tribunal, threat modeling, manual drift, post-merge cleanup and PR
   entry procedures under concise skill owners. Retain explicit entries and mode
   authority; select PR watch/cleanup before creation preflight and avoid wrapper

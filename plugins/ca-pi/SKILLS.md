@@ -52,7 +52,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `/ca-adr` | Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/. |
+| `/ca-adr` | Record user-decided ADRs or inspect their health read-only. Preserve attribution and acceptance evidence. |
 
 ### Ship
 
@@ -91,7 +91,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `/ca-adr-status` | Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only. |
+| `/ca-adr-status` | Inspect ADR health read-only; optionally select one ADR with --adr N. |
 | `/ca-reconcile` | SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice. |
 
 ### Operate

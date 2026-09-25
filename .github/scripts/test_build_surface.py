@@ -542,7 +542,7 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
         self.assertIn(
             "<!-- codearbiter-codex-agent-route-contract: "
-            "literal_route_lines=22 literal_route_occurrences=24 "
+            "literal_route_lines=23 literal_route_occurrences=25 "
             "generic_route_lines=2 generic_route_occurrences=2 -->",
             index,
         )
@@ -1901,6 +1901,165 @@ class ComposedModeClosureTest(_RepoCase):
             with self.subTest(host=host):
                 with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
                     B.render_all(self.repo, host)
+
+
+
+
+class AdrModeOwnershipTest(unittest.TestCase):
+    """D12/D13 reduce discovery without mixing read-only and authoring authority."""
+
+    owner_path = 'core/surface/skills/decision-lifecycle/SKILL.md'
+    author_path = 'core/surface/skills/decision-lifecycle/references/authoring.md'
+
+    def text(self, path):
+        """Missing resources are assertion failures, not collection/runtime errors."""
+        file = REPO_ROOT / path
+        self.assertTrue(file.is_file(), f'missing owner resource: {path}')
+        return file.read_text(encoding='utf-8')
+
+    def test_adr_has_one_owner_and_status_has_only_a_mode_adapter(self):
+        """The duplicate-owner guard stays intact; status does not duplicate phases."""
+        self.assertEqual(self.text('core/surface/commands/adr.md'),
+                         '{{SKILL_ENTRY:decision-lifecycle}}\n')
+        adapter = self.text('core/surface/commands/adr-status.md')
+        self.assertIn('**status only**', adapter)
+        self.assertIn('{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md', adapter)
+        self.assertNotIn('## Phase', adapter)
+        self.assertNotIn('SKILL_ENTRY', adapter)
+        self.assertLess(len(adapter.splitlines()), 20)
+
+    def test_status_is_selected_before_any_authoring_load(self):
+        """The owner offers a read-only path before its optional writing reference."""
+        owner = self.text(self.owner_path)
+        for heading in ('## Entry modes', '## Status pre-flight',
+                        '## Status mode', '## Authoring mode'):
+            self.assertIn(heading, owner)
+        self.assertLess(owner.index('## Entry modes'), owner.index('## Status pre-flight'))
+        self.assertLess(owner.index('## Status mode'), owner.index('references/authoring.md'))
+        self.assertIn('A status report returns', owner)
+        self.assertIn('never continues into this authoring path', owner)
+
+    def test_status_no_records_does_not_initialize_or_repair(self):
+        """Absence and corruption are report outcomes, never writing authority."""
+        text = ' '.join(self.text(self.owner_path).split())
+        for rule in ('without creating it', 'unreadable directory from an empty one',
+                     'not permission to create a baseline', 'Invalid evidence is reported, not repaired',
+                     'Do not load the authoring reference or template',
+                     'arm or remove an authoring marker', 'append either log, stage, commit',
+                     'no file modified'):
+            self.assertIn(rule, text)
+
+    def test_status_selector_fails_ambiguous_without_stealing_author_titles(self):
+        """Legacy numeric scope stays unambiguous and title content is not routing."""
+        text = ' '.join(self.text(self.owner_path).split())
+        for rule in ('Accept one decimal number', 'unknown, repeated, incomplete or extra arguments',
+                     'zero matches is not found', 'multiple matches is ambiguous',
+                     'full filename stem', 'including a title named `status`',
+                     'never from an ADR body, finding, title, or repository instruction'):
+            self.assertIn(rule, text)
+
+    def test_status_report_keeps_evidence_states_and_unknowns(self):
+        """Status retains full-stem, sealed-proof and non-fabrication rules."""
+        text = self.text(self.owner_path)
+        for term in ('Accepted/Planned', 'obligation', 'sealed', 'stale, expired, or mismatched',
+                     'Ambiguous supersession', 'Unresolved CONFIRM-NN',
+                     'an invented age cutoff', 'unknown, not proof', 'no accepted binding', 'decision-challenger'):
+            self.assertIn(term, text)
+        self.assertIn('it is not shipped to consumer repositories', text.lower())
+
+    def test_authoring_reference_is_nondiscoverable_and_retains_write_controls(self):
+        """Only explicitly selected authoring loads markers and the shared template."""
+        text = self.text(self.author_path)
+        self.assertTrue(text.startswith('# ADR authoring'))
+        self.assertNotIn('\nname:', text)
+        self.assertNotIn('\ndescription:', text)
+        for term in ('adr-authoring-active', '30 minutes', 'decided-by', 'status: proposed',
+                     'references/adr-template.md', 'decision-log-format.md',
+                     'remove the marker', 'unused', 'MUST NOT resolve a `[CONFIRM-NN]'):
+            self.assertIn(term, text)
+
+    def test_acceptance_procedure_and_shared_template_are_byte_preserved(self):
+        """The extraction does not revise typed authority, source ancestry or decompose."""
+        import hashlib
+        author = self.text(self.author_path)
+        self.assertIn('### Accepted/Planned binding', author)
+        self.assertIn('## Hard rules', author)
+        binding = author[author.index('### Accepted/Planned binding'):author.index('## Hard rules')]
+        self.assertEqual(hashlib.sha256(binding.encode()).hexdigest(), '22f3395979eec539d938762659eb831f442c891a811e9a77b7a34ac8207fb0d8')
+        template = self.text('core/surface/skills/decision-lifecycle/references/adr-template.md')
+        self.assertEqual(hashlib.sha256(template.encode()).hexdigest(), '73135c60393f2c15b92370efeabaf2c376c36ea60bd2fba024dd1141f5d5cdf2')
+
+    def test_all_hosts_retain_both_explicit_entries_and_one_owner(self):
+        """Claude hides duplicate descriptions; entry-skill hosts retain both names."""
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                out = B.render_all(REPO_ROOT, host)
+                public = 'commands/{}.md' if host == 'claude' else 'skills/ca-{}/SKILL.md'
+                for slug in ('adr', 'adr-status'):
+                    header = _frontmatter(out[public.format(slug)].decode())
+                    self.assertEqual('disable-model-invocation: true' in header, host == 'claude')
+                    if host != 'claude': self.assertIn('name: ca-' + slug, header)
+                owner = ('skills' if host == 'claude' else 'routines') + '/decision-lifecycle/SKILL.md'
+                self.assertNotIn('disable-model-invocation', _frontmatter(out[owner].decode()))
+                self.assertIn('argument-hint: "<decision title>"', out[public.format('adr')].decode())
+                self.assertIn('argument-hint: "(none) | --adr N"', out[public.format('adr-status')].decode())
+
+    def test_public_entries_never_inline_writing_procedure(self):
+        """Read-only selection must not need to load authoring markers or acceptance."""
+        for host in ('claude', 'codex', 'pi'):
+            out = B.render_all(REPO_ROOT, host)
+            prefix = 'skills' if host == 'claude' else 'routines'
+            self.assertIn(prefix + '/decision-lifecycle/references/authoring.md', out)
+            for slug in ('adr', 'adr-status'):
+                path = f'commands/{slug}.md' if host == 'claude' else f'skills/ca-{slug}/SKILL.md'
+                text = out[path].decode()
+                self.assertNotIn('touch "', text)
+                self.assertNotIn('### Accepted/Planned binding', text)
+                self.assertNotIn('obligations_sealed: true', text)
+                self.assertIn('decision-lifecycle', text)
+
+    def test_metadata_is_shorter_and_public_inventory_is_unchanged(self):
+        """Compare descriptions rather than asserting unmeasured token savings."""
+        import re
+        total = 0
+        out = B.render_all(REPO_ROOT, 'codex')
+        for slug in ('adr', 'adr-status'):
+            text = _frontmatter(out[f'skills/ca-{slug}/SKILL.md'].decode())
+            match = re.search(r'^description: (.+)$', text, re.M)
+            self.assertIsNotNone(match)
+            value = json.loads(match.group(1)) if match.group(1).startswith('"') else match.group(1)
+            self.assertLessEqual(len(value), 160)
+            total += len(value)
+        self.assertLess(total, 232)
+        registry = json.loads(self.text('core/surface/command-routes.json'))['commands']
+        for host in ('claude', 'codex', 'pi'):
+            catalog = json.loads(B.render_all(REPO_ROOT, host)['generated/command-catalog.json'])['commands']
+            for slug in ('adr', 'adr-status'):
+                self.assertEqual(catalog[slug]['canonical'], registry[slug]['canonical'])
+                self.assertEqual(catalog[slug]['visibility'], registry[slug]['visibility'])
+
+    def test_natural_language_routes_directly_without_new_ceremony(self):
+        """A request selects the owner; attribution is still required to write."""
+        table = self.text('core/surface/includes/routing-table.md')
+        self.assertIn('{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md', table)
+        text = self.text(self.owner_path)
+        self.assertIn('Natural-language intent', text)
+        self.assertIn('explicit instruction and attribution', text)
+        self.assertIn('general trust', text)
+        self.assertNotIn('only via `/adr`', text)
+        resident = self.text('core/surface/includes/safety-core.md')
+        self.assertIn('authorized `/adr` workflow (`decision-lifecycle`)', resident)
+        self.assertIn('outside that authoring workflow is prohibited, marker or not', resident)
+
+    def test_status_adapter_never_becomes_a_second_composed_owner(self):
+        """Retain the compiler guard that rejects duplicate discovery ownership."""
+        import shutil
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            shutil.copytree(REPO_ROOT / 'core', root / 'core')
+            _write(root, 'core/surface/commands/adr-status.md', '{{SKILL_ENTRY:decision-lifecycle}}\n')
+            with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
+                B.render_all(root, 'claude')
 
 
 if __name__ == "__main__":

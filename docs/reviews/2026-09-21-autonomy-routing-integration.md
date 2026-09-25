@@ -1285,3 +1285,52 @@ the owner now names the verified lens directory and recorded slug, not a generat
 Markdown destination containing an unsupported placeholder. The original route set,
 reviewer resources and non-targeted owner bodies remain intact. Normal hosted CI,
 independent review and live-model/installed-session measurements remain distinct.
+
+
+### D12/D13 — one ADR owner, read-only status first (2026-09-25)
+
+Baseline: `578065076e2e11a4e63f33256cb386a5cba1d7d2`, PR #854. The maintainer
+approved D12/D13 together after the five-owner frontmatter slice. D14, debug,
+decompose and the shared ADR template are outside this increment.
+
+`adr` composes `decision-lifecycle`; `adr-status` is a small mode adapter into
+that same owner, not a second procedure or composed-owner exception. Claude's
+two explicit entries suppress redundant model descriptions; Codex/Pi retain their
+two existing public names. No command, skill, agent or discovery registry is added.
+One new source-only procedure reference and its three generated copies carry the
+existing authoring/acceptance instructions without discovery frontmatter.
+
+The owner selects read-only status before any writable preflight. Missing directories,
+missing/invalid evidence, ambiguous numeric selectors and unresolved questions are
+reported without creating or repairing records. Author titles are not mode selectors.
+Only explicitly authorized authoring or stored-status transitions load the authoring
+reference. Existing-record transitions do not allocate a new ADR number. A routine
+finding or general trust remains insufficient decision authority. Two existing ADR
+sentences in safety-core name the authorized workflow, rather than requiring the user
+to spell a slash command; the marker, immutable-record and attribution rules remain.
+
+The complete Accepted/Planned binding procedure and shared ADR template retain their
+baseline bytes. The source lifecycle tests follow the extracted procedure rather than
+dropping their ancestry/acceptance assertions. The twelve new source/host checks fail
+against the original surface and pass against the candidate; those are prompt-contract
+and resource tests, not proof of actual model intent routing or side-effect behavior.
+The unchanged runtime lifecycle suite passed all 61 cases during discovery validation.
+
+The source public descriptions and native loader evidence must be measured per host;
+no prompt-token or model-quality improvement follows merely from file counts. The
+same 37 command records and 22 top-level source skills remain. D12/D13 complete two
+more ownership relationships, leaving D03/D04/D07/D14 separate. Exact final-head CI,
+review and installed/model-backed qualification remain distinct obligations.
+
+Rollback the two entries, shared owner, authoring reference/projections and targeted
+source/documentation tests together; keep the original template, approval bindings,
+other agents' work and unrelated farm behavior intact. No HTML-farm rollout change.
+
+
+D12/D13 local source qualification completed 28 commands, including all 61 lifecycle
+cases and 116 surface-compiler cases (one existing native-Windows skip). Three new
+operator-documentation cases also passed. Before/after Codex 0.145.0 directory
+metadata discovery retained both enabled entry names without skill errors; combined
+descriptions fell from 232 to 174 characters. This excludes other frontmatter and
+host framing, uses no model turn, and does not claim prompt-token savings. The full
+site pipeline and final-head hosted checks are recorded separately on PR #854.

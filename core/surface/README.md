@@ -59,8 +59,9 @@ For a multi-mode owner such as branch finishing, dispatch watch/cleanup before
 creation prerequisites. Its PR-opening procedure belongs to the owner, not a
 wrapper it must load again. Supporting cards remain without discovery frontmatter.
 
-The declaration must occupy the entire command template. One owner has one public
-entry. Composition is non-recursive, rejects missing/symlinked owners and unsupported
+The declaration must occupy the entire command template. One owner has one composed public
+entry. An existing mode-only adapter may select that owner without duplicating its
+procedure, as `adr-status` selects read-only `decision-lifecycle` before authoring. Composition is non-recursive, rejects missing/symlinked owners and unsupported
 frontmatter, and requires rooted resource links so rendering uses the actual output
 location. It never adds `allowed-tools`, changes a mode, or drops a gate. Separate
 wrappers with distinct modes, arguments or continuations must first reconcile those

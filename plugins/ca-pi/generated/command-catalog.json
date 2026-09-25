@@ -54,7 +54,7 @@
     },
     "adr": {
       "name": "adr",
-      "description": "Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/.",
+      "description": "Record user-decided ADRs or inspect their health read-only. Preserve attribution and acceptance evidence.",
       "skillPath": "skills/ca-adr/SKILL.md",
       "visibility": "core",
       "workflow": "decide",
@@ -63,7 +63,7 @@
     },
     "adr-status": {
       "name": "adr-status",
-      "description": "Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only.",
+      "description": "Inspect ADR health read-only; optionally select one ADR with --adr N.",
       "skillPath": "skills/ca-adr-status/SKILL.md",
       "visibility": "advanced",
       "workflow": "decide",
