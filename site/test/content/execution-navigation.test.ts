@@ -37,3 +37,21 @@ describe('map links wait for the reader to request a destination', () => {
     });
   }
 });
+
+
+describe('guide links and map vocabulary', () => {
+  for (const [id, file] of [
+    ['greenfield', 'plan-a-new-project.mdx'],
+    ['brownfield', 'understand-an-existing-project.md'],
+  ]) it(`${id} guidance links to the source-owned first chapter`, () => {
+    const definition = workflows.find(w => w.id === id)!;
+    const source = readFileSync(`src/content/docs/guides/${file}`, 'utf8');
+    expect(source).toContain(`](${workflowMapHref(definition)})`);
+    expect(source).not.toContain(`#${id}-execution-map`);
+  });
+  it('keeps the standard ADR acronym in the workflow disclosure', () => {
+    const source = readFileSync('src/content/docs/guides/recording-adrs.mdx', 'utf8');
+    expect(source).toContain('<summary>Trace the ADR workflow');
+    expect(source).not.toContain('<summary>Trace the adr workflow');
+  });
+});

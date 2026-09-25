@@ -2,7 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const base = '703abc9ed45b68d075ff867c75bc81ea06084b6f';
+// Identical executable workflows, pinned in retained main history rather than the open stack.
+const base = '929229354e3a15ae3002c82116b66c837ab43729';
 const parent = 'docs/concepts-decisions-evidence';
 /** Ignore explanatory comments, but compare every executable workflow line. */
 const executable = (text: string) => text.split('\n').filter(line => !/^\s*#/.test(line)).join('\n');

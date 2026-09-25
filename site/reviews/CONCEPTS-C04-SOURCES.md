@@ -232,3 +232,30 @@ All storage mutations and WebSockets remain prohibited by these reading tests.
 Observed icon reads are attached to the test result instead of silently discarded.
 This distinguishes a native browser resource fetch from map telemetry; it is not a
 claim that ordinary page navigation makes no network requests.
+
+
+### Final external-review reconciliation
+
+CodeRabbit review `5315817146` identified three remaining presentation/source issues
+on candidate `470213c2e3bd4105adef0250ecef41922090bb45`. The dedicated greenfield and
+brownfield guides still linked to obsolete wrapper IDs instead of their registered
+first chapters. They now use the same destinations as the workflow directory, with
+source-driven link checks and explicit keyboard navigation tests for both guides.
+The ADR disclosure keeps the standard uppercase acronym.
+
+The six maps' reviewed source is now
+`arbiterForge/codeArbiter@929229354e3a15ae3002c82116b66c837ab43729:`. GitHub comparison
+confirmed this commit is an ancestor of the inspected main head
+`13013b2fb021df623f4ba328ddb15f8b287590ad`. All 14 owning source files are byte-for-byte
+identical to the original map baseline, and all 39 source-excerpt checks pass. This
+is a revalidated, retained-main source pin, not an assumption that newer means
+released. The original discovery identity above is retained as historical context.
+The whole-workflow allowlist check also uses this retained-main commit; both CI
+workflow files are identical to the previously tested parent baseline. No assertions
+or required jobs are dropped. A new ancestry assertion rejects future unmerged-only
+map pins rather than depending on preservation of a deleted review branch.
+
+The four new focused source regressions reproduced their failures before the
+correction. Generated diagrams are rebuilt from the updated source model, with no
+route or arrow-geometry change. All final outcomes, captures and exact-head CI
+identities remain owned by the PR completion evidence, not predeclared here.

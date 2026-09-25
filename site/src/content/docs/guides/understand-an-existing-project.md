@@ -89,4 +89,4 @@ brownfield routes after its earlier lessons; this guide does not change those pr
 
 ## Follow the complete initialization route
 
-Open the [brownfield execution map](/guides/opt-in-a-repo/#brownfield-execution-map) to follow the command, owning skill and applicable roles from entry to initialized state. The other initialization route is an alternative, not a next phase.
+Open the [brownfield execution map](/guides/opt-in-a-repo/#init-brownfield-inspect-code) to follow the command, owning skill and applicable roles from entry to initialized state. The other initialization route is an alternative, not a next phase.

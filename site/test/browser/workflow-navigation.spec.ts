@@ -180,3 +180,20 @@ test('native chapter links and all content survive without JavaScript', async ({
     }
   } finally { await context.close(); }
 });
+
+
+for (const w of workflows.filter(w => ['greenfield', 'brownfield'].includes(w.id))) {
+  test(`${w.id}: its dedicated guide opens the requested initialization chapter`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 1000 });
+    await page.goto(w.guide);
+    const link = page.getByRole('link', { name: `${w.id} execution map`, exact: true });
+    await expect(link).toHaveAttribute('href', workflowMapHref(w));
+    await link.focus(); await link.press('Enter');
+    await expect(page).toHaveURL(new URL(workflowMapHref(w), 'http://127.0.0.1:4322').href);
+    const map = page.locator(`[data-workflow="${w.id}"]`);
+    await expect(map.locator(`[data-map-chapter="${w.map.chapters[0].id}"]`)).toBeVisible();
+    await expect(map.locator(`[data-map-select="${w.map.chapters[0].id}"]`)).toHaveAttribute('aria-pressed', 'true');
+    const sibling = w.id === 'greenfield' ? 'brownfield' : 'greenfield';
+    await expect(page.locator(`[data-workflow="${sibling}"]`)).toBeHidden();
+  });
+}

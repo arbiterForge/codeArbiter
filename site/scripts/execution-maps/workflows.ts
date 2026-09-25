@@ -15,7 +15,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "map": {
       "id": "sprint",
       "title": "An approved sprint reaches a PR",
-      "reviewedAt": "090773ec6aa98687cd7b207985cb29ebb8f9c8e1",
+      "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "New full-lane sprint, normal premium path. The initial HTML pair uses its qualified one-reply transaction. There are no attended per-batch pauses; real hard gates still stop. This is a source-traced route, not a captured host run.",
       "outcome": "An open PR and sprint receipt with current evidence, decisions and remaining work. The sprint never merges or discards the branch.",
       "sources": {
@@ -452,7 +452,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "map": {
       "id": "dependency",
       "title": "Review before adopting a dependency",
-      "reviewedAt": "090773ec6aa98687cd7b207985cb29ebb8f9c8e1",
+      "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "The adoption path is shown here. A one-time named inspection tool is a separate bounded branch inside the same command. The reviewer does not install the package.",
       "outcome": "A reviewed and explicitly confirmed dependency change. Inspect the manifest and lockfile, then deliver them together through the owning change and commit/PR procedure.",
       "sources": {
@@ -586,7 +586,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "map": {
       "id": "adr",
       "title": "Record a decision and bind its acceptance",
-      "reviewedAt": "090773ec6aa98687cd7b207985cb29ebb8f9c8e1",
+      "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "This path follows an explicitly attributed decision through user-authorized acceptance. Remaining Proposed is valid. A status query and optional challenge are separate operations, not automatic authoring steps.",
       "outcome": "The decision, decision-log append and exact acceptance binding are retained. Accepted/Planned does not prove implementation, verification or a merged PR.",
       "sources": {
@@ -795,7 +795,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "map": {
       "id": "release",
       "title": "Prepare a release through a reviewed PR",
-      "reviewedAt": "090773ec6aa98687cd7b207985cb29ebb8f9c8e1",
+      "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "Real release path, not --dry-run. Preparation stops at a release PR. Tag composition belongs to a qualified hosted publisher after merge and exact-head CI, never the interactive checkout.",
       "outcome": "An exact published tag and declared asset inventory after authorization and read-back. When provenance is declared, retain the original receipt and merge its separate closeout PR; publication alone does not finish that record.",
       "sources": {
@@ -1174,7 +1174,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "map": {
       "id": "greenfield",
       "title": "Initialize a new project from intent",
-      "reviewedAt": "090773ec6aa98687cd7b207985cb29ebb8f9c8e1",
+      "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "Choose this route only when meaningful source does not yet exist. A decomposition persona is not an extra agent dispatch. Existing source selects the separate brownfield route.",
       "outcome": "Populated project state, the three approved project-level Markdown documents, an initialization sentinel and no abandoned decomposition drafts. Code implementation and PR delivery are later work.",
       "sources": {
@@ -1430,7 +1430,7 @@ export const workflows: readonly WorkflowDefinition[] = [
     "map": {
       "id": "brownfield",
       "title": "Initialize existing code from evidence",
-      "reviewedAt": "090773ec6aa98687cd7b207985cb29ebb8f9c8e1",
+      "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
       "boundary": "Choose this route when meaningful source exists. Six isolated scout reports are required; the orchestrator synthesizes their reports rather than loading raw source. Missing isolation is a capability stop.",
       "outcome": "Populated source-backed project state, provenance and a code map, with each gap resolved or explicitly deferred before initialization. It does not invent the three greenfield planning documents.",
       "sources": {

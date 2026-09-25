@@ -13,6 +13,15 @@ const ids = (id: string) => getWorkflow(id).map.chapters.flatMap(chapter => chap
 const presentation = (id: string) => { const w = getWorkflow(id); return { kicker: `${id.toUpperCase()} • COMMANDS / SKILLS / AGENTS`, summary: w.summary, endpoint: w.endpoint }; };
 
 describe('C04 distinct workflow routes', () => {
+  it('keeps historical map sources reachable from the inspected main history', () => {
+    // Main's 9292293 commit was inspected before this correction. A fresh main
+    // clone must retain the cited objects after the stacked branches are removed.
+    const retainedMain = '929229354e3a15ae3002c82116b66c837ab43729';
+    for (const revision of new Set(workflows.map(w => w.map.reviewedAt))) {
+      execFileSync('git', ['merge-base', '--is-ancestor', revision, retainedMain]);
+    }
+  });
+
   it('covers every approved remaining lane and rejects unknown routes', () => {
     expect(workflows.map(w => w.id)).toEqual(['sprint', 'dependency', 'adr', 'release', 'greenfield', 'brownfield']);
     expect(new Set(workflows.map(w => w.asset)).size).toBe(workflows.length);
