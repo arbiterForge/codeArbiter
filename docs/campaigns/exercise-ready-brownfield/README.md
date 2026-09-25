@@ -61,3 +61,11 @@ Preserve report-only synthesis, isolated scouts and required logical coverage; h
 The single draft specification will choose reversible implementation bounds and make them visible for approval. The actual exercise environment remains to be profiled at qualification time; that is not permission to assume an OS/provider/network policy. The future guidance kind and publication/rollout need their own explicit gate under the same specification, not another competing spec. Independent semantic review and real approval are still required before implementation.
 
 Finish E0-E2 on demonstrated correctness and first-contribution usefulness. Proceed with P1 only on better maintenance-adjusted task outcomes than map-only, with no authority, preservation or correctness regression. Publish scoped support claims, not universal parity or invented token/dollar savings.
+
+## 9. First specification and failure-review handoff
+
+Draft WIP PR: [#872](https://github.com/arbiterForge/codeArbiter/pull/872). The single engine-authored specification is `SPEC-EXERCISE-BROWNFIELD`, revision 4, with 41 criteria, 84 scenarios and eight covered scope records. The first 32-criterion draft is preserved at the same path in commit `96f4a052ca057c2085c5241f6fcf7f5f616d5ce2`; it is not a second live specification.
+
+[PREMORTEM.md](PREMORTEM.md) records 13 failure stories, ten tightened original criteria and nine added criteria. [authoring-evidence.json](authoring-evidence.json) binds native authoring/validation to the exact package and document identities. Structural and ready validation passed; approval validation remains false by design. All product verification obligations remain planned. This is author self-review, not independent review or execution approval.
+
+The new draft also makes legacy context writes explicitly bounded under existing helper owners, prevents a native eager-load freshness promise that the host cannot deliver, and provides criterion-level map-only/no-go acceptance. Independent semantic review and genuine maintainer approval precede implementation planning.
