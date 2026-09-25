@@ -1,11 +1,15 @@
 # Debug correctness: reviewed specification
 
-Document: CA-DEBUG-CORRECTNESS-01, review revision 2  
+Document: CA-DEBUG-CORRECTNESS-01, D1 review revision 3  
 Date: 2026-09-25  
 Status: Proposed specification input, not an approved or engine-authored artifact  
 Repository: arbiterForge/codeArbiter  
 Inspected main: 4187f1e22dc7da3cf755a2654bbf7ec268236126  
-Integration candidate: PR #854 at 35a3cd18a327fe5aa306ba452cc21ae096a24b02 (open and draft at inspection)
+Integration candidate rechecked for D1: PR #854 at 578065076e2e11a4e63f33256cb386a5cba1d7d2 (open and draft; debug owner/declaration byte-identical to the earlier inspected candidate)
+
+## D1 preparation status
+
+T01-T04 source preparation is complete; T05 native adoption and T06 actual approval are blocked, not waived. [D1.md](D1.md) records exact evidence and the remaining gate. D1-PROFILE.md resolves the finite profile choices and D1-CASES.json freezes evaluator-side controls. All product scenarios remain unrun. The D1 request authorizes this preparation on the same PR, not D2/D3, package updates, an approval receipt, merge or release.
 
 ## Authority and use
 

@@ -1,18 +1,18 @@
 # Debug correctness: implementation plan input
 
-Status: Proposed, source-only plan. All 40 tasks/work packages PENDING. No native approval, implementation, product verification or release qualification is asserted.  
-Specification: [SPEC.md](SPEC.md), CA-DEBUG-CORRECTNESS-01 review revision 2  
+Status: Source-only plan; T01-T04 SOURCE_COMPLETE, T05-T06 BLOCKED, T07-T40 PENDING. D1 remains incomplete until native adoption and actual approval. See [D1.md](D1.md). No runtime implementation, product verification or release qualification is asserted.  
+Specification: [SPEC.md](SPEC.md), CA-DEBUG-CORRECTNESS-01 D1 review revision 3  
 Contract: [CONTRACT.md](CONTRACT.md)  
 Scenario oracles: [SCENARIOS.md](SCENARIOS.md)  
 Completeness review: [REVIEW.md](REVIEW.md)
 
 ## 1. Execution and integration boundary
 
-This is the requested WIP preparation, not a shadow authoritative `.codearbiter` plan. D1 settles exact adoption inputs. A qualified installed session must create the engine-owned native specification and bound plan, validate readiness and obtain actual required approval before implementation. Map these external AC/task identities to engine-issued records; do not fabricate IDs, receipts, or approved status. Sequential planning retains approved-source binding; initial sprint planning uses only its explicit draft-pair preparation and real combined approval. No farm is requested.
+This is the requested WIP preparation, not a shadow authoritative `.codearbiter` plan. D1 source preparation has settled exact adoption inputs in D1-PROFILE.md and D1-CASES.json. Native adoption/approval is still blocked as recorded in D1.md. A qualified installed session must create the engine-owned native specification and bound plan, validate readiness and obtain actual required approval before implementation. Map these external AC/task identities to engine-issued records; do not fabricate IDs, receipts, or approved status. Sequential planning retains approved-source binding; initial sprint planning uses only its explicit draft-pair preparation and real combined approval. No farm is requested.
 
 After adoption, record actual native pair pointers and label these proposal inputs historical, not a second active execution ledger. PENDING here is descriptive, not a native resume state. The user's WIP request authorizes publication of this proposal, not implementation, merge, release or provider expenditure.
 
-Base: `arbiterForge/codeArbiter@4187f1e22dc7da3cf755a2654bbf7ec268236126`. PR #854 was open/draft at `35a3cd18a327fe5aa306ba452cc21ae096a24b02`. Re-read both refs before execution; recorded identities are evidence, not permission to overwrite later changes.
+Base: `arbiterForge/codeArbiter@4187f1e22dc7da3cf755a2654bbf7ec268236126`. PR #854 was rechecked open/draft at `578065076e2e11a4e63f33256cb386a5cba1d7d2`; the debug owner and declaration match the prior candidate byte-for-byte. Re-read both refs before execution; recorded identities are evidence, not permission to overwrite later changes.
 
 **P-854:** Before overlapping owner edits, require #854's accepted consolidation to be integrated, or explicit approval for a narrowly identified prerequisite extraction. Do not merge/cherry-pick its whole farm branch or treat its synthetic merge ref as a merge. Preserve `{{SKILL_ENTRY:debug}}`, the single owning skill, Claude owner versus generated-command visibility, Codex/Pi entry discovery, actual output-relative resource resolution and retirement of `new-skill`/`skill-author`. Replace the moved active-fix prohibition with a finite internal diagnostic return, not recursive public routing. If the prerequisite changes or is rejected, record a revised integration decision. Do not resurrect retired procedures.
 
@@ -78,14 +78,16 @@ Follow explicit dependencies. T36 can prepare evidence records after D1. T34 int
 
 ### D1
 
+SOURCE_COMPLETE means the source-only preparation deliverable exists, not native acceptance. T01 records the integration policy; P-854 is NOT satisfied while its accepted consolidation is unintegrated. T02/T04 retain actual independent review as an outstanding T06/T36 requirement. T05 is blocked by the inspected installed-workflow mismatch; T06 additionally lacks a current native pair and host-observed approval. These labels are not engine task states.
+
 | ID | Exact path keys and work | Verification / completion evidence | AC / maps-to | Depends on | Status |
 |---|---|---|---|---|---|
-| T01 | P, W, B, I: Revalidate main/#854 and record the exact accepted owner-consolidation prerequisite, without importing unrelated changes. | V36: exact refs/patches, sole owner, discovery differences and retirement retained. | AC-25,AC-26 | None | PENDING |
-| T02 | P: Cross-check scope, original review, all criteria and scenario oracles; resolve missing intent before task execution. | All G1-G8/R01-R15 and original V01-V35 retained; answer what remains broken if static checks pass. | AC-01,AC-10,AC-16,AC-27 | T01 | PENDING |
-| T03 | P/CONTRACT.md: Finalize the finite date-time, numeric, Unicode, fingerprint and validator-result profiles before native readiness. | V39/V40: explicit valid/invalid format cases and schema/runtime agreement; 0.0 control is not a defect. | AC-07,AC-14,AC-15 | T02 | PENDING |
-| T04 | P/SCENARIOS.md: Freeze closed-field/SEM negative cases and hidden ground truth; retain original example identities. | Every SEM-01 through SEM-19 has negative coverage; solvable versus blocked outcomes fixed before trials. | AC-10,AC-15,AC-27,AC-28 | T03 | PENDING |
-| T05 | P; engine-selected native spec/plan paths: Adopt this proposal through the qualified installed native authoring workflow and record the actual pair pointers. | Engine-issued IDs, ready validation, exact source binding, external-ID correspondence; no fake receipt or Markdown shadow. | AC-26,AC-27 | T04 | PENDING |
-| T06 | Native pair; P/REVIEW.md: Complete adversarial/completeness review, native task expansion and actual required approval. | Current approved pair and real host-observed authority; complete AC coverage and acyclic task graph. P-AUTH satisfied. | AC-26,AC-27 | T05 | PENDING |
+| T01 | P, W, B, I: Revalidate main/#854 and record the exact accepted owner-consolidation prerequisite, without importing unrelated changes. | V36: exact refs/patches, sole owner, discovery differences and retirement retained. | AC-25,AC-26 | None | SOURCE_COMPLETE |
+| T02 | P: Cross-check scope, original review, all criteria and scenario oracles; resolve missing intent before task execution. | All G1-G8/R01-R15 and original V01-V35 retained; answer what remains broken if static checks pass. | AC-01,AC-10,AC-16,AC-27 | T01 | SOURCE_COMPLETE |
+| T03 | P/CONTRACT.md: Finalize the finite date-time, numeric, Unicode, fingerprint and validator-result profiles before native readiness. | V39/V40: explicit valid/invalid format cases and schema/runtime agreement; 0.0 control is not a defect. | AC-07,AC-14,AC-15 | T02 | SOURCE_COMPLETE |
+| T04 | P/SCENARIOS.md: Freeze closed-field/SEM negative cases and hidden ground truth; retain original example identities. | Every SEM-01 through SEM-19 has negative coverage; solvable versus blocked outcomes fixed before trials. | AC-10,AC-15,AC-27,AC-28 | T03 | SOURCE_COMPLETE |
+| T05 | P; engine-selected native spec/plan paths: Adopt this proposal through the qualified installed native authoring workflow and record the actual pair pointers. | Engine-issued IDs, ready validation, exact source binding, external-ID correspondence; no fake receipt or Markdown shadow. | AC-26,AC-27 | T04 | BLOCKED |
+| T06 | Native pair; P/REVIEW.md: Complete adversarial/completeness review, native task expansion and actual required approval. | Current approved pair and real host-observed authority; complete AC coverage and acyclic task graph. P-AUTH satisfied. | AC-26,AC-27 | T05 | BLOCKED |
 
 ### D2
 

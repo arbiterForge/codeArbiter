@@ -3,7 +3,8 @@
 Status: Test and evaluation design only. Every product scenario below is PENDING; no passing product, host, model, or release result is asserted.  
 Specification: [SPEC.md](SPEC.md)  
 Contract: [CONTRACT.md](CONTRACT.md)  
-Implementation dependencies: [PLAN.md](PLAN.md)
+Implementation dependencies: [PLAN.md](PLAN.md)  
+D1 evaluator-side freeze: [D1-CASES.json](D1-CASES.json), with [D1-PROFILE.md](D1-PROFILE.md). This freezes design, not actual test execution or independent oracle approval. The paired V25 and V31 cases require each named variant; variant coverage cannot be collapsed into one permissive outcome.
 
 ## Proof layers and fixture rules
 

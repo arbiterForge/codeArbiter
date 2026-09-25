@@ -112,3 +112,8 @@ The proposal is complete enough to enter native planning preparation. It is deli
 | Decisions requiring approval | Native specification/plan adoption and actual approval; #854 prerequisite integration/extraction if still pending; specific external qualification access/spend. No repeated approval of already known user intent is requested here. |
 | Verification still required | All proposed product scenarios, source suites, installed Claude/Codex journeys, applicable Pi parity, model trials, native readiness/approval and exact released-payload evidence. WIP CI is not those product results. |
 | Recommended next action | Resume T01-T06 in a qualified installed authoring session, preserve #854 single-owner/retirement semantics, then implement D2/D3 and qualify D4 without broadening scope. |
+
+
+## D1 continuation, 2026-09-25
+
+See [D1.md](D1.md) for T01-T04 source completion and T05/T06 blockers. [D1-PROFILE.md](D1-PROFILE.md) freezes the previously deferred profile; [D1-CASES.json](D1-CASES.json) retains all SEM and scenario identities with explicit proof layers. Native capabilities succeeded on the inspected installed ca 2.21.12 binary, but its bridge lacks the workflow_preflight admission required by current source. No native artifact, approval or product result is inferred from that probe. Earlier review findings remain commit-bound history.

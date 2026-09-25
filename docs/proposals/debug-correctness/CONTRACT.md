@@ -3,7 +3,8 @@
 Status: Reviewed design input only. No runtime validator, native artifact kind, or approval is implemented by this document.  
 Protocol: `codearbiter.debug-handoff/1.0.0` (proposed, not a released version)  
 Parent specification: [SPEC.md](SPEC.md), R08-R13  
-Verification cases: [SCENARIOS.md](SCENARIOS.md), especially V19-V22 and V37-V40
+Verification cases: [SCENARIOS.md](SCENARIOS.md), especially V19-V22 and V37-V40  
+D1 finite primitive/process profile: [D1-PROFILE.md](D1-PROFILE.md); frozen controls: [D1-CASES.json](D1-CASES.json)
 
 ## 1. Representation and single owner
 
@@ -21,11 +22,11 @@ No caller may provide a schema path, remote reference, executable path, new exte
 - Namespace identifiers are full-string matches: `S-`, `E-`, `H-`, or `C-`, followed by 2-4 ASCII decimal digits. Case identity is `DBG-` followed by one ASCII alphanumeric character and then 2-63 ASCII alphanumeric, underscore, or hyphen characters. A regex match ending before a final newline is not a full match.
 - `git_oid`: exactly 40 or 64 lowercase hexadecimal characters. It identifies supplied source evidence, not necessarily the executing/deployed artifact.
 - `sha256`: `sha256:` followed by exactly 64 lowercase hexadecimal characters.
-- `timestamp`: timezone-bearing RFC3339 date-time accepted by the declared generated-schema format profile. Date/time values must actually be checked, not merely labeled with an annotation. Implementation tests must settle the supported fractional-second/offset cases and calendar validity against the selected conformance checker; do not silently claim broader date-time conformance. Timestamps are observations, not currentness or authority by themselves.
+- `timestamp`: timezone-bearing date-time in the finite `debug-rfc3339/1` profile defined by D1-PROFILE.md. Date/time values must actually be checked, not merely labeled with an annotation. Implementation tests must verify the frozen fractional-second/offset cases and calendar validity against the selected conformance checker; do not silently claim broader date-time conformance. Timestamps are observations, not currentness or authority by themselves.
 - `integer`: finite mathematically integral JSON number. Thus 0.0 is an integer value under the reference JSON Schema interpretation; true/false are never integers. No NaN/Infinity. The production implementation and conformance checker must agree rather than accidentally relying on Python's bool subclassing or requiring integer lexical spelling only.
 - Global serialized-input ceiling: 65,536 UTF-8 bytes. Read no more than the limit plus one byte before rejecting oversize input. Container nesting ceiling: 16, counting the root object as level 1, each child object/array as one additional level, and scalars as adding no container level. Reject escaped unpaired surrogates, malformed UTF-8/JSON, duplicate keys, and excess input. Do not silently truncate or coerce.
 
-The timestamp implementation/profile is a method to finalize in T03 before native-spec readiness; it is not an invitation to accept invalid strings. If the conformance tool and selected finite stdlib profile differ, record that exact difference and amend the unapproved contract/tests before approval rather than shipping two behaviors.
+T03's primitive/process choices are frozen in D1-PROFILE.md. Its timestamp subset, exact-number and Unicode semantics, fingerprint omission/inspection boundary, and private output protocol complete this contract. D1-CASES.json fixes positive and negative controls. Implementation and reference-conformance checks remain required; do not claim full RFC3339 acceptance or use binary-float loading to erase numeric counterexamples. No native approval is implied.
 
 ## 3. Top-level object
 
@@ -243,7 +244,7 @@ Placement choices for native planning:
 
 The proposed invocation is the resolved Python 3 executable with `-B`, the absolute trusted installed helper path, and the literal `validate` operation. Packet bytes arrive on stdin. No project-root argument is needed for pure validation; no packet path or schema path is accepted. The wrapper sets bytecode suppression before importing any local module as a defense in depth. The invocation is a private helper operation, not a new model tool or registered skill.
 
-Output is one bounded JSON result using `codearbiter.debug-validation/1.0.0`:
+Output is one bounded JSON result using `codearbiter.debug-validation/1.0.0`, with the exact closed envelope, error-code ordering, and interrupted/broken-output treatment in D1-PROFILE.md:
 
 - valid: true with an empty errors list and exit 0;
 - invalid input: valid false, fixed error code plus bounded field path, exit 2;

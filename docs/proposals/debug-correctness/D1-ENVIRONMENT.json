@@ -1,0 +1,16 @@
+{
+  "host": "Windows AMD64",
+  "python": "3.14.6",
+  "plugin": "ca",
+  "installed_version": "2.21.12",
+  "bridge_sha256": "210e1492363fe010de5e9534b11a5fef92c4c56d60efead6967ca0c7188e8e13",
+  "binary_sha256": "5cfb75794adccb8d48841184fa4696617dc7b70b4dbf75eb565c21f261512de1",
+  "release_manifest_sha256": "86280813c92fbb28a2007d3645ca4532d14b46fec40e4093c47e960314ec1cf8",
+  "capabilities_observation": "success; schema_version 0.3.1, binary version 0.1.0, windows/amd64",
+  "workflow_preflight_present": false,
+  "native_spec": null,
+  "native_plan": null,
+  "approval_receipt": null,
+  "adoption_status": "BLOCKED_INSTALLED_WORKFLOW_MISMATCH",
+  "scope": "Read-only capability probe only; not installation promotion, hook trust proof, native readiness or approval."
+}

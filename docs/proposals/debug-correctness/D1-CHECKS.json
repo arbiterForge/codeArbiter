@@ -1,0 +1,44 @@
+{
+  "format": "codearbiter.debug-d1-checks/1",
+  "boundary": "source-only design/reference checks; not a product validator, native approval or installed debug journey",
+  "python": "3.14.6",
+  "checks": [
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/proposals/debug-correctness/check-d1.py"
+      ],
+      "exit": 0,
+      "stdout": "{\"boundary\": \"source-only design checks; no product validation\", \"tests\": 7, \"primitive_vectors\": 59, \"semantic_rows\": 19, \"scenarios\": 41, \"success\": true}\n",
+      "stderr": "test_adjacent_links (__main__.D1DesignTest.test_adjacent_links) ... ok\ntest_native_adoption_not_fabricated (__main__.D1DesignTest.test_native_adoption_not_fabricated) ... ok\ntest_original_examples_retained (__main__.D1DesignTest.test_original_examples_retained) ... ok\ntest_plan_coverage_and_graph (__main__.D1DesignTest.test_plan_coverage_and_graph) ... ok\ntest_profile_vectors (__main__.D1DesignTest.test_profile_vectors) ... ok\ntest_scenario_inventory_and_oracles (__main__.D1DesignTest.test_scenario_inventory_and_oracles) ... ok\ntest_semantic_matrix (__main__.D1DesignTest.test_semantic_matrix) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.010s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/proposals/debug-correctness/check-d1.py",
+        "--unknown-selector"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "This preparation checker accepts no selectors; run the complete finite suite.\n"
+    }
+  ],
+  "checked_files_sha256": {
+    "check-d1.py": "001e0da00a7571b7d98c1c21e65bd53207e270562a81e25381d2d24a19e84890",
+    "CONTRACT.md": "fab0d4c68de179fc0d5ab0357adc1d599d1030afefa1242633163a0f55b3f9fc",
+    "D1-CASES.json": "ed0e723b7ad51679a6787055a6c034efae62af88f2a3a9d623d9b0135e4202d3",
+    "D1-ENVIRONMENT.json": "f85d769e9ba29a64a2987d424cffba9f1c6903cce0680371a0d89f7f62f8add5",
+    "D1-OWNERSHIP.json": "80b9c318b8da57dc843139d89c226fffa89abaa97a90ff2f8565089bed1e39ef",
+    "D1-PROFILE.md": "ee4a807b2de02ce18888d12b30b9d0f903855f6e2a2b6185b7a0c6dcc0a751ad",
+    "D1.md": "5c9ac2b5dee8ad9c99d0efdb7b3bb48378d825ab8b84f7704617427df2933d9c",
+    "PLAN.md": "f377d3500f860367f2b201149495b6c5ee3e61aeccc8611b8968aefa5732d52e",
+    "REVIEW.md": "3a765b2987cd027b53a4718ab56b714fc5eda46b58666ca92f2f365488b75ea9",
+    "SCENARIOS.md": "59eeb351059bb969d61b0a727f209dfce6cdf7a6bd8406e04c49e58ec2bd1158",
+    "SPEC.md": "e1f27e0b870eba1c19780c48cb6a04b2551f2aa37049ff1adce6b9bf6f8b5aa6"
+  },
+  "proposal_bytecode_directory_present": false,
+  "product_scenarios_run": 0,
+  "native_artifacts_created": 0
+}
