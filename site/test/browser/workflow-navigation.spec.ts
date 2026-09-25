@@ -28,7 +28,9 @@ test('chapter links advance, restore Back, reload and same-fragment selection wi
   const before = await state();
   const first = map.locator('[data-map-chapter="review-pair"]');
   await expect(first).toBeVisible();
-  await first.locator('[data-map-next]').focus(); await page.keyboard.press('Enter');
+  const next = first.locator('[data-map-next]');
+  await next.focus(); await expect(next).toBeFocused();
+  await next.press('Enter');
   const second = map.locator('[data-map-chapter="execute-tasks"]');
   await expect(second).toBeVisible(); await expect(first).toBeHidden();
   await expect(page).toHaveURL(/#sprint-execution-map-execute-tasks$/);
@@ -37,7 +39,11 @@ test('chapter links advance, restore Back, reload and same-fragment selection wi
   await second.locator('[data-map-permalink]').click(); // Same hash still restores this view.
   await expect(map.locator('[data-map-chapter]:visible')).toHaveCount(1);
   await page.goBack(); await expect(first).toBeVisible();
+  await expect(second).toBeHidden();
   await expect(page).toHaveURL(/#sprint-execution-map-review-pair$/);
+  await page.goForward(); await expect(second).toBeVisible();
+  await expect(first).toBeHidden();
+  await expect(page).toHaveURL(/#sprint-execution-map-execute-tasks$/);
   expect(await state()).toEqual(before);
 });
 

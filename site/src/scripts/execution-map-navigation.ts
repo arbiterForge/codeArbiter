@@ -22,8 +22,8 @@ export function installMapNavigation(root: HTMLElement): AbortController {
     status.textContent = selection === 'all' ? `All ${sections.length} chapters. Read in numbered order.`
       : `Chapter ${sections.findIndex(section => section.dataset.mapChapter === selection) + 1} of ${sections.length}. Choose another chapter or read the whole path.`;
   };
-  const revealFragment = () => {
-    const id = fragmentId(location.hash);
+  const revealFragment = (hash: string) => {
+    const id = fragmentId(hash);
     if (!id) return;
     const target = document.getElementById(id);
     if (!target || !root.contains(target)) return;
@@ -41,20 +41,24 @@ export function installMapNavigation(root: HTMLElement): AbortController {
     });
   };
   buttons.forEach(button => button.addEventListener('click', () => choose(button.dataset.mapSelect!), options));
-  window.addEventListener('hashchange', revealFragment, options);
+  const readLocation = () => revealFragment(location.hash);
+  window.addEventListener('hashchange', readLocation, options);
+  window.addEventListener('popstate', readLocation, options);
   // Astro may update history before replacing the document. Re-read its final DOM.
-  document.addEventListener('astro:page-load', revealFragment, options);
+  document.addEventListener('astro:page-load', readLocation, options);
   root.addEventListener('click', event => {
-    if (!(event instanceof MouseEvent) || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!(event instanceof MouseEvent) || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href^="#"]') : null;
     if (!link || link.target || link.hasAttribute('download')) return;
-    // Clicking the current fragment does not fire hashchange. Keep native link
-    // behavior, then reveal the requested chapter even after another selection.
-    queueMicrotask(() => { if (!controller.signal.aborted) revealFragment(); });
+    // Read the clicked destination, not the old location. Astro can use
+    // pushState for a same-page link without firing hashchange or page-load.
+    // Keep its native history handling; also restore a same-fragment selection.
+    const requestedHash = link.hash;
+    queueMicrotask(() => { if (!controller.signal.aborted) revealFragment(requestedHash); });
   }, options);
   controller.signal.addEventListener('abort', () => cancelAnimationFrame(frame), { once: true });
   choose(root.dataset.initial ?? sections[0].dataset.mapChapter!);
   controls.hidden = false;
-  revealFragment();
+  readLocation();
   return controller;
 }

@@ -221,7 +221,7 @@ test('record C04 full guide pages, role-row chapters and mobile reading paths', 
         // chapter beneath the sticky header. No page styles or content are changed.
         const box = await root(page, w).locator(`[data-map-chapter="${chapter.id}"]`).boundingBox();
         expect(box).not.toBeNull();
-        await page.screenshot({ path: join(directory, `c04-${w.id}-${chapter.id}-${width}.png`), clip: box! });
+        await page.screenshot({ path: join(directory, `c04-${w.id}-${chapter.id}-${width}.png`), fullPage: true, clip: box! });
       }
     }
   }

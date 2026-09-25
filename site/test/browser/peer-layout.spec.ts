@@ -156,7 +156,13 @@ test('maps and implementation disclosure work without JavaScript', async ({ brow
       await page.goto(`/guides/${slug}/`);
       await expect(page.locator('.ca-reader-journey__step')).toHaveCount(4);
       await readImplementation(page, slug, false);
-      await page.locator('.ca-reader-journey__step a').first().click();
+      // Return from the fully expanded routes using native keyboard navigation.
+      // This must not depend on pointer actionability during a long-page scroll.
+      const next = page.locator('.ca-reader-journey__step a').first();
+      const destination = await next.getAttribute('href');
+      await next.focus(); await expect(next).toBeFocused();
+      await next.press('Enter');
+      await expect(page).toHaveURL(new URL(destination!, page.url()).href);
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('h1')).not.toHaveText('404');
     }
