@@ -12,11 +12,10 @@ export const evidenceSources = {
   checkpointWriter: { path: 'core/surface/agents/checkpoint-aggregator.md', quote: 'Runs only after `verdict-aggregator` returns' },
   audit: { path: 'core/surface/commands/audit.md', quote: '**Triage** — every small-lane classification' },
   override: { path: 'core/surface/commands/override.md', quote: 'MUST write the log line before proceeding' },
-  authority: { path: 'core/surface/includes/artifacts.md', quote: 'Verification and review authority below is supported on Codex and Claude Code.', revision: '090773ec6aa98687cd7b207985cb29ebb8f9c8e1' },
 } as const;
 export type EvidenceSource = keyof typeof evidenceSources;
 export const evidenceSourceUrl = (key: EvidenceSource) =>
-  `https://github.com/arbiterForge/codeArbiter/blob/${'revision' in evidenceSources[key] ? evidenceSources[key].revision : evidenceSourceRevision}/${evidenceSources[key].path}`;
+  `https://github.com/arbiterForge/codeArbiter/blob/${evidenceSourceRevision}/${evidenceSources[key].path}`;
 
 export type CellVerdict = 'Strong' | 'Adequate' | 'Weak' | 'Indifferent';
 export interface LensCell { verdict: CellVerdict; reason: string }
