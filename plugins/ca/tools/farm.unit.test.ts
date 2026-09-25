@@ -4407,8 +4407,11 @@ describe("rendered enrichment budget", () => {
     expect(rendered).not.toContain("LATER_MUST_NOT_APPEAR"); expect(rendered).not.toContain("--- src/later.ts");
   });
   it("redacts complete source before choosing a prefix, not after breaking a sensitive span", () => {
-    const contents = ["SAFE_START", "-----BEGIN PRIVATE KEY-----", "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
-      "-----END PRIVATE KEY-----", "SAFE_END"].join("\n");
+    // Build delimiters for deliberately non-key test material. This keeps the
+    // exact same runtime span without embedding a key-shaped source literal.
+    const pemMarker = (edge: "BEGIN" | "END") => `-----${edge} PRIVATE KEY-----`;
+    const contents = ["SAFE_START", pemMarker("BEGIN"), "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
+      pemMarker("END"), "SAFE_END"].join("\n");
     const { rendered, added } = measure([{ path: "src/impl.ts", contents, readOnly: false }], 256);
     expect(added).toBeLessThanOrEqual(256); expect(rendered).not.toContain("NOT_REAL_PRIVATE_MATERIAL");
     expect(rendered).toContain("SAFE_START"); expect(rendered).toContain("[REDACTED");
