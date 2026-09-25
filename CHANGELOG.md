@@ -12,10 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.15] - 2026-09-24
+## [2.21.16] - 2026-09-24
 
 ### Fixed
 
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
 - Bound farm provider-directed retry waits and close discarded responses before
   backoff; preserve independent progress without regenerating against a cooldown.
 - Preserve valid provider-reported tokens when worker output is rejected; validate
@@ -38,6 +40,19 @@ predate the plugin rewrite and are grouped by date.
   worktrees, without changing integration or existing task branches. Report the
   effective candidate model and incomplete cleanup instead of hiding it.
 - Keep worker/test/verification gates and the separate HTML farm restriction intact.
+
+## [2.21.15] - 2026-09-24
+
+### Fixed
+
+- Check the installed host's required HTML workflow resources and hook
+  registrations before new full-lane authoring. Unsupported or incomplete
+  hosts stop early without creating fallback artifacts; legacy Markdown and
+  the inline small feature lane retain their existing behavior.
+- Include complete LICENSE and Go runtime notices in every installable
+  governance-plugin subtree and verify their exact-source package bytes.
+- Clarify the native-helper security inventory, retire operative wording
+  from the inactive CLA, and document explicit statusline uninstall.
 
 ## [2.21.14] - 2026-09-24
 

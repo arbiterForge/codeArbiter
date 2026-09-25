@@ -3891,3 +3891,174 @@ describe("transport deferral preserves task retry boundaries", () => {
     expect(d.resetWorktree).toHaveBeenCalledTimes(2);
   });
 });
+
+// Failure-path coverage for the existing HTTP policy. No provider call is made:
+// the injected fetch and clock exercise request ownership and terminal evidence.
+describe("HTTP connection and body failure evidence", () => {
+  let worker: Worker;
+  const ctx = { cwd: process.cwd(), prompt: "fixture", model: "fixture-model",
+    apiBaseUrl: "https://api.example/v1", apiKey: "fixture-key", forbidden: new Set<string>() };
+  const emptyCompletion = () => new Response(JSON.stringify({ choices: [],
+    usage: { prompt_tokens: 7, completion_tokens: 11 } }));
+  beforeEach(async () => {
+    vi.resetModules();
+    vi.stubEnv("FARM_REQUEST_TIMEOUT_MS", "200");
+    vi.stubEnv("FARM_API_MAX_RETRIES", "2");
+    worker = (await import("./farm.ts")).httpWorker;
+    vi.useFakeTimers({ now: 0 });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it("retries connection errors with identical requests and fresh released signals", async () => {
+    const calls: Array<{ time: number; url: unknown; init: RequestInit }> = [];
+    const fetcher = vi.fn(async (url: unknown, init?: RequestInit) => {
+      if (calls.length) expect(calls.at(-1)!.init.signal!.aborted).toBe(true);
+      calls.push({ time: Date.now(), url, init: init! });
+      if (calls.length < 3) throw new Error("fixture connection reset");
+      return emptyCompletion();
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const pending = worker.apply(ctx);
+    await vi.advanceTimersByTimeAsync(999);
+    expect(calls).toHaveLength(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(calls).toHaveLength(2);
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(calls).toHaveLength(2);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await pending).toMatchObject({ ok: false,
+      error: "no parseable file blocks in response", promptTokens: 7, completionTokens: 11 });
+    expect(calls.map(call => call.time)).toEqual([0, 1000, 3000]);
+    const first = calls[0];
+    for (const call of calls) {
+      expect(call.url).toBe("https://api.example/v1/chat/completions");
+      expect(call.init.body).toBe(first.init.body);
+      expect(call.init.headers).toEqual(first.init.headers);
+      expect(call.init.method).toBe("POST");
+      expect(call.init.redirect).toBe("error");
+      expect(call.init.signal!.aborted).toBe(true);
+    }
+    expect(new Set(calls.map(call => call.init.signal)).size).toBe(3);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([new Error("fixture connection reset"), "fixture connection reset", null, undefined])(
+    "keeps exhausted network failures distinct from an HTTP cooldown: %s", async (failure) => {
+      const signals: AbortSignal[] = [];
+      const times: number[] = [];
+      vi.stubGlobal("fetch", vi.fn(async (_url: unknown, init?: RequestInit) => {
+        signals.push(init!.signal!); times.push(Date.now()); throw failure;
+      }));
+      const pending = worker.apply(ctx);
+      await vi.runAllTimersAsync();
+      const result = await pending;
+      expect(result).toMatchObject({ ok: false, filesWritten: [] });
+      expect(result.error).toMatch(/^fetch failed: /);
+      expect(result.retryable).toBeUndefined();
+      expect(result.promptTokens).toBeUndefined();
+      expect(result.completionTokens).toBeUndefined();
+      expect(times).toEqual([0, 1000, 3000]);
+      expect(signals.every(signal => signal.aborted)).toBe(true);
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
+  it("times out stalled headers on each original deadline without leaking timers", async () => {
+    const signals: AbortSignal[] = [];
+    const times: number[] = [];
+    vi.stubGlobal("fetch", vi.fn((_url: unknown, init?: RequestInit) => {
+      const signal = init!.signal!; signals.push(signal); times.push(Date.now());
+      return new Promise<Response>((_resolve, reject) => signal.addEventListener("abort",
+        () => reject(new DOMException("fixture deadline", "AbortError")), { once: true }));
+    }));
+    const pending = worker.apply(ctx);
+    await vi.runAllTimersAsync();
+    const result = await pending;
+    expect(result).toMatchObject({ ok: false, filesWritten: [], error: "request timed out after 200ms" });
+    expect(result.retryable).toBeUndefined();
+    expect(times).toEqual([0, 1200, 3400]);
+    expect(Date.now()).toBe(3600);
+    expect(signals.every(signal => signal.aborted)).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([new Error("fixture stream reset"), "fixture stream reset", null, undefined])(
+    "does not replay a request after response headers when body consumption fails: %s", async (failure) => {
+      let signal: AbortSignal | undefined;
+      const response = emptyCompletion();
+      const read = vi.spyOn(response, "text").mockRejectedValue(failure);
+      const fetcher = vi.fn(async (_url: unknown, init?: RequestInit) => {
+        signal = init!.signal!; return response;
+      });
+      vi.stubGlobal("fetch", fetcher);
+      const result = await worker.apply(ctx);
+      expect(result).toMatchObject({ ok: false, filesWritten: [] });
+      expect(result.error).toMatch(/^failed reading response body: /);
+      expect(result.retryable).toBeUndefined();
+      expect(result.promptTokens).toBeUndefined();
+      expect(result.completionTokens).toBeUndefined();
+      expect(fetcher).toHaveBeenCalledTimes(1);
+      expect(read).toHaveBeenCalledTimes(1);
+      expect(signal!.aborted).toBe(true);
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
+  it("keeps the body on the original deadline after headers arrive late", async () => {
+    let signal: AbortSignal | undefined;
+    let settled = false;
+    const response = emptyCompletion();
+    const read = vi.spyOn(response, "text").mockImplementation(() => new Promise<string>((_resolve, reject) => {
+      signal!.addEventListener("abort", () => reject(new DOMException("fixture deadline", "AbortError")), { once: true });
+    }));
+    const fetcher = vi.fn((_url: unknown, init?: RequestInit) => {
+      signal = init!.signal!;
+      return new Promise<Response>(resolve => setTimeout(() => resolve(response), 150));
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const pending = worker.apply(ctx).then(result => { settled = true; return result; });
+    await vi.advanceTimersByTimeAsync(149);
+    expect(read).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(read).toHaveBeenCalledTimes(1);
+    expect(signal!.aborted).toBe(false);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await pending).toMatchObject({ ok: false, filesWritten: [],
+      error: "request timed out after 200ms (reading response body)" });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(signal!.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(["fetch", "body"])("redacts and bounds %s failure diagnostics without inventing usage", async (phase) => {
+    const secret = "sk-ant-" + "fixture".repeat(12);
+    const failure = new Error("fixture failure\nAuthorization: Bearer " + secret + "\n" + "z".repeat(600));
+    let lastSignal: AbortSignal | undefined;
+    const response = emptyCompletion();
+    vi.spyOn(response, "text").mockRejectedValue(failure);
+    const fetcher = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      lastSignal = init!.signal!;
+      if (phase === "fetch") throw failure;
+      return response;
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const pending = worker.apply(ctx);
+    await vi.runAllTimersAsync();
+    const result = await pending;
+    const prefix = phase === "fetch" ? "fetch failed: " : "failed reading response body: ";
+    expect(result.error).toContain(prefix);
+    expect(result.error).toContain("[REDACTED");
+    expect(result.error).not.toContain(secret);
+    expect(result.error!.length).toBeLessThanOrEqual(prefix.length + 300);
+    expect(result.promptTokens).toBeUndefined();
+    expect(result.completionTokens).toBeUndefined();
+    expect(fetcher).toHaveBeenCalledTimes(phase === "fetch" ? 3 : 1);
+    expect(lastSignal!.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});

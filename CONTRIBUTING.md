@@ -7,6 +7,8 @@ it holds itself to the same bar. This guide explains how to get set up, what the
 gates expect, and how to get a change merged.
 
 By participating you agree to abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
+Read the [contributor agreement status](./CLA.md) before submitting: no CLA is
+currently in force, and the retired template is not an assent mechanism.
 
 ## Ways to contribute
 
@@ -32,6 +34,11 @@ By participating you agree to abide by our [Code of Conduct](./CODE_OF_CONDUCT.m
 - **Node.js**, if you touch the cost-arbitrage farm dispatcher under
   `plugins/ca/tools/`, the Pi adapter under `plugins/ca-pi/tools/`, or the docs
   site (TypeScript + Vitest/Astro).
+
+The structured artifact workflow also needs the installation-pinned native
+`ca-artifact` payload. Developing that executable requires the Go version declared
+in `core/artifacts/go.mod`. A source checkout or Python installation alone does
+not establish the complete installed-host workflow capability.
 
 ## Getting set up
 

@@ -150,6 +150,35 @@ class MalformedInputTest(unittest.TestCase):
         self.assertTrue(findings)  # missing surfaces => findings, not an exception
 
 
+class PolicyDocumentationTest(unittest.TestCase):
+    def read(self, name):
+        with open(os.path.join(REPO, name), encoding="utf-8") as source:
+            return " ".join(source.read().split())
+
+    def test_statusline_restore_names_the_uninstall_action(self):
+        readme = self.read("README.md")
+        self.assertIn("`/ca:statusline uninstall`", readme)
+        self.assertNotIn("`/ca:statusline` again restores", readme)
+        self.assertIn("preserves the backup", readme)
+
+    def test_security_inventory_includes_native_dependency_and_host_limit(self):
+        policy = self.read("SECURITY.md")
+        self.assertIn("`ca-artifact` native executable, built with Go", policy)
+        self.assertIn("Engine capability is not host workflow qualification", policy)
+        self.assertNotIn("no compiled binaries", policy)
+        self.assertIn("./PRIVACY.md", policy)
+
+    def test_inactive_cla_does_not_seek_automatic_assent(self):
+        cla = self.read("CLA.md")
+        self.assertIn("No Contributor License Agreement is currently in force", cla)
+        self.assertNotIn("By submitting a contribution", cla)
+        self.assertNotIn("## Signature", cla)
+        self.assertNotIn("You grant the Owner", cla)
+        self.assertIn("separate, explicit", cla)
+        self.assertIn("No Contributor License Agreement is currently in force", self.read("README.md"))
+        self.assertIn("./CLA.md", self.read("CONTRIBUTING.md"))
+
+
 class LiveRepoTest(unittest.TestCase):
     """AC-9: the real repository is consistent (after the ca-sandbox manifest fix)."""
 

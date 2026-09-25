@@ -64,6 +64,28 @@ class ClaudeRootInventoryTest(unittest.TestCase):
             [entry.category for entry in inventory], ["codex-compatibility-fixture-input"]
         )
 
+    def test_installed_host_inspection_classifies_only_the_claude_branch_literal(self):
+        source = f'    token = "{ROOT_LITERAL}" if host == "claude" else "${{PLUGIN_ROOT}}"\n'
+        for path in ("core/pysrc/_artifactlib.py", "plugins/ca-codex/hooks/_artifactlib.py", "plugins/ca-pi/hooks/_artifactlib.py"):
+            with self.subTest(path=path):
+                errors, inventory = self.inventory(path, source)
+                self.assertEqual(errors, [])
+                self.assertEqual([row.category for row in inventory], ["claude-native"])
+
+    def test_installed_host_inspection_does_not_allow_other_portable_root_uses(self):
+        source = f'    token = "{ROOT_LITERAL}" if host == "claude" else "${{PLUGIN_ROOT}}"\n'
+        mutations = (
+            ("core/pysrc/_artifactlib.py", source.replace('host == "claude"', 'host == "codex"')),
+            ("core/pysrc/_artifactlib.py", f'    token = "{ROOT_LITERAL}"\n'),
+            ("plugins/ca-pi/hooks/_artifactlib.py", source + f'    path = "{ROOT_LITERAL}/hooks/elsewhere.py"\n'),
+            ("core/pysrc/other.py", source),
+        )
+        for path, altered in mutations:
+            with self.subTest(path=path, altered=altered):
+                errors, _ = self.inventory(path, altered)
+                self.assertEqual(len(errors), 1)
+                self.assertIn("unclassified portable/product use", errors[0])
+
     def test_arbitrary_github_script_occurrence_fails_closed(self):
         errors, _inventory = self.inventory(
             ".github/scripts/portable_product.py", f'ROOT_LITERAL = "{ROOT_LITERAL}"\n'

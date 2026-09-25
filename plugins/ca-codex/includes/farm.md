@@ -57,9 +57,12 @@ capable of the slice).
    surviving mutant is an implementation change the test command did not reject. It can indicate
    weak tests, dead code or an equivalent change; it does not by itself prove gaming. Bare nonzero
    exits do not establish valid, assertion-killed mutants. Built-in positive rejection ratios remain
-   unverified bounds, not measured scores; see the accounting rule below. A low result attaches a
-   **warning that rides into Phase 3** for independent review; only the existing near-zero result
-   with sufficient evaluated evidence rejects the candidate. Screening is sampled and time-boxed. Set
+   unverified bounds, not measured scores; see the accounting rule below. Any completed nonzero
+   built-in rerun leaves the measurement unavailable, whatever its ratio. It attaches a
+   **warning that rides into Phase 3** for independent review unless the existing near-zero bound
+   with sufficient evaluated evidence rejects the candidate. `FARM_MUTATION_WARN_BELOW` applies
+   only to measured scores from a successful external hook or a built-in all-pass zero result;
+   it cannot suppress an unavailable-measurement warning. Screening is sampled and time-boxed. Set
    `FARM_MUTATION_CMD` to swap the built-in text mutator for a real per-language framework (Stryker,
    mutmut, …); it runs in the worktree with `FARM_MUTATION_FILES` / `FARM_MUTATION_TEST_PATH` /
    `FARM_MUTATION_TEST_CMD` set. A measured hook score requires successful completion (exit 0,
@@ -242,7 +245,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MUTATION` | `on` | Mutation guard on/off. |
 | `FARM_MUTATION_SAMPLE` | `15` | Max mutants per task (sampled). |
 | `FARM_MUTATION_BUDGET_MS` | `30000` | Per-task mutation time box. |
-| `FARM_MUTATION_WARN_BELOW` | `0.5` | Score below this attaches a warning into Phase 3. |
+| `FARM_MUTATION_WARN_BELOW` | `0.5` | Measured scores below this warn in Phase 3 unless the rejection floor applies. Unavailable or unverified measurements warn independently of this threshold. |
 | `FARM_MUTATION_ESCALATE_BELOW` | `0.1` | Score at/below this (≥5 mutants) hard-escalates. |
 | `FARM_MUTATION_CMD` | _(unset)_ | Pluggable external mutation framework hook. |
 | `FARM_RUN_ID` | _(random)_ | Pin this run's id — also the name of its artifact directory (`.farm/runs/<run-id>/`). Must be 1–64 chars of `[A-Za-z0-9._-]`; anything else is refused at startup. Reusing an id publishes over that directory's receipts, so pin a fresh one per run. |

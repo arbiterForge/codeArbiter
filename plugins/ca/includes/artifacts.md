@@ -15,6 +15,22 @@ and continues on the legacy path without automatic conversion. The feature
 small lane remains an inline mini-spec and creates no artifact. HTML `--farm`
 dispatch remains disabled and outside this rollout.
 
+## Installed host admission
+
+Before new full-lane or plan authoring, the bridge checks the exact installed
+host's required producers, helpers, reviewer charter where applicable, and
+platform-specific hook registrations. `_select_authoring_route` and
+`_preflight_plan_authoring` require this read-only preflight in addition to the
+native engine capability. `HOST_WORKFLOW_UNAVAILABLE` stops before authoring;
+repair the installed package or use a supported host. Never create a fallback
+artifact, substitute another package, or mint an authority event to proceed.
+
+`ArtifactClient.workflow_preflight()` reports only installed resources. It does
+not prove host trust, enabled hooks, supported host-version behavior, reviewer
+independence, or a completed live workflow. Actual authority producers and their
+existing validation remain required. Pi currently fails this admission check;
+existing Markdown pairs and the inline small feature lane are unchanged.
+
 ## Internal execution contract
 
 The normal qualified package's installation-owned `release.json` pins the native

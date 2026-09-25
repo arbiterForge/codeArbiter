@@ -435,9 +435,10 @@ jobs:
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    # macOS exhausted 15 minutes after passing package tests while final
-    # conformance still ran (PR854/run35963335302). Keep every native
-    # qualification step and a bounded cap; do not weaken per-operation limits.
+    # Run 36079069513: Intel macOS passed its 42 authoring and 35 package
+    # cases, then hit the former 15-minute job ceiling during the full
+    # conformance replay. Windows ARM took 12m07s. Retain every required
+    # suite and bound the entire cold-toolchain/native population at 30m.
     timeout-minutes: 30
     permissions:
       contents: read

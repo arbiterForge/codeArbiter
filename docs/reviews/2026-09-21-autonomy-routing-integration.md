@@ -756,3 +756,42 @@ the existing pending/idempotent cleanup controls. Do not enlarge test or product
 deadlines, change runner containment, or skip the Windows cell. Qualify the full
 Pi isolation file and its surrounding suite on native Windows in addition to the
 farm matrix; treat any remaining failure as evidence rather than silencing it.
+
+
+## 2026-09-24 continuation: transport failure coverage and current-main reconciliation
+
+Baseline: `e2ddf7fdd2951d86d23b91aba56781d780482b35`; incorporated main:
+`929229354e3a15ae3002c82116b66c837ab43729`. The older unpublished transport
+patch is superseded by the baseline's bounded-retry implementation, not reapplied.
+The baseline's normal CI run `36083254895` completed successfully. The earlier
+Pi Windows failure is already repaired there; it is not an unresolved farm failure.
+
+Thirteen cases added to the existing farm unit suite exercise connection-error
+retries, exhausted network failures, stalled headers, body-read refusal after
+headers, the original deadline across late headers, exact request counts and
+payloads, fresh aborted signals, timer cleanup, and bounded/redacted diagnostics.
+Missing usage remains unknown. Network errors retain their existing retry policy;
+the tests do not extend task-local HTTP cooldown deferral to another failure class.
+These are injected-fetch/clock tests of existing behavior, not a new provider
+mechanism, authenticated model journey, production defect reproduction or spend proof.
+
+The private farm card now distinguishes measured-score thresholds from unavailable
+mutation measurements: a completed nonzero built-in rerun warns regardless of its
+ratio unless the existing sufficient-count near-zero rejection condition applies.
+Regenerate all three host cards. Preserve the actual runtime, bundle and thresholds.
+
+Retain main's host workflow admission, package notices and policy corrections.
+Both branches independently adopted the same 30-minute native qualification budget;
+retain main's workflow bytes and reconcile its provenance rather than changing CI.
+The existing payload guard requires new candidates because main consumed the old
+coordinates: ca `2.21.16`, ca-codex `0.13.17`, ca-pi `0.14.16`. Keep main's
+original changelog history and synchronize adapter/runtime/generated identities.
+
+Run full farm coverage, official generators, relevant static/authority contracts,
+payload-version guards and normal final-head CI. Record each platform/runtime and
+actual outcomes independently; another platform's percentage is not coverage union.
+No threshold, coverage exclusion, test deadline or production timeout changes here.
+Keep HTML farm disabled. Broader accounting, durable process resume, framework-backed
+mutation classification and model-quality/resource measurements remain separate.
+Revert the isolated tests, private cards and matching candidate metadata together
+if rejected; preserve upstream admission/policy fixes and authenticated history.

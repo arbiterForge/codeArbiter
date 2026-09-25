@@ -178,6 +178,18 @@ def _classify_claude_root_occurrence(
         return _core_host_category(descriptor_host, line)
     if relative in _CODEX_COMPATIBILITY_INPUTS:
         return "codex-compatibility-fixture-input"
+    # The installed-resource inspector compares native hook syntax; it never
+    # expands this variable or uses it as a Codex/Pi execution root. Classify
+    # only its exact host-conditional assignment, not the containing file.
+    inspection_paths = {
+        "core/pysrc/_artifactlib.py", "plugins/ca-codex/hooks/_artifactlib.py",
+        "plugins/ca-pi/hooks/_artifactlib.py",
+    }
+    native_inspection = (
+        f'token = "{CLAUDE_ROOT}" if host == "claude" else "${{PLUGIN_ROOT}}"'
+    )
+    if relative in inspection_paths and line.strip() == native_inspection:
+        return "claude-native"
     if relative in _CLAUDE_NATIVE_INPUTS or relative.startswith(_CLAUDE_NATIVE_PREFIXES):
         return "claude-native"
     return None
@@ -208,8 +220,9 @@ def check_claude_root_inventory(repo: str | Path = REPO) -> tuple[list[str], lis
 
     The three classes are deliberately exclusive: native Claude product syntax,
     Codex compatibility fixtures/inputs, and immutable historical evidence.
-    Comments in portable Python/TypeScript code are not executable occurrences;
-    an actual token expression there remains a fail-closed finding.
+    Comments in portable Python/TypeScript code are not executable occurrences.
+    The installed-host inspector's exact Claude-conditional comparison is native
+    syntax inspection; all other portable token expressions still fail closed.
     """
     root = Path(repo)
     errors: list[str] = []

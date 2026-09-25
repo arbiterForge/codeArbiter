@@ -382,6 +382,22 @@ class PackageTests(unittest.TestCase):
             self.assertTrue(capabilities["repository_operations_available"])
             self.assertTrue(capabilities["host_default_enabled"])
 
+    def test_package_notices_require_complete_canonical_bytes(self):
+        canonical = {name: (b"complete fixture notice\n", 0o644, "source", name)
+                     for name in ("LICENSE", "THIRD_PARTY_NOTICES.md")}
+        members = {f"plugins/ca/{name}": value for name, value in canonical.items()}
+        PACKAGER._require_package_notices(members, "plugins/ca", canonical)
+        for name in canonical:
+            with self.subTest(name=name):
+                missing = dict(members)
+                del missing[f"plugins/ca/{name}"]
+                with self.assertRaisesRegex(ValueError, "package notice"):
+                    PACKAGER._require_package_notices(missing, "plugins/ca", canonical)
+                identifier_only = dict(members)
+                identifier_only[f"plugins/ca/{name}"] = (b"AGPL-3.0-only", 0o644, "source", name)
+                with self.assertRaisesRegex(ValueError, "package notice"):
+                    PACKAGER._require_package_notices(identifier_only, "plugins/ca", canonical)
+
     def test_final_normal_packages_bind_exact_source_and_promoted_bytes(self):
         source_commit = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=REPO, text=True, encoding="utf-8"
@@ -442,6 +458,13 @@ class PackageTests(unittest.TestCase):
             destination = self.base / f"extracted-{host}"
             PACKAGER.extract_artifact_release_package(artifact, destination, host=host)
             extracted[host] = destination
+            plugin_prefix = {"claude": "plugins/ca", "codex": "plugins/ca-codex",
+                             "pi": "package/plugins/ca-pi"}[host]
+            for notice in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+                committed = subprocess.check_output(
+                    ["git", "show", f"{source_commit}:{notice}"], cwd=REPO)
+                self.assertEqual((destination / plugin_prefix / notice).read_bytes(), committed)
+                self.assertIn(f"{plugin_prefix}/{notice}", result["packages"][host]["members"])
             relative = {
                 "claude": "plugins/ca/helpers/artifacts",
                 "codex": "plugins/ca-codex/helpers/artifacts",
@@ -500,6 +523,20 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(
             ["ca-codex"], [entry["name"] for entry in codex_catalog["plugins"]]
         )
+
+        npm_output = self.base / "codex-npm"
+        npm_result = PACKAGER.build_codex_npm_package(
+            package_root=output,
+            package_cohort_sha256=hashlib.sha256(
+                (output / "artifact-package-cohort.json").read_bytes()).hexdigest(),
+            output=npm_output,
+        )
+        with tarfile.open(npm_output / npm_result["file"], "r:gz") as archive:
+            for notice in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+                member = archive.extractfile(f"package/{notice}")
+                self.assertIsNotNone(member)
+                self.assertEqual(member.read(), subprocess.check_output(
+                    ["git", "show", f"{source_commit}:{notice}"], cwd=REPO))
 
         pi_artifact = output / result["packages"]["pi"]["file"]
         with tarfile.open(pi_artifact, "r:gz") as archive:

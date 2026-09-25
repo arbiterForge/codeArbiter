@@ -4,10 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.14.15] - 2026-09-24
+## [0.14.16] - 2026-09-24
 
 ### Fixed
 
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
 - Document bounded farm transport retries and task-local cooldown handling in
   the shared private card without enabling a new backend or HTML farm support.
 - Preserve known rejected-response usage in the shared farm backend and document
@@ -28,6 +30,17 @@ All notable changes to `ca-pi` are documented in this file.
   document dependency-ready scheduling and detached canary evaluation in the
   shared farm resource. Existing preview dispatch authority and HTML farm
   restrictions remain unchanged.
+
+## [0.14.15] - 2026-09-24
+
+### Fixed
+
+- Check the installed host's required HTML workflow resources and hook
+  registrations before new full-lane authoring. Unsupported or incomplete
+  hosts stop early without creating fallback artifacts; legacy Markdown and
+  the inline small feature lane retain their existing behavior.
+- Include complete LICENSE and Go runtime notices in every installable
+  governance-plugin subtree and verify their exact-source package bytes.
 
 ## [0.14.14] - 2026-09-24
 

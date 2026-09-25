@@ -6,10 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.16] - 2026-09-24
+## [0.13.17] - 2026-09-24
 
 ### Fixed
 
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
 - Document bounded farm transport retries and task-local cooldown handling in
   the shared private card without enabling a new backend or HTML farm support.
 - Clarify reported-versus-complete farm usage and rejected-response recovery in
@@ -29,6 +31,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Synchronize shared runtime identity with the current candidate cohort and
   document the isolated farm evaluation contract in the private resource. This
   does not add a packaged Codex farm backend or enable HTML farm execution.
+
+## [0.13.16] - 2026-09-24
+
+### Fixed
+
+- Check the installed host's required HTML workflow resources and hook
+  registrations before new full-lane authoring. Unsupported or incomplete
+  hosts stop early without creating fallback artifacts; legacy Markdown and
+  the inline small feature lane retain their existing behavior.
+- Include complete LICENSE and Go runtime notices in every installable
+  governance-plugin subtree and verify their exact-source package bytes.
 
 ## [0.13.15] - 2026-09-24
 

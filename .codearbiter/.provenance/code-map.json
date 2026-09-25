@@ -71,19 +71,19 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "26144810c452b2f1c556176e4831636d4363ef46",
+      "hash": "99a64aa682f6e2f007697226689fec808e9d9f1b",
       "path": "tools/build-host-packages.py"
     },
     {
       "claims": [
         {
-          "claim": "Byte-identical vendoring of core/pysrc into each plugin's hooks/",
+          "claim": "Byte-identical vendoring of shared hooks and owning package notices into each governance adapter",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "4f43d2b00765136c5b0610987ccde257e741099b",
+      "hash": "d59a9546e70499a41145d88d3635ccd5858fe0b1",
       "path": "tools/sync-core.py"
     },
     {
@@ -137,37 +137,37 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.21.15)",
+          "claim": "Claude Code plugin manifest for ca (v2.21.16)",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "acfe33e04e12fcf60560d1f4c1e4c3428ce81349",
+      "hash": "044e629557d7f71c902b4de5d4bcd836f8674c23",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.16), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.17), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "811f2a471fd5154afe6be089fd1adade785d3fed",
+      "hash": "d6eb45a03dae70ddb2b33bb734e8f9b1143879fb",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.14.15, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.14.16, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "59a23f934a3e647fe672bbb38a2ef2291336433f",
+      "hash": "92f3a244a6b6bf2b680cbdbe4745d73410e9227d",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "d3225b71d81e93614942faa10a84e7467388f31a",
+      "hash": "6ad10e23d388c6baf65372488ca740c658c6845a",
       "path": ".github/workflows/ci.yml"
     },
     {
