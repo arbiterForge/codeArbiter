@@ -984,3 +984,24 @@ Revert this renderer, rebuilt bundle, tests, private projections and affected in
 hashes together if rejected. Preserve earlier PR work, release identities and
 ledger history. HTML farm remains disabled; durable process resume, complete
 accounting and remaining command consolidation are not implemented by this slice.
+
+### Hosted follow-through: exact synthetic-source exception
+
+The c428014 current-tree scan identified the deliberately non-key redaction
+fixture. Commit 150c729 preserves its exact 2574-byte runtime input while constructing
+the delimiters at runtime. The current-tree scan then passed, but the PR-range
+scan still saw the original source expression in append-only history.
+
+The sole exception now matches the exact 103-byte historical TypeScript expression,
+not expanded key material, by a whole RE2 literal quote inside the existing absolute
+anchors. The validator permits that closed literal form only; an earlier quote exit,
+active regex suffix, path/commit/stopword exclusion or changed matching target still
+fails. No default scanner rule is removed and no file or commit is exempted.
+Four new contract methods cover punctuation, quote exits, forbidden scope changes
+and the exact source-value digest. All 89 CI-impact tests pass. Native Gitleaks
+8.30.1 independently matched the original value and then passed the actual 45-commit
+PR range with the proposed exception. An optional extra scanner-canary script could
+not be created by the tool and was not executed or counted as proof. The required
+hosted pinned-scanner run remains the final check, separate from native results.
+The renderer/bundle are unchanged by these fixture/CI follow-ups. Full final local
+farm coverage again passed 895 cases with three existing platform skips.

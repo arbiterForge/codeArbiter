@@ -346,7 +346,8 @@ def gitleaks_allowlist_regexes(config: str) -> list[str]:
 
 # The characters that would let an anchored waiver match more than the single
 # fixed value it spells out.  `\` is in the set because an escape sequence is a
-# pattern, and this contract admits no patterns at all.
+# pattern. The only exception, below, is one complete literal quote; active
+# patterns and early quote exits remain forbidden.
 _REGEX_METACHARACTERS = frozenset(".*+?()[]{}|^$\\")
 # `\A<body>\z` - Go RE2's spelling of "the WHOLE target is exactly <body>".
 _ANCHORED_WAIVER = re.compile(r"(?s)\A\\A(?P<body>.*)\\z\Z")
@@ -463,7 +464,12 @@ def gitleaks_waiver_violations(config: str) -> list[str]:
                     "regexes as substrings, so it waives anything merely containing it"
                 )
                 continue
-            stray = sorted(set(anchored.group("body")) & _REGEX_METACHARACTERS)
+            body = anchored.group("body")
+            # A whole RE2 quote is still ONE exact value, including punctuation.
+            # Refuse any earlier quote terminator: no regex may follow it.
+            if body.startswith(r"\Q") and body.endswith(r"\E") and r"\E" not in body[2:-2]:
+                continue
+            stray = sorted(set(body) & _REGEX_METACHARACTERS)
             if stray:
                 problems.append(
                     f"{literal!r} carries regex metacharacter(s) {''.join(stray)!r}; "
@@ -1945,6 +1951,45 @@ class WorkflowContractTest(unittest.TestCase):
             "the .env.example placeholder is not the waived value, so the file is waived by "
             "something broader",
         )
+
+    def test_exact_quoted_secret_waivers_remain_single_values(self):
+        for value in ["fixture.with(punctuation)", "line one\nline two", ".*[]{}|^$", r"literal\Qtext"]:
+            with self.subTest(value=value):
+                pattern = r"\A\Q" + value + r"\E\z"
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''" + pattern + "''']\n"
+                self.assertEqual(gitleaks_waiver_violations(config), [])
+
+    def test_quoted_secret_waivers_cannot_leave_the_literal_scope(self):
+        patterns = [r"\Qfixture\E", r"\A\Qfixture\E", r"\Qfixture\E\z",
+                    r"\A\Qfixture\E.*\z", r"\A\Qfixture\E.*\Qother\E\z",
+                    r"\A\Qfixture\E|other\Qx\E\z", r"\A\Qfixture\E(?i)\Qx\E\z",
+                    r"\A\Qfixture\E\z.*", r"(?i)\A\Qfixture\E\z",
+                    r"\A\Qfixture\E[\s\S]*\Q\E\z", r"\Afixture.*\z", r"\A\Qfixture\z"]
+        for pattern in patterns:
+            with self.subTest(pattern=pattern):
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''" + pattern + "''']\n"
+                self.assertTrue(gitleaks_waiver_violations(config))
+
+    def test_quoted_literal_does_not_allow_path_or_target_waivers(self):
+        for field in ["paths = ['fixtures/']", "commits = ['abc']", "stopwords = ['fixture']",
+                      "regexTarget = 'match'", "regexTarget = 'line'", "condition = 'OR'"]:
+            with self.subTest(field=field):
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''\\A\\Qfixture(x)\\E\\z''']\n" + field
+                self.assertTrue(gitleaks_waiver_violations(config))
+
+    def test_historical_redaction_fixture_waiver_is_exact_source_text(self):
+        import hashlib
+        config = GITLEAKS_CONFIG.read_text(encoding="utf-8")
+        patterns = [p for p in gitleaks_allowlist_regexes(config) if p.startswith(r"\A\Q")]
+        self.assertEqual(len(patterns), 1)
+        pattern = patterns[0]
+        self.assertTrue(pattern.endswith(r"\E\z"))
+        value = pattern[4:-4]
+        self.assertNotIn(r"\E", value)
+        self.assertEqual(len(value.encode("utf-8")), 103)
+        self.assertEqual(hashlib.sha256(value.encode("utf-8")).hexdigest(),
+                         "0636fae38f63fc5e488ed81d916994bd086c5aea4f323ed1b912fa0f0697c1df")
+        self.assertIn("c4280147cffa1a7a8ba73ebe1b8b1bbf5f2a1e44", config)
 
     def test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract(self):
         # A contract only means something if it FAILS on the diffs it exists to
