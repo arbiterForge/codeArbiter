@@ -96,13 +96,22 @@ execute are different checks. A plan's `draft_preview` relationship does not aut
 
 ## Understand what your decision authorizes
 
-Use the approval boundary presented by the owning workflow. A feature has spec and plan review
-gates; a sprint reviews the linked pair as one package. For typed HTML, the current adapter arms
-one artifact at a time. Review the named artifact, return the exact reply supplied by the host,
-and require a fresh approved-gate check before the next transition. A generic “yes” or a reply
-for another artifact does not approve this one. After spec approval, the plan must bind to that
-approved definition and obtain its own current approval. One review package is not a promise of
-one prompt or a receipt covering both documents.
+Use the approval boundary presented by the owning workflow. An attended feature normally approves
+its specification, binds the plan to that approved definition, and obtains the plan's own current
+approval. For later single-artifact changes, review the named content and follow its exact prompt.
+
+The **initial HTML sprint pair** has a distinct qualified path: a ready draft specification plus
+a draft-for-pair plan. `arm-sprint` freezes both identities and any exact delegation terms. One
+host-observed reply names both and `approve-only` or `delegate-methods`; `sprint-approve` commits
+the two approvals and binding in one recoverable native transaction. Do not simulate this by
+separately approving the initial files. `resume-sprint` is only for a matching already-observed
+reply after interruption, never permission to fabricate one. See the
+[sprint review boundary](/guides/autonomous-sprints/#inspect-the-durable-package) and the current
+[owning sprint contract](/reference/commands/sprint/).
+
+These are current-source contracts, not proof that any installed package supports them. Require
+the relevant installed capability and fresh approved-gate evidence. A reply for another identity
+or a generic “yes” does not approve the selected content.
 
 Academy lessons have their own declared review and verifier contract; do not substitute a
 different ceremony into a pinned lesson.

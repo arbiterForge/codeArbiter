@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1682" role="img" data-diagram-system="ca-v2" data-execution-map="greenfield">
+<title>Initialize a new project from intent</title><desc>Choose this route only when meaningful source does not yet exist. A decomposition persona is not an extra agent dispatch. Existing source selects the separate brownfield route. Actual endpoint: Populated project state, the three approved project-level Markdown documents, an initialization sentinel and no abandoned decomposition drafts. Code implementation and PR delivery are later work. Conditions and return paths remain in the companion reading view.</desc>
+<rect width="900" height="1682" fill="#090d12"/>
+<text x="24" y="35" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="852">GREENFIELD • COMMANDS / SKILLS / AGENTS</text>
+<text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Scaffold → interview → approve three documents → initialize</text>
+<svg x="0" y="94" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="begin-greenfield">
+<title>Choose the new-project route</title><desc>command: /ca:init: scaffold once → command: /ca:decompose: selected strategy → skill: decompose: establish or resume drafts. A writable project-state scaffold and a valid new-project interview or explicit resume choice. An initialized project is not reinitialized.</desc>
+<defs><marker id="asset-greenfield-begin-greenfield-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Choose the new-project route</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="green-init:green-entry" data-relation="sequence" d="M299 120H398.5V120H411.5" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-greenfield-begin-greenfield-arrow)"><title>no meaningful source: The stub must pass through its greenfield populator.</title></path>
+<path data-map-edge="green-entry:green-resume" data-relation="sequence" d="M582.5 120H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-greenfield-begin-greenfield-arrow)"><title>interview owner: The selected skill prepares persistence before questioning.</title></path>
+<g data-map-node="green-init" data-role="command"><title>/ca:init: scaffold once. The scaffolder writes activation and empty state but no initialization sentinel. It refuses to overwrite existing state; an uninitialized stub enters its selected populator directly.</title>
+<rect x="130" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="143" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">01</text>
+<text x="214.5" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:init</text>
+</g>
+<g data-map-node="green-entry" data-role="command"><title>/ca:decompose: selected strategy. Automatic detection or --greenfield chooses the decomposition workflow. Source-shape mismatches remain stops rather than forced population.</title>
+<rect x="413.5" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="426.5" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">02</text>
+<text x="498" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:decompose</text>
+</g>
+<g data-map-node="green-resume" data-role="skill"><title>decompose: establish or resume drafts. Confirm pre-flight, explain the interview and inspect any existing draft session. Resume, restart and abort are user choices; do not silently delete prior drafts.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">03</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">decompose</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="586" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Review three guiding documents</text>
+<svg x="0" y="620" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="design-project">
+<title>Review three guiding documents</title><desc>skill: decompose: complete each layer → skill: decompose: synthesize from disk → skill: decompose: iterate until approval. All three project-level documents are on disk and explicitly approved. Their tasks are not a typed feature execution plan.</desc>
+<defs><marker id="asset-greenfield-design-project-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Review three guiding documents</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="green-layers:green-docs" data-relation="sequence" d="M299 252H398.5V252H411.5" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-greenfield-design-project-arrow)"><title>complete durable input: Synthesis rereads the layer and draft-decision files rather than trusting conversation memory.</title></path>
+<path data-map-edge="green-docs:green-approve" data-relation="return" d="M582.5 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-greenfield-design-project-arrow)"><title>user review: No population until all three outputs are approved.</title></path>
+<g data-map-node="green-layers" data-role="skill"><title>decompose: complete each layer. Explore problem, users, capabilities, technical shape, integrations and risks. Persist completed layers and draft choices. Unresolved facts receive named questions instead of guesses.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">04</text>
+<text x="214.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Six-layer</text>
+<text x="214.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">interview</text>
+</g>
+<g data-map-node="green-docs" data-role="skill"><title>decompose: synthesize from disk. Reread the drafts and write 01-architecture-breakdown.md, 02-phased-build-plan.md and 03-task-backlog.md under .codearbiter/plans/ before review.</title>
+<rect x="413.5" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="426.5" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">05</text>
+<text x="498" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Three guiding</text>
+<text x="498" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">documents</text>
+</g>
+<g data-map-node="green-approve" data-role="skill"><title>decompose: iterate until approval. Open each document, request corrections and approve all three explicitly. The existence of files or a conversation summary cannot stand in for this decision.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">06</text>
+<text x="781.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Review all</text>
+<text x="781.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">three</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1112" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Populate and lock initialization</text>
+<svg x="0" y="1146" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="lock-greenfield">
+<title>Populate and lock initialization</title><desc>skill: decompose: populate project context → skill: decompose: initialization lock and cleanup. Inspect the populated tree, required files and sentinel. The interview did not generate a release-target row or meaningful source-code provenance.</desc>
+<defs><marker id="asset-greenfield-lock-greenfield-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Populate and lock initialization</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="green-populate:green-lock" data-relation="sequence" d="M299 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-greenfield-lock-greenfield-arrow)"><title>inspect then lock: The skill closes only after the required state and cleanup are confirmed.</title></path>
+<g data-map-node="green-populate" data-role="skill"><title>decompose: populate project context. Reread the approved documents and layers, populate context and the task board, and promote the draft choices as specified. Write interview-derived provenance stubs and a coarse code-map stub.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">07</text>
+<text x="214.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Populate</text>
+<text x="214.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">state</text>
+</g>
+<g data-map-node="green-lock" data-role="skill"><title>decompose: initialization lock and cleanup. Write the initialization sentinel, verify required state and remove the completed draft directory. Report normal operation, leaving implementation for the appropriate next lane.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">08</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Lock + return</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1638" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Populated project context; implementation has not started.</text>
+</svg>

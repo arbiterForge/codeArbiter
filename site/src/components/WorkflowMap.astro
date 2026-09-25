@@ -1,0 +1,27 @@
+---
+import ExecutionMap from './ExecutionMap.astro';
+import { getWorkflow } from '../../scripts/execution-maps/workflows';
+interface Props { id: string; workflow: string; initial?: string }
+const { id, workflow, initial } = Astro.props;
+const definition = getWorkflow(workflow);
+const sourceUrl = (key: string) => `https://github.com/arbiterForge/codeArbiter/blob/${definition.map.reviewedAt}/${definition.map.sources[key].path}`;
+---
+<div class="ca-workflow-map" data-workflow={definition.id}>
+  <ExecutionMap id={id} model={definition.map} initial={initial} asset={definition.asset}
+    label={`${definition.title}: execution map`}
+    limits="This route has its own endpoint. Row membership does not imply every role participates, and a source-traced relationship is not an installed-host verification." />
+  <aside class="ca-workflow-map__limits not-content" aria-label={`${definition.title}: conditions and limits`}>
+    <h4>Conditions that change this route</h4>
+    <dl>{definition.notes.map(note => <div><dt>{note.title}</dt><dd>{note.detail} <a data-astro-prefetch="false" href={sourceUrl(note.source)}>Owning source</a></dd></div>)}</dl>
+  </aside>
+</div>
+<style>
+  .ca-workflow-map__limits { margin-block:var(--ca-space-4) var(--ca-space-7); padding:var(--ca-space-5); border-inline-start:3px solid var(--ca-brand); background:var(--ca-bg-panel); overflow-wrap:anywhere; }
+  .ca-workflow-map__limits h4 { color:var(--ca-ink); font-size:var(--ca-text-lg); margin:0 0 var(--ca-space-4); }
+  .ca-workflow-map__limits dl { display:grid; gap:var(--ca-space-4); margin:0; }
+  .ca-workflow-map__limits dt { font-weight:650; color:var(--ca-ink); }
+  .ca-workflow-map__limits dd { color:var(--ca-ink-soft); margin:var(--ca-space-2) 0 0; font-size:var(--ca-text-sm); line-height:1.75; }
+  .ca-workflow-map__limits a { color:var(--ca-brand-bright); }
+  .ca-workflow-map__limits a:focus-visible { outline:2px solid var(--ca-brand-bright); outline-offset:3px; }
+  @media (forced-colors:active) { .ca-workflow-map__limits { --ca-brand:CanvasText; --ca-bg-panel:Canvas; --ca-ink:CanvasText; --ca-ink-soft:CanvasText; --ca-brand-bright:LinkText; } }
+</style>

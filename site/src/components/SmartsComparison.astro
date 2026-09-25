@@ -1,0 +1,48 @@
+---
+import { smartsExample as example, evidenceSourceUrl, validateDecisionEvidence } from '../../scripts/decision-evidence';
+const errors = validateDecisionEvidence();
+if (errors.length) throw new Error(errors.join('; '));
+---
+<section class="ca-smarts-comparison not-content" aria-labelledby="smarts-worked-title">
+  <header><p class="ca-eyebrow">One bounded example · two materially different options</p>
+    <h3 id="smarts-worked-title">{example.title}</h3><p>{example.scenario}</p>
+    <p class="ca-smarts-comparison__intent"><strong>Recorded intent first:</strong> {example.intent}</p>
+  </header>
+  <dl class="ca-smarts-comparison__matrix">
+    {example.lenses.map((lens, index) => <div class="ca-smarts-comparison__row" data-smarts-lens={lens.id}>
+      <dt><span aria-hidden="true">0{index + 1}</span><strong>{lens.name}</strong><p>{lens.question}</p></dt>
+      {lens.cells.map((cell, option) => <dd data-smarts-option={option}>
+        <p class="ca-smarts-comparison__option">{example.options[option]}</p>
+        <p class="ca-smarts-comparison__verdict">{cell.verdict}.</p><p>{cell.reason}</p>
+      </dd>)}
+    </div>)}
+  </dl>
+  <footer><p><strong>Illustrative recommendation · {example.strength}:</strong> {example.recommendation}</p>
+    <p>{example.limits}</p><a href={evidenceSourceUrl('smarts')}>Inspect the scoring contract</a>
+  </footer>
+</section>
+<style>
+  .ca-smarts-comparison { container-type: inline-size; margin-block: var(--ca-space-6); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-lg); background: var(--ca-bg-raised); overflow-wrap: anywhere; }
+  .ca-smarts-comparison :is(h3,p,dl,dt,dd) { margin: 0; }
+  .ca-smarts-comparison :is(h3,strong) { color: var(--ca-ink); }
+  .ca-smarts-comparison header, .ca-smarts-comparison footer { padding: var(--ca-space-5); }
+  .ca-smarts-comparison h3 { font-size: var(--ca-text-xl); line-height: 1.35; margin-block: var(--ca-space-3); }
+  .ca-smarts-comparison p { font-size: var(--ca-text-sm); color: var(--ca-ink-soft); line-height: 1.7; }
+  .ca-smarts-comparison .ca-eyebrow { font-size: var(--ca-text-xs); color: var(--ca-brand-bright); }
+  .ca-smarts-comparison .ca-smarts-comparison__intent { margin-block-start: var(--ca-space-4); padding-inline-start: var(--ca-space-3); border-inline-start: 3px solid var(--ca-brand); }
+  .ca-smarts-comparison__row { display: grid; grid-template-columns: minmax(0,1fr); border-block-start: 1px solid var(--ca-line-strong); }
+  .ca-smarts-comparison dt, .ca-smarts-comparison dd { padding: var(--ca-space-4) var(--ca-space-5); min-inline-size: 0; }
+  .ca-smarts-comparison dt { background: var(--ca-bg-panel); }
+  .ca-smarts-comparison dt > span { color: var(--ca-brand-bright); font-family: var(--ca-font-mono); font-size: var(--ca-text-xs); margin-inline-end: var(--ca-space-3); }
+  .ca-smarts-comparison dt > p { margin-block-start: var(--ca-space-2); }
+  .ca-smarts-comparison .ca-smarts-comparison__option { color: var(--ca-ink-muted); font-size: var(--ca-text-xs); }
+  .ca-smarts-comparison .ca-smarts-comparison__verdict { color: var(--ca-brand-bright); font-weight: 750; margin-block: var(--ca-space-2); }
+  .ca-smarts-comparison dd + dd { border-block-start: 1px solid var(--ca-line); }
+  .ca-smarts-comparison footer { border-block-start: 1px solid var(--ca-line-strong); }
+  .ca-smarts-comparison footer p + p { margin-block: var(--ca-space-3); }
+  .ca-smarts-comparison a { color: var(--ca-brand-bright); font-size: var(--ca-text-sm); text-underline-offset: 3px; }
+  .ca-smarts-comparison a:focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 4px; }
+  @container (min-width: 40rem) { .ca-smarts-comparison__row { grid-template-columns: 1fr 1.25fr 1.25fr; } .ca-smarts-comparison dd + dd { border-block-start: 0; border-inline-start: 1px solid var(--ca-line); } }
+  @media (forced-colors: active) { .ca-smarts-comparison { --ca-bg-raised: Canvas; --ca-bg-panel: Canvas; --ca-ink: CanvasText; --ca-ink-soft: CanvasText; --ca-ink-muted: CanvasText; --ca-brand: CanvasText; --ca-brand-bright: LinkText; --ca-line: CanvasText; --ca-line-strong: CanvasText; } }
+  @media print { .ca-smarts-comparison { container-type: normal; } .ca-smarts-comparison__row { break-inside: avoid; } }
+</style>

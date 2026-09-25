@@ -47,12 +47,16 @@ describe("documentation presentation regressions", () => {
     expect(config).toContain("rehypeTableShell");
   });
 
-  it("OBL-PRES-03 preserves Checkpoints as a real reviewer data grid", () => {
-    const checkpoints = readFileSync(join(docsRoot, "concepts", "checkpoints.md"), "utf8");
-    const fleetTable = checkpoints.match(/\| Reviewer \| Checks \|[\s\S]+?(?=\n\n## The funnel)/)?.[0] ?? "";
-
-    expect(fleetTable).toContain("| Reviewer | Checks |");
-    expect(fleetTable.match(/reference\/agents\//g)).toHaveLength(6);
+  it("OBL-PRES-03 retains six linked reviewers and their checks in a mobile-readable list", () => {
+    const checkpoints = readFileSync(join(docsRoot, "concepts", "checkpoints.mdx"), "utf8");
+    const fleet = checkpoints.match(/## The fleet[\s\S]+?(?=\n\n## The funnel)/)?.[0] ?? "";
+    expect(fleet.match(/^- \*\*\[/gm)).toHaveLength(6);
+    for (const role of ["security-reviewer", "auth-crypto-reviewer", "dependency-reviewer",
+      "migration-reviewer", "coverage-auditor", "architecture-drift-reviewer"]) {
+      expect(fleet).toContain(`/reference/agents/${role}/`);
+    }
+    expect(fleet).toContain("incomplete-unit results");
+    expect(checkpoints).toContain("<CheckpointMap />");
   });
 
   it("OBL-PRES-04 gives Start a trailhead icon instead of a pause-shaped glyph", () => {
@@ -238,7 +242,7 @@ describe("documentation presentation regressions", () => {
   it("OBL-CONTENT-10 turns power-user internals into repeatable diagnostic drills", () => {
     const enforcement = readFileSync(join(docsRoot, "enforcement.md"), "utf8");
     const hooks = readFileSync(join(docsRoot, "hooks.md"), "utf8");
-    const smarts = readFileSync(join(docsRoot, "concepts", "smarts.md"), "utf8");
+    const smarts = readFileSync(join(docsRoot, "concepts", "smarts.mdx"), "utf8");
 
     expect(enforcement).toContain("## Diagnose a Block End to End");
     expect(enforcement).toContain("BLOCKED [H-03]");
@@ -248,7 +252,8 @@ describe("documentation presentation regressions", () => {
     expect(hooks).toContain("registration surface");
     expect(smarts).toContain("## Audit a Verdict");
     expect(smarts).toContain("non-SMARTS considerations");
-    expect(smarts).toContain("confidence flag");
+    expect(smarts).toContain("confidence");
+    expect(smarts).toContain("recorded-intent check");
   });
 
   it("OBL-CONTENT-11 teaches ownership and request flow before host mechanics", () => {

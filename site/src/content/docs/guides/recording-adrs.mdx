@@ -11,19 +11,19 @@ journey:
   proof: "The ADR and decision log agree, and a superseding record names the full prior filename stem."
 ---
 
+import WorkflowMap from '../../../components/WorkflowMap.astro';
+
 Use this guide when a choice will shape later implementation: a storage model, trust boundary,
 public contract, dependency policy, or other decision future work must respect. The result is a
 numbered record under `.codearbiter/decisions/`, attributed to the person who made the call and
 linked to the paths it governs.
 
-<figure class="ca-diagram">
-  <img
-    src="/diagrams/lane-adr.svg"
-    alt="The architecture decision lane from a decision prompt through numbered ADR authoring, user attribution, validation, and the decision log."
-    loading="lazy"
-  />
-  <figcaption>The ADR lane gives one consequential choice a numbered, user-attributed, forward-only record.</figcaption>
-</figure>
+<details class="ca-implementation-view" id="execution-map">
+  <summary>Trace the ADR workflow from entry to its actual endpoint</summary>
+  <WorkflowMap id="adr-execution-map" workflow="adr" />
+</details>
+
+[Open the full three-row diagram](/diagrams/lane-adr.svg).
 
 <div class="ca-host-syntax">
   <strong>Host syntax:</strong> Claude Code uses <code>/ca:adr</code>; Codex uses <code>$ca-adr</code>;
@@ -56,8 +56,26 @@ Review the proposed record. On approval, codeArbiter writes:
 .codearbiter/decisions/0017-store-durable-workflow-state.md
 ```
 
-The number is gap-free and the slug is derived from the title. The companion
+The number is the next unused value in the indexed records, and the slug is derived from the title. The companion
 `.codearbiter/decisions/decision-log.md` receives the corresponding ledger entry.
+
+## Acceptance binds a real committed definition
+
+Remaining Proposed is a valid outcome. An explicit acceptance instruction moves the decision to
+Accepted/Planned; it is not implementation or verification. The owning lane derives stable
+normative obligations and independently reviews their completeness before sealing the accepted set.
+
+The accepted ADR and its decision-log entry are committed through the normal commit gate first.
+Only then can the lane hash those **committed** bytes and append an acceptance event to
+`.codearbiter/adr-lifecycle.jsonl` with the real source commit. That binding is persisted in a
+subsequent commit. It cannot truthfully point to a commit that did not yet exist, and a repeated
+binding for the same full stem is not a harmless rewrite.
+
+Inspect both records and the existing source identity. For later PR delivery, preserve the
+ancestry required by the installed lifecycle verifier rather than choosing an unqualified squash
+that discards it. Derived Implemented and Verified states need their own current obligation and
+evidence records. A legacy-unsealed decision keeps its narrower inspection limits; do not invent
+missing obligations or receipts to improve its display.
 
 ## Verify the result
 

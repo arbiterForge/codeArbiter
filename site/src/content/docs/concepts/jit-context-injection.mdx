@@ -1,0 +1,145 @@
+---
+title: Just-in-Time Context Injection
+description: "Trace a file read through ordered governing pointers, the context budget and freshness checks, including typed HTML diagnostics and the limits of fail-open advice."
+journey:
+  level: Power user
+  time: "12 minutes"
+  outcome: "Predict the relevant pointers for a file, explain why some are absent or repeated, and keep read advice separate from permission to change it."
+  prerequisites:
+    - An initialized repository
+    - A file and its relevant security, decision, specification or provenance context
+  proof: "You can compare an observed pointer with its source mapping and explain both what the read hook establishes and what it cannot prove."
+---
+
+import ContextExplorer from '../../../components/ContextExplorer.astro';
+
+export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+An agent does not need every repository document in every prompt. It does need to notice the
+requirements that matter when it opens a particular file. Just-in-time context is the advisory
+bridge between those two needs: the supported read path supplies a short pointer to relevant
+knowledge at the moment of a read.
+
+**The pointer tells the reader what to consult. It is not the full policy, proof that the reader
+followed it, or permission to modify the file.** The shared `pre-read.py` entry allows the read
+and is fail-open. Its advice and the product's blocking mutation gates are separate mechanisms.
+This source-level behavior does not establish that every host exposes every file access through
+the same event; confirm the installed adapter and read route when diagnosing an absent pointer.
+
+## How a governing document is chosen
+
+The four tiers are an **ordered collection**, not a first-match-only switch. More than one tier
+can contribute to the final additional context. The budget determines how much survives.
+
+**Security controls come first.** The current classifier recognizes whole path tokens such as
+`auth`, `middleware` and `jwt`, including its documented separator and camel-case handling. It
+points to `security-controls.md`; it does not parse that document into a complete security map.
+A token match is a reminder to consult the controls, not evidence of a vulnerability or complete
+coverage of every security-relevant path.
+
+**Accepted ADRs come next.** The index selects accepted decisions with nonempty `governs:`
+patterns and matches the relative path. Pointers use the full filename stem, avoiding ambiguity
+between decisions that happen to share a number. A matching Accepted status is not a claim of
+Implemented or Verified lifecycle state.
+
+**Specifications follow.** Legacy Markdown specs opt in with the recognized approved-status and
+`**Governs:**` fields. Typed HTML specifications use the installed artifact client's validated
+index and verified authority fields. Matching a file in this advisory index does not itself
+create approval or execution authority.
+
+**Fresh provenance claims come last.** A recorded source path contributes its claim pointer only
+when a non-null stored hash matches the current hash. Stale or unverifiable claims are suppressed.
+The helper hashes a provenance path lazily when that path is actually present in the index; an
+ordinary unmatched legacy read does not make that hash call.
+
+<ContextExplorer id="read-pointer-observations" />
+
+This recorded example deliberately matches all four tiers. It contradicts the old first-match
+explanation: the security pointer does not erase the decision, specification and fresh claim when
+there is room for them. It does not establish that every real read will fit all of its candidates.
+
+<details>
+  <summary>Inspect the static relationship map</summary>
+  <figure class="ca-diagram">
+    <img src={`${baseUrl}/diagrams/four-tier-map.svg`} alt="All applicable tiers contribute to an ordered candidate set before bounded assembly. Advice does not authorize a change." width="1128" height="690" loading="lazy" />
+    <figcaption>The full reading explanation remains in this page. This map describes source-defined relationships, not a captured host run.</figcaption>
+  </figure>
+</details>
+
+## The budget is a pointer budget
+
+The assembler's default budget is 150 **estimated** tokens, using
+`ceil(character_count / 4)` as a proxy. It is not a count from the active model's tokenizer and
+not a cap on the entire conversation, retrieved file or total operation cost.
+
+Pointers are considered in tier order. Whole pointers fit where possible; an oversized result is
+bounded and marked with an ellipsis. If the first pointer alone is too large, a shortened part of
+that pointer survives rather than a bare ellipsis. Lower-priority omissions are not evidence that
+those requirements ceased to apply. Open the linked governing records before a relevant change.
+
+Loading an artifact include, a role charter or the full specification is separate on-demand work.
+Do not confuse the small advisory pointer with a promise that the complete workflow uses only
+150 tokens. [Role separation](/concepts/persona-and-context/) explains why the caller must still
+supply the relevant inputs to an author or reviewer.
+
+## What you should expect
+
+A supported read inside an enabled repository can receive additional context naming one or more
+governing records. Reading `.codearbiter/` itself is excluded from this self-injection path, and
+an outside-repository path exits before the mapping. A read with no applicable pointer is silent.
+The hook never blocks a read merely because it could not assemble advice.
+
+For legacy work, deduplication is per session and relative file. A second read may therefore emit
+nothing even though the first supplied useful context. It is not a continuous refresh of every
+legacy decision and claim during a session. A fresh session is the useful control when repeating
+a mapping observation after edits.
+
+Where HTML authority exists, the helper builds a validated snapshot before deduplication and
+includes its artifact identity in the deduplication epoch. Changed revision, model or normative
+identity can make advice eligible again in the same session. The same snapshot drives both the
+pointer and its deduplication key, avoiding mismatched reads. This is advisory identity, not a
+new approval ledger or a promise of zero work on every repeat.
+
+The index and dedup markers are local support state. Their presence proves neither that an agent
+understood the text nor that a particular task was verified. Do not delete them as a routine
+workaround for an unexplained result.
+
+## When HTML advice reports a problem
+
+The source distinguishes an unavailable installed capability from an invalid or unreadable HTML
+artifact. It can append a bounded diagnostic that names the condition and its repair direction.
+A diagnostic is not an approved-spec pointer. Source inspection may continue while the affected
+HTML planning or execution path must stop.
+
+Use [artifact review](/guides/review-artifacts/) to identify the installed capability and
+[Resume and recover](/guides/resume-and-recover/) for stale bindings or uncertain transactions.
+Do not replace an HTML pair with Markdown, edit receipts, or select an arbitrary repository binary
+because a read hook permits inspection. The mutation workflow's stricter checks remain in force.
+
+## Practice: predict one injection
+
+Choose a file and enumerate its applicable mappings before reading it: the security path tokens,
+accepted ADR patterns, approved specification mapping, and any fresh provenance entries. Predict
+an ordered candidate set, not one winner. Inspect which claims are actually recorded and whether
+their hashes can be checked.
+
+Start a fresh supported host session in the intended checkout and ask it to read that exact file.
+Compare the observed advice with the mapping. Then open the governing documents and identify the
+behavior that would constrain a change. A second read helps distinguish deduplication from a
+missing mapping; preserve the first result rather than treating the second silence as a failure.
+
+If the pointer is absent or unexpected, check repository activation, host event support, the path
+spelling, ADR status, specification format/authority, provenance freshness and prior reads. Treat
+unreadable records and missing capability as explicit uncertainty. A manual source inspection and
+[doctor](/reference/commands/doctor/) can establish different parts of the diagnosis; neither should
+be presented as proof of an event it did not observe.
+
+## Where it fits
+
+Repository context is created during initialization, maintained through provenance and reviewed
+changes, and loaded where a workflow or read needs it. Read advice sits alongside that process,
+not above its authority. The [hooks reference](/hooks/),
+[Provenance and context drift](/concepts/provenance-drift/), and
+[Enforcement & Security](/enforcement/) connect the advisory selection to maintenance and blocking
+controls. A small pointer can make a rule visible; only the applicable evidence can establish that
+the work satisfied it.

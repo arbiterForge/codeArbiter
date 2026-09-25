@@ -68,3 +68,5 @@ Use it for dependency adoption or the bounded one-time exception. Removing a dep
 updating one as part of a code change belongs in `fix` or `feature`; dependency changes receive
 review in the PR lane. Ask package questions directly when no execution is intended. The
 legacy `btw` reference in the embedded source is not a prerequisite for a read-only question.
+
+For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/adding-a-dependency/) and [Compare workflow routes](/concepts/workflow-routes/).

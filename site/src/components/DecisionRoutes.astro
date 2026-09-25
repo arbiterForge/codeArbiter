@@ -1,0 +1,38 @@
+---
+import { decisionRoutes, evidenceSourceUrl } from '../../scripts/decision-evidence';
+---
+<section class="ca-decision-routes not-content" aria-labelledby="decision-routes-title">
+  <header><p class="ca-eyebrow">Two callers · distinct authority</p><h3 id="decision-routes-title">Who may choose after the comparison?</h3>
+    <p>These are decision handoffs, not a complete execution map. Command labels use Claude Code spelling. Shared scoring does not make the callers interchangeable.</p></header>
+  <div class="ca-decision-routes__paths" data-ca-layout="peers">
+    {decisionRoutes.map(route => <section data-decision-route={route.id} aria-labelledby={`${route.id}-route-title`}>
+      <header><p class="ca-eyebrow">{route.entry}</p><h4 id={`${route.id}-route-title`}>{route.label}</h4><p>{route.question}</p></header>
+      <ol role="list" data-ca-layout="peers">{route.steps.map((step,i) => <li>
+        <p class="ca-decision-routes__role"><span aria-hidden="true">{i + 1} · </span>{step.role}</p><h5>{step.title}</h5><p>{step.detail}</p>
+      </li>)}</ol>
+      <p class="ca-decision-routes__endpoint"><strong>Endpoint:</strong> {route.endpoint}</p>
+      <a href={evidenceSourceUrl(route.source)}>Inspect this caller’s contract</a>
+    </section>)}
+  </div>
+</section>
+<style>
+  .ca-decision-routes { container-type: inline-size; margin-block: var(--ca-space-6); overflow-wrap: anywhere; }
+  .ca-decision-routes :is(h3,h4,h5,p,ol) { margin: 0; }
+  .ca-decision-routes :is(h3,h4,h5,strong) { color: var(--ca-ink); }
+  .ca-decision-routes h3 { font-size: var(--ca-text-xl); margin-block: var(--ca-space-3); }
+  .ca-decision-routes p { color: var(--ca-ink-soft); font-size: var(--ca-text-sm); line-height: 1.7; }
+  .ca-decision-routes .ca-eyebrow { color: var(--ca-brand-bright); font-size: var(--ca-text-xs); }
+  .ca-decision-routes__paths { display: grid; grid-template-columns: minmax(0,1fr); gap: var(--ca-space-5); margin-block-start: var(--ca-space-5); }
+  .ca-decision-routes__paths > section { padding: var(--ca-space-5); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-md); background: var(--ca-bg-raised); min-inline-size: 0; }
+  .ca-decision-routes h4 { margin-block: var(--ca-space-2); font-size: var(--ca-text-lg); }
+  .ca-decision-routes ol { padding: 0; list-style: none; margin-block: var(--ca-space-5); display: grid; gap: var(--ca-space-5); }
+  .ca-decision-routes li { padding-inline-start: var(--ca-space-4); border-inline-start: 2px solid var(--ca-line-strong); }
+  .ca-decision-routes .ca-decision-routes__role { color: var(--ca-brand-bright); font: 600 var(--ca-text-xs)/1.5 var(--ca-font-mono); }
+  .ca-decision-routes h5 { margin-block: var(--ca-space-2); font-size: var(--ca-text-base); }
+  .ca-decision-routes .ca-decision-routes__endpoint { padding-block-start: var(--ca-space-4); border-block-start: 1px solid var(--ca-line-strong); margin-block-end: var(--ca-space-4); }
+  .ca-decision-routes a { font-size: var(--ca-text-sm); color: var(--ca-brand-bright); }
+  .ca-decision-routes a:focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 4px; }
+  @container (min-width: 42rem) { .ca-decision-routes__paths { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+  @media (forced-colors: active) { .ca-decision-routes { --ca-bg-raised: Canvas; --ca-ink: CanvasText; --ca-ink-soft: CanvasText; --ca-brand-bright: LinkText; --ca-line-strong: CanvasText; } }
+  @media print { .ca-decision-routes { container-type: normal; } .ca-decision-routes li { break-inside: avoid; } }
+</style>

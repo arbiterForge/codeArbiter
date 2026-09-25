@@ -227,3 +227,87 @@ explanations; generated pages remain generator-owned. Existing diagram addresses
 Check actual rendered text bounds, all selections, source links, desktop label sizes, keyboard,
 no-script reading, text enlargement, forced colors and exact-candidate screenshots. Do not
 confuse a passing diagram check with installed-host, runtime, release or human approval evidence.
+
+
+## Concepts decision and evidence exhibits
+
+C02 uses a shared, source-bound teaching record rather than a second authority model. SMARTS
+comparisons label hypothetical constraints, keep both options visible for each lens and preserve
+verdict/strength distinctions. Decision handoffs compare caller authority, not a universal lane.
+The periodic checkpoint map retains its command/skill/agent result sequence and its real report
+endpoint; it is not the typed acceptance checkpoint.
+
+Evidence-view controls only change reading visibility. Use separate fields for supported claim,
+unproved claim and next inspection, never an Approve/Verify button on illustrative data. Reconnect
+controls after client navigation; make no request or persistent write. Without JavaScript and in
+print, retain all cases. Pair foreground/background tokens for forced colors and test every state,
+not only the first card. Preserve full-text content and labels under enlarged text and narrow
+widths. Existing guide-table and peer-spacing rules still apply.
+
+
+## Recorded context observations
+
+`ContextExplorer` presents a checked capture, not an emulator or live governance console.
+The capture producer runs real read/provenance helpers and Git content hashing only in a
+disposable repository. Retain exact inputs, source identity and hashes, the emitted text,
+observed deduplication and hash-call scope. A helper observation is not host activation,
+end-to-end execution, authority or verification of the reader's project.
+
+The prose, optional static diagrams and actual observations must distinguish all matching
+candidates from the bounded result. Never display first-match routing when the owning helper
+composes tiers. Distinguish the estimated pointer budget from a model tokenizer or complete
+workflow cost. Do not convert silent, stale, absent or unverifiable results into an all-clear.
+
+All observations are statically readable; selection hides only reading sections and must not
+persist state, change the URL or run a tool. Print restores every case. Serve the machine-readable
+capture from the same JSON import rather than maintaining an independent copy. Historical
+research and hardening notes retain attribution without asserting current efficacy.
+
+Test each state, actual text bounds, enlarged text, normal/forced colors, keyboard focus,
+no-script and print paths, navigation/back and base-prefixed links. Inspect real rendered
+captures after the final build. Keep arrowheads in explicit user-space units with their tips
+centred on the path endpoint; their shafts must approach straight without crossing the head.
+
+
+## Workflow-specific execution maps
+
+The six C04 route definitions in `scripts/execution-maps/workflows.ts` own their
+ordered role nodes, handoffs, conditional paths, important results and actual endpoint.
+`WorkflowMap` supplies the same model to the existing `ExecutionMap` component;
+`renderExecutionSvg` uses it for retained public diagram URLs. A guide's four-step
+reader orientation is not replaced by the implementation map. Keep the map behind
+a native disclosure, with a full ordered reading path for narrow screens and no JavaScript.
+
+Chapter numbering is cumulative, not a hard-coded four-step offset. An empty role
+row can be meaningful: dependency review does not acquire an invented intervening
+skill just to fill the picture. Greenfield and brownfield are independent routes,
+not phases joined by a connector. Command labels also identify owning procedures;
+they do not tell the user to repeatedly invoke the same command at each node.
+
+The source record must identify simplifications, current-source versus installed
+capability, approval boundaries, review returns, publication prerequisites and
+real alternate exits. No diagram endpoint may imply release or PR creation where
+the owning route ends in context, a decision record or a dependency change.
+Keep known source contradictions separate from presentation repairs.
+
+Before publishing map changes, validate canonical excerpts, source identities,
+endpoints, continuous numbering, unchanged public URLs, all map selections and
+base-prefixed links. Inspect actual desktop/mobile captures, arrow endpoints,
+text bounds, expanded disclosures, no-script reading, doubled text, forced colors,
+print and useful full-text search results. Source excerpts and successful rendering
+are not proof of an installed workflow or a universal accessibility certification.
+
+### Execution-map reading addresses
+
+Procedure URLs and exact map URLs serve different reader tasks. Keep both in the
+workflow metadata; the route directory labels them separately. A chapter's explicit
+native permalink reveals its enclosing disclosures and selects that chapter. Add
+previous/next reading links at the end so a reader need not scroll back to the chooser.
+These links do not signal executed work or approval. Ordinary chooser buttons do not
+write history, storage or network requests; explicit links use native URL fragments.
+
+Resolve fragments as bounded literal element IDs within the owning map. Ignore
+invalid encoding and unrelated targets. Preserve all content without JavaScript,
+restore the complete path in print, and disconnect page-specific listeners during
+client navigation. Test direct load, reload, repeated navigation, Back, nested
+initialization alternatives, same-fragment links and keyboard focus against built HTML.

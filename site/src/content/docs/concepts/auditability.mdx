@@ -1,0 +1,141 @@
+---
+title: Auditability
+description: "Assemble available governance records without confusing a decision, autonomous choice, override, review finding or audit packet with verified delivery."
+journey:
+  level: Power user
+  time: "12–15 min"
+  outcome: "Explain a bounded range of work using traceable records, with missing inputs, temporal limits and unproved claims left visible."
+  prerequisites:
+    - An initialized repository and a defined question about its history
+  proof: "A packet's selected range and sampled records can be traced to their sources without treating missing evidence as proof of absence."
+---
+
+import DecisionEvidence from '../../../components/DecisionEvidence.astro';
+
+Auditability is the ability to explain a claim by following the records that support it. It is not
+another code review and it is not a certification supplied by a filename. A useful handoff can say
+what changed, why it was chosen, which exceptions were recorded, what was checked, and what remains
+unknown. Each part needs the appropriate source.
+
+For the saved-search example, an ADR explains the synchronous response decision. A sprint entry
+can explain an in-scope implementation choice. A regression result describes a tested behavior.
+A checkpoint describes a later review. Combining those documents cannot make a missing release
+or approval event appear.
+
+## When to use it
+
+Assemble the record before a maintainer handoff, a release discussion, or investigation of a
+particular governance exception. Begin with the question and boundaries: which repository, which
+source range, which time window and which claim. An audit of “everything” without a selected
+identity is difficult to verify and easy to overstate.
+
+The audit command reads existing records and writes one packet. It does not repair its inputs,
+run reviewers, decide unresolved questions or reconstruct evidence that was never captured.
+Current [project status](/reference/commands/status/), a fresh
+[checkpoint sweep](/concepts/checkpoints/) and deeper [tribunal review](/reference/commands/tribunal/)
+remain distinct operations.
+
+## The assembler
+
+<DecisionEvidence id="audit-record-explorer" kind="audit" />
+
+The packet's sources have different meanings. `triage.log` supplies **small-lane classifications**,
+not checkpoint findings. The latter come from the latest relevant checkpoint reports. ADRs and the
+decision log explain attributed choices, while `sprint-log.md` records autonomous reasoning.
+Override rows describe sanctioned exceptions. The commit list groups work by Conventional-Commit
+type and identifies merge PR references where present.
+
+The current command also includes **currently unresolved** `[CONFIRM-NN]` questions and open
+findings from the **most recent** checkpoint. Those sections are not automatically a reconstruction
+of what was unresolved at the historical end of the requested range. A reader must distinguish
+range-bound events from the present open state included alongside them.
+
+## Window and output
+
+The command accepts explicit `<from-ref> <to-ref>`, `--since <date>`, or `--since-checkpoint`.
+With no argument it attempts the most recent tag through HEAD, then a checkpoint fallback if no
+tag exists; without a usable boundary it must ask for an explicit window. Multiple tag families
+or unrelated release tags are a reason to choose explicit refs instead of trusting “most recent”
+to match the product you meant.
+
+Prefer a pair of refs that you have resolved to the intended commits. In the native terminal,
+`git rev-parse HEAD` records the current commit and `git status --short` identifies dirty paths.
+Resolve each chosen starting/ending ref with `git rev-parse --verify` before interpreting the packet.
+An uncommitted source state is not silently included in a claim about a committed range.
+
+**Checkpoint-window limitation:** the owning checkpoint writer stores `last-checkpoint` as an
+integer override-count baseline, not a date or commit. The audit command names that path as a
+window source without defining how the counter resolves to history. Until the actual selected
+boundary can be shown as a commit and time range, use explicit refs or a date. Do not treat the
+integer as a SHA or manufacture a timestamp. This is a source-contract discrepancy, not a missing
+user setup step.
+
+The packet is written to `.codearbiter/audits/YYYY-MM-DD.md`. Further runs that day choose `-2`,
+`-3`, and so on, preserving earlier packets. The returned path is the first thing to inspect, not
+proof that its contents are complete.
+
+## Example
+
+In the coding host, replace the two placeholders with the actual refs or SHAs you inspected:
+
+```text wrap
+Claude Code: /ca:audit <from-ref> <to-ref>
+Codex:      $ca-audit <from-ref> <to-ref>
+Pi:         /ca-audit <from-ref> <to-ref>
+```
+
+These are host entries, not native-terminal commands. The resolved commit range and time range
+should appear in the packet header. Override lines and low-confidence sprint entries must be
+quoted verbatim. High-confidence sprint decisions are counted. Empty sections stay explicit.
+
+An empty result can mean there were no matching events in the available input. It cannot by itself
+establish that the input exists, was readable, covered the whole period, or captured every relevant
+action. Those are separate observations. If an expected log is missing or a reviewer was incomplete,
+keep that gap in the handoff rather than translating it into “none occurred.”
+
+## Validate the packet
+
+Start with the selected identity and range. Confirm the branch and both resolved commits, then
+sample a commit from the packet against the actual Git history. Check whether the included events
+fall within the claimed time window, and identify sections that intentionally describe current
+open state instead of only past events.
+
+Trace one decision to its full ADR stem and append-only ledger entry. Check the forward
+supersession chain and the explicit user attribution. For a claim of implementation or verification,
+inspect the separate current lifecycle evidence; an accepted ADR alone is insufficient. The
+`Artifact-section-hash` in an arbitration entry fingerprints its cited artifact section. It is not
+an authentication signature or an attestation of the application's code.
+
+Trace an override to the exact original row, including its time, BY identity, gate/finding and
+reason. Trace a low-confidence autonomous choice to its unabridged sprint entry and original scope.
+Trace a checkpoint finding to the full verdict, actual reviewed scope and any recorded evidence gap.
+A later correction needs fresh proof; the earlier report does not update itself.
+
+Finally name every unsupported part of the proposed handoff. “The local regression passed on this
+revision” is stronger and more useful than an unscoped “verified.” A PR URL proves that a PR exists;
+merged, deployed and released require their own evidence and identities.
+
+## Limits of append-only and attribution
+
+Official workflow controls protect append-only paths and require an override record before the
+sanctioned immediate bypass. That is a bounded operational guarantee. It does not mean an
+unrestricted filesystem writer cannot change local files or that every out-of-band action is visible.
+A recorded Git email is attribution, not cryptographic authentication of the person who decided.
+
+The audit packet is another derivative. It should preserve source links, verbatim required entries
+and the limits of each claim rather than upgrading all evidence into one green status. A missing
+receipt remains missing. The packet is also not a substitute for the installed host's authority
+adapters or for exact distributed-artifact verification.
+
+## Share the result without corrupting the record
+
+Inspect the packet for credentials, private URLs, personal data and sensitive payloads before
+sharing. Required verbatim rows can legitimately contain information that should not be public.
+Preserve the original source and packet. Make a separately labelled redacted derivative for the
+intended recipient, identifying that it is not a byte-exact copy; do not rewrite append-only inputs
+or silently call redacted text verbatim evidence.
+
+A useful final summary states the range, available sources, sampled checks, open questions,
+exceptions and remaining verification. Follow [Review and ship](/guides/review-and-ship/) for
+actual delivery, [ADRs](/concepts/adrs/) for decision evidence, and the
+[audit command](/reference/commands/audit/) for the current assembly contract.

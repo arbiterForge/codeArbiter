@@ -1,0 +1,137 @@
+---
+title: SMARTS
+description: "Read codeArbiter's six-lens comparisons, distinguish recorded intent from recommendations, and understand why sprint and reconciliation have different decision authority."
+journey:
+  level: Power user
+  time: "12–15 min"
+  outcome: "Explain why an option was recommended, who may choose it, where the reasoning is recorded, and which evidence remains missing."
+  prerequisites:
+    - Understand the distinction between a specification and its execution plan
+  proof: "You can challenge a SMARTS cell and distinguish a recorded decision, an autonomous in-scope choice and typed mutation authority."
+---
+
+import SmartsComparison from '../../../components/SmartsComparison.astro';
+import DecisionRoutes from '../../../components/DecisionRoutes.astro';
+
+SMARTS is codeArbiter's method for comparing engineering options. It makes the reasons for a
+recommendation inspectable: the alternatives, six engineering lenses, the evidence behind each
+judgment, and the factors the rubric does not cover. It is useful when a change admits more than
+one plausible approach. It is not a numerical score that automatically selects the winner.
+
+The surrounding lane determines who can make the decision. Interactive reconciliation needs an
+explicit user choice. An approved sprint decides non-hard-gate questions inside its existing scope,
+including close calls. Both use SMARTS, but they do not have the same authority.
+
+## Begin with recorded intent
+
+Before sprint or specification-shaping scoring, the recorded-intent check asks whether the project
+has already answered the question. The source order is an explicit user decision in the current
+session, an unsuperseded decision-log entry, an accepted ADR, then the three project planning
+artifacts. Project context and recorded open/deferred questions constrain the comparison at their
+recorded level. Relevant indexes and headings come first; the check is not a bulk read of every
+project document.
+
+There are three useful results. **Answered** means follow the highest-ranked decision and cite it.
+**Constrains** means carry that source into the affected comparison cells. **Silent** means no
+record answers the question, so proceed and identify that absence. A missing planning or decision
+directory alone is not a reason to stop this check.
+
+A request to contradict recorded intent is different from silence. In an interactive lane it can
+require reconciliation or supersession. A sprint surfaces a real contradiction rather than running
+a mid-sprint reconcile session on its own. A recorded deferral whose re-evaluation trigger has
+occurred is reopened and surfaced, not quietly treated as permission to choose anew.
+
+This Step 0 applies to sprint and brainstorming. The arbitration skill, grader and
+optional decision-challenger are explicitly exempt from that separate step: their work already
+compares the conflicting record under the arbitration authority order. That exception does not
+exempt them from the six-lens scoring rules.
+
+## The Six Lenses
+
+**Scalable** asks whether growth fits the design without an architectural rewrite. A facility for
+millions of jobs is not automatically an advantage for a tightly bounded export. **Maintainable**
+asks whether future developers can understand and change the complete solution, including its
+operational dependencies. **Available** asks whether the capability is reachable when needed;
+this is not a demand that every project implement high availability.
+
+**Reliable** concerns correct, predictable and durable outcomes when work fails or repeats.
+Availability and reliability can diverge: an endpoint can respond while returning an incorrect
+result. **Testable** asks whether meaningful success and failure behavior can be checked with
+repeatable tests. **Securable** asks whether the design can meet the project's security controls
+without a retrofit. It is a design judgment, not a completed security review or bypass permission.
+
+The same lenses apply to every option. The worked comparison below makes its assumptions visible
+so a reader can disagree with a premise rather than merely disputing an adjective.
+
+<SmartsComparison />
+
+## Verdicts and Strength
+
+Each cell begins with **Strong**, **Adequate**, **Weak**, or **Indifferent**. The canonical format
+caps the cell at 25 words and its justification at 20. The justification names an option property,
+project constraint or failure mode; “best practice” is not evidence. The rubric rejects hedging
+adverbs and uses Indifferent when the lens does not distinguish the options or the judgment is
+genuinely uncertain. An omitted observation still needs to be surfaced, not hidden inside a label.
+
+Recommendation strength is a separate field: **strong** when multiple dominant lenses align and
+non-SMARTS factors confirm, **moderate** for a qualified or single-lens advantage, and **tied** when
+no preferred option emerges. There is no weak recommendation level. Counting Strong cells or
+converting labels into invented numbers would lose the project's actual priorities.
+
+Cost, time-to-market, team-skill fit, vendor lock-in and political acceptability are
+non-SMARTS considerations. They must remain visible alongside the table when relevant. A technically attractive
+option can still be the wrong business choice. In the example, an established synchronous-response
+decision must be respected before any new queue is considered.
+
+## Where it runs
+
+<DecisionRoutes />
+
+During reconciliation, prior decisions provide a `Precedent:` line with relevant IDs and the
+observed lens pattern. Thin history cannot support an invented precedent, and precedent never
+outranks an explicit higher-authority decision. A strong recommendation remains a recommendation
+until the user makes or explicitly accepts the choice.
+
+During an approved sprint, moderate and tied non-hard-gate choices do not create new routine human
+checkpoints. The sprint breaks a tie using its stated priorities and the existing conflict hierarchy.
+It logs **low** confidence for moderate/tied choices and **high** for strong choices. An answered
+recorded-intent choice is logged with high confidence and its citation. Confidence is not a
+probability estimate or a verification result. Security boundaries, irreversible actions, overrides,
+missing user authority, conflicting accepted decisions and merge remain actual stop boundaries.
+
+## Typed method changes need their own authority
+
+For an existing typed plan, the current source defines a separate, explicit `delegate-methods`
+grant and a private `smarts-apply` producer. After the pair's required approvals, that bounded
+producer can revise an existing task's method **steps** under the original scope. It cannot expand
+paths, tests, criteria, dependencies, prerequisites, rollback or checkpoint membership.
+
+The producer checks current plan identity, refuses active affected writers and invalidates affected
+proof before another attempt. It keeps blocked states and their reasons. The next attempt still
+needs current eligibility, verification and review. A matrix pasted into chat or a line appended to
+the sprint log is not that authority, and the method grant does not confer prerequisite, security,
+backend or publication authority. Read the [artifact-review host boundary](/guides/review-artifacts/#check-your-hosts-authority-capability)
+and use the actual installed capability rather than inferring support from a shared name.
+
+This distinction matters during recovery: changing an approach inside an approved task is different
+from weakening its test or silently widening the task to make a failure disappear.
+
+## Audit a Verdict
+
+Start with the evidence that could change the outcome. Are the options materially different, or is
+one a deliberately weak alternative? Does each cell refer to the actual scale, deployment boundary
+and failure behavior? Which lens is decisive, and is that priority stated in project records? Keep
+unknown facts visible and ask for the missing observation rather than inventing a confident cell.
+
+Next identify the caller and recorded outcome. Sprint reasoning belongs in
+`.codearbiter/sprint-log.md`, with intent and confidence. Interactive arbitration decisions belong in
+`.codearbiter/decisions/decision-log.md`, with user attribution. Its `Artifact-section-hash` binds
+the cited source artifact section, not the log entry's own prose or the whole codebase. A changed
+hash signals changed referenced text; it does not decide that the recorded choice is wrong.
+
+A useful completion check is to explain the choice, its strongest counterargument, its source,
+and the specific authority needed for the next action. Use [Run an autonomous sprint](/guides/autonomous-sprints/)
+for execution, [ADRs and the decision log](/concepts/adrs/) for durable choices, and
+[Auditability](/concepts/auditability/) for the later evidence packet. The exact comparison and
+arbitration rules remain in the [grader](/reference/agents/grader/) and
+[decision-variance](/reference/skills/decision-variance/) references.

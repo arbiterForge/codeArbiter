@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import { completePagefind } from "./scripts/pagefind-build.ts";
 import { unified } from "@astrojs/markdown-remark";
 import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
@@ -128,6 +129,9 @@ export default defineConfig({
   },
   integrations: [
     starlight({
+      // The custom integration below uses the same indexer but awaits and verifies
+      // all output bytes. Our existing Search override remains the reader UI.
+      pagefind: false,
       title: "codeArbiter",
       description: "Shared enforcement and project-context parity across Claude Code, Codex, and Pi.",
       // A custom StarlightPage-backed src/pages/404.astro owns the production
@@ -178,5 +182,6 @@ export default defineConfig({
       ],
       sidebar: buildJourneySidebar(referenceGroups, academySidebarItems),
     }),
+    completePagefind(),
   ],
 });

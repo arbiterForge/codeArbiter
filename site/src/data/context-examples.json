@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "source_revision": "aebee1bb753d29e34030ee22c98c9eb8fabb1752",
+  "evidence_kind": "disposable-helper-observation",
+  "boundary": "Actual Python helper output over fixed local fixtures, not an installed-host run, approval, or validation of your repository.",
+  "source_sha256": {
+    "core/pysrc/_readinjectlib.py": "6edb4c9d71bc61a613a3b2d939beae5fae92bd765f2cff611ca46d579411075e",
+    "core/pysrc/_provenancelib.py": "12bd9e14803e622d5587beabedbe3ebd5b0bad00bdba6e5a0c6cc8ac58b7e051",
+    "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+    "core/pysrc/_hooklib.py": "9c6eab65f14417ec6a392af944c18a8a4641111cea91ac6eff35341da100c562"
+  },
+  "fixture_files": {
+    "src/auth/session.py": "def active_session():\n    return True\n",
+    "package.json": "{\"type\":\"module\"}\n",
+    "src/ui/view.py": "def title():\n    return 'Saved searches'\n",
+    ".codearbiter/security-controls.md": "# Security controls\nReview session boundaries.\n",
+    ".codearbiter/decisions/0042-session-boundary.md": "---\ntitle: Session boundary\nstatus: accepted\ngoverns: src/auth/*\n---\nKeep session checks explicit.\n",
+    ".codearbiter/specs/session.md": "# Session\n**Status:** approved\n**Governs:** src/auth/*\nRetain session behavior.\n"
+  },
+  "provenance_records": {
+    "standards": {
+      "schema": 1,
+      "doc": "standards",
+      "created": "2026-09-24",
+      "interview_derived": false,
+      "entries": [
+        {
+          "path": "src/auth/session.py",
+          "hash": "001ff6533ce4b1b890ba3f5744fcc20952270301",
+          "drift_trigger": true,
+          "claims": [
+            {
+              "claim": "Session checks are explicit.",
+              "lines": "1-2"
+            }
+          ]
+        }
+      ]
+    },
+    "tech-stack": {
+      "schema": 1,
+      "doc": "tech-stack",
+      "created": "2026-09-24",
+      "interview_derived": false,
+      "entries": [
+        {
+          "path": "package.json",
+          "hash": "089153bcb5adf57dc25f206a9dad3114c9cff80d",
+          "drift_trigger": true,
+          "claims": [
+            {
+              "claim": "The package declares module syntax.",
+              "lines": "1"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "overlap",
+      "path": "src/auth/session.py",
+      "candidate_pointers": [
+        {
+          "text": "security-controls.md governs this file — consult it for auth, crypto, and secret-handling constraints.",
+          "tier": "security-controls"
+        },
+        {
+          "text": "ADR-0042-session-boundary (Session boundary) governs this file — do not contradict it; route changes via /ca:reconcile or /ca:adr.",
+          "tier": "decisions"
+        },
+        {
+          "text": "spec session governs this file — implement to its acceptance criteria.",
+          "tier": "specs"
+        },
+        {
+          "text": "standards.md notes (lines 1-2): Session checks are explicit.",
+          "tier": "standards"
+        }
+      ],
+      "emitted": "security-controls.md governs this file — consult it for auth, crypto, and secret-handling constraints.\nADR-0042-session-boundary (Session boundary) governs this file — do not contradict it; route changes via /ca:reconcile or /ca:adr.\nspec session governs this file — implement to its acceptance criteria.\nstandards.md notes (lines 1-2): Session checks are explicit.",
+      "estimated_tokens": 92,
+      "hash_calls": 1,
+      "repeated_emitted": "",
+      "repeat_hash_calls": 0
+    },
+    {
+      "id": "fresh",
+      "path": "package.json",
+      "candidate_pointers": [
+        {
+          "text": "tech-stack.md notes (lines 1): The package declares module syntax.",
+          "tier": "standards"
+        }
+      ],
+      "emitted": "tech-stack.md notes (lines 1): The package declares module syntax.",
+      "estimated_tokens": 17,
+      "hash_calls": 1,
+      "repeated_emitted": "",
+      "repeat_hash_calls": 0
+    },
+    {
+      "id": "changed",
+      "path": "package.json",
+      "candidate_pointers": [],
+      "emitted": "",
+      "estimated_tokens": 0,
+      "hash_calls": 1,
+      "repeated_emitted": "",
+      "repeat_hash_calls": 1
+    },
+    {
+      "id": "unmapped",
+      "path": "src/ui/view.py",
+      "candidate_pointers": [],
+      "emitted": "",
+      "estimated_tokens": 0,
+      "hash_calls": 0,
+      "repeated_emitted": "",
+      "repeat_hash_calls": 0
+    }
+  ],
+  "changed_source_hashes": {
+    "src/auth/session.py": "001ff6533ce4b1b890ba3f5744fcc20952270301",
+    "package.json": "729ac4d93b7f2d9be36b44525f02ff6555f9383a"
+  },
+  "drift_after_change": {
+    "tech-stack": [
+      {
+        "path": "package.json",
+        "kind": "changed"
+      }
+    ]
+  },
+  "self_read": {
+    "emitted": "",
+    "hash_calls": 0
+  },
+  "budget": {
+    "proxy": "ceil(character_count / 4)",
+    "limit": 150,
+    "input": [
+      {
+        "tier": "decisions",
+        "text": "Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. "
+      }
+    ],
+    "emitted": "Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing decision. Review this governing d…",
+    "estimated_tokens": 150
+  }
+}
