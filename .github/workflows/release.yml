@@ -13,11 +13,14 @@ name: release
 #
 # There is no cross-plugin cohort: a failed plugin never blocks the others,
 # and there is no resume state. Every publish step observes the remote first
-# and does only what is missing, so the recovery path for any half-finished
-# release is simply to re-run the failed job, or dispatch this workflow with
-# that target. The only refusals are ones that protect users: a version whose
-# tag already names another commit (bump and merge again), a package cohort
-# that does not verify, or published bytes that do not read back.
+# and does only what is missing. To recover a half-finished release, use
+# "Re-run failed jobs" on the original run: it reuses that run's planned
+# commit and CI artifacts, while they are retained. A manual dispatch
+# publishes main's CURRENT head, so it helps only while the version's tag is
+# not yet cut or still names that head. The only refusals are ones that
+# protect users: a version whose tag already names another commit (bump and
+# merge again), a package cohort that does not verify, or published bytes that
+# do not read back.
 
 on:
   workflow_run:
@@ -39,7 +42,7 @@ jobs:
   preflight:
     name: "[GATE ] | [RELEASE] | Plan"
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.event == 'push' &&
        github.event.workflow_run.head_branch == 'main' &&

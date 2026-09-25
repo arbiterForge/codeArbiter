@@ -33,8 +33,8 @@ to every host, and release on every merge.
    ca-codex, ca-pi and ca-sandbox whose manifest advanced (or whose own tag exists but whose Release
    is not published) releases in its own job. No job depends on another plugin's job. There is no
    cohort, resume/continuation state, repair allowlist or supersession logic. Every publish step
-   observes the remote first and does only what is missing; re-running the job (or dispatching the
-   workflow for that target) is the recovery path.
+   observes the remote first and does only what is missing; re-running the failed job on its
+   original run (which reuses that run's planned commit and CI artifacts) is the recovery path.
 2. **Claude Code receives the engine through a Git distribution channel.** The qualified release
    archive is published as an orphan `ca-dist-v<version>` tag and the `ca-marketplace` branch is
    advanced to it. Main's `.claude-plugin/marketplace.json` points `ca` at that branch with a
@@ -67,8 +67,9 @@ to every host, and release on every merge.
   checkout never carries it, and the `CAPABILITY_MISSING` diagnostic names the concrete repair.
 - Provenance evidence is still collected and reported, but a provenance-only failure no longer stops
   a release.
-- The first release after this lands must create `ca-marketplace`; until it exists, Claude installs
-  that refresh the catalog cannot resolve `ca`.
+- Rollout order: the first release after this lands creates `ca-marketplace`; main's catalog is
+  flipped to it only in a follow-up change once the branch is verified, so no install ever points at
+  a branch that does not exist.
 
 ## Risks
 - A provenance regression can ship unnoticed except as a warning; watch release logs.

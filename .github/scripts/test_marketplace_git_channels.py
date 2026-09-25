@@ -192,18 +192,20 @@ class ClaudeChannelTests(ChannelFixture):
 
 
 class ClaudeCatalogTests(unittest.TestCase):
-    def test_main_catalog_points_ca_at_the_distribution_branch(self):
-        catalog = json.loads((REPO / ".claude-plugin/marketplace.json").read_text(encoding="utf-8"))
-        entry = [item for item in catalog["plugins"] if item["name"] == "ca"]
-        self.assertEqual(len(entry), 1)
-        self.assertEqual(entry[0]["source"], PACKAGER.CLAUDE_DISTRIBUTION_SOURCE)
-
-    def test_archive_catalog_is_relative_so_the_archive_installs_locally(self):
+    # Main's catalog flips to CLAUDE_DISTRIBUTION_SOURCE only after the first
+    # release has created `ca-marketplace` (ADR-0040 rollout order); both
+    # forms must package to the same archive-local catalog.
+    def test_archive_catalog_is_relative_for_either_main_catalog_form(self):
         installer = PACKAGER._artifact_installer_module()
-        source = (REPO / ".claude-plugin/marketplace.json").read_bytes()
-        archived = json.loads(PACKAGER._claude_catalog(source, installer))
-        self.assertEqual([item["name"] for item in archived["plugins"]], ["ca"])
-        self.assertEqual(archived["plugins"][0]["source"], "./plugins/ca")
+        main = json.loads((REPO / ".claude-plugin/marketplace.json").read_text(encoding="utf-8"))
+        flipped = json.loads(json.dumps(main))
+        for entry in flipped["plugins"]:
+            if entry["name"] == "ca":
+                entry["source"] = PACKAGER.CLAUDE_DISTRIBUTION_SOURCE
+        for catalog in (main, flipped):
+            archived = json.loads(PACKAGER._claude_catalog(json.dumps(catalog).encode(), installer))
+            self.assertEqual([item["name"] for item in archived["plugins"]], ["ca"])
+            self.assertEqual(archived["plugins"][0]["source"], "./plugins/ca")
 
     def test_unexpected_ca_source_is_refused(self):
         installer = PACKAGER._artifact_installer_module()

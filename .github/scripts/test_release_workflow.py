@@ -68,6 +68,10 @@ class TriggerTest(unittest.TestCase):
                        "github.event.workflow_run.head_repository.full_name == github.repository"):
             self.assertIn(clause, condition)
 
+    def test_dispatch_is_refused_off_the_default_branch(self):
+        self.assertIn("(github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')",
+                      jobs()["preflight"])
+
     def test_stale_run_defers_to_the_newer_main_tip(self):
         self.assertIn('if [ "$(git rev-parse HEAD)" != "$SOURCE" ]', jobs()["preflight"])
 
