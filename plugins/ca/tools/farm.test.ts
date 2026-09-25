@@ -2675,3 +2675,104 @@ describe("worker response evidence CLI", () => {
     });
   }
 });
+
+// Real merge conflicts against a concurrently advanced integration branch.
+// No model/provider or non-fixture repository participates.
+describe("verified merge recovery CLI", () => {
+  let root: string;
+  let server: Server | undefined;
+  const gitIn = (dir: string, ...args: string[]) => execFileSync("git", args,
+    { cwd: dir, env: fixtureEnv(), encoding: "utf8", stdio: "pipe" }).trim();
+  beforeEach(() => {
+    root = join(tmpdir(), `farm-merge-recovery-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    createTempRepo(root);
+    writeFileSync(join(root, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(root, "src/impl.cjs"), "module.exports = n => n * 0;\n");
+    writeFileSync(join(root, "src/check.cjs"), "require('node:assert/strict').equal(require('./impl.cjs')(6), 12);\n");
+    gitIn(root, "add", "--", ".gitignore", "src");
+    gitIn(root, "commit", "-m", "original failing obligation");
+  });
+  afterEach(async () => {
+    await reapStrayChildren();
+    if (server) { server.closeAllConnections(); await new Promise<void>(done => server!.close(() => done())); server = undefined; }
+    rmWithRetry(root);
+  });
+  for (const entry of ["source", "bundle"] as const) {
+    for (const mode of ["single", "samples", "reset-refusal"] as const) {
+      it(`${entry}: ${mode} retains merge evidence and uses the verified baseline`, async () => {
+        const samples = mode === "samples" ? 2 : 1;
+        const runId = "merge-recovery";
+        const integration = join(root, ".farm/runs", runId, "integration-wt");
+        const before = gitIn(root, "rev-parse", "main");
+        const testBefore = readFileSync(join(root, "src/check.cjs"));
+        const prompts: string[] = [];
+        let calls = 0, advanced = "", handlerError: unknown;
+        const firstCode = "module.exports = n => n + n;\n";
+        const nextCode = "module.exports = n => n + n + n;\n";
+        const mock = await startMockServer(body => {
+          try {
+            calls++; prompts.push((body as { messages: Array<{ content: string }> }).messages[0].content);
+            if (calls === 1) {
+              writeFileSync(join(integration, "src/impl.cjs"), "module.exports = n => n * 3;\n");
+              writeFileSync(join(integration, "src/check.cjs"), "require('node:assert/strict').equal(require('./impl.cjs')(6), 18);\n");
+              gitIn(integration, "add", "--", "src/impl.cjs", "src/check.cjs");
+              gitIn(integration, "commit", "-m", "concurrent integration obligation");
+              advanced = gitIn(integration, "rev-parse", "HEAD");
+              if (mode === "reset-refusal") {
+                // A fixture-owned post-commit lock permits the first candidate
+                // commit, then makes the real task reset refuse after conflict.
+                const hook = ["#!/bin/sh", 'case "$(git symbolic-ref --short HEAD)" in',
+                  '  farm/recover) index="$(git rev-parse --git-path index)";',
+                  '    printf "%s\\n" "fixture-owned reset lock" > "$index.lock";;',
+                  "esac", ""].join("\n");
+                writeFileSync(join(root, ".git/hooks/post-commit"), hook, { mode: 0o755 });
+              }
+            }
+            return "```javascript:src/impl.cjs\n" + (calls <= samples ? firstCode : nextCode) + "```";
+          } catch (error) { handlerError = error; return ""; }
+        }, { prompt_tokens: 7, completion_tokens: 11 });
+        server = mock.server;
+        const planPath = join(root, "plan.json");
+        writeFileSync(planPath, JSON.stringify({ meta: { name: "merge recovery", model: "fixture" }, tasks: [{
+          id: "recover", description: "Implement the current arithmetic obligation", deps: [],
+          filesInScope: ["src/impl.cjs"], test: { path: "src/check.cjs" },
+          gate: { commands: ["node src/check.cjs"] }, maxRetries: 1 }] }));
+        const run = await runFarmWithArgs(root, [], planPath, {
+          FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${mock.port}`,
+          FARM_RUN_ID: runId, FARM_SAMPLES: String(samples), FARM_TEMPERATURE: "0",
+          FARM_MUTATION: "off", FARM_API_MAX_RETRIES: "0",
+        }, [], entry);
+        expect(handlerError).toBeUndefined(); expect(advanced).toMatch(/^[0-9a-f]{40}$/);
+        expect(run.code, run.out).toBe(mode === "reset-refusal" ? 2 : 0);
+        expect(gitIn(root, "rev-parse", "main")).toBe(before);
+        expect(readFileSync(join(root, "src/check.cjs"))).toEqual(testBefore);
+        const report = JSON.parse(readFileSync(join(root, ".farm/runs", runId, "farm-report.json"), "utf8"));
+        const result = report.results[0];
+        const expectedCalls = mode === "reset-refusal" ? 1 : 2 * samples;
+        expect(calls).toBe(expectedCalls);
+        expect(result).toMatchObject({ attempts: mode === "reset-refusal" ? 1 : 2,
+          promptTokens: 7 * expectedCalls, completionTokens: 11 * expectedCalls });
+        const streamed = JSON.parse(readFileSync(join(root, ".farm/runs", runId, "farm-results.jsonl"), "utf8").trim());
+        expect(streamed).toMatchObject({ id: "recover", status: result.status, promptTokens: result.promptTokens });
+        if (mode === "reset-refusal") {
+          expect(result.note).toMatch(/merge recovery failed.*reset refused/);
+          expect(gitIn(root, "rev-parse", "farm/integration")).toBe(advanced);
+          const taskTree = join(root, ".farm/worktrees/recover");
+          const index = gitIn(taskTree, "rev-parse", "--git-path", "index");
+          expect(readFileSync(resolve(taskTree, index + ".lock"), "utf8")).toContain("fixture-owned reset lock");
+          expect(readFileSync(join(taskTree, "src/impl.cjs"), "utf8")).toBe(firstCode);
+        } else {
+          expect(gitIn(root, "show", "farm/integration:src/impl.cjs")).toBe(nextCode.trim());
+          expect(gitIn(root, "show", "farm/integration:src/check.cjs")).toContain("18");
+          expect(prompts[samples]).toContain(advanced);
+          const prior = prompts[samples].split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+          expect(prior).toContain(firstCode.trim());
+          expect(prior).not.toContain("n * 3");
+          expect(prompts[samples]).toContain("18");
+          expect(result.acceptedPromptTokens).toBe(7);
+          expect(existsSync(join(root, ".farm/worktrees/recover"))).toBe(false);
+        }
+      });
+    }
+  }
+});

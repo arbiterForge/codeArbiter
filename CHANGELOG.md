@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Recover farm merge conflicts against a verified integration commit, retaining
+  prior output and rechecking the current protected-test baseline.
 - Cover connection and response-body failure lifecycles; clarify that unavailable
   mutation measurements warn independently of the measured-score threshold.
 - Bound farm provider-directed retry waits and close discarded responses before

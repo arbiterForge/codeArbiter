@@ -842,3 +842,60 @@ pass 74/16/20 tests. The unchanged live auditor verifies 168 original receipts a
 This is a correction to the owning action for review, not recovery of the already
 partial release. Release continuation must separately establish its exact cohort,
 trusted verifier revision and current publication state; no release run was retried.
+
+
+## 2026-09-25: verified merge-conflict recovery (PR854)
+
+Baseline: `arbiterForge/codeArbiter@fdec093d20476533ca58f3fd0a5f3e4ff912c0da`.
+That preserving merge incorporates main `13013b2fb021df623f4ba328ddb15f8b287590ad`.
+The three overlaps with #863 were duplicate Codex metadata handoff fixes, their
+regressions, and semantically identical tag receipts. Keep main's exact action
+and ledger bytes and both test sets; the combined distribution suite has 29 cases.
+Neither an old pending CI description nor the Project bootstrap is current proof.
+
+The integration phase of `runTask` ignored staging, rollback and rebase failures.
+Its retry also replaced the candidate before collecting prior-output feedback and
+kept the first attempt's test hash even when the integration baseline legitimately
+changed that test. A single-sample retry could mislabel baseline content as its
+previous output; best-of-N could lose the selected implementation context.
+
+Check staging before committing. After a real failed merge, verify rollback and
+tracked integration cleanliness inside the existing merge lock, then pin the exact
+integration commit. Capture the current qualified candidate before reset, verify
+reset/clean and the resulting task HEAD, and bind the replacement protected-test
+hash before setup or worker execution. The next attempt sees new current source
+and separately labeled prior output, reruns setup fingerprints and all normal
+checks, and uses the original task retry budget. A worker still cannot change its
+test. Failed Git recovery keeps attempt, file, known usage and cleanup evidence;
+it does not purchase a blind retry or manufacture acceptance. Commit diagnostic
+content retains its existing 200-character limit with redaction before bounding.
+
+Sixteen new injected-boundary cases and six real source/bundle CLI cases cover
+successful recovery, retained samples, exact baseline identity, actual reset-lock
+refusal, test tampering, stage refusal and exhausted budgets. CLI fixtures advance
+only their own integration branch while a loopback worker is active, execute real
+Git and narrow tests, and assert unchanged main/tests, request counts, prior
+candidate feedback and both receipt formats. The original source fails 12 of the
+14 unit obligations with two preservation passes; all six CLI cases fail against
+the prior source/bundle. These are genuine assertion failures, not missing-export
+or collection errors. Corrected selected suites pass all twenty-two new cases.
+
+The conflict-only head's normal CI run 36094315974 exposed one Windows concurrent
+receipt-fixture failure: bravo1 failed to commit after the unchecked staging call.
+The old diagnostic does not identify why staging failed. No cause is inferred
+from that incomplete evidence. Five selected and thirty additional bounded local
+repetitions passed without changing concurrency, deadlines or assertions; those
+repetitions do not by themselves establish a fix. Staging now preserves its own
+failure diagnostic and repeats only the identical explicit-path stage up to three
+times with bounded 150/300 ms waits. Two extra cases prove transient refusal can
+clear without another worker, commit retry or extra authoring allowance. Permanent
+refusal still blocks commit; no existing lock is deleted. Exact-head hosted requalification and remaining failures must
+be reported separately in the PR, not erased by a local green run.
+
+No public command, skill, agent, resident registry, dependency or authority producer
+is added. Ignored caches, gate/mutation policies, versions and real approval rules
+are unchanged. HTML farm remains disabled. This is bounded merge recovery, not
+durable process resume or a whole-run concurrency redesign. Revert runtime and
+bundle with their private projections and tests if rejected, preserving unrelated
+main changes, authenticated publication history and retained worktrees. Final-head
+CI, installed-host and model-backed evidence remain distinct qualification layers.

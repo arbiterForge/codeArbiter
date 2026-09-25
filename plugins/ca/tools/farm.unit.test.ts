@@ -1182,6 +1182,7 @@ describe("Regenerate-on-conflict — merge conflict re-enters regeneration (AC-0
           if (out !== null) return { code: 1, out, stdout: "", stderr: out };
           return { code: 0, out: "", stdout: "", stderr: "" };
         }
+        if (args[0] === "rev-parse") return { code: 0, out: "a".repeat(40), stdout: "a".repeat(40), stderr: "" };
         if (args[0] === "reset" || args[0] === "clean") {
           opts.resetCalls.push(args);
         }
@@ -4060,5 +4061,159 @@ describe("HTTP connection and body failure evidence", () => {
     expect(fetcher).toHaveBeenCalledTimes(phase === "fetch" ? 3 : 1);
     expect(lastSignal!.aborted).toBe(true);
     expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+// The conflict-retry boundary must retain useful work, rebind to a verified
+// integration commit, and rerun the same checks without buying blind retries.
+describe("verified merge recovery", () => {
+  const roots: string[] = [];
+  const samplesBefore = process.env.FARM_SAMPLES;
+  const temperatureBefore = process.env.FARM_TEMPERATURE;
+  afterEach(async () => {
+    for (const [key, value] of [["FARM_SAMPLES", samplesBefore], ["FARM_TEMPERATURE", temperatureBefore]]) {
+      if (value === undefined) delete process.env[key!]; else process.env[key!] = value;
+    }
+    for (const root of roots.splice(0)) await fsRm(root, { recursive: true, force: true });
+  });
+  async function fixture(samples = 1, failure = "") {
+    process.env.FARM_SAMPLES = String(samples);
+    process.env.FARM_TEMPERATURE = "0";
+    const id = `merge-recovery-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const task: Task = { id, description: "recover a merge without losing prior work",
+      filesInScope: ["src/impl.ts"], test: { path: "test.txt" },
+      gate: { commands: ["fixture gate"] }, maxRetries: 1 };
+    const wt = path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+    roots.push(wt, wt + "__s0", wt + "__s1");
+    const baseline = "a".repeat(40);
+    const prompts: string[] = [], events: string[] = [], resets: string[][] = [];
+    let calls = 0, merges = 0, commits = 0, gateCalls = 0;
+    let protectedTest = "original protected test", head = "b".repeat(40);
+    const deps: RunTaskDeps = {
+      prepareWorktree: async (_branch, dir) => {
+        await fsMkdir(path.join(dir, "src"), { recursive: true });
+        await fsWriteFile(path.join(dir, "test.txt"), protectedTest);
+        await fsWriteFile(path.join(dir, "src/impl.ts"), "initial implementation\n");
+        return null;
+      },
+      resetWorktree: async () => { events.push("retry-reset"); },
+      fileHash: async file => fsReadFile(file, "utf8").catch(() => null),
+      checkDrift: async () => [],
+      runGate: async () => { gateCalls++; return { ok: true }; },
+      antiGamingCheck: async () => ({ risk: "none" }), mutationCheck: async () => null,
+      worker: { async apply(ctx) {
+        prompts.push(ctx.prompt); calls++;
+        await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"), `worker-candidate-${calls}\n`);
+        if (failure === "worker-tamper" && merges > 0)
+          await fsWriteFile(path.join(ctx.cwd, "test.txt"), "worker changed the protected test");
+        return { ok: true, filesWritten: ["src/impl.ts"], promptTokens: 7, completionTokens: 11 };
+      } },
+      withMergeLock: async <T,>(fn: () => Promise<T>) => { events.push("lock"); try { return await fn(); } finally { events.push("unlock"); } },
+      git: async (args, cwd) => {
+        const good = (out = "") => ({ code: 0, out, stdout: out, stderr: "" });
+        const bad = () => ({ code: 1, out: "fixture refusal", stdout: "", stderr: "fixture refusal" });
+        if (args[0] === "add" && failure === "stage") return bad();
+        if (args.includes("commit")) commits++;
+        if (args.includes("merge") && args.includes("--no-ff")) {
+          merges++; return merges === 1 ? bad() : good();
+        }
+        if (args[0] === "merge" && args[1] === "--abort") {
+          events.push("abort");
+          if (failure === "abort-throw") throw new Error("fixture abort exception");
+          return failure === "abort" ? bad() : good();
+        }
+        if (args[0] === "status") return failure === "dirty-integration" ? good("M  retained.txt\n") : good();
+        if (args[0] === "rev-parse") {
+          events.push(cwd === wt ? "task-head" : "integration-head");
+          if (failure === "unreadable-head") return bad();
+          return good((cwd === wt ? (failure === "wrong-head" ? "c".repeat(40) : head) : baseline) + "\n");
+        }
+        if (args[0] === "reset" && args.includes("--hard") && args.at(-1) !== "HEAD") {
+          resets.push(args); events.push("rebase");
+          if (failure === "reset-throw") throw new Error("fixture reset exception");
+          if (failure === "reset") return bad();
+          head = baseline;
+          protectedTest = failure === "same-test" ? protectedTest : "advanced protected test";
+          await fsWriteFile(path.join(wt, "test.txt"), protectedTest);
+          if (failure === "missing-test") await fsRm(path.join(wt, "test.txt"));
+          await fsWriteFile(path.join(wt, "src/impl.ts"), "advanced implementation\n");
+        }
+        if (args[0] === "clean" && failure === "clean") return bad();
+        return good();
+      },
+    };
+    return { task, deps, wt, baseline, prompts, events, resets,
+      state: () => ({ calls, merges, commits, gateCalls }) };
+  }
+  for (const samples of [1, 2]) {
+    it(`recovers on the exact advanced baseline and keeps previous candidate with ${samples} samples`, async () => {
+      const f = await fixture(samples);
+      const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("green"); expect(r.attempts).toBe(2);
+      expect(f.state().calls).toBe(2 * samples); expect(f.state().merges).toBe(2);
+      expect(r.promptTokens).toBe(14 * samples); expect(r.completionTokens).toBe(22 * samples);
+      expect(f.resets[0].at(-1)).toBe(f.baseline);
+      const next = f.prompts[samples];
+      expect(next).toContain("advanced protected test");
+      expect(next).toContain("advanced implementation");
+      const prior = next.split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+      expect(prior).toContain("worker-candidate-1");
+      expect(prior).not.toContain("advanced implementation");
+      expect(f.state().gateCalls).toBeGreaterThanOrEqual(2);
+      const read = f.events.indexOf("integration-head");
+      expect(read).toBeGreaterThan(f.events.indexOf("lock"));
+      expect(read).toBeLessThan(f.events.indexOf("unlock"));
+    });
+  }
+  it.each(["abort", "abort-throw", "dirty-integration", "unreadable-head", "reset", "reset-throw", "clean", "wrong-head", "missing-test"])(
+    "retains evidence and dispatches no new author when recovery fails: %s", async failure => {
+      const f = await fixture(1, failure);
+      const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("escalate"); expect(r.attempts).toBe(1);
+      expect(f.state().calls).toBe(1); expect(f.state().merges).toBe(1);
+      expect(r.promptTokens).toBe(7); expect(r.completionTokens).toBe(11);
+      expect(r.filesWritten).toEqual(["src/impl.ts"]);
+      expect(r.note).toMatch(/merge recovery/i);
+    });
+  it("does not turn a refused staging operation into a partial commit", async () => {
+    const f = await fixture(1, "stage");
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate"); expect(f.state().commits).toBe(0);
+    expect(f.state().merges).toBe(0); expect(f.state().calls).toBe(1);
+    expect(r.note).toMatch(/stage failed/); expect(r.promptTokens).toBe(7);
+  });
+  it.each([1, 2])("retries %s transient stages without another worker or authoring allowance", async failures => {
+    const f = await fixture(1, "same-test");
+    const original = f.deps.git;
+    let stages = 0, commits = 0;
+    const stageArgs: string[][] = [];
+    f.deps.git = async (args, cwd) => {
+      if (args[0] === "add") {
+        stageArgs.push(args); stages++;
+        if (stages <= failures) return { code: 1, out: "fixture stage temporarily refused", stdout: "", stderr: "fixture stage temporarily refused" };
+      }
+      if (args.includes("commit")) commits++;
+      if (args.includes("merge") && args.includes("--no-ff")) return { code: 0, out: "", stdout: "", stderr: "" };
+      return original(args, cwd);
+    };
+    const r = await runTask({ ...f.task, maxRetries: 0 }, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green"); expect(r.attempts).toBe(1);
+    expect(f.state().calls).toBe(1); expect(commits).toBe(1);
+    expect(stages).toBe(failures + 1);
+    expect(stageArgs.every(args => JSON.stringify(args) === JSON.stringify(["add", "--", "src/impl.ts"]))).toBe(true);
+    expect(r.promptTokens).toBe(7); expect(r.completionTokens).toBe(11);
+    expect(f.events).not.toContain("rebase");
+  });
+  it("still rejects worker edits to the newly bound protected test", async () => {
+    const f = await fixture(1, "worker-tamper");
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate"); expect(r.note).toContain("tampered test");
+    expect(f.state().calls).toBe(2); expect(f.state().merges).toBe(1);
+  });
+  it("keeps the original retry budget at zero without rebasing", async () => {
+    const f = await fixture(1, "same-test");
+    const r = await runTask({ ...f.task, maxRetries: 0 }, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate"); expect(r.attempts).toBe(1);
+    expect(f.resets).toHaveLength(0); expect(f.state().calls).toBe(1);
   });
 });

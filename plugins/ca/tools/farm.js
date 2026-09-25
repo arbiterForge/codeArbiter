@@ -2016,8 +2016,9 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
   const prepErr = evaluation ? await prepareEvaluationWorktree(wt, evaluation.baseCommit, deps.git) : await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
-  const testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
+  let testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
   let priorFailure;
+  let rebasedForRetry = false;
   let driftedOnce = false;
   let lastFilesWritten = [];
   let priorInScope = [];
@@ -2085,7 +2086,7 @@ ${gate.tail}`) };
     return { kind: "pass", warning: risk === "warn" ? note : void 0, mutationScore: score };
   };
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
-    if (attempt > 1) {
+    if (attempt > 1 && !rebasedForRetry) {
       if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
       try {
         await deps.resetWorktree(wt);
@@ -2104,6 +2105,7 @@ ${gate.tail}`) };
         });
       }
     }
+    rebasedForRetry = false;
     const setupNote = await runSetupPhases(wt, t, deps, setupState);
     if (setupNote)
       return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: setupNote, promptTokens, completionTokens });
@@ -2277,31 +2279,77 @@ ${gate.tail}`) };
         acceptedCompletionTokens
       });
     }
-    await deps.git(["add", "--", ...worker.filesWritten], wt);
-    const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
-    if (commit.code !== 0)
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-    const diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
-    const merged = await deps.withMergeLock(async () => {
-      const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
-      if (m.code !== 0) {
-        await deps.git(["merge", "--abort"], integrationWorktree).catch(() => {
-        });
-        return m.out;
-      }
-      return null;
+    const integrationFailure = (note) => finish({
+      id: t.id,
+      status: "escalate",
+      attempts: attempt,
+      branch,
+      worktree: wt,
+      note: redactSecrets(note).slice(0, 500),
+      filesWritten: worker.filesWritten,
+      promptTokens,
+      completionTokens,
+      mutationScore,
+      warning: lastWarning
     });
-    if (merged !== null) {
-      if (attempt <= limit) {
-        await deps.git(["reset", "--hard", ENV.integration], wt).catch(() => {
-        });
-        await deps.git(["clean", "-fd"], wt).catch(() => {
-        });
-        priorFailure = redactSecrets(`merge conflict vs integration: rebuild against the updated baseline (integration HEAD moved)
-${String(merged).slice(0, 160)}`);
+    let diffstat;
+    try {
+      let staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
+      let stageAttempts = 1;
+      while (staged.code !== 0 && stageAttempts < 3) {
+        await sleep(150 * stageAttempts);
+        stageAttempts++;
+        staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
+      }
+      if (staged.code !== 0) return integrationFailure(`stage failed after ${stageAttempts} attempts: ${staged.out}`);
+      const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
+      if (commit.code !== 0) return integrationFailure(`commit failed: ${redactSecrets(commit.out).slice(0, 200)}`);
+      diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
+      const merged = await deps.withMergeLock(async () => {
+        const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
+        if (m.code === 0) return null;
+        const aborted = await deps.git(["merge", "--abort"], integrationWorktree);
+        if (aborted.code !== 0) return {
+          kind: "fatal",
+          note: `merge recovery failed: could not abort failed merge: ${aborted.out}`
+        };
+        const clean = await deps.git(["status", "--porcelain=v1", "--untracked-files=no"], integrationWorktree);
+        if (clean.code !== 0 || clean.stdout.trim()) return {
+          kind: "fatal",
+          note: "merge recovery failed: integration tracked state is not verified clean"
+        };
+        if (attempt > limit) return {
+          kind: "exhausted",
+          note: `merge failed vs integration: ${m.out}`
+        };
+        const head = await deps.git(["rev-parse", "--verify", "HEAD^{commit}"], integrationWorktree);
+        const base = head.stdout.trim();
+        if (head.code !== 0 || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base))
+          return { kind: "fatal", note: "merge recovery failed: integration commit is unreadable" };
+        return { kind: "retry", base, note: redactSecrets(m.out).slice(0, 300) };
+      });
+      if (merged !== null) {
+        if (merged.kind !== "retry") return integrationFailure(merged.note);
+        const previous = await captureInScope(wt, t);
+        const reset = await deps.git(["reset", "--hard", merged.base], wt);
+        if (reset.code !== 0) return integrationFailure(`merge recovery failed: task reset refused: ${reset.out}`);
+        const clean = await deps.git(["clean", "-fd"], wt);
+        if (clean.code !== 0) return integrationFailure(`merge recovery failed: task cleanup refused: ${clean.out}`);
+        const head = await deps.git(["rev-parse", "--verify", "HEAD^{commit}"], wt);
+        if (head.code !== 0 || head.stdout.trim() !== merged.base)
+          return integrationFailure("merge recovery failed: task did not reach the pinned integration commit");
+        const refreshedTest = await deps.fileHash(path3.resolve(wt, t.test.path));
+        if (testHashBefore !== null && refreshedTest === null)
+          return integrationFailure("merge recovery failed: protected test is unavailable on the new baseline");
+        testHashBefore = refreshedTest;
+        priorInScope = previous;
+        rebasedForRetry = true;
+        priorFailure = `merge conflict vs integration: rebuild against pinned commit ${merged.base}
+${merged.note}`;
         continue;
       }
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
+    } catch (error) {
+      return integrationFailure(`merge recovery failed: ${msgOf(error)}`);
     }
     noteCleanup(await removeWorktreeVerified(deps.git, wt));
     return finish({ id: t.id, status: "green", attempts: attempt, branch, worktree: wt, warning: lastWarning, filesWritten: worker.filesWritten, diffstat, promptTokens, completionTokens, mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens });

@@ -394,3 +394,21 @@ eligible tasks can continue under the existing circuit breaker, and dependent wo
 This is a reported task deferral, not a new user-approval gate or automatic delayed-resume service.
 Network/body failures and ordinary implementation failures otherwise retain their existing retry
 policy. This does not introduce a provider-wide cooldown coordinator, a new setting, or a spend claim.
+
+### Merge-conflict recovery
+
+A failed integration merge uses the existing task retry budget, not a new interview.
+The dispatcher verifies merge rollback and clean tracked integration state, pins that
+integration commit, and checks task reset, cleanup and HEAD before the next author.
+It keeps the prior qualified implementation as labeled feedback instead of presenting
+replacement baseline files as the worker's previous output. A protected test brought
+in by the verified integration commit becomes the next attempt's immutable baseline;
+setup and worker edits to that test still fail the same checks. Retained samples use
+this path too. Ignored setup caches keep their existing fingerprint contract.
+
+The same explicit-path staging operation gets up to three attempts, with 150 ms
+and 300 ms waits after refusal. This repeats no worker or commit and never removes
+another process's index lock. Persistent staging refusal, unverified rollback/reset
+or an unreadable replacement test cannot be repaired by another model call. The task retains its actual
+attempt, written-file and known-usage evidence, without commit or acceptance bypass.
+This does not add process resume, a provider fallback or a new approval checkpoint.

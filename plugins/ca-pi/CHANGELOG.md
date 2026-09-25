@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Recover farm merge conflicts against a verified integration commit, retaining
+  prior output and rechecking the current protected-test baseline.
 - Cover connection and response-body failure lifecycles; clarify that unavailable
   mutation measurements warn independently of the measured-score threshold.
 - Document bounded farm transport retries and task-local cooldown handling in

@@ -2388,9 +2388,10 @@ export async function runTask(
   if (prepErr)
     return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
 
-  const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+  let testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
 
   let priorFailure: string | undefined;
+  let rebasedForRetry = false;
   let driftedOnce = false;
   let lastFilesWritten: string[] = [];
   // F2: the failed attempt's in-scope output, captured before each reset and
@@ -2475,7 +2476,7 @@ export async function runTask(
   };
 
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
-    if (attempt > 1) {
+    if (attempt > 1 && !rebasedForRetry) {
       // F2: snapshot the failed attempt's in-scope output BEFORE the reset wipes
       // it, so the next attempt refines against what it wrote rather than
       // restarting from the baseline blind. Out-of-scope drift is not captured.
@@ -2497,6 +2498,8 @@ export async function runTask(
           filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore });
       }
     }
+
+    rebasedForRetry = false;
 
     // Setup (#92/#391): `setup` runs ONCE per worktree — the reset above is
     // `clean -fd`, which preserves the ignored dependency tree setup is
@@ -2622,46 +2625,76 @@ export async function runTask(
         mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens });
     }
 
-    // Commit + merge into the dedicated integration worktree.
-    // B-1: stage only the files the worker actually wrote, not everything in the
-    // worktree — git add -A would silently include any stale or injected files.
-    await deps.git(["add", "--", ...worker.filesWritten], wt);
-    const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
-    if (commit.code !== 0)
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-
-    const diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
-
-    // Merge into the integration branch is INSIDE the attempt loop (AC-07/D4):
-    // a conflict is treated like a gate failure and re-enters regeneration,
-    // consuming ONE of the existing `maxRetries` attempts rather than escalating
-    // instantly. The merge stays serialized under withMergeLock so the
-    // integration worktree is never touched concurrently (T-06 prevents most
-    // overlaps; this is the residual defense-in-depth case).
-    const merged = await deps.withMergeLock(async () => {
-      const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
-      if (m.code !== 0) {
-        await deps.git(["merge", "--abort"], integrationWorktree).catch(() => {});
-        return m.out;
-      }
-      return null;
+    // Staging, merge rollback and baseline reset are part of qualification.
+    // A failed Git operation must not silently buy another authoring attempt.
+    const integrationFailure = (note: string): Result => finish({
+      id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+      note: redactSecrets(note).slice(0, 500), filesWritten: worker.filesWritten,
+      promptTokens, completionTokens, mutationScore, warning: lastWarning,
     });
-    if (merged !== null) {
-      // Regenerate-on-conflict (AC-07): with retries left, rebuild against the
-      // UPDATED baseline instead of escalating. Reset the task worktree+branch
-      // onto the new integration HEAD (so the next attempt cuts from what the
-      // merge target now contains), then re-run the worker with a redacted,
-      // concise merge-conflict note seeded into priorFailure. resetWorktree at
-      // the loop top is then a no-op reset to this same HEAD. Per D4 this is NOT
-      // a new unbounded loop — it spends one of the existing attempts.
-      if (attempt <= limit) {
-        await deps.git(["reset", "--hard", ENV.integration], wt).catch(() => {});
-        await deps.git(["clean", "-fd"], wt).catch(() => {});
-        priorFailure = redactSecrets(`merge conflict vs integration: rebuild against the updated baseline (integration HEAD moved)\n${String(merged).slice(0, 160)}`);
+    let diffstat: string;
+    try {
+      let staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
+      let stageAttempts = 1;
+      // Repeating the identical explicit-path stage is idempotent. Let brief
+      // filesystem/index contention clear without regenerating the candidate,
+      // removing somebody else's lock, or retrying a potentially made commit.
+      while (staged.code !== 0 && stageAttempts < 3) {
+        await sleep(150 * stageAttempts);
+        stageAttempts++;
+        staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
+      }
+      if (staged.code !== 0) return integrationFailure(`stage failed after ${stageAttempts} attempts: ${staged.out}`);
+      const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
+      if (commit.code !== 0) return integrationFailure(`commit failed: ${redactSecrets(commit.out).slice(0, 200)}`);
+      diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
+
+      const merged = await deps.withMergeLock(async () => {
+        const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
+        if (m.code === 0) return null;
+        // Keep rollback and its read-back inside the integration lock. A merge
+        // refusal with no recoverable MERGE_HEAD is not evidence of a conflict
+        // that can be repaired by regenerating code.
+        const aborted = await deps.git(["merge", "--abort"], integrationWorktree);
+        if (aborted.code !== 0) return { kind: "fatal" as const,
+          note: `merge recovery failed: could not abort failed merge: ${aborted.out}` };
+        const clean = await deps.git(["status", "--porcelain=v1", "--untracked-files=no"], integrationWorktree);
+        if (clean.code !== 0 || clean.stdout.trim()) return { kind: "fatal" as const,
+          note: "merge recovery failed: integration tracked state is not verified clean" };
+        if (attempt > limit) return { kind: "exhausted" as const,
+          note: `merge failed vs integration: ${m.out}` };
+        const head = await deps.git(["rev-parse", "--verify", "HEAD^{commit}"], integrationWorktree);
+        const base = head.stdout.trim();
+        if (head.code !== 0 || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base))
+          return { kind: "fatal" as const, note: "merge recovery failed: integration commit is unreadable" };
+        return { kind: "retry" as const, base, note: redactSecrets(m.out).slice(0, 300) };
+      });
+      if (merged !== null) {
+        if (merged.kind !== "retry") return integrationFailure(merged.note);
+        // Capture the actual qualified candidate BEFORE replacing its baseline.
+        // This also preserves the selected best-of-N output after sample cleanup.
+        const previous = await captureInScope(wt, t);
+        const reset = await deps.git(["reset", "--hard", merged.base], wt);
+        if (reset.code !== 0) return integrationFailure(`merge recovery failed: task reset refused: ${reset.out}`);
+        const clean = await deps.git(["clean", "-fd"], wt);
+        if (clean.code !== 0) return integrationFailure(`merge recovery failed: task cleanup refused: ${clean.out}`);
+        const head = await deps.git(["rev-parse", "--verify", "HEAD^{commit}"], wt);
+        if (head.code !== 0 || head.stdout.trim() !== merged.base)
+          return integrationFailure("merge recovery failed: task did not reach the pinned integration commit");
+        // The worker may never edit its test. A verified integration baseline can
+        // legitimately carry a newer test; bind that identity before the next
+        // setup/worker, not to the prior candidate or to a post-worker hash.
+        const refreshedTest = await deps.fileHash(path.resolve(wt, t.test.path));
+        if (testHashBefore !== null && refreshedTest === null)
+          return integrationFailure("merge recovery failed: protected test is unavailable on the new baseline");
+        testHashBefore = refreshedTest;
+        priorInScope = previous;
+        rebasedForRetry = true;
+        priorFailure = `merge conflict vs integration: rebuild against pinned commit ${merged.base}\n${merged.note}`;
         continue;
       }
-      // retries exhausted — escalate exactly as before (worktree left for inspection)
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
+    } catch (error) {
+      return integrationFailure(`merge recovery failed: ${msgOf(error)}`);
     }
 
     // success — drop the worktree (branch stays, merged into integration).
