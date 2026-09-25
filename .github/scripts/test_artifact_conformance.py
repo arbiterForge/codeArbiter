@@ -49,6 +49,8 @@ EXPECTED_SUITES = {
         "test_new_html_route_reports_actionable_capability_error_before_writing",
     },
     "test_artifact_authoring.py": {
+        "test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts",
+        "test_fixture_copy_excludes_stale_payload_before_building_artifacts",
         "test_admission_rechecks_namespace_after_host_resource_scan",
         "test_admission_rechecks_before_plan_identity_reads",
         "test_admission_accepts_current_codex_resources_without_conveying_authority",
@@ -424,6 +426,7 @@ class ArtifactConformanceTest(unittest.TestCase):
         for script, expected in EXPECTED_SUITES.items():
             with self.subTest(script=script):
                 self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+                print(f"conformance suite start: {script}", flush=True)
                 result = self.run_checked(
                     [sys.executable, str(REPO / ".github/scripts" / script)],
                     env=environment,
@@ -433,6 +436,7 @@ class ArtifactConformanceTest(unittest.TestCase):
                 names = [name for name, _ in matches]
                 self.assertEqual(len(names), len(set(names)), f"duplicate test result in {script}")
                 self.assertEqual(set(names), expected, f"unexpected suite membership in {script}")
+                print(f"conformance suite verified: {script} ({len(names)} cases)", flush=True)
                 self.assertIn(f"Ran {len(expected)} tests", output)
                 for name, status in matches:
                     if name == "test_unix_parent_swap_after_validation_cannot_redirect_creation" and platform.system() == "Windows":

@@ -133,6 +133,17 @@ class TestFreshInstall(_WireStatuslineTest):
         self.assertIn(ws.BACKUP_KEY, data)
         self.assertIsNone(data[ws.BACKUP_KEY])
 
+    def test_uninstall_removes_statusline_when_no_prior_existed(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        self.assertIsNone(_read(self.settings)[ws.BACKUP_KEY])
+        ws.main(["uninstall", "--settings", self.settings,
+                 "--plugin-root", self.root])
+        data = _read(self.settings)
+        self.assertNotIn("statusLine", data)
+        self.assertNotIn(ws.BACKUP_KEY, data)
+        self.assertNotIn(ws.OWNER_KEY, data)
+
     def test_settings_file_created_if_absent(self):
         absent = os.path.join(self.tmp.name, "other", "settings.json")
         os.makedirs(os.path.dirname(absent))

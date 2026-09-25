@@ -179,6 +179,47 @@ class AuthoringRouteContractTest(unittest.TestCase):
 
 
 
+
+class InstalledFixtureCopyTest(unittest.TestCase):
+    def exercise(self, supplied):
+        with tempfile.TemporaryDirectory(prefix="ca-fixture-copy-") as temporary:
+            source_repo = physical_test_directory(temporary)
+            source_plugin = source_repo / "plugins/ca-codex"
+            stale = source_plugin / "helpers/artifacts"
+            stale.mkdir(parents=True)
+            (stale / "stale-binary").write_bytes(b"must not reach this fixture")
+            (source_plugin / "hooks").mkdir()
+            (source_plugin / "hooks/prompt-submit.py").write_bytes(b"retained source resource")
+            payload = source_repo / "supplied-payload"
+            payload.mkdir()
+            (payload / "release.json").write_bytes(b"fresh test payload")
+            environment = dict(os.environ)
+            environment.pop("ARTIFACT_TEST_INSTALLATION", None)
+            if supplied:
+                environment["ARTIFACT_TEST_INSTALLATION"] = str(payload)
+            def build(command, **kwargs):
+                output = Path(command[command.index("--output") + 1])
+                output.mkdir(parents=True, exist_ok=True)
+                (output / "release.json").write_bytes(b"fresh test payload")
+            with mock.patch.object(sys.modules[__name__], "REPO", source_repo):
+                with mock.patch.dict(os.environ, environment, clear=True):
+                    with mock.patch.object(subprocess, "run", side_effect=build) as builder:
+                        owner, installed = build_installation()
+                        try:
+                            self.assertEqual({p.name for p in installed.iterdir()}, {"release.json"})
+                            self.assertEqual((installed / "release.json").read_bytes(), b"fresh test payload")
+                            self.assertEqual((installed.parent.parent / "hooks/prompt-submit.py").read_bytes(), b"retained source resource")
+                            self.assertEqual((stale / "stale-binary").read_bytes(), b"must not reach this fixture")
+                            self.assertEqual(builder.call_count, 0 if supplied else 1)
+                        finally:
+                            owner.cleanup()
+
+    def test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts(self):
+        self.exercise(supplied=True)
+
+    def test_fixture_copy_excludes_stale_payload_before_building_artifacts(self):
+        self.exercise(supplied=False)
+
 class HostWorkflowAdmissionTest(unittest.TestCase):
     """Installed resources are prerequisites, not live-host authority evidence."""
 
@@ -764,8 +805,15 @@ def build_installation(
         owner.addCleanup(temporary.cleanup)
     base = physical_test_directory(temporary.name)
     plugin = base / "ca-codex"
-    shutil.copytree(REPO / "plugins" / "ca-codex", plugin,
-                    ignore=shutil.ignore_patterns("__pycache__", "node_modules"))
+    source_plugin = REPO / "plugins" / "ca-codex"
+    def source_only(directory, names):
+        ignored = set(shutil.ignore_patterns("__pycache__", "node_modules")(directory, names))
+        if Path(directory) == source_plugin / "helpers":
+            ignored.add("artifacts")
+        return ignored
+    # A developer checkout may already contain a native payload. Never copy
+    # it into this fresh fixture: the supplied/build branch owns those bytes.
+    shutil.copytree(source_plugin, plugin, ignore=source_only)
     installation = plugin / "helpers" / "artifacts"
     supplied = os.environ.get("ARTIFACT_TEST_INSTALLATION")
     if supplied:
