@@ -5,9 +5,15 @@
   "boundary": "Actual Python helper output over fixed local fixtures, not an installed-host run, approval, or validation of your repository.",
   "source_sha256": {
     "core/pysrc/_readinjectlib.py": "6edb4c9d71bc61a613a3b2d939beae5fae92bd765f2cff611ca46d579411075e",
-    "core/pysrc/_provenancelib.py": "12bd9e14803e622d5587beabedbe3ebd5b0bad00bdba6e5a0c6cc8ac58b7e051",
+    "core/pysrc/_provenancelib.py": "410df35b13cafba2feff94277ee77ca9e1fd6259b638ef50c3ec2bd6c10db633",
     "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
     "core/pysrc/_hooklib.py": "9c6eab65f14417ec6a392af944c18a8a4641111cea91ac6eff35341da100c562"
+  },
+  "source_blobs": {
+    "core/pysrc/_readinjectlib.py": "5ea4072369ef9fd51502842eed3829114c423b03",
+    "core/pysrc/_provenancelib.py": "bb3c882d002349ff2b0091acd8852ffc416b30f2",
+    "core/pysrc/pre-read.py": "08f4467a9895d81eff1a71b9a1c57b5682a311f8",
+    "core/pysrc/_hooklib.py": "02021f0260b2141525f50095e1bb53004411d7ad"
   },
   "fixture_files": {
     "src/auth/session.py": "def active_session():\n    return True\n",

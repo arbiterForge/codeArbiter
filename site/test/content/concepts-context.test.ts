@@ -18,7 +18,9 @@ describe('C03 actual helper observations', () => {
   it('binds inspected helpers to the exact source and publishes the same data once', async () => {
     for (const [path, hash] of Object.entries(capture.source_sha256)) {
       expect(createHash('sha256').update(readFileSync(`../${path}`)).digest('hex')).toBe(hash);
-      const baseline = execFileSync('git', ['show', `${capture.source_revision}:${path}`]);
+      const blob = capture.source_blobs[path as keyof typeof capture.source_blobs];
+      expect(blob).toMatch(/^[0-9a-f]{40}$/);
+      const baseline = execFileSync('git', ['cat-file', 'blob', blob]);
       expect(createHash('sha256').update(baseline).digest('hex')).toBe(hash);
     }
     const result = GET();

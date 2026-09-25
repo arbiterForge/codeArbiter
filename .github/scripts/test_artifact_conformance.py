@@ -49,6 +49,8 @@ EXPECTED_SUITES = {
         "test_new_html_route_reports_actionable_capability_error_before_writing",
     },
     "test_artifact_authoring.py": {
+        "test_installed_intent_cli_accepts_native_empty_diagnostics",
+        "test_installed_intent_cli_reports_incomplete_native_draft",
         "test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts",
         "test_fixture_copy_excludes_stale_payload_before_building_artifacts",
         "test_admission_rechecks_namespace_after_host_resource_scan",
