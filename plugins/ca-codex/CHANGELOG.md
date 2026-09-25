@@ -6,13 +6,27 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.14] - 2026-09-24
+## [0.13.15] - 2026-09-24
 
 ### Changed
 
 - Vendor the shared authority adapter with Claude Code verification and review
   seams and the `claude-review/0.1.0` engine profile. This package's own
   authority behavior is unchanged; the Claude-only reviewer charter is excluded.
+
+## [0.13.14] - 2026-09-24
+
+### Fixed
+
+- Publish the exact qualified Codex payload as `@arbiterforge/ca-codex`, verify
+  its registry integrity and provenance, and only then point the protected
+  marketplace channel at that exact version.
+- Cold-install the public npm package through real Codex marketplaces at both
+  supported host boundaries and require its installation-pinned artifact engine
+  to answer capabilities before the release and marketplace channel can advance.
+- Keep source-development host checks distinct from qualified consumer-package
+  checks so the checkout's intentionally absent promoted binaries are not
+  mistaken for a release-package failure.
 
 ## [0.13.13] - 2026-09-24
 
