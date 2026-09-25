@@ -1,0 +1,40 @@
+name: PR854 response resume source (temporary)
+on:
+  push:
+    branches: [codex/farm-readiness-canary-isolation]
+    paths: [.github/workflows/pr854-resume-response.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture committed source without executing product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = 09ee073e77814b28be8e61d4274f58b07741ee1b
+          MAIN=28f14f59f1a5e7231ee21d5f75d161ad1c51939a
+          git cat-file -e "$MAIN^{commit}"
+          git update-ref refs/review/pinned-main "$MAIN"
+          OUT="$RUNNER_TEMP/pr854-response-resume"
+          mkdir "$OUT"
+          git bundle create "$OUT/source.bundle" HEAD refs/review/pinned-main
+          git rev-parse HEAD > "$OUT/head.txt"
+          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
+          printf '%s\n' "$MAIN" > "$OUT/main.txt"
+          cd "$OUT"
+          sha256sum source.bundle > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr854-response-resume-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-response-resume/
+          if-no-files-found: error
+          retention-days: 3
