@@ -1,6 +1,6 @@
 {
   "name": "@arbiterforge/ca-pi",
-  "version": "0.14.14",
+  "version": "0.14.15",
   "license": "AGPL-3.0-only",
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
   },
   "files": [
     "plugins/ca-pi/*.md",
+    "plugins/ca-pi/LICENSE",
     "plugins/ca-pi/package.json",
     "plugins/ca-pi/agents/",
     "plugins/ca-pi/extensions/",

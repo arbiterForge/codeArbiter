@@ -12,6 +12,19 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.15] - 2026-09-24
+
+### Fixed
+
+- Check the installed host's required HTML workflow resources and hook
+  registrations before new full-lane authoring. Unsupported or incomplete
+  hosts stop early without creating fallback artifacts; legacy Markdown and
+  the inline small feature lane retain their existing behavior.
+- Include complete LICENSE and Go runtime notices in every installable
+  governance-plugin subtree and verify their exact-source package bytes.
+- Clarify the native-helper security inventory, retire operative wording
+  from the inactive CLA, and document explicit statusline uninstall.
+
 ## [2.21.14] - 2026-09-24
 
 ### Added

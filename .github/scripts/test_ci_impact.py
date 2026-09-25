@@ -3187,6 +3187,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         self.assertIn("needs: changes", job)
         self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
+        self.assertRegex(job, r"(?m)^    timeout-minutes: 30$")
         for runner in (
             "ubuntu-24.04", "ubuntu-24.04-arm", "windows-2025", "windows-11-arm",
             "macos-15-intel", "macos-26",

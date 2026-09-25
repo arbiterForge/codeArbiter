@@ -435,7 +435,10 @@ jobs:
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    # Native macOS qualification can exceed 15 minutes before final evidence binding.
+    # Run 36079069513: Intel macOS passed its 42 authoring and 35 package
+    # cases, then hit the former 15-minute job ceiling during the full
+    # conformance replay. Windows ARM took 12m07s. Retain every required
+    # suite and bound the entire cold-toolchain/native population at 30m.
     timeout-minutes: 30
     permissions:
       contents: read

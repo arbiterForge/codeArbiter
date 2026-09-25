@@ -10,7 +10,7 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.21.14" src="https://img.shields.io/badge/version-2.21.14-2b7489">
+<img alt="version 2.21.15" src="https://img.shields.io/badge/version-2.21.15-2b7489">
 <img alt="core lanes" src="https://img.shields.io/badge/core_lanes-18-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-20-555">
@@ -403,8 +403,10 @@ Run `/ca:statusline` to install the optional token-aware statusline.
 </div>
 
 Folder, Git state, rate limits, token use, cost, context headroom, model, effort, and session age
-render globally. The governance row activates only in an enabled repository. Running
-`/ca:statusline` again restores the previous statusline.
+render globally. The governance row activates only in an enabled repository.
+Run `/ca:statusline uninstall` to restore the previous statusline, or remove the
+codeArbiter setting when no previous line existed. Running `/ca:statusline install`
+again refreshes the installed path and preserves the backup; it does not uninstall.
 
 </details>
 
@@ -513,9 +515,10 @@ shipped with.
 under separate proprietary terms. Commercial licenses are not being offered at this time. Inquiries
 may be made through GitHub if AGPLv3 does not fit a use case.
 
-**Contributions.** Future community contributions require a Contributor License Agreement that
-permits relicensing under AGPLv3 and proprietary terms. See [`CLA.md`](./CLA.md). The CLA is a
-template pending legal review and is not yet in force.
+**Contributions.** No Contributor License Agreement is currently in force. See
+[`CLA.md`](./CLA.md) for its status and maintainer handling. A future agreement
+requires legal review and separate explicit assent; maintainers must not infer
+additional proprietary relicensing rights from the retired template.
 
 <div align="center">
 <sub>Built for Claude Code, Codex CLI, and Pi.</sub>

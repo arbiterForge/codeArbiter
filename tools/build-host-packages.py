@@ -1118,6 +1118,16 @@ def _member_receipt(members: dict[str, tuple[bytes, int, str, str]]) -> dict[str
     }
 
 
+def _require_package_notices(members, prefix: str, canonical) -> None:
+    """Require complete owning notice bytes inside the installable subtree."""
+    for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+        expected = canonical.get(name)
+        actual = members.get(f"{prefix}/{name}")
+        if (expected is None or not expected[0] or actual is None
+                or actual[0] != expected[0]):
+            raise ValueError(f"package notice missing or differs from source: {prefix}/{name}")
+
+
 def _expected_release_package_members(*, stage: Path, source_repo: Path,
                                       source_commit: str, workflow: str,
                                       run_id: str, promotion_receipt_sha256: str,
@@ -1187,6 +1197,13 @@ def _expected_release_package_members(*, stage: Path, source_repo: Path,
             )
             for path in sorted(pi_selected_paths)
         }
+    notices = _git_archive_files(source_repo, source_commit, (
+        "LICENSE", "THIRD_PARTY_NOTICES.md",
+    ))
+    for members, prefix in ((claude, "plugins/ca"),
+                            (codex, "plugins/ca-codex"),
+                            (pi, "package/plugins/ca-pi")):
+        _require_package_notices(members, prefix, notices)
     return snapshot, {"claude": claude, "codex": codex, "pi": pi}
 
 
@@ -1685,6 +1702,7 @@ def render_package(
         "publishConfig": {"access": "public", "provenance": True},
         "files": [
             f"{host.plugin_dir}/*.md",
+            f"{host.plugin_dir}/LICENSE",
             f"{host.plugin_dir}/package.json",
             f"{host.plugin_dir}/agents/",
             f"{host.plugin_dir}/extensions/",

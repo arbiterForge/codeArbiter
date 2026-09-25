@@ -603,14 +603,30 @@ def phase_run(args, bridge, installation: Path) -> dict[str, object]:
         bridge, args.repository, installation, args.phase, args.host, args.plugin_root
     )
     if args.phase == "author-dispatch":
+        if args.host == "pi":
+            # Pi has no production authority chain. Prove refusal BEFORE any
+            # artifact exists; the remaining Pi lifecycle is the explicitly
+            # synthetic engine fixture, not a production routing exception.
+            try:
+                bridge._select_authoring_route(args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
+            except bridge.ArtifactError as error:
+                if error.code != "HOST_WORKFLOW_UNAVAILABLE":
+                    raise
+            else:
+                raise AssertionError("Pi production authoring was incorrectly admitted")
+            if any((args.repository / ".codearbiter" / part).exists() for part in ("specs", "plans")):
+                raise AssertionError("refused Pi authoring created artifact paths")
+        else:
+            bridge._select_authoring_route(args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
         spec = spec_normative()
         workflow.client.call("create", {"operation_id": workflow.operation_id("create-spec"), "artifact_id": "SPEC-FLOW", "kind": "spec", "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
         if workflow.client.call("validate", {"artifact_id": "SPEC-FLOW", "gate": "ready"}, permit_invalid=True)["valid"] is not True:
             raise AssertionError("installed host did not create a ready spec")
         spec_approval_mode = workflow.approve("SPEC-FLOW")
         spec_identity = workflow.client.call("identity", {"artifact_id": "SPEC-FLOW"})
-        route = bridge._select_authoring_route(args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
-        bridge._preflight_plan_authoring(route, workflow.client, spec_artifact_id="SPEC-FLOW", spec_normative_sha256=spec_identity["normative_sha256"])
+        if args.host != "pi":
+            route = bridge._select_authoring_route(args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
+            bridge._preflight_plan_authoring(route, workflow.client, spec_artifact_id="SPEC-FLOW", spec_normative_sha256=spec_identity["normative_sha256"])
         plan = plan_normative(spec_identity["normative_sha256"])
         workflow.client.call("create", {"operation_id": workflow.operation_id("create-plan"), "artifact_id": "PLAN-FLOW", "kind": "plan", "slug": "flow", "title": plan["title"], "summary": plan["summary"], "spec_id": "SPEC-FLOW", "normative": plan})
         workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
