@@ -14,49 +14,56 @@ jobs:
         with:
           ref: 0c989584f0bc14bdf95d62dc80b910bf85c0f0fb
           persist-credentials: false
-      - name: Verify the tested patch and create unreferenced blobs only
+      - name: Apply four bounded edits and upload verified unreferenced blobs
         shell: python
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          import base64, gzip, hashlib, json, os, pathlib, subprocess, urllib.request
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request
+          assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == '0c989584f0bc14bdf95d62dc80b910bf85c0f0fb'
           expected = {
               'site/astro.config.mjs': '54fe7a3fb02da8135df8aef30dbe229d1d064098',
               'site/package-lock.json': '1bd3deefda25a9b433b0bad8232a54903bcfd37c',
               'site/package.json': '55d8f2af90c895162551538285162301d675730a',
               'site/reviews/CONCEPTS-C04-SOURCES.md': '6816ec83743d70861e32a0c1d76ac5db6306433e',
-              'site/reviews/PR862-SEARCH-INTEGRITY.md': '08dc961122af8d121bb7338003fc97b986de9c01',
-              'site/scripts/pagefind-build.test.ts': 'b9362892cc2111338690cfdac1f6e72c55097372',
-              'site/scripts/pagefind-build.ts': 'bd58968e3c7798d9152a600cbaec213486fbaba3',
-              'site/test/browser/search-bundle.spec.ts': '7b6977b554df18cebc3cee0519a8bd44e5309410',
           }
-          encoded = 'H4sIAAAAAAAC/808aXPbRpbf9Ss6zkwIRiQIkuIpyxNbcWJnE9tlOZna9WgiHE0RFgkwAChZUfjf9x3djQZIynImtbWuRKKIPl6/+2pE8Wwm2u3LuBB+J48L2fHzIkvdME1m8aW7/JCLYPf3B3ESyY9iOOmNwn4vHB71g6OgG/QCz/MHvaPx4Cjwh93hZNj1jwb+0HUHRzM58vuzwOtF/rjbH0SzsS9nfS8KZK83ibqRNzzyJmPR9eDD0UG73d4H08Hh4eFeuL75RrS7raE47LZG4ptvDkSnI74p8nY4l+HVgYiXqzQrxJ2I5CxO5ClNFBsxy9KleESrdXi1R8dmdF742SK+nBdq2Dc07kPeMQ9g8KFZOkyXq4Us5Bv/EjeJzPJuJw+zeFXknZV61A7W8SJyi9za7U6sk3gWy3Ke2W/pZ1dRepO0M4kfK5My6UffxQt5dpuEZmaSRnI6y2sD57cr+czP5Y9xcpXvgI5HtAMY0l7gGAaQUNsbE3J7k9YE0CvkR1oVsOmvF0UFq87dgRBi08KfcVLIy8wv4jTJp+I9fiVKtMLIQ/oGifVuLkW4zgsAyZolArlIb8Q6l7koYETuL6UgHpSZCNbAvzd+XOTCB3Rfywzxl1uL+ouFSNfFCgYGt4XMXfF6nQHwcV7EyaU4k34WzkUKM7M4kgLRGye8E+IV9vj5pavX08Sbipm/yGWLTyNEERcLORWPQkD60ywA9swemYeRZOzCWWDI2dzPgMAymaVZKJcyKQjyFVBZhkUbOLCQHwvYKYuLW+GHWZrn4nThrwG4U1i+RT8/tmjWm9gt94HDPtX4O9MIRk4EcoZXsGeehcR+eefIO3KJswSwFB8WAIjWIQLJ1B6NWwOg9rgHRH8ItfHfuYElB1wGfjYVxOU/pOsskbdn/KWTyZnMZBLK77N0vcrhKCEgeqmfvyzkMm+qpTbwgZBfFy2HR+CWm+bxQbSlz1ZwaDz8Ig2v3A85MtKeB0qjdbsTfzzyAt8PxqDBJnIYhGFvKCfhZAIaTnpy1O3NPM91u0HUj6ScRX5v4E+Co34/gGnRuNfv+YOjidcPwlnUH4U7NNr25pZK237IpCC5Gymtpv89+ma18G5r?'
-          # No partial transfer may update the branch. All Git objects are verified
-          # independently before a separate connector ref action publishes them.
-          patch = gzip.decompress(base64.b64decode(encoded, validate=True))
-          assert len(patch) == 25096
-          assert hashlib.sha256(patch).hexdigest() == '815634a98c0a43d345e8a81433ebe1e69dbf3f201d2eb4ab288f20a3bcdbc109'
-          assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == '0c989584f0bc14bdf95d62dc80b910bf85c0f0fb'
-          subprocess.run(['git','apply','--check','--index','-'], input=patch, check=True)
-          subprocess.run(['git','apply','--index','-'], input=patch, check=True)
-          paths = subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines()
-          assert sorted(paths) == sorted(expected)
-          tree = subprocess.check_output(['git','write-tree'], text=True).strip()
-          assert tree == '948ae2060abf2668a8916bbdb5fabb45a072d71b'
+          for name in ['site/package.json', 'site/package-lock.json']:
+              path = pathlib.Path(name)
+              value = json.loads(path.read_text())
+              original_nodes = {k:v for k,v in value.get('packages', {}).items() if k}
+              root = value['packages'][''] if name.endswith('lock.json') else value
+              root['devDependencies']['pagefind'] = '1.5.2'
+              root['devDependencies'] = dict(sorted(root['devDependencies'].items()))
+              assert original_nodes == {k:v for k,v in value.get('packages', {}).items() if k}
+              path.write_text(json.dumps(value, indent=2)+'\n')
+          path = pathlib.Path('site/astro.config.mjs')
+          text = path.read_text()
+          replacements = [
+              ('import starlight from "@astrojs/starlight";', 'import starlight from "@astrojs/starlight";\nimport { completePagefind } from "./scripts/pagefind-build.ts";'),
+              ('      title: "codeArbiter",', '      // The custom integration below uses the same indexer but awaits and verifies\n      // all output bytes. Our existing Search override remains the reader UI.\n      pagefind: false,\n      title: "codeArbiter",'),
+              ('      sidebar: buildJourneySidebar(referenceGroups, academySidebarItems),\n    }),', '      sidebar: buildJourneySidebar(referenceGroups, academySidebarItems),\n    }),\n    completePagefind(),'),
+          ]
+          for old, new in replacements:
+              assert text.count(old) == 1
+              text = text.replace(old, new)
+          path.write_text(text)
+          path = pathlib.Path('site/reviews/CONCEPTS-C04-SOURCES.md')
+          text = path.read_text() + '\n### Search output at final publication\n\nThe latest exact-head browser run exposed an incomplete served Pagefind module,\nnot a workflow-map content or navigation failure. Its evidence and the new awaited,\nbyte-verified build boundary are recorded in [PR862-SEARCH-INTEGRITY.md](./PR862-SEARCH-INTEGRITY.md).\nThe six real search checks remain unchanged. The completed C04 maps and chapter\nnavigation are retained while this final publication prerequisite is verified.\n'
+          path.write_text(text)
           entries = []
-          for path in paths:
-              raw = pathlib.Path(path).read_bytes()
+          for name, expected_sha in expected.items():
+              raw = pathlib.Path(name).read_bytes()
               digest = hashlib.sha1(f'blob {len(raw)}\0'.encode()+raw).hexdigest()
-              assert digest == expected[path]
+              assert digest == expected_sha, (name, digest)
               request = urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs', data=json.dumps({'content':base64.b64encode(raw).decode(),'encoding':'base64'}).encode(), headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'}, method='POST')
               with urllib.request.urlopen(request, timeout=30) as response:
                   returned = json.load(response)
               assert returned['sha'] == digest
-              entries.append({'path':path,'mode':'100644','type':'blob','sha':digest})
+              entries.append({'path':name,'mode':'100644','type':'blob','sha':digest})
           out = pathlib.Path(os.environ['RUNNER_TEMP'])/'pr862-search-objects'
           out.mkdir()
-          (out/'objects.json').write_text(json.dumps({'base':'0c989584f0bc14bdf95d62dc80b910bf85c0f0fb','tree':tree,'entries':entries}, indent=2)+'\n')
-          print(json.dumps({'tree':tree,'blob_count':len(entries)}))
+          (out/'objects.json').write_text(json.dumps(entries, indent=2)+'\n')
+          print(json.dumps(entries))
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: pr862-search-objects
