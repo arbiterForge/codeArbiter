@@ -9,6 +9,7 @@ import importlib.util
 import io
 import json
 import os
+import shutil
 from pathlib import Path
 import sys
 import tarfile
@@ -359,6 +360,53 @@ else:
         self.assertFalse(called.exists())
         self.assertEqual(b"do not overwrite", (npm_root / "sentinel").read_bytes())
         self.assertEqual(["sentinel"], [p.name for p in npm_root.iterdir()])
+
+    def test_release_action_build_handoff_reaches_codex_prepare_with_sibling_files(self):
+        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
+            encoding="utf-8"
+        )
+        step = action.split("    - name: Prepare exact qualified Codex npm package\n", 1)[1]
+        step = step.split("\n    - name: Configure authenticated npm scope", 1)[0]
+        shell = step.split("      run: |\n", 1)[1]
+        shell = "\n".join(line[8:] for line in shell.splitlines())
+        shell = shell.split("python3 .github/scripts/_npm_publishlib.py prepare-codex", 1)[0]
+        shell += '\nprintf "%s\\n" "$METADATA" "$TARBALL"\n'
+
+        runner_temp = self.root / "runner"
+        runner_temp.mkdir()
+        environment = dict(os.environ, RUNNER_TEMP=str(runner_temp),
+                           PACKAGE_ROOT=str(self.package_root),
+                           COHORT_SHA256=self.receipt_sha256)
+        if os.name == "nt":
+            git = Path(shutil.which("git")).resolve()
+            bash = git.parent.parent / "bin/bash.exe"
+        else:
+            bash = shutil.which("bash")
+        result = subprocess.run([str(bash), "-c", shell], cwd=REPO,
+                                env=environment, capture_output=True, text=True)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        metadata_path, tarball_path = map(Path, result.stdout.splitlines())
+        output = self.root / "prepare-output"
+        args = argparse.Namespace(
+            metadata=str(metadata_path), tarball=str(tarball_path),
+            expected_sha=self.source_commit, trusted_sha=self.source_commit,
+            expected_cohort_sha256=self.receipt_sha256,
+            expected_source_archive_sha256=hashlib.sha256(self.archive.read_bytes()).hexdigest(),
+            trusted_repo=str(self.source), npm="npm", output=str(output),
+            allow_continuation=False,
+        )
+        absent = subprocess.CompletedProcess(
+            ["npm"], 1, stdout=json.dumps({"error": {"code": "E404"}}),
+            stderr="npm error E404",
+        )
+        with mock.patch.object(NPM, "validate_release_source_binding"), \
+             mock.patch.object(NPM, "registry_lookup", return_value=absent):
+            self.assertEqual(0, NPM.prepare_codex(args))
+        prepared = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual("9.8.7", prepared["version"])
+        self.assertEqual("new", prepared["publication-mode"])
+        self.assertEqual(str(tarball_path.resolve()), prepared["tarball"])
+        self.assertEqual(str(metadata_path.resolve()), prepared["metadata"])
 
     def test_codex_npm_package_rejects_manifest_identity_drift(self):
         changed = dict(self.members)

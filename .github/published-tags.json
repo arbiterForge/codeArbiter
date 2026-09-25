@@ -874,13 +874,13 @@
     },
     "v2.21.15": {
       "object_sha": "f74de069c2aa47728667ebf8060b471df485fffd",
-      "commit_sha": "929229354e3a15ae3002c82116b66c837ab43729",
-      "object_type": "tag"
+      "object_type": "tag",
+      "commit_sha": "929229354e3a15ae3002c82116b66c837ab43729"
     },
     "ca-codex-v0.13.16": {
-      "object_type": "tag",
+      "commit_sha": "929229354e3a15ae3002c82116b66c837ab43729",
       "object_sha": "c3a34e1ff51412fc39d4a2a20978efa471f49d1e",
-      "commit_sha": "929229354e3a15ae3002c82116b66c837ab43729"
+      "object_type": "tag"
     }
   }
 }
