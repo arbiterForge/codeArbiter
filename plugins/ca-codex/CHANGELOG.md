@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.15] - 2026-09-24
+
+### Changed
+
+- Vendor the shared authority adapter with Claude Code verification and review
+  seams and the `claude-review/0.1.0` engine profile. This package's own
+  authority behavior is unchanged; the Claude-only reviewer charter is excluded.
+
 ## [0.13.14] - 2026-09-24
 
 ### Fixed

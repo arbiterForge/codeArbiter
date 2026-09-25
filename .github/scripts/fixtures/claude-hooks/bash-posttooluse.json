@@ -1,0 +1,25 @@
+{
+ "cwd": "<cwd>",
+ "duration_ms": 812,
+ "effort": {
+  "level": "medium"
+ },
+ "hook_event_name": "PostToolUse",
+ "permission_mode": "auto",
+ "prompt_id": "prompt-1",
+ "session_id": "session-1",
+ "tool_input": {
+  "command": "echo probe-bash-ok; exit 0",
+  "description": "Trigger Bash hook payload capture"
+ },
+ "tool_name": "Bash",
+ "tool_response": {
+  "interrupted": false,
+  "isImage": false,
+  "noOutputExpected": false,
+  "stderr": "",
+  "stdout": "probe-bash-ok"
+ },
+ "tool_use_id": "toolu-1",
+ "transcript_path": "<transcript-path>"
+}

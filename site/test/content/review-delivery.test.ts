@@ -46,7 +46,7 @@ describe('review-to-delivery guidance', () => {
     expect(source).toContain('current override **count**');
     expect(guide).toContain('integer override-count baseline, not proof that the commit gate passed');
     expect(guide).toContain('all_accepted_and_current: true');
-    expect(guide).toContain('Codex-only production verification/review authority');
+    expect(guide).toContain('production verification/review authority on Codex and Claude Code only');
     expect(guide).toContain('/guides/review-artifacts/#check-your-hosts-authority-capability');
   });
   it('keeps automatic review distinct from a redundant standalone ceremony', () => {

@@ -704,6 +704,32 @@ def run_ca_campaign(hooks, paths, stub_log, enabled, dormant, base):
     for kind in ("primary", "fallback"):
         assert_loud_failure(run("prune-transcript.py", kind, "NONE", enabled, prune_in))
 
+    # ---- 10. The Claude authority bridge is registered on Bash, Agent,
+    # SendMessage and subagent events. With no armed request every native
+    # event stays inert: no output, exit 0, in enabled and dormant repos.
+    authority_events = (
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": {"command": "git status"},
+         "session_id": "cold-session", "prompt_id": "cold-prompt", "tool_use_id": "cold-tool"},
+        {"hook_event_name": "PostToolUseFailure", "tool_name": "Bash", "tool_input": {"command": "false"},
+         "session_id": "cold-session", "prompt_id": "cold-prompt", "tool_use_id": "cold-tool",
+         "error": "Exit code 1", "is_interrupt": False},
+        {"hook_event_name": "PreToolUse", "tool_name": "Agent",
+         "tool_input": {"description": "d", "prompt": "Review this.", "subagent_type": "general-purpose"},
+         "session_id": "cold-session", "prompt_id": "cold-prompt", "tool_use_id": "cold-agent-tool"},
+        {"hook_event_name": "SubagentStart", "session_id": "cold-session", "prompt_id": "cold-prompt",
+         "agent_id": "cold-agent", "agent_type": "general-purpose"},
+        {"hook_event_name": "SubagentStop", "session_id": "cold-session", "prompt_id": "cold-prompt",
+         "agent_id": "cold-agent", "agent_type": "general-purpose", "stop_hook_active": False,
+         "last_assistant_message": "done", "background_tasks": []},
+    )
+    for event in authority_events:
+        for fixture in (enabled, dormant):
+            for kind in ("primary", "fallback"):
+                assert_noop_allow(run("artifact-authority-hook.py", kind, "REAL", fixture,
+                                      {**event, "cwd": fixture}))
+            assert_loud_failure(run("artifact-authority-hook.py", "primary", "NONE", fixture,
+                                    {**event, "cwd": fixture}))
+
 
 def _patch(body):
     return "*** Begin Patch\n" + body + "*** End Patch\n"
@@ -956,7 +982,7 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
 
 CA_EXPECTED = {"session-start.py", "pre-bash.py", "pre-write.py",
                "pre-edit.py", "post-write-edit.py", "prune-transcript.py",
-               "pre-read.py", "prompt-submit.py"}
+               "pre-read.py", "prompt-submit.py", "artifact-authority-hook.py"}
 CODEX_EXPECTED = {"session-start.py", "pre-tool-adapter.py",
                    "artifact-authority-hook.py",
                    "post-write-edit.py", "prune-transcript.py",
@@ -981,10 +1007,10 @@ def main():
     ca_groups = [group for groups in ca_config["hooks"].values() for group in groups]
     ca_fallbacks = [hook["command"] for group in ca_groups for hook in group["hooks"]
                     if "||" in hook["command"]]
-    if len(ca_fallbacks) != 10 or not all("version_info" in cmd for cmd in ca_fallbacks):
-        sys.exit("FATAL: all 10 ca fallback registrations must use a Python-3 "
+    if len(ca_fallbacks) != 15 or not all("version_info" in cmd for cmd in ca_fallbacks):
+        sys.exit("FATAL: all 15 ca fallback registrations must use a Python-3 "
                  f"version probe; found {len(ca_fallbacks)}: {ca_fallbacks}")
-    print("ca Python-3 fallback probes: OK (10/10 registrations version-aware)")
+    print("ca Python-3 fallback probes: OK (15/15 registrations version-aware)")
     pretooluse_groups = ca_config["hooks"].get("PreToolUse", [])
     read_groups = [g for g in pretooluse_groups if g.get("matcher") == "Read"]
     if not read_groups:

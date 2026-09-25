@@ -1,0 +1,1307 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Claude Code verification and review authority adapter · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-CLAUDE-ARTIFACT-AUTHORITY</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/claude-artifact-authority.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">APPROVED · authority must be verified at use</span><h1>Claude Code verification and review authority adapter</h1><p class="deck">Bring the #844 production authority adapter to Claude Code so HTML plans can record task-review and accept-scope on Claude, grounded in recorded Claude Code 2.1.281 hook payloads.</p><div class="meta"><span>SPEC-CLAUDE-ARTIFACT-AUTHORITY</span><span>Revision 7 · schema 0.3.1</span><span>87 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>Maintainers running /feature and /sprint on Claude Code.</div><div class="field"><span class="label">Outcome</span>A Claude session can verify, review and accept HTML plan tasks with the same fail-closed guarantees as Codex.</div><div class="field"><span class="label">Problem</span>Claude sessions cannot produce verification or review authority, so HTML plans never accept a task on Claude.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li><li><a href="#SRC-05">SRC-05</a></li></ul></div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-01 -->
+<article class="record" id="SCOPE-01" data-ca-symbol="SCOPE-01" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-01">SCOPE-01</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Claude Code seams for the supervised verification wrapper: authorize on PreToolUse Bash, corroborate on PostToolUse, fail on PostToolUseFailure.</div></article>
+<!-- CA:END:SCOPE-01 -->
+
+<!-- CA:BEGIN:SCOPE-02 -->
+<article class="record" id="SCOPE-02" data-ca-symbol="SCOPE-02" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-02">SCOPE-02</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Claude Code seams for independent spec and quality review: exact Agent launch, launch-to-child binding, single-launch parent turn, first-Stop result binding.</div></article>
+<!-- CA:END:SCOPE-02 -->
+
+<!-- CA:BEGIN:SCOPE-03 -->
+<article class="record" id="SCOPE-03" data-ca-symbol="SCOPE-03" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-03">SCOPE-03</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>A claude-review/0.1.0 producer profile in the engine with its own closed launch schema, leaving codex-review/0.1.0 unchanged.</div></article>
+<!-- CA:END:SCOPE-03 -->
+
+<!-- CA:BEGIN:SCOPE-04 -->
+<article class="record" id="SCOPE-04" data-ca-symbol="SCOPE-04" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-04">SCOPE-04</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Register the hook in the Claude plugin, update the authority documentation, and prove the end-to-end path to task-review and accept-scope.</div></article>
+<!-- CA:END:SCOPE-04 -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NG-01 -->
+<article class="record" id="NG-01" data-ca-symbol="NG-01" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-01">NG-01</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>No Pi verification or review authority.</div></article>
+<!-- CA:END:NG-01 -->
+
+<!-- CA:BEGIN:NG-02 -->
+<article class="record" id="NG-02" data-ca-symbol="NG-02" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-02">NG-02</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>No change to Codex behavior, the codex-review/0.1.0 profile, approval capture, or SMARTS authority.</div></article>
+<!-- CA:END:NG-02 -->
+
+<!-- CA:BEGIN:NG-03 -->
+<article class="record" id="NG-03" data-ca-symbol="NG-03" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-03">NG-03</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>No transcript parsing as an authority source; agent_transcript_path is ignored.</div></article>
+<!-- CA:END:NG-03 -->
+
+<!-- CA:BEGIN:NG-04 -->
+<article class="record" id="NG-04" data-ca-symbol="NG-04" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-04">NG-04</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>No lenient parsing of reviewer output (code fences, prose around JSON) and no retry that reuses a rejected request.</div></article>
+<!-- CA:END:NG-04 -->
+
+<!-- CA:BEGIN:NG-05 -->
+<article class="record" id="NG-05" data-ca-symbol="NG-05" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-05">NG-05</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>No shipping of the engine payload inside the ca release package (tracked separately as pkg.bug).</div></article>
+<!-- CA:END:NG-05 -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Binding decision refs</span><ul class="items"><li><a href="#DEC-01">DEC-01</a></li><li><a href="#DEC-04">DEC-04</a></li><li><a href="#DEC-05">DEC-05</a></li><li><a href="#DEC-06">DEC-06</a></li></ul></div><div class="field"><span class="label">Choice</span>Add Claude seams beside the Codex seams in _artifactauthoritylib, a claude-review/0.1.0 engine profile, and Claude hook registration; bind by prompt_id, tool_use_id and agentId.</div><div class="field"><span class="label">Tradeoff</span>Adds a second host path to a security-sensitive module and an engine rebuild, in exchange for Claude parity without weakening any Codex guarantee.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2>
+<!-- CA:BEGIN:CONSTRAINT-01 -->
+<article class="record" id="CONSTRAINT-01" data-ca-symbol="CONSTRAINT-01" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-01">CONSTRAINT-01</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Statement</span>Fail closed: any mismatch on an authority-correlated event rejects the request and records no receipt; ordinary (non-authority) tool use is never blocked or altered.</div></article>
+<!-- CA:END:CONSTRAINT-01 -->
+
+<!-- CA:BEGIN:CONSTRAINT-02 -->
+<article class="record" id="CONSTRAINT-02" data-ca-symbol="CONSTRAINT-02" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-02">CONSTRAINT-02</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Statement</span>Codex behavior and existing Codex tests stay unchanged.</div></article>
+<!-- CA:END:CONSTRAINT-02 -->
+</section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2>
+<!-- CA:BEGIN:DEC-01 -->
+<article class="record" id="DEC-01" data-ca-symbol="DEC-01" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-01">DEC-01</a><h3>Parent turn identity</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Use session_id + prompt_id to correlate a Bash PreToolUse/PostToolUse pair and an Agent PreToolUse/PostToolUse pair only. SubagentStart/SubagentStop are correlated by agent_id alone, never by prompt_id.</div><div class="field"><span class="label">Rationale</span>Recorded payloads show subagent lifecycle events carry the parent&#39;s CURRENT prompt_id: the second SubagentStop carried the next prompt&#39;s id, so an async reviewer that outlives the launching turn would never match.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-04">SRC-04</a></div></article>
+<!-- CA:END:DEC-01 -->
+
+<!-- CA:BEGIN:DEC-02 -->
+<article class="record" id="DEC-02" data-ca-symbol="DEC-02" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-02">DEC-02</a><h3>Verifier exit status</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Success is a PostToolUse event whose tool_response.stdout parses as exactly {request_id, state: COMPLETED} for the armed request and interrupted is false; a PostToolUseFailure event for the same tool_use_id marks the attempt failed.</div><div class="field"><span class="label">Rationale</span>Claude reports no exit code; the success/failure split is by event name.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-04">SRC-04</a></div></article>
+<!-- CA:END:DEC-02 -->
+
+<!-- CA:BEGIN:DEC-03 -->
+<article class="record" id="DEC-03" data-ca-symbol="DEC-03" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-03">DEC-03</a><h3>Claude launch envelope</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>arm_request on Claude returns launch_envelope = {description, prompt, subagent_type: &#39;ca:authority-reviewer&#39;, model}; PreToolUse Agent tool_input must equal it exactly. Any other key (run_in_background, isolation, name, cwd) and subagent_type &#39;fork&#39; are denied. The plugin ships ca:authority-reviewer with tools Read, Grep, Glob only; arming refuses when any project, user or CLI agent definition could shadow that name. The launch record stores tool_response.resolvedModel.</div><div class="field"><span class="label">Rationale</span>Project and user agent files override built-ins (documented precedence), so a built-in reviewer name is spoofable by the parent; a read-only plugin reviewer cannot edit what it grades, launch agents, or message its parent.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-04">SRC-04</a></div></article>
+<!-- CA:END:DEC-03 -->
+
+<!-- CA:BEGIN:DEC-04 -->
+<article class="record" id="DEC-04" data-ca-symbol="DEC-04" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-04">DEC-04</a><h3>Launch-to-child binding</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Join launch and child order-independently: record Agent PostToolUse tool_response.agentId against the launch&#39;s tool_use_id, record SubagentStart by agent_id, and bind when both are present with agent_type equal to the pinned reviewer.</div><div class="field"><span class="label">Rationale</span>SubagentStop carries no tool_use_id, and the recorded Agent PostToolUse and SubagentStart landed in the same second, so their order is not established.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-04">SRC-04</a></div></article>
+<!-- CA:END:DEC-04 -->
+
+<!-- CA:BEGIN:DEC-05 -->
+<article class="record" id="DEC-05" data-ca-symbol="DEC-05" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-05">DEC-05</a><h3>First-Stop binding</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>The review result is the first SubagentStop for the bound agent_id with stop_hook_active false, agent_type ca:authority-reviewer, and a background_tasks list whose entry for this agent (if any) also names ca:authority-reviewer. Later Stops for that agent never change a recorded result; a first Stop failing these conditions rejects the request.</div><div class="field"><span class="label">Rationale</span>Recorded payloads show a second Stop for the same agent (stop_hook_active true, different final message), and that background_tasks is the parent session&#39;s list, which includes the running reviewer itself, so it can only corroborate identity.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-04">SRC-04</a></div></article>
+<!-- CA:END:DEC-05 -->
+
+<!-- CA:BEGIN:DEC-06 -->
+<article class="record" id="DEC-06" data-ca-symbol="DEC-06" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-06">DEC-06</a><h3>Engine profile</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Add producer profile claude-review/0.1.0 with launch {parent_session_id, parent_prompt_id, tool_use_id, post_confirmed:true, agent_id, agent_type:&#39;ca:authority-reviewer&#39;, subagent_type:&#39;ca:authority-reviewer&#39;, model, resolved_model, first_stop:true}; review kinds accept codex-review/0.1.0 or claude-review/0.1.0, each only with its own launch schema. Bump the engine schema/protocol version as the compatibility rules require.</div><div class="field"><span class="label">Rationale</span>Mapping Claude events onto the Codex profile would misstate the producer.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-02">SRC-02</a></div></article>
+<!-- CA:END:DEC-06 -->
+
+<!-- CA:BEGIN:DEC-07 -->
+<article class="record" id="DEC-07" data-ca-symbol="DEC-07" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-07">DEC-07</a><h3>Hook placement and cost</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Register artifact-authority-hook.py as its own Claude hook entry; it exits 0 silently after one registry lookup when no request is armed.</div><div class="field"><span class="label">Rationale</span>Keeps pre-bash.py unchanged; the extra per-call cost is one registry directory read.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-07">SRC-07</a></div></article>
+<!-- CA:END:DEC-07 -->
+
+<!-- CA:BEGIN:DEC-08 -->
+<article class="record" id="DEC-08" data-ca-symbol="DEC-08" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-08">DEC-08</a><h3>Fixtures</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Tests use the recorded Claude Code 2.1.281 payload shapes (identifiers and paths replaced) as fixtures.</div><div class="field"><span class="label">Rationale</span>Grounds the adapter in real host output rather than documentation.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-04">SRC-04</a></div></article>
+<!-- CA:END:DEC-08 -->
+
+<!-- CA:BEGIN:DEC-09 -->
+<article class="record" id="DEC-09" data-ca-symbol="DEC-09" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-09">DEC-09</a><h3>Hook output discipline</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>On success the Claude hook prints nothing and exits 0 (no permissionDecision allow, which would bypass user permission rules). It denies only via hookSpecificOutput.permissionDecision &#39;deny&#39; with a reason on PreToolUse, and prints nothing on PostToolUse, PostToolUseFailure, SubagentStart and SubagentStop (never decision &#39;block&#39; on SubagentStop, which would make the reviewer keep going).</div><div class="field"><span class="label">Rationale</span>Claude&#39;s output semantics differ from Codex&#39;s; recording authority must not grant permissions or alter the reviewer.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-01">SRC-01</a></div></article>
+<!-- CA:END:DEC-09 -->
+
+<!-- CA:BEGIN:DEC-10 -->
+<article class="record" id="DEC-10" data-ca-symbol="DEC-10" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-10">DEC-10</a><h3>Reviewer isolation channels</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Any SendMessage PreToolUse from the reviewer&#39;s parent session while a review is launching or running rejects that review (fail closed: the message shape is not a recorded contract). The wrapper Bash call is denied when run_in_background or dangerouslyDisableSandbox is true, when it carries any input key beyond command, description and timeout, or when its script is not the shipped artifact-authority.py beside the adapter.</div><div class="field"><span class="label">Rationale</span>Codex&#39;s fork_turns none has no Claude equivalent for mid-run steering; background Bash returns no stdout to corroborate.</div><div class="field"><span class="label">Source ref</span><a href="#SRC-04">SRC-04</a></div></article>
+<!-- CA:END:DEC-10 -->
+</section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:AC-001 -->
+<article class="record" id="AC-001" data-ca-symbol="AC-001" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-001">AC-001</a><h3>Verifier wrapper authorization on Claude</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The wrapper record stores session_id, prompt_id and tool_use_id.</li><li>Non-wrapper commands produce no output and exit 0.</li><li>Authorization emits no output (never permissionDecision allow).</li><li>run_in_background or dangerouslyDisableSandbox on the wrapper call is denied.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A verification request is ARMED.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-001-01 -->
+<article class="record" id="SCN-001-01" data-ca-symbol="SCN-001-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-001-01">SCN-001-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>An armed request and the exact wrapper command.</div><div class="field"><span class="label">Then</span>State AUTHORIZED; hook stdout is empty.</div><div class="field"><span class="label">When</span>PreToolUse fires.</div></article>
+<!-- CA:END:SCN-001-01 -->
+
+<!-- CA:BEGIN:SCN-001-02 -->
+<article class="record" id="SCN-001-02" data-ca-symbol="SCN-001-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-001-02">SCN-001-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The wrapper chained with &#39;&amp;&amp; echo x&#39;.</div><div class="field"><span class="label">Then</span>permissionDecision deny; not authorized.</div><div class="field"><span class="label">When</span>PreToolUse fires.</div></article>
+<!-- CA:END:SCN-001-02 -->
+
+<!-- CA:BEGIN:SCN-001-03 -->
+<article class="record" id="SCN-001-03" data-ca-symbol="SCN-001-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-001-03">SCN-001-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The exact wrapper with run_in_background true.</div><div class="field"><span class="label">Then</span>Denied.</div><div class="field"><span class="label">When</span>PreToolUse fires.</div></article>
+<!-- CA:END:SCN-001-03 -->
+
+<!-- CA:BEGIN:SCN-001-04 -->
+<article class="record" id="SCN-001-04" data-ca-symbol="SCN-001-04" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-001-04">SCN-001-04</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>An unrelated &#39;git status&#39;.</div><div class="field"><span class="label">Then</span>No output, exit 0, no state change.</div><div class="field"><span class="label">When</span>PreToolUse fires.</div></article>
+<!-- CA:END:SCN-001-04 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>When a Claude PreToolUse Bash event carries the exact 7-token verify wrapper for an armed request, the adapter shall authorize it bound to session_id, prompt_id and tool_use_id and emit an allow decision; a compound wrapper command is denied; any other Bash command passes through untouched.</div><div class="field"><span class="label">Trigger</span>PreToolUse Bash.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-001 -->
+<article class="record" id="VER-001" data-ca-symbol="VER-001" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-001">VER-001</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Accepting turn_id instead of prompt_id must fail the Claude fixture.</div><div class="field"><span class="label">Oracle</span>Fixture payloads shaped like the recorded Bash PreToolUse.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_verifier_authorize</div></article>
+<!-- CA:END:VER-001 -->
+</div></article>
+<!-- CA:END:AC-001 -->
+
+<!-- CA:BEGIN:AC-002 -->
+<article class="record" id="AC-002" data-ca-symbol="AC-002" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-002">AC-002</a><h3>Verifier corroboration by event</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>No receipt is publishable without corroboration.</li><li>A mismatched request_id, interrupted true, or extra stdout text is rejected.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The wrapper was authorized.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-002-01 -->
+<article class="record" id="SCN-002-01" data-ca-symbol="SCN-002-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-002-01">SCN-002-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Successful wrapper run.</div><div class="field"><span class="label">Then</span>CORROBORATED; publish yields a receipt.</div><div class="field"><span class="label">When</span>PostToolUse with matching stdout JSON.</div></article>
+<!-- CA:END:SCN-002-01 -->
+
+<!-- CA:BEGIN:SCN-002-02 -->
+<article class="record" id="SCN-002-02" data-ca-symbol="SCN-002-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-002-02">SCN-002-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Wrapper exited 3.</div><div class="field"><span class="label">Then</span>Not corroborated; publish refuses.</div><div class="field"><span class="label">When</span>PostToolUseFailure with error &#39;Exit code 3&#39;.</div></article>
+<!-- CA:END:SCN-002-02 -->
+
+<!-- CA:BEGIN:SCN-002-03 -->
+<article class="record" id="SCN-002-03" data-ca-symbol="SCN-002-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-002-03">SCN-002-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>stdout names a different request_id.</div><div class="field"><span class="label">Then</span>Rejected.</div><div class="field"><span class="label">When</span>PostToolUse.</div></article>
+<!-- CA:END:SCN-002-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>After the wrapper runs, the adapter shall mark the attempt CORROBORATED only on a PostToolUse event for the same session, prompt and tool_use_id whose tool_response.stdout, after trimming surrounding whitespace, is exactly one JSON object {request_id, state: COMPLETED} for the armed request with interrupted false; a PostToolUseFailure for that tool_use_id leaves it uncorroborated and unpublishable.</div><div class="field"><span class="label">Trigger</span>PostToolUse or PostToolUseFailure for Bash.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-002 -->
+<article class="record" id="VER-002" data-ca-symbol="VER-002" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-002">VER-002</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Treating any PostToolUse as success must fail the stdout-mismatch case.</div><div class="field"><span class="label">Oracle</span>Recorded PostToolUse/PostToolUseFailure shapes.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_verifier_corroborate</div></article>
+<!-- CA:END:VER-002 -->
+</div></article>
+<!-- CA:END:AC-002 -->
+
+<!-- CA:BEGIN:AC-003 -->
+<article class="record" id="AC-003" data-ca-symbol="AC-003" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-003">AC-003</a><h3>Exact review launch</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Extra keys (run_in_background, isolation, name, cwd), subagent_type &#39;fork&#39; or &#39;general-purpose&#39;, a different model, or an altered prompt are denied.</li><li>The launch is recorded with tool_use_id, session_id and prompt_id.</li><li>The shipped ca:authority-reviewer definition allows only Read, Grep and Glob.</li><li>The shadow check scans project, main-checkout, user (including CLAUDE_CONFIG_DIR) and managed agent directories, matches the name case-insensitively anywhere in a definition&#39;s file name or front matter, and re-runs at launch and at the first stop.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A review request is ARMED.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-003-01 -->
+<article class="record" id="SCN-003-01" data-ca-symbol="SCN-003-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-003-01">SCN-003-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Exact envelope.</div><div class="field"><span class="label">Then</span>LAUNCHING; hook stdout empty.</div><div class="field"><span class="label">When</span>PreToolUse Agent.</div></article>
+<!-- CA:END:SCN-003-01 -->
+
+<!-- CA:BEGIN:SCN-003-02 -->
+<article class="record" id="SCN-003-02" data-ca-symbol="SCN-003-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-003-02">SCN-003-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Envelope plus run_in_background.</div><div class="field"><span class="label">Then</span>permissionDecision deny; request REJECTED.</div><div class="field"><span class="label">When</span>PreToolUse Agent.</div></article>
+<!-- CA:END:SCN-003-02 -->
+
+<!-- CA:BEGIN:SCN-003-03 -->
+<article class="record" id="SCN-003-03" data-ca-symbol="SCN-003-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-003-03">SCN-003-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>subagent_type &#39;fork&#39;.</div><div class="field"><span class="label">Then</span>Denied; REJECTED.</div><div class="field"><span class="label">When</span>PreToolUse Agent.</div></article>
+<!-- CA:END:SCN-003-03 -->
+
+<!-- CA:BEGIN:SCN-003-04 -->
+<article class="record" id="SCN-003-04" data-ca-symbol="SCN-003-04" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-003-04">SCN-003-04</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A .claude/agents/authority-reviewer.md or equivalent shadowing file exists.</div><div class="field"><span class="label">Then</span>Refused before any launch.</div><div class="field"><span class="label">When</span>arm_request.</div></article>
+<!-- CA:END:SCN-003-04 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>On Claude, arm_request for spec_review or quality_review shall return launch_envelope {description, prompt, subagent_type: &#39;ca:authority-reviewer&#39;, model} and refuse to arm when a project, user or CLI agent definition could shadow ca:authority-reviewer; a PreToolUse Agent event authorizes the launch only when tool_input equals the envelope exactly, otherwise it is denied and the request REJECTED.</div><div class="field"><span class="label">Trigger</span>PreToolUse Agent carrying the authority prefix.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-003 -->
+<article class="record" id="VER-003" data-ca-symbol="VER-003" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-003">VER-003</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>A subset match must fail the extra-key case.</div><div class="field"><span class="label">Oracle</span>Recorded Agent PreToolUse shape.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_review_launch_exact</div></article>
+<!-- CA:END:VER-003 -->
+</div></article>
+<!-- CA:END:AC-003 -->
+
+<!-- CA:BEGIN:AC-004 -->
+<article class="record" id="AC-004" data-ca-symbol="AC-004" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-004">AC-004</a><h3>Launch-to-child binding</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Binding completes only when both sides are present.</li><li>A missing agentId, a different agent_type, or a SubagentStart for an unbound agent_id rejects the request.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A review launch is LAUNCHING.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-004-01 -->
+<article class="record" id="SCN-004-01" data-ca-symbol="SCN-004-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-004-01">SCN-004-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>PostToolUse agentId then SubagentStart.</div><div class="field"><span class="label">Then</span>RUNNING with agent_id bound.</div><div class="field"><span class="label">When</span>Hooks fire.</div></article>
+<!-- CA:END:SCN-004-01 -->
+
+<!-- CA:BEGIN:SCN-004-02 -->
+<article class="record" id="SCN-004-02" data-ca-symbol="SCN-004-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-004-02">SCN-004-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>SubagentStart then PostToolUse agentId.</div><div class="field"><span class="label">Then</span>RUNNING with agent_id bound.</div><div class="field"><span class="label">When</span>Hooks fire.</div></article>
+<!-- CA:END:SCN-004-02 -->
+
+<!-- CA:BEGIN:SCN-004-03 -->
+<article class="record" id="SCN-004-03" data-ca-symbol="SCN-004-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-004-03">SCN-004-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>PostToolUse without agentId.</div><div class="field"><span class="label">Then</span>REJECTED.</div><div class="field"><span class="label">When</span>Hook fires.</div></article>
+<!-- CA:END:SCN-004-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>The adapter shall bind the launch&#39;s tool_use_id to the agent_id in Agent PostToolUse tool_response.agentId and to a SubagentStart with that agent_id and agent_type ca:authority-reviewer, in either arrival order, recording resolvedModel.</div><div class="field"><span class="label">Trigger</span>Agent PostToolUse then SubagentStart.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-004 -->
+<article class="record" id="VER-004" data-ca-symbol="VER-004" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-004">VER-004</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Binding by prompt_id alone must fail the other-agent case.</div><div class="field"><span class="label">Oracle</span>Recorded Agent PostToolUse and SubagentStart shapes.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_review_child_binding</div></article>
+<!-- CA:END:VER-004 -->
+</div></article>
+<!-- CA:END:AC-004 -->
+
+<!-- CA:BEGIN:AC-005 -->
+<article class="record" id="AC-005" data-ca-symbol="AC-005" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-005">AC-005</a><h3>Reviewer isolation</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Parallel ordinary launches do not reject the review.</li><li>Any SendMessage from the parent session, whatever its target field, rejects the running review.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A review is LAUNCHING or RUNNING.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-005-01 -->
+<article class="record" id="SCN-005-01" data-ca-symbol="SCN-005-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-005-01">SCN-005-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>An ordinary author Agent launch in the same prompt.</div><div class="field"><span class="label">Then</span>Review unaffected.</div><div class="field"><span class="label">When</span>Hooks fire.</div></article>
+<!-- CA:END:SCN-005-01 -->
+
+<!-- CA:BEGIN:SCN-005-02 -->
+<article class="record" id="SCN-005-02" data-ca-symbol="SCN-005-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-005-02">SCN-005-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>SendMessage from the parent session with any target shape.</div><div class="field"><span class="label">Then</span>Request REJECTED.</div><div class="field"><span class="label">When</span>PreToolUse fires.</div></article>
+<!-- CA:END:SCN-005-02 -->
+
+<!-- CA:BEGIN:SCN-005-03 -->
+<article class="record" id="SCN-005-03" data-ca-symbol="SCN-005-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-005-03">SCN-005-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>SendMessage from another session.</div><div class="field"><span class="label">Then</span>Review unaffected.</div><div class="field"><span class="label">When</span>PreToolUse fires.</div></article>
+<!-- CA:END:SCN-005-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Statement</span>While a review is launching or running, any SendMessage from its parent session shall reject the request; ordinary Agent launches in the same parent turn and messages from other sessions are unaffected.</div><div class="field"><span class="label">Trigger</span>PreToolUse SendMessage or Agent.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-005 -->
+<article class="record" id="VER-005" data-ca-symbol="VER-005" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-005">VER-005</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Ignoring SendMessage must fail the second case.</div><div class="field"><span class="label">Oracle</span>Fixture sequences.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_reviewer_isolation</div></article>
+<!-- CA:END:VER-005 -->
+</div></article>
+<!-- CA:END:AC-005 -->
+
+<!-- CA:BEGIN:AC-006 -->
+<article class="record" id="AC-006" data-ca-symbol="AC-006" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-006">AC-006</a><h3>First-Stop result binding</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The recorded decision equals the first Stop&#39;s last_assistant_message.</li><li>A reviewer that outlives the launching turn is accepted.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The review is RUNNING.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-006-01 -->
+<article class="record" id="SCN-006-01" data-ca-symbol="SCN-006-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-006-01">SCN-006-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>First Stop (pass) then a second Stop with stop_hook_active true and a fenced message.</div><div class="field"><span class="label">Then</span>COMPLETED from the first; payload unchanged.</div><div class="field"><span class="label">When</span>Both fire.</div></article>
+<!-- CA:END:SCN-006-01 -->
+
+<!-- CA:BEGIN:SCN-006-02 -->
+<article class="record" id="SCN-006-02" data-ca-symbol="SCN-006-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-006-02">SCN-006-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The first Stop arrives under a later parent prompt_id.</div><div class="field"><span class="label">Then</span>Accepted; prompt_id ignored.</div><div class="field"><span class="label">When</span>Fires.</div></article>
+<!-- CA:END:SCN-006-02 -->
+
+<!-- CA:BEGIN:SCN-006-03 -->
+<article class="record" id="SCN-006-03" data-ca-symbol="SCN-006-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-006-03">SCN-006-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>First Stop whose background_tasks is absent, or names this agent with another agent_type.</div><div class="field"><span class="label">Then</span>REJECTED.</div><div class="field"><span class="label">When</span>Fires.</div></article>
+<!-- CA:END:SCN-006-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>The review result shall come only from the first SubagentStop for the bound agent_id with stop_hook_active false, agent_type ca:authority-reviewer, and a background_tasks list whose own entry (if present) names ca:authority-reviewer; later SubagentStop events for that agent never change a recorded result, and a first Stop failing those conditions rejects the request. prompt_id is not compared.</div><div class="field"><span class="label">Trigger</span>SubagentStop events.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-006 -->
+<article class="record" id="VER-006" data-ca-symbol="VER-006" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-006">VER-006</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Last-writer-wins must fail the double-Stop case.</div><div class="field"><span class="label">Oracle</span>The recorded double-Stop sequence as a fixture.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_first_stop_binding</div></article>
+<!-- CA:END:VER-006 -->
+</div></article>
+<!-- CA:END:AC-006 -->
+
+<!-- CA:BEGIN:AC-007 -->
+<article class="record" id="AC-007" data-ca-symbol="AC-007" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-007">AC-007</a><h3>Strict decision parsing</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Code-fenced or prose-wrapped JSON is rejected.</li><li>decision other than pass, or any BLOCK finding, rejects.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>security</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A first Stop was accepted for binding.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-007-01 -->
+<article class="record" id="SCN-007-01" data-ca-symbol="SCN-007-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-007-01">SCN-007-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Exact passing JSON.</div><div class="field"><span class="label">Then</span>COMPLETED.</div><div class="field"><span class="label">When</span>Validate.</div></article>
+<!-- CA:END:SCN-007-01 -->
+
+<!-- CA:BEGIN:SCN-007-02 -->
+<article class="record" id="SCN-007-02" data-ca-symbol="SCN-007-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-007-02">SCN-007-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The same JSON inside ```json fences.</div><div class="field"><span class="label">Then</span>REJECTED.</div><div class="field"><span class="label">When</span>Validate.</div></article>
+<!-- CA:END:SCN-007-02 -->
+
+<!-- CA:BEGIN:SCN-007-03 -->
+<article class="record" id="SCN-007-03" data-ca-symbol="SCN-007-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-007-03">SCN-007-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A BLOCK finding.</div><div class="field"><span class="label">Then</span>REVIEW_REJECTED.</div><div class="field"><span class="label">When</span>Validate.</div></article>
+<!-- CA:END:SCN-007-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>The reviewer&#39;s last_assistant_message shall be accepted only if it is exactly one review-decision/0.1.0 JSON object that passes, with no BLOCK finding and matching request_id, target and contract hashes.</div><div class="field"><span class="label">Trigger</span>Decision validation.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-007 -->
+<article class="record" id="VER-007" data-ca-symbol="VER-007" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-007">VER-007</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>A fence-stripping parser must fail the fenced case.</div><div class="field"><span class="label">Oracle</span>Decision fixtures.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_strict_decision</div></article>
+<!-- CA:END:VER-007 -->
+</div></article>
+<!-- CA:END:AC-007 -->
+
+<!-- CA:BEGIN:AC-008 -->
+<article class="record" id="AC-008" data-ca-symbol="AC-008" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-008">AC-008</a><h3>Engine claude-review profile</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>A Claude launch under codex-review/0.1.0 fails, and vice versa.</li><li>Existing codex golden tests pass unchanged.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-03">SCOPE-03</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A review observation is captured.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-008-01 -->
+<article class="record" id="SCN-008-01" data-ca-symbol="SCN-008-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-008-01">SCN-008-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Valid Claude observation.</div><div class="field"><span class="label">Then</span>Receipt issued.</div><div class="field"><span class="label">When</span>capture-observation.</div></article>
+<!-- CA:END:SCN-008-01 -->
+
+<!-- CA:BEGIN:SCN-008-02 -->
+<article class="record" id="SCN-008-02" data-ca-symbol="SCN-008-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-008-02">SCN-008-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Claude launch fields under codex-review/0.1.0.</div><div class="field"><span class="label">Then</span>Rejected.</div><div class="field"><span class="label">When</span>capture-observation.</div></article>
+<!-- CA:END:SCN-008-02 -->
+
+<!-- CA:BEGIN:SCN-008-03 -->
+<article class="record" id="SCN-008-03" data-ca-symbol="SCN-008-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-008-03">SCN-008-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Existing Codex fixtures.</div><div class="field"><span class="label">Then</span>Pass unchanged.</div><div class="field"><span class="label">When</span>go test ./...</div></article>
+<!-- CA:END:SCN-008-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Statement</span>The engine shall accept spec_review and quality_review observations with producer profile claude-review/0.1.0 and its closed launch schema, keep codex-review/0.1.0 unchanged, and reject a launch shape that does not match its profile.</div><div class="field"><span class="label">Trigger</span>capture-observation, task-review, accept-scope.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-008 -->
+<article class="record" id="VER-008" data-ca-symbol="VER-008" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-008">VER-008</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Allowing either launch shape for either profile must fail.</div><div class="field"><span class="label">Oracle</span>Go unit tests in core/artifacts/internal/observation.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/observation TestClaudeReviewProfile</div></article>
+<!-- CA:END:VER-008 -->
+</div></article>
+<!-- CA:END:AC-008 -->
+
+<!-- CA:BEGIN:AC-009 -->
+<article class="record" id="AC-009" data-ca-symbol="AC-009" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-009">AC-009</a><h3>Claude hook registration and routing</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>With an empty registry the hook writes nothing and exits 0.</li><li>Exact stdout per event: empty on success for every event; only PreToolUse may print a hookSpecificOutput deny.</li><li>Codex routing is unchanged; Pi still no-ops.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-04">SCOPE-04</a></li></ul></div><div class="field"><span class="label">Kind</span>interface</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The Claude plugin is installed.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-009-01 -->
+<article class="record" id="SCN-009-01" data-ca-symbol="SCN-009-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-009-01">SCN-009-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Empty registry.</div><div class="field"><span class="label">Then</span>stdout empty, exit 0.</div><div class="field"><span class="label">When</span>PreToolUse Bash fires (subprocess).</div></article>
+<!-- CA:END:SCN-009-01 -->
+
+<!-- CA:BEGIN:SCN-009-02 -->
+<article class="record" id="SCN-009-02" data-ca-symbol="SCN-009-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-009-02">SCN-009-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Armed review, first SubagentStop.</div><div class="field"><span class="label">Then</span>stdout empty; never decision block.</div><div class="field"><span class="label">When</span>Hook subprocess.</div></article>
+<!-- CA:END:SCN-009-02 -->
+
+<!-- CA:BEGIN:SCN-009-03 -->
+<article class="record" id="SCN-009-03" data-ca-symbol="SCN-009-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-009-03">SCN-009-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>Codex host.</div><div class="field"><span class="label">Then</span>Unchanged results.</div><div class="field"><span class="label">When</span>Existing Codex fixtures.</div></article>
+<!-- CA:END:SCN-009-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Statement</span>The Claude plugin shall register artifact-authority-hook.py for PreToolUse (Agent, Bash), PostToolUse (Agent, Bash), PostToolUseFailure (Bash), SubagentStart and SubagentStop, and the hook shall route host claude to the Claude seams while exiting 0 silently when no request is armed.</div><div class="field"><span class="label">Trigger</span>Any registered event.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-009 -->
+<article class="record" id="VER-009" data-ca-symbol="VER-009" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-009">VER-009</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Dropping a matcher must fail the registration test.</div><div class="field"><span class="label">Oracle</span>hooks.json contract test plus hook subprocess tests.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeHookRegistrationTest</div></article>
+<!-- CA:END:VER-009 -->
+</div></article>
+<!-- CA:END:AC-009 -->
+
+<!-- CA:BEGIN:AC-010 -->
+<article class="record" id="AC-010" data-ca-symbol="AC-010" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-010">AC-010</a><h3>End-to-end task acceptance on Claude</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>task-review accepts the verification and spec_review receipts.</li><li>accept-scope accepts the quality_review receipt.</li><li>Any single tampered event in the sequence prevents acceptance.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-04">SCOPE-04</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>A temp repo with an approved spec and plan.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-010-01 -->
+<article class="record" id="SCN-010-01" data-ca-symbol="SCN-010-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-010-01">SCN-010-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The full Claude sequence.</div><div class="field"><span class="label">Then</span>Task REVIEW then scope ACCEPTED.</div><div class="field"><span class="label">When</span>Run.</div></article>
+<!-- CA:END:SCN-010-01 -->
+
+<!-- CA:BEGIN:SCN-010-02 -->
+<article class="record" id="SCN-010-02" data-ca-symbol="SCN-010-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-010-02">SCN-010-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The sequence with the second SubagentStop injected.</div><div class="field"><span class="label">Then</span>Acceptance unchanged.</div><div class="field"><span class="label">When</span>Run.</div></article>
+<!-- CA:END:SCN-010-02 -->
+
+<!-- CA:BEGIN:SCN-010-03 -->
+<article class="record" id="SCN-010-03" data-ca-symbol="SCN-010-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-010-03">SCN-010-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The sequence with an extra Agent launch in the review turn.</div><div class="field"><span class="label">Then</span>No acceptance.</div><div class="field"><span class="label">When</span>Run.</div></article>
+<!-- CA:END:SCN-010-03 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Statement</span>Using the real engine binary and Claude-shaped hook payloads, a task shall move from arm through verification and spec review to task-review, and a scope through quality review to accept-scope.</div><div class="field"><span class="label">Trigger</span>Run the full sequence.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-010 -->
+<article class="record" id="VER-010" data-ca-symbol="VER-010" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-010">VER-010</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Skipping corroboration must fail acceptance.</div><div class="field"><span class="label">Oracle</span>Real engine in a temp repo; engine state read back via index/eligible.</div><div class="field"><span class="label">Planned target</span>test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_end_to_end_claude</div></article>
+<!-- CA:END:VER-010 -->
+</div></article>
+<!-- CA:END:AC-010 -->
+
+<!-- CA:BEGIN:AC-011 -->
+<article class="record" id="AC-011" data-ca-symbol="AC-011" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-011">AC-011</a><h3>Documentation and status agree</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>conditional</div><div class="field"><span class="label">Rationale</span>The trigger and preconditions delimit this obligation.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>No generated projection says Claude is fail-closed for verification or review.</li><li>build-surface --check, sync-core --check and badge consistency pass.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-04">SCOPE-04</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Canonical docs changed.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-011-01 -->
+<article class="record" id="SCN-011-01" data-ca-symbol="SCN-011-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-011-01">SCN-011-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>The candidate tree.</div><div class="field"><span class="label">Then</span>Pass.</div><div class="field"><span class="label">When</span>Run the checks.</div></article>
+<!-- CA:END:SCN-011-01 -->
+
+<!-- CA:BEGIN:SCN-011-02 -->
+<article class="record" id="SCN-011-02" data-ca-symbol="SCN-011-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-011-02">SCN-011-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A stale &#39;Codex-only&#39; sentence.</div><div class="field"><span class="label">Then</span>Fails naming the file.</div><div class="field"><span class="label">When</span>Run a docs grep test.</div></article>
+<!-- CA:END:SCN-011-02 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Statement</span>artifacts.md, the Claude host notes and ABSORPTION-REVIEW shall state that Claude supports verification and review authority and Pi still stops, and the regenerated projections and plugin versions shall be in sync.</div><div class="field"><span class="label">Trigger</span>Run surface and version checks.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-011 -->
+<article class="record" id="VER-011" data-ca-symbol="VER-011" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-011">VER-011</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated_and_review</div><div class="field"><span class="label">Negative control</span>Leaving the old sentence must fail.</div><div class="field"><span class="label">Oracle</span>Existing surface gates plus a targeted grep test.</div><div class="field"><span class="label">Planned target</span>tools/build-surface.py --check; test_artifact_surface.py</div></article>
+<!-- CA:END:VER-011 -->
+</div></article>
+<!-- CA:END:AC-011 -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-01 -->
+<article class="record" id="SEC-01" data-ca-symbol="SEC-01" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-01">SEC-01</a><h3>Problem</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>HTML plans cannot reach task-review or accept-scope on Claude: the authority adapter observes only Codex hook events and the engine accepts only a Codex review profile. Every Claude full-lane feature, including #777, stops at its first task.</p><div class="refs">References: <a href="#SRC-03">SRC-03</a> <a href="#SRC-01">SRC-01</a> </div></div></div></article>
+<!-- CA:END:SEC-01 -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-01 -->
+<article class="record" id="SRC-01" data-ca-symbol="SRC-01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-01">SRC-01</a><h3>Codex production authority adapter (#844)</h3></div><div class="field"><span class="label">Locator</span>core/pysrc/_artifactauthoritylib.py</div><div class="field"><span class="label">Note</span>Verification wrapper, review launch/child correlation, spool, registry, publish_request; Codex seams only.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/pysrc/_artifactauthoritylib.py</div></article>
+<!-- CA:END:SRC-01 -->
+
+<!-- CA:BEGIN:SRC-02 -->
+<article class="record" id="SRC-02" data-ca-symbol="SRC-02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-02">SRC-02</a><h3>Engine review observation contract</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/observation/contract.go:110-131,222</div><div class="field"><span class="label">Note</span>spec_review and quality_review require producer profile codex-review/0.1.0 with a Codex launch shape; verification profile declared-command/0.1.0 is host-neutral.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/artifacts/internal/observation/contract.go</div></article>
+<!-- CA:END:SRC-02 -->
+
+<!-- CA:BEGIN:SRC-03 -->
+<article class="record" id="SRC-03" data-ca-symbol="SRC-03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-03">SRC-03</a><h3>Artifacts include: authority is Codex-only</h3></div><div class="field"><span class="label">Locator</span>core/surface/includes/artifacts.md:176-179</div><div class="field"><span class="label">Note</span>Claude and Pi stop at the verification/review boundary.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/surface/includes/artifacts.md</div></article>
+<!-- CA:END:SRC-03 -->
+
+<!-- CA:BEGIN:SRC-04 -->
+<article class="record" id="SRC-04" data-ca-symbol="SRC-04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-04">SRC-04</a><h3>Recorded Claude Code 2.1.281 hook payloads</h3></div><div class="field"><span class="label">Locator</span>%TEMP%/ca-hook-probe/payloads (captured 2026-09-24, session with maintainer approval)</div><div class="field"><span class="label">Note</span>Bash PreToolUse/PostToolUse/PostToolUseFailure, Agent PreToolUse/PostToolUse (tool_response.agentId), SubagentStart, two SubagentStop events for one agent with different prompt_id, stop_hook_active and last_assistant_message.</div><div class="field"><span class="label">Type</span>primary_research</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-04 -->
+
+<!-- CA:BEGIN:SRC-05 -->
+<article class="record" id="SRC-05" data-ca-symbol="SRC-05" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-05">SRC-05</a><h3>Maintainer direction 2026-09-24</h3></div><div class="field"><span class="label">Locator</span>#777 session</div><div class="field"><span class="label">Note</span>Build the Claude portions required for HTML plan execution; own branch and PR first.</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-05 -->
+
+<!-- CA:BEGIN:SRC-06 -->
+<article class="record" id="SRC-06" data-ca-symbol="SRC-06" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-06">SRC-06</a><h3>Absorption review status</h3></div><div class="field"><span class="label">Locator</span>docs/artifacts/ABSORPTION-REVIEW.md AC-011/T-013</div><div class="field"><span class="label">Note</span>Reviewer and verification authority adapters remain for Claude and Pi.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/docs/artifacts/ABSORPTION-REVIEW.md</div></article>
+<!-- CA:END:SRC-06 -->
+
+<!-- CA:BEGIN:SRC-07 -->
+<article class="record" id="SRC-07" data-ca-symbol="SRC-07" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-07">SRC-07</a><h3>Claude plugin hook registration</h3></div><div class="field"><span class="label">Locator</span>plugins/ca/hooks/hooks.json</div><div class="field"><span class="label">Note</span>No Agent, SubagentStart, SubagentStop or artifact-authority-hook registration.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/plugins/ca/hooks/hooks.json</div></article>
+<!-- CA:END:SRC-07 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>6860daa3c974ae32cd9584d3e60e0a51c185a613</div><div class="field"><span class="label">Observed date</span>2026-09-24</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><ul class="items"><li>core/pysrc/_artifactauthoritylib.py</li><li>core/pysrc/artifact-authority-hook.py</li><li>core/pysrc/artifact-authority.py</li><li>core/artifacts/**</li><li>core/surface/agents/authority-reviewer.md</li><li>plugins/ca/hooks/hooks.json</li><li>core/surface/includes/artifacts.md</li><li>docs/artifacts/ABSORPTION-REVIEW.md</li><li>.github/scripts/test_artifact_authority_adapter.py</li></ul></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Execution must verify current receipt sources and binding.</p><div class="fields"><div class="field"><span class="label">Approvals</span><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-CLAUDE-ARTIFACT-AUTHORITY</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>176d5ae168e38a1736b01aa8475c22e2fd1038afaf0902429bcc78262ef7f2a2</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/7a33b080b4fb607aa3d6efd803ada0d28b9bad3e5cddfa1366bbdada2b4b42c3.json</div><div class="field"><span class="label">Source sha256</span>7a33b080b4fb607aa3d6efd803ada0d28b9bad3e5cddfa1366bbdada2b4b42c3</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-CLAUDE-ARTIFACT-AUTHORITY</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>bd30baee0fed8fbbd54c81c3b586c209f2d4cbadc19b1ad151aceab39686edc7</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/8b5e0f514c5f1fc07c27d07b68cbe14eacc66ddc028c5df2305769473fcb0299.json</div><div class="field"><span class="label">Source sha256</span>8b5e0f514c5f1fc07c27d07b68cbe14eacc66ddc028c5df2305769473fcb0299</div></div></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>approved</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: bd30baee0fed8fbbd54c81c3b586c209f2d4cbadc19b1ad151aceab39686edc7<br>Model SHA-256: 72421925b3dcdfb525f20f0315c2da0da6dbd58ea581c1f122085694ccfa1dbb</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-CLAUDE-ARTIFACT-AUTHORITY",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [
+      {
+        "artifact_id": "SPEC-CLAUDE-ARTIFACT-AUTHORITY",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "176d5ae168e38a1736b01aa8475c22e2fd1038afaf0902429bcc78262ef7f2a2",
+        "source_ref": ".codearbiter/.artifacts/receipts/7a33b080b4fb607aa3d6efd803ada0d28b9bad3e5cddfa1366bbdada2b4b42c3.json",
+        "source_sha256": "7a33b080b4fb607aa3d6efd803ada0d28b9bad3e5cddfa1366bbdada2b4b42c3"
+      },
+      {
+        "artifact_id": "SPEC-CLAUDE-ARTIFACT-AUTHORITY",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "bd30baee0fed8fbbd54c81c3b586c209f2d4cbadc19b1ad151aceab39686edc7",
+        "source_ref": ".codearbiter/.artifacts/receipts/8b5e0f514c5f1fc07c27d07b68cbe14eacc66ddc028c5df2305769473fcb0299.json",
+        "source_sha256": "8b5e0f514c5f1fc07c27d07b68cbe14eacc66ddc028c5df2305769473fcb0299"
+      }
+    ],
+    "review_notes": [],
+    "state": "approved"
+  },
+  "integrity": {
+    "model_sha256": "72421925b3dcdfb525f20f0315c2da0da6dbd58ea581c1f122085694ccfa1dbb",
+    "normative_sha256": "bd30baee0fed8fbbd54c81c3b586c209f2d4cbadc19b1ad151aceab39686edc7",
+    "symbol_count": 87
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "binding_decision_refs": [
+        "DEC-01",
+        "DEC-04",
+        "DEC-05",
+        "DEC-06"
+      ],
+      "choice": "Add Claude seams beside the Codex seams in _artifactauthoritylib, a claude-review/0.1.0 engine profile, and Claude hook registration; bind by prompt_id, tool_use_id and agentId.",
+      "id": "APPROACH-01",
+      "tradeoff": "Adds a second host path to a security-sensitive module and an engine rebuild, in exchange for Claude parity without weakening any Codex guarantee."
+    },
+    "baseline": {
+      "commit": "6860daa3c974ae32cd9584d3e60e0a51c185a613",
+      "observed_date": "2026-09-24",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "constraints": [
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-01",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "statement": "Fail closed: any mismatch on an authority-correlated event rejects the request and records no receipt; ordinary (non-authority) tool use is never blocked or altered."
+      },
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-02",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "statement": "Codex behavior and existing Codex tests stay unchanged."
+      }
+    ],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "The wrapper record stores session_id, prompt_id and tool_use_id.",
+          "Non-wrapper commands produce no output and exit 0.",
+          "Authorization emits no output (never permissionDecision allow).",
+          "run_in_background or dangerouslyDisableSandbox on the wrapper call is denied."
+        ],
+        "id": "AC-001",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "A verification request is ARMED."
+        ],
+        "scenarios": [
+          {
+            "given": "An armed request and the exact wrapper command.",
+            "id": "SCN-001-01",
+            "then": "State AUTHORIZED; hook stdout is empty.",
+            "when": "PreToolUse fires."
+          },
+          {
+            "given": "The wrapper chained with '\u0026\u0026 echo x'.",
+            "id": "SCN-001-02",
+            "then": "permissionDecision deny; not authorized.",
+            "when": "PreToolUse fires."
+          },
+          {
+            "given": "The exact wrapper with run_in_background true.",
+            "id": "SCN-001-03",
+            "then": "Denied.",
+            "when": "PreToolUse fires."
+          },
+          {
+            "given": "An unrelated 'git status'.",
+            "id": "SCN-001-04",
+            "then": "No output, exit 0, no state change.",
+            "when": "PreToolUse fires."
+          }
+        ],
+        "source_refs": [
+          "SRC-01",
+          "SRC-04"
+        ],
+        "statement": "When a Claude PreToolUse Bash event carries the exact 7-token verify wrapper for an armed request, the adapter shall authorize it bound to session_id, prompt_id and tool_use_id and emit an allow decision; a compound wrapper command is denied; any other Bash command passes through untouched.",
+        "title": "Verifier wrapper authorization on Claude",
+        "trigger": "PreToolUse Bash.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-001",
+          "method": "automated_and_review",
+          "negative_control": "Accepting turn_id instead of prompt_id must fail the Claude fixture.",
+          "oracle": "Fixture payloads shaped like the recorded Bash PreToolUse.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_verifier_authorize"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "No receipt is publishable without corroboration.",
+          "A mismatched request_id, interrupted true, or extra stdout text is rejected."
+        ],
+        "id": "AC-002",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "The wrapper was authorized."
+        ],
+        "scenarios": [
+          {
+            "given": "Successful wrapper run.",
+            "id": "SCN-002-01",
+            "then": "CORROBORATED; publish yields a receipt.",
+            "when": "PostToolUse with matching stdout JSON."
+          },
+          {
+            "given": "Wrapper exited 3.",
+            "id": "SCN-002-02",
+            "then": "Not corroborated; publish refuses.",
+            "when": "PostToolUseFailure with error 'Exit code 3'."
+          },
+          {
+            "given": "stdout names a different request_id.",
+            "id": "SCN-002-03",
+            "then": "Rejected.",
+            "when": "PostToolUse."
+          }
+        ],
+        "source_refs": [
+          "SRC-04"
+        ],
+        "statement": "After the wrapper runs, the adapter shall mark the attempt CORROBORATED only on a PostToolUse event for the same session, prompt and tool_use_id whose tool_response.stdout, after trimming surrounding whitespace, is exactly one JSON object {request_id, state: COMPLETED} for the armed request with interrupted false; a PostToolUseFailure for that tool_use_id leaves it uncorroborated and unpublishable.",
+        "title": "Verifier corroboration by event",
+        "trigger": "PostToolUse or PostToolUseFailure for Bash.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-002",
+          "method": "automated_and_review",
+          "negative_control": "Treating any PostToolUse as success must fail the stdout-mismatch case.",
+          "oracle": "Recorded PostToolUse/PostToolUseFailure shapes.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_verifier_corroborate"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Extra keys (run_in_background, isolation, name, cwd), subagent_type 'fork' or 'general-purpose', a different model, or an altered prompt are denied.",
+          "The launch is recorded with tool_use_id, session_id and prompt_id.",
+          "The shipped ca:authority-reviewer definition allows only Read, Grep and Glob.",
+          "The shadow check scans project, main-checkout, user (including CLAUDE_CONFIG_DIR) and managed agent directories, matches the name case-insensitively anywhere in a definition's file name or front matter, and re-runs at launch and at the first stop."
+        ],
+        "id": "AC-003",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "A review request is ARMED."
+        ],
+        "scenarios": [
+          {
+            "given": "Exact envelope.",
+            "id": "SCN-003-01",
+            "then": "LAUNCHING; hook stdout empty.",
+            "when": "PreToolUse Agent."
+          },
+          {
+            "given": "Envelope plus run_in_background.",
+            "id": "SCN-003-02",
+            "then": "permissionDecision deny; request REJECTED.",
+            "when": "PreToolUse Agent."
+          },
+          {
+            "given": "subagent_type 'fork'.",
+            "id": "SCN-003-03",
+            "then": "Denied; REJECTED.",
+            "when": "PreToolUse Agent."
+          },
+          {
+            "given": "A .claude/agents/authority-reviewer.md or equivalent shadowing file exists.",
+            "id": "SCN-003-04",
+            "then": "Refused before any launch.",
+            "when": "arm_request."
+          }
+        ],
+        "source_refs": [
+          "SRC-01",
+          "SRC-04"
+        ],
+        "statement": "On Claude, arm_request for spec_review or quality_review shall return launch_envelope {description, prompt, subagent_type: 'ca:authority-reviewer', model} and refuse to arm when a project, user or CLI agent definition could shadow ca:authority-reviewer; a PreToolUse Agent event authorizes the launch only when tool_input equals the envelope exactly, otherwise it is denied and the request REJECTED.",
+        "title": "Exact review launch",
+        "trigger": "PreToolUse Agent carrying the authority prefix.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-003",
+          "method": "automated_and_review",
+          "negative_control": "A subset match must fail the extra-key case.",
+          "oracle": "Recorded Agent PreToolUse shape.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_review_launch_exact"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Binding completes only when both sides are present.",
+          "A missing agentId, a different agent_type, or a SubagentStart for an unbound agent_id rejects the request."
+        ],
+        "id": "AC-004",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "A review launch is LAUNCHING."
+        ],
+        "scenarios": [
+          {
+            "given": "PostToolUse agentId then SubagentStart.",
+            "id": "SCN-004-01",
+            "then": "RUNNING with agent_id bound.",
+            "when": "Hooks fire."
+          },
+          {
+            "given": "SubagentStart then PostToolUse agentId.",
+            "id": "SCN-004-02",
+            "then": "RUNNING with agent_id bound.",
+            "when": "Hooks fire."
+          },
+          {
+            "given": "PostToolUse without agentId.",
+            "id": "SCN-004-03",
+            "then": "REJECTED.",
+            "when": "Hook fires."
+          }
+        ],
+        "source_refs": [
+          "SRC-04"
+        ],
+        "statement": "The adapter shall bind the launch's tool_use_id to the agent_id in Agent PostToolUse tool_response.agentId and to a SubagentStart with that agent_id and agent_type ca:authority-reviewer, in either arrival order, recording resolvedModel.",
+        "title": "Launch-to-child binding",
+        "trigger": "Agent PostToolUse then SubagentStart.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-004",
+          "method": "automated_and_review",
+          "negative_control": "Binding by prompt_id alone must fail the other-agent case.",
+          "oracle": "Recorded Agent PostToolUse and SubagentStart shapes.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_review_child_binding"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Parallel ordinary launches do not reject the review.",
+          "Any SendMessage from the parent session, whatever its target field, rejects the running review."
+        ],
+        "id": "AC-005",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "A review is LAUNCHING or RUNNING."
+        ],
+        "scenarios": [
+          {
+            "given": "An ordinary author Agent launch in the same prompt.",
+            "id": "SCN-005-01",
+            "then": "Review unaffected.",
+            "when": "Hooks fire."
+          },
+          {
+            "given": "SendMessage from the parent session with any target shape.",
+            "id": "SCN-005-02",
+            "then": "Request REJECTED.",
+            "when": "PreToolUse fires."
+          },
+          {
+            "given": "SendMessage from another session.",
+            "id": "SCN-005-03",
+            "then": "Review unaffected.",
+            "when": "PreToolUse fires."
+          }
+        ],
+        "source_refs": [
+          "SRC-01"
+        ],
+        "statement": "While a review is launching or running, any SendMessage from its parent session shall reject the request; ordinary Agent launches in the same parent turn and messages from other sessions are unaffected.",
+        "title": "Reviewer isolation",
+        "trigger": "PreToolUse SendMessage or Agent.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-005",
+          "method": "automated_and_review",
+          "negative_control": "Ignoring SendMessage must fail the second case.",
+          "oracle": "Fixture sequences.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_reviewer_isolation"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "The recorded decision equals the first Stop's last_assistant_message.",
+          "A reviewer that outlives the launching turn is accepted."
+        ],
+        "id": "AC-006",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "The review is RUNNING."
+        ],
+        "scenarios": [
+          {
+            "given": "First Stop (pass) then a second Stop with stop_hook_active true and a fenced message.",
+            "id": "SCN-006-01",
+            "then": "COMPLETED from the first; payload unchanged.",
+            "when": "Both fire."
+          },
+          {
+            "given": "The first Stop arrives under a later parent prompt_id.",
+            "id": "SCN-006-02",
+            "then": "Accepted; prompt_id ignored.",
+            "when": "Fires."
+          },
+          {
+            "given": "First Stop whose background_tasks is absent, or names this agent with another agent_type.",
+            "id": "SCN-006-03",
+            "then": "REJECTED.",
+            "when": "Fires."
+          }
+        ],
+        "source_refs": [
+          "SRC-04"
+        ],
+        "statement": "The review result shall come only from the first SubagentStop for the bound agent_id with stop_hook_active false, agent_type ca:authority-reviewer, and a background_tasks list whose own entry (if present) names ca:authority-reviewer; later SubagentStop events for that agent never change a recorded result, and a first Stop failing those conditions rejects the request. prompt_id is not compared.",
+        "title": "First-Stop result binding",
+        "trigger": "SubagentStop events.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-006",
+          "method": "automated_and_review",
+          "negative_control": "Last-writer-wins must fail the double-Stop case.",
+          "oracle": "The recorded double-Stop sequence as a fixture.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_first_stop_binding"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Code-fenced or prose-wrapped JSON is rejected.",
+          "decision other than pass, or any BLOCK finding, rejects."
+        ],
+        "id": "AC-007",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "security",
+        "obligation": "must",
+        "preconditions": [
+          "A first Stop was accepted for binding."
+        ],
+        "scenarios": [
+          {
+            "given": "Exact passing JSON.",
+            "id": "SCN-007-01",
+            "then": "COMPLETED.",
+            "when": "Validate."
+          },
+          {
+            "given": "The same JSON inside ```json fences.",
+            "id": "SCN-007-02",
+            "then": "REJECTED.",
+            "when": "Validate."
+          },
+          {
+            "given": "A BLOCK finding.",
+            "id": "SCN-007-03",
+            "then": "REVIEW_REJECTED.",
+            "when": "Validate."
+          }
+        ],
+        "source_refs": [
+          "SRC-01",
+          "SRC-04"
+        ],
+        "statement": "The reviewer's last_assistant_message shall be accepted only if it is exactly one review-decision/0.1.0 JSON object that passes, with no BLOCK finding and matching request_id, target and contract hashes.",
+        "title": "Strict decision parsing",
+        "trigger": "Decision validation.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-007",
+          "method": "automated_and_review",
+          "negative_control": "A fence-stripping parser must fail the fenced case.",
+          "oracle": "Decision fixtures.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_strict_decision"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "A Claude launch under codex-review/0.1.0 fails, and vice versa.",
+          "Existing codex golden tests pass unchanged."
+        ],
+        "id": "AC-008",
+        "intent_refs": [
+          "SCOPE-03"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "A review observation is captured."
+        ],
+        "scenarios": [
+          {
+            "given": "Valid Claude observation.",
+            "id": "SCN-008-01",
+            "then": "Receipt issued.",
+            "when": "capture-observation."
+          },
+          {
+            "given": "Claude launch fields under codex-review/0.1.0.",
+            "id": "SCN-008-02",
+            "then": "Rejected.",
+            "when": "capture-observation."
+          },
+          {
+            "given": "Existing Codex fixtures.",
+            "id": "SCN-008-03",
+            "then": "Pass unchanged.",
+            "when": "go test ./..."
+          }
+        ],
+        "source_refs": [
+          "SRC-02"
+        ],
+        "statement": "The engine shall accept spec_review and quality_review observations with producer profile claude-review/0.1.0 and its closed launch schema, keep codex-review/0.1.0 unchanged, and reject a launch shape that does not match its profile.",
+        "title": "Engine claude-review profile",
+        "trigger": "capture-observation, task-review, accept-scope.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-008",
+          "method": "automated_and_review",
+          "negative_control": "Allowing either launch shape for either profile must fail.",
+          "oracle": "Go unit tests in core/artifacts/internal/observation.",
+          "planned_target": "core/artifacts/internal/observation TestClaudeReviewProfile"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "With an empty registry the hook writes nothing and exits 0.",
+          "Exact stdout per event: empty on success for every event; only PreToolUse may print a hookSpecificOutput deny.",
+          "Codex routing is unchanged; Pi still no-ops."
+        ],
+        "id": "AC-009",
+        "intent_refs": [
+          "SCOPE-04"
+        ],
+        "kind": "interface",
+        "obligation": "must",
+        "preconditions": [
+          "The Claude plugin is installed."
+        ],
+        "scenarios": [
+          {
+            "given": "Empty registry.",
+            "id": "SCN-009-01",
+            "then": "stdout empty, exit 0.",
+            "when": "PreToolUse Bash fires (subprocess)."
+          },
+          {
+            "given": "Armed review, first SubagentStop.",
+            "id": "SCN-009-02",
+            "then": "stdout empty; never decision block.",
+            "when": "Hook subprocess."
+          },
+          {
+            "given": "Codex host.",
+            "id": "SCN-009-03",
+            "then": "Unchanged results.",
+            "when": "Existing Codex fixtures."
+          }
+        ],
+        "source_refs": [
+          "SRC-07"
+        ],
+        "statement": "The Claude plugin shall register artifact-authority-hook.py for PreToolUse (Agent, Bash), PostToolUse (Agent, Bash), PostToolUseFailure (Bash), SubagentStart and SubagentStop, and the hook shall route host claude to the Claude seams while exiting 0 silently when no request is armed.",
+        "title": "Claude hook registration and routing",
+        "trigger": "Any registered event.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-009",
+          "method": "automated_and_review",
+          "negative_control": "Dropping a matcher must fail the registration test.",
+          "oracle": "hooks.json contract test plus hook subprocess tests.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeHookRegistrationTest"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "task-review accepts the verification and spec_review receipts.",
+          "accept-scope accepts the quality_review receipt.",
+          "Any single tampered event in the sequence prevents acceptance."
+        ],
+        "id": "AC-010",
+        "intent_refs": [
+          "SCOPE-04"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "A temp repo with an approved spec and plan."
+        ],
+        "scenarios": [
+          {
+            "given": "The full Claude sequence.",
+            "id": "SCN-010-01",
+            "then": "Task REVIEW then scope ACCEPTED.",
+            "when": "Run."
+          },
+          {
+            "given": "The sequence with the second SubagentStop injected.",
+            "id": "SCN-010-02",
+            "then": "Acceptance unchanged.",
+            "when": "Run."
+          },
+          {
+            "given": "The sequence with an extra Agent launch in the review turn.",
+            "id": "SCN-010-03",
+            "then": "No acceptance.",
+            "when": "Run."
+          }
+        ],
+        "source_refs": [
+          "SRC-01",
+          "SRC-02"
+        ],
+        "statement": "Using the real engine binary and Claude-shaped hook payloads, a task shall move from arm through verification and spec review to task-review, and a scope through quality review to accept-scope.",
+        "title": "End-to-end task acceptance on Claude",
+        "trigger": "Run the full sequence.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-010",
+          "method": "automated_and_review",
+          "negative_control": "Skipping corroboration must fail acceptance.",
+          "oracle": "Real engine in a temp repo; engine state read back via index/eligible.",
+          "planned_target": "test_artifact_authority_adapter.py::ClaudeAuthorityAdapterTest::test_end_to_end_claude"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The trigger and preconditions delimit this obligation."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01",
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "No generated projection says Claude is fail-closed for verification or review.",
+          "build-surface --check, sync-core --check and badge consistency pass."
+        ],
+        "id": "AC-011",
+        "intent_refs": [
+          "SCOPE-04"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [
+          "Canonical docs changed."
+        ],
+        "scenarios": [
+          {
+            "given": "The candidate tree.",
+            "id": "SCN-011-01",
+            "then": "Pass.",
+            "when": "Run the checks."
+          },
+          {
+            "given": "A stale 'Codex-only' sentence.",
+            "id": "SCN-011-02",
+            "then": "Fails naming the file.",
+            "when": "Run a docs grep test."
+          }
+        ],
+        "source_refs": [
+          "SRC-03",
+          "SRC-06"
+        ],
+        "statement": "artifacts.md, the Claude host notes and ABSORPTION-REVIEW shall state that Claude supports verification and review authority and Pi still stops, and the regenerated projections and plugin versions shall be in sync.",
+        "title": "Documentation and status agree",
+        "trigger": "Run surface and version checks.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-011",
+          "method": "automated_and_review",
+          "negative_control": "Leaving the old sentence must fail.",
+          "oracle": "Existing surface gates plus a targeted grep test.",
+          "planned_target": "tools/build-surface.py --check; test_artifact_surface.py"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "authority": "proposed",
+        "choice": "Use session_id + prompt_id to correlate a Bash PreToolUse/PostToolUse pair and an Agent PreToolUse/PostToolUse pair only. SubagentStart/SubagentStop are correlated by agent_id alone, never by prompt_id.",
+        "id": "DEC-01",
+        "rationale": "Recorded payloads show subagent lifecycle events carry the parent's CURRENT prompt_id: the second SubagentStop carried the next prompt's id, so an async reviewer that outlives the launching turn would never match.",
+        "source_ref": "SRC-04",
+        "topic": "Parent turn identity"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Success is a PostToolUse event whose tool_response.stdout parses as exactly {request_id, state: COMPLETED} for the armed request and interrupted is false; a PostToolUseFailure event for the same tool_use_id marks the attempt failed.",
+        "id": "DEC-02",
+        "rationale": "Claude reports no exit code; the success/failure split is by event name.",
+        "source_ref": "SRC-04",
+        "topic": "Verifier exit status"
+      },
+      {
+        "authority": "proposed",
+        "choice": "arm_request on Claude returns launch_envelope = {description, prompt, subagent_type: 'ca:authority-reviewer', model}; PreToolUse Agent tool_input must equal it exactly. Any other key (run_in_background, isolation, name, cwd) and subagent_type 'fork' are denied. The plugin ships ca:authority-reviewer with tools Read, Grep, Glob only; arming refuses when any project, user or CLI agent definition could shadow that name. The launch record stores tool_response.resolvedModel.",
+        "id": "DEC-03",
+        "rationale": "Project and user agent files override built-ins (documented precedence), so a built-in reviewer name is spoofable by the parent; a read-only plugin reviewer cannot edit what it grades, launch agents, or message its parent.",
+        "source_ref": "SRC-04",
+        "topic": "Claude launch envelope"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Join launch and child order-independently: record Agent PostToolUse tool_response.agentId against the launch's tool_use_id, record SubagentStart by agent_id, and bind when both are present with agent_type equal to the pinned reviewer.",
+        "id": "DEC-04",
+        "rationale": "SubagentStop carries no tool_use_id, and the recorded Agent PostToolUse and SubagentStart landed in the same second, so their order is not established.",
+        "source_ref": "SRC-04",
+        "topic": "Launch-to-child binding"
+      },
+      {
+        "authority": "proposed",
+        "choice": "The review result is the first SubagentStop for the bound agent_id with stop_hook_active false, agent_type ca:authority-reviewer, and a background_tasks list whose entry for this agent (if any) also names ca:authority-reviewer. Later Stops for that agent never change a recorded result; a first Stop failing these conditions rejects the request.",
+        "id": "DEC-05",
+        "rationale": "Recorded payloads show a second Stop for the same agent (stop_hook_active true, different final message), and that background_tasks is the parent session's list, which includes the running reviewer itself, so it can only corroborate identity.",
+        "source_ref": "SRC-04",
+        "topic": "First-Stop binding"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Add producer profile claude-review/0.1.0 with launch {parent_session_id, parent_prompt_id, tool_use_id, post_confirmed:true, agent_id, agent_type:'ca:authority-reviewer', subagent_type:'ca:authority-reviewer', model, resolved_model, first_stop:true}; review kinds accept codex-review/0.1.0 or claude-review/0.1.0, each only with its own launch schema. Bump the engine schema/protocol version as the compatibility rules require.",
+        "id": "DEC-06",
+        "rationale": "Mapping Claude events onto the Codex profile would misstate the producer.",
+        "source_ref": "SRC-02",
+        "topic": "Engine profile"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Register artifact-authority-hook.py as its own Claude hook entry; it exits 0 silently after one registry lookup when no request is armed.",
+        "id": "DEC-07",
+        "rationale": "Keeps pre-bash.py unchanged; the extra per-call cost is one registry directory read.",
+        "source_ref": "SRC-07",
+        "topic": "Hook placement and cost"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Tests use the recorded Claude Code 2.1.281 payload shapes (identifiers and paths replaced) as fixtures.",
+        "id": "DEC-08",
+        "rationale": "Grounds the adapter in real host output rather than documentation.",
+        "source_ref": "SRC-04",
+        "topic": "Fixtures"
+      },
+      {
+        "authority": "proposed",
+        "choice": "On success the Claude hook prints nothing and exits 0 (no permissionDecision allow, which would bypass user permission rules). It denies only via hookSpecificOutput.permissionDecision 'deny' with a reason on PreToolUse, and prints nothing on PostToolUse, PostToolUseFailure, SubagentStart and SubagentStop (never decision 'block' on SubagentStop, which would make the reviewer keep going).",
+        "id": "DEC-09",
+        "rationale": "Claude's output semantics differ from Codex's; recording authority must not grant permissions or alter the reviewer.",
+        "source_ref": "SRC-01",
+        "topic": "Hook output discipline"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Any SendMessage PreToolUse from the reviewer's parent session while a review is launching or running rejects that review (fail closed: the message shape is not a recorded contract). The wrapper Bash call is denied when run_in_background or dangerouslyDisableSandbox is true, when it carries any input key beyond command, description and timeout, or when its script is not the shipped artifact-authority.py beside the adapter.",
+        "id": "DEC-10",
+        "rationale": "Codex's fork_turns none has no Claude equivalent for mid-run steering; background Bash returns no stdout to corroborate.",
+        "source_ref": "SRC-04",
+        "topic": "Reviewer isolation channels"
+      }
+    ],
+    "governs": [
+      "core/pysrc/_artifactauthoritylib.py",
+      "core/pysrc/artifact-authority-hook.py",
+      "core/pysrc/artifact-authority.py",
+      "core/artifacts/**",
+      "core/surface/agents/authority-reviewer.md",
+      "plugins/ca/hooks/hooks.json",
+      "core/surface/includes/artifacts.md",
+      "docs/artifacts/ABSORPTION-REVIEW.md",
+      ".github/scripts/test_artifact_authority_adapter.py"
+    ],
+    "intent": {
+      "caller": "Maintainers running /feature and /sprint on Claude Code.",
+      "id": "INTENT-01",
+      "outcome": "A Claude session can verify, review and accept HTML plan tasks with the same fail-closed guarantees as Codex.",
+      "problem": "Claude sessions cannot produce verification or review authority, so HTML plans never accept a task on Claude.",
+      "source_refs": [
+        "SRC-03",
+        "SRC-05"
+      ]
+    },
+    "non_goals": [
+      {
+        "id": "NG-01",
+        "statement": "No Pi verification or review authority."
+      },
+      {
+        "id": "NG-02",
+        "statement": "No change to Codex behavior, the codex-review/0.1.0 profile, approval capture, or SMARTS authority."
+      },
+      {
+        "id": "NG-03",
+        "statement": "No transcript parsing as an authority source; agent_transcript_path is ignored."
+      },
+      {
+        "id": "NG-04",
+        "statement": "No lenient parsing of reviewer output (code fences, prose around JSON) and no retry that reuses a rejected request."
+      },
+      {
+        "id": "NG-05",
+        "statement": "No shipping of the engine payload inside the ca release package (tracked separately as pkg.bug)."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-01",
+        "statement": "Claude Code seams for the supervised verification wrapper: authorize on PreToolUse Bash, corroborate on PostToolUse, fail on PostToolUseFailure."
+      },
+      {
+        "id": "SCOPE-02",
+        "statement": "Claude Code seams for independent spec and quality review: exact Agent launch, launch-to-child binding, single-launch parent turn, first-Stop result binding."
+      },
+      {
+        "id": "SCOPE-03",
+        "statement": "A claude-review/0.1.0 producer profile in the engine with its own closed launch schema, leaving codex-review/0.1.0 unchanged."
+      },
+      {
+        "id": "SCOPE-04",
+        "statement": "Register the hook in the Claude plugin, update the authority documentation, and prove the end-to-end path to task-review and accept-scope."
+      }
+    ],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-03",
+              "SRC-01"
+            ],
+            "text": "HTML plans cannot reach task-review or accept-scope on Claude: the authority adapter observes only Codex hook events and the engine accepts only a Codex review profile. Every Claude full-lane feature, including #777, stops at its first task.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-01",
+        "title": "Problem"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-01",
+        "locator": "core/pysrc/_artifactauthoritylib.py",
+        "note": "Verification wrapper, review launch/child correlation, spool, registry, publish_request; Codex seams only.",
+        "title": "Codex production authority adapter (#844)",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/pysrc/_artifactauthoritylib.py"
+      },
+      {
+        "id": "SRC-02",
+        "locator": "core/artifacts/internal/observation/contract.go:110-131,222",
+        "note": "spec_review and quality_review require producer profile codex-review/0.1.0 with a Codex launch shape; verification profile declared-command/0.1.0 is host-neutral.",
+        "title": "Engine review observation contract",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/artifacts/internal/observation/contract.go"
+      },
+      {
+        "id": "SRC-03",
+        "locator": "core/surface/includes/artifacts.md:176-179",
+        "note": "Claude and Pi stop at the verification/review boundary.",
+        "title": "Artifacts include: authority is Codex-only",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/surface/includes/artifacts.md"
+      },
+      {
+        "id": "SRC-04",
+        "locator": "%TEMP%/ca-hook-probe/payloads (captured 2026-09-24, session with maintainer approval)",
+        "note": "Bash PreToolUse/PostToolUse/PostToolUseFailure, Agent PreToolUse/PostToolUse (tool_response.agentId), SubagentStart, two SubagentStop events for one agent with different prompt_id, stop_hook_active and last_assistant_message.",
+        "title": "Recorded Claude Code 2.1.281 hook payloads",
+        "type": "primary_research",
+        "url": null
+      },
+      {
+        "id": "SRC-05",
+        "locator": "#777 session",
+        "note": "Build the Claude portions required for HTML plan execution; own branch and PR first.",
+        "title": "Maintainer direction 2026-09-24",
+        "type": "user_request",
+        "url": null
+      },
+      {
+        "id": "SRC-06",
+        "locator": "docs/artifacts/ABSORPTION-REVIEW.md AC-011/T-013",
+        "note": "Reviewer and verification authority adapters remain for Claude and Pi.",
+        "title": "Absorption review status",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/docs/artifacts/ABSORPTION-REVIEW.md"
+      },
+      {
+        "id": "SRC-07",
+        "locator": "plugins/ca/hooks/hooks.json",
+        "note": "No Agent, SubagentStart, SubagentStop or artifact-authority-hook registration.",
+        "title": "Claude plugin hook registration",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/plugins/ca/hooks/hooks.json"
+      }
+    ],
+    "summary": "Bring the #844 production authority adapter to Claude Code so HTML plans can record task-review and accept-scope on Claude, grounded in recorded Claude Code 2.1.281 hook payloads.",
+    "title": "Claude Code verification and review authority adapter"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/claude-artifact-authority.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 7,
+  "schema_version": "0.3.1",
+  "slug": "claude-artifact-authority"
+}
+</script>
+</body></html>
