@@ -113,7 +113,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Pi active-dispatch doctor self-test | DEGRADED | Public 0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi interactive artifact approval | HOST-IMPOSSIBLE | Pi 0.84.1 exposes no pre-model event carrying the user's exact prompt, so approval remains blocked rather than accepting synthetic host authority. | `core/surface/includes/artifacts.md`, `plugins/ca-pi/tools/src/extension.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits the fresh multi-repository, cross-host promotion evidence defined in `includes/farm.md`; historical runs receive no qualification credit. | `plugins/ca-pi/tools/src/farm.ts` |
-| Pi npm package | SUPPORTED | Every `ca-pi-v*` tag publishes `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible install. | `.github/workflows/npm-publish.yml` |
+| Pi npm package | SUPPORTED | Every `ca-pi-v*` tag publishes `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible install. | `.github/workflows/release.yml` |
 <!-- PI-EXCEPTIONS:END -->
 
 ## Reproduce the evidence

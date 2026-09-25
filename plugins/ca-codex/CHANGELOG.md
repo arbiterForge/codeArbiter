@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.17] - 2026-09-25
+
+### Changed
+
+- Promote Codex releases through the immutable `ca-codex-dist-v*` Git tag
+  channel; npm publication of `@arbiterforge/ca-codex` is deferred (ADR-0040).
+- Name the concrete per-host repair in the `CAPABILITY_MISSING` diagnostic.
+
 ## [0.13.16] - 2026-09-24
 
 ### Fixed

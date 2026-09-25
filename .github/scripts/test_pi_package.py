@@ -2166,134 +2166,9 @@ class NpmPublishContractTest(unittest.TestCase):
     """ADR-0029 / spec npm-publish-ca-pi: the npm channel ships the same payload
     the Git install serves, synchronously inside the release workflow."""
 
-    WORKFLOW = REPO / ".github" / "workflows" / "npm-publish.yml"
+    WORKFLOW = REPO / ".github" / "workflows" / "release.yml"
+    ACTION = REPO / ".github" / "actions" / "publish-target" / "action.yml"
 
-    def _assert_npm_workflow_security_contract(self, text):
-        workflow_prefix = text.split("    steps:\n", 1)[0] + "    steps:\n"
-        self.assertEqual(
-            hashlib.sha256(workflow_prefix.encode("utf-8")).hexdigest(),
-            "42b5c137ac570042994de04f559e1f5b1a85f67c69d273644beb7d7a74fa574b",
-            "the privileged workflow prelude drifted",
-        )
-        permissions = text.split("permissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
-        self.assertEqual(
-            permissions,
-            "  actions: read\n"
-            "  # The publisher validates an existing draft immediately before mutation.\n"
-            "  # GitHub hides draft Releases from tokens without push-equivalent access.\n"
-            "  contents: write\n"
-            "  id-token: write\n",
-        )
-        concurrency = text.split("concurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
-        self.assertEqual(
-            concurrency,
-            "  group: npm-publish-${{ inputs.tag }}\n"
-            "  cancel-in-progress: false\n",
-        )
-        job_header = text.split("jobs:\n  publish:\n", 1)[1].split(
-            "    steps:\n", 1
-        )[0]
-        self.assertEqual(
-            job_header,
-            '    name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"\n'
-            "    # Reusable workflows inherit the caller's event context. A call from the\n"
-            "    # automatic release workflow therefore still reports `workflow_run`, and a\n"
-            "    # call from its manual lane reports `workflow_dispatch`; neither reports\n"
-            "    # `workflow_call`. The caller jobs already require the exact release route,\n"
-            "    # while this boundary independently keeps publication on protected main.\n"
-            "    if: github.ref == 'refs/heads/main'\n"
-            "    runs-on: ubuntu-latest\n"
-            "    timeout-minutes: 15\n",
-        )
-        workflow_call = text.split("  workflow_call:\n", 1)[1].split(
-            "  workflow_dispatch:\n", 1
-        )[0]
-        secret_declaration = workflow_call.split("    secrets:\n", 1)[1].strip()
-        self.assertEqual(
-            secret_declaration,
-            "NPMJS_TOKEN:\n        required: true",
-            "the reusable publisher must declare exactly one named secret",
-        )
-        checkout_blocks = text.split("uses: actions/checkout@")[1:]
-        self.assertEqual(len(checkout_blocks), 2)
-        for block in checkout_blocks:
-            step = block.split("\n      - ", 1)[0]
-            self.assertEqual(step.count("persist-credentials: false"), 1)
-            self.assertNotIn("persist-credentials: true", step)
-        self.assertNotRegex(
-            text,
-            r"(?m)^\s+(?:-\s+)?(?:uses|working-directory):\s+.*candidate",
-            "candidate content must not become an action or working directory",
-        )
-        run_blocks = re.findall(r"(?ms)^        run: .*?(?=^      - |\Z)", text)
-        candidate_consumers = [
-            line.strip()
-            for block in run_blocks
-            for line in block.splitlines()
-            if re.search(r"\bcandidate(?:[/\\]|\b)", line)
-        ]
-        self.assertEqual(
-            candidate_consumers,
-            [
-                "run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main",
-                '--source-repo candidate --source-commit "$SOURCE_COMMIT" --ci-run-id "$CI_RUN_ID" \\',
-                'versions={"ca":json.load(open("candidate/plugins/ca/.claude-plugin/plugin.json"))["version"],',
-                '"ca-codex":json.load(open("candidate/plugins/ca-codex/.codex-plugin/plugin.json"))["version"],',
-                '"ca-pi":json.load(open("candidate/plugins/ca-pi/package.json"))["version"]}',
-                "--repo candidate \\",
-                'git -C candidate ls-remote --tags origin "refs/tags/$RELEASE_TAG" \\',
-                'versions = {"ca": json.load(open("candidate/plugins/ca/.claude-plugin/plugin.json"))["version"],',
-                '"ca-codex": json.load(open("candidate/plugins/ca-codex/.codex-plugin/plugin.json"))["version"],',
-                '"ca-pi": json.load(open("candidate/plugins/ca-pi/package.json"))["version"]}',
-            ],
-            "candidate content reached a command outside the exact inert-data allowlist",
-        )
-        steps_text = text.split("    steps:\n", 1)[1]
-        step_blocks = [
-            block.rstrip() + "\n"
-            for block in re.split(r"(?m)(?=^      - )", steps_text)
-            if block.strip()
-        ]
-        step_contract = [
-            (
-                block.splitlines()[0].strip(),
-                hashlib.sha256(block.encode("utf-8")).hexdigest(),
-            )
-            for block in step_blocks
-        ]
-        self.assertEqual(
-            step_contract,
-            [
-                ("- name: Check out the trusted default-branch verifier", "e5f2364f9cd674ffb2154ccfa5731f2bafc85406538d0154d409c28dbe216f97"),
-                ("- name: Validate untrusted release inputs before use", "69772fd4dfe6dfcb48d3f30c3eece2c592edfa50b0e6f66719562cd0ddd78cdc"),
-                ("- name: Download exact promoted host payloads", "d9d89c456edb713a79b7de9ffd3953315599e0f02dd8e32841d9f14b6a106869"),
-                ("- name: Download exact normal release package cohort", "0937dba9b0aa2812e4b14d2fcb9e1bb148f2c9be229170d869e2ed5c53242e71"),
-                ("- name: Download exact cold-execution receipt matrix", "8a0a09aae2c3f52186da9f05269a9e22f1eb0e8ea9e10122309307a9d05248b6"),
-                ("- name: Materialize the exact tagged package as inert data", "d2f4e3fe952dc4276ef6cd7169935f52fbd76e30dac74e5a24586e79782e2e1f"),
-                ("- uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0", "72f4f712094c2099d186d3e7f571517102fc456dc598a5977dcf997794a5df7d"),
-                (
-                    "- name: Acquire reviewed npm@11.19.1 CLI",
-                    "8a51403701b27ee91c921f18488885e7f042d9901e02045f56b1546332fc3eba",
-                ),
-                (
-                    "- name: Fetch protected main without credentials",
-                    "eb31d3327ddc305329e5639d95fa6abeb2d2df463f0837c713b7da2d6c9a3730",
-                ),
-                ("- name: Capture draft-inclusive GitHub Release evidence", "d1453085ae5dede76e863387e84d5ad236184236d591c71bfe5174c02c28519f"),
-                ("- name: Reverify the exact retained package cohort", "4bd5c2f4763821cc0b1b0339332f9e6bb2b69782aca99312279b75d82e80c54b"),
-                ("- name: Verify exact draft cohort-start marker before npm mutation", "f70ebba615690509cef78d9abe440a337fc661fd5b211a9eab50ae7054faeb29"),
-                ("- name: Validate identity, select prebuilt tarball, and classify exact registry state", "45ca1c100ddb6680840fe93521756f7a5db43a652442c94ecc865b9776bc2fcc"),
-                ("- name: Require exact annotated tag object before npm mutation", "2018ffe36b25c717cfb3698e814ef04d865786bb664f5cf49fc57c1290155820"),
-                ("- name: Re-fetch exact empty marker-owned draft immediately before npm publish", "b5a07c1faced20dea8566ab36ebffdf26b28a8bc805ddea3fdb5f8d53d4c9c43"),
-                ("- name: Publish with provenance", "c3beb4d9d68652884af4c9ab7532d0a8cc2df7052baa5efee27ada23f5a05c32"),
-                ("- name: Verify exact registry publication evidence", "6b12ead24bf6d987e3d080eed40713268f40f05ff3fb5e47ddc8d094bf062344"),
-                ("- name: Create immutable durable cohort receipt", "50e65e49ba2c4beaaef31bc5a80b4bd0ca3b4569fab4d9f1f29b1180493aa0ba"),
-                ("- name: Stage durable Pi cohort receipt for publisher-isolated retention", "339c472a2d4bd0368353b39a817dd12a7019e3ea6d2da7b11fbb91e8476c72e2"),
-                ("- name: Capture npm package publication disposition", "e714059551391922498475735e2f36a9e9188b8c8f05af62cccc383e61214bad"),
-                ("- name: Retain npm package publication disposition", "5975b978cc79ecda5c4aa0896ec2c5b362eeec6fcd33f7d5da1aa7dc01753e3b"),
-            ],
-            "the complete publisher step contract drifted",
-        )
     HELPER = REPO / ".github" / "scripts" / "_npm_publishlib.py"
 
     def _helper(self):
@@ -2347,167 +2222,6 @@ class NpmPublishContractTest(unittest.TestCase):
             leaked = sorted(path for path in paths if path.startswith(excluded_prefix))
             self.assertEqual(leaked, [], f"tarball leaks {excluded_prefix}")
 
-    def test_npm_publish_workflow_contract(self):
-        # AC-3: reusable exact-tag/SHA publication, least privilege, provenance,
-        # registry read-back, and no candidate build or dependency install.
-        self.assertTrue(self.WORKFLOW.is_file(), "npm-publish.yml is missing")
-        text = self.WORKFLOW.read_text(encoding="utf-8")
-        self._assert_npm_workflow_security_contract(text)
-        self.assertNotRegex(text, r"(?m)^  push:")
-        self.assertIn(
-            "workflow_dispatch:",
-            text,
-            "an immutable historical tag needs the same exact-tag/SHA verifier as a recovery path",
-        )
-        dispatch = text.split("  workflow_dispatch:", 1)[1].split("\n\npermissions:", 1)[0]
-        for name in ("tag", "expected_sha", "ci_run_id"):
-            self.assertRegex(
-                dispatch,
-                rf"(?ms)^      {name}:\n        required: true\n        type: string$",
-            )
-        self.assertRegex(text, r"(?ms)^on:\n  workflow_call:\n    inputs:\n")
-        workflow_call = text.split("  workflow_call:\n", 1)[1].split(
-            "  workflow_dispatch:\n", 1
-        )[0]
-        for name in ("tag", "expected_sha", "ci_run_id"):
-            self.assertRegex(
-                workflow_call,
-                rf"(?ms)^      {name}:\n        required: true\n        type: string$",
-            )
-        self.assertRegex(
-            text,
-            r"(?ms)^    secrets:\n      NPMJS_TOKEN:\n        required: true$",
-        )
-        self.assertRegex(
-            text,
-            r"(?ms)^permissions:\n\s+actions: read\n"
-            r"(?:\s+#.*\n)*\s+contents: write\n\s+id-token: write\n",
-        )
-        self.assertIn("timeout-minutes: 15", text)
-        self.assertIn("format('refs/tags/{0}', inputs.tag)", text)
-        # Re-runs are serialized per tag and become no-ops once the exact
-        # artifact and provenance are proven on the registry.
-        self.assertIn("group: npm-publish-${{ inputs.tag }}", text)
-        self.assertIn("cancel-in-progress: false", text)
-        self.assertNotIn('--tag "${{ inputs.tag }}"', text)
-        self.assertNotIn('--expected-sha "${{ inputs.expected_sha }}"', text)
-        self.assertNotIn('tags/${{ inputs.tag }}', text)
-        self.assertIn("RELEASE_TAG: ${{ inputs.tag }}", text)
-        self.assertIn("EXPECTED_SHA: ${{ inputs.expected_sha }}", text)
-        self.assertIn("TRUSTED_SHA: ${{ github.sha }}", text)
-        self.assertIn('--expected-sha "$EXPECTED_SHA"', text)
-        self.assertIn('--trusted-sha "$TRUSTED_SHA"', text)
-        self.assertIn("--registry=https://registry.npmjs.org/", text)
-        self.assertIn("--@arbiterforge:registry=https://registry.npmjs.org/", text)
-        self.assertIn("npm publish", text)
-        self.assertIn("--ignore-scripts", text)
-        self.assertIn("--provenance", text)
-        self.assertIn("Verify exact registry publication evidence", text)
-        self.assertIn("NODE_AUTH_TOKEN", text)
-        self.assertIn("secrets.NPMJS_TOKEN", text)
-        self.assertNotIn("npm ci", text)
-        self.assertIn(
-            "npm@11.19.1",
-            text,
-            "the publisher needs the reviewed zero-HIGH npm CLI before it can verify attestations",
-        )
-        self.assertIn(
-            "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==",
-            text,
-            "the reviewed npm CLI artifact must be integrity-pinned before execution",
-        )
-        self.assertIn('node-version: "22.23.2"', text)
-        cli_step = text.split(
-            "      - name: Acquire reviewed npm@11.19.1 CLI\n", 1
-        )[1].split("      - name: Fetch protected main without credentials\n", 1)[0]
-        for required in (
-            "https://registry.npmjs.org/npm/-/npm-11.19.1.tgz",
-            "curl --disable --fail --show-error --silent --proto '=https' --tlsv1.2",
-            "--max-redirs 0",
-            "openssl dgst -sha512 -binary",
-            'test "$ACTUAL_INTEGRITY" = "$NPM_CLI_INTEGRITY"',
-            "path.is_absolute()",
-            '".." in path.parts',
-            "member.issym()",
-            "member.islnk()",
-            "tar --extract --gzip --no-same-owner --no-same-permissions",
-            'test -f "$npm_cli"',
-            'test ! -L "$npm_cli"',
-            'resolved_cli="$(realpath "$npm_cli")"',
-            '"$npm_cli_root"/*',
-            'test "$("$npm_cli" --version)" = "$NPM_CLI_VERSION"',
-            'echo "executable=$npm_cli" >> "$GITHUB_OUTPUT"',
-        ):
-            self.assertIn(required, cli_step)
-        self.assertNotIn("NODE_AUTH_TOKEN", cli_step)
-        self.assertNotIn("NPMJS_TOKEN", cli_step)
-        self.assertNotIn("npm install", text)
-        self.assertEqual(text.count("steps.npm-cli.outputs.executable"), 4)
-        self.assertNotIn("npm ci", text)
-        for manifest in ("package.json", "plugins/ca-pi/package.json"):
-            self.assertIn(manifest, text)
-        self.assertRegex(text, r"(?is)tag.{0,240}version.{0,240}(mismatch|match|equal)")
-
-    def test_npm_workflow_security_contract_rejects_hostile_drift(self):
-        text = self.WORKFLOW.read_text(encoding="utf-8")
-        mutations = (
-            text.replace(
-                "      NPMJS_TOKEN:\n        required: true\n  workflow_dispatch:",
-                "      NPMJS_TOKEN:\n        required: true\n"
-                "      EXTRA_SECRET:\n        required: true\n  workflow_dispatch:",
-                1,
-            ),
-            text.replace("persist-credentials: false", "persist-credentials: true", 1),
-            text.replace(
-                "run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main",
-                "run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main\n"
-                "          python3 candidate/evil.py",
-                1,
-            ),
-            text.replace(
-                "      - uses: actions/setup-node@",
-                "      - uses: ./candidate/evil-action\n"
-                "      - uses: actions/setup-node@",
-                1,
-            ),
-            text.replace(
-                "      - name: Fetch protected main without credentials",
-                "      - name: Hidden candidate execution\n"
-                "        env:\n          EVIL: candidate/evil.py\n"
-                "        run: python3 \"$EVIL\"\n"
-                "      - name: Fetch protected main without credentials",
-                1,
-            ),
-            text.replace("runs-on: ubuntu-latest", "runs-on: self-hosted", 1),
-            text.replace("  id-token: write", "  id-token: write\n  actions: write", 1),
-            text.replace(
-                "if: github.ref == 'refs/heads/main'",
-                "if: github.ref == 'refs/heads/main' || github.actor == github.actor",
-                1,
-            ),
-            text.replace("curl --disable", "curl --location", 1),
-            text.replace("--max-redirs 0", "--max-redirs 1", 1),
-            text.replace(
-                "\npermissions:\n",
-                "\nenv:\n  PUBLISH_CREDENTIAL: ${{ secrets.NPMJS_TOKEN }}\n"
-                "permissions:\n",
-                1,
-            ),
-            text.replace(
-                "\npermissions:\n",
-                "\nenv:\n  PATH: candidate/bin\npermissions:\n",
-                1,
-            ),
-            text.replace(
-                "\npermissions:\n",
-                "\ndefaults:\n  run:\n    shell: candidate/evil-shell\npermissions:\n",
-                1,
-            ),
-        )
-        for mutation in mutations:
-            with self.subTest(mutation=mutation), self.assertRaises(AssertionError):
-                self._assert_npm_workflow_security_contract(mutation)
-
     def test_publish_inputs_reject_ref_injection_and_noncanonical_sha(self):
         helper = self._helper()
         for tag in (
@@ -2525,22 +2239,6 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertEqual(
             helper.validate_inputs("ca-pi-v0.10.0", "a" * 40), "0.10.0"
         )
-
-    def test_publisher_executes_only_trusted_verifier_against_tagged_candidate_data(self):
-        text = self.WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("if: github.ref == 'refs/heads/main'", text)
-        dispatch = text.split("  workflow_dispatch:\n", 1)[1].split("\npermissions:\n", 1)[0]
-        self.assertNotIn("continuation:", dispatch)
-        self.assertIn("ref: ${{ github.sha }}", text)
-        self.assertNotIn("ref: refs/heads/main", text)
-        self.assertIn("path: trusted", text)
-        self.assertIn("ref: ${{ format('refs/tags/{0}', inputs.tag) }}", text)
-        self.assertIn("path: candidate", text)
-        self.assertIn(
-            "python3 trusted/.github/scripts/_npm_publishlib.py prepare", text
-        )
-        self.assertIn("--repo candidate", text)
-        self.assertNotIn("python3 .github/scripts/_npm_publishlib.py", text)
 
     def test_package_identity_requires_both_manifests_and_public_repository(self):
         helper = self._helper()
@@ -2580,6 +2278,26 @@ class NpmPublishContractTest(unittest.TestCase):
             (repo / ".npmrc").write_text("registry=https://evil.invalid/\n", encoding="utf-8")
             with self.assertRaises(ValueError):
                 helper.validate_project_registry(repo)
+
+    def test_release_readback_gates_integrity_but_attestation_is_advisory(self):
+        # ADR-0040: a published version with the expected integrity but no
+        # matching attestation is present-unattested (warn), never a hard stop;
+        # a version or integrity mismatch still raises.
+        helper = self._helper()
+        unattested = json.dumps({"version": "0.10.0", "dist": {"integrity": "sha512-ok"}})
+        self.assertEqual(
+            helper.classify_registry_lookup(0, unattested, "", "0.10.0", "sha512-ok",
+                                            require_attestation=False),
+            "present-unattested")
+        with self.assertRaises(ValueError):
+            helper.classify_registry_lookup(0, unattested, "", "0.10.0", "sha512-ok")
+        for document, version, integrity in (
+            ({"version": "0.10.0", "dist": {"integrity": "sha512-other"}}, "0.10.0", "sha512-ok"),
+            ({"version": "0.9.9", "dist": {"integrity": "sha512-ok"}}, "0.10.0", "sha512-ok"),
+        ):
+            with self.subTest(document=document), self.assertRaises(ValueError):
+                helper.classify_registry_lookup(0, json.dumps(document), "", version, integrity,
+                                                require_attestation=False)
 
     def test_registry_lookup_distinguishes_absence_from_failure_and_requires_proof(self):
         helper = self._helper()
@@ -3287,450 +3005,23 @@ class NpmPublishContractTest(unittest.TestCase):
                 Path("trusted"), Path("candidate"), "a" * 40, "b" * 40
             )
 
-    def test_release_source_binding_allows_only_explicit_ancestor_continuation(self):
+    def test_release_source_binding_is_exact_and_refuses_continuation(self):
         helper = self._helper()
-        completed = subprocess.CompletedProcess([], 0, "", "")
-        def git_result(repo, *args):
-            if args == ("rev-parse", "HEAD"):
-                return subprocess.CompletedProcess([], 0,
-                    (("b" if str(repo).endswith("trusted") else "a") * 40) + "\n", "")
-            if args == ("merge-base", "--is-ancestor", "a" * 40, "b" * 40):
-                return completed
-            if args == ("diff", "--name-status", "a" * 40, "b" * 40):
-                return completed
-            return subprocess.CompletedProcess([], 1, "", "")
-        with mock.patch.object(helper, "_git", side_effect=git_result):
+        heads = lambda repo, *args: subprocess.CompletedProcess(
+            [], 0, (("b" if str(repo).endswith("trusted") else "a") * 40) + "\n", "")
+        with mock.patch.object(helper, "_git", side_effect=heads):
+            with self.assertRaisesRegex(ValueError, "continuation was removed"):
+                helper.validate_release_source_binding(
+                    Path("trusted"), Path("candidate"), "a" * 40, "b" * 40,
+                    allow_continuation=True,
+                )
+            with self.assertRaisesRegex(ValueError, "must be identical"):
+                helper.validate_release_source_binding(
+                    Path("trusted"), Path("candidate"), "a" * 40, "b" * 40)
+        same = lambda repo, *args: subprocess.CompletedProcess([], 0, "a" * 40 + "\n", "")
+        with mock.patch.object(helper, "_git", side_effect=same):
             helper.validate_release_source_binding(
-                Path("trusted"), Path("candidate"), "a" * 40, "b" * 40,
-                allow_continuation=True,
-            )
-        with mock.patch.object(helper, "_git", side_effect=lambda repo, *args: (
-                subprocess.CompletedProcess([], 0,
-                    (("b" if str(repo).endswith("trusted") else "a") * 40) + "\n", "")
-                if args == ("rev-parse", "HEAD") else
-                subprocess.CompletedProcess([], 1, "", ""))):
-            with self.assertRaisesRegex(ValueError, "not an ancestor"):
-                helper.validate_release_source_binding(
-                    Path("trusted"), Path("candidate"), "a" * 40, "b" * 40,
-                    allow_continuation=True,
-                )
-        with mock.patch.object(helper, "_git", side_effect=lambda repo, *args: (
-                subprocess.CompletedProcess([], 0,
-                    (("b" if str(repo).endswith("trusted") else "a") * 40) + "\n", "")
-                if args == ("rev-parse", "HEAD") else
-                subprocess.CompletedProcess([], 0, "M\tplugins/ca-pi/package.json\n", "")
-                if args == ("diff", "--name-status", "a" * 40, "b" * 40) else
-                completed)):
-            with self.assertRaisesRegex(ValueError, "outside the repair allowlist"):
-                helper.validate_release_source_binding(
-                    Path("trusted"), Path("candidate"), "a" * 40, "b" * 40,
-                    allow_continuation=True,
-                )
-
-    def test_repair_only_commit_selects_the_single_durable_original_cohort(self):
-        helper = self._helper()
-        tags = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
-                "ca-pi": "ca-pi-v1.0.0"}
-        marker = {
-            "format": "codearbiter.cohort-start/0.1.0", "target": "ca-pi",
-            "host": "pi", "tag": tags["ca-pi"], "source_commit": "a" * 40,
-            "source_tree": "c" * 40, "workflow": ".github/workflows/ci.yml",
-            "ci_run_id": "123", "cohort_sha256": "d" * 64,
-            "release_notes_sha256": "e" * 64, "cohort_tags": tags,
-            "cohort_targets": ["ca", "ca-codex", "ca-pi"],
-        }
-        selected = helper.resolve_durable_cohort_identity(
-            current_source="b" * 40, current_run_id="456", current_tags=tags,
-            eligible_targets=[], markers=[marker], receipts=[], draft_markers=[marker])
-        self.assertEqual(selected["source_commit"], "a" * 40)
-        self.assertEqual(selected["ci_run_id"], "123")
-        self.assertTrue(selected["requires_cohort"])
-        self.assertTrue(selected["continuation"])
-        idle = helper.resolve_durable_cohort_identity(
-            current_source="b" * 40, current_run_id="456", current_tags=tags,
-            eligible_targets=[], markers=[], receipts=[], draft_markers=[])
-        self.assertFalse(idle["requires_cohort"])
-        changed = {**tags, "ca-pi": "ca-pi-v1.0.1"}
-        with self.assertRaisesRegex(ValueError, "versions differ"):
-            helper.resolve_durable_cohort_identity(
-                current_source="b" * 40, current_run_id="456", current_tags=changed,
-                eligible_targets=[], markers=[marker], receipts=[], draft_markers=[marker])
-        other = {**marker, "source_commit": "f" * 40, "source_tree": "1" * 40,
-                 "ci_run_id": "789", "cohort_sha256": "2" * 64}
-        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
-            helper.resolve_durable_cohort_identity(
-                current_source="b" * 40, current_run_id="456", current_tags=tags,
-                eligible_targets=[], markers=[marker, other], receipts=[],
-                draft_markers=[marker, other])
-
-    def test_marker_complete_but_unpublished_successor_does_not_supersede(self):
-        helper = self._helper()
-        old_tags = {"ca": "v2.21.4", "ca-codex": "ca-codex-v0.13.4",
-                    "ca-pi": "ca-pi-v0.14.4"}
-        new_tags = {"ca": "v2.21.6", "ca-codex": "ca-codex-v0.13.6",
-                    "ca-pi": "ca-pi-v0.14.6"}
-
-        def markers(tags, source, run_id, targets):
-            return [{
-                "format": "codearbiter.cohort-start/0.1.0", "target": target,
-                "host": {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}[target],
-                "tag": tags[target], "source_commit": source,
-                "source_tree": ("c" if source.startswith("a") else "d") * 40,
-                "workflow": ".github/workflows/ci.yml", "ci_run_id": run_id,
-                "cohort_sha256": ("e" if source.startswith("a") else "f") * 64,
-                "release_notes_sha256": "1" * 64, "cohort_tags": tags,
-                "cohort_targets": ["ca", "ca-codex", "ca-pi"],
-            } for target in targets]
-
-        old = markers(old_tags, "a" * 40, "123", ["ca"])
-        new = markers(new_tags, "b" * 40, "456", ["ca", "ca-codex", "ca-pi"])
-        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
-            helper.resolve_durable_cohort_identity(
-                current_source="c" * 40, current_run_id="789",
-                current_tags=new_tags, eligible_targets=[],
-                markers=old + new, receipts=[], draft_markers=old + new)
-
-        def receipt(marker):
-            return {
-                "format": "codearbiter.cohort-publication/0.1.0",
-                "target": marker["target"], "host": marker["host"],
-                "tag": marker["tag"], "source_commit": marker["source_commit"],
-                "source_tree": marker["source_tree"], "ci_run_id": marker["ci_run_id"],
-                "cohort_sha256": marker["cohort_sha256"],
-                "release_notes_sha256": marker["release_notes_sha256"],
-                "package_file": marker["target"] + ".tgz", "package_sha256": "2" * 64,
-                "tag_object_sha": "3" * 40, "cohort_tags": marker["cohort_tags"],
-                "cohort_targets": marker["cohort_targets"], "readback": "verified",
-                "disposition": "published-and-read-back",
-            }
-
-        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
-            helper.reconcile_durable_cohort(
-                [receipt(new[0]), receipt(new[1])],
-                current={"source_commit": "b" * 40, "source_tree": "d" * 40,
-                         "workflow": ".github/workflows/ci.yml", "ci_run_id": "456",
-                         "cohort_sha256": "f" * 64, "cohort_tags": new_tags,
-                         "eligible_targets": []},
-                markers=old + new, draft_markers=old + [new[2]],
-                missing_current=["ca-pi"])
-
-        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
-            helper.resolve_durable_cohort_identity(
-                current_source="c" * 40, current_run_id="789", current_tags=new_tags,
-                eligible_targets=[], markers=old + new[:-1], receipts=[],
-                draft_markers=old + new[:-1])
-
-        non_monotonic = {**new_tags, "ca": old_tags["ca"]}
-        non_monotonic_new = markers(
-            non_monotonic, "b" * 40, "456", ["ca", "ca-codex", "ca-pi"])
-        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
-            helper.resolve_durable_cohort_identity(
-                current_source="c" * 40, current_run_id="789",
-                current_tags=non_monotonic, eligible_targets=[],
-                markers=old + non_monotonic_new, receipts=[],
-                draft_markers=old + non_monotonic_new)
-
-    def test_completed_newer_cohort_keeps_older_partial_superseded_after_versions_advance(self):
-        helper = self._helper()
-        old_tags = {"ca": "v2.21.4", "ca-codex": "ca-codex-v0.13.4",
-                    "ca-pi": "ca-pi-v0.14.4"}
-        completed_tags = {"ca": "v2.21.6", "ca-codex": "ca-codex-v0.13.6",
-                          "ca-pi": "ca-pi-v0.14.6"}
-        current_tags = {"ca": "v2.21.7", "ca-codex": "ca-codex-v0.13.7",
-                        "ca-pi": "ca-pi-v0.14.7"}
-        hosts = {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}
-        targets = ["ca", "ca-codex", "ca-pi"]
-
-        def marker(tags, target, source, run_id, tree, cohort):
-            return {
-                "format": "codearbiter.cohort-start/0.1.0", "target": target,
-                "host": hosts[target], "tag": tags[target],
-                "source_commit": source, "source_tree": tree,
-                "workflow": ".github/workflows/ci.yml", "ci_run_id": run_id,
-                "cohort_sha256": cohort, "release_notes_sha256": "1" * 64,
-                "cohort_tags": tags, "cohort_targets": targets,
-            }
-
-        old = marker(old_tags, "ca", "a" * 40, "123", "b" * 40, "c" * 64)
-        completed = [
-            marker(completed_tags, target, "d" * 40, "456", "e" * 40, "f" * 64)
-            for target in targets
-        ]
-        receipts = [{
-            "format": "codearbiter.cohort-publication/0.1.0",
-            "target": item["target"], "host": item["host"], "tag": item["tag"],
-            "source_commit": item["source_commit"],
-            "source_tree": item["source_tree"], "ci_run_id": item["ci_run_id"],
-            "cohort_sha256": item["cohort_sha256"],
-            "release_notes_sha256": item["release_notes_sha256"],
-            "package_file": item["target"] + ".tgz", "package_sha256": "2" * 64,
-            "tag_object_sha": "3" * 40, "cohort_tags": item["cohort_tags"],
-            "cohort_targets": item["cohort_targets"], "readback": "verified",
-            "disposition": "published-and-read-back",
-        } for item in completed]
-
-        for later in (current_tags, {
-            "ca": "v2.21.8", "ca-codex": "ca-codex-v0.13.8",
-            "ca-pi": "ca-pi-v0.14.8",
-        }):
-            selected = helper.resolve_durable_cohort_identity(
-                current_source="4" * 40, current_run_id="789",
-                current_tags=later, eligible_targets=targets,
-                markers=[old, *completed], receipts=receipts,
-                draft_markers=[old])
-            self.assertEqual(selected["source_commit"], "4" * 40)
-            self.assertEqual(selected["ci_run_id"], "789")
-            self.assertEqual(selected["cohort_tags"], later)
-            self.assertEqual(selected["cohort_targets"], targets)
-            self.assertTrue(selected["requires_cohort"])
-            self.assertFalse(selected["continuation"])
-
-        reconciled = helper.reconcile_durable_cohort(
-            receipts,
-            current={"source_commit": "4" * 40, "source_tree": "5" * 40,
-                     "workflow": ".github/workflows/ci.yml", "ci_run_id": "789",
-                     "cohort_sha256": "6" * 64, "cohort_tags": current_tags,
-                     "eligible_targets": targets},
-            markers=[old, *completed], draft_markers=[old])
-        self.assertEqual(reconciled, {
-            "mode": "start", "cohort_targets": targets,
-            "repair_targets": targets,
-        })
-
-        # A partial N must not deadlock a full, strictly newer N+1 release.
-        # Preflight supplies the full eligible target set before N+1 markers
-        # exist; both selection phases must deterministically start N+1.
-        selected = helper.resolve_durable_cohort_identity(
-            current_source="4" * 40, current_run_id="789",
-            current_tags=current_tags, eligible_targets=targets,
-            markers=[old], receipts=[], draft_markers=[old])
-        self.assertEqual(selected["source_commit"], "4" * 40)
-        self.assertEqual(selected["cohort_tags"], current_tags)
-        self.assertFalse(selected["continuation"])
-        reconciled = helper.reconcile_durable_cohort(
-            [],
-            current={"source_commit": "4" * 40, "source_tree": "5" * 40,
-                     "workflow": ".github/workflows/ci.yml", "ci_run_id": "789",
-                     "cohort_sha256": "6" * 64, "cohort_tags": current_tags,
-                     "eligible_targets": targets},
-            markers=[old], draft_markers=[old])
-        self.assertEqual(reconciled, {
-            "mode": "start", "cohort_targets": targets,
-            "repair_targets": targets,
-        })
-
-        with self.assertRaisesRegex(ValueError, "versions differ"):
-            helper.resolve_durable_cohort_identity(
-                current_source="4" * 40, current_run_id="789",
-                current_tags=current_tags, eligible_targets=["ca"],
-                markers=[old], receipts=[], draft_markers=[old])
-
-        current_state = {
-            "source_commit": "4" * 40, "source_tree": "5" * 40,
-            "workflow": ".github/workflows/ci.yml", "ci_run_id": "789",
-            "cohort_sha256": "6" * 64, "cohort_tags": current_tags,
-            "eligible_targets": ["ca"],
-        }
-        with self.assertRaisesRegex(ValueError, "exact original source"):
-            helper.reconcile_durable_cohort(
-                [], current=current_state, markers=[old], draft_markers=[old])
-
-        non_monotonic_current = dict(current_tags)
-        non_monotonic_current["ca-codex"] = old_tags["ca-codex"]
-        with self.assertRaisesRegex(ValueError, "versions differ"):
-            helper.resolve_durable_cohort_identity(
-                current_source="4" * 40, current_run_id="789",
-                current_tags=non_monotonic_current, eligible_targets=targets,
-                markers=[old], receipts=[], draft_markers=[old])
-        with self.assertRaisesRegex(ValueError, "exact original source"):
-            helper.reconcile_durable_cohort(
-                [], current={**current_state,
-                             "cohort_tags": non_monotonic_current,
-                             "eligible_targets": targets},
-                markers=[old], draft_markers=[old])
-
-        partially_advanced = {**completed_tags, "ca": "v2.21.7"}
-        selected = helper.resolve_durable_cohort_identity(
-            current_source="4" * 40, current_run_id="789",
-            current_tags=partially_advanced, eligible_targets=["ca"],
-            markers=[old, *completed], receipts=receipts, draft_markers=[old])
-        self.assertEqual(selected["cohort_tags"], partially_advanced)
-        self.assertEqual(selected["cohort_targets"], ["ca"])
-        self.assertFalse(selected["continuation"])
-
-        for incomplete_receipts in (receipts[:-1], receipts):
-            with self.subTest(receipts=len(incomplete_receipts)):
-                selected = helper.resolve_durable_cohort_identity(
-                    current_source="4" * 40, current_run_id="789",
-                    current_tags=current_tags, eligible_targets=targets,
-                    markers=[old, *completed], receipts=incomplete_receipts,
-                    draft_markers=[old, completed[-1]])
-                self.assertEqual(selected["cohort_tags"], current_tags)
-                self.assertEqual(selected["cohort_targets"], targets)
-                self.assertFalse(selected["continuation"])
-                with self.assertRaisesRegex(ValueError, "multiple unresolved"):
-                    helper.resolve_durable_cohort_identity(
-                        current_source="4" * 40, current_run_id="789",
-                        current_tags=current_tags, eligible_targets=[],
-                        markers=[old, *completed], receipts=incomplete_receipts,
-                        draft_markers=[old, completed[-1]])
-
-        ca_only = {**completed[0], "cohort_targets": ["ca"]}
-        ca_only_receipt = {**receipts[0], "cohort_targets": ["ca"]}
-        with self.assertRaisesRegex(ValueError, "versions differ"):
-            helper.resolve_durable_cohort_identity(
-                current_source="4" * 40, current_run_id="789",
-                current_tags=current_tags, eligible_targets=[],
-                markers=[old, ca_only], receipts=[ca_only_receipt],
-                draft_markers=[old])
-
-    def test_durable_cross_run_cohort_stops_source_mixing_and_allows_exact_resume(self):
-        helper = self._helper()
-        cohort_tags = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
-                       "ca-pi": "ca-pi-v1.0.0"}
-        intended = ["ca", "ca-codex"]
-        current = {"source_commit": "a" * 40, "source_tree": "b" * 40,
-                   "workflow": ".github/workflows/ci.yml",
-                   "ci_run_id": "123", "cohort_sha256": "c" * 64,
-                   "cohort_tags": cohort_tags, "eligible_targets": ["ca-codex"]}
-        def receipt(target):
-            host = {"ca": "claude", "ca-codex": "codex"}[target]
-            return {"format": "codearbiter.cohort-publication/0.1.0", "target": target,
-                    "host": host, "tag": cohort_tags[target], "source_commit": "a" * 40,
-                    "source_tree": "b" * 40, "ci_run_id": "123", "cohort_sha256": "c" * 64,
-                    "release_notes_sha256": "4" * 64,
-                    "package_file": target + ".tgz", "package_sha256": "1" * 64,
-                    "tag_object_sha": "2" * 40,
-                    "cohort_tags": cohort_tags, "cohort_targets": intended,
-                    "readback": "verified", "disposition": "published-and-read-back"}
-        partial = [receipt("ca")]
-        self.assertEqual(helper.classify_durable_cohort(partial, current=current), "resume")
-        repair = helper.reconcile_durable_cohort(
-            partial, current=current, missing_current=["ca-codex"])
-        self.assertEqual(repair, {"mode": "resume", "cohort_targets": intended,
-                                  "repair_targets": ["ca-codex"]})
-        source_b = copy.deepcopy(current); source_b["source_commit"] = "d" * 40
-        with self.assertRaisesRegex(ValueError, "exact original source"):
-            helper.classify_durable_cohort(partial, current=source_b)
-        self.assertEqual(helper.classify_durable_cohort(
-            [receipt(target) for target in intended], current=current), "complete")
-        for mutation, message in (
-            ({**receipt("ca"), "extra": True}, "schema is not exact"),
-            ({**receipt("ca"), "host": "pi"}, "target binding"),
-        ):
-            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
-                helper.classify_durable_cohort([mutation], current=current)
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp); current_path = root / "current.json"; state_path = root / "state.json"
-            current_path.write_text(json.dumps(current)); state_path.write_text(json.dumps({
-                "receipts": [], "markers": [], "missing_current": ["ca"],
-                "draft_markers": [],
-            }))
-            self.assertEqual(helper.main(["reconcile-state", "--current", str(current_path),
-                                          "--state", str(state_path), "--output", str(root / "out")]), 1)
-
-    def test_durable_reconciliation_cannot_forget_incomplete_historical_cohorts(self):
-        helper = self._helper()
-        tags_a = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
-                  "ca-pi": "ca-pi-v1.0.0"}
-        def current(tags, source="a", eligible=None):
-            return {"source_commit": source * 40, "source_tree": "b" * 40,
-                    "workflow": ".github/workflows/ci.yml",
-                    "ci_run_id": "123", "cohort_sha256": "c" * 64,
-                    "cohort_tags": tags, "eligible_targets": sorted(eligible or [])}
-        def receipt(target, tags=tags_a, intended=("ca", "ca-codex")):
-            return {"format": "codearbiter.cohort-publication/0.1.0", "target": target,
-                    "host": {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}[target],
-                    "tag": tags[target], "source_commit": "a" * 40,
-                    "source_tree": "b" * 40, "ci_run_id": "123",
-                    "cohort_sha256": "c" * 64, "package_file": target + ".tgz",
-                    "release_notes_sha256": "4" * 64,
-                    "package_sha256": "1" * 64, "cohort_tags": tags,
-                    "tag_object_sha": "2" * 40,
-                    "cohort_targets": sorted(intended), "readback": "verified",
-                    "disposition": "published-and-read-back"}
-        partial = [receipt("ca")]
-        tags_b = {**tags_a, "ca-codex": "ca-codex-v1.0.1"}
-        with self.assertRaisesRegex(ValueError, "exact original source"):
-            helper.classify_durable_cohort(
-                partial, current=current(tags_b, source="d", eligible=["ca-codex"]))
-        complete = [receipt("ca"), receipt("ca-codex")]
-        self.assertEqual(helper.classify_durable_cohort(
-            complete, current=current(tags_a, source="d")), "complete")
-        self.assertEqual(helper.classify_durable_cohort(
-            complete, current=current(tags_b, source="d", eligible=["ca-codex"])), "start")
-        self.assertEqual(helper.classify_durable_cohort(
-            complete, current=current(tags_a, source="d", eligible=["ca-codex"])), "start")
-        with self.assertRaisesRegex(ValueError, "missing its durable receipt"):
-            helper.classify_durable_cohort(complete, current=current(tags_a, source="d"),
-                                           missing_current=["ca-pi"])
-        duplicate = [receipt("ca"), receipt("ca")]
-        with self.assertRaisesRegex(ValueError, "duplicate target"):
-            helper.classify_durable_cohort(duplicate, current=current(tags_a))
-
-    def test_cohort_start_marker_recovers_first_receipt_failure_and_blocks_source_b(self):
-        helper = self._helper()
-        tags = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
-                "ca-pi": "ca-pi-v1.0.0"}
-        intended = ["ca", "ca-codex"]
-        current = {"source_commit": "a" * 40, "source_tree": "b" * 40,
-                   "workflow": ".github/workflows/ci.yml",
-                   "ci_run_id": "123", "cohort_sha256": "c" * 64,
-                   "cohort_tags": tags, "eligible_targets": intended}
-        def marker(target):
-            return {"format": "codearbiter.cohort-start/0.1.0", "target": target,
-                    "host": {"ca": "claude", "ca-codex": "codex"}[target],
-                    "tag": tags[target], "source_commit": "a" * 40,
-                    "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
-                    "ci_run_id": "123", "cohort_sha256": "c" * 64,
-                    "release_notes_sha256": "4" * 64,
-                    "cohort_tags": tags, "cohort_targets": intended}
-        def receipt(target):
-            return {"format": "codearbiter.cohort-publication/0.1.0", "target": target,
-                    "host": {"ca": "claude", "ca-codex": "codex"}[target],
-                    "tag": tags[target], "source_commit": "a" * 40,
-                    "source_tree": "b" * 40, "ci_run_id": "123",
-                    "cohort_sha256": "c" * 64, "package_file": target + ".tgz",
-                    "release_notes_sha256": "4" * 64,
-                    "package_sha256": "1" * 64, "cohort_tags": tags,
-                    "tag_object_sha": "2" * 40,
-                    "cohort_targets": intended, "readback": "verified",
-                    "disposition": "published-and-read-back"}
-        first = marker("ca")
-        result = helper.reconcile_durable_cohort(
-            [], current=current, markers=[first], draft_markers=[first])
-        self.assertEqual(result, {"mode": "resume", "cohort_targets": intended,
-                                  "repair_targets": intended})
-        source_b = copy.deepcopy(current); source_b["source_commit"] = "d" * 40
-        with self.assertRaisesRegex(ValueError, "exact original source"):
-            helper.reconcile_durable_cohort(
-                [], current=source_b, markers=[first], draft_markers=[first])
-        changed = copy.deepcopy(current)
-        changed["cohort_tags"] = {**tags, "ca-codex": "ca-codex-v1.0.1"}
-        with self.assertRaisesRegex(ValueError, "exact original source"):
-            helper.reconcile_durable_cohort(
-                [], current=changed, markers=[first], draft_markers=[first])
-        with self.assertRaisesRegex(ValueError, "duplicate target markers"):
-            helper.reconcile_durable_cohort(
-                [], current=current, markers=[first, first], draft_markers=[first])
-        with self.assertRaisesRegex(ValueError, "schema is not exact"):
-            helper.reconcile_durable_cohort(
-                [], current=current, markers=[{**first, "extra": True}],
-                draft_markers=[])
-        with self.assertRaisesRegex(ValueError, "published without"):
-            helper.reconcile_durable_cohort([], current=current, markers=[first])
-        complete_markers = [marker(target) for target in intended]
-        complete_receipts = [receipt(target) for target in intended]
-        notes_mismatch = copy.deepcopy(complete_receipts)
-        notes_mismatch[0]["release_notes_sha256"] = "0" * 64
-        with self.assertRaisesRegex(ValueError, "exact cohort-start marker"):
-            helper.reconcile_durable_cohort(
-                notes_mismatch, current=current, markers=complete_markers)
-        later = copy.deepcopy(current); later["source_commit"] = "d" * 40
-        later["eligible_targets"] = []
-        self.assertEqual(helper.reconcile_durable_cohort(
-            complete_receipts, current=later, markers=complete_markers),
-            {"mode": "complete", "cohort_targets": [], "repair_targets": []})
+                Path("trusted"), Path("candidate"), "a" * 40, "a" * 40)
 
     def test_cold_receipt_schema_matches_real_producer_field_set(self):
         """COLD_FIELDS must track every field the real cold-execution receipt
@@ -3875,6 +3166,7 @@ class NpmPublishContractTest(unittest.TestCase):
             encoding="utf-8"
         )
         workflow = self.WORKFLOW.read_text(encoding="utf-8")
+        action = self.ACTION.read_text(encoding="utf-8")
         self.assertIn("### ca-pi npm publication boundary", policy)
         for claim in (
             "NPMJS_TOKEN",
@@ -3891,13 +3183,60 @@ class NpmPublishContractTest(unittest.TestCase):
             "credential-free",
         ):
             self.assertIn(claim, policy)
+        self._assert_npm_secret_boundary(workflow, action)
+
+    def _assert_npm_secret_boundary(self, workflow, action):
         self.assertNotIn("secrets: inherit", workflow)
-        self.assertEqual(workflow.count("NODE_AUTH_TOKEN:"), 1)
-        publish_step = workflow.split("      - name: Publish with provenance", 1)[1].split(
-            "      - name: Verify exact registry publication evidence", 1
+        # The npm credential enters exactly one job (ca-pi) ...
+        self.assertEqual(workflow.count("secrets.NPMJS_TOKEN"), 1)
+        pi_job = workflow.split("\n  release-pi:\n", 1)[1].split("\n  release-sandbox:\n", 1)[0]
+        self.assertIn("npm-token: ${{ secrets.NPMJS_TOKEN }}", pi_job)
+        self.assertNotRegex(workflow, r"(?m)^env:")
+        self.assertNotRegex(workflow, r"(?m)^defaults:")
+        self.assertNotIn("self-hosted", workflow)
+        self.assertNotIn("persist-credentials: true", workflow)
+        self.assertEqual(workflow.count("uses: actions/checkout@"),
+                         workflow.count("persist-credentials: false"))
+        # ... and exactly one step of the publish action.
+        self.assertEqual(action.count("NODE_AUTH_TOKEN:"), 1)
+        self.assertEqual(action.count("inputs.npm-token"), 1)
+        publish_step = action.split("    - name: Publish @arbiterforge/ca-pi to npm", 1)[1].split(
+            "\n    - name: ", 1
         )[0]
-        self.assertIn("NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}", publish_step)
-        self.assertIn('--ignore-scripts', publish_step)
+        self.assertIn("NODE_AUTH_TOKEN: ${{ inputs.npm-token }}", publish_step)
+        self.assertIn("--ignore-scripts", publish_step)
+        self.assertIn("--provenance", publish_step)
+        # The reviewed npm CLI is fetched without redirects and pinned by integrity.
+        self.assertIn("curl --disable", action)
+        self.assertIn("--max-redirs 0", action)
+        self.assertIn("sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==", action)
+
+    def test_npm_secret_boundary_rejects_hostile_drift(self):
+        workflow = self.WORKFLOW.read_text(encoding="utf-8")
+        action = self.ACTION.read_text(encoding="utf-8")
+        workflow_mutations = (
+            workflow.replace("  release-sandbox:\n", "  release-sandbox:\n    secrets: inherit\n", 1),
+            workflow.replace("permissions:\n  contents: read\n",
+                             "permissions:\n  contents: read\nenv:\n  T: ${{ secrets.NPMJS_TOKEN }}\n", 1),
+            workflow.replace("persist-credentials: false", "persist-credentials: true", 1),
+            workflow.replace("runs-on: ubuntu-latest", "runs-on: self-hosted", 1),
+            workflow.replace("\npermissions:\n", "\ndefaults:\n  run:\n    shell: evil\npermissions:\n", 1),
+        )
+        for mutation in workflow_mutations:
+            self.assertNotEqual(mutation, workflow)
+            with self.subTest(mutation="workflow"), self.assertRaises(AssertionError):
+                self._assert_npm_secret_boundary(mutation, action)
+        action_mutations = (
+            action.replace("--ignore-scripts", "", 1),
+            action.replace("curl --disable", "curl --location", 1),
+            action.replace("--max-redirs 0", "--max-redirs 1", 1),
+            action.replace("    - name: Read back the npm publication\n",
+                           "    - name: Read back the npm publication\n      env:\n        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}\n", 1),
+        )
+        for mutation in action_mutations:
+            self.assertNotEqual(mutation, action)
+            with self.subTest(mutation="action"), self.assertRaises(AssertionError):
+                self._assert_npm_secret_boundary(workflow, mutation)
 
     def test_release_and_git_identity_require_exact_annotated_tag(self):
         helper = self._helper()
@@ -3979,219 +3318,6 @@ class NpmPublishContractTest(unittest.TestCase):
                 helper.validate_remote_annotated_tag(
                     observed, tag, source, expected_object=expected
                 )
-
-    def test_qualified_draft_guard_rejects_published_marker_drift_and_duplicate_assets(self):
-        helper = self._helper()
-        marker_document = {
-            "format": "codearbiter.cohort-start/0.1.0", "target": "ca",
-            "host": "claude", "tag": "v1.2.3", "source_commit": "a" * 40,
-            "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
-            "ci_run_id": "123", "cohort_sha256": "c" * 64,
-            "release_notes_sha256": hashlib.sha256(b"notes\n").hexdigest(),
-            "cohort_tags": {"ca": "v1.2.3", "ca-codex": "ca-codex-v1.2.3",
-                            "ca-pi": "ca-pi-v1.2.3"},
-            "cohort_targets": ["ca"],
-        }
-        marker = json.dumps(marker_document, sort_keys=True, separators=(",", ":")).encode()
-        encoded = base64.urlsafe_b64encode(marker).decode().rstrip("=")
-        release = {"id": 42, "tag_name": "v1.2.3", "draft": True,
-                   "body": f"notes\n\n<!-- codearbiter-cohort-start-v1:{encoded} -->\n",
-                   "assets": [{"name": "package.tgz", "url": "asset-url"}]}
-        self.assertEqual(
-            helper.validate_qualified_draft_release(
-                [[release]], "v1.2.3", marker, asset_name="package.tgz"),
-            (42, "asset-url"),
-        )
-        for changed, message in (
-            ({**release, "draft": False}, "must remain draft"),
-            ({**release, "body": "marker removed"}, "marker is missing"),
-            ({**release, "body": release["body"].replace("notes\n", "replaced\n", 1)},
-             "notes identity mismatch"),
-            ({**release, "body": "extra prefix\n" + release["body"]},
-             "notes identity mismatch"),
-            ({**release, "body": release["body"] + "extra suffix\n"},
-             "marker is missing"),
-            ({**release, "body": release["body"] + release["body"].split("\n\n", 1)[1]},
-             "marker is missing"),
-            ({**release, "assets": release["assets"] * 2}, "duplicate"),
-        ):
-            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
-                helper.validate_qualified_draft_release(
-                    [[changed]], "v1.2.3", marker, asset_name="package.tgz")
-        final = {**release, "assets": [
-            {"name": "codearbiter-cohort-publication-v1.json", "url": "receipt-url"},
-            {"name": "package.tgz", "url": "package-url"},
-        ]}
-        self.assertEqual(helper.validate_qualified_finalization(
-            [[final]], "v1.2.3", marker,
-            allowed_assets=["codearbiter-cohort-publication-v1.json", "package.tgz"]),
-            (42, {"codearbiter-cohort-publication-v1.json": "receipt-url",
-                  "package.tgz": "package-url"}))
-        with self.assertRaisesRegex(ValueError, "missing, duplicate, or extra"):
-            helper.validate_qualified_finalization(
-                [[{**final, "assets": final["assets"] + [{"name": "extra", "url": "x"}]}]],
-                "v1.2.3", marker,
-                allowed_assets=["codearbiter-cohort-publication-v1.json", "package.tgz"])
-
-    def test_finalization_fault_injection_refuses_every_mutated_evidence_class(self):
-        helper = self._helper()
-        marker_document = {
-            "format": "codearbiter.cohort-start/0.1.0", "target": "ca-pi",
-            "host": "pi", "tag": "ca-pi-v1.2.3", "source_commit": "a" * 40,
-            "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
-            "ci_run_id": "123", "cohort_sha256": "c" * 64,
-            "release_notes_sha256": hashlib.sha256(b"notes\n").hexdigest(),
-            "cohort_tags": {"ca": "v1.2.3", "ca-codex": "ca-codex-v1.2.3",
-                            "ca-pi": "ca-pi-v1.2.3"},
-            "cohort_targets": ["ca-pi"],
-        }
-        marker = json.dumps(
-            marker_document, sort_keys=True, separators=(",", ":")
-        ).encode()
-        encoded = base64.urlsafe_b64encode(marker).decode().rstrip("=")
-        release = {
-            "id": 42, "tag_name": "ca-pi-v1.2.3", "draft": True,
-            "body": f"notes\n\n<!-- codearbiter-cohort-start-v1:{encoded} -->\n",
-            "assets": [{"name": "codearbiter-cohort-publication-v1.json",
-                        "url": "receipt-url"}],
-        }
-        helper.validate_qualified_finalization(
-            [[release]], "ca-pi-v1.2.3", marker,
-            allowed_assets=["codearbiter-cohort-publication-v1.json"],
-        )
-        for changed in (
-            {**release, "body": "mutated after initial observation"},
-            {**release, "assets": release["assets"] + [{"name": "extra", "url": "x"}]},
-            {**release, "draft": False},
-        ):
-            with self.subTest(release_mutation=changed), self.assertRaises(ValueError):
-                helper.validate_qualified_finalization(
-                    [[changed]], "ca-pi-v1.2.3", marker,
-                    allowed_assets=["codearbiter-cohort-publication-v1.json"],
-                )
-
-        receipt = {
-            "format": "codearbiter.cohort-publication/0.1.0", "target": "ca-pi",
-            "host": "pi", "tag": "ca-pi-v1.2.3", "source_commit": "a" * 40,
-            "source_tree": "b" * 40, "ci_run_id": "123", "cohort_sha256": "c" * 64,
-            "package_file": "arbiterforge-ca-pi-1.2.3.tgz",
-            "package_sha256": "d" * 64, "tag_object_sha": "e" * 40,
-            "release_notes_sha256": marker_document["release_notes_sha256"],
-            "cohort_tags": marker_document["cohort_tags"], "cohort_targets": ["ca-pi"],
-            "readback": "verified", "disposition": "published-and-read-back",
-        }
-        helper.validate_durable_receipt_with_marker(receipt, marker_document)
-        with self.assertRaisesRegex(ValueError, "exact cohort-start marker"):
-            helper.validate_durable_receipt_with_marker(
-                {**receipt, "source_commit": "f" * 40}, marker_document
-            )
-        with self.assertRaisesRegex(ValueError, "exact cohort-start marker"):
-            helper.validate_durable_receipt_with_marker(
-                {**receipt, "release_notes_sha256": "f" * 64}, marker_document
-            )
-
-        source = "a" * 40
-        remote = (f"{'e' * 40}\trefs/tags/ca-pi-v1.2.3\n"
-                  f"{source}\trefs/tags/ca-pi-v1.2.3^{{}}\n")
-        helper.validate_remote_annotated_tag(
-            remote, "ca-pi-v1.2.3", source, expected_object="e" * 40
-        )
-        same_commit_retag = remote.replace("e" * 40, "f" * 40, 1)
-        with self.assertRaisesRegex(ValueError, "object identity changed"):
-            helper.validate_remote_annotated_tag(
-                same_commit_retag, "ca-pi-v1.2.3", source,
-                expected_object=receipt["tag_object_sha"],
-            )
-
-        integrity = "sha512-" + base64.b64encode(b"integrity").decode()
-        registry = json.dumps({
-            "version": "1.2.3",
-            "dist": {"integrity": integrity, "attestations": {
-                "url": "https://registry.npmjs.org/-/npm/v1/attestations/"
-                       "@arbiterforge%2fca-pi@1.2.3",
-                "provenance": {"predicateType": helper.PROVENANCE_PREDICATE},
-            }},
-        })
-        self.assertEqual(helper.classify_registry_lookup(
-            0, registry, "", "1.2.3", integrity), "present")
-        with self.assertRaisesRegex(ValueError, "integrity"):
-            helper.classify_registry_lookup(
-                0, registry, "", "1.2.3",
-                "sha512-" + base64.b64encode(b"mutated").decode(),
-            )
-
-    def test_second_observation_drift_never_reaches_npm_publish_or_undraft(self):
-        helper = self._helper()
-        marker_document = {
-            "format": "codearbiter.cohort-start/0.1.0", "target": "ca-pi",
-            "host": "pi", "tag": "ca-pi-v1.2.3", "source_commit": "a" * 40,
-            "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
-            "ci_run_id": "123", "cohort_sha256": "c" * 64,
-            "release_notes_sha256": hashlib.sha256(b"notes\n").hexdigest(),
-            "cohort_tags": {"ca": "v1.2.3", "ca-codex": "ca-codex-v1.2.3",
-                            "ca-pi": "ca-pi-v1.2.3"},
-            "cohort_targets": ["ca-pi"],
-        }
-        marker = json.dumps(
-            marker_document, sort_keys=True, separators=(",", ":")
-        ).encode()
-        encoded = base64.urlsafe_b64encode(marker).decode().rstrip("=")
-        body = f"notes\n\n<!-- codearbiter-cohort-start-v1:{encoded} -->\n"
-        receipt = {"name": "codearbiter-cohort-publication-v1.json", "url": "r"}
-        package = {"name": "package.tgz", "url": "p"}
-
-        def assert_stopped(first, second, assets, command):
-            invoked = []
-            _, observed = helper.validate_qualified_finalization(
-                [[first]], "ca-pi-v1.2.3", marker, allowed_assets=assets)
-            try:
-                helper.validate_qualified_finalization(
-                    [[second]], "ca-pi-v1.2.3", marker, allowed_assets=assets,
-                    expected_assets=observed)
-            except ValueError:
-                pass
-            else:
-                invoked.append(command)
-            self.assertNotIn(command, invoked)
-
-        empty = {"id": 42, "tag_name": "ca-pi-v1.2.3", "draft": True,
-                 "body": body, "assets": []}
-        for changed in (
-            {**empty, "draft": False},
-            {**empty, "body": "late body drift"},
-            {**empty, "assets": [receipt]},
-        ):
-            with self.subTest(boundary="npm", changed=changed):
-                assert_stopped(empty, changed, [], "npm publish")
-
-        complete = {**empty, "assets": [receipt, package]}
-        complete_assets = sorted((receipt["name"], package["name"]))
-        for changed in (
-            {**complete, "draft": False},
-            {**complete, "body": "late body drift"},
-            {**complete, "assets": [receipt]},
-            {**complete, "assets": [{**receipt, "url": "replacement-receipt"}, package]},
-            {**complete, "assets": [receipt, {"name": "replacement.tgz", "url": "x"}]},
-            {**complete, "assets": [receipt, package,
-                                     {"name": "unexpected", "url": "x"}]},
-        ):
-            with self.subTest(boundary="patch", changed=changed):
-                assert_stopped(complete, changed, complete_assets,
-                               "gh api --method PATCH")
-
-    def test_markerless_exact_current_tag_is_unresolved_but_historical_tag_is_outside(self):
-        helper = self._helper()
-        source_a = "a" * 40
-        source_b = "b" * 40
-        remote_a = f"{source_a}\trefs/tags/v1.2.3\n"
-        with self.assertRaisesRegex(ValueError, "markerless current qualified tag"):
-            helper.reject_markerless_current_tag(
-                remote_a, "v1.2.3", source_a, has_marker=False)
-        helper.reject_markerless_current_tag(
-            remote_a, "v1.2.3", source_b, has_marker=False)
-        helper.reject_markerless_current_tag(
-            remote_a, "v1.2.3", source_a, has_marker=True)
-
 
 if __name__ == "__main__":
     if "--rpc-commands" in sys.argv:

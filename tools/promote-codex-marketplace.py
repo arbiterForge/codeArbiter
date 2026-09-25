@@ -97,23 +97,30 @@ def promote(*, package_root: Path, cohort_sha256: str, source_repo: Path,
             work: Path, push: bool, advance_channel: bool=False,
             expected_marketplace_head: str | None=None,
             expected_npm_integrity: str | None=None,
-            expected_npm_sha256: str | None=None) -> dict[str, object]:
+            expected_npm_sha256: str | None=None,
+            catalog_mode: str="git") -> dict[str, object]:
     if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None: raise ValueError("source commit must be a full lowercase commit id")
     if not remote_url or "\n" in remote_url or "\r" in remote_url: raise ValueError("publication remote URL is invalid")
     if PACKAGER.semver_key(version) is None: raise ValueError("Codex distribution version must be SemVer")
+    # "git" (default) points the channel at the immutable dist tag; "npm" is
+    # the deferred registry channel (ADR-0039), kept for when npm resumes.
+    if catalog_mode not in ("git", "npm"): raise ValueError("Codex catalog mode must be git or npm")
     work = work.absolute()
     if work.exists() or work.is_symlink(): raise ValueError("Codex distribution work path already exists")
     work.mkdir(); distribution = work / "distribution"
     staged = PACKAGER.stage_codex_marketplace_distribution(package_root=package_root,
         package_cohort_sha256=cohort_sha256, output=distribution)
     if staged.get("source_commit") != source_commit: raise ValueError("Codex distribution cohort is bound to a different source commit")
-    npm = PACKAGER.build_codex_npm_package(
-        package_root=package_root, package_cohort_sha256=cohort_sha256,
-        output=work / "npm",
-    )
-    if npm.get("source_commit") != source_commit or npm.get("version") != version:
-        raise ValueError("Codex npm package is bound to a different source or version")
-    if advance_channel and (
+    if catalog_mode == "npm":
+        npm = PACKAGER.build_codex_npm_package(
+            package_root=package_root, package_cohort_sha256=cohort_sha256,
+            output=work / "npm",
+        )
+        if npm.get("source_commit") != source_commit or npm.get("version") != version:
+            raise ValueError("Codex npm package is bound to a different source or version")
+    else:
+        npm = {"file": "", "sha256": "", "integrity": ""}
+    if advance_channel and catalog_mode == "npm" and (
         expected_npm_integrity != npm.get("integrity")
         or expected_npm_sha256 != npm.get("sha256")
     ):
@@ -137,10 +144,14 @@ def promote(*, package_root: Path, cohort_sha256: str, source_repo: Path,
     expected = None if expected_marketplace_head == "absent" else expected_marketplace_head
     if expected_marketplace_head is not None and existing_marketplace != expected:
         raise ValueError("Codex marketplace expected head drifted")
-    catalog = PACKAGER.promoted_codex_catalog(
-        catalog_source, package="@arbiterforge/ca-codex", version=version,
-        registry="https://registry.npmjs.org",
-    )
+    if catalog_mode == "npm":
+        catalog = PACKAGER.promoted_codex_catalog(
+            catalog_source, package="@arbiterforge/ca-codex", version=version,
+            registry="https://registry.npmjs.org",
+        )
+    else:
+        catalog = PACKAGER.promoted_codex_git_catalog(
+            catalog_source, ref=distribution_ref, sha=distribution_commit)
     catalog_commit = None
     if advance_channel:
         if existing_distribution != distribution_commit:
@@ -189,9 +200,11 @@ def main(argv=None):
     for name in ("package-root","source-repo","work"): p.add_argument("--"+name,type=Path,required=True)
     p.add_argument("--push",action="store_true"); p.add_argument("--advance-channel",action="store_true"); p.add_argument("--expected-marketplace-head")
     p.add_argument("--expected-npm-integrity"); p.add_argument("--expected-npm-sha256")
+    p.add_argument("--catalog-mode",choices=("git","npm"),default="git")
     a=p.parse_args(argv)
     print(json.dumps(promote(package_root=a.package_root,cohort_sha256=a.cohort_sha256,source_repo=a.source_repo,
         source_commit=a.source_commit,remote_url=a.remote_url,catalog_url=a.catalog_url,version=a.version,work=a.work,
         push=a.push,advance_channel=a.advance_channel,expected_marketplace_head=a.expected_marketplace_head,
-        expected_npm_integrity=a.expected_npm_integrity,expected_npm_sha256=a.expected_npm_sha256),indent=2)); return 0
+        expected_npm_integrity=a.expected_npm_integrity,expected_npm_sha256=a.expected_npm_sha256,
+        catalog_mode=a.catalog_mode),indent=2)); return 0
 if __name__ == "__main__": raise SystemExit(main())
