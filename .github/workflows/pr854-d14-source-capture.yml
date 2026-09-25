@@ -1,0 +1,40 @@
+name: PR854 D14 source capture (temporary)
+on:
+  push:
+    branches: [codex/farm-readiness-canary-isolation]
+    paths: [.github/workflows/pr854-d14-source-capture.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture exact committed source without running product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = a469bf51d65ecbd88fae9d21994470f63f78630c
+          MAIN=3bc62943be35b1593017016c3ecb4bbb2bc2fb88
+          git cat-file -e "$MAIN^{commit}"
+          git update-ref refs/review/pinned-main "$MAIN"
+          OUT="$RUNNER_TEMP/pr854-d14-source"
+          mkdir "$OUT"
+          git bundle create "$OUT/source.bundle" HEAD refs/review/pinned-main
+          git rev-parse HEAD > "$OUT/head.txt"
+          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
+          printf '%s\n' "$MAIN" > "$OUT/main.txt"
+          cd "$OUT"
+          sha256sum source.bundle > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr854-d14-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-d14-source/
+          if-no-files-found: error
+          retention-days: 3
