@@ -1461,8 +1461,8 @@ registry remains 37 records and the source skill count remains 22.
 Twelve new source/host-projection methods pass. Against unchanged baseline source,
 all twelve fail by assertion (fourteen failed assertions/subtests), with no runtime
 or collection errors. They cover mode-first loading, scoped sources, non-mutating
-reports, explicit append-only capture, owner handoffs, protected neighboring
-contracts, exact scoring preservation and the unchanged duplicate-owner guard.
+reports, explicit append-only capture, owner handoffs, shared-reference
+ownership, exact scoring preservation and the unchanged duplicate-owner guard.
 The last is preservation evidence, not proof of a previously allowed duplicate.
 Two operator-document cases cover report/record separation and continuation.
 
@@ -1499,3 +1499,63 @@ Rollback this slice's owner, entry, private card, generated projections and targ
 tests/docs together; retain actual ADR history, protected runtime authority and the
 other agents' work. Final review, actual model side-effect traces, installed-session
 context accounting and release qualification remain separate obligations.
+
+
+### D14 self-review: avoid freezing neighboring owners
+
+The first D14 commit included six whole-file digest assertions for unchanged
+neighboring workflows and shared sources. Those checks establish this slice's
+scope, but keeping them in permanent CI would reject another agent's legitimate
+SPRINT, debug, decompose, registry or shared-reference edit even when D14 is unaffected.
+The follow-up retains the D14-owned scoring-block preservation check and shared
+reference assertions, while moving neighboring-file identity to the already
+recorded parent-to-published-tree validation. Existing neighbor-owned tests remain.
+No runtime code, source procedure, metadata, deadline or workflow setting changes.
+
+
+### D14 review and browser correction after 2530d1c
+
+Review 5323133105, comment 4108989846, identified a real conflict between the new
+same-level-conflict reporting requirement and the retained Phase 3 exclusion of
+all concur cases. The two report-selection/gate clauses now retain every unresolved
+authority conflict, cite both governing sources and do not invent a disagreement
+between an artifact and scaffold that actually agree. The rest of the exact prior
+Phase 3 is still hash-checked after reversing only those two explicit replacements.
+The new regression fails against the old card and passes after correction. The
+complete surface suite now runs 135 cases with one existing Windows platform skip.
+The current private card is 8,702 UTF-8 bytes; the owner and measured discovery
+entry bytes are unchanged from 2530d1c.
+
+Docs run 36193561288 at 2530d1c built the site and passed link audit but failed the
+browser publication gate (job 108264106711): 172 of 173 cases passed. The failing
+assertion still required the pre-D14 phrase "user resolves each variance" rather
+than the new remaining-choices and report-only contract. This is assertion drift,
+not a timing failure. The unchanged assertion reproduces locally against the built
+candidate. Its replacement checks remaining choices, report-only returning before
+capture, no repeat of an already-selected choice, append-only history and separate
+authorization. All prior lens/count/no-scoring-control/sprint restrictions remain.
+All 15 C02 browser cases pass locally, including reflow, accessibility, navigation,
+no-script and print coverage. This is separate from the normal 925-case site tests;
+neither substitutes for the final-head complete hosted publication gate.
+
+These corrections add no entry, prompt metadata, runtime permission, deadline or
+workflow configuration. Final checks and remote tree identity are recorded on the
+PR; this historical failure is not relabeled as a passing run.
+
+
+### Distinct native package timeout at 2530d1c
+
+CI run 36193561292, native Windows AMD64 job 108264164172, passed the farm
+boundary tests but timed out in the package suite's
+`test_cold_execution_refuses_wrong_cell_context_and_is_create_only`. The timeout
+occurred during `reviewed-npm.cmd pack --dry-run --ignore-scripts --json` at the
+existing 120-second bound, before the wrong-cell assertions. This is not the
+historical 30-second farm subprocess timeout or a D14 assertion failure.
+
+A fresh exact-2530d1c Windows worktree built the same native binary digest and
+passed that unchanged test locally (Node 24.18.0, Python 3.14.6, Go 1.27.1).
+The hosted Node 22.19.0/Python 3.14.7 environment was not reproduced. The trace
+does not identify why npm failed to finish, so no durable fix or disappearance
+is claimed. The packager's offline environment and 120-second deadline remain
+unchanged. Final-head native and cold-package qualification is still required;
+a successful new head must not erase this failed-attempt record.

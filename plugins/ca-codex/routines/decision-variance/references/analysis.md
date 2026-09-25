@@ -99,7 +99,11 @@ For every `divergent`, `scaffold-silent`, or `artifact-silent` case, write one e
 position (cited with anchor), the scaffold position (cited with file paths), why it matters (1–3
 sentences), the resolution options (adopt artifact / adopt scaffold / hybrid only if a real synthesis
 exists / defer with reason), a SMARTS analysis of each option, and a recommendation with a strength
-label. `concur` and `both-silent` cases produce no entry — they live in the evidence index only.
+label. `concur` and `both-silent` cases without an unresolved authority flag stay
+in the evidence index. Every `same-level-conflict` still produces an unresolved
+report item, including when the artifact/scaffold comparison is `concur`. Cite
+both governing sources and their disagreement; do not invent an artifact/scaffold
+variance, resolution or scoring inputs where that comparison actually agrees.
 
 The SMARTS table follows [includes/smarts/core.md](../../../includes/smarts/core.md) exactly: six lenses, verdict-first cells (Strong /
 Adequate / Weak / Indifferent), the length cap, no hedging adverbs, evidence specificity. The
@@ -122,7 +126,9 @@ than ~20 decision categories or ~50 scaffold files), MAY dispatch `scout`
 smaller passes.
 
 Gate: every qualifying variance has a conformant SMARTS table and a strength-labeled
-recommendation. No `concur`/`both-silent` noise in the report.
+recommendation. Every `same-level-conflict` remains visible with both source
+citations, independently of comparison status. Only unflagged `concur`/`both-silent`
+items are omitted from the report; unresolved authority conflicts are not noise.
 
 ## Return boundary
 

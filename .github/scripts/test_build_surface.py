@@ -2317,14 +2317,39 @@ class ReconcileOwnershipTest(unittest.TestCase):
         self.assertIn('re-read the log', text)
         self.assertIn('never duplicate', text)
 
-    def test_scoring_and_adjacent_contracts_are_preserved(self):
-        """Extraction changes loading, not SMARTS scoring or another agent's scope."""
+    def test_scoring_procedure_and_shared_reference_ownership_are_preserved(self):
+        """Keep D14 scoring intact without freezing other workflows' source bytes."""
         import hashlib
         card = self.text(self.analysis)
-        self.assertEqual(hashlib.sha256(card[card.index('## Phase 3'):card.index('## Return boundary')].encode()).hexdigest(), 'd2129e34ce0bd412801d93c6372b5ca09617c90499940028fd9bcb75251d4c37')
-        for path, expected in {'core/surface/SPRINT.md': 'f4febee07ef7446307c14cf8a52d40224daaddcf1e43bc1e84e9ca36af1f99ec', 'core/surface/includes/smarts/core.md': 'bec35848cb148b0c1ff8e05c39e561012ab74385074d11cc38d6d8315462b434', 'core/surface/includes/smarts/decision-log-format.md': 'bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6', 'core/surface/command-routes.json': '2ced3f30fea81d5318e5b22dcf05e14edd6d516c2920bf5bcfbd74596d1059cb', 'core/surface/skills/decompose/SKILL.md': 'cd8bdd5b2e7f347fd6d8f07118bdc2bab8fdd74ce2411a1dc64b21f373d05393', 'core/surface/skills/debug/SKILL.md': '86824be48ec461399920bb3ea8d5a9150f7908b928b3f611ea4f4e7b4203436a'}.items():
-            with self.subTest(path=path):
-                self.assertEqual(hashlib.sha256((REPO_ROOT / path).read_bytes()).hexdigest(), expected)
+        scoring = card[card.index('## Phase 3'):card.index('## Return boundary')]
+        # The verified report-filter correction is the only Phase 3 delta;
+        # reconstructing those two clauses keeps the rest of its exact contract.
+        old_filter, new_filter = 'label. `concur` and `both-silent` cases produce no entry — they live in the evidence index only.', 'label. `concur` and `both-silent` cases without an unresolved authority flag stay\nin the evidence index. Every `same-level-conflict` still produces an unresolved\nreport item, including when the artifact/scaffold comparison is `concur`. Cite\nboth governing sources and their disagreement; do not invent an artifact/scaffold\nvariance, resolution or scoring inputs where that comparison actually agrees.'
+        old_gate, new_gate = 'recommendation. No `concur`/`both-silent` noise in the report.', 'recommendation. Every `same-level-conflict` remains visible with both source\ncitations, independently of comparison status. Only unflagged `concur`/`both-silent`\nitems are omitted from the report; unresolved authority conflicts are not noise.'
+        self.assertEqual(scoring.count(new_filter), 1)
+        self.assertEqual(scoring.count(new_gate), 1)
+        legacy = scoring.replace(new_filter, old_filter).replace(new_gate, old_gate)
+        self.assertEqual(hashlib.sha256(legacy.encode()).hexdigest(),
+                         'd2129e34ce0bd412801d93c6372b5ca09617c90499940028fd9bcb75251d4c37')
+        self.assertIn('{{PLUGIN_ROOT}}/includes/smarts/core.md', card)
+        self.assertIn('{{PLUGIN_ROOT}}/includes/smarts/decision-log-format.md', card)
+        self.assertIn('{{PLUGIN_ROOT}}/includes/smarts/decision-log-format.md',
+                      self.text(self.owner))
+        # Untouched neighboring files are checked against this slice's parent at
+        # publication, not locked to that historical digest in every future CI run.
+
+    def test_report_filter_retains_conflicts_despite_artifact_scaffold_agreement(self):
+        """An agreeing comparison cannot hide independent conflicting governance."""
+        card = self.text(self.analysis)
+        phase = card[card.index('## Phase 3'):card.index('## Return boundary')]
+        flowed = ' '.join(phase.split())
+        for phrase in ('Every `same-level-conflict` still produces an unresolved report item',
+                       'including when the artifact/scaffold comparison is `concur`',
+                       'Cite both governing sources',
+                       'do not invent an artifact/scaffold variance',
+                       'Only unflagged `concur`/`both-silent` items are omitted'):
+            self.assertIn(phrase, flowed)
+        self.assertNotIn('No `concur`/`both-silent` noise', phase)
 
     def test_duplicate_composed_owner_remains_rejected(self):
         """The consolidation cannot add a second model-facing procedure owner."""
