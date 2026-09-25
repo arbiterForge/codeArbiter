@@ -1,0 +1,46 @@
+name: PR862 browser correction objects
+on:
+  push:
+    branches: [prep/pr862-ci-source]
+    paths: [.github/workflows/pr862-browser-final-objects.yml]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 54d8dfec3fbc58e155ba4222dbaeee9fbed696ba
+          persist-credentials: false
+      - name: Apply hash-bound patch and store four unreferenced blobs
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import base64, gzip, hashlib, json, os, pathlib, subprocess, urllib.request
+          encoded = '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'
+          expected = {
+            'site/src/scripts/execution-map-navigation.ts':'19ddf288ea3ab9a6ce634e72961e6e254269bdab',
+            'site/test/browser/peer-layout.spec.ts':'9e89a631694ab2cab970af7dde969faaa7ac6bd3',
+            'site/test/browser/workflow-navigation.spec.ts':'8e39be219f6e0037ec6ff2714144a74ac93e6e1e',
+            'site/test/browser/workflow-propagation.spec.ts':'4bb272620a2f1b23bb9cd144aeb15e35d889e4be',
+          }
+          patch = gzip.decompress(base64.b64decode(encoded, validate=True))
+          assert len(patch) == 6600
+          assert hashlib.sha256(patch).hexdigest() == '7e5db51af47943aed8da52fe0462e9d65e25a4966ff80d2d7b035b683f16bd76'
+          subprocess.run(['git','apply','--check','--index','-'], input=patch, check=True)
+          subprocess.run(['git','apply','--index','-'], input=patch, check=True)
+          paths = subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines()
+          assert sorted(paths) == sorted(expected)
+          tree = subprocess.check_output(['git','write-tree'], text=True).strip()
+          assert tree == '86cbb6d9b64c0998fe0734817eab0f26d874a5d4'
+          for path in paths:
+            raw = pathlib.Path(path).read_bytes()
+            sha = hashlib.sha1(f'blob {len(raw)}\0'.encode()+raw).hexdigest()
+            assert sha == expected[path]
+            request = urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs', data=json.dumps({'content':base64.b64encode(raw).decode(),'encoding':'base64'}).encode(), headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'}, method='POST')
+            with urllib.request.urlopen(request, timeout=30) as response:
+              assert json.load(response)['sha'] == sha
+          print(json.dumps({'tree':tree,'verified_blobs':expected}))
