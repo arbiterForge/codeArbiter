@@ -2051,6 +2051,39 @@ class AdrModeOwnershipTest(unittest.TestCase):
         self.assertIn('authorized `/adr` workflow (`decision-lifecycle`)', resident)
         self.assertIn('outside that authoring workflow is prohibited, marker or not', resident)
 
+    def test_authoring_distinguishes_absent_from_unreadable_storage(self):
+        """Only a new explicitly authorized ADR may initialize absent storage."""
+        text = ' '.join(self.text(self.author_path).split())
+        self.assertIn('Unreadable existing storage is a STOP, not an empty index', text)
+        self.assertIn('Only an explicitly authorized new-record request may create an absent directory', text)
+        self.assertIn('changes to an existing record never create a missing directory', text)
+        self.assertNotIn('Read these, or STOP and surface the gap', text)
+
+    def test_adr_marker_uses_guard_project_root_and_captured_cleanup_path(self):
+        """ADR guards differ from security/migration marker-root escalation."""
+        import re
+        text = self.text(self.author_path)
+        resolver = re.search(r"-c '([^']+)'", text)
+        self.assertIsNotNone(resolver)
+        self.assertIn('from _hooklib import project_root', resolver.group(1))
+        self.assertNotIn('marker_root', resolver.group(1))
+        self.assertNotIn('git rev-parse --show-toplevel', text)
+        self.assertIn('rm -f "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"', text)
+        self.assertIn('Do not resolve a different root during cleanup', text)
+        self.assertIn('a resolver failure or empty result stops', text.lower())
+
+    def test_current_progress_rollup_matches_adopted_owner_relationships(self):
+        """An agent reading only the current table must not requeue completed work."""
+        import re
+        text = self.text('docs/reviews/2026-09-21-autonomy-routing-integration.md')
+        current = text.split('## Current progress:', 1)[1].split('Active canonical command records', 1)[0]
+        rows = re.findall(r'^\| (D\d{2}) \| [^|]+ \| (.+) \|$', current, re.M)
+        self.assertEqual(len(rows), 15)
+        self.assertEqual({key for key, value in rows if value.startswith('Pending')},
+                         {'D03', 'D04', 'D07', 'D14'})
+        self.assertEqual(sum(value.startswith('Complete') for _, value in rows), 10)
+        self.assertIn('not ten distinct composed owners', current)
+
     def test_status_adapter_never_becomes_a_second_composed_owner(self):
         """Retain the compiler guard that rejects duplicate discovery ownership."""
         import shutil
@@ -2060,6 +2093,110 @@ class AdrModeOwnershipTest(unittest.TestCase):
             _write(root, 'core/surface/commands/adr-status.md', '{{SKILL_ENTRY:decision-lifecycle}}\n')
             with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
                 B.render_all(root, 'claude')
+
+
+
+
+class AdrMarkerRootJourneyTest(unittest.TestCase):
+    """Fresh-process resolver/guard agreement with real primary and linked roots."""
+
+    def exercise(self, host, root_signal):
+        import importlib.util
+        import re
+        import subprocess
+        author = (REPO_ROOT / 'core/surface/skills/decision-lifecycle/references/authoring.md').read_text(encoding='utf-8')
+        found = re.search(r"-c '([^']+)'", author)
+        self.assertIsNotNone(found, 'authoring must carry a guard-aligned root resolver')
+        resolver = found.group(1)
+        hooks = REPO_ROOT / f'plugins/{host}/hooks'
+        with tempfile.TemporaryDirectory(prefix='adr-root-contract-') as td:
+            outer = Path(td).resolve()
+            primary, linked = outer / 'primary', outer / 'linked'
+            primary.mkdir()
+            env = {k: v for k, v in os.environ.items()
+                   if not k.startswith(('GIT_', 'CLAUDE_', 'CODEX_', 'PI_'))
+                   and k not in ('PLUGIN_ROOT', 'PROJECT_DIR')}
+            env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull,
+                       GIT_AUTHOR_NAME='Fixture', GIT_COMMITTER_NAME='Fixture',
+                       GIT_AUTHOR_EMAIL='fixture@example.invalid', GIT_COMMITTER_EMAIL='fixture@example.invalid')
+            def git(*args):
+                return subprocess.run(['git', *args], cwd=primary, env=env,
+                                      capture_output=True, text=True, check=True, timeout=15)
+            git('init', '--initial-branch=main')
+            context = primary / '.codearbiter/CONTEXT.md'
+            context.parent.mkdir()
+            context.write_text('---\narbiter: enabled\n---\n', encoding='utf-8')
+            git('add', '--', '.codearbiter/CONTEXT.md')
+            git('commit', '-m', 'Isolated root fixture')
+            git('worktree', 'add', str(linked), '-b', 'fixture-linked')
+            cwd = linked / 'nested'
+            cwd.mkdir()
+            if root_signal:
+                env['CLAUDE_PROJECT_DIR'] = str(primary if root_signal == 'primary' else linked)
+            expected = primary if host == 'ca' and root_signal == 'primary' else linked
+            selected = subprocess.run([sys.executable, '-c', resolver, str(hooks)],
+                                      cwd=cwd, env=env, capture_output=True, text=True,
+                                      encoding='utf-8', check=True, timeout=15)
+            root = Path(selected.stdout.strip())
+            self.assertTrue(root.samefile(expected), (host, root_signal, selected.stdout))
+            marker = root / '.codearbiter/.markers/adr-authoring-active'
+            other_root = linked if root.samefile(primary) else primary
+            if host == 'ca' and root_signal == 'primary':
+                legacy = subprocess.run(['git', 'rev-parse', '--show-toplevel'],
+                                        cwd=cwd, env=env, capture_output=True, text=True,
+                                        check=True, timeout=15)
+                self.assertTrue(Path(legacy.stdout.strip()).samefile(other_root))
+            else:
+                # The general security/migration resolver intentionally escalates.
+                # That is not the root used by this ADR guard in these cases.
+                general = resolver.replace('project_root', 'marker_root')
+                other = subprocess.run([sys.executable, '-c', general, str(hooks)],
+                                       cwd=cwd, env=env, capture_output=True, text=True,
+                                       check=True, timeout=15)
+                self.assertTrue(Path(other.stdout.strip()).samefile(other_root))
+            wrong_marker = other_root / '.codearbiter/.markers/adr-authoring-active'
+            wrong_marker.parent.mkdir(parents=True, exist_ok=True)
+            wrong_marker.touch()
+            unrelated = wrong_marker.parent / 'unrelated-sentinel'
+            unrelated.write_bytes(b'preserve')
+            guard_code = ("import sys, importlib.util; sys.path.insert(0, sys.argv[1]); "
+                          "from _hooklib import project_root; "
+                          "s=importlib.util.spec_from_file_location('adr_guard', sys.argv[1]+'/pre-write.py'); "
+                          "m=importlib.util.module_from_spec(s); s.loader.exec_module(m); "
+                          "m._guard_op(project_root(), {'kind':'write','file_path':sys.argv[2],'content':'# fixture'})")
+            target = expected / '.codearbiter/decisions/0001-fixture.md'
+            def guard():
+                return subprocess.run([sys.executable, '-c', guard_code, str(hooks), str(target)],
+                                      cwd=cwd, env=env, capture_output=True, text=True,
+                                      encoding='utf-8', timeout=15)
+            denied = guard()
+            self.assertEqual(denied.returncode, 2, denied.stdout + denied.stderr)
+            self.assertIn('H-11', denied.stderr + denied.stdout)
+            marker.parent.mkdir(parents=True, exist_ok=True)
+            marker.touch()
+            admitted = guard()
+            self.assertEqual(admitted.returncode, 0, admitted.stdout + admitted.stderr)
+            marker.unlink()  # same captured path, not a new root resolved from cwd
+            denied_again = guard()
+            self.assertEqual(denied_again.returncode, 2, denied_again.stdout + denied_again.stderr)
+            self.assertTrue(wrong_marker.exists())
+            self.assertEqual(unrelated.read_bytes(), b'preserve')
+            self.assertFalse(target.exists(), 'guard checks must not actually author an ADR')
+
+    def test_claude_main_signal_and_linked_cwd_use_the_guard_root(self):
+        """The old Git-toplevel guess arms a marker the env-rooted guard misses."""
+        self.exercise('ca', 'primary')
+
+    def test_claude_linked_signal_does_not_unconditionally_escalate_to_main(self):
+        """General marker_root escalation would be wrong for this ADR guard."""
+        self.exercise('ca', 'linked')
+
+    def test_codex_and_pi_ignore_a_foreign_claude_root_signal(self):
+        """Host-local resolver semantics, not a Claude-only path, own the marker."""
+        for host in ('ca-codex', 'ca-pi'):
+            with self.subTest(host=host):
+                self.exercise(host, 'primary')
+
 
 
 if __name__ == "__main__":

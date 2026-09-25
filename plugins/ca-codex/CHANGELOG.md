@@ -16,6 +16,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Resolve ADR authoring markers through the same host project-root function as
+  the ADR guards, retain that path for cleanup, and distinguish first-record
+  directory creation from unreadable storage.
+
 - Consolidate ADR authoring and read-only status under one concise owner; load
   authoring and acceptance details only on demand, preserving explicit entries
   and full-stem identity without creating records during a status request.

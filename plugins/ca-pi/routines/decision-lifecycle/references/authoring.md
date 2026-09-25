@@ -17,9 +17,12 @@ A health scan never enters this procedure. New-record authoring follows the phas
 
 ## Pre-flight
 
-Read these, or STOP and surface the gap — never guess a path:
+Read existing storage before changing it; never guess a path:
 
-- `<project-root>/.codearbiter/decisions/` — the ADR directory and existing records. Create it on first `/adr` if absent.
+- `<project-root>/.codearbiter/decisions/` — if present, read the directory and
+  its existing records. Unreadable existing storage is a STOP, not an empty index.
+  Only an explicitly authorized new-record request may create an absent directory.
+  Read-only status and changes to an existing record never create a missing directory.
 - For `/adr`: confirm the user explicitly authorized this decision and supplied (or confirmed) its content. An ADR is never authored as the disposition of a routine finding.
 
 ## Phase 1 — Index · gate: BLOCK
@@ -34,11 +37,25 @@ Gate: the existing ADRs are indexed by stem and, for `/adr`, the next number is 
 
 Confirm the decision content with the user — context, the decision itself, alternatives, consequences. MUST NOT fill these from inference. Surface any unknown as an inline `[CONFIRM-NN]` placeholder; do not resolve it by guessing.
 
-**Drop the authoring marker first.** The `pre-write`/`pre-edit` hooks block any write to `.codearbiter/decisions/NNNN-*.md` unless a fresh authoring marker is present — that block requires the authorized authoring workflow to arm its own marker. Direct owner routing executes the same `/adr` procedure, not a second authorization path. Immediately before writing, create the marker at the path the hooks check (project root = git top level):
+**Drop the authoring marker first.** The `pre-write`/`pre-edit` hooks block any write to `.codearbiter/decisions/NNNN-*.md` unless a fresh authoring marker is present — that block requires the authorized authoring workflow to arm its own marker. Direct owner routing executes the same `/adr` procedure, not a second authorization path. Immediately before writing, resolve the **same project root as the ADR guards**
+using the installed `_hooklib.project_root()` in the current host/session context.
+Those guards use `project_root()`, not the general security/migration `marker_root()`;
+do not unconditionally climb to the main worktree or use a fresh Git toplevel guess.
+Claude's project-directory signal can legitimately name the main checkout while
+execution is in a linked checkout; Codex and Pi use their own host resolution.
+
+Use the host's already resolved native Python 3 executable as `PY` in this Bash
+form (equivalent native-shell filesystem operations are allowed). Pass the trusted
+installed hooks directory, not a project module with the same name. Preserve the
+resolved `ADR_MARKER_ROOT` and exact marker path in workflow context for cleanup,
+including across separate shell calls. A resolver failure or empty result stops
+before any marker write:
 
 ```bash
-mkdir -p "$(git rev-parse --show-toplevel)/.codearbiter/.markers"
-touch "$(git rev-parse --show-toplevel)/.codearbiter/.markers/adr-authoring-active"
+ADR_MARKER_ROOT="$("$PY" -c 'import sys; from pathlib import Path; sys.path.insert(0, sys.argv[1]); from _hooklib import project_root; print(Path(project_root()).as_posix())' "<plugin-root>/hooks")" || exit 1
+[ -n "$ADR_MARKER_ROOT" ] || exit 1
+mkdir -p "$ADR_MARKER_ROOT/.codearbiter/.markers"
+touch "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"
 ```
 
 The marker is honored for 30 minutes. Then write `<project-root>/.codearbiter/decisions/NNNN-<slug>.md` using the canonical ADR template — `<plugin-root>/routines/decision-lifecycle/references/adr-template.md` (the single source of truth for the ADR shape, shared with `decompose`). Author it with `status: proposed`. If this decision supersedes an existing one, set `supersedes:` to that ADR's **full filename stem** — `supersedes: 0014-githook-shim-dropin-fail-closed`, never `supersedes: 0014` — and leave the prior ADR's file untouched (forward-only chain — do not edit it to add a back-reference).
@@ -53,10 +70,10 @@ by ADR-NNNN" — so a recorded decision pushes back at edit time instead of wait
 sweep. Offer the field whenever a decision constrains identifiable files; omit it for decisions
 without a file footprint. Globs are fnmatch-style against repo-relative forward-slash paths.
 
-Once the ADR file and its log entry are written (and any user-instructed status edit is applied), remove the marker — it exists only for one authoring pass:
+Once the ADR file and its log entry are written (and any user-instructed status edit is applied), remove the marker at the exact previously resolved path, even if the shell cwd changed. Do not resolve a different root during cleanup; it exists only for one authoring pass:
 
 ```bash
-rm -f "$(git rev-parse --show-toplevel)/.codearbiter/.markers/adr-authoring-active"
+rm -f "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"
 ```
 
 Gate: the ADR file is written with a real `decided-by` user attribution, numbered without a gap, and its log entry is appended. An ADR with no user attribution, or authored as the disposition of a finding, does not pass — STOP.

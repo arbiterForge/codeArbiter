@@ -5,6 +5,8 @@ export interface MapSource {
   path: string; quote: string;
   /** Relocated current owner; path and reviewedAt retain historical evidence. */
   currentPath?: string;
+  /** Exact present-day wording when the pinned historical quote predates a refactor. */
+  currentQuote?: string;
 }
 export interface MapNode {
   id: string; role: Role; label: string[]; title: string; href: string;
@@ -34,7 +36,7 @@ export const featureMap: ExecutionMap = {
     scope: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'batch complete and return to `executing-plans`. Do NOT hand to `commit-gate`' },
     tdd: { path: 'core/surface/skills/tdd/SKILL.md', quote: 'A `MISSING` obligation returns the workflow to Phase 2' },
     commit: { path: 'core/surface/skills/commit-gate/SKILL.md', quote: '# commit-gate' },
-    finish: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: 'MUST NOT auto-merge under `/sprint`' },
+    finish: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '**execute those steps here; do not re-invoke `{{CMD:pr}}`**', currentQuote: 'execute the **Open-PR procedure** below in this owner. Do not load or re-invoke the PR command wrapper.' },
     pr: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '`commit-gate` MUST have cleared on the current HEAD.' },
     dispatch: { path: 'core/surface/skills/dispatching-parallel-agents/SKILL.md', quote: 'finding-triage' },
   },
@@ -158,6 +160,7 @@ export function validateExecutionMap(map: ExecutionMap): string[] {
   for (const source of Object.values(map.sources)) {
     if (!/^core\/surface\//.test(source.path) || source.path.split('/').includes('..') || !source.quote.trim()) errors.push('invalid source anchor');
     if (source.currentPath !== undefined && (!/^core\/surface\//.test(source.currentPath) || source.currentPath.split('/').includes('..'))) errors.push('invalid current source anchor');
+    if (source.currentQuote !== undefined && !source.currentQuote.trim()) errors.push('invalid current source quote');
   }
   for (const edge of [...map.chapters.flatMap(chapter => chapter.edges), ...map.alternatives]) {
     if (!ids.has(edge.from) || !ids.has(edge.to)) errors.push('unknown edge endpoint');

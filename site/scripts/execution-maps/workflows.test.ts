@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { workflows, getWorkflow } from './workflows';
-import { validateExecutionMap } from './model';
+import { featureMap, validateExecutionMap } from './model';
 import { renderExecutionSvg, renderAlternativeMaps, chapterOffset } from './render';
 import { auditDiagram } from '../diagram-audit';
 
@@ -43,6 +43,21 @@ describe('C04 distinct workflow routes', () => {
     expect(validateExecutionMap(noRelocation)).toEqual([]);
   });
 
+  it('binds finishing reuse claims to actual historical and current procedure text', () => {
+    for (const map of [featureMap, getWorkflow('sprint').map]) {
+      const source = map.sources.finish;
+      expect(source.quote).toContain('do not re-invoke');
+      expect(source.currentQuote).toContain('execute the **Open-PR procedure**');
+      expect(source.currentQuote).toContain('Do not load or re-invoke the PR command wrapper.');
+      expect(read(source.path)).toContain(source.currentQuote);
+      expect(execFileSync('git', ['show', `${map.reviewedAt}:${source.path}`], { encoding: 'utf8' })).toContain(source.quote);
+      expect(source.currentQuote).not.toBe('MUST NOT auto-merge under `/sprint`');
+    }
+    const empty = structuredClone(getWorkflow('sprint').map);
+    empty.sources.finish.currentQuote = '  ';
+    expect(validateExecutionMap(empty)).toContain('invalid current source quote');
+  });
+
   it('covers every approved remaining lane and rejects unknown routes', () => {
     expect(workflows.map(w => w.id)).toEqual(['sprint', 'dependency', 'adr', 'release', 'greenfield', 'brownfield']);
     expect(new Set(workflows.map(w => w.asset)).size).toBe(workflows.length);
@@ -52,7 +67,7 @@ describe('C04 distinct workflow routes', () => {
     it(`${w.id} has a connected, source-owned path and actual endpoint`, () => {
       expect(validateExecutionMap(w.map)).toEqual([]);
       for (const source of Object.values(w.map.sources)) {
-        expect(read(source.currentPath ?? source.path)).toContain(source.quote);
+        expect(read(source.currentPath ?? source.path)).toContain(source.currentQuote ?? source.quote);
         expect(execFileSync('git', ['show', `${w.map.reviewedAt}:${source.path}`], { encoding: 'utf8' })).toContain(source.quote);
       }
       for (const note of w.notes) { expect(w.map.sources[note.source]).toBeDefined(); expect(note.detail.length).toBeGreaterThan(30); }

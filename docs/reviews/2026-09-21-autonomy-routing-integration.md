@@ -8,49 +8,48 @@ Source baseline: `arbiterForge/codeArbiter@5c876dd885598c248fa777e951dac4e628688
 
 This document carries the sprint/farm and structured-artifact reassessment into a review branch. It is not a new runtime registry, skill, command, agent, or always-loaded instruction. The implementation must be verified against the actual checkout rather than treating the preceding audits as authority.
 
-## Current progress: skill-authoring retirement (2026-09-25)
+## Current progress: ADR owner consolidation (2026-09-25)
 
-This section supersedes earlier slice status only where stated. Baseline inspected:
-`arbiterForge/codeArbiter@b075a61717f16ebb18c4f7f5e94b71b5a2ef56fe`.
-The maintainer explicitly requested deletion of both `new-skill` and its owning
-skill on the same PR. It is an intentional compatibility break for this one
-workflow, not a removal of other aliases or permission to invent a replacement.
+This rollup reflects the implemented D12/D13 source at
+`arbiterForge/codeArbiter@1584e4aa95b889e0061c3d3d81e86f22b0fa0242`, preserved by
+main merge `680cb03d39f91fd3e4a8ad968f0536a84dde9f0d`. Earlier dated implementation
+sections below remain historical records, not competing current status.
 
 ### Surface reduction, counted by kind
 
 | Work | Current disposition |
 |---|---|
-| `commit` / `commit-gate`, `debug` / `debug`, `refactor` / `refactor` | Three retained single-source owners; explicit entries are generated derivatives. |
-| `new-skill` / `skill-author` | Previously consolidated; now retired, including the template, host entries and public reference pages. |
-| `watch`, `cleanup`, `decompose`, `create-context`, `context-check` | Five previously implemented catalog aliases to PR, init and status modes; bodies/windows unchanged. These are not five new deletions. |
-| `release`, `tribunal`, `decompose`, `context-check`, `create-context`, `cleanup`, `threat-model` | Seven named owner-consolidation candidates still pending mode/authority/terminal-effect reconciliation. |
-| ADR/ADR-status/reconcile family; PR/finishing relationship | Four further relationships (D12-D15), not assumed to be trivial wrappers. |
+| D01/D05/D06 commit, debug and refactor | Three retained single-source relationships; explicit entries are generated derivatives. Debug is reserved for the other agent's separate work. |
+| D02 new-skill / skill-author | Retired by maintainer instruction, including template, host entries and public reference pages; no replacement. |
+| D08/D09/D10/D11/D15 tribunal, threat-model, context-check, cleanup and PR | Five additional retained single-source relationships, completed at `34b459c02bca520a31a9b25ba227f756e0633541`. |
+| D12/D13 ADR authoring and status | Two retained relationships share one procedure owner: composed ADR entry plus read-only status adapter. Authoring is an on-demand reference. |
+| D03/D04/D07/D14 | Four pending candidates: context-creation, decompose, release and decision-variance. No further deletion is approved. |
 
 The original 17 September `REVIEW.html` names **fifteen** candidate relationships,
 D01-D15, against archive baseline `5e7b2dac4e0f82560c1301144f3a20c35b7e0878`.
-The earlier rollup grouped D12-D15 and obscured that total. Three are consolidated
-and retained, one is explicitly retired, and eleven remain candidates, not eleven
-preapproved deletions. The broader RA-11 umbrella-command proposal is a different
-backlog from these ownership migrations. Counts below describe source ownership,
-not live-model routing success or token savings.
+**Ten retained relationships are addressed, one workflow is retired, and four
+candidates remain.** This is not ten distinct composed owners: D12 and D13 share
+`decision-lifecycle`, with only D12 composed. Existing catalog aliases and the
+broader RA-11 umbrella-verb proposal remain distinct from owner consolidation.
+Counts describe source ownership, not live-model routing or token savings.
 
 | Original ID | Entry / procedure | Current disposition |
 |---|---|---|
-| D01 | commit / commit-gate | Single-source owner retained |
+| D01 | commit / commit-gate | Complete: single-source owner retained |
 | D02 | new-skill / skill-author | Removed by maintainer instruction |
-| D03 | create-context / context-creation | Owner consolidation pending; existing init alias retained |
-| D04 | decompose / decompose | Owner consolidation pending; existing init alias retained |
-| D05 | debug / debug | Single-source owner retained |
-| D06 | refactor / refactor | Single-source owner retained |
+| D03 | create-context / context-creation | Pending; existing init alias retained |
+| D04 | decompose / decompose | Pending; reserved for the other agent, existing init alias retained |
+| D05 | debug / debug | Complete: single-source owner retained; current separate deep dive excluded here |
+| D06 | refactor / refactor | Complete: single-source owner retained |
 | D07 | release / release | Pending; preserve current target and dry-run semantics |
-| D08 | tribunal / tribunal | Pending; preserve cost, filing and telemetry boundaries |
-| D09 | threat-model / security-architecture | Pending; reconcile verdict and constraint semantics |
-| D10 | context-check / context-check | Owner consolidation pending; existing status alias retained |
-| D11 | cleanup / post-merge-cleanup | Owner consolidation pending; existing PR alias retained |
-| D12 | adr / decision-lifecycle | Pending; author mode remains distinct from inspection |
-| D13 | adr-status / decision-lifecycle | Pending; preserve read-only status |
+| D08 | tribunal / tribunal | Complete: cost, applicable lenses, filing and telemetry boundaries retained |
+| D09 | threat-model / security-architecture | Complete: read-only owner with three-way verdict and prerequisite distinction |
+| D10 | context-check / context-check | Complete: selected per-document actions, no staging/commit; status alias retained |
+| D11 | cleanup / post-merge-cleanup | Complete: containment and per-item consent retained; PR alias retained |
+| D12 | adr / decision-lifecycle | Complete: composed entry; authoring and acceptance loaded on demand |
+| D13 | adr-status / decision-lifecycle | Complete: small read-only adapter selects shared owner before writing prerequisites |
 | D14 | reconcile / decision-variance | Pending; arbitration is not ADR recording |
-| D15 | pr / finishing-a-development-branch | Pending; composite lifecycle, not a thin wrapper |
+| D15 | pr / finishing-a-development-branch | Complete: one opening procedure with watch/cleanup selected before creation gates |
 
 Active canonical command records go from 38 to 37 and top-level source skills
 from 23 to 22. Host command-entry totals go from 38/36/37 to 37/35/36 for
@@ -1346,3 +1345,44 @@ model-facing routing registry. The normal site pipeline passed all 920 tests in
 87 files plus base-path, build, rendered-output and type checks. One earlier local
 sidebar import test exceeded its existing five-second limit; both its unchanged
 isolated rerun and the final full run passed. No timeout or assertion was changed.
+
+
+### D12/D13 full-review corrections (2026-09-25)
+
+Full review 5321624153 covered `680cb03d39f91fd3e4a8ad968f0536a84dde9f0d` and
+raised four findings. The authoring preflight now distinguishes an absent directory
+for an authorized new record from unreadable existing storage. Status and an
+existing-record transition still never initialize missing records. The current
+progress table now agrees with the ten completed retained relationships, one
+retirement and four pending candidates; D12/D13 share one owner.
+
+The marker concern was verified against the actual ADR guards, not accepted from
+the review wording alone. Those guards call `_hooklib.project_root()`, not the
+security/migration `marker_root()` resolver. The authoring reference now uses that
+exact host-aware project resolver and retains its result for cleanup. Fresh real
+Git worktree tests show denied writes with the marker at the wrong root, admission
+with the marker at the correct root, and denial after its removal. They cover
+Claude main/linked context and Codex/Pi with an irrelevant Claude root signal.
+The original Git-toplevel guess is wrong for one case; blindly changing to the
+general marker-root escalation is wrong for the others. No guard implementation,
+marker lifetime, acceptance binding or template changed.
+
+The feature/sprint maps again cite procedure reuse rather than using a no-auto-merge
+quote to support an unrelated claim. Historical quote/revision remain bound;
+`currentQuote` identifies the corresponding current wording. Both forms are checked
+against their exact sources. Map structure and historical ancestry checks remain.
+This is editorial evidence metadata, not an instruction or runtime registry.
+
+The six new source/real-root cases fail by assertion against the previous source
+and pass after correction. The new reuse-quote case likewise fails against the old
+map and passes after correction; unselected tests are not counted as passes.
+All 28 source/package/version commands passed. The normal site pipeline passed
+921 tests in 87 files plus its base-path, build, rendered and type checks.
+Final-head hosted qualification remains separate.
+
+Native Windows test timing remains an explicitly unresolved historical event:
+CI 36174503599 attempt 1 hit a 30-second child timeout in the unchanged farm
+anti-downgrade case; the same local case and one unchanged job-specific hosted
+retry passed. Attempt 2 completed all 70 jobs successfully on 680cb03. No test,
+assertion, production watchdog or workflow setting was changed, and no durable
+cause/fix of that intermittent timeout is claimed by these review corrections.

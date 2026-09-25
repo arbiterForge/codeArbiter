@@ -25,7 +25,8 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "finish": {
           "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
-          "quote": "MUST NOT auto-merge under `/sprint`"
+          "quote": "**execute those steps here; do not re-invoke `{{CMD:pr}}`**",
+          "currentQuote": "execute the **Open-PR procedure** below in this owner. Do not load or re-invoke the PR command wrapper."
         },
         "pair": {
           "path": "core/surface/SPRINT.md",
