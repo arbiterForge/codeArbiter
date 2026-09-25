@@ -259,3 +259,11 @@ The four new focused source regressions reproduced their failures before the
 correction. Generated diagrams are rebuilt from the updated source model, with no
 route or arrow-geometry change. All final outcomes, captures and exact-head CI
 identities remain owned by the PR completion evidence, not predeclared here.
+
+### Search output at final publication
+
+The latest exact-head browser run exposed an incomplete served Pagefind module,
+not a workflow-map content or navigation failure. Its evidence and the new awaited,
+byte-verified build boundary are recorded in [PR862-SEARCH-INTEGRITY.md](./PR862-SEARCH-INTEGRITY.md).
+The six real search checks remain unchanged. The completed C04 maps and chapter
+navigation are retained while this final publication prerequisite is verified.
