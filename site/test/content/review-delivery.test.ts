@@ -58,6 +58,18 @@ describe('review-to-delivery guidance', () => {
     expect(guide).toContain('The remote branch is not deleted');
     expect(guide).toContain('Unknown residue remains unique');
   });
+  it('asks for branch disposition only when no action is already selected', () => {
+    const text = read('src/curated/skills/finishing-a-development-branch.md');
+    expect(text).toContain('when: after the commit gate clears, when no action is selected');
+    expect(text).toContain('If no action is selected, it presents exactly three ways');
+    expect(text).toContain('If the request or caller has not selected an action, present the three terminal options');
+    expect(text).toContain('A direct open-PR request keeps that selection');
+    expect(text).toContain('an autonomous sprint selects open PR only');
+    expect(text).toContain('only an authorized merge through that PR lands the work');
+    expect(text).toContain('confirming any unpushed work');
+    expect(text).not.toContain('then presents exactly three ways');
+    expect(text).not.toContain('2. Present the three terminal options');
+  });
   it('labels the fictional example and avoids a new command or cleanup shortcut', () => {
     expect(guide).toContain('Illustrative review excerpt, not captured execution');
     expect(guide).not.toContain('/ca:review-pr');

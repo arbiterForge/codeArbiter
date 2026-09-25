@@ -3,7 +3,7 @@ entity: skills/finishing-a-development-branch
 related: [commands/feature, commands/sprint, commands/pr]
 gates:
   - gate: terminal choice
-    when: after the commit gate clears
+    when: after the commit gate clears, when no action is selected
     effect: you choose exactly one of open a PR, merge via PR, or discard — direct merge to the default branch is never an option
   - gate: pushed-work confirmation
     when: discarding a branch
@@ -18,16 +18,18 @@ menu. `pr --watch` and `pr --cleanup` dispatch to their existing owners before t
 creation prerequisites. They do not create a PR or inherit its unrelated gates.
 
 At the end of a feature or sprint, this is the finishing step.
-It gathers the branch's state — what changed, what the gates found, what a plan still leaves
-open — then presents exactly three ways to end the branch: open a pull request and stop, open one
-and merge it once checks are green, or discard it. Under an autonomous sprint, "open a PR" is
-chosen automatically and the merge decision is left to you.
+It gathers the branch state: what changed, what the gates found, and what the plan still
+leaves open. If no action is selected, it presents exactly three ways to finish: open a PR
+and stop, merge through a PR after the required checks, or discard with confirmation.
+A direct open-PR request keeps that selection; an autonomous sprint selects open PR only
+and leaves the merge decision to you.
 
 ## Phases
 
 1. Assemble the branch, diff, gate-result, and plan-delta facts the decision needs.
-2. Present the three terminal options and stop for your choice — or, under an autonomous sprint,
-   auto-select opening a PR and surface the merge decision separately.
+2. If the request or caller has not selected an action, present the three terminal options
+   and stop for your choice. Otherwise retain the selected action; sprint's selection is
+   open PR only, with the merge decision surfaced separately.
 3. Carry out exactly the chosen option: open the PR, merge through it once green, or discard after
    confirming any unpushed work you'd lose.
 4. Emit a short receipt — obligations covered, gates that caught something, decisions you made,
