@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.14] - 2026-09-24
+
+### Changed
+
+- Vendor the shared authority adapter with Claude Code verification and review
+  seams and the `claude-review/0.1.0` engine profile. This package's own
+  authority behavior is unchanged; Pi still stops at the verification and review boundary and `arm` now refuses Pi explicitly.
+
 ## [0.14.13] - 2026-09-24
 
 ### Fixed

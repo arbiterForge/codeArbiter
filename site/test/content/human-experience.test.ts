@@ -65,12 +65,12 @@ describe("human-operable product window", () => {
 
   it("bounds typed authority by host rather than equating entry syntax with capability", () => {
     const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
-    expect(source).toContain("Verification and review authority below is currently Codex-only");
+    expect(source).toContain("Verification and review authority below is supported on Codex and Claude Code");
     expect(source).toContain("Pi has no qualified pre-model prompt seam and must remain blocked");
     const guide = read("src/content/docs/guides/review-artifacts.md");
     expect(guide).toContain("## Check your host's authority capability");
-    expect(guide).toContain("| Claude Code | Host-observed prompt approval | Not supported");
-    expect(guide).toContain("| Codex | Host-observed prompt approval | Codex-only");
+    expect(guide).toContain("| Claude Code | Host-observed prompt approval | Production adapters");
+    expect(guide).toContain("| Codex | Host-observed prompt approval | Production adapters");
     expect(guide).toContain("| Pi | Not supported | Not supported");
     for (const path of ["guides/first-feature.mdx", "guides/feature-lane.mdx", "guides/autonomous-sprints.mdx", "concepts/artifacts.md"]) {
       expect(read(`src/content/docs/${path}`)).toContain("/guides/review-artifacts/#check-your-hosts-authority-capability");

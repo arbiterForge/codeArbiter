@@ -57,9 +57,19 @@ class PiChildFixtureContract(unittest.TestCase):
     def test_generated_roles_are_exact_and_nonrecursive(self) -> None:
         roles = json.loads((REPO / "plugins/ca-pi/generated/roles.json").read_text(encoding="utf-8"))
         by_name = {item["name"]: item for item in roles}
+        hosts = json.loads((REPO / "core/hosts.json").read_text(encoding="utf-8"))
+        pi_host = next(host for host in hosts["hosts"] if host["name"] == "pi")
+        # Charters a host descriptor scopes away (e.g. the Claude-only
+        # authority reviewer) are not Pi roles.
+        excluded = {
+            rel.split("/", 1)[1]
+            for rule in pi_host["surface"]["rules"]
+            if rule.get("source_prefix") == "agents/"
+            for rel in rule.get("exclude", [])
+        }
         canonical_agents = sorted(
             path for path in (REPO / "core/surface/agents").glob("*.md")
-            if path.name != "INDEX.md"
+            if path.name != "INDEX.md" and path.name not in excluded
         )
         self.assertEqual(len(roles), 19)
         self.assertEqual(sorted(by_name), [path.stem for path in canonical_agents])

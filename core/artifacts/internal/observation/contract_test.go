@@ -337,3 +337,68 @@ func TestReviewProducerResultIsSemanticallyBound(t *testing.T) {
 		})
 	}
 }
+
+func claudeReviewFixture(t *testing.T) (map[string]any, map[string]any, map[string]any, string) {
+	t.Helper()
+	context := verificationContext()
+	context["activity"] = "spec_review"
+	context["task"] = map[string]any{"id": "T-001", "criterion_refs": []any{"AC-001"}}
+	contextBytes, _ := canonical.Marshal(context)
+	contextHash := canonical.BytesHash(contextBytes)
+	payload := map[string]any{"assessment": "All required criteria pass."}
+	payloadHash, _ := canonical.Hash(payload)
+	decision := map[string]any{
+		"format": "codearbiter.review-decision/0.1.0", "request_id": testDigest("request"),
+		"target_sha256": context["input_sha256"], "contract_sha256": reviewContractHash(), "decision": "pass",
+		"coverage": []any{"AC-001"}, "findings": []any{}, "assessment": payload["assessment"],
+	}
+	result := map[string]any{
+		"launch": map[string]any{
+			"parent_session_id": "session", "parent_prompt_id": "prompt", "tool_use_id": "toolu_1", "post_confirmed": true,
+			"agent_id": "agent-1", "agent_type": ClaudeReviewer, "subagent_type": ClaudeReviewer,
+			"model": "opus", "resolved_model": "claude-opus-5-5", "first_stop": true,
+		},
+		"decision": decision,
+	}
+	resultHash, _ := canonical.Hash(result)
+	observed := map[string]any{
+		"format": "codearbiter.observation/0.2.0", "kind": "spec_review", "subject": subject(),
+		"context_ref": ContextRef(contextHash), "context_sha256": contextHash, "payload_sha256": payloadHash,
+		"producer_profile": ClaudeReviewProfile, "producer_run_id": "agent-1", "producer_result_sha256": resultHash, "producer_result": result,
+	}
+	event := map[string]any{"kind": "spec_review", "subject": subject(), "payload": payload}
+	return observed, event, context, contextHash
+}
+
+func TestClaudeReviewProfile(t *testing.T) {
+	observed, event, context, contextHash := claudeReviewFixture(t)
+	if es := schema.ValidateWith(Schema(), observed); len(es) != 0 {
+		t.Fatalf("claude review observation schema rejected: %v", es)
+	}
+	if err := ValidateLink(event, observed, context, ContextRef(contextHash), contextHash); err != nil {
+		t.Fatalf("valid claude review observation rejected: %v", err)
+	}
+	codexLaunch := map[string]any{"parent_session_id": "parent", "parent_turn_id": "turn", "tool_use_id": "tool", "post_confirmed": true, "agent_id": "agent-1", "agent_type": "default", "task_name": "review", "fork_turns": "none"}
+	for name, mutate := range map[string]func(map[string]any){
+		"codex launch under claude profile": func(v map[string]any) { model.M(v["producer_result"])["launch"] = codexLaunch },
+		"claude launch under codex profile": func(v map[string]any) { v["producer_profile"] = "codex-review/0.1.0" },
+		"fork subagent":                     func(v map[string]any) { model.M(model.M(v["producer_result"])["launch"])["subagent_type"] = "fork" },
+		"unpinned agent type": func(v map[string]any) {
+			model.M(model.M(v["producer_result"])["launch"])["agent_type"] = "general-purpose"
+		},
+		"not first stop":     func(v map[string]any) { model.M(model.M(v["producer_result"])["launch"])["first_stop"] = false },
+		"unconfirmed launch": func(v map[string]any) { model.M(model.M(v["producer_result"])["launch"])["post_confirmed"] = false },
+		"other agent":        func(v map[string]any) { v["producer_run_id"] = "agent-2" },
+	} {
+		t.Run(name, func(t *testing.T) {
+			candidate, _ := canonical.Clone(observed)
+			mutate(candidate)
+			newHash, _ := canonical.Hash(candidate["producer_result"])
+			candidate["producer_result_sha256"] = newHash
+			schemaOK := len(schema.ValidateWith(Schema(), candidate)) == 0
+			if schemaOK && ValidateLink(event, candidate, context, ContextRef(contextHash), contextHash) == nil {
+				t.Fatal("claude review mutation accepted")
+			}
+		})
+	}
+}

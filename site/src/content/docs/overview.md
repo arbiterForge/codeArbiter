@@ -75,7 +75,7 @@ These mechanisms are not interchangeable guarantees; the host-specific evidence 
 their qualified limits.
 
 For typed HTML, native engine support and host authority are separate capabilities. The current
-verification and review authority adapters are Codex-only; Claude Code and Pi stop at unsupported
+verification and review authority adapters cover Codex and Claude Code; Pi stops at unsupported
 boundaries. Check the [typed-artifact authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability)
 for the exact scope rather than treating shared files or commands as end-to-end parity.
 
