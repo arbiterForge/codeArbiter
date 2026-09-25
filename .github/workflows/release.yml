@@ -1,551 +1,62 @@
 name: release
 
-# Manual publish path for the `ca` plugin, driven by workflow_dispatch so a
-# release can be cut without a local machine. The runner's GITHUB_TOKEN carries
-# `contents: write`, so it can create the tag and GitHub Release that a
-# fine-grained integration token may not. This is the mechanical publish only:
-# the version, the README/badge surfaces, and the CHANGELOG section must already
-# be merged to the default branch (that is the /ca:release skill's Phase 1). The
-# job asserts the requested version equals plugins/ca/.claude-plugin/plugin.json,
-# extracts the matching CHANGELOG section as the notes, and is idempotent — a
-# re-run at the SAME commit is a no-op, not a failure.
-
-# Every plugin versions and releases independently (ADR-0007 for the sibling
-# split, ADR-0011 for the Codex host), and each brings its own tag namespace,
-# manifest, and CHANGELOG to this one dispatched workflow:
+# Release on merge, one plugin at a time (ADR-0040).
 #
-#   ca          v*             plugins/ca/.claude-plugin/plugin.json         CHANGELOG.md
-#   ca-codex    ca-codex-v*    plugins/ca-codex/.codex-plugin/plugin.json    plugins/ca-codex/CHANGELOG.md
-#   ca-sandbox  ca-sandbox-v*  plugins/ca-sandbox/.claude-plugin/plugin.json plugins/ca-sandbox/CHANGELOG.md
-#   ca-pi       ca-pi-v*       plugins/ca-pi/package.json (+ root package.json)
-#                                                                            plugins/ca-pi/CHANGELOG.md
+# When `ci` succeeds for a push to main, every plugin whose manifest advanced
+# (or whose own tag exists but whose Release is not yet published) releases
+# independently:
 #
-# The ca-sandbox and ca-pi lanes are issue #382. Before them the repository
-# enforced independent ca-sandbox-v*/ca-pi-v* version guards in CI and the
-# README told users to install a pinned `ca-pi-v<version>` tag, while no
-# workflow or sanctioned skill could create one — a documented install nothing
-# could satisfy, and a standing invitation to hand-cut a tag outside the
-# changelog, freshness, and read-back guarantees below.
+#   ca          v*             Claude Code  -> Release + ca-marketplace branch
+#   ca-codex    ca-codex-v*    Codex        -> Release + ca-codex-marketplace (git dist tag)
+#   ca-pi       ca-pi-v*       Pi           -> Release + npm @arbiterforge/ca-pi
+#   ca-sandbox  ca-sandbox-v*  Claude Code  -> Release (plain plugin, no engine payload)
 #
-# The four publisher jobs are deliberately thin. The mechanical publish they
-# share — version/manifest agreement, notes extraction, the #380 tag classifier,
-# and the #380 read-back — lives once in `.github/actions/publish-release`,
-# because four copies of an irreversible-publish guard is three copies that will
-# not get the next fix.
-
-# AUTHORIZATION MODEL (issues #378, #385). Everything this workflow publishes is
-# public and irreversible, so the decision to publish is made ONCE, by a job that
-# holds no write token, and both publishers depend on it:
-#
-#   preflight (contents: read, checks: read)
-#     1. refuses a dispatch off the default branch;
-#     2. resolves EXACTLY ONE target from the four confirmation inputs — none
-#        filled, or more than one filled, is a refusal, not a guess (#378: the
-#        jobs used to test only their own input, so one dispatch supplying two
-#        started two write-token publishers);
-#     3. requires a green `[GATE ] | [REPO] | Merge readiness` check run for
-#        GITHUB_SHA itself (#385: branch protection proves how a commit ENTERED
-#        main, not that post-merge evidence exists for the exact commit being
-#        tagged; the release skill's hard rules say MUST NOT tag on a red suite).
-#
-# Each publisher then runs only for the one resolved target. Their conditions
-# carry no always()/!cancelled() escape, so a failed preflight skips them.
-# .github/scripts/test_release_workflow.py asserts all of that against this file.
+# There is no cross-plugin cohort: a failed plugin never blocks the others,
+# and there is no resume state. Every publish step observes the remote first
+# and does only what is missing, so the recovery path for any half-finished
+# release is simply to re-run the failed job, or dispatch this workflow with
+# that target. The only refusals are ones that protect users: a version whose
+# tag already names another commit (bump and merge again), a package cohort
+# that does not verify, or published bytes that do not read back.
 
 on:
-  workflow_dispatch:
-    inputs:
-      confirm:
-        description: "ca version to release (must equal plugins/ca/.claude-plugin/plugin.json), e.g. 2.6.1 — leave every other version input blank"
-        required: false
-        default: ""
-      summary:
-        description: "Optional release-title summary (appended after the version)"
-        required: false
-        default: ""
-      codex_confirm:
-        description: "ca-codex version to release (must equal plugins/ca-codex/.codex-plugin/plugin.json), e.g. 0.1.0 — leave every other version input blank"
-        required: false
-        default: ""
-      codex_summary:
-        description: "Optional release-title summary for the ca-codex release"
-        required: false
-        default: ""
-      sandbox_confirm:
-        description: "ca-sandbox version to release (must equal plugins/ca-sandbox/.claude-plugin/plugin.json), e.g. 0.1.5 — leave every other version input blank"
-        required: false
-        default: ""
-      sandbox_summary:
-        description: "Optional release-title summary for the ca-sandbox release"
-        required: false
-        default: ""
-      pi_confirm:
-        description: "ca-pi version to release (must equal plugins/ca-pi/package.json AND the root package.json), e.g. 0.1.28 — leave every other version input blank"
-        required: false
-        default: ""
-      pi_summary:
-        description: "Optional release-title summary for the ca-pi release"
-        required: false
-        default: ""
-  # Auto-tag-on-merge (drift-prevention campaign, adjacent to issue #645).
-  # Fires when `ci` finishes running on a push to `main` — NOT on `push`
-  # directly, because a push-triggered job here would race ci.yml's OWN
-  # concurrent re-run for the same commit and could read "pending" or
-  # "missing" merge-readiness evidence for its own SHA. `workflow_run` only
-  # dispatches once the upstream run has fully concluded, so
-  # `github.event.workflow_run.conclusion` is authoritative with no race,
-  # and no second evidence-fetch is needed the way the manual preflight's
-  # own check-runs query is (#385).
-  #
-  # This trigger always resolves the workflow FILE as committed on the
-  # default branch, regardless of which ref the upstream `ci` run analyzed —
-  # the standard, safe shape for a downstream automation that holds a write
-  # token. `auto-preflight` checks out the protected main ref, then refuses
-  # unless its resolved commit is the exact completed upstream run commit;
-  # no workflow_run-controlled revision is executed by the privileged job.
   workflow_run:
     workflows: ["ci"]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Plugin to (re)publish from main's current head"
+        required: true
+        type: choice
+        options: [ca, ca-codex, ca-pi, ca-sandbox]
 
-# Least privilege by default. Only the publishing jobs widen this to
-# `contents: write`; the preflight that authorizes them never holds a write
-# token, so the job deciding whether to publish cannot itself publish.
 permissions:
   contents: read
 
-# Qualified auto-publication is one hosted cohort at a time. Manual dispatches
-# keep their own run identity (and only sandbox can pass their preflight), so
-# sandbox remains independent from qualified-target success/failure ordering.
-concurrency:
-  group: release-${{ github.event_name == 'workflow_run' && 'hosted-cohort' || github.run_id }}
-  cancel-in-progress: false
-
 jobs:
   preflight:
-    name: "[GATE ] | [RELEASE] | Dispatch preflight"
-    # Read-only authorization for the write-token publishers below. Fails
-    # closed on every path: a refusal here skips both of them.
-    #
-    # Gated to the trigger that supplies its inputs (#654). This job resolves
-    # a target from the four dispatch confirmations, which exist on
-    # `workflow_dispatch` alone — on the auto-tag `workflow_run` path it read
-    # four empty inputs, resolved `none`, and exited 1, concluding every
-    # merge's `release` run `failure` while the auto-tag lanes below it
-    # tagged correctly. Nothing was mis-published (it fails closed, and the
-    # publishers skipped with it); what it destroyed was the signal, since a
-    # permanently-red run is indistinguishable from a real auto-tag failure.
-    # The four publishers need no guard of their own — `needs: preflight`
-    # skips them with it, and their conditions carry no status escape.
-    if: github.event_name == 'workflow_dispatch'
+    name: "[GATE ] | [RELEASE] | Plan"
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       actions: read
-      contents: read
-      checks: read
+      # Draft Releases are only visible to a token with push access.
+      contents: write
     outputs:
-      target: ${{ steps.target.outputs.target }}
-      cohort-run-id: ${{ steps.cohort.outputs.run-id }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Refuse a dispatch off the default branch
-        run: |
-          set -euo pipefail
-          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
-            echo "::error::release dispatches are only valid on refs/heads/main (got '$GITHUB_REF')"
-            exit 1
-          fi
-
-      - name: Require complete prior tag provenance
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
-            --manifest .github/published-tags.json \
-            --legacy-manifest .github/legacy-published-tags.json
-
-      - name: Resolve exactly one release target
-        id: target
-        env:
-          CONFIRM: ${{ github.event.inputs.confirm }}
-          CODEX_CONFIRM: ${{ github.event.inputs.codex_confirm }}
-          SANDBOX_CONFIRM: ${{ github.event.inputs.sandbox_confirm }}
-          PI_CONFIRM: ${{ github.event.inputs.pi_confirm }}
-        run: |
-          set -euo pipefail
-          # The helper prints a label and never raises; the '*' arm below is the
-          # fail-closed default, so an unknown label refuses too — and a helper
-          # that crashed prints nothing and trips `set -e` on the assignment.
-          # NAME-KEYED (A-4.2). Each input carries the target it belongs
-          # to, so selection never depends on the order these are passed.
-          # The previous positional form aligned by index against the
-          # declared row order — correct only while the two agreed, which
-          # nothing enforced. A row inserted at the front of the declared
-          # file shifted every confirmation by one, and this dispatch would
-          # have published the wrong plugin while holding contents:write,
-          # with every downstream check passing because the wrong release
-          # is internally consistent.
-          TARGET=$(python3 .github/scripts/_releaselib.py select-target-named \
-            "ca=$CONFIRM" "ca-codex=$CODEX_CONFIRM" \
-            "ca-sandbox=$SANDBOX_CONFIRM" "ca-pi=$PI_CONFIRM")
-          case "$TARGET" in
-            ca|ca-codex|ca-sandbox|ca-pi)
-              echo "resolved release target: $TARGET"
-              ;;
-            multiple)
-              echo "::error::this dispatch selected more than one plugin — supply exactly one version input, never two"
-              exit 1
-              ;;
-            none)
-              echo "::error::this dispatch selected no plugin — supply exactly one version input"
-              exit 1
-              ;;
-            unknown)
-              echo "::error::a version input names a target that .codearbiter/release-targets.md does not declare — the workflow's inputs and the declared file disagree. Reconcile them; do not add the name here alone."
-              exit 1
-              ;;
-            *)
-              echo "::error::could not resolve a release target (got '$TARGET')"
-              exit 1
-              ;;
-          esac
-          if [ "$TARGET" != "ca-sandbox" ]; then
-            echo "::error::$TARGET is owned by the serialized hosted CI cohort; independent manual publication is prohibited"
-            exit 1
-          fi
-          MANIFEST=$(python3 core/pysrc/_releaselib.py show-row "$TARGET" --field manifest)
-          CHANGELOG=$(python3 core/pysrc/_releaselib.py show-row "$TARGET" --field changelog)
-          test -n "$MANIFEST" && test -n "$CHANGELOG" || {
-            echo "::error::$TARGET declaration lacks a manifest or changelog"
-            exit 1
-          }
-          test "$(git log --first-parent -1 --format=%H -- "$CHANGELOG")" = "$GITHUB_SHA" || {
-            echo "::error::$TARGET release surface $CHANGELOG was not advanced by $GITHUB_SHA"
-            exit 1
-          }
-          for SURFACE in "$MANIFEST" "$CHANGELOG"; do
-            CANDIDATE_BLOB=$(git rev-parse "$GITHUB_SHA:$SURFACE") || {
-              echo "::error::$TARGET release surface $SURFACE is absent from $GITHUB_SHA"
-              exit 1
-            }
-            test "$(git hash-object "$SURFACE")" = "$CANDIDATE_BLOB" || {
-              echo "::error::$TARGET release surface $SURFACE differs from $GITHUB_SHA"
-              exit 1
-            }
-            echo "$TARGET: candidate=$GITHUB_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
-          done
-          # Per-release evidence is not a per-PR CI gate (AC-6.8). Execute
-          # the selected declaration through the check-only runner before
-          # authorizing any publisher. No token or Actions output channel is
-          # inherited by declared commands; checkout credentials are absent.
-          PYTHON=$(python3 -c 'import sys; print(sys.executable)')
-          env -i PATH="$PATH" SYSTEMROOT="${SYSTEMROOT:-}" \
-            "$PYTHON" core/pysrc/_releaselib.py run-pre-tag "$TARGET"
-          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
-
-      - name: Require green merge readiness for this exact commit
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          # Evidence is resolved for GITHUB_SHA itself, and the classifier
-          # re-checks each run's head_sha — a green gate on a neighbouring
-          # commit is not evidence for this one.
-          # One page, deliberately: `--paginate` with `--jq` concatenates one
-          # array per page, which is not valid JSON. A commit here carries a
-          # few dozen check runs, and an over-full first page would land on
-          # `missing` — a refusal, not a silent pass.
-          gh api \
-            "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" \
-            --jq '.check_runs' > checks.json
-          STATE=$(python3 .github/scripts/_releaselib.py merge-readiness "$GITHUB_SHA" checks.json)
-          case "$STATE" in
-            green)
-              echo "merge readiness is green for $GITHUB_SHA"
-              ;;
-            *)
-              echo "::error::merge-readiness evidence for $GITHUB_SHA is '$STATE' — refusing to tag (release SKILL.md: MUST NOT tag on a red suite)"
-              exit 1
-              ;;
-          esac
-
-      - name: Locate the protected successful exact-commit package cohort
-        id: cohort
-        if: steps.target.outputs.target != 'ca-sandbox'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${GITHUB_SHA}&branch=main&event=push&status=success&per_page=100" > cohort-runs.json
-          RUN_ID=$(python3 - <<'PY'
-          import json, os
-          runs = json.load(open("cohort-runs.json", encoding="utf-8")).get("workflow_runs", [])
-          eligible = [run for run in runs if run.get("head_sha") == os.environ["GITHUB_SHA"]
-                      and run.get("head_branch") == "main" and run.get("event") == "push"
-                      and run.get("conclusion") == "success"
-                      and run.get("repository", {}).get("full_name") == os.environ["GITHUB_REPOSITORY"]]
-          if not eligible:
-              raise SystemExit("no protected successful CI run owns the exact release commit cohort")
-          chosen = max(eligible, key=lambda run: (run.get("run_attempt", 0), run["id"]))
-          print(chosen["id"])
-          PY
-          )
-          echo "run-id=$RUN_ID" >> "$GITHUB_OUTPUT"
-
-  release:
-    name: CA | [Release] - Publish
-    # The repository's primary release, and the only lane that claims the
-    # "Latest" badge. Publish only from the default branch, where the merged
-    # CHANGELOG section lives, and only when the read-only preflight resolved
-    # `ca` as the single target. `needs: preflight` IS the authorization: the
-    # condition below carries no status function, so a failed preflight skips
-    # this job rather than letting it run anyway.
-    needs: preflight
-    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca'
-    permissions:
-      actions: read
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/publish-release
-        with:
-          target: ca
-          manifest: plugins/ca/.claude-plugin/plugin.json
-          changelog: CHANGELOG.md
-          tag-prefix: v
-          title-prefix: codeArbiter
-          requested-version: ${{ github.event.inputs.confirm }}
-          summary: ${{ github.event.inputs.summary }}
-          mark-latest: "true"
-          package-host: claude
-          ci-run-id: ${{ needs.preflight.outputs.cohort-run-id }}
-          source-commit: ${{ github.sha }}
-          github-token: ${{ github.token }}
-
-  codex-provenance:
-    name: "[GATE ] | [CDX ] | Release candidate provenance"
-    needs: preflight
-    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Verify the exact static Codex candidate
-        run: |
-          set -euo pipefail
-          python3 .github/scripts/verify_codex_candidate_provenance.py \
-            --repo . --final-ref ${{ github.sha }} --json
-
-  release-codex:
-    name: CA-Codex | [Release] - Publish
-    # An independently versioned sibling, never the repository's primary
-    # release: the tag is namespaced so it cannot collide with ca's bare v*
-    # series, and `mark-latest` stays false so it cannot take ca's "Latest"
-    # badge. Publish only from the default branch, and only for the one
-    # target the read-only preflight resolved.
-    needs: [preflight, codex-provenance]
-    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
-    permissions:
-      actions: read
-      contents: read
-      id-token: write
-    environment: codex-distribution
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Mint dedicated Codex distribution publisher token
-        id: codex-publisher
-        shell: bash
-        env:
-          APP_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
-          INSTALLATION_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_INSTALLATION_ID }}
-          PRIVATE_KEY: ${{ secrets.CODEX_DISTRIBUTION_APP_PRIVATE_KEY }}
-        run: |
-          set -euo pipefail
-          umask 077
-          key="$RUNNER_TEMP/codex-distribution-app.pem"
-          trap 'rm -f "$key"' EXIT
-          printf '%s' "$PRIVATE_KEY" > "$key"
-          chmod 600 "$key"
-          python3 .github/scripts/create_codex_distribution_token.py \
-            --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
-
-      - name: Mint separate Codex ruleset verifier token
-        id: codex-ruleset-verifier
-        shell: bash
-        env:
-          APP_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
-          INSTALLATION_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID }}
-          PRIVATE_KEY: ${{ secrets.CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY }}
-        run: |
-          set -euo pipefail
-          umask 077
-          key="$RUNNER_TEMP/codex-ruleset-verifier-app.pem"
-          trap 'rm -f "$key"' EXIT
-          printf '%s' "$PRIVATE_KEY" > "$key"
-          chmod 600 "$key"
-          python3 .github/scripts/create_codex_distribution_token.py \
-            --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
-
-      - uses: ./.github/actions/publish-release
-        with:
-          target: ca-codex
-          manifest: plugins/ca-codex/.codex-plugin/plugin.json
-          changelog: plugins/ca-codex/CHANGELOG.md
-          tag-prefix: ca-codex-v
-          title-prefix: ca-codex
-          requested-version: ${{ github.event.inputs.codex_confirm }}
-          summary: ${{ github.event.inputs.codex_summary }}
-          mark-latest: "false"
-          package-host: codex
-          ci-run-id: ${{ needs.preflight.outputs.cohort-run-id }}
-          source-commit: ${{ github.sha }}
-          github-token: ${{ steps.codex-publisher.outputs.token }}
-          codex-publisher-actor-id: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
-          codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}
-          codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
-          npm-token: ${{ secrets.NPMJS_TOKEN }}
-
-  release-sandbox:
-    name: CA-Sandbox | [Release] - Publish
-    # An independently versioned sibling, never the repository's primary
-    # release: the tag is namespaced so it cannot collide with ca's bare v*
-    # series, and `mark-latest` stays false so it cannot take ca's "Latest"
-    # badge. Publish only from the default branch, and only for the one
-    # target the read-only preflight resolved.
-    needs: preflight
-    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-sandbox'
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/publish-release
-        with:
-          target: ca-sandbox
-          manifest: plugins/ca-sandbox/.claude-plugin/plugin.json
-          changelog: plugins/ca-sandbox/CHANGELOG.md
-          tag-prefix: ca-sandbox-v
-          title-prefix: ca-sandbox
-          requested-version: ${{ github.event.inputs.sandbox_confirm }}
-          summary: ${{ github.event.inputs.sandbox_summary }}
-          mark-latest: "false"
-          github-token: ${{ github.token }}
-
-  release-pi:
-    name: CA-Pi | [Release] - Publish
-    # An independently versioned sibling, never the repository's primary
-    # release: the tag is namespaced so it cannot collide with ca's bare v*
-    # series, and `mark-latest` stays false so it cannot take ca's "Latest"
-    # badge. Publish only from the default branch, and only for the one
-    # target the read-only preflight resolved.
-    #
-    # Pi installs the REPOSITORY ROOT as the package (`pi install
-    # git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`), so the root
-    # package.json is a second manifest that must already agree with the
-    # plugin's — hence `companion-manifest`. A root disagreeing with the tag
-    # would install a package claiming a version the tag does not name.
-    needs: preflight
-    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-pi'
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    outputs:
-      tag-object-sha: ${{ steps.release.outputs.tag-object-sha }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/publish-release
-        with:
-          target: ca-pi
-          manifest: plugins/ca-pi/package.json
-          companion-manifest: package.json
-          changelog: plugins/ca-pi/CHANGELOG.md
-          tag-prefix: ca-pi-v
-          title-prefix: ca-pi
-          requested-version: ${{ github.event.inputs.pi_confirm }}
-          summary: ${{ github.event.inputs.pi_summary }}
-          mark-latest: "false"
-          github-token: ${{ github.token }}
-        id: release
-
-  publish-pi-npm:
-    name: CA-Pi | [Release] - Publish npm
-    needs: [preflight, release-pi]
-    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-pi'
-    permissions:
-      actions: read
-      # The called workflow must observe the draft created by release-pi.
-      contents: write
-      id-token: write
-    uses: ./.github/workflows/npm-publish.yml
-    with:
-      tag: ca-pi-v${{ github.event.inputs.pi_confirm }}
-      expected_sha: ${{ github.sha }}
-      ci_run_id: ${{ needs.preflight.outputs.cohort-run-id }}
-      cohort_targets: ca-pi
-      expected_tag_object_sha: ${{ needs.release-pi.outputs.tag-object-sha }}
-    secrets:
-      NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-
-  # ------------------------------------------------------------------------- #
-  # Auto-publish-on-merge. Every push to main that advances a target's manifest
-  # past its last published tag creates that tag and its GitHub Release after
-  # CI completes successfully — no human dispatch, no batching, and no drift
-  # between an installable tag and a visible release. A target whose manifest
-  # advanced but
-  # whose CHANGELOG carries no matching section fails loudly (the shared
-  # action's own "no CHANGELOG section found" guard) rather than tagging
-  # silently or inventing content — the exact gap that let ca-codex drift 11
-  # undocumented versions before anyone noticed.
-  # ------------------------------------------------------------------------- #
-
-  auto-preflight:
-    name: "[GATE ] | [RELEASE] | Auto-tag preflight"
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      actions: read
-      contents: read
-    env:
-      SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
-    outputs:
+      source: ${{ steps.source.outputs.source }}
+      ci-run-id: ${{ steps.source.outputs.ci-run-id }}
       ca: ${{ steps.eligible.outputs.ca }}
       ca-codex: ${{ steps.eligible.outputs.ca-codex }}
-      ca-sandbox: ${{ steps.eligible.outputs.ca-sandbox }}
       ca-pi: ${{ steps.eligible.outputs.ca-pi }}
-      ca-pi-version: ${{ steps.eligible.outputs.ca-pi-version }}
-      cohort-targets: ${{ steps.eligible.outputs.cohort-targets }}
-      cohort-run-id: ${{ github.event.workflow_run.id }}
+      ca-sandbox: ${{ steps.eligible.outputs.ca-sandbox }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -554,589 +65,120 @@ jobs:
           fetch-tags: true
           persist-credentials: false
 
-      - name: Bind the trusted checkout to the qualified upstream commit
-        env:
-          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          CHECKED_OUT_SHA=$(git rev-parse HEAD)
-          if [ "$CHECKED_OUT_SHA" != "$UPSTREAM_SHA" ]; then
-            echo "::error::qualified upstream commit is no longer the protected main tip"
-            echo "expected=$UPSTREAM_SHA actual=$CHECKED_OUT_SHA"
-            exit 1
-          fi
-
-      - name: Validate automatic release candidate
-        run: >-
-          python3 .github/scripts/check_auto_release_candidate.py
-          --candidate "$SOURCE_SHA"
-
-      - name: Determine which targets have untagged work
-        id: eligible
+      - name: Resolve the release commit and its successful CI run
+        id: source
         env:
           GH_TOKEN: ${{ github.token }}
-          UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}
-          UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
-          UPSTREAM_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
-          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           set -euo pipefail
-          SOURCE_SHA=${SOURCE_SHA:-$GITHUB_SHA}
-          # Execute only the independently selected trusted workflow tree.
-          # An older or foreign event candidate remains inert, even when its
-          # branch is named main or it reports a successful CI conclusion.
-          if [ "$UPSTREAM_EVENT" != push ] || [ "$UPSTREAM_CONCLUSION" != success ] || \
-             [ "$UPSTREAM_BRANCH" != main ] || [ "$UPSTREAM_REPOSITORY" != "$GITHUB_REPOSITORY" ] || \
-             [ "$UPSTREAM_SHA" != "$SOURCE_SHA" ] || [ "$(git rev-parse HEAD)" != "$SOURCE_SHA" ]; then
-            echo "::error::upstream is not a same-repository main push at the trusted workflow revision"
-            exit 1
+          if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
+            SOURCE="$RUN_SHA"; CI_RUN_ID="$RUN_ID"
+            # A later merge supersedes this one; its own run releases main's tip.
+            if [ "$(git rev-parse HEAD)" != "$SOURCE" ]; then
+              echo "::notice::main moved past $SOURCE; the newer run releases it"
+              SOURCE=""
+            fi
+          else
+            SOURCE=$(git rev-parse HEAD)
+            CI_RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$SOURCE&event=push&status=success&per_page=1" \
+              --jq '.workflow_runs[0].id // empty')
+            [ -n "$CI_RUN_ID" ] || { echo "::error::no successful push CI run for $SOURCE; re-run CI on main first"; exit 1; }
           fi
-          # "Eligible" mirrors payload_version_gate.py's own question, asked
-          # again here rather than trusted from the PR that merged: is the
-          # manifest ACTUALLY ahead of what is already tagged, right now, at
-          # this exact commit? A target whose manifest did not move in this
-          # push is silently skipped — not an error, just nothing to do.
-          TAGS=$(git tag -l)
-          PYTHON=$(python3 -c 'import sys; print(sys.executable)')
-          # Defense in depth around the publication-authority outputs below.
-          # The shared validator above is also run by required pre-merge CI.
-          OUTPUTS=()
-          COHORT_TARGETS=()
-          ANY_ELIGIBLE=false
+          echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
+          echo "ci-run-id=${CI_RUN_ID:-}" >> "$GITHUB_OUTPUT"
+
+      - name: Require prior published tags to be recorded and unmoved
+        if: steps.source.outputs.source != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
+            --manifest .github/published-tags.json \
+            --legacy-manifest .github/legacy-published-tags.json
+
+      - name: Decide which plugins release
+        id: eligible
+        if: steps.source.outputs.source != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DISPATCHED: ${{ inputs.target }}
+        run: |
+          set -euo pipefail
+          git tag -l > "$RUNNER_TEMP/tags.txt"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
           for row in \
-            "ca plugins/ca/.claude-plugin/plugin.json CHANGELOG.md - v" \
-            "ca-codex plugins/ca-codex/.codex-plugin/plugin.json plugins/ca-codex/CHANGELOG.md - ca-codex-v" \
-            "ca-sandbox plugins/ca-sandbox/.claude-plugin/plugin.json plugins/ca-sandbox/CHANGELOG.md - ca-sandbox-v" \
-            "ca-pi plugins/ca-pi/package.json plugins/ca-pi/CHANGELOG.md package.json ca-pi-v"
+            "ca plugins/ca/.claude-plugin/plugin.json v" \
+            "ca-codex plugins/ca-codex/.codex-plugin/plugin.json ca-codex-v" \
+            "ca-pi plugins/ca-pi/package.json ca-pi-v" \
+            "ca-sandbox plugins/ca-sandbox/.claude-plugin/plugin.json ca-sandbox-v"
           do
             set -- $row
-            TARGET="$1"; MANIFEST="$2"; CHANGELOG="$3"; COMPANION="$4"; PREFIX="$5"
+            TARGET="$1"; MANIFEST="$2"; PREFIX="$3"
             VERSION=$(node -p "require('./$MANIFEST').version")
-            ELIGIBLE=$(printf '%s' "$TAGS" \
-              | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
+            ELIGIBLE=$(python3 .github/scripts/release_target.py eligible --version "$VERSION" \
+              --prefix "$PREFIX" --tags "$RUNNER_TEMP/tags.txt" --releases "$RUNNER_TEMP/releases.json")
+            if [ -n "$DISPATCHED" ] && [ "$DISPATCHED" != "$TARGET" ]; then ELIGIBLE=false; fi
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
-            if [ "$ELIGIBLE" = "true" ]; then
-              for SURFACE in "$MANIFEST" "$CHANGELOG"; do
-                CANDIDATE_BLOB=$(git rev-parse "$SOURCE_SHA:$SURFACE") || {
-                  echo "::error::$TARGET release surface $SURFACE is absent from $SOURCE_SHA"
-                  exit 1
-                }
-                test "$(git hash-object "$SURFACE")" = "$CANDIDATE_BLOB" || {
-                  echo "::error::$TARGET release surface $SURFACE differs from $SOURCE_SHA"
-                  exit 1
-                }
-                echo "$TARGET: candidate=$SOURCE_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
-              done
-              if [ "$COMPANION" != "-" ]; then
-                COMPANION_BLOB=$(git rev-parse "$SOURCE_SHA:$COMPANION") || {
-                  echo "::error::$TARGET companion manifest $COMPANION is absent from $SOURCE_SHA"
-                  exit 1
-                }
-                test "$(git hash-object "$COMPANION")" = "$COMPANION_BLOB" || {
-                  echo "::error::$TARGET companion manifest $COMPANION differs from $SOURCE_SHA"
-                  exit 1
-                }
-                echo "$TARGET: candidate=$SOURCE_SHA companion=$COMPANION blob=$COMPANION_BLOB"
-              fi
-              ANY_ELIGIBLE=true
-              if [ "$TARGET" != "ca-sandbox" ]; then COHORT_TARGETS+=("$TARGET"); fi
-              # Same canonical, check-only release guard as manual dispatch;
-              # ineligible siblings need no new per-release evidence.
-              env -i PATH="$PATH" SYSTEMROOT="${SYSTEMROOT:-}" \
-                "$PYTHON" core/pysrc/_releaselib.py run-pre-tag "$TARGET"
-            fi
-            OUTPUTS+=("$TARGET=$ELIGIBLE")
-            if [ "$TARGET" = "ca-pi" ]; then
-              OUTPUTS+=("ca-pi-version=$VERSION")
+            echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"
+            if [ "$ELIGIBLE" = true ]; then
+              # Advisory: release-skill proof freshness and ledger checks warn only.
+              python3 core/pysrc/_releaselib.py run-pre-tag "$TARGET" \
+                || echo "::warning::$TARGET pre-tag advisory checks did not pass (not blocking)"
             fi
           done
-          IFS=,; OUTPUTS+=("cohort-targets=${COHORT_TARGETS[*]-}"); unset IFS
-          if [ "$ANY_ELIGIBLE" = true ]; then
-            python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
-              --manifest .github/published-tags.json \
-              --legacy-manifest .github/legacy-published-tags.json
-          fi
-          # A late target failure must not leave earlier authorizations behind.
-          printf '%s\n' "${OUTPUTS[@]}" >> "$GITHUB_OUTPUT"
 
-  auto-release:
-    name: CA | [Auto-tag]
-    needs: [auto-preflight, auto-cohort-reconciliation]
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-cohort-reconciliation.result == 'success' && (needs.auto-preflight.outputs.ca == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca == 'true')
+  release-ca:
+    name: CA | [Release]
+    needs: preflight
+    if: needs.preflight.outputs.ca == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency: { group: release-ca, cancel-in-progress: false }
     permissions:
       actions: read
       contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
-
-      - uses: ./.github/actions/publish-release
+          persist-credentials: false
+      - uses: ./.github/actions/publish-target
         with:
           target: ca
           manifest: plugins/ca/.claude-plugin/plugin.json
           changelog: CHANGELOG.md
           tag-prefix: v
           title-prefix: codeArbiter
-          requested-version: ""
-          summary: ""
           mark-latest: "true"
-          create-release: "true"
-          package-host: claude
-          ci-run-id: ${{ needs.auto-preflight.outputs.cohort-run-id }}
-          source-commit: ${{ github.event.workflow_run.head_sha }}
-          cohort-targets: ${{ needs.auto-cohort-reconciliation.outputs.cohort-targets }}
+          host: claude
+          source-commit: ${{ needs.preflight.outputs.source }}
+          ci-run-id: ${{ needs.preflight.outputs.ci-run-id }}
           github-token: ${{ github.token }}
 
-  auto-cohort-reconciliation:
-    name: "[GATE ] | [COHORT] | Reconcile durable publication state"
-    needs: auto-preflight
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main'
-    permissions:
-      actions: read
-      # Draft Releases are visible only to tokens with push access. This gate
-      # remains read-only in its commands, but needs contents:write authority
-      # to discover and authenticate an unfinished marker-owned draft.
-      contents: write
-    outputs:
-      mode: ${{ steps.durable.outputs.mode || steps.no-cohort.outputs.mode }}
-      cohort-targets: ${{ steps.durable.outputs.cohort-targets || steps.no-cohort.outputs.cohort-targets }}
-      repair-ca: ${{ steps.durable.outputs.repair-ca || steps.no-cohort.outputs.repair-ca }}
-      repair-ca-codex: ${{ steps.durable.outputs.repair-ca-codex || steps.no-cohort.outputs.repair-ca-codex }}
-      repair-ca-pi: ${{ steps.durable.outputs.repair-ca-pi || steps.no-cohort.outputs.repair-ca-pi }}
-      source-commit: ${{ steps.resolve.outputs.source-commit }}
-      ci-run-id: ${{ steps.resolve.outputs.ci-run-id }}
-      continuation: ${{ steps.resolve.outputs.continuation }}
-      tag-object-sha: ${{ steps.durable.outputs.tag-object-sha }}
-      pi-release-id: ${{ steps.resolve.outputs.pi-release-id }}
+  release-codex:
+    name: CA-Codex | [Release]
+    needs: preflight
+    if: needs.preflight.outputs.ca-codex == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      GH_TOKEN: ${{ github.token }}
-      ELIGIBLE_CA: ${{ needs.auto-preflight.outputs.ca }}
-      ELIGIBLE_CODEX: ${{ needs.auto-preflight.outputs.ca-codex }}
-      ELIGIBLE_PI: ${{ needs.auto-preflight.outputs.ca-pi }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # Execute only verifier code from the trusted default-branch workflow
-          # revision. The exact upstream package identity comes from the bound
-          # cohort receipt below; no code from head_sha runs in this job.
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Resolve current or unfinished durable cohort identity
-        id: resolve
-        env:
-          CURRENT_SOURCE: ${{ github.event.workflow_run.head_sha }}
-          CURRENT_CI_RUN_ID: ${{ needs.auto-preflight.outputs.cohort-run-id }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import base64, hashlib, json, os, pathlib, re, subprocess, sys
-          sys.path.insert(0, ".github/scripts")
-          from _npm_publishlib import (_validate_qualified_release_body,
-                                       resolve_durable_cohort_identity,
-                                       validate_continuation_revision)
-          root = pathlib.Path(os.environ["RUNNER_TEMP"])
-          pages = json.loads(subprocess.run(
-              ["gh", "api", "--paginate", "--slurp",
-               f"repos/{os.environ['GITHUB_REPOSITORY']}/releases?per_page=100"],
-              text=True, capture_output=True, check=True).stdout)
-          releases = [release for page in pages for release in page]
-          def unique(pairs):
-              result = {}
-              for key, value in pairs:
-                  if key in result: raise SystemExit(f"duplicate durable marker field: {key}")
-                  result[key] = value
-              return result
-          markers, receipts, drafts = [], [], []
-          for release in releases:
-              body = release.get("body") or ""
-              match = re.fullmatch(
-                  r"(?s)(.*\n)\n<!-- codearbiter-cohort-start-v1:([A-Za-z0-9_-]+) -->\n",
-                  body)
-              mentions = body.count("codearbiter-cohort-start-v1:")
-              if match is None and mentions == 0: continue
-              if match is None or mentions != 1:
-                  raise SystemExit("durable Release marker is malformed or duplicate")
-              marker_bytes = base64.urlsafe_b64decode(
-                  match.group(2) + "=" * (-len(match.group(2)) % 4))
-              marker = json.loads(marker_bytes, object_pairs_hook=unique)
-              _validate_qualified_release_body(body, release.get("tag_name"), marker_bytes)
-              if marker.get("tag") != release.get("tag_name"):
-                  raise SystemExit("durable marker is attached to the wrong Release")
-              markers.append(marker)
-              if release.get("draft") is True: drafts.append(marker)
-              assets = release.get("assets", [])
-              durable = [asset for asset in assets if isinstance(asset.get("name"), str)
-                         and asset["name"].startswith("codearbiter-cohort-publication")]
-              if not durable:
-                  if release.get("draft") is not True:
-                      raise SystemExit("marker-owned Release was published without its durable receipt")
-                  continue
-              if len(durable) != 1 or durable[0]["name"] != "codearbiter-cohort-publication-v1.json":
-                  raise SystemExit("durable Release receipt inventory is ambiguous")
-              response = subprocess.run(
-                  ["gh", "api", "-H", "Accept: application/octet-stream", durable[0]["url"]],
-                  capture_output=True, check=True)
-              receipt = json.loads(response.stdout.decode("utf-8"), object_pairs_hook=unique)
-              if receipt.get("tag") != release.get("tag_name"):
-                  raise SystemExit("durable receipt is attached to the wrong Release")
-              package_assets = [asset for asset in assets
-                                if asset.get("name") == receipt.get("package_file")]
-              if receipt.get("host") != "pi":
-                  if len(package_assets) != 1:
-                      raise SystemExit("historical durable receipt is missing its exact package asset")
-                  package_bytes = subprocess.run(
-                      ["gh", "api", "-H", "Accept: application/octet-stream",
-                       package_assets[0]["url"]], capture_output=True, check=True).stdout
-                  if hashlib.sha256(package_bytes).hexdigest() != receipt.get("package_sha256"):
-                      raise SystemExit("historical durable package asset digest mismatch")
-              receipts.append(receipt)
-          def trusted_version(path):
-              raw = subprocess.run(["git", "show", os.environ["GITHUB_SHA"] + ":" + path],
-                                   text=True, capture_output=True, check=True).stdout
-              return json.loads(raw)["version"]
-          versions = {
-              "ca": trusted_version("plugins/ca/.claude-plugin/plugin.json"),
-              "ca-codex": trusted_version("plugins/ca-codex/.codex-plugin/plugin.json"),
-              "ca-pi": trusted_version("plugins/ca-pi/package.json"),
-          }
-          tags = {"ca": "v" + versions["ca"],
-                  "ca-codex": "ca-codex-v" + versions["ca-codex"],
-                  "ca-pi": "ca-pi-v" + versions["ca-pi"]}
-          eligible = sorted(target for target, name in (
-              ("ca", "ELIGIBLE_CA"), ("ca-codex", "ELIGIBLE_CODEX"),
-              ("ca-pi", "ELIGIBLE_PI")) if os.environ[name] == "true")
-          result = resolve_durable_cohort_identity(
-              current_source=os.environ["CURRENT_SOURCE"],
-              current_run_id=os.environ["CURRENT_CI_RUN_ID"], current_tags=tags,
-              eligible_targets=eligible, markers=markers, receipts=receipts,
-              draft_markers=drafts)
-          if result["requires_cohort"]:
-              source = result["source_commit"]
-              subprocess.run(["git", "cat-file", "-e", source + "^{commit}"], check=True)
-              validate_continuation_revision(
-                  pathlib.Path("."), source, os.environ["GITHUB_SHA"])
-              tree = subprocess.run(["git", "rev-parse", source + "^{tree}"], text=True,
-                                    capture_output=True, check=True).stdout.strip()
-              if result["source_tree"] and tree != result["source_tree"]:
-                  raise SystemExit("durable marker source tree does not match Git")
-              run = json.loads(subprocess.run(
-                  ["gh", "api", f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{result['ci_run_id']}"],
-                  text=True, capture_output=True, check=True).stdout)
-              if (run.get("head_sha") != source or run.get("head_branch") != "main"
-                      or run.get("path") != ".github/workflows/ci.yml"
-                      or run.get("event") != "push" or run.get("conclusion") != "success"
-                      or (run.get("repository") or {}).get("full_name") != os.environ["GITHUB_REPOSITORY"]):
-                  raise SystemExit("selected cohort CI run is not an exact successful protected-main run")
-              artifact_pages = json.loads(subprocess.run(
-                  ["gh", "api", "--paginate", "--slurp",
-                   f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{result['ci_run_id']}/artifacts?per_page=100"],
-                  text=True, capture_output=True, check=True).stdout)
-              artifacts = [artifact for page in artifact_pages
-                           for artifact in page.get("artifacts", [])]
-              required_names = {
-                  "artifact-release-packages-" + source,
-                  "artifact-host-payloads-" + source,
-              }
-              selected = [artifact for artifact in artifacts
-                          if artifact.get("name") in required_names]
-              if ({artifact.get("name") for artifact in selected} != required_names
-                      or len(selected) != len(required_names)
-                      or any(artifact.get("expired") is not False
-                             or re.fullmatch(r"sha256:[0-9a-f]{64}", artifact.get("digest", "")) is None
-                             or (artifact.get("workflow_run") or {}).get("id") != int(result["ci_run_id"])
-                             or (artifact.get("workflow_run") or {}).get("head_sha") != source
-                             for artifact in selected)):
-                  raise SystemExit("selected cohort artifacts are missing, expired, duplicate, or cross-run")
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
-              for key in ("requires_cohort", "continuation"):
-                  stream.write(f"{key.replace('_','-')}={'true' if result[key] else 'false'}\n")
-              stream.write(f"source-commit={result['source_commit']}\n")
-              stream.write(f"ci-run-id={result['ci_run_id']}\n")
-              if result["continuation"]:
-                  pi_tag = result["cohort_tags"]["ca-pi"]
-                  matched = [release for release in releases
-                             if release.get("tag_name") == pi_tag and release.get("draft") is True]
-                  if len(matched) != 1 or not isinstance(matched[0].get("id"), int):
-                      raise SystemExit("Pi continuation requires exactly one existing marker-owned draft")
-                  stream.write(f"pi-release-id={matched[0]['id']}\n")
-          PY
-      - name: Download exact retained package cohort identity
-        if: steps.resolve.outputs.requires-cohort == 'true'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: artifact-release-packages-${{ steps.resolve.outputs.source-commit }}
-          path: ${{ runner.temp }}/artifact-publication-packages
-          run-id: ${{ steps.resolve.outputs.ci-run-id }}
-          github-token: ${{ github.token }}
-      - name: Report a release run with no publication obligation
-        if: steps.resolve.outputs.requires-cohort != 'true'
-        id: no-cohort
-        run: |
-          echo "mode=none" >> "$GITHUB_OUTPUT"
-          echo "cohort-targets=" >> "$GITHUB_OUTPUT"
-          echo "repair-ca=false" >> "$GITHUB_OUTPUT"
-          echo "repair-ca-codex=false" >> "$GITHUB_OUTPUT"
-          echo "repair-ca-pi=false" >> "$GITHUB_OUTPUT"
-      - name: Refuse cross-run cohort mixing before publication
-        if: steps.resolve.outputs.requires-cohort == 'true'
-        id: durable
-        env:
-          SOURCE_COMMIT: ${{ steps.resolve.outputs.source-commit }}
-          CI_RUN_ID: ${{ steps.resolve.outputs.ci-run-id }}
-          CONTINUATION: ${{ steps.resolve.outputs.continuation }}
-          PI_RELEASE_ID: ${{ steps.resolve.outputs.pi-release-id }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import base64, hashlib, json, os, pathlib, re, subprocess, sys
-          sys.path.insert(0, ".github/scripts")
-          from _npm_publishlib import (_validate_qualified_release_body,
-                                       reject_markerless_current_tag)
-          from _releaselib import SEMVER
-          root = pathlib.Path(os.environ["RUNNER_TEMP"])
-          package_root = root / "artifact-publication-packages"
-          cohort_path = package_root / "artifact-package-cohort.json"
-          cohort = json.loads(cohort_path.read_text(encoding="utf-8"))
-          if (cohort.get("source_commit") != os.environ["SOURCE_COMMIT"]
-                  or cohort.get("workflow") != ".github/workflows/ci.yml"
-                  or cohort.get("run_id") != os.environ["CI_RUN_ID"]
-                  or re.fullmatch(r"[0-9a-f]{40}", cohort.get("source_tree", "")) is None):
-              raise SystemExit("retained cohort identity does not match this exact release run")
-          packages = cohort.get("packages")
-          host_targets = {"claude": "ca", "codex": "ca-codex", "pi": "ca-pi"}
-          if not isinstance(packages, dict) or set(packages) != set(host_targets):
-              raise SystemExit("retained cohort package inventory is malformed")
-          versions = {}
-          for host, target in host_targets.items():
-              package = packages.get(host)
-              version = package.get("version") if isinstance(package, dict) else None
-              if not isinstance(version, str) or re.fullmatch(SEMVER, version) is None:
-                  raise SystemExit(f"retained {host} package version is malformed")
-              versions[target] = version
-          config = {"ca": "v" + versions["ca"],
-                    "ca-codex": "ca-codex-v" + versions["ca-codex"],
-                    "ca-pi": "ca-pi-v" + versions["ca-pi"]}
-          enabled = {"ca": os.environ["ELIGIBLE_CA"] == "true",
-                     "ca-codex": os.environ["ELIGIBLE_CODEX"] == "true",
-                     "ca-pi": os.environ["ELIGIBLE_PI"] == "true"}
-          cohort_tags = dict(config)
-          current = {"source_commit": cohort["source_commit"], "source_tree": cohort["source_tree"],
-                     "workflow": cohort["workflow"],
-                     "ci_run_id": cohort["run_id"],
-                     "cohort_sha256": hashlib.sha256(cohort_path.read_bytes()).hexdigest(),
-                     "cohort_tags": cohort_tags,
-                     "eligible_targets": sorted(target for target, value in enabled.items() if value)}
-          def unique(pairs):
-              result = {}
-              for key, value in pairs:
-                  if key in result: raise SystemExit(f"duplicate durable receipt field: {key}")
-                  result[key] = value
-              return result
-          pages = json.loads(subprocess.run(
-              ["gh", "api", "--paginate", "--slurp",
-               f"repos/{os.environ['GITHUB_REPOSITORY']}/releases?per_page=100"],
-              text=True, capture_output=True, check=True).stdout)
-          releases = [release for page in pages for release in page]
-          by_tag = {release.get("tag_name"): release for release in releases}
-          if os.environ["CONTINUATION"] == "true":
-              expected_tag = "ca-pi-v" + versions["ca-pi"]
-              if (not os.environ["PI_RELEASE_ID"].isdigit()
-                      or (by_tag.get(expected_tag) or {}).get("id") != int(os.environ["PI_RELEASE_ID"])):
-                  raise SystemExit("Pi continuation Release identity changed during qualification")
-          receipts = []
-          markers = []
-          draft_markers = []
-          for release in releases:
-              body = release.get("body") or ""
-              matched = re.fullmatch(
-                  r"(?s)(.*\n)\n<!-- codearbiter-cohort-start-v1:([A-Za-z0-9_-]+) -->\n",
-                  body)
-              marker_mentions = body.count("codearbiter-cohort-start-v1:")
-              if matched is None and marker_mentions == 0:
-                  continue
-              if matched is None or marker_mentions != 1:
-                  raise SystemExit(f"Release {release.get('tag_name')} has malformed or duplicate cohort markers")
-              try:
-                  marker_bytes = base64.urlsafe_b64decode(
-                      matched.group(2) + "=" * (-len(matched.group(2)) % 4))
-                  marker = json.loads(marker_bytes, object_pairs_hook=unique)
-              except Exception as error:
-                  raise SystemExit("cohort-start marker is not canonical JSON") from error
-              _validate_qualified_release_body(
-                  body, release.get("tag_name"), marker_bytes)
-              if marker.get("tag") != release.get("tag_name"):
-                  raise SystemExit("cohort-start marker is attached to the wrong Release")
-              markers.append(marker)
-              if release.get("draft") is True:
-                  draft_markers.append(marker)
-              assets = release.get("assets", [])
-              durable = [asset for asset in assets if isinstance(asset.get("name"), str)
-                         and asset["name"].startswith("codearbiter-cohort-publication")]
-              if not durable:
-                  if release.get("draft") is not True:
-                      raise SystemExit("marker-owned Release was published without its durable receipt")
-                  continue
-              if len(durable) != 1 or durable[0]["name"] != "codearbiter-cohort-publication-v1.json":
-                  raise SystemExit(f"Release {release.get('tag_name')} has extra durable receipts")
-              response = subprocess.run(
-                  ["gh", "api", "-H", "Accept: application/octet-stream", durable[0]["url"]],
-                  capture_output=True, check=True)
-              receipt = json.loads(response.stdout.decode("utf-8"), object_pairs_hook=unique)
-              if receipt.get("tag") != release.get("tag_name"):
-                  raise SystemExit("durable receipt is attached to the wrong Release")
-              package_assets = [asset for asset in assets
-                                if asset.get("name") == receipt.get("package_file")]
-              if receipt.get("host") != "pi":
-                  if len(package_assets) != 1:
-                      raise SystemExit("historical durable receipt is missing its exact package asset")
-                  package_bytes = subprocess.run(
-                      ["gh", "api", "-H", "Accept: application/octet-stream",
-                       package_assets[0]["url"]], capture_output=True, check=True).stdout
-                  if hashlib.sha256(package_bytes).hexdigest() != receipt.get("package_sha256"):
-                      raise SystemExit("historical durable package asset digest mismatch")
-              receipts.append(receipt)
-          missing = []
-          for target, tag in config.items():
-              remote = subprocess.run(["git", "ls-remote", "--tags", "origin", f"refs/tags/{tag}",
-                                       f"refs/tags/{tag}^{{}}"], text=True, capture_output=True, check=True)
-              release = by_tag.get(tag)
-              matching_markers = [marker for marker in markers
-                                  if marker.get("target") == target and marker.get("tag") == tag]
-              if len(matching_markers) > 1:
-                  raise SystemExit(f"current {target} Release marker is duplicate")
-              try:
-                  reject_markerless_current_tag(
-                      remote.stdout, tag, cohort["source_commit"],
-                      has_marker=len(matching_markers) == 1)
-              except ValueError as error:
-                  raise SystemExit(str(error)) from error
-          state = {"receipts": receipts, "markers": markers,
-                   "missing_current": sorted(missing),
-                   "draft_markers": draft_markers}
-          (root / "current-cohort.json").write_text(json.dumps(current), encoding="utf-8")
-          (root / "durable-state.json").write_text(json.dumps(state), encoding="utf-8")
-          PY
-          python3 .github/scripts/_npm_publishlib.py reconcile-state \
-            --current "$RUNNER_TEMP/current-cohort.json" --state "$RUNNER_TEMP/durable-state.json" \
-            --output "$GITHUB_OUTPUT"
-          if [ "$CONTINUATION" = true ]; then
-            tag=$(python3 -c 'import json,os; print(json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"current-cohort.json")))["cohort_tags"]["ca-pi"])')
-            expected_object=$(python3 - "$tag" "$SOURCE_COMMIT" <<'PY'
-          import json,re,sys
-          ledger=json.load(open(".github/published-tags.json",encoding="utf-8"))
-          entry=(ledger.get("tags") or {}).get(sys.argv[1])
-          if (not isinstance(entry,dict) or entry.get("object_type")!="tag"
-                  or entry.get("commit_sha")!=sys.argv[2]
-                  or re.fullmatch(r"[0-9a-f]{40}",entry.get("object_sha", "")) is None):
-              raise SystemExit("Pi continuation tag is absent from the immutable receipt ledger")
-          print(entry["object_sha"])
-          PY
-            )
-            git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}" > "$RUNNER_TEMP/pi-repair-tag.txt"
-            object=$(python3 .github/scripts/_npm_publishlib.py tag-identity \
-              --remote "$RUNNER_TEMP/pi-repair-tag.txt" --tag "$tag" --source "$SOURCE_COMMIT" \
-              --expected-object "$expected_object")
-            echo "tag-object-sha=$object" >> "$GITHUB_OUTPUT"
-          fi
-
-  auto-claude-cohort-gate:
-    name: "[GATE ] | [COHORT] | Claude publication complete"
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-release]
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' }}
-    runs-on: ubuntu-latest
-    permissions: {}
-    steps:
-      - name: Require Claude publication completion
-        env:
-          ELIGIBLE: ${{ needs.auto-preflight.outputs.ca }}
-          REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca }}
-          PUBLICATION_RESULT: ${{ needs.auto-release.result }}
-        run: |
-          set -euo pipefail
-          case "$ELIGIBLE" in true|false) ;; *) echo "::error::ca eligibility output is malformed"; exit 1 ;; esac
-          case "$REPAIR" in true|false) ;; *) echo "::error::ca repair output is malformed"; exit 1 ;; esac
-          if [ "$ELIGIBLE" = true ] || [ "$REPAIR" = true ]; then
-            if [ "$PUBLICATION_RESULT" != success ]; then
-              echo "::error::ca publication was required but concluded $PUBLICATION_RESULT"
-              exit 1
-            fi
-          elif [ "$PUBLICATION_RESULT" != skipped ]; then
-            echo "::error::ca publication was ineligible but concluded $PUBLICATION_RESULT"
-            exit 1
-          fi
-
-  auto-codex-provenance:
-    name: "[GATE ] | [CDX ] | Auto-tag candidate provenance"
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-claude-cohort-gate]
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-claude-cohort-gate.result == 'success' && (needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true') }}
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Check out the trusted default-branch verifier
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.sha }}
-          path: trusted
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Materialize the exact completed-run candidate as inert data
-        env:
-          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          case "$CANDIDATE_SHA" in
-            ""|*[!0-9a-f]*) echo "::error::candidate SHA must be lowercase hexadecimal"; exit 1 ;;
-          esac
-          if [ "${#CANDIDATE_SHA}" -ne 40 ]; then
-            echo "::error::candidate SHA must contain exactly 40 hexadecimal characters"
-            exit 1
-          fi
-          git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
-          git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
-          git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
-      - name: Verify the exact static Codex candidate
-        env:
-          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          python3 trusted/.github/scripts/verify_codex_candidate_provenance.py \
-            --repo candidate --final-ref "$CANDIDATE_SHA" --json
-
-  auto-release-codex:
-    name: CA-Codex | [Auto-tag]
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-codex-provenance]
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-provenance.result == 'success' && (needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true') }}
-    permissions:
-      actions: read
-      contents: read
-      id-token: write
+    timeout-minutes: 30
+    concurrency: { group: release-ca-codex, cancel-in-progress: false }
     environment: codex-distribution
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+    permissions:
+      actions: read
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Mint dedicated Codex distribution publisher token
+      # The ca-codex-marketplace branch and ca-codex-dist-v* tags are
+      # ruleset-protected; only the dedicated distribution App may write them.
+      - name: Mint Codex distribution publisher token
         id: codex-publisher
-        shell: bash
         env:
           APP_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
           INSTALLATION_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_INSTALLATION_ID }}
@@ -1147,13 +189,11 @@ jobs:
           key="$RUNNER_TEMP/codex-distribution-app.pem"
           trap 'rm -f "$key"' EXIT
           printf '%s' "$PRIVATE_KEY" > "$key"
-          chmod 600 "$key"
           python3 .github/scripts/create_codex_distribution_token.py \
             --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
-
-      - name: Mint separate Codex ruleset verifier token
+      - name: Mint Codex ruleset verifier token (advisory)
         id: codex-ruleset-verifier
-        shell: bash
+        continue-on-error: true
         env:
           APP_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
           INSTALLATION_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID }}
@@ -1161,109 +201,44 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          key="$RUNNER_TEMP/codex-ruleset-verifier-app.pem"
+          key="$RUNNER_TEMP/codex-verifier-app.pem"
           trap 'rm -f "$key"' EXIT
           printf '%s' "$PRIVATE_KEY" > "$key"
-          chmod 600 "$key"
           python3 .github/scripts/create_codex_distribution_token.py \
             --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
-
-      - uses: ./.github/actions/publish-release
+      - uses: ./.github/actions/publish-target
         with:
           target: ca-codex
           manifest: plugins/ca-codex/.codex-plugin/plugin.json
           changelog: plugins/ca-codex/CHANGELOG.md
           tag-prefix: ca-codex-v
           title-prefix: ca-codex
-          requested-version: ""
-          summary: ""
-          mark-latest: "false"
-          create-release: "true"
-          package-host: codex
-          ci-run-id: ${{ needs.auto-preflight.outputs.cohort-run-id }}
-          source-commit: ${{ github.event.workflow_run.head_sha }}
-          cohort-targets: ${{ needs.auto-cohort-reconciliation.outputs.cohort-targets }}
+          host: codex
+          source-commit: ${{ needs.preflight.outputs.source }}
+          ci-run-id: ${{ needs.preflight.outputs.ci-run-id }}
           github-token: ${{ steps.codex-publisher.outputs.token }}
-          codex-publisher-actor-id: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
           codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}
+          codex-publisher-actor-id: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
           codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
-          npm-token: ${{ secrets.NPMJS_TOKEN }}
 
-  auto-codex-cohort-gate:
-    name: "[GATE ] | [COHORT] | Codex publication complete"
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-claude-cohort-gate, auto-release-codex]
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-claude-cohort-gate.result == 'success' }}
+  release-pi:
+    name: CA-Pi | [Release]
+    needs: preflight
+    if: needs.preflight.outputs.ca-pi == 'true'
     runs-on: ubuntu-latest
-    permissions: {}
-    steps:
-      - name: Require Codex publication completion
-        env:
-          ELIGIBLE: ${{ needs.auto-preflight.outputs.ca-codex }}
-          REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca-codex }}
-          PUBLICATION_RESULT: ${{ needs.auto-release-codex.result }}
-        run: |
-          set -euo pipefail
-          case "$ELIGIBLE" in true|false) ;; *) echo "::error::ca-codex eligibility output is malformed"; exit 1 ;; esac
-          case "$REPAIR" in true|false) ;; *) echo "::error::ca-codex repair output is malformed"; exit 1 ;; esac
-          if [ "$ELIGIBLE" = true ] || [ "$REPAIR" = true ]; then
-            if [ "$PUBLICATION_RESULT" != success ]; then
-              echo "::error::ca-codex publication was required but concluded $PUBLICATION_RESULT"
-              exit 1
-            fi
-          elif [ "$PUBLICATION_RESULT" != skipped ]; then
-            echo "::error::ca-codex publication was ineligible but concluded $PUBLICATION_RESULT"
-            exit 1
-          fi
-
-  auto-release-sandbox:
-    name: CA-Sandbox | [Auto-tag]
-    needs: auto-preflight
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-sandbox == 'true'
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0
-
-      - uses: ./.github/actions/publish-release
-        with:
-          target: ca-sandbox
-          manifest: plugins/ca-sandbox/.claude-plugin/plugin.json
-          changelog: plugins/ca-sandbox/CHANGELOG.md
-          tag-prefix: ca-sandbox-v
-          title-prefix: ca-sandbox
-          requested-version: ""
-          summary: ""
-          mark-latest: "false"
-          create-release: "true"
-          github-token: ${{ github.token }}
-
-  auto-release-pi:
-    name: CA-Pi | [Auto-tag]
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-codex-cohort-gate]
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-cohort-gate.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
+    timeout-minutes: 30
+    concurrency: { group: release-ca-pi, cancel-in-progress: false }
     permissions:
       actions: read
       contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    outputs:
-      tag-object-sha: ${{ steps.release.outputs.tag-object-sha || steps.repair.outputs.tag-object-sha }}
-    env:
-      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
-
-      - uses: ./.github/actions/publish-release
+          persist-credentials: false
+      - uses: ./.github/actions/publish-target
         with:
           target: ca-pi
           manifest: plugins/ca-pi/package.json
@@ -1271,294 +246,33 @@ jobs:
           changelog: plugins/ca-pi/CHANGELOG.md
           tag-prefix: ca-pi-v
           title-prefix: ca-pi
-          requested-version: ""
-          summary: ""
-          mark-latest: "false"
-          create-release: "true"
-          package-host: pi
-          attach-package: "false"
-          finalize-release: "false"
-          ci-run-id: ${{ needs.auto-preflight.outputs.cohort-run-id }}
-          source-commit: ${{ github.event.workflow_run.head_sha }}
-          cohort-targets: ${{ needs.auto-cohort-reconciliation.outputs.cohort-targets }}
+          host: pi
+          source-commit: ${{ needs.preflight.outputs.source }}
+          ci-run-id: ${{ needs.preflight.outputs.ci-run-id }}
           github-token: ${{ github.token }}
-        id: release
-        if: needs.auto-cohort-reconciliation.outputs.continuation != 'true'
-      - name: Reuse the reconciled immutable Pi tag during continuation
-        if: needs.auto-cohort-reconciliation.outputs.continuation == 'true'
-        id: repair
-        env:
-          TAG_OBJECT_SHA: ${{ needs.auto-cohort-reconciliation.outputs.tag-object-sha }}
-        run: |
-          case "$TAG_OBJECT_SHA" in ""|*[!0-9a-f]*)
-            echo "::error::reconciled Pi tag object SHA is malformed"; exit 1 ;; esac
-          [ "${#TAG_OBJECT_SHA}" -eq 40 ] || {
-            echo "::error::reconciled Pi tag object SHA is malformed"; exit 1; }
-          echo "tag-object-sha=$TAG_OBJECT_SHA" >> "$GITHUB_OUTPUT"
+          npm-token: ${{ secrets.NPMJS_TOKEN }}
 
-  auto-publish-pi-npm:
-    name: CA-Pi | [Auto-publish npm]
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-codex-cohort-gate, auto-release-pi]
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-cohort-gate.result == 'success' && needs.auto-release-pi.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
-    permissions:
-      actions: read
-      # The called workflow must observe the reconciled marker-owned draft.
-      contents: write
-      id-token: write
-    uses: ./.github/workflows/npm-publish.yml
-    with:
-      tag: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}
-      expected_sha: ${{ needs.auto-cohort-reconciliation.outputs.source-commit }}
-      ci_run_id: ${{ needs.auto-cohort-reconciliation.outputs.ci-run-id }}
-      cohort_targets: ${{ needs.auto-cohort-reconciliation.outputs.cohort-targets }}
-      expected_tag_object_sha: ${{ needs.auto-release-pi.outputs.tag-object-sha }}
-      continuation: ${{ needs.auto-cohort-reconciliation.outputs.continuation == 'true' }}
-    secrets:
-      NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-
-  auto-retain-pi-cohort-receipt:
-    name: CA-Pi | [Auto-publish receipt]
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-publish-pi-npm]
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-publish-pi-npm.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
-    permissions:
-      actions: read
-      contents: write
+  release-sandbox:
+    name: CA-Sandbox | [Release]
+    needs: preflight
+    if: needs.preflight.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    concurrency: { group: release-ca-sandbox, cancel-in-progress: false }
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ needs.preflight.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Download exact retained Pi package cohort
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: ./.github/actions/publish-target
         with:
-          name: artifact-release-packages-${{ needs.auto-cohort-reconciliation.outputs.source-commit }}
-          path: ${{ runner.temp }}/artifact-publication-packages
-          run-id: ${{ needs.auto-cohort-reconciliation.outputs.ci-run-id }}
+          target: ca-sandbox
+          manifest: plugins/ca-sandbox/.claude-plugin/plugin.json
+          changelog: plugins/ca-sandbox/CHANGELOG.md
+          tag-prefix: ca-sandbox-v
+          title-prefix: ca-sandbox
+          source-commit: ${{ needs.preflight.outputs.source }}
           github-token: ${{ github.token }}
-      - name: Acquire reviewed npm@11.19.1 CLI for final readback
-        id: npm-cli
-        run: |
-          set -euo pipefail
-          root="$(mktemp -d "$RUNNER_TEMP/npm-final.XXXXXXXX")"
-          archive="$root/npm.tgz"
-          curl --disable --fail --show-error --silent --proto '=https' --tlsv1.2 --max-redirs 0 \
-            --output "$archive" "https://registry.npmjs.org/npm/-/npm-11.19.1.tgz"
-          actual="sha512-$(openssl dgst -sha512 -binary "$archive" | openssl base64 -A)"
-          test "$actual" = "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
-          python3 - "$archive" <<'PY'
-          import pathlib,sys,tarfile
-          with tarfile.open(sys.argv[1],"r:gz") as stream:
-              for member in stream.getmembers():
-                  path=pathlib.PurePosixPath(member.name)
-                  if (path.is_absolute() or ".." in path.parts or member.issym()
-                          or member.islnk() or member.isdev() or member.isfifo()):
-                      raise SystemExit(f"unsafe npm CLI archive member: {member.name}")
-          PY
-          tar --extract --gzip --no-same-owner --no-same-permissions --file "$archive" --directory "$root"
-          cli="$(realpath "$root/package/bin/npm-cli.js")"
-          case "$cli" in "$root"/*) ;; *) exit 1 ;; esac
-          test ! -L "$cli" && test "$("$cli" --version)" = "11.19.1"
-          echo "executable=$cli" >> "$GITHUB_OUTPUT"
-      - name: Download publisher-isolated durable Pi receipt
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: durable-pi-cohort-receipt-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/durable-pi-receipt
-      - name: Retain and read back immutable Pi receipt on the Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}
-          SOURCE_COMMIT: ${{ needs.auto-cohort-reconciliation.outputs.source-commit }}
-          CI_RUN_ID: ${{ needs.auto-cohort-reconciliation.outputs.ci-run-id }}
-          TRUSTED_SHA: ${{ github.sha }}
-          CONTINUATION: ${{ needs.auto-cohort-reconciliation.outputs.continuation }}
-          NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
-        run: |
-          set -euo pipefail
-          receipt="$RUNNER_TEMP/durable-pi-receipt/codearbiter-cohort-publication-v1.json"
-          marker="$RUNNER_TEMP/pi-cohort-marker.json"
-          python3 - "$receipt" "$marker" <<'PY'
-          import json,sys
-          receipt=json.load(open(sys.argv[1], encoding="utf-8"))
-          marker={"format":"codearbiter.cohort-start/0.1.0","target":receipt["target"],
-                  "host":receipt["host"],"tag":receipt["tag"],
-                  "source_commit":receipt["source_commit"],"source_tree":receipt["source_tree"],
-                  "workflow":".github/workflows/ci.yml","ci_run_id":receipt["ci_run_id"],
-                  "cohort_sha256":receipt["cohort_sha256"],"cohort_tags":receipt["cohort_tags"],
-                  "release_notes_sha256":receipt["release_notes_sha256"],
-                  "cohort_targets":receipt["cohort_targets"]}
-          with open(sys.argv[2],"w",encoding="utf-8",newline="\n") as stream:
-              json.dump(marker,stream,sort_keys=True,separators=(",",":")); stream.write("\n")
-          PY
-          python3 .github/scripts/_npm_publishlib.py cohort-receipt \
-            --receipt "$receipt" --marker "$marker"
-          releases="$RUNNER_TEMP/pi-draft-releases.json"
-          require_exact_draft() {
-            gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
-            python3 .github/scripts/_npm_publishlib.py qualified-draft \
-              --releases "$releases" --tag "$RELEASE_TAG" --marker "$marker" \
-              --asset codearbiter-cohort-publication-v1.json
-          }
-          read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
-          if [ "$RECEIPT_URL" = missing ]; then
-            read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
-            if [ "$RECEIPT_URL" = missing ]; then
-              gh api --method POST -H "Content-Type: application/json" --input "$receipt" \
-                "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-cohort-publication-v1.json" >/dev/null
-            fi
-          fi
-          read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
-          [ "$RECEIPT_URL" != missing ]
-          gh api -H "Accept: application/octet-stream" "$RECEIPT_URL" > "$RUNNER_TEMP/pi-receipt-readback.json"
-          cmp "$receipt" "$RUNNER_TEMP/pi-receipt-readback.json"
-
-          # Final, fresh Release validation: exact draft+marker, receipt-only
-          # asset set, exact retained tgz digest, registry integrity/provenance,
-          # and annotated tag identity all precede the undraft mutation.
-          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
-          read -r RELEASE_ID RECEIPT_URL < <(
-            python3 .github/scripts/_npm_publishlib.py qualified-finalize \
-              --releases "$releases" --tag "$RELEASE_TAG" --marker "$marker" \
-              --asset codearbiter-cohort-publication-v1.json)
-          gh api -H "Accept: application/octet-stream" "$RECEIPT_URL" > "$RUNNER_TEMP/pi-final-receipt.json"
-          cmp "$receipt" "$RUNNER_TEMP/pi-final-receipt.json"
-          python3 .github/scripts/_npm_publishlib.py cohort-receipt \
-            --receipt "$RUNNER_TEMP/pi-final-receipt.json" --marker "$marker"
-          read -r TARBALL INTEGRITY < <(python3 - "$receipt" "$RUNNER_TEMP" <<'PY'
-          import base64,hashlib,json,pathlib,sys
-          receipt=json.load(open(sys.argv[1],encoding="utf-8"))
-          path=pathlib.Path(sys.argv[2]) / "artifact-publication-packages" / receipt["package_file"]
-          data=path.read_bytes()
-          if hashlib.sha256(data).hexdigest()!=receipt["package_sha256"]:
-              raise SystemExit("Pi retained package digest changed before final publication")
-          print(path, "sha512-"+base64.b64encode(hashlib.sha512(data).digest()).decode())
-          PY
-          )
-          extra=()
-          if [ "$CONTINUATION" = true ]; then extra+=(--allow-continuation); fi
-          python3 .github/scripts/_npm_publishlib.py verify --repo . \
-            --tag "$RELEASE_TAG" --expected-sha "$SOURCE_COMMIT" --trusted-sha "$TRUSTED_SHA" \
-            --integrity "$INTEGRITY" --npm "$NPM_CLI" --publication-mode existing \
-            "${extra[@]}"
-          TAG_OBJECT_SHA=$(python3 - "$RUNNER_TEMP/pi-final-receipt.json" <<'PY'
-          import json,sys
-          print(json.load(open(sys.argv[1],encoding="utf-8"))["tag_object_sha"])
-          PY
-          )
-          git ls-remote --tags origin "refs/tags/$RELEASE_TAG" "refs/tags/$RELEASE_TAG^{}" > "$RUNNER_TEMP/pi-final-tag.txt"
-          python3 .github/scripts/_npm_publishlib.py tag-identity \
-            --remote "$RUNNER_TEMP/pi-final-tag.txt" --tag "$RELEASE_TAG" \
-            --source "$SOURCE_COMMIT" --expected-object "$TAG_OBJECT_SHA" >/dev/null
-          python3 - "$RUNNER_TEMP/pi-final-asset-identity.json" "$RECEIPT_URL" <<'PY'
-          import json,sys
-          with open(sys.argv[1],"w",encoding="utf-8",newline="\n") as stream:
-              json.dump({"codearbiter-cohort-publication-v1.json":sys.argv[2]},stream,
-                        sort_keys=True,separators=(",",":")); stream.write("\n")
-          PY
-          # A second full inventory read is the literal final operation before
-          # publication, so late body/draft/asset drift cannot reuse the prior snapshot.
-          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
-          read -r RELEASE_ID _ < <(
-            python3 .github/scripts/_npm_publishlib.py qualified-finalize \
-              --releases "$releases" --tag "$RELEASE_TAG" --marker "$marker" \
-              --asset codearbiter-cohort-publication-v1.json \
-              --expected-assets "$RUNNER_TEMP/pi-final-asset-identity.json")
-          gh api --method PATCH -F draft=false -f make_latest=false \
-            "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" >/dev/null
-          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq '.draft == false' | grep -qx true
-
-  auto-command-route-release-audit:
-    name: "[GATE ] | [RELEASE] | Command-route publication"
-    needs: [auto-preflight, auto-cohort-reconciliation, auto-claude-cohort-gate, auto-codex-cohort-gate, auto-release, auto-release-codex, auto-release-pi, auto-publish-pi-npm, auto-retain-pi-cohort-receipt]
-    # Run after intentional skips and failures so incomplete required
-    # publication becomes a red assertion instead of another skipped job.
-    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' }}
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Require automatic publication completion
-        env:
-          CA_ELIGIBLE: ${{ needs.auto-preflight.outputs.ca }}
-          CA_REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca }}
-          CA_RESULT: ${{ needs.auto-release.result }}
-          CODEX_ELIGIBLE: ${{ needs.auto-preflight.outputs.ca-codex }}
-          CODEX_REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca-codex }}
-          CODEX_RESULT: ${{ needs.auto-release-codex.result }}
-          PI_ELIGIBLE: ${{ needs.auto-preflight.outputs.ca-pi }}
-          PI_REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca-pi }}
-          PI_RESULT: ${{ needs.auto-retain-pi-cohort-receipt.result }}
-        run: |
-          set -euo pipefail
-          require_completion() {
-            target="$1" eligible="$2" repair="$3" result="$4"
-            case "$eligible" in true|false) ;; *) echo "::error::$target eligibility output is malformed"; exit 1 ;; esac
-            case "$repair" in true|false) ;; *) echo "::error::$target repair output is malformed"; exit 1 ;; esac
-            if [ "$eligible" = true ] || [ "$repair" = true ]; then
-              if [ "$result" != success ]; then
-                echo "::error::$target publication was required but concluded $result"
-                exit 1
-              fi
-            elif [ "$result" != skipped ]; then
-              echo "::error::$target publication was ineligible but concluded $result"
-              exit 1
-            fi
-          }
-          require_completion ca "$CA_ELIGIBLE" "$CA_REPAIR" "$CA_RESULT"
-          require_completion ca-codex "$CODEX_ELIGIBLE" "$CODEX_REPAIR" "$CODEX_RESULT"
-          require_completion ca-pi "$PI_ELIGIBLE" "$PI_REPAIR" "$PI_RESULT"
-
-      - name: Check out the trusted default-branch release auditor
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.sha }}
-          path: trusted
-          fetch-depth: 0
-          fetch-tags: true
-          persist-credentials: false
-
-      - name: Materialize the exact completed-run release candidate as inert data
-        env:
-          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          case "$CANDIDATE_SHA" in
-            ""|*[!0-9a-f]*) echo "::error::candidate SHA must be lowercase hexadecimal"; exit 1 ;;
-          esac
-          if [ "${#CANDIDATE_SHA}" -ne 40 ]; then
-            echo "::error::candidate SHA must contain exactly 40 hexadecimal characters"
-            exit 1
-          fi
-          git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
-          git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
-          git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
-
-      - name: Capture exact GitHub Release API evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -u
-          EVIDENCE_DIR="$RUNNER_TEMP/command-route-release-state"
-          mkdir -p "$EVIDENCE_DIR"
-          python3 trusted/.github/scripts/check_command_route_release_state.py plan \
-            --repo candidate > "$EVIDENCE_DIR/plan.tsv"
-          while IFS=$'\t' read -r TARGET TAG; do
-            set +e
-            gh api --include \
-              "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
-              > "$EVIDENCE_DIR/$TARGET.http" \
-              2> "$EVIDENCE_DIR/$TARGET.stderr"
-            STATUS=$?
-            set -e
-            printf '%s\n' "$STATUS" > "$EVIDENCE_DIR/$TARGET.exit"
-          done < "$EVIDENCE_DIR/plan.tsv"
-
-      - name: Require every first-containing candidate to be published
-        run: |
-          python3 trusted/.github/scripts/check_command_route_release_state.py observe \
-            --repo candidate \
-            --evidence-dir "$RUNNER_TEMP/command-route-release-state"

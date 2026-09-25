@@ -1,15 +1,13 @@
 # Codex distribution protection contract
 
-The release workflow first publishes the immutable `ca-codex-dist-v*` tag from
-the qualified archive, builds `@arbiterforge/ca-codex` from the exact qualified
-plugin members, and verifies the exact npm integrity and provenance readback.
-It then cold-installs that public npm version through a real Codex marketplace,
-at both supported host boundaries (0.143.0 and 0.145.0), requires the
-installation-pinned artifact engine to answer capabilities,
-finalizes and reads back the GitHub Release, and only then advances
-`ca-codex-marketplace`. The public marketplace source pins the exact verified
-npm version; it never points at a merely staged or attempted publication. The
-marketplace commit carries an
+The release workflow verifies the CI package cohort (member digests and the
+cold-install receipt matrix, which requires the installation-pinned artifact
+engine to answer capabilities), publishes the immutable `ca-codex-dist-v*` tag
+from the qualified archive, and advances `ca-codex-marketplace` to a catalog
+whose `git-subdir` source pins that tag by ref and full commit. The GitHub
+Release is published after the channel advances. npm publication of
+`@arbiterforge/ca-codex` is deferred (ADR-0040); its tooling remains in the tree
+for when it resumes. The marketplace commit carries an
 append-only `.agents/plugins/codex-distribution-tags.json` ledger binding every
 distribution tag to its Git commit, source commit, package cohort digest, and
 archive and npm digests. Promotion uses an expected-head lease and fails on
@@ -23,10 +21,12 @@ and grant the sole bypass to a dedicated GitHub App whose App ID is supplied as
 `CODEX_DISTRIBUTION_APP_ID` by the protected `codex-distribution` environment.
 The general GitHub Actions integration (actor 15368) is explicitly refused.
 Source control remains the reviewed desired-state contract, not
-evidence that the remote rules are installed. Immediately before the first
-distribution write, the release action fetches each live ruleset through the
-GitHub API and fails closed unless its enforcement, ref conditions, rule types,
-and sole publisher bypass exactly satisfy that contract.
+evidence that the remote rules are installed. Before the first distribution
+write, the release action audits each live ruleset through the GitHub API and
+reports a warning (advisory since ADR-0040) unless its enforcement, ref
+conditions, rule types, and sole publisher bypass exactly satisfy that
+contract. The rulesets themselves still fail closed: only the dedicated App can
+write the protected refs.
 
 Create a protected GitHub Actions environment named `codex-distribution` and
 store two independent GitHub App identities as environment secrets:

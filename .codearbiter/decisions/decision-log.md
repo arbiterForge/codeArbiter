@@ -2005,3 +2005,28 @@ Testable and Reliable require the release gate to reproduce the public consumer 
 Override setup-node's authenticated user configuration in the cold-install step with a temporary registry-only npmrc, omit NODE_AUTH_TOKEN from that step, and regression-test both properties.
 
 ---
+
+## DECISION-0069 — adr-0040-independent-release — Release each plugin independently with consumer-safety gates
+
+**Date:** 2026-09-25
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — directed loosening the release gates the pipeline could not meet, shipping the engine to every host, and releasing on merge; chose independent idempotent releases, the ca-marketplace Git channel, deferring Codex npm ("i want NPM in the future, I want functional releases NOW"), and consumer-safety-only hard gates.
+**Decision category:** release architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0039 and the cohort design coupled ca, ca-codex and ca-pi into one publication with resume/allowlist/supersede state and fail-closed provenance gates.
+- **Scaffold position:** Most release failures were the pipeline tripping on its own bookkeeping; normal Claude installs received no engine payload.
+- **Status type:** divergent
+
+### Decision
+Record ADR-0040-independent-per-target-release-with-consumer-safety-gates: independent per-plugin release on merge, `ca-marketplace` Git distribution for Claude Code, Codex npm deferred, provenance checks advisory, published-tag ledger gate unchanged.
+
+### SMARTS rationale
+Reliable and Testable: every release step is observe-then-act and re-runnable, and the planner is unit- and mutation-tested. Securable: consumer-facing integrity gates (package cohort, tag identity, byte read-back) stay hard; only provenance extras become advisory.
+
+### Implementation implication
+Rewrite release.yml around `.github/actions/publish-target` and `.github/scripts/release_target.py`; add `tools/promote-claude-marketplace.py`; default Codex promotion to the Git catalog; remove cohort code from `_npm_publishlib.py`; bump ca, ca-codex and ca-pi so the first run publishes a fresh version of each.
+
+---

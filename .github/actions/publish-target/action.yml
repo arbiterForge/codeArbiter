@@ -1,0 +1,494 @@
+name: "Publish one plugin release"
+description: >
+  Independent, re-runnable publication of ONE plugin. Every step observes the
+  remote state first and does only what is missing, so re-running the job is
+  the recovery path for a half-finished release. One plugin failing never
+  blocks another (ADR-0040).
+
+# Hard gates (consumer safety): manifest = tag = CHANGELOG version; the CI
+# package cohort verifies (payload digests + cold-install receipts); an
+# existing tag must name this commit; published bytes read back exactly.
+# Provenance extras (npm attestation, Codex ruleset audit) only warn.
+
+inputs:
+  target:
+    description: "ca | ca-codex | ca-pi | ca-sandbox"
+    required: true
+  manifest:
+    description: "Plugin manifest whose .version is authoritative"
+    required: true
+  companion-manifest:
+    description: "Optional second manifest that must agree (ca-pi root package.json)"
+    required: false
+    default: ""
+  changelog:
+    description: "CHANGELOG holding this version's section"
+    required: true
+  tag-prefix:
+    description: "Tag namespace, e.g. v or ca-pi-v"
+    required: true
+  title-prefix:
+    description: "Release title prefix"
+    required: true
+  mark-latest:
+    description: "true only for ca"
+    required: false
+    default: "false"
+  host:
+    description: "Package host: claude | codex | pi, or empty for a tag-and-notes-only plugin"
+    required: false
+    default: ""
+  source-commit:
+    description: "Exact commit being released (the successful CI run's head)"
+    required: true
+  ci-run-id:
+    description: "Successful CI run that retained the package cohort for source-commit"
+    required: false
+    default: ""
+  github-token:
+    description: "Token with contents:write for tag, Release and channel refs"
+    required: true
+  npm-token:
+    description: "npm automation token (ca-pi only)"
+    required: false
+    default: ""
+  codex-ruleset-verifier-token:
+    description: "Optional read-only token for the advisory Codex ruleset audit"
+    required: false
+    default: ""
+  codex-publisher-actor-id:
+    description: "Codex distribution App actor id (advisory ruleset audit)"
+    required: false
+    default: ""
+  codex-ruleset-verifier-actor-id:
+    description: "Codex ruleset verifier App actor id (advisory ruleset audit)"
+    required: false
+    default: ""
+
+outputs:
+  release-state:
+    description: "Final observed Release state"
+    value: ${{ steps.finish.outputs.release-state }}
+
+runs:
+  using: composite
+  steps:
+    - name: Download promoted host payloads
+      if: ${{ inputs.host != '' }}
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: artifact-host-payloads-${{ inputs.source-commit }}
+        path: ${{ runner.temp }}/artifact-publication-stage
+        run-id: ${{ inputs.ci-run-id }}
+        github-token: ${{ inputs.github-token }}
+    - name: Download release package cohort
+      if: ${{ inputs.host != '' }}
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: artifact-release-packages-${{ inputs.source-commit }}
+        path: ${{ runner.temp }}/artifact-publication-packages
+        run-id: ${{ inputs.ci-run-id }}
+        github-token: ${{ inputs.github-token }}
+    - name: Download cold-install receipt matrix
+      if: ${{ inputs.host != '' }}
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        pattern: artifact-package-cold-*-${{ inputs.source-commit }}
+        path: ${{ runner.temp }}/artifact-publication-cold
+        merge-multiple: false
+        run-id: ${{ inputs.ci-run-id }}
+        github-token: ${{ inputs.github-token }}
+
+    - name: Acquire reviewed npm@11.19.1 CLI
+      id: npm-cli
+      if: ${{ inputs.host != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        root="$(mktemp -d "$RUNNER_TEMP/npm-cli.XXXXXXXX")"
+        archive="$root/npm.tgz"
+        curl --disable --fail --show-error --silent --proto '=https' --tlsv1.2 --max-redirs 0 \
+          --output "$archive" "https://registry.npmjs.org/npm/-/npm-11.19.1.tgz"
+        actual="sha512-$(openssl dgst -sha512 -binary "$archive" | openssl base64 -A)"
+        test "$actual" = "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
+        python3 - "$archive" <<'PY'
+        import pathlib, sys, tarfile
+        with tarfile.open(sys.argv[1], "r:gz") as stream:
+            for member in stream.getmembers():
+                path = pathlib.PurePosixPath(member.name)
+                if (path.is_absolute() or ".." in path.parts or member.issym()
+                        or member.islnk() or member.isdev() or member.isfifo()):
+                    raise SystemExit(f"unsafe npm CLI archive member: {member.name}")
+        PY
+        tar --extract --gzip --no-same-owner --no-same-permissions --file "$archive" --directory "$root"
+        cli="$(realpath "$root/package/bin/npm-cli.js")"
+        case "$cli" in "$root"/*) ;; *) exit 1 ;; esac
+        test ! -L "$cli" && test "$("$cli" --version)" = "11.19.1"
+        echo "executable=$cli" >> "$GITHUB_OUTPUT"
+
+    # GATE: the exact CI package cohort — payload digests, member set, and the
+    # cold-install receipt matrix for every host/platform — must verify.
+    - name: Verify the CI package cohort (payload digests + cold-install receipts)
+      id: package
+      if: ${{ inputs.host != '' }}
+      shell: bash
+      env:
+        HOST: ${{ inputs.host }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        CI_RUN_ID: ${{ inputs.ci-run-id }}
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+      run: |
+        set -euo pipefail
+        [ "$(git rev-parse HEAD)" = "$SOURCE_COMMIT" ] || { echo "::error::checkout is not the release commit"; exit 1; }
+        python3 .github/scripts/_npm_publishlib.py verify-cohort \
+          --package-root "$RUNNER_TEMP/artifact-publication-packages" \
+          --stage-root "$RUNNER_TEMP/artifact-publication-stage" \
+          --cold-root "$RUNNER_TEMP/artifact-publication-cold" \
+          --source-repo . --source-commit "$SOURCE_COMMIT" --ci-run-id "$CI_RUN_ID" \
+          --workflow-sha "$SOURCE_COMMIT" --npm "$NPM_CLI" --trusted-repo . \
+          --host "$HOST" --output "$GITHUB_OUTPUT"
+
+    # GATE: manifest (and ca-pi's root package.json) agree; the tag is built from it.
+    - name: Resolve version from the manifest
+      id: v
+      shell: bash
+      env:
+        MANIFEST: ${{ inputs.manifest }}
+        COMPANION: ${{ inputs.companion-manifest }}
+        TAG_PREFIX: ${{ inputs.tag-prefix }}
+      run: |
+        set -euo pipefail
+        VERSION=$(node -p "require('./$MANIFEST').version")
+        if [ -n "$COMPANION" ]; then
+          COMPANION_VERSION=$(node -p "require('./$COMPANION').version")
+          [ "$COMPANION_VERSION" = "$VERSION" ] || {
+            echo "::error::$COMPANION says '$COMPANION_VERSION' but $MANIFEST says '$VERSION'"; exit 1; }
+        fi
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "tag=${TAG_PREFIX}${VERSION}" >> "$GITHUB_OUTPUT"
+
+    # GATE: the CHANGELOG has exactly one dated section for this version.
+    - name: Extract the CHANGELOG section as release notes
+      shell: bash
+      env:
+        VER: ${{ steps.v.outputs.version }}
+        TAG: ${{ steps.v.outputs.tag }}
+        CHANGELOG: ${{ inputs.changelog }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+      run: |
+        set -euo pipefail
+        python3 core/pysrc/_releaselib.py changelog-section \
+          "$GITHUB_WORKSPACE" "$SOURCE_COMMIT" "$CHANGELOG" "$VER" semver "" > notes.md
+        python3 core/pysrc/_releaselib.py notes-match "$TAG" notes.md semver ""
+        RELEASE_DATE=$(python3 - <<'PY'
+        import re
+        heading=open("notes.md",encoding="utf-8").readline().rstrip("\n")
+        match=re.search(r"(?: - | — )(\d{4}-\d{2}-\d{2})$",heading)
+        if not match: raise SystemExit("changelog section has no release date")
+        print(match.group(1))
+        PY
+        )
+        printf '%s\nReleased-at: %s\n' "$(cat notes.md)" "$RELEASE_DATE" > tagmsg.txt
+        echo "RELEASED_AT=$RELEASE_DATE" >> "$GITHUB_ENV"
+
+    - name: Observe remote state and plan
+      id: plan
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        ASSET: ${{ inputs.host != 'pi' && steps.package.outputs.file || '' }}
+      run: |
+        set -euo pipefail
+        gh auth setup-git
+        git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" > "$RUNNER_TEMP/remote-tag.txt"
+        gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+        extra=()
+        [ -z "$ASSET" ] || extra+=(--asset "$ASSET")
+        python3 .github/scripts/release_target.py plan --tag "$TAG" --source "$SOURCE_COMMIT" \
+          --remote-tag "$RUNNER_TEMP/remote-tag.txt" --releases "$RUNNER_TEMP/releases.json" \
+          --asset codearbiter-publication.json "${extra[@]}" --output "$GITHUB_OUTPUT"
+
+    - name: Create and push the annotated tag
+      if: ${{ steps.plan.outputs.tag == 'create' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+      run: |
+        set -euo pipefail
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        GIT_COMMITTER_DATE="$RELEASED_AT 00:00:00 +0000" \
+          git tag -a "$TAG" -F tagmsg.txt --cleanup=verbatim "$SOURCE_COMMIT"
+        git push origin "refs/tags/$TAG"
+
+    # GATE: the tag names exactly this commit (fresh read, after any push).
+    - name: Read back the tag
+      shell: bash
+      env:
+        TAG: ${{ steps.v.outputs.tag }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+      run: |
+        set -euo pipefail
+        TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+          | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+        [ "$TAG_SHA" = "$SOURCE_COMMIT" ] || { echo "::error::$TAG resolves to '$TAG_SHA', not $SOURCE_COMMIT"; exit 1; }
+
+    # The published-tag ledger (.github/published-tags.json) is fed only by
+    # these receipts through the reviewed reconciliation path (issue #386).
+    - name: Capture published tag identity receipt
+      id: receipt
+      if: ${{ always() && steps.v.outputs.tag != '' && steps.plan.outcome != 'skipped' }}
+      shell: bash
+      env:
+        TAG: ${{ steps.v.outputs.tag }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        RECEIPT_PATH: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json
+      run: |
+        set -euo pipefail
+        python3 .github/scripts/tag_publication_receipt.py capture \
+          --repo "$GITHUB_REPOSITORY" --tag "$TAG" \
+          --expected-commit "$SOURCE_COMMIT" --workflow-sha "$SOURCE_COMMIT" \
+          --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+          --output "$RECEIPT_PATH"
+
+    - name: Retain published tag identity receipt
+      if: ${{ always() && steps.receipt.outcome != 'skipped' }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: tag-publication-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json
+        if-no-files-found: error
+        retention-days: 90
+
+    - name: Create the draft Release
+      id: draft
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+        TITLE: ${{ inputs.title-prefix }} ${{ steps.v.outputs.version }}
+        STATE: ${{ steps.plan.outputs.release }}
+        RELEASE_ID: ${{ steps.plan.outputs.release-id }}
+      run: |
+        set -euo pipefail
+        if [ "$STATE" = create ]; then
+          RELEASE_ID=$(gh api --method POST "repos/$GITHUB_REPOSITORY/releases" \
+            -f tag_name="$TAG" -f name="$TITLE" -F body=@notes.md \
+            -F draft=true -F prerelease=false --jq .id)
+        fi
+        echo "release-id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+
+    # GATE: the attached package reads back byte-identical to the verified cohort.
+    - name: Upload and read back the package asset
+      if: ${{ inputs.host == 'claude' || inputs.host == 'codex' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        RELEASE_ID: ${{ steps.draft.outputs.release-id }}
+        MISSING: ${{ steps.plan.outputs.missing-assets }}
+        ASSET_FILE: ${{ steps.package.outputs.file }}
+        ASSET_PATH: ${{ steps.package.outputs.path }}
+        ASSET_SHA256: ${{ steps.package.outputs.sha256 }}
+      run: |
+        set -euo pipefail
+        case " $MISSING " in *" $ASSET_FILE "*)
+          gh api --method POST -H "Content-Type: application/gzip" --input "$ASSET_PATH" \
+            "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$ASSET_FILE" >/dev/null ;;
+        esac
+        URL=$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets" \
+          --jq ".[] | select(.name == \"$ASSET_FILE\") | .url")
+        [ -n "$URL" ] || { echo "::error::$ASSET_FILE is missing after upload"; exit 1; }
+        gh api -H "Accept: application/octet-stream" "$URL" > "$RUNNER_TEMP/readback-$ASSET_FILE"
+        printf '%s  %s\n' "$ASSET_SHA256" "$RUNNER_TEMP/readback-$ASSET_FILE" | sha256sum --check --strict
+
+    - name: Publish the Claude marketplace channel
+      id: claude-channel
+      if: ${{ inputs.host == 'claude' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}
+        VERSION: ${{ steps.v.outputs.version }}
+      run: |
+        set -euo pipefail
+        python3 tools/promote-claude-marketplace.py \
+          --package-root "$RUNNER_TEMP/artifact-publication-packages" \
+          --cohort-sha256 "$COHORT_SHA256" --source-commit "$SOURCE_COMMIT" \
+          --remote-url "$(git remote get-url origin)" --version "$VERSION" \
+          --work "$RUNNER_TEMP/claude-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+          --push > "$RUNNER_TEMP/claude-channel.json"
+        echo "ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["marketplace_commit"])' "$RUNNER_TEMP/claude-channel.json")" >> "$GITHUB_OUTPUT"
+
+    - name: Audit Codex distribution rulesets (advisory)
+      if: ${{ inputs.host == 'codex' && inputs.codex-ruleset-verifier-token != '' }}
+      continue-on-error: true
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.codex-ruleset-verifier-token }}
+      run: |
+        python3 .github/scripts/verify_codex_distribution_rulesets.py \
+          --repository "$GITHUB_REPOSITORY" \
+          --publisher-actor-id "${{ inputs.codex-publisher-actor-id }}" \
+          --verifier-actor-id "${{ inputs.codex-ruleset-verifier-actor-id }}" \
+          || echo "::warning::Codex distribution ruleset audit did not pass"
+
+    - name: Publish the Codex marketplace channel
+      id: codex-channel
+      if: ${{ inputs.host == 'codex' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}
+        VERSION: ${{ steps.v.outputs.version }}
+      run: |
+        set -euo pipefail
+        promote() {
+          python3 tools/promote-codex-marketplace.py \
+            --package-root "$RUNNER_TEMP/artifact-publication-packages" \
+            --cohort-sha256 "$COHORT_SHA256" --source-repo . --source-commit "$SOURCE_COMMIT" \
+            --remote-url "$(git remote get-url origin)" \
+            --catalog-url "https://github.com/$GITHUB_REPOSITORY.git" \
+            --version "$VERSION" --catalog-mode git --push "$@"
+        }
+        promote --work "$RUNNER_TEMP/codex-dist-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > /dev/null
+        promote --work "$RUNNER_TEMP/codex-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+          --advance-channel > "$RUNNER_TEMP/codex-channel.json"
+        echo "ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["marketplace_commit"])' "$RUNNER_TEMP/codex-channel.json")" >> "$GITHUB_OUTPUT"
+
+    - name: Select the exact Pi npm tarball
+      id: pi
+      if: ${{ inputs.host == 'pi' }}
+      shell: bash
+      env:
+        VERSION: ${{ steps.v.outputs.version }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        CI_RUN_ID: ${{ inputs.ci-run-id }}
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+      run: |
+        set -euo pipefail
+        python3 - <<'PY' >> "$GITHUB_OUTPUT"
+        import json, os, sys
+        from pathlib import Path
+        sys.path.insert(0, ".github/scripts")
+        import _npm_publishlib as lib
+        root = Path(os.environ["RUNNER_TEMP"]) / "artifact-publication-packages"
+        cohort = root / "artifact-package-cohort.json"
+        name = json.loads(cohort.read_text(encoding="utf-8"))["packages"]["pi"]["file"]
+        tarball, integrity = lib.load_prebuilt_pi_package(
+            cohort, root / name, version=os.environ["VERSION"],
+            expected_sha=os.environ["SOURCE_COMMIT"], ci_run_id=os.environ["CI_RUN_ID"])
+        lookup = lib.registry_lookup(os.environ["NPM_CLI"], os.environ["VERSION"])
+        state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout, lookup.stderr,
+                                             os.environ["VERSION"], integrity)
+        print(f"tarball={tarball}"); print(f"integrity={integrity}")
+        print(f"skip={'true' if state == 'present' else 'false'}")
+        PY
+
+    - name: Configure npm authentication
+      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        registry-url: https://registry.npmjs.org
+        scope: '@arbiterforge'
+
+    - name: Publish @arbiterforge/ca-pi to npm
+      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}
+      shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+        TARBALL: ${{ steps.pi.outputs.tarball }}
+      run: '"$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/'
+
+    # GATE: the registry serves exactly the tarball CI built (integrity match).
+    - name: Read back the npm publication
+      if: ${{ inputs.host == 'pi' }}
+      shell: bash
+      env:
+        VERSION: ${{ steps.v.outputs.version }}
+        INTEGRITY: ${{ steps.pi.outputs.integrity }}
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+      run: |
+        set -euo pipefail
+        python3 - <<'PY'
+        import os, sys, time
+        sys.path.insert(0, ".github/scripts")
+        import _npm_publishlib as lib
+        version, integrity, npm = os.environ["VERSION"], os.environ["INTEGRITY"], os.environ["NPM_CLI"]
+        deadline = time.monotonic() + lib.REGISTRY_READBACK_SECONDS
+        while True:
+            try:
+                lookup = lib.registry_lookup(npm, version)
+                state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout,
+                                                     lookup.stderr, version, integrity)
+            except lib.RegistryUnavailable:
+                state = "unavailable"
+            if state == "present":
+                print(f"read back {lib.PACKAGE}@{version} with the expected integrity"); break
+            if time.monotonic() > deadline:
+                raise SystemExit(f"npm publication not observable with expected integrity (last: {state})")
+            time.sleep(15)
+        try:
+            lib.verify_registry_authenticity(npm, version)
+        except Exception as exc:  # provenance is advisory (ADR-0040)
+            print(f"::warning::npm provenance/signature check did not pass: {exc}")
+        PY
+
+    - name: Publish the Release
+      id: finish
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+        RELEASE_ID: ${{ steps.draft.outputs.release-id }}
+        MARK_LATEST: ${{ inputs.mark-latest }}
+      run: |
+        set -euo pipefail
+        DRAFT=$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq .draft)
+        if [ "$DRAFT" = true ]; then
+          gh api --method PATCH -F draft=false -f make_latest="$MARK_LATEST" \
+            "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" >/dev/null
+        fi
+        # GATE: the Release is public and names this tag.
+        read -r DRAFT NAMED < <(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq '"\(.draft) \(.tag_name)"')
+        [ "$DRAFT" = false ] && [ "$NAMED" = "$TAG" ] || {
+          echo "::error::Release $RELEASE_ID reads back draft=$DRAFT tag=$NAMED"; exit 1; }
+        echo "release-state=published" >> "$GITHUB_OUTPUT"
+
+    - name: Attach the publication receipt
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        RELEASE_ID: ${{ steps.draft.outputs.release-id }}
+        MISSING: ${{ steps.plan.outputs.missing-assets }}
+        TARGET: ${{ inputs.target }}
+        HOST: ${{ inputs.host }}
+        TAG: ${{ steps.v.outputs.tag }}
+        VERSION: ${{ steps.v.outputs.version }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        PACKAGE_FILE: ${{ inputs.host == 'pi' && steps.pi.outputs.tarball || steps.package.outputs.file }}
+        PACKAGE_SHA256: ${{ steps.package.outputs.sha256 }}
+        CHANNEL_REF: ${{ steps.claude-channel.outputs.ref || steps.codex-channel.outputs.ref }}
+      run: |
+        set -euo pipefail
+        case "$HOST" in
+          claude) CHANNEL=ca-marketplace ;;
+          codex) CHANNEL=ca-codex-marketplace ;;
+          pi) CHANNEL="npm:@arbiterforge/ca-pi@$VERSION" ;;
+          *) CHANNEL=none ;;
+        esac
+        case " $MISSING " in *" codearbiter-publication.json "*) ;; *) echo "receipt already attached"; exit 0 ;; esac
+        receipt="$RUNNER_TEMP/codearbiter-publication.json"
+        python3 .github/scripts/release_target.py receipt --target "$TARGET" --host "${HOST:-none}" \
+          --tag "$TAG" --version "$VERSION" --source "$SOURCE_COMMIT" \
+          --package-file "$(basename "${PACKAGE_FILE:-none}")" --package-sha256 "${PACKAGE_SHA256:-none}" \
+          --channel "$CHANNEL" --channel-ref "${CHANNEL_REF:-none}" --release-state published \
+          --output "$receipt"
+        gh api --method POST -H "Content-Type: application/json" --input "$receipt" \
+          "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-publication.json" >/dev/null

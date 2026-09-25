@@ -32,7 +32,7 @@ RELEASE_SKILL = REPO_ROOT / "core" / "surface" / "skills" / "release" / "SKILL.m
 RELEASE_TARGETS = REPO_ROOT / ".codearbiter" / "release-targets.md"
 LEGACY_MANIFEST = REPO_ROOT / ".github" / "legacy-published-tags.json"
 RELEASE_PROVENANCE = REPO_ROOT / ".github" / "RELEASE-PROVENANCE.md"
-PUBLISH_ACTION = REPO_ROOT / ".github" / "actions" / "publish-release" / "action.yml"
+PUBLISH_ACTION = REPO_ROOT / ".github" / "actions" / "publish-target" / "action.yml"
 RECONCILE_TOOL = REPO_ROOT / ".github" / "scripts" / "reconcile_tag_receipt.py"
 ADR = REPO_ROOT / ".codearbiter" / "decisions" / "0034-establish-closed-legacy-published-tag-provenance-epoch.md"
 ADR_LIFECYCLE = REPO_ROOT / ".codearbiter" / "decisions" / "adr-lifecycle.jsonl"
@@ -864,7 +864,8 @@ class RepositoryWiring(unittest.TestCase):
 
     def test_release_preflights_require_prior_tag_records(self):
         workflow = (REPO_ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
-        for job in ("preflight", "auto-preflight"):
+        # One preflight serves both merge-triggered and dispatched releases.
+        for job in ("preflight",):
             with self.subTest(job=job):
                 body = re.search(
                     rf"(?ms)^  {re.escape(job)}:\n(.*?)(?=^  [A-Za-z0-9_-]+:|\Z)",
@@ -888,7 +889,7 @@ class RepositoryWiring(unittest.TestCase):
             self.assertIn(f"python .github/scripts/{script}", commands)
 
     def test_publisher_retains_tag_identity_receipt_after_partial_failure(self):
-        action = (REPO_ROOT / ".github/actions/publish-release/action.yml").read_text(encoding="utf-8")
+        action = PUBLISH_ACTION.read_text(encoding="utf-8")
         self.assertIn("Capture published tag identity receipt", action)
         receipt_steps = action.split("Capture published tag identity receipt", 1)[1]
         self.assertIn("always()", receipt_steps)
@@ -896,23 +897,23 @@ class RepositoryWiring(unittest.TestCase):
         self.assertIn("if-no-files-found: error", receipt_steps)
 
     def test_receipt_capture_precedes_readback_and_survives_publish_failure(self):
-        action = (REPO_ROOT / ".github/actions/publish-release/action.yml").read_text(encoding="utf-8")
-        self.assertIn("id: publish", action)
+        action = PUBLISH_ACTION.read_text(encoding="utf-8")
+        self.assertIn("id: plan", action)
         capture = re.search(
             r"(?ms)^    - name: Capture published tag identity receipt\n(.*?)(?=^    - |\Z)", action)
         self.assertIsNotNone(capture, "publication identity must survive a later release failure")
         body = capture.group(1)
         self.assertIn("always()", body)
-        self.assertIn("steps.publish.outcome != 'skipped'", body)
-        self.assertNotIn("steps.publish.outcome == 'success'", body)
+        self.assertIn("steps.plan.outcome != 'skipped'", body)
+        self.assertNotIn("outcome == 'success'", body)
         self.assertIn("tag_publication_receipt.py", body)
         for flag in ("--repo", "--tag", "--expected-commit", "--run-id",
                      "--run-attempt", "--workflow-sha", "--output"):
             self.assertIn(flag, body)
         self.assertLess(action.index("Capture published tag identity receipt"),
-                        action.index("Verify the published Release names"))
+                        action.index("name: Publish the Release"))
         self.assertLess(action.index("actions/upload-artifact@"),
-                        action.index("Verify the published Release names"))
+                        action.index("name: Publish the Release"))
 
     def test_the_audit_runs_in_a_job_registered_in_the_merge_gate(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
