@@ -899,3 +899,40 @@ durable process resume or a whole-run concurrency redesign. Revert runtime and
 bundle with their private projections and tests if rejected, preserving unrelated
 main changes, authenticated publication history and retained worktrees. Final-head
 CI, installed-host and model-backed evidence remain distinct qualification layers.
+
+
+## 2026-09-25 resume: complete merge recovery verification and Pi CI ordering
+
+The recovered implementation is `932913ffb003e916eff0f6a604b88fdc7e975e10`
+(tree `a51ebb11447427fcb44c5e5ad3bd795ad5498134`), incorporating main
+`13013b2fb021df623f4ba328ddb15f8b287590ad`. Its final local farm run completed:
+**852 passed / 3 existing platform skips**, including both bounded-staging cases.
+The prior in-progress description is superseded by this result, not by assumption.
+
+Normal run 36095844564 passed farm and required merge readiness but failed native
+Windows Pi job 107947862340 and its coverage aggregate. The bridge test observed
+its delayed write marker; that log does not establish when teardown was triggered.
+Replace the two competing wall clocks in the fixture with a ready/release protocol:
+a real grandchild exists before the unchanged deadline is armed, and the one-way
+write is released only after the call settles. Keep the full six-second absence
+observation, timeout/cancellation responses, and each existing 15-second case cap.
+Positive controls prove that no cleanup and root-only cleanup both expose a live
+writer. Production bridge/process cleanup code and all production deadlines are
+unchanged. Unknown original-run scheduling details remain unknown.
+
+A separate disposable worktree reproduced the old marker failure with an injected
+4.2-second pre-deadline driver delay. Under that same delay, the ready/release
+fixture passes with identical production cancellation. This proves the fixture
+race, not the exact original CI root cause or a hard-real-time kill guarantee.
+The new positive controls would still fail a cleanup implementation that leaves
+a writer alive after settlement; an absent marker without priming cannot pass.
+
+Full native Windows Pi coverage: **879 passed / 1 existing platform skips**,
+880 cases. Typecheck and all 19 generation/static/closure commands pass locally.
+This is local Node 24.18.0 evidence, not the normal CI's Node 22.19.0 qualification.
+The full farm implementation and bundle are byte-identical to the recovered head.
+No test exclusion, required check, runtime timeout, authority or dependency changes.
+
+Also correct the reviewed FARM_REQUEST_TIMEOUT_MS table: a valid excessive
+Retry-After defers the task; it is not shortened into an early retry. Regenerate
+all three host cards. Normal final-head CI and independent review remain separate.

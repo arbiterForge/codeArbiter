@@ -235,7 +235,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
-| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout; also caps an individual provider-directed retry wait. |
+| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout. A valid provider `Retry-After` longer than this is not shortened; the task is deferred without another authoring attempt. |
 | `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx. Bounded `Retry-After` is honored; exhaustion defers new authoring for that task. |
 | `FARM_ENTITLEMENT_PROBE_TIMEOUT_MS` | `35000` | Per-candidate wall-clock cap for the `--canary` entitlement pre-screen (drops 401 promo-expired models). |
 | `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on bytes of test-source + in-scope file context injected into the worker prompt (data-minimization; redacted for secrets). |
