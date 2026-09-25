@@ -1203,3 +1203,31 @@ The final merge parent also retains `a4842fab60a6e6ee943341861ec4aed0a7b17a50`,
 which restores original ADR-0040 ancestry and adds only DECISION-0072 beyond
 `b4febae...`. Its decision log is copied exactly; no acceptance event is
 rewritten or rebound. The already-tested release implementation is unchanged.
+
+### Final retirement continuation and native teardown (2026-09-25)
+
+The resumed remote head was `5ac5caafb320dae221030e8a48c02260ed445a15`;
+retirement and the sidebar correction were already published. Current main
+`d171126e71e48b78d242c3d95b218236fdd8f61d` merges without content conflicts.
+Its publication-receipt, static-candidate and documentation changes are retained,
+not described as newly authored by this retirement slice.
+
+CI 36128798325 failed on Windows ARM64 during conformance teardown after all
+seven farm-boundary cases passed. The copied executable raised WinError 32;
+the identity of its holder is not established by that log. Only the test-owned
+installation cleanup now retries that exact sharing violation for at most two
+seconds and 41 attempts. Other errors and persistent holds still fail. Six new
+regressions cover success, transient/persistent errors, the attempt cap, unrelated
+errors and a real held Windows file while preserving an unrelated sibling.
+The exact conformance test inventory includes all six; no test or skip is removed.
+Production process containment and cleanup remain unchanged.
+
+The complete 13-case farm-boundary suite and 24 source/generator/resource checks
+passed locally. The normal site pipeline passed all 914 cases in 87 files,
+its base-path and rendered-build checks, followed by typecheck. A first local
+conformance attempt lacked its declared jsonschema dependency; it is not a pass.
+A fresh environment installs the unchanged hash-pinned conformance lock, rather
+than relaxing the reference validator. The first site attempt used CRLF checkout
+representations; exact index-byte replay in this disposable worktree restored the
+source bytes without modifying tracked attributes or expectations. Hosted final-
+head CI and review remain separate obligations. HTML farm is still disabled.

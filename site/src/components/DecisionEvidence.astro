@@ -1,0 +1,99 @@
+---
+import { adrCases, auditCases, evidenceSourceRevision, evidenceSourceUrl, validateDecisionEvidence } from '../../scripts/decision-evidence';
+interface Props { id: string; kind: 'adr' | 'audit' }
+const { id, kind } = Astro.props;
+if (!/^[a-z][a-z0-9-]*$/.test(id) || !['adr', 'audit'].includes(kind)) throw new Error('Invalid evidence exhibit');
+const errors = validateDecisionEvidence();
+if (errors.length) throw new Error(errors.join('; '));
+const cases = kind === 'adr' ? adrCases : auditCases;
+const title = kind === 'adr' ? 'One decision, different evidence states' : 'Choose the record for the claim';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<ca-decision-evidence class="ca-decision-evidence not-content" id={id} data-evidence-kind={kind} aria-label={title}>
+  <header>
+    <p class="ca-eyebrow">Read the evidence boundary</p>
+    <h3>{title}</h3>
+    <p>{kind === 'adr' ? 'These are illustrative snapshots, not a linear approval wizard. New inputs or expired evidence can remove a derived delivery claim without undoing the decision.' : 'These records answer different questions. Combining them does not make the combined claim stronger than its sources.'}</p>
+    <p class="ca-decision-evidence__notice">Teaching examples only. Selecting a view does not validate your repository, create a receipt or change a status.</p>
+  </header>
+  <div class="ca-decision-evidence__controls" hidden>
+    <div role="group" aria-label="Choose an evidence view" data-ca-layout="peers">
+      {cases.map(item => <button type="button" data-evidence-select={item.id} aria-controls={`${id}-${item.id}`} aria-pressed="false">{item.label}</button>)}
+      <button type="button" data-evidence-select="all" aria-pressed="false">Compare all</button>
+    </div>
+    <p role="status" aria-live="polite" aria-atomic="true" data-evidence-status></p>
+  </div>
+  {cases.map(item => <section data-evidence-case={item.id} id={`${id}-${item.id}`} aria-labelledby={`${id}-${item.id}-title`}>
+    <div class="ca-decision-evidence__record">
+      <p class="ca-eyebrow">{item.record}</p>
+      <h4 id={`${id}-${item.id}-title`}>{item.label}</h4>
+      <p>{item.example}</p>
+    </div>
+    <dl>
+      <div><dt>What this supports</dt><dd>{item.supports}</dd></div>
+      <div><dt>What remains unproved</dt><dd>{item.missing}</dd></div>
+    </dl>
+    <p class="ca-decision-evidence__inspect"><strong>Inspect next:</strong> {item.inspect}</p>
+    <p class="ca-decision-evidence__links"><a href={`${base}${item.href}`}>Read the owning procedure</a><a href={evidenceSourceUrl(item.source)}>Inspect the source contract</a></p>
+  </section>)}
+  <footer>Source reviewed at <code>{evidenceSourceRevision}</code>. These views explain source contracts, not certified installed-release behavior.</footer>
+</ca-decision-evidence>
+<script>
+  /** Reading-only selection. Reconnect cleanly across Astro navigation; no saved state. */
+  class DecisionEvidence extends HTMLElement {
+    private controller?: AbortController;
+    connectedCallback() {
+      this.controller?.abort(); this.controller = new AbortController();
+      const controls = this.querySelector<HTMLElement>('.ca-decision-evidence__controls');
+      const status = this.querySelector<HTMLElement>('[data-evidence-status]');
+      const sections = Array.from(this.querySelectorAll<HTMLElement>('[data-evidence-case]'));
+      const buttons = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-evidence-select]'));
+      if (!controls || !status || !sections.length || !buttons.length) return;
+      const choose = (id: string) => {
+        if (id !== 'all' && !sections.some(section => section.dataset.evidenceCase === id)) return;
+        sections.forEach(section => { section.hidden = id !== 'all' && section.dataset.evidenceCase !== id; });
+        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.evidenceSelect === id)));
+        status.textContent = id === 'all' ? `Comparing all ${sections.length} evidence views.`
+          : `Reading: ${buttons.find(button => button.dataset.evidenceSelect === id)?.textContent?.trim()}. No repository state changed.`;
+      };
+      buttons.forEach(button => button.addEventListener('click', () => choose(button.dataset.evidenceSelect!), { signal: this.controller!.signal }));
+      choose(sections[0].dataset.evidenceCase!); controls.hidden = false;
+    }
+    disconnectedCallback() { this.controller?.abort(); }
+  }
+  if (!customElements.get('ca-decision-evidence')) customElements.define('ca-decision-evidence', DecisionEvidence);
+</script>
+<style>
+  .ca-decision-evidence { display: block; container-type: inline-size; margin-block: var(--ca-space-6); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-lg); background: var(--ca-bg-raised); overflow-wrap: anywhere; }
+  .ca-decision-evidence [hidden] { display: none !important; }
+  .ca-decision-evidence :is(h3,h4,p,dl,dd,dt) { margin: 0; }
+  .ca-decision-evidence :is(h3,h4,strong) { color: var(--ca-ink); }
+  .ca-decision-evidence header, .ca-decision-evidence section { padding: var(--ca-space-5); }
+  .ca-decision-evidence h3 { font-size: var(--ca-text-xl); line-height: 1.35; margin-block: var(--ca-space-3); }
+  .ca-decision-evidence :is(p,dd) { color: var(--ca-ink-soft); font-size: var(--ca-text-sm); line-height: 1.7; }
+  .ca-decision-evidence .ca-eyebrow { color: var(--ca-brand-bright); font-size: var(--ca-text-xs); }
+  .ca-decision-evidence .ca-decision-evidence__notice { margin-block-start: var(--ca-space-3); font-size: var(--ca-text-xs); }
+  .ca-decision-evidence__controls { padding: 0 var(--ca-space-5) var(--ca-space-4); }
+  .ca-decision-evidence__controls > div { display: flex; flex-wrap: wrap; gap: var(--ca-space-2); }
+  .ca-decision-evidence button { flex: 1 1 9rem; background: var(--ca-bg); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-sm); color: var(--ca-ink); padding: var(--ca-space-3); font: 650 var(--ca-text-sm)/1.5 var(--ca-font-sans); text-align: start; cursor: pointer; }
+  .ca-decision-evidence button[aria-pressed="true"] { border-color: var(--ca-brand-bright); box-shadow: inset 3px 0 var(--ca-brand-bright); }
+  .ca-decision-evidence [data-evidence-status] { margin-block-start: var(--ca-space-3); font-size: var(--ca-text-xs); }
+  .ca-decision-evidence section { border-block-start: 1px solid var(--ca-line-strong); }
+  .ca-decision-evidence h4 { font-size: var(--ca-text-xl); margin-block: var(--ca-space-2); }
+  .ca-decision-evidence dl { display: grid; grid-template-columns: minmax(0,1fr); gap: var(--ca-space-5); margin-block: var(--ca-space-5); }
+  .ca-decision-evidence dl > div { min-inline-size: 0; padding-inline-start: var(--ca-space-4); border-inline-start: 2px solid var(--ca-line-strong); }
+  .ca-decision-evidence dt { font-weight: 700; color: var(--ca-ink); margin-block-end: var(--ca-space-2); }
+  .ca-decision-evidence__inspect { padding: var(--ca-space-4); background: var(--ca-bg-panel); border-inline-start: 3px solid var(--ca-brand); }
+  .ca-decision-evidence .ca-decision-evidence__links { display: flex; flex-wrap: wrap; gap: var(--ca-space-3) var(--ca-space-5); margin-block-start: var(--ca-space-4); }
+  .ca-decision-evidence a { color: var(--ca-brand-bright); text-underline-offset: 3px; }
+  .ca-decision-evidence :is(a,button):focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 4px; }
+  .ca-decision-evidence footer { padding: var(--ca-space-4) var(--ca-space-5); border-block-start: 1px solid var(--ca-line); font-size: var(--ca-text-xs); color: var(--ca-ink-muted); line-height: 1.7; }
+  .ca-decision-evidence code { overflow-wrap: anywhere; white-space: normal; }
+  @container (min-width: 36rem) { .ca-decision-evidence dl { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+  @media (forced-colors: active) {
+    .ca-decision-evidence { --ca-bg: Canvas; --ca-bg-raised: Canvas; --ca-bg-panel: Canvas; --ca-ink: CanvasText; --ca-ink-soft: CanvasText; --ca-ink-muted: CanvasText; --ca-brand: CanvasText; --ca-brand-bright: LinkText; --ca-line: CanvasText; --ca-line-strong: CanvasText; }
+    .ca-decision-evidence button { color: ButtonText; background: ButtonFace; border-color: ButtonText; }
+    .ca-decision-evidence button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -3px; box-shadow: none; }
+  }
+  @media print { .ca-decision-evidence { container-type: normal; } .ca-decision-evidence__controls { display: none !important; } .ca-decision-evidence section[hidden] { display: block !important; } .ca-decision-evidence dl { display: block; } .ca-decision-evidence dl > div { margin-block: 1rem; } }
+</style>

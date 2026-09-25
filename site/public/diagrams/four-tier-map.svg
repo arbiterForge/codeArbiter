@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1128 430" role="img" data-diagram-system="ca-v2">
-  <title>File-to-knowledge priority map</title>
-  <desc>A file read is matched in priority order against security controls, accepted architecture decisions, approved specifications, and fresh provenance.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1128 690" role="img" data-diagram-system="ca-v2">
+  <title>Collect governing pointers, then apply a budget</title>
+  <desc>All matching security, decision, specification and fresh provenance pointers are collected in that order. A bounded assembler emits advice; reads remain allowed. This is not a first-match switch or approval.</desc>
   <defs>
     <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
       <stop stop-color="#090d12"/>
@@ -9,46 +9,40 @@
     <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
       <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
+    <marker id="arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0L9 4L0 8Z" fill="context-stroke"/>
     </marker>
   </defs>
-  <rect width="1128" height="430" rx="14" fill="url(#canvas)"/>
-  <rect width="1128" height="430" rx="14" fill="url(#grid)"/>
-  <rect x="1" y="1" width="1126" height="428" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <rect width="1128" height="690" rx="14" fill="url(#canvas)"/>
+  <rect width="1128" height="690" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1126" height="688" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
   <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1062">JUST-IN-TIME CONTEXT</text>
-<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1062">Read(file) checks four tiers in strict priority order.</text>
-<rect x="42" y="154" width="188" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="136" y="185" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="164">Read(file)</text>
-<text x="136" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="164">PreToolUse hook</text>
-<rect x="300" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="392" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">1</text>
-<text x="392" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">security-</text>
-<text x="392" y="201" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">controls.md</text>
-<text x="392" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">security-entry</text>
-<text x="392" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">files</text>
-<path d="M236 200 L290 200" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="500" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="592" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">2</text>
-<text x="592" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">decisions/</text>
-<text x="592" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">accepted ADR</text>
-<text x="592" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">governs glob</text>
-<rect x="700" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="792" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">3</text>
-<text x="792" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">specs/</text>
-<text x="792" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">approved Governs</text>
-<text x="792" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">header</text>
-<rect x="900" y="132" width="184" height="136" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="992" y="163" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">4</text>
-<text x="992" y="182" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="160">provenance</text>
-<text x="992" y="234" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">stored hash</text>
-<text x="992" y="250" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="160">still matches</text>
-<rect x="300" y="310" width="375" height="82" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="487.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="351">Inject highest-priority pointer</text>
-<text x="487.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="351">budget ≤ 150 tokens</text>
-<rect x="710" y="310" width="375" height="82" rx="10" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="897.5" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="351">No tier matches</text>
-<text x="897.5" y="374" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="351">no injection · zero git calls</text>
-<polyline points="642,268 642,290 487,290 487,300" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<polyline points="970,268 970,300" fill="none" stroke="#3a4c60" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1062">Collect all matches. Priority orders the pointers; it does not choose one winner.</text>
+<rect x="424" y="120" width="280" height="84" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="564" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="256">Read one file</text>
+<text x="564" y="186" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="256">enabled supported path</text>
+<path d="M564 210 L564 246" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="42" y="254" width="1044" height="204" rx="12" fill="#0e141c" stroke="#f0b92f" stroke-width="2"/>
+<text x="66" y="286" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="13" font-weight="650" fill="#ffd568" text-anchor="start" data-label-kind="annotation" data-max-width="1038">ORDERED CANDIDATE SET: ALL APPLICABLE ENTRIES</text>
+<rect x="62" y="318" width="236" height="102" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="180" y="349" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="212">1. Security</text>
+<text x="180" y="402" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="212">path-token match</text>
+<rect x="318" y="318" width="236" height="102" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="436" y="349" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="212">2. Decisions</text>
+<text x="436" y="402" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="212">accepted + governs</text>
+<rect x="574" y="318" width="236" height="102" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="692" y="349" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="212">3. Specifications</text>
+<text x="692" y="402" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="212">format + authority</text>
+<rect x="830" y="318" width="236" height="102" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="948" y="349" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="212">4. Provenance</text>
+<text x="948" y="402" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="212">recorded hash matches</text>
+<rect x="84" y="516" width="440" height="98" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="304" y="547" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="416">Bounded additional context</text>
+<text x="304" y="596" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="416">150-token character proxy; omissions possible</text>
+<rect x="610" y="516" width="440" height="98" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
+<text x="830" y="547" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="416">Read continues</text>
+<text x="830" y="596" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="416">advice is not a mutation permission</text>
+<polyline points="564,464 564,488 304,488 304,510" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<path d="M530 565 L600 565" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<text x="42" y="658" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="13" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation" data-max-width="1062">No usable pointer or a read-helper failure can be silent. Silence is not proof that no rule applies.</text>
 </svg>

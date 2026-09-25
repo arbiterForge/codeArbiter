@@ -1,0 +1,143 @@
+---
+title: ADRs and the Decision Log
+description: "Distinguish an attributed architectural choice from its delivery evidence, resolve full ADR identities and forward supersession, and inspect accepted, implemented and verified claims."
+journey:
+  level: Power user
+  time: "12–15 min"
+  outcome: "Trace a governing decision through its ADR, append-only decision log and current lifecycle evidence without promoting approval into a delivery claim."
+  prerequisites:
+    - Know which architectural choice needs to govern future work
+  proof: "You can resolve an ADR by full stem, explain its governance and delivery states separately, and name the evidence missing from a stronger claim."
+---
+
+import DecisionEvidence from '../../../components/DecisionEvidence.astro';
+
+An Architecture Decision Record (ADR) preserves an important choice future work should understand
+and respect. It records the context, decision, alternatives and consequences with explicit user
+attribution. It is useful when the reasoning would otherwise disappear inside a conversation:
+why a boundary exists, why an approach was rejected, or what would justify revisiting it.
+
+Consider a saved-search export. “Keep the export synchronous” is a decision; “implement CSV quoting”
+is a task. The decision can constrain several tasks and later releases. Accepting it does not prove
+the endpoint exists, the test passes, or the application has been deployed.
+
+## Where a decision lives
+
+The domain has three related records with different jobs. The **ADR file** lives at
+`.codearbiter/decisions/NNNN-<slug>.md` and carries the complete rationale, governance status,
+attribution, optional governed paths and supersession reference. The **decision log** lives beside
+it at `.codearbiter/decisions/decision-log.md`; numbered `DECISION-NNNN` entries record attributed
+choices and arbitration outcomes in append order. These are not interchangeable identifiers.
+
+The **lifecycle ledger**, `.codearbiter/decisions/adr-lifecycle.jsonl`, binds a decision to its
+normative obligations and the evidence supporting derived delivery states. It is not a second ADR
+body and must not be hand-edited to improve a status display. Each new evidence event preserves
+the earlier history.
+
+The full filename stem is the ADR identity. A bare number is only a sort key until resolution is
+unambiguous. Existing repositories can contain duplicate historical numbers; a lookup must not
+collapse those files into one decision. New authoring chooses an unused sequential number, while
+supersession points to the full stem, such as `0014-export-response-contract`, rather than relying
+on a bare `0014`.
+
+## Making a decision and recording it are different work
+
+The [ADR entry](/reference/commands/adr/) routes to `decision-lifecycle` to record a choice the
+user has explicitly made. It confirms the content rather than inventing a reason on the user's
+behalf, writes the proposed record and appends its corresponding decision-log entry. Unknown
+questions remain visible as `[CONFIRM-NN]` items. A routine review finding does not authorize a new
+architectural decision.
+
+[Reconcile](/reference/commands/reconcile/) has a different purpose: `decision-variance` compares
+the exact project planning documents, implementation and prior decisions, then recommends resolutions.
+An explicit user choice resolves each variance. The skill records and recommends; it does not
+edit code or rewrite the artifacts to make its recommendation true. A replacement ADR still uses
+the ADR authoring path. [SMARTS](/concepts/smarts/#where-it-runs) explains why that interactive rule
+differs from bounded sprint autonomy.
+
+## Accepted, implemented and verified are different claims
+
+An ADR has a **stored governance status**: proposed, accepted, superseded or rejected. Status
+changes require explicit instruction. The delivery states below are derived from separate evidence,
+not extra words an agent may write into the status field. Current source presents stored accepted
+as **Accepted/Planned**.
+
+<DecisionEvidence id="adr-evidence-states" kind="adr" />
+
+A sealed obligation set identifies every normative requirement the accepted decision imposes.
+“Sealed” means completeness has been bound for later checks; it is not a claim that the requirements
+were implemented. The acceptance event records the exact committed source and hashes. Its source
+commit must already exist, so the accepted ADR/log commit and the later binding append cannot
+truthfully be the same self-referencing operation.
+
+Implementation events bind each obligation to current source and relevant input digests.
+Verification adds an explicit proof contract, repository-scoped claim, producer identity, command
+or workflow identity, observation and expiry, and the same relevant inputs. Complete, sealed,
+current evidence is required for a derived promotion. An expired event or changed input withholds
+the stronger current claim without erasing the historical result.
+
+A legacy accepted record may have an unsealed baseline rather than a historical acceptance receipt.
+That is an honest migration state: Accepted/Planned, not a reason to fabricate past approval.
+Repository lifecycle evidence also does not establish external claims such as actual installation,
+marketplace publication, support coverage or a legal conclusion.
+
+## What makes a decision live
+
+The optional `governs:` field maps the decision to identifiable repository paths. It uses
+fnmatch-style matching against repository-relative forward-slash paths. For an accepted ADR,
+matching edits receive a governing-decision notice; its paths also inform prioritized context
+injection. A notice tells the author which decision matters. It does not by itself prove that the
+new code conforms to it.
+
+For an illustrative `src/export/*` scope, inspect the actual changed path and active decision,
+not just the prefix that happens to look similar. A too-broad scope can inject irrelevant context;
+a missing scope can leave the relationship less visible. The [ADR guide](/guides/recording-adrs/#inspect-a-complete-example)
+shows a complete labelled document and the review responsibilities before recording it.
+
+## Follow supersession forward
+
+A newer ADR's `supersedes:` field points to the prior full stem. The old record is not rewritten
+to add a back-reference. To discover what replaced it, scan forward for later references. Partial
+supersession is explained in the new body: one document-level pointer cannot identify an individual
+clause. Two newer ADRs can replace different parts of one predecessor without that fork being an error.
+
+A bare-number pointer that matches multiple stems is genuinely ambiguous. Report it; do not choose
+based on filename order. A dangling reference is a separate problem. Explicit same-level conflicting
+choices require a decision rather than an inferred winner.
+
+The source permits a tightly bounded identifier-only repair under maintainer direction. It is not
+permission to rewrite a past decision's content, date, status or attribution. Likewise, a later
+user-authorized status transition may alter only the recognized status values; the accepted
+immutable decision content remains bound. Request the sanctioned lifecycle operation instead of
+copying a file and editing its history.
+
+## Enforcement, not convention
+
+The authoring path arms the marker checked by the supported pre-write/pre-edit hooks, then removes
+it after the authoring pass. The marker and the recorded Git email are workflow controls and
+attribution, not cryptographic proof of who supplied the choice. Lifecycle checks separately bind
+accepted content and evidence. An unrestricted writer outside supported host mediation is not
+made incapable of changing local files by this documentation.
+
+Delivery also preserves source ancestry. If a lifecycle source commit is not already in base
+ancestry, the installed finalization preflight can require a true merge commit rather than squash
+or rebase. Keep the real source identity; changing the receipt to a convenient later commit would
+replace evidence instead of preserving it.
+
+## Use the Records in Practice
+
+Read ADR health with `/ca:adr-status` in Claude Code, `$ca-adr-status` in Codex, or `/ca-adr-status`
+in Pi. The optional `--adr N` filter narrows the scan; it does not remove full-stem resolution.
+The report is read-only and should distinguish stored status, derived delivery state, unresolved
+questions and supersession. An optional decision-challenger offers criticism; it does not advance
+the decision's status.
+
+For the export example, ask four questions: which complete stem governs the path; what the user
+actually decided; which obligations have current implementation evidence; and which exact proof
+supports Verified. A report of “accepted, incomplete evidence” is a useful result, not a failure
+to make the status look finished.
+
+Continue with [Record an architecture decision](/guides/recording-adrs/) to author the record,
+[Review and ship](/guides/review-and-ship/) to preserve evidence through delivery, and
+[Auditability](/concepts/auditability/) to explain it later. The exact lifecycle and exceptions
+remain in [decision-lifecycle](/reference/skills/decision-lifecycle/).

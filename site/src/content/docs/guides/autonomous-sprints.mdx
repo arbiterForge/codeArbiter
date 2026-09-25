@@ -11,6 +11,8 @@ journey:
   proof: "You can identify the combined review package, its actual authority prompts, every persisted restart artifact, and every condition that still stops for the user."
 ---
 
+import WorkflowMap from '../../../components/WorkflowMap.astro';
+
 import ReaderJourney from '../../../components/ReaderJourney.astro';
 
 export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -36,8 +38,8 @@ approvals and the required host capabilities. A sprint is never authorized to me
   {
     "actor": "You grant specific approval",
     "title": "Clear the authority gates",
-    "artifact": "Approval of the current specification, its plan binding, then approval of the current plan.",
-    "review": "Follow the exact typed host prompts. A generic reply does not approve both files; one review package does not mean one approval prompt.",
+    "artifact": "One host-observed reply approving both exact initial artifact identities and their binding.",
+    "review": "Use the qualified initial-pair prompt. It names both files and approve-only or delegate-methods; a generic reply or an unobserved approval cannot start execution.",
     "href": "/guides/review-artifacts/#check-your-hosts-authority-capability",
     "linkLabel": "Check your host capability"
   },
@@ -62,14 +64,8 @@ approvals and the required host capabilities. A sprint is never authorized to me
 
 <details class="ca-implementation-view">
   <summary>Implementation routing: commands, skills and agents</summary>
-<figure class="ca-diagram">
-  <img
-    src={`${baseUrl}/diagrams/lane-sprint.svg`}
-    alt="The autonomous sprint lane from a combined spec and plan review package and its required approvals through small implementation cells, SMARTS-logged decisions, review, verification, commit, and pull request."
-    loading="lazy"
-  />
-  <figcaption>The combined review package opens the autonomous lane only after its actual authority gates clear; durable plan and log state make later cells resumable.</figcaption>
-</figure>
+<WorkflowMap id="sprint-execution-map" workflow="sprint" />
+<p><a href={`${baseUrl}/diagrams/lane-sprint.svg`}>Open the full three-row diagram</a>.</p>
 </details>
 
 <div class="ca-host-syntax">
@@ -108,12 +104,18 @@ The sprint procedure calls for one combined review gate. Review the spec and pla
 request changes, or decline. If the plan exposes a weakness in the spec, revise the package
 before implementation rather than treating the two definitions independently.
 
-**Typed HTML limitation:** the current typed adapter arms one artifact at a time. Follow each
-exact host-provided reply and approved-gate check: approve the spec, bind the plan to that
-approved spec, then approve the current plan. A generic reply does not approve both documents.
-The combined review package is not a one-prompt implementation guarantee, and this guide does
-not replace missing authority with a SMARTS decision. These content-bound prompts are distinct
-from an attended feature's per-batch checkpoints.
+**Initial typed HTML pair:** current source defines one exact, host-observed reply for the
+ready draft specification and its same-slug draft-for-pair plan. The qualified adapter arms both
+identities through `arm-sprint`. The reply names both artifacts and `approve-only` or
+`delegate-methods`; `sprint-approve` commits both approvals and the plan binding in one
+recoverable transaction. This does not authorize a draft merely because both files exist.
+
+Do not separately approve or bind the initial pair as a substitute for that ceremony. After an
+interruption, the matching `resume-sprint` path can finish an already-observed reply; it cannot
+invent one. Later single-artifact changes and ordinary attended features retain their own
+approval paths. Check the installed adapter's capability before relying on this current-source
+behavior. A generic yes, model-authored receipt or SMARTS recommendation supplies no missing
+approval, execution, security, provider or publication authority.
 
 ## Inspect the durable package
 

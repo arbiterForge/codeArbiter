@@ -45,3 +45,5 @@ Source code detected in this repo — routing to /ca:create-context to populate 
 
 Reach for `/ca:init` exactly once, on a repository that hasn't opted in yet. If `.codearbiter/`
 already exists, this refuses and `/ca:status` shows the current state instead.
+
+For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/opt-in-a-repo/) and [Compare workflow routes](/concepts/workflow-routes/).

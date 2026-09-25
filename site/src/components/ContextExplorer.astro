@@ -1,0 +1,112 @@
+---
+import capture from '../data/context-examples.json';
+interface Props { id: string; initial?: string }
+const { id, initial = 'overlap' } = Astro.props;
+const descriptions: Record<string, { title: string; meaning: string; next: string }> = {
+  overlap: { title: 'Several governing sources match', meaning: 'All four tiers contribute. Priority controls assembly order, not a first-match-only decision.', next: 'Read the named documents. The pointer is not their complete contents or an approval.' },
+  fresh: { title: 'The recorded source still matches', meaning: 'The recorded package bytes match their current hash, so the provenance claim can contribute a pointer.', next: 'Inspect the actual claim as well as the hash. Matching bytes do not establish that an earlier interpretation was correct.' },
+  changed: { title: 'The source changed', meaning: 'The package changed from module to commonjs. The old claim is suppressed, and drift detection identifies the dependent document.', next: 'Review the changed behavior and re-scout or defer. Replacing a hash alone would conceal the now-false claim.' },
+  unmapped: { title: 'No mapping exists', meaning: 'No candidate covers this file. The helper emits nothing and makes no provenance hash call.', next: 'Do not treat silence as a safety verdict. Confirm activation, mapping, and relevant requirements before changing sensitive code.' },
+};
+if (!/^[a-z][a-z0-9-]*$/.test(id) || !capture.cases.some(item => item.id === initial)) throw new Error('Invalid context exhibit');
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<ca-context-explorer class="ca-context-explorer not-content" id={id} data-initial={initial} aria-label="Context selection observations">
+  <header>
+    <p class="ca-eyebrow">Follow the evidence into a read</p>
+    <h3>A pointer is a selection, not a verdict</h3>
+    <p>{capture.boundary}</p>
+    <p>The fixture uses real Git content hashes and the repository's read/provenance helpers. Choose an already-recorded case; these controls do not run a tool.</p>
+  </header>
+  <div class="ca-context-explorer__controls" hidden>
+    <div role="group" aria-label="Choose a context observation" data-ca-layout="peers">
+      {capture.cases.map(item => <button type="button" data-context-select={item.id} aria-controls={`${id}-${item.id}`} aria-pressed="false">{descriptions[item.id].title}</button>)}
+      <button type="button" data-context-select="all" aria-pressed="false">Compare all</button>
+    </div>
+    <p data-context-status role="status" aria-live="polite" aria-atomic="true"></p>
+  </div>
+  {capture.cases.map(item => <section data-context-case={item.id} id={`${id}-${item.id}`} aria-labelledby={`${id}-${item.id}-heading`}>
+    <h4 id={`${id}-${item.id}-heading`}>{descriptions[item.id].title}</h4>
+    <p class="ca-context-explorer__path">Fixture read: <code>{item.path}</code></p>
+    <div class="ca-context-explorer__pair" data-ca-layout="peers">
+      <div>
+        <h5>1. Gather matching pointers</h5>
+        {item.candidate_pointers.length ? <ol>{item.candidate_pointers.map(pointer => <li><strong>{['security-controls', 'decisions', 'specs'].includes(pointer.tier) ? pointer.tier : `Provenance · ${pointer.tier}`}</strong><span>{pointer.text}</span></li>)}</ol> : <p>No matching pointer survives the selection and freshness checks in this fixture.</p>}
+      </div>
+      <div>
+        <h5>2. Assemble the bounded result</h5>
+        <p class="ca-context-explorer__measure">{item.estimated_tokens} estimated tokens · {item.hash_calls} provenance hash call{item.hash_calls === 1 ? '' : 's'}</p>
+        {item.emitted ? <pre aria-label="Recorded additional context"><code>{item.emitted}</code></pre> : <p class="ca-context-explorer__empty">Observed output: empty string. The helper did not supply additional context.</p>}
+        <p>Repeat in the same session: {item.repeated_emitted === '' ? 'no additional context' : item.repeated_emitted}. The repeated call performs {item.repeat_hash_calls} provenance hash call{item.repeat_hash_calls === 1 ? '' : 's'}.</p>
+      </div>
+    </div>
+    <p class="ca-context-explorer__meaning"><strong>What this establishes:</strong> {descriptions[item.id].meaning}</p>
+    <p><strong>What you do next:</strong> {descriptions[item.id].next}</p>
+    {item.id === 'changed' && <p>Separate drift output: <code>tech-stack → package.json → changed</code>. The mutation was confined to a disposable fixture.</p>}
+  </section>)}
+  <footer>
+    <p>The 150-token limit uses <code>ceil(character_count / 4)</code>, not the host model's tokenizer. See <a href={`${base}/concepts/jit-context-injection/#when-html-advice-reports-a-problem`}>HTML advice diagnostics</a> for the typed path; these legacy fixture reads do not certify it.</p>
+    <p><a href={`https://github.com/arbiterForge/codeArbiter/blob/${capture.source_revision}/core/pysrc/_readinjectlib.py`}>Inspect the exact helper source</a> · <a href={`${base}/examples/context-observations.json`}>Inspect inputs and recorded output</a> · <a href={`${base}/concepts/provenance-drift/`}>Understand freshness</a></p>
+    <details><summary>Capture identity and method</summary><p>Source revision: <code>{capture.source_revision}</code>. The checked-in capture is generated and rechecked by <code>site/scripts/capture-context-examples.py</code>. It runs the helpers in a temporary repository. It does not invoke a host, approve a specification, or change a real project. Source hashes and fixture inputs are retained in <code>site/src/data/context-examples.json</code>.</p></details>
+  </footer>
+</ca-context-explorer>
+<script>
+  class ContextExplorer extends HTMLElement {
+    private controller?: AbortController;
+    connectedCallback() {
+      this.controller?.abort(); this.controller = new AbortController();
+      const controls = this.querySelector<HTMLElement>('.ca-context-explorer__controls');
+      const status = this.querySelector<HTMLElement>('[data-context-status]');
+      const sections = Array.from(this.querySelectorAll<HTMLElement>('[data-context-case]'));
+      const buttons = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-context-select]'));
+      if (!controls || !status || !sections.length) return;
+      const select = (id: string) => {
+        if (id !== 'all' && !sections.some(section => section.dataset.contextCase === id)) return;
+        sections.forEach(section => { section.hidden = id !== 'all' && section.dataset.contextCase !== id; });
+        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.contextSelect === id)));
+        status.textContent = id === 'all' ? 'All four recorded observations. No tools run.' : 'Reading a recorded observation. No tools run and no repository state changed.';
+      };
+      buttons.forEach(button => button.addEventListener('click', () => select(button.dataset.contextSelect!), { signal: this.controller!.signal }));
+      select(this.dataset.initial ?? 'overlap'); controls.hidden = false;
+    }
+    disconnectedCallback() { this.controller?.abort(); }
+  }
+  if (!customElements.get('ca-context-explorer')) customElements.define('ca-context-explorer', ContextExplorer);
+</script>
+<style>
+  .ca-context-explorer { display:block; container-type:inline-size; margin-block:var(--ca-space-6); border:1px solid var(--ca-line-strong); border-radius:var(--ca-radius-lg); background:var(--ca-bg-raised); overflow-wrap:anywhere; }
+  .ca-context-explorer [hidden] { display:none!important; }
+  .ca-context-explorer :is(h3,h4,h5,p,ol) { margin:0; }
+  .ca-context-explorer :is(h3,h4,h5,strong) { color:var(--ca-ink); }
+  .ca-context-explorer :is(header,section,footer) { padding:var(--ca-space-5); }
+  .ca-context-explorer :is(section,footer) { border-block-start:1px solid var(--ca-line-strong); }
+  .ca-context-explorer :is(p,li,footer) { font-size:var(--ca-text-sm); line-height:1.75; color:var(--ca-ink-soft); }
+  .ca-context-explorer h3 { font-size:var(--ca-text-xl); margin-block:var(--ca-space-3); line-height:1.4; }
+  .ca-context-explorer h4 { font-size:var(--ca-text-xl); line-height:1.4; }
+  .ca-context-explorer h5 { font-size:var(--ca-text-base); line-height:1.5; margin-block-end:var(--ca-space-3); }
+  .ca-context-explorer p + p { margin-block-start:var(--ca-space-3); }
+  .ca-context-explorer .ca-eyebrow { color:var(--ca-brand-bright); font-size:var(--ca-text-xs); }
+  .ca-context-explorer__controls { padding:0 var(--ca-space-5) var(--ca-space-4); }
+  .ca-context-explorer__controls > div { display:flex; flex-wrap:wrap; gap:var(--ca-space-2); }
+  .ca-context-explorer button { flex:1 1 10rem; font:650 var(--ca-text-sm)/1.5 var(--ca-font-sans); color:var(--ca-ink); background:var(--ca-bg); border:1px solid var(--ca-line-strong); border-radius:var(--ca-radius-sm); padding:var(--ca-space-3); text-align:start; cursor:pointer; }
+  .ca-context-explorer button[aria-pressed="true"] { border-color:var(--ca-brand-bright); box-shadow:inset 3px 0 var(--ca-brand-bright); }
+  .ca-context-explorer__pair { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ca-space-5); margin-block:var(--ca-space-5); }
+  .ca-context-explorer__pair > div { min-inline-size:0; padding:var(--ca-space-4); background:var(--ca-bg-panel); border:1px solid var(--ca-line); border-radius:var(--ca-radius-sm); }
+  .ca-context-explorer ol { padding-inline-start:1.4rem; }
+  .ca-context-explorer li + li { margin-block-start:var(--ca-space-3); }
+  .ca-context-explorer li span { display:block; }
+  .ca-context-explorer .ca-context-explorer__measure { font-size:var(--ca-text-xs); }
+  .ca-context-explorer pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:var(--ca-space-3); background:var(--ca-bg); border:1px solid var(--ca-line-strong); color:var(--ca-ink); font:var(--ca-text-xs)/1.8 var(--ca-font-mono); margin-block:var(--ca-space-3); }
+  .ca-context-explorer code { white-space:inherit; overflow-wrap:anywhere; color:inherit; }
+  .ca-context-explorer__meaning { padding-inline-start:var(--ca-space-4); border-inline-start:3px solid var(--ca-brand); }
+  .ca-context-explorer :is(a,button,summary):focus-visible { outline:2px solid var(--ca-brand-bright); outline-offset:4px; }
+  .ca-context-explorer a { color:var(--ca-brand-bright); }
+  .ca-context-explorer details { margin-block-start:var(--ca-space-3); }
+  @container (min-width:42rem) { .ca-context-explorer__pair { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (forced-colors:active) {
+    .ca-context-explorer { --ca-bg:Canvas; --ca-bg-raised:Canvas; --ca-bg-panel:Canvas; --ca-ink:CanvasText; --ca-ink-soft:CanvasText; --ca-line:CanvasText; --ca-line-strong:CanvasText; --ca-brand:CanvasText; --ca-brand-bright:LinkText; }
+    .ca-context-explorer button { color:ButtonText; background:ButtonFace; border-color:ButtonText; }
+    .ca-context-explorer button[aria-pressed="true"] { outline:2px solid Highlight; outline-offset:-3px; box-shadow:none; }
+  }
+  @media print { .ca-context-explorer { container-type:normal; } .ca-context-explorer__controls { display:none!important; } .ca-context-explorer section[hidden] { display:block!important; } .ca-context-explorer__pair { display:block; } .ca-context-explorer__pair > div { margin-block:1rem; } }
+</style>

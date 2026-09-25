@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1682" role="img" data-diagram-system="ca-v2" data-execution-map="brownfield">
+<title>Initialize existing code from evidence</title><desc>Choose this route when meaningful source exists. Six isolated scout reports are required; the orchestrator synthesizes their reports rather than loading raw source. Missing isolation is a capability stop. Actual endpoint: Populated source-backed project state, provenance and a code map, with each gap resolved or explicitly deferred before initialization. It does not invent the three greenfield planning documents. Conditions and return paths remain in the companion reading view.</desc>
+<rect width="900" height="1682" fill="#090d12"/>
+<text x="24" y="35" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="852">BROWNFIELD • COMMANDS / SKILLS / AGENTS</text>
+<text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Scaffold → isolated scouts → resolve gaps → initialize</text>
+<svg x="0" y="94" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="inspect-code">
+<title>Collect six bounded reports</title><desc>command: /ca:init: scaffold once → command: /ca:create-context: selected strategy → skill: context-creation: confirm the source → agent: scout: six separate source slices. All six reports returned, including explicit not-found results. A missing report is not empty evidence and blocks synthesis.</desc>
+<defs><marker id="asset-brownfield-inspect-code-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Collect six bounded reports</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="brown-init:brown-entry" data-relation="sequence" d="M299 120H304V120H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-brownfield-inspect-code-arrow)"><title>source exists: Choose the brownfield populator for existing code.</title></path>
+<path data-map-edge="brown-entry:brown-preflight" data-relation="sequence" d="M488 120H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-brownfield-inspect-code-arrow)"><title>validate source shape: The skill validates its own preconditions.</title></path>
+<path data-map-edge="brown-preflight:brown-scouts" data-relation="dispatch" d="M677 252H682V384H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-brownfield-inspect-code-arrow)"><title>isolated slices: Dispatch every required scout before synthesis.</title></path>
+<g data-map-node="brown-init" data-role="command"><title>/ca:init: scaffold once. Create the enabled stub only when absent. Select the existing-code populator rather than treating the activation flag as completed initialization.</title>
+<rect x="130" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="143" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">01</text>
+<text x="214.5" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:init</text>
+</g>
+<g data-map-node="brown-entry" data-role="command"><title>/ca:create-context: selected strategy. Automatic detection or --brownfield selects this existing workflow. A completed initialization marker or wrong source shape retains the route’s stop.</title>
+<rect x="319" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="332" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">02</text>
+<text x="403.5" y="117" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:create-</text>
+<text x="403.5" y="139" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">context</text>
+</g>
+<g data-map-node="brown-preflight" data-role="skill"><title>context-creation: confirm the source. Confirm meaningful code and identify its primary source directories. The general inline fallback cannot replace this route’s required isolated scouts.</title>
+<rect x="508" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="521" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">03</text>
+<text x="592.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">context-</text>
+<text x="592.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">creation</text>
+</g>
+<g data-map-node="brown-scouts" data-role="agent"><title>scout: six separate source slices. Inspect stack, infrastructure, architecture, security, testing and data model in parallel. Return paths, lines, named values and content hashes, never secret values or raw code excerpts.</title>
+<rect x="697" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7"/>
+<text x="710" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">04</text>
+<text x="781.5" y="381" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Six isolated</text>
+<text x="781.5" y="403" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">scouts</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="586" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Resolve the evidence gaps</text>
+<svg x="0" y="620" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="synthesize-context">
+<title>Resolve the evidence gaps</title><desc>skill: context-creation: report-only synthesis → skill: context-creation: resolve or defer → skill: context-creation: write project state. Real values are written from cited reports and explicit answers. Open uncertainty is recorded, not quietly upgraded to fact.</desc>
+<defs><marker id="asset-brownfield-synthesize-context-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Resolve the evidence gaps</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="brown-synthesis:brown-gaps" data-relation="return" d="M299 252H398.5V252H411.5" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-brownfield-synthesize-context-arrow)"><title>missing facts: Only the needed user facts are asked, not a second greenfield interview.</title></path>
+<path data-map-edge="brown-gaps:brown-write" data-relation="sequence" d="M582.5 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-brownfield-synthesize-context-arrow)"><title>resolved or deferred: Populate from reports and explicit answers without retaining placeholders as resolved values.</title></path>
+<g data-map-node="brown-synthesis" data-role="skill"><title>context-creation: report-only synthesis. Map the returned evidence into context, stack, standards and security drafts. Classify confidence; the orchestrator does not reopen raw source after the scout phase.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">05</text>
+<text x="214.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Synthesize</text>
+<text x="214.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">reports</text>
+</g>
+<g data-map-node="brown-gaps" data-role="skill"><title>context-creation: resolve or defer. Ask the focused missing questions. Resolve each gap or explicitly defer it to open-questions before initialization; do not infer user decisions.</title>
+<rect x="413.5" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="426.5" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">06</text>
+<text x="498" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Gap interview</text>
+</g>
+<g data-map-node="brown-write" data-role="skill"><title>context-creation: write project state. Write the surviving state documents and route board mutations through the helper. A release-target row is conditional on real evidence or a resolved declaration, not mandatory boilerplate.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">07</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Write context</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1112" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Bind sources and finish</text>
+<svg x="0" y="1146" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="lock-brownfield">
+<title>Bind sources and finish</title><desc>skill: context-creation: record evidence → skill: context-creation: initialization lock. The initialized marker and required files are present. The resulting evidence is inspectable; it is not a guarantee that every inferred claim is correct.</desc>
+<defs><marker id="asset-brownfield-lock-brownfield-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Bind sources and finish</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="brown-provenance:brown-lock" data-relation="sequence" d="M299 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-brownfield-lock-brownfield-arrow)"><title>inspect completeness: Validate populated state before returning to normal work.</title></path>
+<g data-map-node="brown-provenance" data-role="skill"><title>context-creation: record evidence. Write per-document provenance using scout source hashes and claims. Build the coarse concern-to-path code map from architecture findings.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">08</text>
+<text x="214.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Provenance</text>
+<text x="214.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">+ code map</text>
+</g>
+<g data-map-node="brown-lock" data-role="skill"><title>context-creation: initialization lock. Write the initialized body marker only after gaps have been resolved or explicitly deferred. Show the populated tree and return to ordinary operation.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">09</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Lock + return</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1638" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Source-backed context; no synthetic greenfield roadmap.</text>
+</svg>

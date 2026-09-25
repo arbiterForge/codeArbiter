@@ -1,33 +1,156 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 360" role="img" data-diagram-system="ca-v2">
-  <title>Release lane</title>
-  <desc>Derive a version, update the record, and clear commit-gate.</desc>
-  <defs>
-    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#090d12"/>
-      <stop offset="1" stop-color="#0e141c"/>
-    </linearGradient>
-    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
-    </pattern>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
-    </marker>
-  </defs>
-  <rect width="1120" height="360" rx="14" fill="url(#canvas)"/>
-  <rect width="1120" height="360" rx="14" fill="url(#grid)"/>
-  <rect x="1" y="1" width="1118" height="358" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="52" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1044">RELEASE LANE</text>
-<text x="52" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1044">Derive a version, update the record, and clear commit-gate.</text>
-<rect x="52" y="112" width="489" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="70" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="1026">COMMAND</text>
-<rect x="68" y="160" width="457" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
-<text x="296.5" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="447">/ca:release</text>
-<path d="M547 202 L571 202" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="579" y="112" width="489" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="597" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="499">SKILLS</text>
-<rect x="595" y="160" width="457" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="823.5" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="447">release</text>
-<rect x="595" y="198" width="457" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="823.5" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="447">commit-gate</text>
-<text x="1068" y="329" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1044">SemVer, changelog, commit, and annotated tag move together</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 2208" role="img" data-diagram-system="ca-v2" data-execution-map="release">
+<title>Prepare a release through a reviewed PR</title><desc>Real release path, not --dry-run. Preparation stops at a release PR. Tag composition belongs to a qualified hosted publisher after merge and exact-head CI, never the interactive checkout. Actual endpoint: An exact published tag and declared asset inventory after authorization and read-back. When provenance is declared, retain the original receipt and merge its separate closeout PR; publication alone does not finish that record. Conditions and return paths remain in the companion reading view.</desc>
+<rect width="900" height="2208" fill="#090d12"/>
+<text x="24" y="35" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="852">RELEASE • COMMANDS / SKILLS / AGENTS</text>
+<text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Declare → derive → merge the release PR → publish</text>
+<svg x="0" y="94" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="resolve-release">
+<title>Resolve and derive</title><desc>command: /ca:release: select the declared target → skill: release: pre-flight and target resolution → skill: release: version derivation. A resolved target, target-scoped history and a derived identity. Missing declarations or required notes are explicit stops or governed back-fill.</desc>
+<defs><marker id="asset-release-resolve-release-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Resolve and derive</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="release-entry:release-preflight" data-relation="sequence" d="M299 120H398.5V252H411.5" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-resolve-release-arrow)"><title>declared owner: The command routes to the reusable release skill.</title></path>
+<path data-map-edge="release-preflight:release-version" data-relation="sequence" d="M582.5 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-resolve-release-arrow)"><title>target scoped: Sibling target history must not bump this target.</title></path>
+<g data-map-node="release-entry" data-role="command"><title>/ca:release: select the declared target. Use the sole declared target or name the intended one. An unknown or ambiguous selection stops rather than choosing a familiar plugin or version.</title>
+<rect x="130" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="143" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">01</text>
+<text x="214.5" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:release</text>
+</g>
+<g data-map-node="release-preflight" data-role="skill"><title>release: pre-flight and target resolution. Resolve project and shell context, the declared row, clean non-default branch, current verification and relevant questions. A missing declaration uses confirmed back-fill, not a guessed row.</title>
+<rect x="413.5" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="426.5" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">02</text>
+<text x="498" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Release</text>
+<text x="498" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">pre-flight</text>
+</g>
+<g data-map-node="release-version" data-role="skill"><title>release: version derivation. Classify only the target’s payload window. Derive through its declared policy using compatible tags and manifests; required changelog notes come from actual commit evidence.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">03</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Derive version</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="586" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Prepare the release PR</text>
+<svg x="0" y="620" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="prepare-release">
+<title>Prepare the release PR</title><desc>skill: release: declared manifests and changelog → skill: commit-gate: release changes → command: Ordinary PR procedure → agent: Applicable PR review and owner decision. The release PR describes committed surfaces, exact declared asset names and their reviewed hosted qualification path. Stop this invocation: no tag composition before merge.</desc>
+<defs><marker id="asset-release-prepare-release-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Prepare the release PR</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="release-surfaces:release-commit" data-relation="dispatch" d="M299 252H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-prepare-release-arrow)"><title>gated persistence: Commit release edits through the existing gate.</title></path>
+<path data-map-edge="release-commit:release-pr" data-relation="sequence" d="M488 252H493V120H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-prepare-release-arrow)"><title>mandatory PR: The release branch must use the PR route and stop this invocation.</title></path>
+<path data-map-edge="release-pr:release-review" data-relation="dispatch" d="M677 120H682V384H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-prepare-release-arrow)"><title>review before merge: Apply the ordinary PR reviewer and merge requirements.</title></path>
+<g data-map-node="release-surfaces" data-role="skill"><title>release: declared manifests and changelog. Update only declared surfaces and run the post-bump pre-tag checks. Report exact asset names and the hosted qualification path without executing release-build locally.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">04</text>
+<text x="214.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Update</text>
+<text x="214.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">surfaces</text>
+</g>
+<g data-map-node="release-commit" data-role="skill"><title>commit-gate: release changes. Commit the release edits through the existing permission, selected-file and evidence gate. A tag names a commit, never outstanding working-tree changes.</title>
+<rect x="319" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="332" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">05</text>
+<text x="403.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">commit-gate</text>
+</g>
+<g data-map-node="release-pr" data-role="command"><title>Ordinary PR procedure. Route the committed branch through the ordinary PR path. The release skill stops here instead of composing a tag on this branch.</title>
+<rect x="508" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="521" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">06</text>
+<text x="592.5" y="117" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:pr</text>
+<text x="592.5" y="139" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">procedure</text>
+</g>
+<g data-map-node="release-review" data-role="agent"><title>Applicable PR review and owner decision. Run the path-selected review and current-head checks. The owner decides whether to merge. The PR’s own head is not the later hosted publication identity.</title>
+<rect x="697" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7"/>
+<text x="710" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">07</text>
+<text x="781.5" y="381" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">PR reviewers</text>
+<text x="781.5" y="403" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">+ verdict</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1112" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Qualify the merged candidate</text>
+<svg x="0" y="1146" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="hosted-release">
+<title>Qualify the merged candidate</title><desc>skill: release: bind the hosted candidate → skill: release: exact hosted inventory → skill: release: hosted annotated tag. A qualified hosted publisher identifies the exact fetched default-branch commit and green evidence. Missing capability, stale surfaces or asset mismatch stops publication.</desc>
+<defs><marker id="asset-release-hosted-release-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Qualify the merged candidate</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="release-hosted:release-qualify" data-relation="sequence" d="M299 252H398.5V252H411.5" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-hosted-release-arrow)"><title>qualified cohort: The exact merged candidate owns the package evidence.</title></path>
+<path data-map-edge="release-qualify:release-tag" data-relation="sequence" d="M582.5 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-hosted-release-arrow)"><title>before publication: The qualifying hosted publisher owns tag composition; the interactive agent does not run it locally.</title></path>
+<g data-map-node="release-hosted" data-role="skill"><title>release: bind the hosted candidate. After the release PR merges, a fresh hosted checkout must equal the fetched default branch and satisfy exact-head checks. Bind the current release section and every declared manifest.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">08</text>
+<text x="214.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Hosted</text>
+<text x="214.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">candidate</text>
+</g>
+<g data-map-node="release-qualify" data-role="skill"><title>release: exact hosted inventory. The reviewed publisher either builds the declared assets or verifies a retained exact-head CI cohort. Local scratch files do not cross the PR boundary as publication input.</title>
+<rect x="413.5" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="426.5" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">09</text>
+<text x="498" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Qualify assets</text>
+</g>
+<g data-map-node="release-tag" data-role="skill"><title>release: hosted annotated tag. Classify the observed tag/release state, compose only when appropriate, and verify the stored tag message. An already-published identity is not replaced.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">10</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Compose tag</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1638" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Authorize, publish and retain proof</text>
+<svg x="0" y="1672" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="publish-release">
+<title>Authorize, publish and retain proof</title><desc>skill: release: consume explicit authorization → skill: release: inspect remote identities and assets → skill: release: retain the original receipt. Read back exact publication before cleanup. When a provenance manifest is declared, close its receipt through a separate PR rather than editing the hosted default branch.</desc>
+<defs><marker id="asset-release-publish-release-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Authorize, publish and retain proof</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="release-publish:release-readback" data-relation="sequence" d="M299 252H398.5V252H411.5" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-publish-release-arrow)"><title>verify the remote: A successful command alone is not proof of the remote inventory.</title></path>
+<path data-map-edge="release-readback:release-receipt" data-relation="sequence" d="M582.5 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-release-publish-release-arrow)"><title>retain original evidence: Capture the original publication identity before disposing of positively identified scratch state.</title></path>
+<g data-map-node="release-publish" data-role="skill"><title>release: consume explicit authorization. Only the declared publisher consumes the applicable one-cohort permission. An explicit merge instruction after the release-PR report can supply it for that protected publisher; CI success alone cannot.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">11</text>
+<text x="214.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Authorized</text>
+<text x="214.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">publication</text>
+</g>
+<g data-map-node="release-readback" data-role="skill"><title>release: inspect remote identities and assets. Read back the annotated tag, dereferenced commit, non-draft release and exact asset names. Preserve partial failure evidence instead of recreating published identities.</title>
+<rect x="413.5" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="426.5" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">12</text>
+<text x="498" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Read back</text>
+<text x="498" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">publication</text>
+</g>
+<g data-map-node="release-receipt" data-role="skill"><title>release: retain the original receipt. If declared, capture the original remote provenance and hand off a non-default-branch receipt PR. Closeout remains pending until that PR merges. With no declared manifest, say explicitly that this step is skipped.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">13</text>
+<text x="781.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Receipt</text>
+<text x="781.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">closeout</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="2164" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Published identity; declared receipt closeout is a separate PR.</text>
 </svg>

@@ -21,19 +21,27 @@ The SessionStart drift line is the usual signal that this check is worth running
 /ca:context-check
 ```
 
-Takes no arguments.
+Takes no arguments. This is a retained compatibility route; prefer `/ca:status drift` where the installed command catalog declares that route.
 
 ## Example
 
 ```text
+Illustrative output shape, not a captured host run:
 > /ca:context-check
 
 Stale provenance-tracked docs (2):
-  tech-stack.md       drift_trigger: package.json  (hash changed 3 commits ago)
-  security-controls.md drift_trigger: auth/**       (hash changed 1 commit ago)
+  tech-stack: package.json (changed)
+  security-controls: src/auth/session.py (missing)
 
-For tech-stack.md: re-scout / re-baseline / defer?
+For tech-stack: re-scout / re-baseline / defer?
 ```
+
+Only recorded entries with `drift_trigger: true` participate in this drift report. The helper
+reports concrete paths as changed or missing; it does not compute a commit-age history from a
+hash mismatch. Confirm missing-file versus unavailable-hash evidence before choosing a disposition.
+A re-baseline updates an available recorded hash; it does not verify that a claim is still correct.
+A missing source is not repaired by re-baselining. Deferring leaves the mismatch in place, without
+creating a new decision or follow-up record. See [Provenance and context drift](/concepts/provenance-drift/).
 
 ## When to reach for it
 

@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -42,6 +44,11 @@ class StaticCandidateContractTest(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.repo = Path(self.temporary.name)
         git(self.repo, "init", "-q")
+        # A throwaway repository must have no detached writer when cleanup starts.
+        # Keep maintenance enabled, but wait for it on old and new Git versions.
+        # This changes only the fixture's local config, never the checked-out project.
+        git(self.repo, "config", "gc.autoDetach", "false")
+        git(self.repo, "config", "maintenance.autoDetach", "false")
         git(self.repo, "config", "user.email", "test@example.invalid")
         git(self.repo, "config", "user.name", "Static Candidate Test")
         shutil.copytree(PLUGIN_ROOT, self.repo / "plugins" / "ca-codex")
@@ -56,6 +63,30 @@ class StaticCandidateContractTest(unittest.TestCase):
         return self.module.verify_static_candidate(
             repo=self.repo, final_ref=self.commit, **expectations
         )
+
+    def test_fixture_maintenance_finishes_before_the_git_command_returns(self):
+        self.assertEqual(git(self.repo, "config", "--local", "gc.autoDetach"), "false")
+        self.assertEqual(git(self.repo, "config", "--local", "maintenance.autoDetach"), "false")
+        # Force a small real task, independent of loose-object sampling thresholds.
+        git(self.repo, "config", "maintenance.commit-graph.enabled", "true")
+        git(self.repo, "config", "maintenance.commit-graph.auto", "-1")
+        trace = self.repo / "maintenance-trace.jsonl"
+        with mock.patch.dict(os.environ, {"GIT_TRACE2_EVENT": str(trace)}):
+            git(self.repo, "commit", "--allow-empty", "-qm", "maintenance lifecycle")
+        events = [json.loads(line) for line in trace.read_text(encoding="utf-8").splitlines()]
+        children = [event.get("argv", []) for event in events if event.get("event") == "child_start"]
+        self.assertTrue(any("maintenance" in command for command in children), children)
+        self.assertTrue(any("commit-graph" in command for command in children), children)
+        self.assertFalse(any("--detach" in command for command in children), children)
+        self.assertFalse(any(event.get("category") == "maintenance" and
+                             event.get("label") == "detach" for event in events))
+        root_session = events[0]["sid"]
+        exits = [index for index, event in enumerate(events)
+                 if event.get("event") == "exit" and event.get("sid") == root_session]
+        self.assertEqual(len(exits), 1)
+        # All traced child work is complete before the parent reports success.
+        self.assertFalse(any(event.get("sid") != root_session for event in events[exits[0] + 1:]))
+        self.assertEqual(events[exits[0]]["code"], 0)
 
     def test_binds_exact_commit_tree_archive_and_static_contract(self):
         first = self.verify()

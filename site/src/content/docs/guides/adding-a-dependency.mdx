@@ -12,6 +12,8 @@ journey:
   proof: "Adoption matches the reviewed version and manifest/lockfile diff; a one-time run preserves project artifacts and records its command and output location."
 ---
 
+import WorkflowMap from '../../../components/WorkflowMap.astro';
+
 import ReaderJourney from '../../../components/ReaderJourney.astro';
 
 export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -195,13 +197,10 @@ For a removal or an existing-version update within an application change, contin
 deprecated `btw` entry. Making a one-time tool recurrent later is a new adoption decision,
 not reuse of the earlier approval.
 
-<details>
+<details class="ca-implementation-view">
   <summary>Implementation route and owning references</summary>
-  <figure class="ca-diagram">
-    <img src={`${baseUrl}/diagrams/lane-add-dep.svg`} width="920" height="190" loading="lazy"
-      alt="The add-dep command dispatches the read-only dependency-reviewer for adoption. The bounded one-time exception is described separately in the owning command." />
-    <figcaption>The implementation diagram describes the adoption review route, not a captured tool run.</figcaption>
-  </figure>
+  <WorkflowMap id="dependency-execution-map" workflow="dependency" />
+<p><a href={`${baseUrl}/diagrams/lane-add-dep.svg`}>Open the full three-row diagram</a>.</p>
 </details>
 
 ## Related
