@@ -15,8 +15,9 @@ gates:
 
 ## What it does
 
-This is the behavior-preserving restructure path, invoked by the refactor command for a rename,
-extract, inline, move, dedup, or internal-implementation swap. It proves — through unmodified
+This skill owns the behavior-preserving restructure path for a rename, extract, inline, move,
+dedup, or equivalent internal-implementation swap. A direct intent route and the generated
+refactor command use this same procedure. It proves — through unmodified
 pre-existing tests, not inspection — that the code's externally observable behavior is identical
 before and after. Anything that turns out to add behavior gets redirected to the test-first gate
 as a feature or fix instead of proceeding as a refactor.

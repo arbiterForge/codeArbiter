@@ -26,9 +26,9 @@ reached the same way.
 | Bug fix | `/fix` → `tdd` (bug variant) | impl author | Failing regression test before any fix code |
 | Docs edit / dep bump / revert | `/chore` (type-scaled gates) | `dependency-reviewer` for deps | No behavioral code; suite green for deps/revert; exits via `commit-gate` |
 | Exploratory throwaway spike | `/spike` (self-contained command) → `spike/<slug>` branch | — | Never merges or PRs; `commit-gate`-exempt (nothing on the branch can land); exits to a findings note or `/feature` |
-| Behavior-preserving restructure | `/refactor` → `refactor` skill | `tdd` Phase 1 (new seams only) | No refactor without parity-coverage proof |
-| Unknown defect / investigation | `/debug` → `debug` skill | — | No code change in the skill; one named exit |
-| Commit | `/commit` → `commit-gate` | — | No commit without all nine gates green |
+| Behavior-preserving restructure | `refactor` skill at [routines/refactor/SKILL.md](../routines/refactor/SKILL.md) (explicit `/refactor` uses the same owner) | `tdd` Phase 1 (coverage backfill or new seams) | No refactor without parity-coverage proof |
+| Unknown defect / investigation | `debug` skill at [routines/debug/SKILL.md](../routines/debug/SKILL.md) (explicit `/debug` uses the same owner) | — | No code change in the skill; one named exit |
+| Commit | `commit-gate` skill at [routines/commit-gate/SKILL.md](../routines/commit-gate/SKILL.md) (explicit `/commit` uses the same owner) | — | No commit without all nine gates green |
 | Open a PR / finish a branch | `/pr` → `finishing-a-development-branch` | reviewer fleet per path; PR-body prose applies `anti-slop-design` (`core` + `medium-documents` §7.A.1) | PR only; no direct-to-default, no force-push |
 | Watch a PR's CI / babysit checks | `/watch` → detached `gh pr checks --watch` | on-red diagnose (propose\|branch) | Never auto-merges; green → notify + offer; merge-to-default routes through the hard gate; no poll loop |
 | Code review of the diff | `/review` → `dispatching-parallel-agents` | reviewer fleet → `finding-triage` → `verdict-aggregator` | BLOCK on any CRITICAL/HIGH |
@@ -46,7 +46,7 @@ reached the same way.
 | New / aged ADR, unresolved `[CONFIRM-NN]` | `/adr`, `/adr-status` → `decision-lifecycle` | `decision-challenger` (optional) | No `[CONFIRM-NN]` resolved by guessing |
 | Rule conflict (persona vs docs vs code) | `/conflict` | — | STOP all other work immediately |
 | Unsure `/reconcile` vs `/conflict`? | rules contradict and work cannot safely continue → `/conflict`; artifacts drifted, work continues → `/reconcile` | — | When genuinely ambiguous, `/conflict` wins — stopping is recoverable, drifting past a rule conflict is not |
-| New skill needed | `/new-skill` → `skill-author` | — | No skill until the gap is proven uncovered |
+| New skill needed | `skill-author` skill at [routines/skill-author/SKILL.md](../routines/skill-author/SKILL.md) (explicit `/new-skill` uses the same owner) | — | No skill until the gap is proven uncovered |
 | Subagent raises an out-of-scope finding | inline `[NEEDS-TRIAGE]` marker | — | Never an ADR disposition; never silently dropped |
 | Sitting down to code / repo hygiene cleanup | `$ca-standup` → orchestrator git actions | — | ff-only pull on a clean tree; branch deletions confirmed individually, worktree removals may be confirmed as one named enumerated group; stash/dirty/un-pushed report-only; never touch the default branch |
 | Finish an already-merged branch (post-merge cleanup) | `$ca-cleanup` → `post-merge-cleanup` | — | Merge proven against the FETCHED default by ancestry, PR-record squash proof, or a byte-identical fallback; unique/unclassifiable artifacts never discarded without a per-item confirmation; `--ff-only`; `branch -d`, or `-D` only under the restated squash-proof path; remote branch untouched; never routes to `$ca-override` |

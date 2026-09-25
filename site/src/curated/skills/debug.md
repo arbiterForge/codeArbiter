@@ -15,8 +15,8 @@ gates:
 
 ## What it does
 
-This is where an unknown defect gets investigated before anyone touches code. Invoked as its own
-command, it runs one closed loop: capture a reproducible symptom, generate several distinct
+This skill owns the investigation procedure, selected from a diagnosis request or its generated
+explicit command entry. Before anyone touches code, it runs one closed loop: capture a reproducible symptom, generate several distinct
 candidate causes, gather cited evidence against each one, then commit to exactly one disposition.
 No code changes here — a confirmed cause routes to the fix path, a design ambiguity routes to a
 decision record, and a resolved-elsewhere symptom closes with a rationale on file.

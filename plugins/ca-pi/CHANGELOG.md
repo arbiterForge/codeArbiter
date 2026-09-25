@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Generate debug and refactor entries from their owning skills, retaining all
+  investigation and parity gates while removing duplicate routing policies.
 - Bound shared farm prompt enrichment and retain neutral retry evidence; existing
   preview authority and HTML farm restrictions remain unchanged.
 - Recover farm merge conflicts against a verified integration commit, retaining

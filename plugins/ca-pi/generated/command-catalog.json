@@ -161,7 +161,7 @@
     },
     "debug": {
       "name": "debug",
-      "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca-fix, /ca-adr, or a no-action close.",
+      "description": "Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff. A no-action close records a board note. Not for implementing a known fix, new features, or explanation-only questions.",
       "skillPath": "skills/ca-debug/SKILL.md",
       "visibility": "advanced",
       "workflow": "change",
@@ -284,7 +284,7 @@
     },
     "refactor": {
       "name": "refactor",
-      "description": "Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change.",
+      "description": "Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work.",
       "skillPath": "skills/ca-refactor/SKILL.md",
       "visibility": "core",
       "workflow": "change",

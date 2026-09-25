@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Generate debug and refactor entries from their owning skills, retaining all
+  investigation and parity gates while removing duplicate routing policies.
 - Bound rendered farm enrichment, including labels and notices; preserve UTF-8
   boundaries and actual retry failure context without extra authoring calls.
 - Recover farm merge conflicts against a verified integration commit, retaining

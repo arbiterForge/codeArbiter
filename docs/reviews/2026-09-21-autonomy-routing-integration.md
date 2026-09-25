@@ -1005,3 +1005,52 @@ not be created by the tool and was not executed or counted as proof. The require
 hosted pinned-scanner run remains the final check, separate from native results.
 The renderer/bundle are unchanged by these fixture/CI follow-ups. Full final local
 farm coverage again passed 895 cases with three existing platform skips.
+
+
+## 2026-09-25: debug and refactor single-owner entries
+
+Baseline: `arbiterForge/codeArbiter@76e8880fb434820d1a9450268cdcdd411f8b927c`.
+This slice revalidates two more command/skill wrapper candidates from the original
+routing review. It is not a command-removal release or a farm enablement change.
+
+The canonical debug and refactor command templates now contain one whole-file
+SKILL_ENTRY declaration each. Their owning skills supply descriptions, arguments,
+entry boundaries and complete procedures through the existing compiler. No new
+composition grammar, runtime router, registry or loader is added. Existing command
+spellings and internal skill/routine paths remain. Claude owners stay discoverable;
+generated explicit aliases use the compiler's existing host-specific metadata.
+Codex/Pi retain their public entry skills and private routines.
+
+Complete pre-flight-through-hard-rules bodies are byte-identical to the baseline.
+Debug still requires cited evidence, its existing hypothesis breadth, a named exit,
+regression-test handoff and explicit ADR attribution. Its no-action note uses the
+existing task helper, not the wrapper's ambiguous direct-append wording. Refactor
+retains approved scope, existing-test parity, coverage, seam, lint and review gates.
+Wrapper-specific intent exclusions and cycle prevention now live with the owner.
+Explanation-only requests do not enter an editing procedure or require command syntax.
+
+Both routes are selected by intent or explicit entry; that does not authorize an
+unrequested fix, decision record, commit, push or PR. No phase approval or threshold
+is removed. Same-name command/skill paths pre-existed; their bodies now agree.
+Static projection checks are not installed-host discovery or token measurements.
+Other candidate migrations, relaxed refactor scope approval, and debug-policy redesign
+remain separate. Farm runtime, paired authority, public registry and HTML farm limits
+are unchanged. Revert declarations, owner introductions, generated entries and tests
+together if rejected; preserve accepted decisions, unrelated work and real authority.
+
+The caller trace covered the routing table, spike/fix/chore/feature entries and the
+skill index. Fix already owns bug diagnosis through its TDD variant; this slice
+adds no recursive debug call. The routing table now points debug, refactor and the
+previously consolidated commit/new-skill entries directly at their existing owners.
+Explicit entry spellings remain documented. Refactor's route and index now include
+its existing Phase 2 coverage-backfill path, not only the Phase 3 new-seam path.
+
+Four test methods were added and the three existing composition/host checks extended
+to both new owners. The nine-method owner group fails against old wrappers and passes
+against the correction; the additional direct-route assertion separately fails before
+the table change and passes afterward. All 24 local static, generator, host, route,
+resource, provenance and candidate-version commands passed on native Windows. Neither
+subtest assertions nor unrun live-host/model journeys are counted as extra test cases.
+Farm runtime/bundle, compiler, host descriptors, public registry, native authority,
+CI configuration and scanner policy are unchanged. Hosted current-head checks and
+independent review remain separate from these local results.

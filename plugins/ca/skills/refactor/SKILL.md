@@ -1,11 +1,27 @@
 ---
 name: refactor
-description: The behavior-preserving restructure gate. Routed to by /refactor for a rename, extract, inline, move, dedup, or internal-implementation swap. Six gated phases prove behavioral parity through unmodified pre-existing tests; any diff that classifies as `feat` is not a refactor and is routed to tdd. A modified pre-existing test is rejected as evidence — it is a behavior change in disguise.
+description: "Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work."
+argument-hint: "<surface and motivation>"
 ---
 
 # refactor
 
-Restructure, do not rewrite. Externally observable behavior before equals after — proven by mechanism, not inspection. Routed to by `/refactor`.
+Select this owning procedure for a behavior-preserving restructure, whether requested
+in plain language or through `/refactor`. Entry syntax is not an additional gate;
+the approved-surface, parity, and verification requirements below still apply.
+Externally observable behavior before equals after, proven rather than assumed.
+
+## Entry boundaries
+
+- Identify both the surface and the motivation. Phase 1 owns the precise surface
+  table and its approval; knowing a command name does not establish either.
+- New behavior, including a new error path, side effect, or public method beyond
+  a Phase 3 seam, belongs to `/feature`. Incorrect existing behavior belongs to `/fix`.
+- An explanation-only question stays in the non-mutating question-answer path,
+  not this editing procedure and not a required help-command detour.
+- Persisting an already-completed refactor belongs to the existing commit owner at
+  `${CLAUDE_PLUGIN_ROOT}/skills/commit-gate/SKILL.md`, with its actual authorization and gates.
+  No commit, push, or PR is implied merely by entering this refactor procedure.
 
 ## Pre-flight
 

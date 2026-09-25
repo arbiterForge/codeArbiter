@@ -1548,11 +1548,11 @@ class SkillEntryCompositionTest(_RepoCase):
 
 
 class ActualConsolidatedOwnersTest(unittest.TestCase):
-    """Pin the two adopted owners, host boundaries and gate-preserving composition."""
+    """Pin adopted owners, host boundaries and gate-preserving composition."""
 
     def test_selected_wrappers_have_no_separately_authored_policy(self):
         """Only the skill owns its description, arguments and execution procedure."""
-        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author'), ('debug', 'debug'), ('refactor', 'refactor')):
             with self.subTest(command=command):
                 declaration = (REPO_ROOT / f'core/surface/commands/{command}.md').read_text()
                 self.assertEqual(declaration, '{{SKILL_ENTRY:' + owner + '}}\n')
@@ -1563,7 +1563,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
     def test_claude_explicit_entries_preserve_complete_owner_bodies(self):
         """ADR-0028 owners stay discoverable; explicit spellings remain available."""
         out = B.render_all(REPO_ROOT, 'claude')
-        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author'), ('debug', 'debug'), ('refactor', 'refactor')):
             with self.subTest(command=command):
                 entry = out[f'commands/{command}.md'].decode()
                 skill = out[f'skills/{owner}/SKILL.md'].decode()
@@ -1579,7 +1579,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
         """Routine owners are private resources, so synthesized entries stay visible."""
         for host in ('codex', 'pi'):
             out = B.render_all(REPO_ROOT, host)
-            for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+            for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author'), ('debug', 'debug'), ('refactor', 'refactor')):
                 with self.subTest(host=host, command=command):
                     entry = out[f'skills/ca-{command}/SKILL.md'].decode()
                     self.assertIn(f'name: ca-{command}', _frontmatter(entry))
@@ -1617,6 +1617,49 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
                 for key in ('visibility', 'workflow', 'canonical', 'replacement', 'legacyRoutes'):
                     self.assertEqual(record.get(key), registry['commands'][name].get(key))
             self.assertNotIn('SKILL_ENTRY', out['arbiter.md'].decode())
+
+
+    def test_debug_entry_preserves_investigation_and_board_writer(self):
+        """The complete entry diagnoses without editing code or inventing evidence."""
+        for host, target in (('claude', 'commands/debug.md'), ('codex', 'skills/ca-debug/SKILL.md'), ('pi', 'skills/ca-debug/SKILL.md')):
+            with self.subTest(host=host):
+                entry = B.render_all(REPO_ROOT, host)[target].decode()
+                for obligation in ('## Phase 5', 'regression test obligation', 'through the board helper, never by appending', 'taskwrite.py', '[NEEDS-TRIAGE]', 'user attribution', 'three distinct hypotheses', 'MUST NOT modify, refactor'):
+                    self.assertIn(obligation, entry)
+                self.assertNotIn('symptom and rationale appended to', entry)
+
+    def test_refactor_entry_preserves_scope_and_parity_gates(self):
+        """Single ownership does not weaken approval, parity or verification."""
+        for host, target in (('claude', 'commands/refactor.md'), ('codex', 'skills/ca-refactor/SKILL.md'), ('pi', 'skills/ca-refactor/SKILL.md')):
+            with self.subTest(host=host):
+                entry = B.render_all(REPO_ROOT, host)[target].decode()
+                for obligation in ('## Phase 6', 'user-signed-off surface table', 'unmodified pre-existing tests', 'BOTH lines and branches', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
+                    self.assertIn(obligation, entry)
+
+    def test_new_owner_metadata_routes_intent_not_required_syntax(self):
+        """Descriptions identify the task rather than demanding a command wrapper."""
+        for owner in ('debug', 'refactor'):
+            with self.subTest(owner=owner):
+                skill = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text()
+                self.assertIn('argument-hint:', _frontmatter(skill))
+                self.assertIn('## Entry boundaries', skill)
+                self.assertIn('explanation-only', skill)
+                self.assertNotIn('Routed to by /refactor', _frontmatter(skill))
+                self.assertNotIn('only permitted entry', skill)
+
+    def test_entry_boundary_distinctions_survive_direct_owner_routing(self):
+        """Cycle prevention and non-mutating intents live with their procedure."""
+        debug = (REPO_ROOT / 'core/surface/skills/debug/SKILL.md').read_text()
+        refactor = (REPO_ROOT / 'core/surface/skills/refactor/SKILL.md').read_text()
+        routing = (REPO_ROOT / 'core/surface/includes/routing-table.md').read_text()
+        for owner in ('debug', 'refactor', 'commit-gate', 'skill-author'):
+            self.assertIn('{{PLUGIN_ROOT}}/skills/' + owner + '/SKILL.md', routing)
+        self.assertIn('Do not re-enter from an active', debug)
+        self.assertIn('known bug with a named regression test', debug)
+        self.assertIn('already-completed refactor', refactor)
+        self.assertIn('{{PLUGIN_ROOT}}/skills/commit-gate/SKILL.md', refactor)
+        self.assertIn('No commit, push, or PR is implied', refactor)
+
 
 
 if __name__ == "__main__":

@@ -38,7 +38,7 @@ skill is invoked — never bulk-read this directory.
 | `$ca-chore` | Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose. |
 | `$ca-feature` | Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation. |
 | `$ca-fix` | Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates. |
-| `$ca-refactor` | Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change. |
+| `$ca-refactor` | Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work. |
 | `$ca-spike` | Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or $ca-feature. |
 | `$ca-sprint` | Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops. |
 
@@ -77,7 +77,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `$ca-debug` | Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to $ca-fix, $ca-adr, or a no-action close. |
+| `$ca-debug` | Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff. A no-action close records a board note. Not for implementing a known fix, new features, or explanation-only questions. |
 
 ### Review
 
