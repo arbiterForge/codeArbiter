@@ -249,6 +249,117 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.assertEqual(self.receipt_sha256, result["cohort_sha256"])
         self.assertRegex(result["integrity"], r"^sha512-[A-Za-z0-9+/]+={0,2}$")
 
+    def _run_codex_npm_preparation_step(self, *, cohort=None, existing_output=False):
+        from test_release_workflow import BASH, _action_step
+        if BASH is None:
+            self.skipTest("no POSIX shell available")
+        runner_root = self.root / "runner with spaces"
+        runner_root.mkdir()
+        npm_root = runner_root / "codex-npm-package"
+        if existing_output:
+            npm_root.mkdir()
+            (npm_root / "sentinel").write_bytes(b"do not overwrite")
+        # Execute the owning shell and real packager/metadata validator. Only
+        # registry access and repository authorization are fixture boundaries;
+        # no publication step, token, or authenticated network call participates.
+        runner = self.root / "python-dispatch.py"
+        runner.write_text('''import importlib.util, os, pathlib, runpy, subprocess, sys
+from unittest import mock
+repo = pathlib.Path(os.environ["STUB_REPO"])
+sys.path.insert(0, str(repo / ".github/scripts"))
+sys.argv = sys.argv[1:]
+if sys.argv[0] == "tools/build-host-packages.py":
+    runpy.run_path(str(repo / sys.argv[0]), run_name="__main__")
+elif sys.argv[0] == "-":
+    exec(compile(sys.stdin.read(), "<workflow inline>", "exec"))
+elif sys.argv[0] == ".github/scripts/_npm_publishlib.py":
+    import _npm_publishlib as npm
+    pathlib.Path(os.environ["STUB_VALIDATOR_CALLED"]).write_text("called")
+    lookup = subprocess.CompletedProcess([], 1, '{"error":{"code":"E404"}}', "")
+    with mock.patch.object(npm, "validate_release_source_binding"), \\
+         mock.patch.object(npm, "validate_project_registry"), \\
+         mock.patch.object(npm, "registry_lookup", return_value=lookup):
+        raise SystemExit(npm.main(sys.argv[1:]))
+else:
+    raise AssertionError("unexpected workflow command")
+''', encoding="utf-8", newline="\n")
+        output = runner_root / "step-output.txt"
+        called = runner_root / "validator-called.txt"
+        env = {name: value for name, value in os.environ.items()
+               if name in ("PATH", "SystemRoot", "WINDIR", "PATHEXT", "TEMP", "TMP")}
+        env.update({
+            "STUB_PYTHON": Path(sys.executable).as_posix(),
+            "STUB_RUNNER": runner.as_posix(), "STUB_REPO": REPO.as_posix(),
+            "STUB_VALIDATOR_CALLED": called.as_posix(),
+            "RUNNER_TEMP": runner_root.as_posix(),
+            "PACKAGE_ROOT": self.package_root.as_posix(),
+            "COHORT_SHA256": self.receipt_sha256 if cohort is None else cohort,
+            "SOURCE_ARCHIVE_SHA256": hashlib.sha256(self.archive.read_bytes()).hexdigest(),
+            "SOURCE_COMMIT": self.source_commit, "GITHUB_SHA": self.source_commit,
+            "GITHUB_OUTPUT": output.as_posix(), "NPM_CLI": "unused-fixture-cli",
+            "PYTHONUTF8": "1", "PYTHONDONTWRITEBYTECODE": "1",
+        })
+        script = self.root / "codex-step.sh"
+        script.write_text('python3() { "$STUB_PYTHON" "$STUB_RUNNER" "$@"; }\n'
+                          + _action_step("Prepare exact qualified Codex npm package"),
+                          encoding="utf-8", newline="\n")
+        proc = subprocess.run([BASH, str(script)], cwd=self.root, env=env,
+                              capture_output=True, text=True, timeout=45)
+        return proc, output, called, npm_root
+
+    def test_codex_npm_workflow_metadata_is_a_real_sibling_of_its_exact_tarball(self):
+        proc, output, called, npm_root = self._run_codex_npm_preparation_step()
+        self.assertEqual(0, proc.returncode, proc.stdout + proc.stderr)
+        self.assertTrue(called.is_file())
+        values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        metadata = Path(values["metadata"])
+        tarball = Path(values["tarball"])
+        self.assertEqual(npm_root.resolve(), metadata.resolve().parent)
+        self.assertEqual(metadata.resolve().parent, tarball.resolve().parent)
+        self.assertFalse(metadata.is_symlink())
+        self.assertEqual("false", values["skip"])
+        self.assertEqual("new", values["publication-mode"])
+        self.assertEqual("9.8.7", values["version"])
+        self.assertEqual(self.receipt_sha256, values["cohort-sha256"])
+        self.assertEqual(hashlib.sha256(tarball.read_bytes()).hexdigest(), values["sha256"])
+        data = json.loads(metadata.read_text())
+        self.assertEqual(self.source_commit, data["source_commit"])
+        self.assertEqual(hashlib.sha256(self.archive.read_bytes()).hexdigest(),
+                         data["source_archive_sha256"])
+        expected = {"package/" + name.removeprefix("plugins/ca-codex/"): payload
+                    for name, payload in self.members.items()
+                    if name.startswith("plugins/ca-codex/")}
+        self.assertEqual(expected, {name: value[0] for name, value
+                                    in PACKAGER._read_archive(tarball).items()})
+        # The caller must comply with the sibling and digest guards, not relax
+        # them merely because a package has reached this preparation step.
+        outside = self.root / "outside-metadata.json"
+        outside.write_bytes(metadata.read_bytes())
+        with self.assertRaisesRegex(ValueError, "real sibling"):
+            NPM._codex_npm_metadata(outside, tarball, self.source_commit,
+                                   self.receipt_sha256, data["source_archive_sha256"])
+        tarball.write_bytes(tarball.read_bytes() + b"drift")
+        with self.assertRaisesRegex(ValueError, "exact qualified cohort"):
+            NPM._codex_npm_metadata(metadata, tarball, self.source_commit,
+                                   self.receipt_sha256, data["source_archive_sha256"])
+
+    def test_codex_npm_workflow_stops_before_prepare_on_cohort_mismatch(self):
+        proc, output, called, npm_root = self._run_codex_npm_preparation_step(cohort="0" * 64)
+        self.assertNotEqual(0, proc.returncode)
+        self.assertIn("cohort digest drifted", proc.stdout + proc.stderr)
+        self.assertFalse(output.exists())
+        self.assertFalse(called.exists())
+        self.assertFalse(npm_root.exists())
+
+    def test_codex_npm_workflow_never_reuses_an_existing_staging_directory(self):
+        proc, output, called, npm_root = self._run_codex_npm_preparation_step(existing_output=True)
+        self.assertNotEqual(0, proc.returncode)
+        self.assertIn("already exists", proc.stdout + proc.stderr)
+        self.assertFalse(output.exists())
+        self.assertFalse(called.exists())
+        self.assertEqual(b"do not overwrite", (npm_root / "sentinel").read_bytes())
+        self.assertEqual(["sentinel"], [p.name for p in npm_root.iterdir()])
+
     def test_codex_npm_package_rejects_manifest_identity_drift(self):
         changed = dict(self.members)
         changed["plugins/ca-codex/package.json"] = (

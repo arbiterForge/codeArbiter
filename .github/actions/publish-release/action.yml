@@ -782,6 +782,10 @@ runs:
           --codex-npm-package-root "$PACKAGE_ROOT" \
           --codex-npm-cohort-sha256 "$COHORT_SHA256" \
           --codex-npm-output "$NPM_ROOT" > "$METADATA"
+        # The builder owns exclusive creation of NPM_ROOT. Only after it
+        # succeeds may metadata be placed beside the tarball for verification.
+        mv -- "$METADATA" "$NPM_ROOT/metadata.json"
+        METADATA="$NPM_ROOT/metadata.json"
         TARBALL=$(python3 - "$METADATA" "$NPM_ROOT" <<'PY'
         import json,pathlib,sys
         metadata=json.load(open(sys.argv[1],encoding="utf-8"))

@@ -795,3 +795,50 @@ Keep HTML farm disabled. Broader accounting, durable process resume, framework-b
 mutation classification and model-quality/resource measurements remain separate.
 Revert the isolated tests, private cards and matching candidate metadata together
 if rejected; preserve upstream admission/policy fixes and authenticated history.
+
+
+### Hosted follow-through: original tag receipts
+
+Normal run `36085674014` at `b711bd432f5354080fe2b8546424710be95e19a4`
+exposed two newly published tags absent from the ledger. Original publisher run
+`36084996407`, attempt 1, used main/workflow revision
+`929229354e3a15ae3002c82116b66c837ab43729`. Its tag-creation logs and authenticated
+artifact metadata were checked before the existing `reconcile_tag_receipt.py`
+prepared append-only candidates. No current-ref observation was substituted for
+original history; all prior identities and the separate legacy ledger are intact.
+
+| Tag | Original tag object | Artifact | Downloaded ZIP SHA-256 |
+| --- | --- | --- | --- |
+| `v2.21.15` | `f74de069c2aa47728667ebf8060b471df485fffd` | `10843288417` | `d7f343833e59cb27daaaa59fdc3d871db2aca59aa31919d64bb0cb28e1ea7468` |
+| `ca-codex-v0.13.16` | `c3a34e1ff51412fc39d4a2a20978efa471f49d1e` | `10842718926` | `19f0cfe70d40cafbc6d07d568714a556cc19fd5170bdd61f867b8cbabed39bc1` |
+
+Both tag objects peel to that main commit. This records tag publication only:
+the original release run failed later during Codex publication and skipped Pi.
+Do not call the release cohort complete or repair it by retagging. This PR does
+not rerun publication, change permissions, weaken immutability, or claim a release.
+
+
+### Codex publication preparation path correction
+
+Original publisher job `107915186019` refused preparation with
+`Codex npm package and metadata must be real sibling files`. The composite
+action put stdout metadata in the runner temporary root while the builder
+created the tarball inside its exclusive `codex-npm-package` directory.
+Move that same metadata beside the tarball only after the builder succeeds;
+do not pre-create the builder-owned directory or weaken the sibling validator.
+The same existing source, cohort, archive, integrity and publication guards remain.
+
+Three tests execute the actual owning shell with the real packager and metadata
+validator. Only repository authorization and registry lookup are test fixtures;
+no real publication or provider request runs. With the final tests, the unmodified
+`b711bd4` action fails the expected sibling check while both refusal controls pass.
+After correction, all three pass, including mismatched-cohort refusal, an existing
+staging-directory sentinel, exact payload/digest binding and preserved sibling/
+tampered-tarball rejection. The full Codex distribution suite passes 28 tests;
+the release workflow suite passes 171. Tag audit/receipt/reconciliation suites
+pass 74/16/20 tests. The unchanged live auditor verifies 168 original receipts and
+44 legacy baselines after the append-only correction.
+
+This is a correction to the owning action for review, not recovery of the already
+partial release. Release continuation must separately establish its exact cohort,
+trusted verifier revision and current publication state; no release run was retried.
