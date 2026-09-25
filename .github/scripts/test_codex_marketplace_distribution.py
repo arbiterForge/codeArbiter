@@ -10,6 +10,7 @@ import io
 import json
 import os
 from pathlib import Path
+import shutil
 import sys
 import tarfile
 import tempfile
@@ -43,6 +44,17 @@ PROMOTION_SPEC = importlib.util.spec_from_file_location(
 )
 PROMOTER = importlib.util.module_from_spec(PROMOTION_SPEC)
 PROMOTION_SPEC.loader.exec_module(PROMOTER)
+# This suite pins the deferred npm channel contract (ADR-0039). The live
+# default is the Git dist-tag channel, covered by test_marketplace_git_channels.
+_GIT_DEFAULT_PROMOTE = PROMOTER.promote
+
+
+def _npm_channel_promote(**kwargs):
+    kwargs.setdefault("catalog_mode", "npm")
+    return _GIT_DEFAULT_PROMOTE(**kwargs)
+
+
+PROMOTER.promote = _npm_channel_promote
 RULESET_SPEC = importlib.util.spec_from_file_location(
     "verify_codex_distribution_rulesets", REPO / ".github/scripts/verify_codex_distribution_rulesets.py"
 )
@@ -725,122 +737,6 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         ).stdout
         self.assertEqual(after_rollback, after)
 
-    def test_release_action_stages_before_and_advances_only_after_finalize(self):
-        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
-            encoding="utf-8"
-        )
-        verify = action.index("Reverify exact retained package cohort before publication")
-        rulesets = action.index("Verify live Codex distribution rulesets")
-        cold_receipt = action.index("Retain immutable durable cohort receipt on the Release")
-        stage = action.index("Stage immutable qualified Codex distribution tag")
-        prepare_npm = action.index("Prepare exact qualified Codex npm package")
-        auth_npm = action.index("Configure authenticated npm scope for exact qualified Codex package")
-        publish_npm = action.index("Publish exact qualified Codex npm package from authenticated scope")
-        verify_npm = action.index("Verify Codex npm integrity and provenance readback")
-        cold_npm = action.index("Cold-install exact Codex npm package through a real marketplace")
-        finalize = action.index("Publish qualified Release only after receipt readback")
-        reverify = action.index("Reverify live Codex distribution rulesets before channel advance")
-        advance = action.index("Advance protected Codex marketplace channel")
-        self.assertLess(verify, cold_receipt)
-        self.assertLess(cold_receipt, stage)
-        self.assertLess(rulesets, stage)
-        self.assertLess(stage, prepare_npm)
-        self.assertLess(prepare_npm, auth_npm)
-        self.assertLess(auth_npm, publish_npm)
-        self.assertLess(publish_npm, verify_npm)
-        self.assertLess(verify_npm, cold_npm)
-        self.assertLess(cold_npm, finalize)
-        self.assertLess(stage, finalize)
-        self.assertLess(finalize, reverify)
-        self.assertLess(reverify, advance)
-        block = action[stage:finalize]
-        self.assertIn("inputs.package-host == 'codex'", block)
-        self.assertIn("--cohort-sha256 \"$COHORT_SHA256\"", block)
-        self.assertIn("--push", block)
-        self.assertNotIn("--advance-channel", block)
-        channel_block = action[advance:]
-        self.assertIn("--advance-channel", channel_block)
-        self.assertNotIn("codex-ruleset-verifier-token", channel_block)
-        self.assertNotIn("verify_codex_distribution_rulesets.py", channel_block)
-        reverify_block = action[reverify:advance]
-        self.assertIn("verify_codex_distribution_rulesets.py", reverify_block)
-        self.assertIn("inputs.codex-ruleset-verifier-token", reverify_block)
-        self.assertNotIn("inputs.github-token", reverify_block)
-        self.assertNotIn("promote-codex-marketplace.py", reverify_block)
-        self.assertIn("git remote get-url origin", action)
-        self.assertIn("--remote-url \"$REMOTE_URL\"", action)
-        auth_block = action[auth_npm:publish_npm]
-        self.assertIn("actions/setup-node@820762786026740c76f36085b0efc47a31fe5020", auth_block)
-        self.assertIn("registry-url: https://registry.npmjs.org", auth_block)
-        self.assertIn("scope: '@arbiterforge'", auth_block)
-        publish_block = action[publish_npm:verify_npm]
-        self.assertIn("NODE_AUTH_TOKEN: ${{ inputs.npm-token }}", publish_block)
-        self.assertIn("--registry=https://registry.npmjs.org/", publish_block)
-        cold_block = action[cold_npm:finalize]
-        self.assertIn("for CODEX_VERSION in 0.143.0 0.145.0", cold_block)
-        self.assertIn('"@openai/codex@$CODEX_VERSION"', cold_block)
-        self.assertIn("--npm-marketplace-version \"$VERSION\"", cold_block)
-        self.assertIn("--qualified-npm-metadata \"$NPM_METADATA\"", cold_block)
-        self.assertIn("NPM_METADATA: ${{ steps.codex-npm.outputs.metadata }}", cold_block)
-        self.assertIn("--require-artifact-capability", cold_block)
-        self.assertIn("NPM_CONFIG_USERCONFIG:", cold_block)
-        self.assertNotIn("NODE_AUTH_TOKEN", cold_block)
-
-    def test_codex_npm_metadata_is_sibling_to_qualified_tarball(self):
-        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
-            encoding="utf-8"
-        )
-        start = action.index("Prepare exact qualified Codex npm package")
-        end = action.index(
-            "Configure authenticated npm scope for exact qualified Codex package",
-            start,
-        )
-        block = action[start:end]
-        self.assertIn('NPM_ROOT="$RUNNER_TEMP/codex-npm-package"', block)
-        metadata_assignment = next(
-            line.strip() for line in block.splitlines()
-            if line.strip().startswith("METADATA=")
-        )
-        self.assertEqual(
-            metadata_assignment,
-            'METADATA="$NPM_ROOT/codex-npm-package.json"',
-            "Codex pre-publication validation requires metadata to be a direct "
-            "sibling of the qualified tarball in the generated package directory",
-        )
-        self.assertIn('--codex-npm-output "$NPM_ROOT" > "$METADATA"', block)
-        self.assertIn(
-            'TARBALL=$(python3 - "$METADATA" "$NPM_ROOT" <<\'PY\'', block
-        )
-        self.assertIn('path=(root/metadata["file"]).resolve(strict=True)', block)
-        self.assertIn("path.relative_to(root)", block)
-
-    def test_codex_npm_output_directory_exists_before_metadata_redirection(self):
-        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
-            encoding="utf-8"
-        )
-        start = action.index("Prepare exact qualified Codex npm package")
-        end = action.index(
-            "Configure authenticated npm scope for exact qualified Codex package",
-            start,
-        )
-        lines = [line.strip() for line in action[start:end].splitlines()]
-        mkdir_index = next(
-            (index for index, line in enumerate(lines)
-             if line == 'mkdir -p "$NPM_ROOT"'),
-            None,
-        )
-        build_index = next(
-            (index for index, line in enumerate(lines)
-             if line == "python3 tools/build-host-packages.py \\"),
-            None,
-        )
-        self.assertIsNotNone(
-            mkdir_index,
-            "the metadata redirection parent must exist before the builder runs",
-        )
-        self.assertIsNotNone(build_index, "the qualified package builder must run")
-        self.assertLess(mkdir_index, build_index)
-
     def test_competing_marketplace_update_wins_and_expected_head_lease_fails(self):
         remote = self.root / "race.git"
         git_run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
@@ -981,12 +877,12 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.assertIn("codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}", release)
         self.assertIn("codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}", release)
         self.assertIn("CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY", release)
-        self.assertEqual(4, release.count("umask 077"))
-        manual = release.split("  release-codex:", 1)[1].split("\n  release-sandbox:", 1)[0]
-        automatic = release.split("  auto-release-codex:", 1)[1].split("\n  auto-codex-cohort-gate:", 1)[0]
-        for block in (manual, automatic):
-            self.assertIn("id-token: write", block)
-            self.assertIn("npm-token: ${{ secrets.NPMJS_TOKEN }}", block)
+        self.assertEqual(2, release.count("umask 077"))
+        # One Codex job serves merge-triggered and dispatched releases. Codex
+        # npm publication is deferred (ADR-0040), so no npm credential reaches it.
+        codex = release.split("  release-codex:", 1)[1].split("\n  release-pi:", 1)[0]
+        self.assertNotIn("NPMJS_TOKEN", codex)
+        self.assertNotIn("id-token: write", codex)
         security = (REPO / ".codearbiter/security-controls.md").read_text()
         self.assertIn("first `@arbiterforge/ca-codex` publication", security)
         self.assertIn("available to all organization repositories", security)
@@ -1008,10 +904,10 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                 self.assertIn(command, (REPO / relative).read_text(encoding="utf-8"))
 
         readme = (REPO / "README.md").read_text(encoding="utf-8")
-        self.assertIn("exact verified `@arbiterforge/ca-codex` npm version", readme)
+        self.assertIn("immutable `ca-codex-dist-v<version>` Git tag", readme)
         self.assertIn("codex plugin remove ca-codex@codearbiter", readme)
         self.assertIn("codex plugin marketplace remove codearbiter", readme)
-        self.assertIn("does not migrate it to the npm-backed channel", readme)
+        self.assertIn("does not migrate it to the promoted binary-bearing channel", readme)
 
 
 if __name__ == "__main__":

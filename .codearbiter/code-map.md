@@ -72,7 +72,7 @@ granularity only — not a file listing. Kept in sync via `.provenance/code-map.
 
 ## CI/CD (.github/)
 
-- `.github/workflows/ci.yml`, `release.yml`, `codeql.yml`, `docs.yml`, `npm-publish.yml`, `pi-promotion.yml` — GitHub Actions workflows gating test/lint, release, security scanning, docs, and publishing
+- `.github/workflows/ci.yml`, `release.yml`, `codeql.yml`, `docs.yml`, `pi-promotion.yml` — GitHub Actions workflows gating test/lint, release and publishing, security scanning, and docs
 - `.github/scripts/` — helper scripts invoked by workflows (release checks, contract/consistency checks, provenance/tag-immutability tooling, ADR lifecycle checks)
 
 ## Architectural pattern

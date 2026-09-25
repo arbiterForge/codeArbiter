@@ -371,6 +371,18 @@ def _require_host_workflow(client: "ArtifactClient") -> None:
         )
 
 
+# The native engine ships only through the release distribution channels, never
+# through a main-branch checkout, so the repair is always "install from the
+# channel". Named concretely so the user is not left to guess (ADR-0040).
+PAYLOAD_REPAIR_HINT = (
+    "Claude Code: /plugin marketplace update codearbiter, then /plugin update ca@codearbiter; "
+    "Codex (registered without --ref): codex plugin remove ca-codex@codearbiter, "
+    "codex plugin marketplace remove codearbiter, "
+    "codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace, "
+    "then codex plugin add ca-codex@codearbiter; Pi: pi install npm:@arbiterforge/ca-pi"
+)
+
+
 def _require_authoring_capability(client: "ArtifactClient") -> None:
     """Fail one default-HTML route with a bounded repair diagnostic."""
     try:
@@ -379,7 +391,7 @@ def _require_authoring_capability(client: "ArtifactClient") -> None:
         raise ArtifactError(
             "CAPABILITY_MISSING",
             f"repair or reinstall the pinned artifact payload ({exc.code}); "
-            "new HTML work cannot fall back to Markdown",
+            f"new HTML work cannot fall back to Markdown. Repair: {PAYLOAD_REPAIR_HINT}",
         ) from exc
     if (
         not isinstance(capabilities, dict)
@@ -389,7 +401,7 @@ def _require_authoring_capability(client: "ArtifactClient") -> None:
         raise ArtifactError(
             "CAPABILITY_MISSING",
             "repair or reinstall the qualified default-on artifact payload; "
-            "new HTML work cannot fall back to Markdown",
+            f"new HTML work cannot fall back to Markdown. Repair: {PAYLOAD_REPAIR_HINT}",
         )
 
 
