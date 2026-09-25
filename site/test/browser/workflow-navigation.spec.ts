@@ -1,4 +1,6 @@
 import { test, expect, type Request } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { isNativeIconRead } from '../chapter-request-contract';
 import { workflows } from '../../scripts/execution-maps/workflows';
 import { workflowMapHref } from '../../scripts/execution-maps/locations';
@@ -80,8 +82,13 @@ for (const w of workflows) test(`${w.id}: chapter navigation preserves storage a
   });
   // Native hash navigation can revalidate the document's favicon. Keep that
   // exact browser read visible, but reject fetch/XHR, prefetch and all other URLs.
-  const iconUrl = await page.locator('link[rel="icon"]').evaluate(node => (node as HTMLLinkElement).href);
-  expect(iconUrl).toBe(new URL('/favicon.svg', page.url()).href);
+  // rel is a token list: the published head uses `shortcut icon`, not `icon`.
+  // Read the loaded head once and fail clearly on absence or ambiguity instead
+  // of waiting thirty seconds for markup the renderer does not produce.
+  const icons = await page.locator('head link[rel~="icon"]').evaluateAll(nodes =>
+    nodes.map(node => (node as HTMLLinkElement).href));
+  expect(icons).toEqual([new URL('/favicon.svg', page.url()).href]);
+  const iconUrl = icons[0];
   for (const link of await map.locator('a').all()) {
     await expect(link).toHaveAttribute('data-astro-prefetch', 'false');
   }
@@ -114,11 +121,19 @@ for (const w of workflows) test(`${w.id}: chapter navigation preserves storage a
   })));
   expect(network.filter(request => !isNativeIconRead(request, iconUrl))).toEqual([]);
   expect(sockets).toEqual([]);
-  // Retain the observed exception rather than hiding it from the evidence.
-  await test.info().attach(`${w.id}-chapter-network`, {
-    body: JSON.stringify({ nativeIconReads: network, applicationRequests: [], storageWrites: [] }, null, 2),
-    contentType: 'application/json',
-  });
+  // Retain actual observations in both the test result and the normal evidence
+  // artifact, which also survives a successful run without failure traces.
+  const observations = {
+    route: w.id, iconUrl, nativeIconReads: network.filter(request => isNativeIconRead(request, iconUrl)),
+    applicationRequests: network.filter(request => !isNativeIconRead(request, iconUrl)),
+    storageWrites: await page.evaluate(() => (window as unknown as { __mapStorageWrites: string[][] }).__mapStorageWrites),
+    sockets,
+  };
+  const body = JSON.stringify(observations, null, 2);
+  const directory = join(process.cwd(), '.astro', 'browser-evidence');
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(join(directory, `c04-${w.id}-chapter-network.json`), `${body}\n`);
+  await test.info().attach(`${w.id}-chapter-network`, { body, contentType: 'application/json' });
 });
 
 test('all chapter permalinks, previous/next links and final outcomes agree with the source map', async ({ page }) => {
