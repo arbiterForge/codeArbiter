@@ -7,7 +7,12 @@
   "plugins": [
     {
       "name": "ca",
-      "source": "./plugins/ca"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/arbiterForge/codeArbiter.git",
+        "path": "plugins/ca",
+        "ref": "ca-marketplace"
+      }
     },
     {
       "name": "ca-sandbox",
