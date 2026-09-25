@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-09-25
 title: Release each plugin independently on merge with consumer-safety-only publication gates
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,10 @@ governs: .github/workflows/release.yml, .github/actions/publish-target/*, .githu
 # ADR-0040 — Release each plugin independently on merge with consumer-safety-only publication gates
 
 ## Status
-Proposed
+Accepted
+
+Accepted by SUaDtL@users.noreply.github.com on 2026-09-25 ("2 accept"), after review of the
+proposed record in PR #865.
 
 ## Context
 Between 2026-09-06 and 2026-09-25 about 57 of roughly 80 `release.yml` runs failed. Almost none
@@ -48,8 +51,13 @@ to every host, and release on every merge.
    name the release commit (otherwise the version is spent — bump and merge again); published bytes
    read back exactly (Release asset digest, npm integrity). Provenance extras — npm attestation and
    signature verification, the Codex ruleset audit, and the release-skill pre-tag proof — warn and do
-   not block. The published-tag ledger check (`check_tag_immutability.py --require-recorded`) is
-   unchanged by this decision.
+   not block.
+5. **The published-tag ledger detects movement; it does not gate new tags.** Required CI and the
+   release preflight run `check_tag_immutability.py` without `--require-recorded`: a recorded tag
+   that moved or disappeared still blocks, but a newly published tag not yet in
+   `.github/published-tags.json` only warns. Prevention is the live tag rulesets, which refuse
+   deletion and movement of every release and distribution tag. The user chose this over automating
+   receipt-recording PRs ("automate it or relax it").
 
 ## Alternatives considered
 - **Keep the cohort and fix its resume path** — keeps the class of failure that recurred all month;

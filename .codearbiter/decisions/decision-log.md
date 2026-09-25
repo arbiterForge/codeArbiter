@@ -2030,3 +2030,28 @@ Reliable and Testable: every release step is observe-then-act and re-runnable, a
 Rewrite release.yml around `.github/actions/publish-target` and `.github/scripts/release_target.py`; add `tools/promote-claude-marketplace.py`; default Codex promotion to the Git catalog; remove cohort code from `_npm_publishlib.py`; bump ca, ca-codex and ca-pi so the first run publishes a fresh version of each.
 
 ---
+
+## DECISION-0070 — adr-0040-acceptance — Accept ADR-0040 with the ledger-detection clause
+
+**Date:** 2026-09-25
+**Status:** accepted
+**Supersedes:** DECISION-0069
+**Decided by:** SUaDtL@users.noreply.github.com — "2 accept", and "yes automate it or relax it" for the published-tag ledger gate.
+**Decision category:** release architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0069 recorded ADR-0040 as proposed with the published-tag ledger gate unchanged.
+- **Scaffold position:** The maintainer accepted the decision and chose to relax the ledger gate rather than automate receipt-recording PRs.
+- **Status type:** divergent
+
+### Decision
+Store ADR-0040 as Accepted/Planned, including its fifth clause: the ledger check detects movement of recorded tags without gating unrecorded new ones, with prevention carried by the live tag rulesets. Seal every normative clause against the exact accepted bytes and preserve the acceptance commit's ancestry through delivery (merge commit, not squash). Nothing is represented as Implemented or Verified without current lifecycle evidence.
+
+### SMARTS rationale
+Reliable: a publication no longer requires a follow-up bookkeeping PR before any merge can land. Securable: tag movement and deletion stay prevented by rulesets and detected by the ledger.
+
+### Implementation implication
+Run required CI and the release preflight without `--require-recorded`; bind the acceptance through `prepare_adr_acceptance.py` and a following lifecycle-ledger commit.
+
+---
