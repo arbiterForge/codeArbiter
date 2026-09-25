@@ -542,7 +542,7 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
         self.assertIn(
             "<!-- codearbiter-codex-agent-route-contract: "
-            "literal_route_lines=21 literal_route_occurrences=22 "
+            "literal_route_lines=22 literal_route_occurrences=24 "
             "generic_route_lines=2 generic_route_occurrences=2 -->",
             index,
         )
@@ -1700,6 +1700,208 @@ class RemovedSkillAuthorTest(unittest.TestCase):
         self.assertIn('check_routing_index_parity.py', text)
         self.assertNotIn('commands/new-skill.md', text)
         self.assertNotIn('Return with evidence', text)
+
+
+class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
+    """D08-D11 and D15 reduce metadata without dropping mode-specific contracts."""
+
+    OWNERS = {'tribunal': 'tribunal', 'threat-model': 'security-architecture', 'context-check': 'context-check', 'cleanup': 'post-merge-cleanup', 'pr': 'finishing-a-development-branch'}
+
+    @classmethod
+    def setUpClass(cls):
+        cls.outputs = {host: B.render_all(REPO_ROOT, host)
+                       for host in ('claude', 'codex', 'pi')}
+
+    def entry(self, host, command):
+        path = f'commands/{command}.md' if host == 'claude' else f'skills/ca-{command}/SKILL.md'
+        return self.outputs[host][path].decode()
+
+    def test_five_commands_use_one_owner_each_and_concise_intent(self):
+        for command, owner in self.OWNERS.items():
+            with self.subTest(command=command):
+                path = REPO_ROOT / f'core/surface/commands/{command}.md'
+                self.assertEqual(path.read_text(encoding='utf-8'), '{{SKILL_ENTRY:' + owner + '}}\n')
+                skill = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
+                description = B._frontmatter_value(skill, 'description', str(path))
+                self.assertLessEqual(len(description), 160)
+                self.assertNotRegex(description, r'(?i)routed to when|phase [0-9]|only via|_provenancelib')
+                self.assertIn('argument-hint:', _frontmatter(skill))
+                self.assertIn('explanation-only', skill.lower())
+
+    def test_host_metadata_and_explicit_names_are_preserved(self):
+        for command, owner in self.OWNERS.items():
+            for host, output in self.outputs.items():
+                with self.subTest(host=host, command=command):
+                    entry = self.entry(host, command)
+                    prefix = 'skills' if host == 'claude' else 'routines'
+                    skill = output[f'{prefix}/{owner}/SKILL.md'].decode()
+                    self.assertNotIn('disable-model-invocation:', _frontmatter(skill))
+                    self.assertNotIn('allowed-tools:', _frontmatter(entry))
+                    self.assertNotIn('user-invocable:', _frontmatter(entry))
+                    if host == 'claude':
+                        self.assertIn('disable-model-invocation: true', _frontmatter(entry))
+                        self.assertEqual(entry.split('\n---\n', 1)[1], skill.split('\n---\n', 1)[1])
+                    else:
+                        self.assertIn(f'name: ca-{command}', _frontmatter(entry))
+                        self.assertNotIn('disable-model-invocation:', _frontmatter(entry))
+                        self.assertNotIn(f'skills/{owner}/SKILL.md', output)
+
+    def test_description_budget_falls_on_entry_skill_hosts(self):
+        # Description characters, not runtime listing count or model prompt tokens.
+        for host in ('codex', 'pi'):
+            values = [B._frontmatter_value(self.entry(host, c), 'description', c) for c in self.OWNERS]
+            self.assertLess(sum(map(len, values)), 927)
+            self.assertTrue(all(0 < len(value) <= 160 for value in values))
+
+    def test_tribunal_keeps_applicability_consent_and_rooted_support(self):
+        for host in self.outputs:
+            text = self.entry(host, 'tribunal')
+            for obligation in ('applicability across the full roster', 'launched/skipped',
+                               'acknowledging the estimated token cost', 'explicit per-run authorization',
+                               'never `open-tasks.md`', 'run-aborted', 'counter_argument',
+                               'Usage recovery is best-effort' if host == 'claude' else '## Phase 6'):
+                self.assertIn(obligation, text)
+            self.assertNotIn('`references/', text)
+            self.assertNotIn('The full lens roster still runs', text)
+            self.assertIn('MUST NOT edit, refactor, format, or commit project code', text)
+            self.assertIn('MUST NOT act as a required gate', text)
+
+    def test_threat_model_retains_readonly_and_nonbinary_verdict(self):
+        for host in self.outputs:
+            text = self.entry(host, 'threat-model')
+            for value in ('PROCEED-WITH-CONSTRAINTS', 'critical unmitigated threat',
+                          'Read-only: modify no project file', 'reviewers inherit this read-only',
+                          'relevant security ADRs', 'prerequisite failure, separate',
+                          'MUST NOT author an ADR', 'MUST NOT force this pass'):
+                self.assertIn(value, text)
+            self.assertNotIn('CLEAR TO IMPLEMENT', text)
+            self.assertNotIn('BLOCKED — resolve findings first', text)
+            self.assertNotIn('Routed to only when the user deliberately invokes', text)
+
+    def test_drift_and_cleanup_operational_bodies_are_preserved(self):
+        import hashlib
+        expected = {'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
+        for command, digest in expected.items():
+            owner = self.OWNERS[command]
+            text = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
+            body = text.split('## Pre-flight\n', 1)[1]
+            self.assertEqual(hashlib.sha256(body.encode()).hexdigest(), digest)
+            self.assertIn('neither stages nor commits', ' '.join(text.split()))
+        drift = (REPO_ROOT / 'core/surface/commands/status.md').read_text(encoding='utf-8')
+        self.assertIn('{{PLUGIN_ROOT}}/skills/context-check/SKILL.md', drift)
+        self.assertNotIn('{{PLUGIN_ROOT}}/commands/context-check.md', drift)
+
+    def test_pr_dispatches_noncreation_modes_before_preflight(self):
+        for host in self.outputs:
+            text = self.entry(host, 'pr')
+            self.assertIn('## Pre-flight', text, 'Composed PR entry must carry creation preflight')
+            before, after = text.split('## Pre-flight', 1)
+            self.assertIn('command-mode:--watch legacy-route:watch', before)
+            self.assertIn('command-mode:--cleanup legacy-route:cleanup', before)
+            self.assertIn('then returns', before)
+            self.assertIn('before reaching that requirement', before)
+            self.assertIn('flags are mutually exclusive', before)
+            self.assertIn('extra cleanup argument', before)
+            self.assertIn('is a title, not a mode', before)
+            self.assertNotIn('command-mode:', after)
+            self.assertIn('post-merge-cleanup/SKILL.md', before)
+            self.assertNotIn('commands/cleanup.md', text)
+            self.assertNotIn('skills/ca-cleanup/SKILL.md', text)
+
+    def test_pr_procedure_has_no_wrapper_cycle_and_preserves_review_and_watch(self):
+        for host in self.outputs:
+            text = self.entry(host, 'pr')
+            self.assertEqual(text.count('### Open-PR procedure'), 1)
+            self.assertNotIn('commands/pr.md', text)
+            self.assertNotIn('skills/ca-pr/SKILL.md', text)
+            for obligation in ('auth-crypto-reviewer', 'security-reviewer', 'migration-reviewer',
+                               'dependency-reviewer', 'coverage-auditor', 'CRITICAL or HIGH',
+                               'anti-slop-design', 'babysit.py', 'CODEARBITER_BABYSIT',
+                               'Never enable the flag', '_preflight_current_acceptance',
+                               '--match-head-commit', 'all_accepted_and_current: true'):
+                self.assertIn(obligation, text)
+
+    def test_pr_respects_direct_choice_and_caller_authority(self):
+        for host in self.outputs:
+            text = self.entry(host, 'pr')
+            self.assertIn('Do not repeat a branch-fate menu', text)
+            self.assertIn('feature-terminal handoff keeps its existing terminal', text)
+            self.assertIn('sprint-terminal handoff selects open PR only', text)
+            self.assertIn('MUST NOT auto-merge under', text)
+            self.assertIn('MUST NOT discard a branch without explicit user confirmation', text)
+            self.assertIn('MUST NOT delete un-pushed commits silently', text)
+            self.assertIn('current exact head', text)
+
+    def test_pr_current_acceptance_and_ancestry_preflight_is_identical(self):
+        import hashlib
+        text = (REPO_ROOT / 'core/surface/skills/finishing-a-development-branch/SKILL.md').read_text(encoding='utf-8')
+        section = text[text.index('## Pre-flight\n'):text.index('## Phase 2')]
+        self.assertEqual(hashlib.sha256(section.encode()).hexdigest(), '0df4e08d97542d6273ae5c7d7cf149daec423d7c7587f5123f4bafadb8dc146a')
+        inventory = json.loads((REPO_ROOT / 'docs/artifacts/consumer-inventory.json').read_text(encoding='utf-8'))
+        consumer = next(row for row in inventory['consumers']
+                        if row['id'] == 'finalization-and-worktree-plan-readers')
+        for path in ('plugins/ca/commands/pr.md', 'plugins/ca-codex/skills/ca-pr/SKILL.md',
+                     'plugins/ca-pi/skills/ca-pr/SKILL.md', 'site/src/content/docs/reference/commands/pr.md'):
+            self.assertIn(path, consumer['generated_paths'])
+        self.assertFalse(inventory['rollout']['typed_html_farm_enabled'])
+
+
+    def test_direct_routing_points_to_all_five_owners(self):
+        table = (REPO_ROOT / 'core/surface/includes/routing-table.md').read_text(encoding='utf-8')
+        for owner in self.OWNERS.values():
+            self.assertIn('{{PLUGIN_ROOT}}/skills/' + owner + '/SKILL.md', table)
+
+
+
+class ComposedModeClosureTest(_RepoCase):
+    """Mode closure must validate the resolved owner, not the empty declaration."""
+
+    def setUp(self):
+        super().setUp()
+        registry = json.loads((Path(self.repo) / 'core/surface/command-routes.json').read_text())
+        registry['commands']['init'].update(modes=['--inspect'], legacyRoutes=['status'])
+        registry['commands']['status'].update(visibility='alias', canonical='init', replacement='init --inspect')
+        registry['commands']['status'].pop('legacyRoutes')
+        _write_registry(self.repo, registry['commands'])
+        self.owner = ('---\nname: mode-owner\ndescription: Inspect or initialize.\n'
+                      'argument-hint: "(none) | --inspect"\n---\n\n'
+                      '# mode owner\n\n<!-- command-mode:--inspect legacy-route:status -->\n'
+                      'Inspect is read-only. Initialization requires separate intent.\n')
+        _write(self.repo, 'core/surface/skills/mode-owner/SKILL.md', self.owner)
+        _write(self.repo, 'core/surface/commands/init.md', '{{SKILL_ENTRY:mode-owner}}\n')
+
+    def test_valid_composed_mode_is_rendered_and_catalogued_on_all_hosts(self):
+        for host, path in [('claude', 'commands/init.md'), ('codex', 'skills/ca-init/SKILL.md'),
+                           ('pi', 'skills/ca-init/SKILL.md')]:
+            with self.subTest(host=host):
+                try:
+                    out = B.render_all(self.repo, host)
+                except B.SurfaceError as error:
+                    self.fail(f'Valid composed mode was rejected: {error}')
+                self.assertIn('command-mode:--inspect legacy-route:status', out[path].decode())
+                metadata = json.loads(out['generated/command-catalog.json'])['commands']['init']
+                alias = json.loads(out['generated/command-catalog.json'])['commands']['status']
+                self.assertEqual(alias['replacement'], 'init --inspect')
+                self.assertEqual(metadata['legacyRoutes'], ['status'])
+
+    def test_composed_modes_still_reject_missing_duplicate_and_wrong_markers(self):
+        marker = '<!-- command-mode:--inspect legacy-route:status -->'
+        variants = [self.owner.replace(marker, ''), self.owner + marker + '\n',
+                    self.owner.replace('--inspect legacy-route:status', '--delete legacy-route:status')]
+        for owner in variants:
+            _write(self.repo, 'core/surface/skills/mode-owner/SKILL.md', owner)
+            for host in ('claude', 'codex', 'pi'):
+                with self.subTest(host=host, owner=owner):
+                    with self.assertRaisesRegex(B.SurfaceError, 'command-mode marker closure'):
+                        B.render_all(self.repo, host)
+
+    def test_mode_composition_does_not_allow_two_entries_for_one_owner(self):
+        _write(self.repo, 'core/surface/commands/status.md', '{{SKILL_ENTRY:mode-owner}}\n')
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
+                    B.render_all(self.repo, host)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

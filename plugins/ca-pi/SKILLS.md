@@ -59,7 +59,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose |
 |---|---|
 | `/ca-commit` | Create a verified local Git commit when committing changes is requested. Not for explaining commit history, drafting a message only, or postponing a commit. Applies every commit gate and never implies a push or PR. |
-| `/ca-pr` | Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch. |
+| `/ca-pr` | Open a PR or finish branch disposition; route CI watching and post-merge cleanup to their owners. Merge and discard need explicit authority. |
 | `/ca-release` | Cut a release the only sanctioned way — derive the target's declared version policy from the commit log, roll its changelog, compose an annotated tag, and optionally publish its exact declared assets. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag. |
 
 ### Operate
@@ -84,8 +84,8 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose |
 |---|---|
 | `/ca-checkpoint` | Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report. |
-| `/ca-threat-model` | Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought. |
-| `/ca-tribunal` | Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate. |
+| `/ca-threat-model` | Threat-model a sensitive design with STRIDE on request. Read-only analysis of threats, controls, and implementation constraints. |
+| `/ca-tribunal` | Run an opt-in deep codebase audit with persisted findings. Confirm cost before dispatch; filing and telemetry need separate approval. |
 
 ### Decide
 
@@ -122,14 +122,14 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-cleanup` | Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed. | `/ca-pr --cleanup` |
+| `/ca-cleanup` | Clean up an already-merged local branch after proving containment. Confirm each discard and preserve unique work. | `/ca-pr --cleanup` |
 | `/ca-watch` | Watch a PR's CI to completion — diagnose on red, notify and offer the merge on green. Never auto-merges. | `/ca-pr --watch` |
 
 ### Operate
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-context-check` | Optional manual drift audit — report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop; commit-gate auto-heal owns routine maintenance. | `/ca-status drift` |
+| `/ca-context-check` | Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs. | `/ca-status drift` |
 
 ## Internal
 

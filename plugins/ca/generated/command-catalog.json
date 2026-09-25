@@ -107,7 +107,7 @@
     },
     "cleanup": {
       "name": "cleanup",
-      "description": "Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed.",
+      "description": "Clean up an already-merged local branch after proving containment. Confirm each discard and preserve unique work.",
       "commandPath": "commands/cleanup.md",
       "visibility": "alias",
       "workflow": "ship",
@@ -143,7 +143,7 @@
     },
     "context-check": {
       "name": "context-check",
-      "description": "Optional manual drift audit — report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.",
+      "description": "Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs.",
       "commandPath": "commands/context-check.md",
       "visibility": "alias",
       "workflow": "operate",
@@ -236,7 +236,7 @@
     },
     "pr": {
       "name": "pr",
-      "description": "Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch.",
+      "description": "Open a PR or finish branch disposition; route CI watching and post-merge cleanup to their owners. Merge and discard need explicit authority.",
       "commandPath": "commands/pr.md",
       "visibility": "core",
       "workflow": "ship",
@@ -358,7 +358,7 @@
     },
     "threat-model": {
       "name": "threat-model",
-      "description": "Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought.",
+      "description": "Threat-model a sensitive design with STRIDE on request. Read-only analysis of threats, controls, and implementation constraints.",
       "commandPath": "commands/threat-model.md",
       "visibility": "advanced",
       "workflow": "review",
@@ -367,7 +367,7 @@
     },
     "tribunal": {
       "name": "tribunal",
-      "description": "Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.",
+      "description": "Run an opt-in deep codebase audit with persisted findings. Confirm cost before dispatch; filing and telemetry need separate approval.",
       "commandPath": "commands/tribunal.md",
       "visibility": "advanced",
       "workflow": "review",

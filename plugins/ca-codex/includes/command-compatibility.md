@@ -31,3 +31,17 @@ This is an intentional command-compatibility break, not a claim that older
 invocations continue to resolve. Existing installed older releases are unchanged.
 The five other compatibility aliases and their publication clocks remain intact;
 this retirement is not permission to remove any other entry.
+
+## Reviewed single-owner entries
+
+PR #854 composes `tribunal`, `threat-model`, `context-check`, `cleanup`, and `pr`
+from their existing skill owners. These operations are retained, not retired or
+renamed. Their explicit argument grammars, mode markers, compatibility clocks and
+host availability remain unchanged. `status drift` and `pr --cleanup` reach the
+same owners directly; PR watch mode retains its existing watcher resource.
+
+The wrapper text is no longer an independent policy source. Drift and cleanup
+retain their full operational body, and PR retains current acceptance/ancestry
+preflight plus one shared opening procedure. Tests keep historical wrapper
+fingerprints while checking these named migrations against the owning contracts.
+This permission does not authorize an unrelated route removal or gate change.

@@ -41,7 +41,7 @@ including orphans). Workflow: edit the template here, run
 
 A command template that only routes to a skill may contain just the whole-file
 SKILL_ENTRY declaration (double braces, colon, then the skill directory name).
-The current examples are `commands/commit.md`, `commands/debug.md`, and `commands/refactor.md`.
+Examples include `commands/commit.md`, `commands/refactor.md`, and `commands/pr.md`.
 The generator reads the named `skills/<name>/SKILL.md` at build time and emits the
 complete procedure under the existing host-native command or entry-skill name.
 There is no new runtime include service, route registry, or model-facing capability.
@@ -53,7 +53,11 @@ another description. No `user-invocable` flag or user-level setting is added. On
 Codex/Pi the generated `ca-<command>` entry remains discoverable because its owning
 routine lives outside their discovery directory. Natural-language discovery and
 actual mutation permission remain different: every gate stays in the full body.
-Existing direct resource paths and explicit names remain intact.
+Existing direct resource paths and explicit names remain intact. Keep descriptions
+focused on intent and the key side-effect boundary, not phase inventories.
+For a multi-mode owner such as branch finishing, dispatch watch/cleanup before
+creation prerequisites. Its PR-opening procedure belongs to the owner, not a
+wrapper it must load again. Supporting cards remain without discovery frontmatter.
 
 The declaration must occupy the entire command template. One owner has one public
 entry. Composition is non-recursive, rejects missing/symlinked owners and unsupported

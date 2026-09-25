@@ -12,7 +12,12 @@ gates:
 
 ## What it does
 
-This is the last step of a feature or a sprint, reached only once the commit gate has cleared.
+For PR creation and branch disposition, this owner runs after the current-head commit
+gate. A direct open-PR request already selects that action, without a repeated terminal
+menu. `pr --watch` and `pr --cleanup` dispatch to their existing owners before these
+creation prerequisites. They do not create a PR or inherit its unrelated gates.
+
+At the end of a feature or sprint, this is the finishing step.
 It gathers the branch's state — what changed, what the gates found, what a plan still leaves
 open — then presents exactly three ways to end the branch: open a pull request and stop, open one
 and merge it once checks are green, or discard it. Under an autonomous sprint, "open a PR" is
@@ -30,6 +35,6 @@ chosen automatically and the merge decision is left to you.
 
 ## Exits
 
-Opening or merging a PR lands the work through GitHub, never by a direct push to the default
-branch. A discard only proceeds after you've confirmed it against a stated summary of anything
+Opening a PR leaves it open; only an authorized merge through that PR lands the work.
+Neither path directly pushes to the default branch. A discard only proceeds after you've confirmed it against a stated summary of anything
 unpushed that would be lost.

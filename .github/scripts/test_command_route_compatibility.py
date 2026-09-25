@@ -67,13 +67,29 @@ EXPECTED_FIRST_CONTAINING_RELEASES = {
 }
 
 
-def command_body(slug: str) -> str:
+# PR #854: reviewed single-owner composition, not route retirement. Historical
+# wrapper fingerprints above remain the original baseline; these two workflows
+# preserve the entire owner preflight-through-hard-rules body instead.
+COMPOSED_OWNERS = {"cleanup": "post-merge-cleanup", "context-check": "context-check",
+                   "pr": "finishing-a-development-branch"}
+OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d', 'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198'}
+
+def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
+    if slug in COMPOSED_OWNERS:
+        owner = COMPOSED_OWNERS[slug]
+        if text != "{{SKILL_ENTRY:" + owner + "}}\n":
+            raise AssertionError(f"{slug}: expected the reviewed single owner")
+        return (REPO / "core/surface/skills" / owner / "SKILL.md").read_text(encoding="utf-8")
+    return text
+
+def command_body(slug: str) -> str:
+    text = command_source(slug)
     return text.split("\n---\n", 1)[1]
 
 
 def argument_hint(slug: str) -> str:
-    text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
+    text = command_source(slug)
     frontmatter = text.split("\n---\n", 1)[0]
     match = re.search(r"^argument-hint:\s*(.+)$", frontmatter, re.MULTILINE)
     if match is None:
@@ -172,14 +188,25 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
             with self.subTest(slug=slug):
                 body = command_body(slug)
                 self.assertEqual(len(NOTICE_RE.findall(body)), 1)
-                self.assertEqual(digest(NOTICE_RE.sub("", body)), expected)
+                if slug in OWNER_OPERATIONAL_SHA256:
+                    self.assertEqual(digest(body.split("## Pre-flight\n", 1)[1]),
+                                     OWNER_OPERATIONAL_SHA256[slug])
+                    self.assertIn("neither stages nor commits", " ".join(body.split()))
+                else:
+                    self.assertEqual(digest(NOTICE_RE.sub("", body)), expected)
 
     def test_default_canonical_bodies_are_byte_frozen_except_for_additive_modes(self):
         for slug, expected in EXPECTED_DEFAULT_BODY_SHA256.items():
             with self.subTest(slug=slug):
                 body = command_body(slug)
                 self.assertEqual(len(MODES_RE.findall(body)), 1)
-                self.assertEqual(digest(MODES_RE.sub("", body)), expected)
+                if slug == "pr":
+                    procedure = body.split("### Open-PR procedure\n", 1)[1]
+                    procedure = procedure[procedure.index("1. **Confirm"):].split("\n## Phase 4", 1)[0].strip()
+                    self.assertEqual(digest(procedure), "7c7dc99c1202125e59851396a9c077dcf6b992dddcce28bae1b5b58df52b3b00")
+                    self.assertNotIn("{{PLUGIN_ROOT}}/commands/pr.md", body)
+                else:
+                    self.assertEqual(digest(MODES_RE.sub("", body)), expected)
 
     def test_mode_markers_and_notices_close_over_each_safe_replacement(self):
         commands = self.registry()["commands"]

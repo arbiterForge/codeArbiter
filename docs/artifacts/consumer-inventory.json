@@ -258,7 +258,11 @@
         "plugins/ca-pi/routines/finishing-a-development-branch/SKILL.md",
         "plugins/ca-pi/routines/using-git-worktrees/SKILL.md",
         "site/src/content/docs/reference/skills/finishing-a-development-branch.md",
-        "site/src/content/docs/reference/skills/using-git-worktrees.md"
+        "site/src/content/docs/reference/skills/using-git-worktrees.md",
+        "plugins/ca/commands/pr.md",
+        "plugins/ca-codex/skills/ca-pr/SKILL.md",
+        "plugins/ca-pi/skills/ca-pr/SKILL.md",
+        "site/src/content/docs/reference/commands/pr.md"
       ],
       "reason": "Both readers resolve the authoritative pair first, consume HTML only through current engine identity/state, and retain the existing Markdown reader without conversion or counterpart creation."
     },

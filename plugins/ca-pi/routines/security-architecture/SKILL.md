@@ -1,16 +1,27 @@
 ---
 name: security-architecture
-description: Optional, opt-in STRIDE threat pass for a sensitive feature — invoked deliberately via /threat-model, never forced on ordinary changes. Walks the change's attack surface and security boundaries (governed by <project-root>/.codearbiter/security-controls.md), surfaces threats and unmitigated gaps, and MAY dispatch security-reviewer or auth-crypto-reviewer. Not a routine gate; it can hard-STOP only on a genuinely critical unmitigated threat it surfaces.
+description: "Threat-model a sensitive design with STRIDE on request. Read-only analysis of threats, controls, and implementation constraints."
+argument-hint: "<scope description>"
 ---
 
 # security-architecture
 
-Optional, lightweight threat-modeling pass over a design before it is built. Routed to only when the user deliberately invokes `/threat-model <scope>` for a sensitive feature — never forced on an ordinary change. Reviews architectural intent before code exists; for code already written, dispatch `security-reviewer` instead.
+Optional, lightweight threat-modeling pass over a design before it is built. Selected when the user deliberately requests threat modeling of a sensitive design, with or without `/ca-threat-model`. Never forced on an ordinary change. Reviews architectural intent before code exists; for code already written, dispatch `security-reviewer` instead.
+
+## Entry boundaries
+
+Read-only: modify no project file, decision record, control or implementation.
+Optional reviewers inherit this read-only analysis scope. An explanation-only
+security question does not start the pass; mentioning authentication in an ordinary
+change does not opt in. The user need not repeat a slash command to request it.
+Missing required security-controls input is a prerequisite failure, separate from
+the severity of a finding. A lesser gap is a constraint, not blanket denied clearance.
 
 ## Pre-flight
 
 - Read `<project-root>/.codearbiter/security-controls.md` — approved primitives, declared security boundaries and their permitted crossings, what is and is not allowed. If it cannot be read, STOP and surface the gap; do not guess the boundary model.
-- Establish the scope from the user's `/threat-model` argument: the feature, component, or design under review.
+- Establish the scope from the user's request: the feature, component, or design under review.
+- Read relevant security ADRs under `<project-root>/.codearbiter/decisions/`; do not invent decisions or interpret their absence as approval.
 
 ## Phase 1 — Attack surface · gate: BLOCK
 

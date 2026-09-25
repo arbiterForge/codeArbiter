@@ -30,8 +30,8 @@ export const featureMap: ExecutionMap = {
     scope: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'batch complete and return to `executing-plans`. Do NOT hand to `commit-gate`' },
     tdd: { path: 'core/surface/skills/tdd/SKILL.md', quote: 'A `MISSING` obligation returns the workflow to Phase 2' },
     commit: { path: 'core/surface/skills/commit-gate/SKILL.md', quote: '# commit-gate' },
-    finish: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '**execute those steps here; do not re-invoke `{{CMD:pr}}`**' },
-    pr: { path: 'core/surface/commands/pr.md', quote: 'Confirm the commit gate cleared' },
+    finish: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: 'MUST NOT auto-merge under `/sprint`' },
+    pr: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '`commit-gate` MUST have cleared on the current HEAD.' },
     dispatch: { path: 'core/surface/skills/dispatching-parallel-agents/SKILL.md', quote: 'finding-triage' },
   },
   chapters: [

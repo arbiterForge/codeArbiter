@@ -4,7 +4,7 @@
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "699b8e0f01bba7207182b278939a058d2d1ef62d",
+      "hash": "40c01ad63772cd3955a242089929a379806aade0",
       "path": "CHANGELOG.md"
     },
     {
@@ -19,12 +19,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "748991abd7c29e6672ccf74b920f97f46e02170a",
+      "hash": "03020ce75bdd4bdf53faac5f5958a847cf1e97e4",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "654bee42714121e242c3484ad71290d180bc715f",
+      "hash": "fb386868702e8de6f336958ce32f1881651c0493",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {

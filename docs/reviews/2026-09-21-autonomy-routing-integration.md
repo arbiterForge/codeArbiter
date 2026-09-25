@@ -1231,3 +1231,57 @@ than relaxing the reference validator. The first site attempt used CRLF checkout
 representations; exact index-byte replay in this disposable worktree restored the
 source bytes without modifying tracked attributes or expectations. Hosted final-
 head CI and review remain separate obligations. HTML farm is still disabled.
+
+### D08-D11 and D15: first discovery-overhead slice (2026-09-25)
+
+Authorized baseline: `35a3cd18a327fe5aa306ba452cc21ae096a24b02`. The maintainer
+prioritized frontmatter reduction and explicitly included PR in the first slice.
+This supersedes the earlier HTML-farm-next priority, not its qualification rules.
+Debug and decompose source, references, generated copies and index rows are outside
+this slice. D12/D13 and D14 remain separate mode/arbitration work.
+
+Five command declarations now compose tribunal, security-architecture, context-check,
+post-merge-cleanup and finishing-a-development-branch owners. Descriptions carry
+intent and a material side-effect boundary; detailed phases stay in the loaded body.
+Claude suppresses duplicate explicit command metadata while retaining discoverable
+owners. Codex/Pi retain their five discoverable entry names and private routines.
+No discovery registry, new public capability, mode grammar or tool permission was added.
+
+| Description values only | Before | Candidate |
+|---|---:|---:|
+| tribunal | 221 | 133 |
+| threat-model | 149 | 128 |
+| context-check | 193 | 109 |
+| cleanup | 216 | 113 |
+| pr | 148 | 140 |
+| Five public-entry descriptions | 927 | 623 |
+
+These Unicode-character counts exclude keys, names, paths, argument hints, host
+formatting and tokenizer effects. The five Claude command files now explicitly
+suppress model invocation; same-name resolution may already deduplicate a listing.
+No live-session entry count, retained-context saving or model-routing score is claimed.
+Command/skill inventories remain 37/22. Eight original relationships now retain a
+single-source owner, one is retired, and six remain (D03/D04/D07/D12/D13/D14).
+
+Tribunal evaluates applicability across the roster and roots support-card references;
+its report writes, cost acknowledgment, independent triage, filing and telemetry
+boundaries remain. Threat modeling retains read-only analysis and relevant ADR inputs,
+with PROCEED / PROCEED-WITH-CONSTRAINTS / STOP rather than blanket binary clearance.
+Missing required controls remains a separate prerequisite failure. Drift and cleanup
+retain their complete preflight-through-hard-rules operational bytes.
+
+PR dispatches watch/cleanup before creation prerequisites. A direct open-PR request
+already chooses open, while feature/sprint handoffs retain their distinct authority.
+The owner contains the common review/body/babysitter sequence, with no reference back
+to its generated wrapper. Its original acceptance and ancestry preflight is unchanged.
+The compiler validates mode closure against the same resolved template it renders;
+missing, duplicate and extra markers still fail, as does exposing one owner twice.
+No general include engine or new frontmatter dialect was introduced.
+
+Fourteen regression methods exercise these boundaries and existing compatibility
+checks explicitly account for the named ownership moves instead of discarding their
+historical fingerprints. Exact package validation also caught a dynamic lens link:
+the owner now names the verified lens directory and recorded slug, not a generated
+Markdown destination containing an unsupported placeholder. The original route set,
+reviewer resources and non-targeted owner bodies remain intact. Normal hosted CI,
+independent review and live-model/installed-session measurements remain distinct.

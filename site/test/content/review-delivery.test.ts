@@ -50,7 +50,8 @@ describe('review-to-delivery guidance', () => {
     expect(guide).toContain('/guides/review-artifacts/#check-your-hosts-authority-capability');
   });
   it('keeps automatic review distinct from a redundant standalone ceremony', () => {
-    expect(read('../core/surface/commands/pr.md')).toContain('Confirm the commit gate cleared');
+    expect(read('../core/surface/commands/pr.md')).toBe('{{SKILL_ENTRY:finishing-a-development-branch}}\n');
+    expect(read('../core/surface/skills/finishing-a-development-branch/SKILL.md')).toContain('Confirm the commit gate cleared');
     expect(guide).toContain('not required as a redundant ceremony');
     expect(guide).toContain('missing, pending, cancelled, stale, mismatched or failing');
     expect(guide).toContain('Sprint autonomy ends with opening the PR');

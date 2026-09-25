@@ -47,4 +47,4 @@ Block a required review, isolation, or write-containment workflow when the host 
 
 Codex built-in type preference is not a permission boundary. Mandatory isolation or write containment blocks when unavailable; it must not silently degrade to prompt-only guidance.
 
-<!-- codearbiter-codex-agent-route-contract: literal_route_lines=21 literal_route_occurrences=22 generic_route_lines=2 generic_route_occurrences=2 -->
+<!-- codearbiter-codex-agent-route-contract: literal_route_lines=22 literal_route_occurrences=24 generic_route_lines=2 generic_route_occurrences=2 -->

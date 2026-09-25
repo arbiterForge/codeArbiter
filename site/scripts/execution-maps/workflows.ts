@@ -25,15 +25,15 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "finish": {
           "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
-          "quote": "**execute those steps here; do not re-invoke `{{CMD:pr}}`**"
+          "quote": "MUST NOT auto-merge under `/sprint`"
         },
         "pair": {
           "path": "core/surface/SPRINT.md",
           "quote": "commits approval plus plan binding in one recoverable native transaction."
         },
         "pr": {
-          "path": "core/surface/commands/pr.md",
-          "quote": "Confirm the commit gate cleared"
+          "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+          "quote": "`commit-gate` MUST have cleared on the current HEAD."
         },
         "sprint": {
           "path": "core/surface/SPRINT.md",
@@ -800,8 +800,8 @@ export const workflows: readonly WorkflowDefinition[] = [
       "outcome": "An exact published tag and declared asset inventory after authorization and read-back. When provenance is declared, retain the original receipt and merge its separate closeout PR; publication alone does not finish that record.",
       "sources": {
         "pr": {
-          "path": "core/surface/commands/pr.md",
-          "quote": "Confirm the commit gate cleared"
+          "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+          "quote": "`commit-gate` MUST have cleared on the current HEAD."
         },
         "release": {
           "path": "core/surface/commands/release.md",

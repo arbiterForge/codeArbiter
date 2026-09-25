@@ -16,6 +16,11 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Consolidate tribunal, threat modeling, manual drift, post-merge cleanup and PR
+  entry procedures under concise skill owners. Retain explicit entries and mode
+  authority; select PR watch/cleanup before creation preflight and avoid wrapper
+  reloads or repeated branch-fate questions for an explicit open-PR request.
+
 - Generate debug and refactor entries from their owning skills, retaining all
   investigation and parity gates while removing duplicate routing policies.
 - Clarify rendered farm context budgets and neutral rejection feedback in the shared
