@@ -9,8 +9,8 @@ import importlib.util
 import io
 import json
 import os
-import shutil
 from pathlib import Path
+import shutil
 import sys
 import tarfile
 import tempfile
@@ -44,6 +44,17 @@ PROMOTION_SPEC = importlib.util.spec_from_file_location(
 )
 PROMOTER = importlib.util.module_from_spec(PROMOTION_SPEC)
 PROMOTION_SPEC.loader.exec_module(PROMOTER)
+# This suite pins the deferred npm channel contract (ADR-0039). The live
+# default is the Git dist-tag channel, covered by test_marketplace_git_channels.
+_GIT_DEFAULT_PROMOTE = PROMOTER.promote
+
+
+def _npm_channel_promote(**kwargs):
+    kwargs.setdefault("catalog_mode", "npm")
+    return _GIT_DEFAULT_PROMOTE(**kwargs)
+
+
+PROMOTER.promote = _npm_channel_promote
 RULESET_SPEC = importlib.util.spec_from_file_location(
     "verify_codex_distribution_rulesets", REPO / ".github/scripts/verify_codex_distribution_rulesets.py"
 )
@@ -249,164 +260,6 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.assertEqual("9.8.7", result["version"])
         self.assertEqual(self.receipt_sha256, result["cohort_sha256"])
         self.assertRegex(result["integrity"], r"^sha512-[A-Za-z0-9+/]+={0,2}$")
-
-    def _run_codex_npm_preparation_step(self, *, cohort=None, existing_output=False):
-        from test_release_workflow import BASH, _action_step
-        if BASH is None:
-            self.skipTest("no POSIX shell available")
-        runner_root = self.root / "runner with spaces"
-        runner_root.mkdir()
-        npm_root = runner_root / "codex-npm-package"
-        if existing_output:
-            npm_root.mkdir()
-            (npm_root / "sentinel").write_bytes(b"do not overwrite")
-        # Execute the owning shell and real packager/metadata validator. Only
-        # registry access and repository authorization are fixture boundaries;
-        # no publication step, token, or authenticated network call participates.
-        runner = self.root / "python-dispatch.py"
-        runner.write_text('''import importlib.util, os, pathlib, runpy, subprocess, sys
-from unittest import mock
-repo = pathlib.Path(os.environ["STUB_REPO"])
-sys.path.insert(0, str(repo / ".github/scripts"))
-sys.argv = sys.argv[1:]
-if sys.argv[0] == "tools/build-host-packages.py":
-    runpy.run_path(str(repo / sys.argv[0]), run_name="__main__")
-elif sys.argv[0] == "-":
-    exec(compile(sys.stdin.read(), "<workflow inline>", "exec"))
-elif sys.argv[0] == ".github/scripts/_npm_publishlib.py":
-    import _npm_publishlib as npm
-    pathlib.Path(os.environ["STUB_VALIDATOR_CALLED"]).write_text("called")
-    lookup = subprocess.CompletedProcess([], 1, '{"error":{"code":"E404"}}', "")
-    with mock.patch.object(npm, "validate_release_source_binding"), \\
-         mock.patch.object(npm, "validate_project_registry"), \\
-         mock.patch.object(npm, "registry_lookup", return_value=lookup):
-        raise SystemExit(npm.main(sys.argv[1:]))
-else:
-    raise AssertionError("unexpected workflow command")
-''', encoding="utf-8", newline="\n")
-        output = runner_root / "step-output.txt"
-        called = runner_root / "validator-called.txt"
-        env = {name: value for name, value in os.environ.items()
-               if name in ("PATH", "SystemRoot", "WINDIR", "PATHEXT", "TEMP", "TMP")}
-        env.update({
-            "STUB_PYTHON": Path(sys.executable).as_posix(),
-            "STUB_RUNNER": runner.as_posix(), "STUB_REPO": REPO.as_posix(),
-            "STUB_VALIDATOR_CALLED": called.as_posix(),
-            "RUNNER_TEMP": runner_root.as_posix(),
-            "PACKAGE_ROOT": self.package_root.as_posix(),
-            "COHORT_SHA256": self.receipt_sha256 if cohort is None else cohort,
-            "SOURCE_ARCHIVE_SHA256": hashlib.sha256(self.archive.read_bytes()).hexdigest(),
-            "SOURCE_COMMIT": self.source_commit, "GITHUB_SHA": self.source_commit,
-            "GITHUB_OUTPUT": output.as_posix(), "NPM_CLI": "unused-fixture-cli",
-            "PYTHONUTF8": "1", "PYTHONDONTWRITEBYTECODE": "1",
-        })
-        script = self.root / "codex-step.sh"
-        script.write_text('python3() { "$STUB_PYTHON" "$STUB_RUNNER" "$@"; }\n'
-                          + _action_step("Prepare exact qualified Codex npm package"),
-                          encoding="utf-8", newline="\n")
-        proc = subprocess.run([BASH, str(script)], cwd=self.root, env=env,
-                              capture_output=True, text=True, timeout=45)
-        return proc, output, called, npm_root
-
-    def test_codex_npm_workflow_metadata_is_a_real_sibling_of_its_exact_tarball(self):
-        proc, output, called, npm_root = self._run_codex_npm_preparation_step()
-        self.assertEqual(0, proc.returncode, proc.stdout + proc.stderr)
-        self.assertTrue(called.is_file())
-        values = dict(line.split("=", 1) for line in output.read_text().splitlines())
-        metadata = Path(values["metadata"])
-        tarball = Path(values["tarball"])
-        self.assertEqual(npm_root.resolve(), metadata.resolve().parent)
-        self.assertEqual(metadata.resolve().parent, tarball.resolve().parent)
-        self.assertFalse(metadata.is_symlink())
-        self.assertEqual("false", values["skip"])
-        self.assertEqual("new", values["publication-mode"])
-        self.assertEqual("9.8.7", values["version"])
-        self.assertEqual(self.receipt_sha256, values["cohort-sha256"])
-        self.assertEqual(hashlib.sha256(tarball.read_bytes()).hexdigest(), values["sha256"])
-        data = json.loads(metadata.read_text())
-        self.assertEqual(self.source_commit, data["source_commit"])
-        self.assertEqual(hashlib.sha256(self.archive.read_bytes()).hexdigest(),
-                         data["source_archive_sha256"])
-        expected = {"package/" + name.removeprefix("plugins/ca-codex/"): payload
-                    for name, payload in self.members.items()
-                    if name.startswith("plugins/ca-codex/")}
-        self.assertEqual(expected, {name: value[0] for name, value
-                                    in PACKAGER._read_archive(tarball).items()})
-        # The caller must comply with the sibling and digest guards, not relax
-        # them merely because a package has reached this preparation step.
-        outside = self.root / "outside-metadata.json"
-        outside.write_bytes(metadata.read_bytes())
-        with self.assertRaisesRegex(ValueError, "real sibling"):
-            NPM._codex_npm_metadata(outside, tarball, self.source_commit,
-                                   self.receipt_sha256, data["source_archive_sha256"])
-        tarball.write_bytes(tarball.read_bytes() + b"drift")
-        with self.assertRaisesRegex(ValueError, "exact qualified cohort"):
-            NPM._codex_npm_metadata(metadata, tarball, self.source_commit,
-                                   self.receipt_sha256, data["source_archive_sha256"])
-
-    def test_codex_npm_workflow_stops_before_prepare_on_cohort_mismatch(self):
-        proc, output, called, npm_root = self._run_codex_npm_preparation_step(cohort="0" * 64)
-        self.assertNotEqual(0, proc.returncode)
-        self.assertIn("cohort digest drifted", proc.stdout + proc.stderr)
-        self.assertFalse(output.exists())
-        self.assertFalse(called.exists())
-        self.assertFalse(npm_root.exists())
-
-    def test_codex_npm_workflow_never_reuses_an_existing_staging_directory(self):
-        proc, output, called, npm_root = self._run_codex_npm_preparation_step(existing_output=True)
-        self.assertNotEqual(0, proc.returncode)
-        self.assertIn("already exists", proc.stdout + proc.stderr)
-        self.assertFalse(output.exists())
-        self.assertFalse(called.exists())
-        self.assertEqual(b"do not overwrite", (npm_root / "sentinel").read_bytes())
-        self.assertEqual(["sentinel"], [p.name for p in npm_root.iterdir()])
-
-    def test_release_action_build_handoff_reaches_codex_prepare_with_sibling_files(self):
-        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
-            encoding="utf-8"
-        )
-        step = action.split("    - name: Prepare exact qualified Codex npm package\n", 1)[1]
-        step = step.split("\n    - name: Configure authenticated npm scope", 1)[0]
-        shell = step.split("      run: |\n", 1)[1]
-        shell = "\n".join(line[8:] for line in shell.splitlines())
-        shell = shell.split("python3 .github/scripts/_npm_publishlib.py prepare-codex", 1)[0]
-        shell += '\nprintf "%s\\n" "$METADATA" "$TARBALL"\n'
-
-        runner_temp = self.root / "runner"
-        runner_temp.mkdir()
-        environment = dict(os.environ, RUNNER_TEMP=str(runner_temp),
-                           PACKAGE_ROOT=str(self.package_root),
-                           COHORT_SHA256=self.receipt_sha256)
-        if os.name == "nt":
-            git = Path(shutil.which("git")).resolve()
-            bash = git.parent.parent / "bin/bash.exe"
-        else:
-            bash = shutil.which("bash")
-        result = subprocess.run([str(bash), "-c", shell], cwd=REPO,
-                                env=environment, capture_output=True, text=True)
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        metadata_path, tarball_path = map(Path, result.stdout.splitlines())
-        output = self.root / "prepare-output"
-        args = argparse.Namespace(
-            metadata=str(metadata_path), tarball=str(tarball_path),
-            expected_sha=self.source_commit, trusted_sha=self.source_commit,
-            expected_cohort_sha256=self.receipt_sha256,
-            expected_source_archive_sha256=hashlib.sha256(self.archive.read_bytes()).hexdigest(),
-            trusted_repo=str(self.source), npm="npm", output=str(output),
-            allow_continuation=False,
-        )
-        absent = subprocess.CompletedProcess(
-            ["npm"], 1, stdout=json.dumps({"error": {"code": "E404"}}),
-            stderr="npm error E404",
-        )
-        with mock.patch.object(NPM, "validate_release_source_binding"), \
-             mock.patch.object(NPM, "registry_lookup", return_value=absent):
-            self.assertEqual(0, NPM.prepare_codex(args))
-        prepared = dict(line.split("=", 1) for line in output.read_text().splitlines())
-        self.assertEqual("9.8.7", prepared["version"])
-        self.assertEqual("new", prepared["publication-mode"])
-        self.assertEqual(str(tarball_path.resolve()), prepared["tarball"])
-        self.assertEqual(str(metadata_path.resolve()), prepared["metadata"])
 
     def test_codex_npm_package_rejects_manifest_identity_drift(self):
         changed = dict(self.members)
@@ -884,67 +737,6 @@ else:
         ).stdout
         self.assertEqual(after_rollback, after)
 
-    def test_release_action_stages_before_and_advances_only_after_finalize(self):
-        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
-            encoding="utf-8"
-        )
-        verify = action.index("Reverify exact retained package cohort before publication")
-        rulesets = action.index("Verify live Codex distribution rulesets")
-        cold_receipt = action.index("Retain immutable durable cohort receipt on the Release")
-        stage = action.index("Stage immutable qualified Codex distribution tag")
-        prepare_npm = action.index("Prepare exact qualified Codex npm package")
-        auth_npm = action.index("Configure authenticated npm scope for exact qualified Codex package")
-        publish_npm = action.index("Publish exact qualified Codex npm package from authenticated scope")
-        verify_npm = action.index("Verify Codex npm integrity and provenance readback")
-        cold_npm = action.index("Cold-install exact Codex npm package through a real marketplace")
-        finalize = action.index("Publish qualified Release only after receipt readback")
-        reverify = action.index("Reverify live Codex distribution rulesets before channel advance")
-        advance = action.index("Advance protected Codex marketplace channel")
-        self.assertLess(verify, cold_receipt)
-        self.assertLess(cold_receipt, stage)
-        self.assertLess(rulesets, stage)
-        self.assertLess(stage, prepare_npm)
-        self.assertLess(prepare_npm, auth_npm)
-        self.assertLess(auth_npm, publish_npm)
-        self.assertLess(publish_npm, verify_npm)
-        self.assertLess(verify_npm, cold_npm)
-        self.assertLess(cold_npm, finalize)
-        self.assertLess(stage, finalize)
-        self.assertLess(finalize, reverify)
-        self.assertLess(reverify, advance)
-        block = action[stage:finalize]
-        self.assertIn("inputs.package-host == 'codex'", block)
-        self.assertIn("--cohort-sha256 \"$COHORT_SHA256\"", block)
-        self.assertIn("--push", block)
-        self.assertNotIn("--advance-channel", block)
-        channel_block = action[advance:]
-        self.assertIn("--advance-channel", channel_block)
-        self.assertNotIn("codex-ruleset-verifier-token", channel_block)
-        self.assertNotIn("verify_codex_distribution_rulesets.py", channel_block)
-        reverify_block = action[reverify:advance]
-        self.assertIn("verify_codex_distribution_rulesets.py", reverify_block)
-        self.assertIn("inputs.codex-ruleset-verifier-token", reverify_block)
-        self.assertNotIn("inputs.github-token", reverify_block)
-        self.assertNotIn("promote-codex-marketplace.py", reverify_block)
-        self.assertIn("git remote get-url origin", action)
-        self.assertIn("--remote-url \"$REMOTE_URL\"", action)
-        auth_block = action[auth_npm:publish_npm]
-        self.assertIn("actions/setup-node@820762786026740c76f36085b0efc47a31fe5020", auth_block)
-        self.assertIn("registry-url: https://registry.npmjs.org", auth_block)
-        self.assertIn("scope: '@arbiterforge'", auth_block)
-        publish_block = action[publish_npm:verify_npm]
-        self.assertIn("NODE_AUTH_TOKEN: ${{ inputs.npm-token }}", publish_block)
-        self.assertIn("--registry=https://registry.npmjs.org/", publish_block)
-        cold_block = action[cold_npm:finalize]
-        self.assertIn("for CODEX_VERSION in 0.143.0 0.145.0", cold_block)
-        self.assertIn('"@openai/codex@$CODEX_VERSION"', cold_block)
-        self.assertIn("--npm-marketplace-version \"$VERSION\"", cold_block)
-        self.assertIn("--qualified-npm-metadata \"$NPM_METADATA\"", cold_block)
-        self.assertIn("NPM_METADATA: ${{ steps.codex-npm.outputs.metadata }}", cold_block)
-        self.assertIn("--require-artifact-capability", cold_block)
-        self.assertIn("NPM_CONFIG_USERCONFIG:", cold_block)
-        self.assertNotIn("NODE_AUTH_TOKEN", cold_block)
-
     def test_competing_marketplace_update_wins_and_expected_head_lease_fails(self):
         remote = self.root / "race.git"
         git_run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
@@ -1085,12 +877,12 @@ else:
         self.assertIn("codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}", release)
         self.assertIn("codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}", release)
         self.assertIn("CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY", release)
-        self.assertEqual(4, release.count("umask 077"))
-        manual = release.split("  release-codex:", 1)[1].split("\n  release-sandbox:", 1)[0]
-        automatic = release.split("  auto-release-codex:", 1)[1].split("\n  auto-codex-cohort-gate:", 1)[0]
-        for block in (manual, automatic):
-            self.assertIn("id-token: write", block)
-            self.assertIn("npm-token: ${{ secrets.NPMJS_TOKEN }}", block)
+        self.assertEqual(2, release.count("umask 077"))
+        # One Codex job serves merge-triggered and dispatched releases. Codex
+        # npm publication is deferred (ADR-0040), so no npm credential reaches it.
+        codex = release.split("  release-codex:", 1)[1].split("\n  release-pi:", 1)[0]
+        self.assertNotIn("NPMJS_TOKEN", codex)
+        self.assertNotIn("id-token: write", codex)
         security = (REPO / ".codearbiter/security-controls.md").read_text()
         self.assertIn("first `@arbiterforge/ca-codex` publication", security)
         self.assertIn("available to all organization repositories", security)
@@ -1112,10 +904,10 @@ else:
                 self.assertIn(command, (REPO / relative).read_text(encoding="utf-8"))
 
         readme = (REPO / "README.md").read_text(encoding="utf-8")
-        self.assertIn("exact verified `@arbiterforge/ca-codex` npm version", readme)
+        self.assertIn("immutable `ca-codex-dist-v<version>` Git tag", readme)
         self.assertIn("codex plugin remove ca-codex@codearbiter", readme)
         self.assertIn("codex plugin marketplace remove codearbiter", readme)
-        self.assertIn("does not migrate it to the npm-backed channel", readme)
+        self.assertIn("does not migrate it to the promoted binary-bearing channel", readme)
 
 
 if __name__ == "__main__":

@@ -802,10 +802,10 @@ class WorkflowContractTest(unittest.TestCase):
             comments=True,
         )
         self.assertEqual(argv[:2], ["python", ".github/scripts/check_tag_immutability.py"])
-        self.assertIn(
+        self.assertNotIn(
             "--require-recorded", argv,
-            "required CI only warns about missing publication receipts; "
-            "the same missing receipt then blocks automatic release after merge",
+            "ADR-0040: an unrecorded newly published tag warns; a moved or "
+            "deleted recorded tag still blocks merge",
         )
 
     def test_surface_job_fetches_complete_release_tag_history(self):

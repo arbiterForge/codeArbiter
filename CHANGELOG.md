@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.16] - 2026-09-24
+## [2.21.17] - 2026-09-25
 
 ### Removed
 
@@ -52,6 +52,20 @@ predate the plugin rewrite and are grouped by date.
   worktrees, without changing integration or existing task branches. Report the
   effective candidate model and incomplete cleanup instead of hiding it.
 - Keep worker/test/verification gates and the separate HTML farm restriction intact.
+
+## [2.21.16] - 2026-09-25
+
+### Changed
+
+- Release every plugin independently and idempotently on merge; a failed
+  plugin no longer blocks the others, and re-running the release job is the
+  recovery path. Three provenance checks now warn instead of
+  blocking: npm attestation re-verification, the Codex ruleset audit, and the
+  release-skill pre-tag proof (ADR-0040).
+- Ship the native artifact engine to every Claude Code install: the qualified
+  release archive is published to the `ca-marketplace` distribution branch and
+  the marketplace catalog installs `ca` from it (ADR-0040).
+- Name the concrete per-host repair in the `CAPABILITY_MISSING` diagnostic.
 
 ## [2.21.15] - 2026-09-24
 

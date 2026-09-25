@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.14.16] - 2026-09-24
+## [0.14.17] - 2026-09-25
 
 ### Removed
 
@@ -42,6 +42,13 @@ All notable changes to `ca-pi` are documented in this file.
   document dependency-ready scheduling and detached canary evaluation in the
   shared farm resource. Existing preview dispatch authority and HTML farm
   restrictions remain unchanged.
+
+## [0.14.16] - 2026-09-25
+
+### Changed
+
+- Publish ca-pi to npm independently of the other plugins on merge (ADR-0040).
+- Name the concrete per-host repair in the `CAPABILITY_MISSING` diagnostic.
 
 ## [0.14.15] - 2026-09-24
 

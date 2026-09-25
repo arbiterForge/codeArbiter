@@ -24,12 +24,33 @@ workflow, not a removal of other aliases or permission to invent a replacement.
 | `new-skill` / `skill-author` | Previously consolidated; now retired, including the template, host entries and public reference pages. |
 | `watch`, `cleanup`, `decompose`, `create-context`, `context-check` | Five previously implemented catalog aliases to PR, init and status modes; bodies/windows unchanged. These are not five new deletions. |
 | `release`, `tribunal`, `decompose`, `context-check`, `create-context`, `cleanup`, `threat-model` | Seven named owner-consolidation candidates still pending mode/authority/terminal-effect reconciliation. |
-| ADR entry family; PR/finishing relationship | Separate family/lifecycle work, not assumed to be trivial wrappers. |
+| ADR/ADR-status/reconcile family; PR/finishing relationship | Four further relationships (D12-D15), not assumed to be trivial wrappers. |
 
-The named owner inventory was eleven relationships plus the ADR family, not a
-four-item plan. After this slice, three are consolidated and retained, one is
-removed, and seven plus the ADR family remain. The broader RA-11 umbrella-command
-proposal is a different backlog from these ownership migrations.
+The original 17 September `REVIEW.html` names **fifteen** candidate relationships,
+D01-D15, against archive baseline `5e7b2dac4e0f82560c1301144f3a20c35b7e0878`.
+The earlier rollup grouped D12-D15 and obscured that total. Three are consolidated
+and retained, one is explicitly retired, and eleven remain candidates, not eleven
+preapproved deletions. The broader RA-11 umbrella-command proposal is a different
+backlog from these ownership migrations. Counts below describe source ownership,
+not live-model routing success or token savings.
+
+| Original ID | Entry / procedure | Current disposition |
+|---|---|---|
+| D01 | commit / commit-gate | Single-source owner retained |
+| D02 | new-skill / skill-author | Removed by maintainer instruction |
+| D03 | create-context / context-creation | Owner consolidation pending; existing init alias retained |
+| D04 | decompose / decompose | Owner consolidation pending; existing init alias retained |
+| D05 | debug / debug | Single-source owner retained |
+| D06 | refactor / refactor | Single-source owner retained |
+| D07 | release / release | Pending; preserve current target and dry-run semantics |
+| D08 | tribunal / tribunal | Pending; preserve cost, filing and telemetry boundaries |
+| D09 | threat-model / security-architecture | Pending; reconcile verdict and constraint semantics |
+| D10 | context-check / context-check | Owner consolidation pending; existing status alias retained |
+| D11 | cleanup / post-merge-cleanup | Owner consolidation pending; existing PR alias retained |
+| D12 | adr / decision-lifecycle | Pending; author mode remains distinct from inspection |
+| D13 | adr-status / decision-lifecycle | Pending; preserve read-only status |
+| D14 | reconcile / decision-variance | Pending; arbitration is not ADR recording |
+| D15 | pr / finishing-a-development-branch | Pending; composite lifecycle, not a thin wrapper |
 
 Active canonical command records go from 38 to 37 and top-level source skills
 from 23 to 22. Host command-entry totals go from 38/36/37 to 37/35/36 for
@@ -1147,3 +1168,38 @@ subtest assertions nor unrun live-host/model journeys are counted as extra test 
 Farm runtime/bundle, compiler, host descriptors, public registry, native authority,
 CI configuration and scanner policy are unchanged. Hosted current-head checks and
 independent review remain separate from these local results.
+
+### Retirement completion and preserving release merge (2026-09-25)
+
+The interrupted retirement reached `ecea23b514407a7bb8d0d7d727f411db0e871746`.
+Normal CI 36120148565 passed, but docs 36120148588 failed because the sidebar
+regression still expected 38 command entries. The recovered test now pins 37,
+the exact reduced visibility distribution, and absence of both retired pages;
+alphabetical ordering, uniqueness and source-to-sidebar parity remain checked.
+
+Main advanced to `b4febae70c9d24fdf760032992b9aae0acbbf818` through PR #865.
+The preserving merge retains its independent-release implementation and ADR-0040.
+The three old npm-publisher shell cases are superseded by that upstream removal
+of their action and validator APIs; current Git-distribution tests are retained.
+Main's changelog sections remain intact below fresh ca 2.21.17, ca-codex 0.13.18
+and ca-pi 0.14.17 candidate sections. These coordinates are not publication proof.
+The farm runtime, bundle, authority implementations and retirement stay intact.
+
+The original review's fifteen D01-D15 relationships are now enumerated above;
+three retained owners, one retirement and eleven pending candidates are distinct
+from previously implemented catalog aliases. No extra deletion is authorized.
+
+Local validation passed 31 source/generator/compatibility/release/version checks,
+the focused sidebar regression and site typecheck. The normal site npm test
+pipeline passed all 790 tests in 78 files, the Academy base-path check, site build
+and rendered release-applicability checks. Early direct invocations lacked the
+required npm generation context and used CRLF representations of pinned fixtures;
+they failed and are not counted as passes. A fresh disposable checkout replayed
+only verified indexed bytes before the normal pipeline; no fixture hash, test
+obligation, tracked attributes or production gate was relaxed. Final-head hosted
+CI and review remain separate obligations. HTML farm is still disabled.
+
+The final merge parent also retains `a4842fab60a6e6ee943341861ec4aed0a7b17a50`,
+which restores original ADR-0040 ancestry and adds only DECISION-0072 beyond
+`b4febae...`. Its decision log is copied exactly; no acceptance event is
+rewritten or rebound. The already-tested release implementation is unchanged.

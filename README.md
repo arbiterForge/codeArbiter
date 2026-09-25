@@ -10,7 +10,7 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.21.16" src="https://img.shields.io/badge/version-2.21.16-2b7489">
+<img alt="version 2.21.17" src="https://img.shields.io/badge/version-2.21.17-2b7489">
 <img alt="core lanes" src="https://img.shields.io/badge/core_lanes-18-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-20-555">
@@ -128,15 +128,16 @@ codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace
 codex plugin add ca-codex@codearbiter
 ```
 
-The `ca-codex-marketplace` branch is the promoted catalog. Each entry pins the
-exact verified `@arbiterforge/ca-codex` npm version assembled from the same
-qualified member set as the release archive; `main` remains the development
+The `ca-codex-marketplace` branch is the promoted catalog. Its entry pins an
+immutable `ca-codex-dist-v<version>` Git tag holding the exact qualified release
+archive, including the native artifact engine; `main` remains the development
 source tree and is not a substitute for the promoted binary-bearing
-distribution.
+distribution. (An `@arbiterforge/ca-codex` npm channel is planned but deferred,
+ADR-0040.)
 
 If `codearbiter` was previously registered without
 `--ref ca-codex-marketplace`, `marketplace upgrade` keeps that default-branch
-registration and does not migrate it to the npm-backed channel. Remove and
+registration and does not migrate it to the promoted binary-bearing channel. Remove and
 re-add the marketplace once, then reinstall the plugin:
 
 ```text
@@ -178,7 +179,9 @@ pi config
 ```
 
 Replace `<version>` with the numeric suffix from the chosen tag while retaining the full
-`ca-pi-v...` tag in the install source.
+`ca-pi-v...` tag in the install source. The Git-tag install carries no native artifact engine, so
+it is a partial install that cannot author typed HTML specs and plans; use the npm channel for
+that.
 
 Pi 0.84.1 is the supported host for this release line. Generated aliases use `/ca-*`;
 `/skill:ca-*` is the host-native fallback. Every `ca-pi-v*` tag is also published to npm as

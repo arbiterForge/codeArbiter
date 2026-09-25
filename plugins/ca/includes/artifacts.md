@@ -10,7 +10,10 @@ default to canonical `.html`. Check the installed capability before writing; a
 missing, invalid, mismatched or unqualified capability is a STOP and
 the workflow must not fall back to Markdown or create any fallback artifact.
 Report `CAPABILITY_MISSING` and direct the user to repair or reinstall the pinned
-artifact payload before retrying. An existing `.md` exact pair remains Markdown
+artifact payload before retrying. The payload ships only through the release
+channels: Claude Code `/plugin marketplace update codearbiter` then
+`/plugin update ca@codearbiter`; Codex the `ca-codex-marketplace` ref; Pi
+`pi install npm:@arbiterforge/ca-pi`. A main-branch checkout never carries it. An existing `.md` exact pair remains Markdown
 and continues on the legacy path without automatic conversion. The feature
 small lane remains an inline mini-spec and creates no artifact. HTML `--farm`
 dispatch remains disabled and outside this rollout.
