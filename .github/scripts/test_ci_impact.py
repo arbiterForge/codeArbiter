@@ -3331,7 +3331,12 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             r"        id: filter\n"
             r"        with:$",
         )
-        self.assertIn("artifacts: ${{ steps.filter.outputs.artifacts }}", changes)
+        # Every main push must build the cohort release.yml publishes from.
+        self.assertIn(
+            "artifacts: ${{ steps.filter.outputs.artifacts == 'true' || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/main') }}",
+            changes,
+        )
         self.assertIn(
             ".github/workflows/release.yml",
             paths_filter(ci, "artifacts"),

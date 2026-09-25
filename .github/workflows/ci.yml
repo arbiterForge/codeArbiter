@@ -147,7 +147,10 @@ jobs:
       impact: ${{ steps.filter.outputs.impact }}
       manifests: ${{ steps.filter.outputs.manifests }}
       codex-resources: ${{ steps.filter.outputs.codex-resources }}
-      artifacts: ${{ steps.filter.outputs.artifacts }}
+      # Every main push builds the package cohort: release.yml publishes from
+      # the triggering run's artifacts, so a path-filtered skip would leave a
+      # version bump with nothing to release (ADR-0040).
+      artifacts: ${{ steps.filter.outputs.artifacts == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
