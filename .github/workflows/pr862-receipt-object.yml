@@ -1,0 +1,51 @@
+name: PR862 receipt object
+on:
+  push:
+    branches: [prep/pr862-ci-source]
+    paths: [.github/workflows/pr862-receipt-object.yml]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: f03ace52f83a67ac5231841193a0a071f293a521
+          persist-credentials: false
+      - name: Reproduce the checked append and store one unreferenced blob
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import base64, hashlib, json, os, pathlib, urllib.request
+          path = pathlib.Path('.github/published-tags.json')
+          original = path.read_bytes()
+          assert hashlib.sha256(original).hexdigest() == '179a726b8ed0b925cd45791a7cd472ff9ae8cbe5aaaba91ea21e222e486811aa'
+          legacy = pathlib.Path('.github/legacy-published-tags.json').read_bytes()
+          assert hashlib.sha256(legacy).hexdigest() == 'd9ae0a45cec0a873c8ed5d28e9f3fc255a6e7cfb4c79e3ccfba80b8294a7e8db'
+          old = json.loads(original)
+          additions = {
+              'v2.21.15': {'object_type':'tag','commit_sha':'929229354e3a15ae3002c82116b66c837ab43729','object_sha':'f74de069c2aa47728667ebf8060b471df485fffd'},
+              'ca-codex-v0.13.16': {'object_type':'tag','commit_sha':'929229354e3a15ae3002c82116b66c837ab43729','object_sha':'c3a34e1ff51412fc39d4a2a20978efa471f49d1e'},
+          }
+          assert not set(additions) & set(old['tags'])
+          suffix = '\n  }\n}\n'
+          raw = original.decode()
+          assert raw.endswith(suffix)
+          for tag, identity in additions.items():
+              raw = raw[:-len(suffix)] + ',\n    ' + json.dumps(tag) + ': ' + json.dumps(identity, indent=2).replace('\n','\n    ') + suffix
+          value = json.loads(raw)
+          assert len(value['tags']) == len(old['tags']) + 2
+          assert all(value['tags'][key] == identity for key, identity in old['tags'].items())
+          assert all(value[key] == val for key, val in old.items() if key != 'tags')
+          payload = raw.encode()
+          assert hashlib.sha256(payload).hexdigest() == '188cd1b4dbbbe86a9e58dd08f2e50f48f4da795f3073a2895e6976a18358a119'
+          sha = hashlib.sha1(f'blob {len(payload)}\0'.encode()+payload).hexdigest()
+          assert sha == 'e9481f0f95596a7abda9a16134ab5e4360097483'
+          request = urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs', data=json.dumps({'content':base64.b64encode(payload).decode(),'encoding':'base64'}).encode(), headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'}, method='POST')
+          with urllib.request.urlopen(request, timeout=30) as response:
+              result = json.load(response)
+          assert result['sha'] == sha
+          print(json.dumps({'blob':sha,'bytes':len(payload),'preserved_entries':len(old['tags']),'appended_entries':2}))
