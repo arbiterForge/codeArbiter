@@ -6,6 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.16] - 2026-09-24
+
+### Fixed
+
+- Check the installed host's required HTML workflow resources and hook
+  registrations before new full-lane authoring. Unsupported or incomplete
+  hosts stop early without creating fallback artifacts; legacy Markdown and
+  the inline small feature lane retain their existing behavior.
+- Include complete LICENSE and Go runtime notices in every installable
+  governance-plugin subtree and verify their exact-source package bytes.
+
 ## [0.13.15] - 2026-09-24
 
 ### Changed

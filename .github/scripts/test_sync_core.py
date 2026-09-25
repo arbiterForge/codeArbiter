@@ -58,6 +58,8 @@ class _SyntheticRepoFixture(unittest.TestCase):
         os.makedirs(os.path.join(self.repo, self.plugin_a))
         os.makedirs(os.path.join(self.repo, self.plugin_b))
 
+        _write(self.repo, "LICENSE", b"fixture license\n")
+        _write(self.repo, "THIRD_PARTY_NOTICES.md", b"fixture notices\n")
         _write(self.core, "hostapi.py", "hostapi source\n")
         _write(self.core, "_hooklib.py", "hooklib source\n")
 
@@ -90,6 +92,39 @@ class _SyntheticRepoFixture(unittest.TestCase):
             rc = S.main(argv)
         return rc, out.getvalue(), err.getvalue()
 
+
+
+class TestPackageNotices(_SyntheticRepoFixture):
+    def setUp(self):
+        super().setUp()
+        _write(self.repo, "LICENSE", b"fixture license\n")
+        _write(self.repo, "THIRD_PARTY_NOTICES.md", b"fixture notices\n")
+
+    def test_syncs_notices_into_each_installable_plugin_root(self):
+        self.assertEqual(self.run_main([])[0], 0)
+        for hooks in (self.plugin_a, self.plugin_b):
+            for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+                target = Path(self.repo) / Path(hooks).parent / name
+                self.assertTrue(target.is_file(), str(target))
+                self.assertEqual(target.read_bytes(), (Path(self.repo) / name).read_bytes())
+
+    def test_missing_notice_fails_check_without_writing(self):
+        self.run_main([])
+        target = Path(self.repo) / Path(self.plugin_a).parent / "LICENSE"
+        target.unlink(missing_ok=True)
+        code, output, _ = self.run_main(["--check"])
+        self.assertNotEqual(code, 0)
+        self.assertIn("LICENSE", output)
+        self.assertFalse(target.exists())
+
+    def test_notice_drift_fails_check_and_write_repairs_it(self):
+        self.run_main([])
+        target = Path(self.repo) / Path(self.plugin_b).parent / "LICENSE"
+        target.write_bytes(b"wrong license\n")
+        self.assertNotEqual(self.run_main(["--check"])[0], 0)
+        self.assertEqual(target.read_bytes(), b"wrong license\n")
+        self.assertEqual(self.run_main([])[0], 0)
+        self.assertEqual(target.read_bytes(), b"fixture license\n")
 
 class TestSuccessfulSync(_SyntheticRepoFixture):
     def test_write_mode_vendors_byte_identical_copies(self):

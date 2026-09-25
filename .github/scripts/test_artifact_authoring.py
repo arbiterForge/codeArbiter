@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import shutil
 import sys
 import tempfile
 import unittest
@@ -176,6 +177,288 @@ class AuthoringRouteContractTest(unittest.TestCase):
         self.assertIn("must not parse rendered HTML", tdd)
         self.assertIn("caller-supplied labels cannot manufacture obligations", tdd)
 
+
+
+
+class InstalledFixtureCopyTest(unittest.TestCase):
+    def exercise(self, supplied):
+        with tempfile.TemporaryDirectory(prefix="ca-fixture-copy-") as temporary:
+            source_repo = physical_test_directory(temporary)
+            source_plugin = source_repo / "plugins/ca-codex"
+            stale = source_plugin / "helpers/artifacts"
+            stale.mkdir(parents=True)
+            (stale / "stale-binary").write_bytes(b"must not reach this fixture")
+            (source_plugin / "hooks").mkdir()
+            (source_plugin / "hooks/prompt-submit.py").write_bytes(b"retained source resource")
+            payload = source_repo / "supplied-payload"
+            payload.mkdir()
+            (payload / "release.json").write_bytes(b"fresh test payload")
+            environment = dict(os.environ)
+            environment.pop("ARTIFACT_TEST_INSTALLATION", None)
+            if supplied:
+                environment["ARTIFACT_TEST_INSTALLATION"] = str(payload)
+            def build(command, **kwargs):
+                output = Path(command[command.index("--output") + 1])
+                output.mkdir(parents=True, exist_ok=True)
+                (output / "release.json").write_bytes(b"fresh test payload")
+            with mock.patch.object(sys.modules[__name__], "REPO", source_repo):
+                with mock.patch.dict(os.environ, environment, clear=True):
+                    with mock.patch.object(subprocess, "run", side_effect=build) as builder:
+                        owner, installed = build_installation()
+                        try:
+                            self.assertEqual({p.name for p in installed.iterdir()}, {"release.json"})
+                            self.assertEqual((installed / "release.json").read_bytes(), b"fresh test payload")
+                            self.assertEqual((installed.parent.parent / "hooks/prompt-submit.py").read_bytes(), b"retained source resource")
+                            self.assertEqual((stale / "stale-binary").read_bytes(), b"must not reach this fixture")
+                            self.assertEqual(builder.call_count, 0 if supplied else 1)
+                        finally:
+                            owner.cleanup()
+
+    def test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts(self):
+        self.exercise(supplied=True)
+
+    def test_fixture_copy_excludes_stale_payload_before_building_artifacts(self):
+        self.exercise(supplied=False)
+
+class HostWorkflowAdmissionTest(unittest.TestCase):
+    """Installed resources are prerequisites, not live-host authority evidence."""
+
+    def setUp(self):
+        self.owner = tempfile.TemporaryDirectory(prefix="ca-admission-")
+        self.addCleanup(self.owner.cleanup)
+        self.base = physical_test_directory(self.owner.name)
+        self.root = self.base / "consumer"
+        self.root.mkdir()
+        self.plugin = self.base / "installed"
+
+    def client(self, host="ca-codex"):
+        shutil.copytree(REPO / "plugins" / host, self.plugin,
+                        ignore=shutil.ignore_patterns("node_modules", "__pycache__"))
+        payload = self.plugin / "helpers" / "artifacts"
+        payload.mkdir(parents=True, exist_ok=True)
+        return ArtifactClient(self.root, payload)
+
+    def select(self, client, workflow="feature"):
+        with mock.patch.object(client, "call", return_value={
+                "host_default_enabled": True, "repository_operations_available": True}):
+            return _artifactlib._select_authoring_route(
+                self.root, "fresh", workflow=workflow, lane="full", client=client)
+
+    def refused(self, client):
+        before = sorted(str(p.relative_to(self.root)) for p in self.root.rglob("*"))
+        for workflow in ("feature", "sprint"):
+            with self.subTest(workflow=workflow):
+                with self.assertRaises(ArtifactError) as caught:
+                    self.select(client, workflow)
+                self.assertEqual(caught.exception.code, "HOST_WORKFLOW_UNAVAILABLE")
+        self.assertEqual(before, sorted(str(p.relative_to(self.root)) for p in self.root.rglob("*")))
+
+    def registry(self):
+        return json.loads((self.plugin / "hooks/hooks.json").read_text(encoding="utf-8"))
+
+    def save_registry(self, value):
+        (self.plugin / "hooks/hooks.json").write_text(json.dumps(value), encoding="utf-8")
+
+    def test_admission_accepts_current_codex_resources_without_conveying_authority(self):
+        client = self.client()
+        self.assertEqual(self.select(client)["format"], "html")
+        self.assertEqual(list(self.root.iterdir()), [])
+        status = client.workflow_preflight()
+        self.assertEqual(status["evidence_kind"], "installed-resource-preflight")
+        self.assertTrue(status["resources_available"])
+        self.assertFalse(status["live_host_verified"])
+
+    def test_admission_accepts_merged_claude_authority_resources(self):
+        client = self.client("ca")
+        self.assertEqual(self.select(client, "sprint")["format"], "html")
+        self.assertEqual(client.workflow_preflight()["host"], "claude")
+
+    def test_admission_refuses_pi_before_any_new_full_lane_artifact(self):
+        self.refused(self.client("ca-pi"))
+
+    def test_admission_refuses_missing_producers_and_host_helpers(self):
+        client = self.client()
+        for name in ("_approvallib.py", "_prerequisitelib.py", "_sprintapprovallib.py",
+                     "_reconciliationlib.py", "_artifactauthoritylib.py", "_gitexec.py",
+                     "artifact-authority.py", "artifact-authority-hook.py", "prompt-submit.py"):
+            path = self.plugin / "hooks" / name
+            original = path.read_bytes()
+            path.unlink()
+            with self.subTest(resource=name):
+                self.refused(client)
+            path.write_bytes(original)
+        self.assertEqual(self.select(client)["format"], "html")
+
+    def test_admission_rechecks_resources_after_initial_success(self):
+        client = self.client()
+        self.select(client)
+        (self.plugin / "hooks/_prerequisitelib.py").write_bytes(b"")
+        self.refused(client)
+
+    def test_admission_requires_every_authority_event(self):
+        client = self.client()
+        original = self.registry()
+        for event in ("UserPromptSubmit", "PreToolUse", "PostToolUse", "SubagentStart", "SubagentStop"):
+            value = json.loads(json.dumps(original))
+            del value["hooks"][event]
+            self.save_registry(value)
+            with self.subTest(event=event):
+                self.refused(client)
+
+    def test_admission_requires_claude_failure_event_and_reviewer_charter(self):
+        client = self.client("ca")
+        original = self.registry()
+        value = json.loads(json.dumps(original))
+        del value["hooks"]["PostToolUseFailure"]
+        self.save_registry(value)
+        self.refused(client)
+        self.save_registry(original)
+        (self.plugin / "agents/authority-reviewer.md").unlink()
+        self.refused(client)
+
+    def test_admission_rejects_wrong_matchers_redirected_commands_and_async_hooks(self):
+        client = self.client()
+        original = self.registry()
+        for mutation in ("matcher", "command", "async"):
+            value = json.loads(json.dumps(original))
+            for group in value["hooks"]["PostToolUse"]:
+                for entry in group["hooks"]:
+                    if "artifact-authority-hook.py" not in entry["command"]:
+                        continue
+                    if mutation == "matcher":
+                        group["matcher"] = "Read"
+                    elif mutation == "async":
+                        entry["async"] = True
+                    else:
+                        entry["command"] = 'python3 "/elsewhere/artifact-authority-hook.py"'
+                        entry["commandWindows"] = 'python "C:/elsewhere/artifact-authority-hook.py"'
+            self.save_registry(value)
+            with self.subTest(mutation=mutation):
+                self.refused(client)
+
+    def test_admission_rejects_malformed_duplicate_and_oversized_registry(self):
+        client = self.client()
+        path = self.plugin / "hooks/hooks.json"
+        for raw in (b"[]", b'{"hooks":{},"hooks":{}}', b" " * 65537):
+            path.write_bytes(raw)
+            self.refused(client)
+
+    def test_admission_rejects_unknown_ambiguous_or_missing_host_identity(self):
+        client = self.client()
+        manifest = self.plugin / ".codex-plugin/plugin.json"
+        original = manifest.read_bytes()
+        value = json.loads(original)
+        value["name"] = "unknown"
+        manifest.write_text(json.dumps(value), encoding="utf-8")
+        self.refused(client)
+        manifest.unlink()
+        self.refused(client)
+        manifest.write_bytes(original)
+        duplicate = self.plugin / ".claude-plugin/plugin.json"
+        duplicate.parent.mkdir()
+        duplicate.write_text('{"name":"ca","version":"1.0.0"}', encoding="utf-8")
+        self.refused(client)
+
+    def test_admission_does_not_follow_environment_or_project_host_claims(self):
+        client = self.client("ca-pi")
+        (self.root / ".claude-plugin").mkdir()
+        (self.root / ".claude-plugin/plugin.json").write_text('{"name":"ca"}', encoding="utf-8")
+        with mock.patch.dict(os.environ, {"PLUGIN_ROOT": str(REPO / "plugins/ca-codex"),
+                                         "CLAUDE_PLUGIN_ROOT": str(REPO / "plugins/ca")}):
+            self.refused(client)
+
+    def test_admission_preserves_small_lane_and_existing_markdown_on_pi(self):
+        client = self.client("ca-pi")
+        self.assertEqual(_artifactlib._select_authoring_route(
+            self.root, "fresh", workflow="feature", lane="small")["mode"], "inline")
+        spec = self.root / ".codearbiter/specs/fresh.md"
+        spec.parent.mkdir(parents=True)
+        spec.write_bytes(b"existing markdown\n")
+        self.assertEqual(self.select(client)["format"], "md")
+        self.assertEqual(spec.read_bytes(), b"existing markdown\n")
+
+    def test_admission_rejects_nonstring_registered_commands(self):
+        client = self.client()
+        original = self.registry()
+        for malformed in (None, [], {}, 42):
+            value = json.loads(json.dumps(original))
+            for entry in value["hooks"]["SubagentStop"][0]["hooks"]:
+                entry["command"] = malformed
+                entry["commandWindows"] = malformed
+            self.save_registry(value)
+            self.refused(client)
+
+    def test_admission_checks_the_platform_specific_hook_command(self):
+        client = self.client()
+        value = self.registry()
+        del value["hooks"]["SubagentStop"][0]["hooks"][0]["commandWindows"]
+        self.save_registry(value)
+        with mock.patch.object(_artifactlib.platform, "system", return_value="Windows"):
+            self.refused(client)
+        with mock.patch.object(_artifactlib.platform, "system", return_value="Linux"):
+            self.assertEqual(self.select(client)["format"], "html")
+
+    def test_admission_rejects_linked_helper_ancestors(self):
+        client = self.client()
+        hooks = self.plugin / "hooks"
+        physical = self.plugin / "real-hooks"
+        hooks.rename(physical)
+        if os.name == "nt":
+            made = subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(hooks), str(physical)],
+                                  text=True, capture_output=True, timeout=10)
+            if made.returncode:
+                self.skipTest("test-owned junction creation is unavailable")
+        else:
+            hooks.symlink_to(physical, target_is_directory=True)
+        try:
+            self.refused(client)
+        finally:
+            if os.name == "nt":
+                hooks.rmdir()
+            else:
+                hooks.unlink()
+
+    def test_admission_rejects_nonregular_required_resource(self):
+        client = self.client()
+        path = self.plugin / "hooks/_approvallib.py"
+        path.unlink()
+        path.mkdir()
+        self.refused(client)
+
+    def test_admission_rechecks_before_plan_identity_reads(self):
+        client = self.client()
+        spec = self.root / ".codearbiter/specs/fresh.html"
+        spec.parent.mkdir(parents=True)
+        spec.write_bytes(b"existing fixture, not an approved artifact")
+        route = self.select(client)
+        (self.plugin / "hooks/_approvallib.py").unlink()
+        with mock.patch.object(client, "call", side_effect=AssertionError("host preflight must run first")):
+            with self.assertRaises(ArtifactError) as caught:
+                _artifactlib._preflight_plan_authoring(
+                    route, client, spec_artifact_id="SPEC-FIXTURE", spec_normative_sha256="a" * 64)
+        self.assertEqual(caught.exception.code, "HOST_WORKFLOW_UNAVAILABLE")
+        self.assertEqual(spec.read_bytes(), b"existing fixture, not an approved artifact")
+        self.assertFalse((self.root / ".codearbiter/plans").exists())
+
+    def test_admission_rechecks_namespace_after_host_resource_scan(self):
+        client = self.client()
+        original = client.workflow_preflight
+        shadow = self.root / ".codearbiter/specs/fresh.md"
+        def inject():
+            result = original()
+            shadow.parent.mkdir(parents=True)
+            shadow.write_bytes(b"concurrent legacy artifact")
+            return result
+        with mock.patch.object(client, "workflow_preflight", side_effect=inject):
+            with self.assertRaises(ArtifactError) as caught:
+                self.select(client)
+        self.assertIn(caught.exception.code, {"STALE_ROUTE", "AMBIGUOUS_ARTIFACT"})
+        self.assertFalse((shadow.parent / "fresh.html").exists())
+
+    def test_admission_rejects_bare_engine_installation(self):
+        payload = self.base / "bare-engine"
+        payload.mkdir()
+        self.refused(ArtifactClient(self.root, payload))
 
 class AuthoringRouteSelectionTest(unittest.TestCase):
     @classmethod
@@ -516,25 +799,34 @@ def plan_normative(spec_id: str, spec_hash: str) -> dict:
 def build_installation(
     owner: unittest.TestCase | None = None,
 ) -> tuple[tempfile.TemporaryDirectory | None, Path]:
-    supplied = os.environ.get("ARTIFACT_TEST_INSTALLATION")
-    if supplied:
-        installation = Path(supplied).resolve()
-        if not installation.is_dir():
-            raise AssertionError(f"ARTIFACT_TEST_INSTALLATION is not a directory: {installation}")
-        return None, installation
+    """Give producer tests actual installed host resources, not an admission bypass."""
     temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-authoring-install-")
     if owner is not None:
         owner.addCleanup(temporary.cleanup)
-    installation = physical_test_directory(temporary.name) / "payload"
-    subprocess.run(
-        [sys.executable, str(REPO / "tools" / "build-artifacts.py"), "--output", str(installation)],
-        cwd=REPO,
-        text=True,
-        capture_output=True,
-        check=True,
-    )
+    base = physical_test_directory(temporary.name)
+    plugin = base / "ca-codex"
+    source_plugin = REPO / "plugins" / "ca-codex"
+    def source_only(directory, names):
+        ignored = set(shutil.ignore_patterns("__pycache__", "node_modules")(directory, names))
+        if Path(directory) == source_plugin / "helpers":
+            ignored.add("artifacts")
+        return ignored
+    # A developer checkout may already contain a native payload. Never copy
+    # it into this fresh fixture: the supplied/build branch owns those bytes.
+    shutil.copytree(source_plugin, plugin, ignore=source_only)
+    installation = plugin / "helpers" / "artifacts"
+    supplied = os.environ.get("ARTIFACT_TEST_INSTALLATION")
+    if supplied:
+        source = Path(supplied).resolve()
+        if not source.is_dir():
+            raise AssertionError(f"ARTIFACT_TEST_INSTALLATION is not a directory: {source}")
+        shutil.copytree(source, installation)
+    else:
+        subprocess.run(
+            [sys.executable, str(REPO / "tools" / "build-artifacts.py"), "--output", str(installation)],
+            cwd=REPO, text=True, capture_output=True, check=True,
+        )
     return temporary, installation
-
 
 class WorkflowHarness:
     def __init__(self, root: Path, installation: Path):
