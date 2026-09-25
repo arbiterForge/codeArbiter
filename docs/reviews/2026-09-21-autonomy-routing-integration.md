@@ -1334,3 +1334,15 @@ metadata discovery retained both enabled entry names without skill errors; combi
 descriptions fell from 232 to 174 characters. This excludes other frontmatter and
 host framing, uses no model turn, and does not claim prompt-token savings. The full
 site pipeline and final-head hosted checks are recorded separately on PR #854.
+
+
+D12/D13 source-move documentation qualification: the ADR execution map retains its
+historical main-ancestor revision and uses an explicit editorial `currentPath` for
+its relocated procedure. Every cited quote must still occur in both the pinned
+historical blob and current owner. The original ancestry test is unchanged; no
+pre-merge commit becomes a durable documentation dependency. Two regressions cover
+relocation and invalid current-path handling. This is site data, not a runtime or
+model-facing routing registry. The normal site pipeline passed all 920 tests in
+87 files plus base-path, build, rendered-output and type checks. One earlier local
+sidebar import test exceeded its existing five-second limit; both its unchanged
+isolated rerun and the final full run passed. No timeout or assertion was changed.

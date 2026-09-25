@@ -1,7 +1,11 @@
 /** Editorial diagrams only: this is not a runtime router or an approval protocol. */
 export type Role = 'command' | 'skill' | 'agent';
 export type Relation = 'sequence' | 'dispatch' | 'return' | 'repeat' | 'reuse';
-export interface MapSource { path: string; quote: string }
+export interface MapSource {
+  path: string; quote: string;
+  /** Relocated current owner; path and reviewedAt retain historical evidence. */
+  currentPath?: string;
+}
 export interface MapNode {
   id: string; role: Role; label: string[]; title: string; href: string;
   source: string; detail: string; output: string; checks?: string[]; conditional?: boolean;
@@ -153,6 +157,7 @@ export function validateExecutionMap(map: ExecutionMap): string[] {
   }
   for (const source of Object.values(map.sources)) {
     if (!/^core\/surface\//.test(source.path) || source.path.split('/').includes('..') || !source.quote.trim()) errors.push('invalid source anchor');
+    if (source.currentPath !== undefined && (!/^core\/surface\//.test(source.currentPath) || source.currentPath.split('/').includes('..'))) errors.push('invalid current source anchor');
   }
   for (const edge of [...map.chapters.flatMap(chapter => chapter.edges), ...map.alternatives]) {
     if (!ids.has(edge.from) || !ids.has(edge.to)) errors.push('unknown edge endpoint');

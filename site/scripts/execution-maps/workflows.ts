@@ -591,19 +591,23 @@ export const workflows: readonly WorkflowDefinition[] = [
       "outcome": "The decision, decision-log append and exact acceptance binding are retained. Accepted/Planned does not prove implementation, verification or a merged PR.",
       "sources": {
         "adr": {
-          "path": "core/surface/commands/adr.md",
-          "quote": "Status transitions require\nexplicit user instruction"
+          "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
+          "quote": "Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction"
         },
         "adrAccept": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "### Accepted/Planned binding"
         },
         "adrCommit": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "its `source_commit` cannot truthfully name a commit that does\n   not exist yet."
         },
         "adrWrite": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "Author it with `status: proposed`."
         }
       },
