@@ -1,0 +1,33 @@
+name: PR862 final inputs
+on:
+  push:
+    branches: [prep/pr862-final-inputs-0808]
+    paths: [.github/workflows/pr862-final-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ee95688bfb2a0f1243d60dddc0b19726bf447859
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture source objects without executing product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/pr862-final-inputs"
+          mkdir -p "$out"
+          git bundle create "$out/source.bundle" HEAD --tags ^a0eec5035c31d804146cc9480324879f1e928856
+          git rev-parse HEAD HEAD^{tree} > "$out/identity.txt"
+          cd "$out"
+          sha256sum source.bundle identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr862-final-inputs
+          path: ${{ runner.temp }}/pr862-final-inputs/
+          if-no-files-found: error
+          retention-days: 1
