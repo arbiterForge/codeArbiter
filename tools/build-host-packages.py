@@ -640,15 +640,53 @@ def _payload_members(snapshot, prefix: str) -> dict[str, tuple[bytes, int, str, 
     return result
 
 
+CANONICAL_GIT_URL = "https://github.com/arbiterForge/codeArbiter.git"
+CLAUDE_MARKETPLACE_BRANCH = "ca-marketplace"
+# main's public catalog points `ca` at the binary-bearing distribution branch,
+# because the native engine payload is never committed to main.
+CLAUDE_DISTRIBUTION_SOURCE = {
+    "source": "git-subdir",
+    "url": CANONICAL_GIT_URL,
+    "path": "plugins/ca",
+    "ref": CLAUDE_MARKETPLACE_BRANCH,
+}
+
+
 def _claude_catalog(source: bytes, installer) -> bytes:
+    """Return the archive-local catalog: `ca` only, as a relative-path entry."""
     document = json.loads(source, object_pairs_hook=installer._pairs)
     plugins = document.get("plugins") if isinstance(document, dict) else None
     selected = [item for item in plugins or []
                 if isinstance(item, dict) and item.get("name") == "ca"]
-    if len(selected) != 1 or selected[0].get("source") != "./plugins/ca":
+    if (len(selected) != 1
+            or selected[0].get("source") not in ("./plugins/ca", CLAUDE_DISTRIBUTION_SOURCE)):
         raise ValueError("source Claude marketplace does not identify one canonical ca package")
+    entry = dict(selected[0])
+    entry["source"] = "./plugins/ca"
     output = {key: value for key, value in document.items() if key != "plugins"}
-    output["plugins"] = selected
+    output["plugins"] = [entry]
+    return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def promoted_codex_git_catalog(source: bytes, *, ref: str, sha: str) -> bytes:
+    """Bind the public Codex entry to one immutable Git distribution tag."""
+    installer = _artifact_installer_module()
+    document = json.loads(source, object_pairs_hook=installer._pairs)
+    plugins = document.get("plugins") if isinstance(document, dict) else None
+    selected = [item for item in plugins or []
+                if isinstance(item, dict) and item.get("name") == "ca-codex"]
+    expected_source = {"source": "local", "path": "./plugins/ca-codex"}
+    if len(selected) != 1 or selected[0].get("source") != expected_source:
+        raise ValueError("source Codex marketplace does not identify one canonical ca-codex package")
+    if re.fullmatch(r"refs/tags/ca-codex-dist-v.+", ref) is None:
+        raise ValueError("Codex distribution ref must be a ca-codex-dist tag")
+    if re.fullmatch(r"[0-9a-f]{40}", sha) is None:
+        raise ValueError("Codex distribution sha must be a full commit id")
+    entry = dict(selected[0])
+    entry["source"] = {"source": "git-subdir", "url": CANONICAL_GIT_URL,
+                       "path": "plugins/ca-codex", "ref": ref, "sha": sha}
+    output = {key: value for key, value in document.items() if key != "plugins"}
+    output["plugins"] = [entry]
     return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
@@ -694,16 +732,25 @@ def promoted_codex_catalog(source: bytes, *, package: str, version: str,
     return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
-def stage_codex_marketplace_distribution(*, package_root: Path,
-                                         package_cohort_sha256: str,
-                                         output: Path) -> dict[str, object]:
-    """Materialize the exact qualified Codex archive as a Git-ready tree.
+_DISTRIBUTION_LAYOUT = {
+    "codex": ("Codex", ".agents/plugins/marketplace.json", "plugins/ca-codex",
+              ".codex-plugin/plugin.json"),
+    "claude": ("Claude", ".claude-plugin/marketplace.json", "plugins/ca",
+               ".claude-plugin/plugin.json"),
+}
+
+
+def _stage_marketplace_distribution(*, host: str, package_root: Path,
+                                    package_cohort_sha256: str,
+                                    output: Path) -> dict[str, object]:
+    """Materialize one exact qualified host archive as a VCS-ready tree.
 
     Publication is deliberately separate.  This function consumes the cohort
     receipt and archive as immutable inputs, rejects any member omission or
     substitution, and creates a tree whose files are byte-for-byte the same
     members already qualified by the release-package lane.
     """
+    label, catalog_name, plugin_root, manifest_name = _DISTRIBUTION_LAYOUT[host]
     package_root = package_root.absolute()
     if (package_root.is_symlink() or not package_root.is_dir()
             or os.path.normcase(str(package_root.resolve(strict=True))) !=
@@ -715,35 +762,34 @@ def stage_codex_marketplace_distribution(*, package_root: Path,
     )
     if (re.fullmatch(r"[0-9a-f]{64}", package_cohort_sha256) is None
             or hashlib.sha256(receipt_bytes).hexdigest() != package_cohort_sha256):
-        raise ValueError("Codex distribution package cohort digest drifted")
+        raise ValueError(f"{label} distribution package cohort digest drifted")
     receipt = json.loads(receipt_bytes, object_pairs_hook=installer._pairs)
     packages = receipt.get("packages") if isinstance(receipt, dict) else None
-    package = packages.get("codex") if isinstance(packages, dict) else None
+    package = packages.get(host) if isinstance(packages, dict) else None
     required = {"file", "version", "size", "sha256", "members"}
     if (receipt.get("format") != ARTIFACT_PACKAGE_FORMAT
             or not isinstance(package, dict) or set(package) != required
             or not isinstance(package.get("file"), str)
             or Path(package["file"]).name != package["file"]
             or not isinstance(package.get("members"), dict)):
-        raise ValueError("Codex package cohort entry is malformed")
+        raise ValueError(f"{label} package cohort entry is malformed")
     archive = package_root / package["file"]
     archive_bytes = installer.read_regular(archive, 256 << 20)
     if (package.get("size") != len(archive_bytes)
             or package.get("sha256") != hashlib.sha256(archive_bytes).hexdigest()):
-        raise ValueError("Codex distribution archive digest or size drifted")
+        raise ValueError(f"{label} distribution archive digest or size drifted")
     files = _read_archive(archive, expected_members=package["members"])
-    catalog_name = ".agents/plugins/marketplace.json"
-    plugin_manifest = "plugins/ca-codex/.codex-plugin/plugin.json"
-    release_manifest = "plugins/ca-codex/helpers/artifacts/release.json"
+    plugin_manifest = f"{plugin_root}/{manifest_name}"
+    release_manifest = f"{plugin_root}/helpers/artifacts/release.json"
     if (catalog_name not in files or plugin_manifest not in files
             or release_manifest not in files
-            or not any(name.startswith("plugins/ca-codex/helpers/artifacts/ca-artifact-")
+            or not any(name.startswith(f"{plugin_root}/helpers/artifacts/ca-artifact-")
                        for name in files)):
-        raise ValueError("Codex distribution omits required marketplace or artifact members")
+        raise ValueError(f"{label} distribution omits required marketplace or artifact members")
     # The qualified archive catalog remains locally installable when the exact
-    # tree is fetched directly; a separately promoted catalog may point to this
-    # tree by full commit using promoted_codex_catalog().
-    _codex_catalog(files[catalog_name][0], installer)
+    # tree is fetched directly; a separately promoted catalog points to this
+    # tree by full commit.
+    (_codex_catalog if host == "codex" else _claude_catalog)(files[catalog_name][0], installer)
     members = {
         name: (data, mode, "qualified-package", name)
         for name, (data, mode) in files.items()
@@ -758,6 +804,22 @@ def stage_codex_marketplace_distribution(*, package_root: Path,
         "members": sorted(files),
         "source_commit": receipt.get("source_commit"),
     }
+
+
+def stage_codex_marketplace_distribution(*, package_root: Path,
+                                         package_cohort_sha256: str,
+                                         output: Path) -> dict[str, object]:
+    return _stage_marketplace_distribution(
+        host="codex", package_root=package_root,
+        package_cohort_sha256=package_cohort_sha256, output=output)
+
+
+def stage_claude_marketplace_distribution(*, package_root: Path,
+                                          package_cohort_sha256: str,
+                                          output: Path) -> dict[str, object]:
+    return _stage_marketplace_distribution(
+        host="claude", package_root=package_root,
+        package_cohort_sha256=package_cohort_sha256, output=output)
 
 
 def build_codex_npm_package(*, package_root: Path,

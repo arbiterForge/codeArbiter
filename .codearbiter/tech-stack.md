@@ -571,4 +571,4 @@ layers:
   `package.json`, update `plugins/ca-pi/CHANGELOG.md`, and keep both manifests
   synchronized. Distribution is the pinned Git tag (reproducible channel) plus
   the CI-published `npm:@arbiterforge/ca-pi` package on every `ca-pi-v*` tag
-  (ADR-0029, `.github/workflows/npm-publish.yml`).
+  (ADR-0029; published by `.github/workflows/release.yml`, ADR-0040).

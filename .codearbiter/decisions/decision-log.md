@@ -2005,3 +2005,103 @@ Testable and Reliable require the release gate to reproduce the public consumer 
 Override setup-node's authenticated user configuration in the cold-install step with a temporary registry-only npmrc, omit NODE_AUTH_TOKEN from that step, and regression-test both properties.
 
 ---
+
+## DECISION-0069 — adr-0040-independent-release — Release each plugin independently with consumer-safety gates
+
+**Date:** 2026-09-25
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — directed loosening the release gates the pipeline could not meet, shipping the engine to every host, and releasing on merge; chose independent idempotent releases, the ca-marketplace Git channel, deferring Codex npm ("i want NPM in the future, I want functional releases NOW"), and consumer-safety-only hard gates.
+**Decision category:** release architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0039 and the cohort design coupled ca, ca-codex and ca-pi into one publication with resume/allowlist/supersede state and fail-closed provenance gates.
+- **Scaffold position:** Most release failures were the pipeline tripping on its own bookkeeping; normal Claude installs received no engine payload.
+- **Status type:** divergent
+
+### Decision
+Record ADR-0040-independent-per-target-release-with-consumer-safety-gates: independent per-plugin release on merge, `ca-marketplace` Git distribution for Claude Code, Codex npm deferred, provenance checks advisory, published-tag ledger gate unchanged.
+
+### SMARTS rationale
+Reliable and Testable: every release step is observe-then-act and re-runnable, and the planner is unit- and mutation-tested. Securable: consumer-facing integrity gates (package cohort, tag identity, byte read-back) stay hard; only provenance extras become advisory.
+
+### Implementation implication
+Rewrite release.yml around `.github/actions/publish-target` and `.github/scripts/release_target.py`; add `tools/promote-claude-marketplace.py`; default Codex promotion to the Git catalog; remove cohort code from `_npm_publishlib.py`; bump ca, ca-codex and ca-pi so the first run publishes a fresh version of each.
+
+---
+
+## DECISION-0070 — adr-0040-acceptance — Accept ADR-0040 with the ledger-detection clause
+
+**Date:** 2026-09-25
+**Status:** accepted
+**Supersedes:** DECISION-0069
+**Decided by:** SUaDtL@users.noreply.github.com — "2 accept", and "yes automate it or relax it" for the published-tag ledger gate.
+**Decision category:** release architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0069 recorded ADR-0040 as proposed with the published-tag ledger gate unchanged.
+- **Scaffold position:** The maintainer accepted the decision and chose to relax the ledger gate rather than automate receipt-recording PRs.
+- **Status type:** divergent
+
+### Decision
+Store ADR-0040 as Accepted/Planned, including its fifth clause: the ledger check detects movement of recorded tags without gating unrecorded new ones, with prevention carried by the live tag rulesets. Seal every normative clause against the exact accepted bytes and preserve the acceptance commit's ancestry through delivery (merge commit, not squash). Nothing is represented as Implemented or Verified without current lifecycle evidence.
+
+### SMARTS rationale
+Reliable: a publication no longer requires a follow-up bookkeeping PR before any merge can land. Securable: tag movement and deletion stay prevented by rulesets and detected by the ledger.
+
+### Implementation implication
+Run required CI and the release preflight without `--require-recorded`; bind the acceptance through `prepare_adr_acceptance.py` and a following lifecycle-ledger commit.
+
+---
+
+## DECISION-0071 — adr-0040-record-correction — Correct DECISION-0069's supersession and stage ADR-0040 decision 2
+
+**Date:** 2026-09-25
+**Status:** accepted
+**Supersedes:** none (corrects the record of DECISION-0069; its text is left as written)
+**Decided by:** SUaDtL@users.noreply.github.com — directed fixing the PR #865 review findings ("majors from coderabite and 4 failing CI tests").
+**Decision category:** release architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0069 records `Supersedes: none`, while ADR-0040 declares `supersedes: 0039-publish-ca-codex-qualified-packages-to-npm`. ADR-0040 decision 2 states in the present tense that main's `.claude-plugin/marketplace.json` points `ca` at `ca-marketplace`.
+- **Scaffold position:** ADR-0040 supersedes ADR-0039's npm channel for ca-codex until npm publication resumes. PR #865 deliberately keeps main's `ca` entry at `./plugins/ca`: the catalog cannot reference a branch that does not exist yet.
+- **Status type:** divergent
+
+### Decision
+Read DECISION-0069 as superseding ADR-0039's npm channel for ca-codex (deferred, not withdrawn). Read ADR-0040 decision 2 as the end state, delivered in two steps: PR #865 creates the `ca-marketplace` channel on the first release, and a follow-up PR flips main's `ca` catalog entry to the `git-subdir` source once that branch has been read back. `.claude-plugin/marketplace.json` stays in ADR-0040's `governs` list for that follow-up. The accepted ADR bytes are not edited.
+
+### SMARTS rationale
+Maintainable: the audit trail states the true supersession and sequencing without rewriting an accepted, sealed ADR. Reliable: flipping the catalog before the branch exists would break every Claude install.
+
+### Implementation implication
+The follow-up catalog-flip PR cites ADR-0040 decision 2 and this entry.
+
+---
+
+## DECISION-0072 — adr-0040-history-restore — Restore the ADR-0040 acceptance commit to main's history
+
+**Date:** 2026-09-25
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — merged #865 and #867; directed fixing the ADR-0040 lifecycle break.
+**Decision category:** governance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0070 requires the ADR-0040 acceptance commit to stay in main's history: merge commit, not squash.
+- **Scaffold position:** #865 and #867 were squash-merged. The acceptance commit bb23701e is not an ancestor of main, so the ADR lifecycle check fails on main and on every pull request.
+- **Status type:** divergent
+
+### Decision
+Restore ancestry with a merge commit whose second parent is the original #865 branch, using the ours strategy so no file changes. The sealed acceptance event is left unchanged.
+
+### SMARTS rationale
+Securable: the acceptance stays bound to its exact sealed bytes instead of being rebound. Reliable: a history-only merge fixes every downstream check at once.
+
+### Implementation implication
+Merge this change with a merge commit. A squash would drop the second parent again.
+
+---

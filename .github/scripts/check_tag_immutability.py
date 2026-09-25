@@ -26,19 +26,21 @@ disagreement.  Comparing the REF OBJECT sha (not just the commit) is the
 stronger test: an annotated tag object is content-addressed over its target,
 message, and tagger, so re-annotating the same commit still changes it.
 
-REQUIRED CI AND RELEASE PREFLIGHT. Both invoke --require-recorded, which refuses
-missing credentials, unreadable inventory, or any governed tag absent from the
-disjoint union. Availability failures therefore block merge as well as release.
-A new, non-legacy tag must be recorded afterward from its trusted run receipt
-through a reviewed PR. This is read-only verification, not automatic receipt
-ingestion or a transaction with publication: a tag published after a green CI
-check can still race a merge, so release preflight remains independently strict.
-The receipt writer has no legacy-ledger mutation path and there is no break-glass.
+REQUIRED CI AND RELEASE PREFLIGHT (ADR-0040). Both run WITHOUT --require-recorded:
+a recorded tag that moved or disappeared, or an invalid inventory, fails; a newly
+published tag not yet in the ledgers only warns, because release-on-merge
+publishes tags no PR has recorded yet and the live tag rulesets already refuse
+deleting or moving any release tag. A new tag may still be recorded afterward
+from its trusted run receipt through a reviewed PR. The receipt writer has no
+legacy-ledger mutation path and there is no break-glass.
 
-OPTIONAL OBSERVATION MODE. Without --require-recorded, missing credentials or
-unavailable inventory produce a loud SKIP, and unrecorded tags produce warnings.
-A definite mismatch or invalid inventory still fails. Required CI never opts
-into this non-strict local-audit behavior.
+STRICT MODE. --require-recorded additionally refuses missing credentials,
+unreadable inventory, or any governed tag absent from the disjoint union. It
+remains available for a deliberate full-ledger audit.
+
+WITHOUT --require-recorded, missing credentials or unavailable inventory produce
+a loud SKIP, and unrecorded tags produce warnings. A definite mismatch or invalid
+inventory still fails.
 
 READ-ONLY.  One GET against `/git/matching-refs/tags/`. Nothing is written.
 Missing, unavailable, malformed, or incomplete evidence cannot authorize the
@@ -352,7 +354,7 @@ def unrecorded(recorded: dict[str, Provenance], live: dict[str, str]) -> list[st
     """Governed tags on the remote that the manifest does not yet record.
 
     This is expected immediately after a release. Required CI and release
-    preflight refuse until it is recorded; optional observation mode only warns.
+    preflight only warn (ADR-0040); strict --require-recorded mode refuses.
     """
     return sorted(
         name for name in live if is_governed(name) and name not in recorded
@@ -442,8 +444,8 @@ _SKIP_NOTE = """SKIP: no token, so published-tag immutability was NOT audited.
 
 This check reads `/repos/{owner}/{repo}/git/matching-refs/tags/`, which needs only
 contents:read - a permission the default GITHUB_TOKEN DOES grant. This skip is
-only for optional observation mode. Required CI and release preflight use
---require-recorded and fail closed on missing credentials or unavailable evidence.
+only without --require-recorded. Required CI always supplies GITHUB_TOKEN; strict
+--require-recorded mode fails closed on missing credentials or unavailable evidence.
 
 To run the audit by hand:
 

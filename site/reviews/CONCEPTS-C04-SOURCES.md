@@ -267,3 +267,20 @@ not a workflow-map content or navigation failure. Its evidence and the new await
 byte-verified build boundary are recorded in [PR862-SEARCH-INTEGRITY.md](./PR862-SEARCH-INTEGRITY.md).
 The six real search checks remain unchanged. The completed C04 maps and chapter
 navigation are retained while this final publication prerequisite is verified.
+
+### Integration of owner-approved per-target publication
+
+Main advanced to `a4842fab60a6e6ee943341861ec4aed0a7b17a50` with the implementation
+and preserved acceptance ancestry of ADR-0040. The C04 branch incorporates that
+main without changing its release decision. The former `publish-release` action
+and its obsolete npm-publication assertions stay removed; the replacement
+`publish-target` action and per-target/channel tests are retained from main.
+Codex npm remains deferred under that owning decision, not re-enabled by the site.
+
+The two conflicting publication-ledger records had identical parsed identities;
+the integration retains main's byte serialization rather than recording new
+identities. The workflow-equivalence test now binds to this retained main commit,
+continuing to permit only the explicit stacked-parent PR-base entry. It compares
+all executable lines and does not restore superseded CI policy to force green.
+Canonical workflow-map sources remain pinned to their separately verified source;
+this integration is not an installed release or permission to publish.

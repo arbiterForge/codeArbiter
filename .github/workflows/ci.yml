@@ -97,7 +97,8 @@ on:
       # workflow's dispatch-exclusivity, merge-readiness, and tag-integrity
       # gates. A push that weakens only release.yml must still start a run.
       - ".github/workflows/release.yml"
-      - ".github/workflows/npm-publish.yml"
+      - ".github/scripts/release_target.py"
+      - "tools/promote-claude-marketplace.py"
       - ".codearbiter/release-targets.md"
       - "CHANGELOG.md"
       # Historical live-proof corrections still run their documentation tests
@@ -245,7 +246,8 @@ jobs:
               # test_release_workflow.py runs in the hooks job and is the only
               # guard on the release workflow's publish gates (#378/#380/#385).
               - '.github/workflows/release.yml'
-              - '.github/workflows/npm-publish.yml'
+              - '.github/scripts/release_target.py'
+              - 'tools/promote-claude-marketplace.py'
               - '.codearbiter/release-targets.md'
               - 'CHANGELOG.md'
               # This job validates the retained historical live-proof record.
@@ -409,7 +411,8 @@ jobs:
               # release workflow repair must therefore build it even when no
               # plugin payload path changed in the same commit.
               - '.github/workflows/release.yml'
-              - '.github/workflows/npm-publish.yml'
+              - '.github/scripts/release_target.py'
+              - 'tools/promote-claude-marketplace.py'
               - '.codearbiter/release-targets.md'
               - '.github/workflows/ci.yml'
       - name: Write impact receipt
@@ -2174,6 +2177,13 @@ jobs:
       - name: Run Codex immutable marketplace distribution contracts
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_codex_marketplace_distribution.py
+      - name: Run per-target release planner and Git channel contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # ADR-0040: the planner is the only publish-state logic, and the Git
+        # channels are how Claude Code and Codex users receive the engine.
+        run: |
+          python .github/scripts/test_release_target.py
+          python .github/scripts/test_marketplace_git_channels.py
       - name: Run the A-1.11 release resolution-trace suite
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, .codearbiter/specs/release-portable-fixture.md: proves
@@ -2950,11 +2960,12 @@ jobs:
     #
     # UNLIKE the branch-protection audit beside it, this one runs LIVE in
     # ordinary CI: listing `/git/matching-refs/tags/` needs only contents:read,
-    # which the default GITHUB_TOKEN grants. Required CI uses --require-recorded:
-    # missing receipts, credentials, transport availability, or trustworthy
-    # inventory block merge. This read-only gate adds no receipt writer or
-    # permission to bypass reviewed-PR ingestion. Tag publication after this
-    # check can still race a merge; release preflight remains independently strict.
+    # which the default GITHUB_TOKEN grants. A recorded tag that moved or was
+    # deleted blocks merge. A newly published tag not yet in the ledgers only
+    # warns (ADR-0040, maintainer-directed 2026-09-25): release-on-merge
+    # publishes tags no PR has recorded yet, and the live "Published plugin tag
+    # immutability" ruleset already refuses deletion or movement of every
+    # release tag, so blocking every merge on ledger bookkeeping protected no one.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -2969,7 +2980,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
-          python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded
+          python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
           --manifest .github/published-tags.json
           --legacy-manifest .github/legacy-published-tags.json
       - name: Test the audit's own logic

@@ -962,10 +962,12 @@ version.
 it reports a moved tag, it cannot prevent one. Between the move and the next CI
 run, a consumer can install the substituted payload. Closing that window is what
 layer 1 is for, which is why the ruleset is a maintainer action tracked on #386
-and not satisfied by the check alone. Required CI and release preflight both use
-`--require-recorded` and fail closed on missing receipts, credentials, unreadable
-refs, or invalid inventory. This deliberately makes transport failures and rate
-limits merge/release availability blockers. The check remains read-only with
+and not satisfied by the check alone. Since ADR-0040 (maintainer-directed,
+2026-09-25) required CI and release preflight run without `--require-recorded`:
+a recorded tag that moved or disappeared, or invalid inventory, still fails, but
+a newly published tag not yet recorded only warns. The live "Published plugin
+tag immutability" ruleset refuses deletion and movement of every release tag,
+which is the preventive layer; the ledger remains the after-the-fact detector. The check remains read-only with
 `contents:read`; it adds no writer or bypass authority. New receipts enter only
 through the independently authenticated, reviewed-PR reconciliation path. A
 receipt-only PR can validate its candidate ledger, but publication and PR merge
