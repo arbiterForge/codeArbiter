@@ -10,6 +10,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Document bounded farm transport retries and task-local cooldown handling in
+  the shared private card without enabling a new backend or HTML farm support.
 - Clarify reported-versus-complete farm usage and rejected-response recovery in
   the shared private card; no Codex farm backend or HTML farm support is added.
 - Keep built-in mutation nonzero exits as unclassified rejection evidence, not

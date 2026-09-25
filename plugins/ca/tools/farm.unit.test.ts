@@ -4,6 +4,7 @@
  */
 import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import path from "node:path";
+import * as farmAPI from "./farm.ts";
 import { readFileSync, mkdtempSync, mkdirSync, symlinkSync, rmSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir, chmod as fsChmod, stat as fsStat, open as fsOpen } from "node:fs/promises";
@@ -3720,5 +3721,173 @@ describe("worker rejection accounting", () => {
     expect(result.promptTokens).toBeUndefined();
     expect(result.completionTokens).toBeUndefined();
     expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+// Provider transport retry is separate from authoring retry. No new producer or
+// real provider is used here: time-policy tests, a mock fetch lifecycle, and an
+// injected worker each test one boundary; real source/bundle HTTP is below.
+describe("HTTP retry delay policy", () => {
+  const now = Date.UTC(2026, 8, 24, 12, 0, 0);
+  it.each([
+    [null, 0, 1000], ["", 1, 2000], ["garbage", 2, 4000],
+    ["-1", 3, 8000], ["1.5", 4, 16000], ["1e9", 5, 16000],
+    ["Infinity", 6, 16000], ["0x10", 0, 1000], ["+1", 0, 1000],
+    ["1, 2", 0, 1000], ["2026-09-24", 0, 1000], ["Thu, 31 Sep 2026 12:00:01 GMT", 0, 1000],
+    ["Thu, 24 Foo 2026 12:00:01 GMT", 0, 1000], ["Thu, 00 Sep 2026 12:00:01 GMT", 0, 1000],
+    ["Thu, 24 Sep 2026 24:00:01 GMT", 0, 1000], ["Thu, 24 Sep 2026 12:60:01 GMT", 0, 1000],
+    ["Thu, 24 Sep 2026 12:00:61 GMT", 0, 1000], ["Fri, 24 Sep 2026 12:00:01 GMT", 0, 1000],
+    ["Thu, 30 Feb 2026 12:00:01 GMT", 0, 1000], ["Thu Sep 24 12:00:01 2026, 2", 0, 1000],
+  ])("uses bounded local fallback for %s at attempt %s", (value, attempt, expected) => {
+    expect(farmAPI.apiRetryDelay(value, attempt, 120000, now)).toBe(expected);
+  });
+  it.each([
+    ["0", 0], [" 2 ", 2000], ["0003", 3000], ["120", 120000],
+    ["Thu, 24 Sep 2026 12:00:02 GMT", 2000],
+    ["Thursday, 24-Sep-26 12:00:02 GMT", 2000],
+    ["Thu Sep 24 12:00:02 2026", 2000],
+    ["Sun, 06 Nov 1994 08:49:37 GMT", 0],
+    ["Sunday, 06-Nov-94 08:49:37 GMT", 0],
+    ["Sun Nov  6 08:49:37 1994", 0],
+  ])("honors bounded HTTP delay/date %s", (value, expected) => {
+    expect(farmAPI.apiRetryDelay(value, 0, 120000, now)).toBe(expected);
+  });
+  it.each(["121", "2147484", "9".repeat(320), "Fri, 25 Sep 2026 12:00:00 GMT"])(
+    "defers an excessive valid wait rather than shortening it: %s", (value) => {
+      expect(farmAPI.apiRetryDelay(value, 0, 120000, now)).toBeNull();
+    });
+  it("accepts the HTTP leap-second spelling without normalizing a different calendar day", () => {
+    expect(farmAPI.apiRetryDelay("Tue, 30 Jun 2026 23:59:60 GMT", 0, 120000, Date.UTC(2026, 5, 30, 23, 59, 59))).toBe(1000);
+  });
+  it("prevents timer overflow even when the configured local budget is larger", () => {
+    expect(farmAPI.apiRetryDelay("2147484", 0, 1e12, now)).toBeNull();
+    expect(farmAPI.apiRetryDelay("2147483", 0, 1e12, now)).toBe(2147483000);
+  });
+});
+
+describe("HTTP transport retry lifecycle", () => {
+  const originalFetch = global.fetch;
+  const ctx = { cwd: process.cwd(), prompt: "fixture", model: "fixture-model",
+    apiBaseUrl: "https://api.example/v1", apiKey: "fixture-key", forbidden: new Set<string>() };
+  afterEach(() => { global.fetch = originalFetch; vi.useRealTimers(); vi.restoreAllMocks(); });
+
+  it("closes the discarded response before sleeping, then preserves final usage", async () => {
+    vi.useFakeTimers();
+    const signals: AbortSignal[] = [];
+    const ignoredBody = new Response("private provider diagnostic", { status: 429, headers: { "retry-after": "2" } });
+    const ignoredRead = vi.spyOn(ignoredBody, "text");
+    const fetcher = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      if (signals.length === 1) return ignoredBody;
+      expect(signals[0].aborted).toBe(true);
+      return new Response(JSON.stringify({ choices: [], usage: { prompt_tokens: 7, completion_tokens: 11 } }));
+    });
+    global.fetch = fetcher as typeof fetch;
+    const pending = httpWorker.apply(ctx);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(signals[0].aborted).toBe(true);
+    expect(ignoredRead).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1998);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    const result = await pending;
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(result).toMatchObject({ ok: false, error: "no parseable file blocks in response", promptTokens: 7, completionTokens: 11 });
+    expect(result.retryable).toBeUndefined();
+    expect(signals.every(s => s.aborted)).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([429, 503])("defers excessive cooldown at HTTP %s without another request", async (status) => {
+    vi.useFakeTimers();
+    let signal: AbortSignal | undefined;
+    const response = new Response("not public", { status, headers: { "retry-after": "86400" } });
+    const read = vi.spyOn(response, "text");
+    global.fetch = vi.fn(async (_url: unknown, init?: RequestInit) => { signal = init!.signal!; return response; }) as typeof fetch;
+    const result = await httpWorker.apply(ctx);
+    expect(result).toMatchObject({ ok: false, retryable: false, filesWritten: [] });
+    expect(result.error).toMatch(/Retry-After exceeds the local wait budget/);
+    expect(result.error).not.toContain("not public");
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(read).not.toHaveBeenCalled();
+    expect(signal!.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([429, 500, 503])("keeps HTTP %s exhaustion out of the authoring retry loop", async (status) => {
+    vi.useFakeTimers();
+    const signals: AbortSignal[] = [];
+    global.fetch = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      return new Response("not public", { status, headers: { "retry-after": "0" } });
+    }) as typeof fetch;
+    const pending = httpWorker.apply(ctx);
+    await vi.runAllTimersAsync();
+    expect(await pending).toMatchObject({ ok: false, retryable: false, filesWritten: [] });
+    expect(global.fetch).toHaveBeenCalledTimes(4); // original request + existing default of three transport retries
+    expect(signals.every(s => s.aborted)).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("preserves the existing exponential fallback for a malformed header", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    global.fetch = vi.fn(async () => ++calls === 1
+      ? new Response("not public", { status: 503, headers: { "retry-after": "-1" } })
+      : new Response(JSON.stringify({ choices: [] }))) as typeof fetch;
+    const pending = httpWorker.apply(ctx);
+    await vi.advanceTimersByTimeAsync(999);
+    expect(calls).toBe(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect((await pending).error).toBe("no parseable file blocks in response");
+    expect(calls).toBe(2);
+  });
+
+  it("closes a terminal error response without awaiting its unused body", async () => {
+    let signal: AbortSignal | undefined;
+    const response = new Response("private diagnostic", { status: 403 });
+    const read = vi.spyOn(response, "text");
+    global.fetch = vi.fn(async (_url: unknown, init?: RequestInit) => { signal = init!.signal!; return response; }) as typeof fetch;
+    const result = await httpWorker.apply(ctx);
+    expect(result).toMatchObject({ ok: false, error: "API 403" });
+    expect(result.retryable).toBeUndefined(); // only the explicit cooldown/exhaustion disposition changed
+    expect(read).not.toHaveBeenCalled();
+    expect(signal!.aborted).toBe(true);
+  });
+});
+
+describe("transport deferral preserves task retry boundaries", () => {
+  const savedSamples = process.env.FARM_SAMPLES;
+  afterEach(() => { if (savedSamples === undefined) delete process.env.FARM_SAMPLES; else process.env.FARM_SAMPLES = savedSamples; });
+  const task: Task = { id: "transport-deferral", description: "respect provider cooldown",
+    filesInScope: ["src/impl.ts"], test: { path: "tests/impl.test.ts" }, gate: { commands: ["node -p 0"] }, maxRetries: 2 };
+  function deps(worker: Worker): RunTaskDeps {
+    return { worker, prepareWorktree: async () => null, resetWorktree: vi.fn(async () => {}),
+      fileHash: async () => null, checkDrift: async () => [], runGate: vi.fn(async () => ({ ok: true as const })),
+      antiGamingCheck: async () => ({ risk: "none" as const }), mutationCheck: async () => null,
+      git: vi.fn(async () => ({ code: 0, out: "", stdout: "", stderr: "" })),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn() };
+  }
+  it.each([1, 2])("does not start another authoring round after %s deferred sample(s)", async (n) => {
+    process.env.FARM_SAMPLES = String(n);
+    const worker: Worker = { apply: vi.fn(async () => ({ ok: false, filesWritten: [], error: "provider cooldown",
+      retryable: false as const, promptTokens: 3, completionTokens: 5 })) };
+    const d = deps(worker);
+    const result = await runTask(task, "fixture", "https://api.example/v1", "fixture", d);
+    expect(result).toMatchObject({ status: "escalate", attempts: 1, promptTokens: 3*n, completionTokens: 5*n });
+    expect(result.note).toContain("provider cooldown");
+    expect(worker.apply).toHaveBeenCalledTimes(n);
+    expect(d.resetWorktree).not.toHaveBeenCalled();
+    expect(d.runGate).not.toHaveBeenCalled();
+    expect(vi.mocked(d.git).mock.calls.some(([args]) => args[0] === "add" || args[0] === "commit" || args[0] === "merge")).toBe(false);
+  });
+  it("retains ordinary custom-worker retries when no disposition was returned", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const worker: Worker = { apply: vi.fn(async () => ({ ok: false, filesWritten: [], error: "ordinary failed implementation" })) };
+    const d = deps(worker);
+    const result = await runTask(task, "fixture", "https://api.example/v1", "fixture", d);
+    expect(result.status).toBe("escalate");
+    expect(worker.apply).toHaveBeenCalledTimes(3);
+    expect(d.resetWorktree).toHaveBeenCalledTimes(2);
   });
 });

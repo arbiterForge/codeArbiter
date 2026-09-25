@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Document bounded farm transport retries and task-local cooldown handling in
+  the shared private card without enabling a new backend or HTML farm support.
 - Preserve known rejected-response usage in the shared farm backend and document
   its limits; existing preview authority and HTML farm restrictions remain.
 - Keep built-in mutation nonzero exits as unclassified rejection evidence, not

@@ -232,8 +232,8 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
-| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout (prevents worker-slot deadlock). |
-| `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx (honors `Retry-After`). |
+| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout; also caps an individual provider-directed retry wait. |
+| `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx. Bounded `Retry-After` is honored; exhaustion defers new authoring for that task. |
 | `FARM_ENTITLEMENT_PROBE_TIMEOUT_MS` | `35000` | Per-candidate wall-clock cap for the `--canary` entitlement pre-screen (drops 401 promo-expired models). |
 | `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on bytes of test-source + in-scope file context injected into the worker prompt (data-minimization; redacted for secrets). |
 | `FARM_ABORT_ESCALATION_RATE` | `0.5` | Circuit breaker: abort once escalations exceed this fraction… |
@@ -361,3 +361,21 @@ To run two farms against one repository at the same time, give each process:
 Escalated tasks leave their worktrees at `.farm/worktrees/<task-id>/` for inspection.
 
 Canary ranking: `FARM_CANDIDATE_MODELS=a,b,c farm.js --canary <plan.json>` (cwd at the project root).
+
+### Transport retry boundaries
+
+A 429 or server failure retries the HTTP request within `FARM_API_MAX_RETRIES`, not a fresh
+implementation. Recognized `Retry-After` delay-seconds and HTTP-date values are honored only when
+the wait fits the existing `FARM_REQUEST_TIMEOUT_MS` budget and the runtime timer range. An excessive
+valid cooldown is not shortened or allowed to park a worker indefinitely. Missing or malformed fields
+use the existing exponential backoff capped at 16 seconds; explicit zero or a past valid date permits
+an immediate retry. Request deadlines still cover headers and successful body reads; between-request
+waits are separate. Discarded error streams are aborted before waiting or returning.
+
+Once that HTTP retry budget is exhausted, or a valid cooldown cannot fit locally, the worker returns
+an explicit non-retryable transport disposition. The task does not spend another authoring attempt
+against the same unavailable provider. Already-produced candidates may still qualify, independently
+eligible tasks can continue under the existing circuit breaker, and dependent work remains unaccepted.
+This is a reported task deferral, not a new user-approval gate or automatic delayed-resume service.
+Network/body failures and ordinary implementation failures otherwise retain their existing retry
+policy. This does not introduce a provider-wide cooldown coordinator, a new setting, or a spend claim.

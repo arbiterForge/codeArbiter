@@ -1425,6 +1425,52 @@ function buildChatBody(model, messages, sampling = readSampling()) {
   if (sampling.maxTokens > 0) body.max_tokens = sampling.maxTokens;
   return body;
 }
+var MAX_API_TIMER_MS = 2147483647;
+var HTTP_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+var HTTP_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function httpDateMillis(value, now) {
+  const modern = /^(Sun|Mon|Tue|Wed|Thu|Fri|Sat), (\d{2}) ([A-Z][a-z]{2}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT$/.exec(value);
+  const obsolete = /^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday), (\d{2})-([A-Z][a-z]{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}) GMT$/.exec(value);
+  const asctime = /^(Sun|Mon|Tue|Wed|Thu|Fri|Sat) ([A-Z][a-z]{2}) ( \d|\d{2}) (\d{2}):(\d{2}):(\d{2}) (\d{4})$/.exec(value);
+  const m = modern ?? obsolete;
+  if (!m && !asctime) return null;
+  const weekday = (m ? m[1] : asctime[1]).slice(0, 3);
+  const day = Number(m ? m[2] : asctime[3]);
+  const month = HTTP_MONTHS.indexOf(m ? m[3] : asctime[2]);
+  let year = Number(m ? m[4] : asctime[7]);
+  const hour = Number(m ? m[5] : asctime[4]);
+  const minute = Number(m ? m[6] : asctime[5]);
+  const second = Number(m ? m[7] : asctime[6]);
+  if (month < 0 || day < 1 || hour > 23 || minute > 59 || second > 60) return null;
+  if (obsolete) {
+    const current = new Date(now);
+    year += Math.floor(current.getUTCFullYear() / 100) * 100;
+    const fiftyYears = new Date(now);
+    fiftyYears.setUTCFullYear(current.getUTCFullYear() + 50);
+    if (Date.UTC(year, month, day, hour, minute, second) > fiftyYears.getTime()) year -= 100;
+  }
+  const date = /* @__PURE__ */ new Date(0);
+  date.setUTCFullYear(year, month, day);
+  date.setUTCHours(hour, minute, Math.min(second, 59), 0);
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month || date.getUTCDate() !== day || HTTP_DAYS[date.getUTCDay()] !== weekday) return null;
+  return date.getTime() + (second === 60 ? 1e3 : 0);
+}
+function apiRetryDelay(raw, attempt, maxWaitMs, now = Date.now()) {
+  const fallback = Math.min(2 ** Math.min(Math.max(0, attempt), 4) * 1e3, 16e3);
+  const value = raw?.trim();
+  if (!value) return fallback;
+  let requested;
+  if (/^\d+$/.test(value)) {
+    requested = Number(value) * 1e3;
+  } else {
+    const date = httpDateMillis(value, now);
+    if (date === null) return fallback;
+    requested = Math.max(0, date - now);
+  }
+  const bound = Math.min(maxWaitMs, MAX_API_TIMER_MS);
+  if (!Number.isFinite(requested) || requested > bound) return null;
+  return requested;
+}
 async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSampling()) {
   try {
     assertSecureBaseUrl(apiBaseUrl);
@@ -1434,62 +1480,65 @@ async function callApi(prompt, model, apiBaseUrl, apiKey, sampling = readSamplin
   for (let attempt = 0; attempt <= ENV.apiMaxRetries; attempt++) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ENV.requestTimeoutMs);
-    let resp;
+    let receivedHeaders = false;
+    let retryDelay;
     try {
-      resp = await fetch(`${apiBaseUrl}/chat/completions`, {
+      const resp = await fetch(`${apiBaseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify(buildChatBody(model, [{ role: "user", content: prompt }], sampling)),
         signal: ctrl.signal,
-        // A validated HTTPS URL is not permission to follow a 307/308 onto an
-        // unvalidated cleartext endpoint with the same POST body.
+        // Do not leak a validated request to an unvalidated redirect target.
         redirect: "error"
       });
-    } catch (e) {
-      clearTimeout(timer);
-      const aborted = e?.name === "AbortError";
-      if (attempt < ENV.apiMaxRetries) {
-        await sleep(Math.min(2 ** attempt * 1e3, 16e3));
-        continue;
-      }
-      return { ok: false, error: aborted ? `request timed out after ${ENV.requestTimeoutMs}ms` : `fetch failed: ${e}` };
-    }
-    try {
+      receivedHeaders = true;
       if (resp.status === 429 || resp.status >= 500) {
-        if (attempt < ENV.apiMaxRetries) {
-          const ra = Number(resp.headers.get("retry-after"));
-          const wait = Number.isFinite(ra) && ra > 0 ? ra * 1e3 : Math.min(2 ** attempt * 1e3, 16e3);
-          await sleep(wait);
-          continue;
+        const wait = apiRetryDelay(resp.headers.get("retry-after"), attempt, ENV.requestTimeoutMs);
+        if (wait === null) {
+          return {
+            ok: false,
+            retryable: false,
+            error: `API ${resp.status}: Retry-After exceeds the local wait budget; task deferred without another authoring attempt`
+          };
         }
-        await resp.text();
-        return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
-      }
-      if (!resp.ok) {
-        await resp.text();
+        if (attempt >= ENV.apiMaxRetries) {
+          return {
+            ok: false,
+            retryable: false,
+            error: `API ${resp.status} after ${ENV.apiMaxRetries} retries; task deferred without another authoring attempt`
+          };
+        }
+        retryDelay = wait;
+      } else if (!resp.ok) {
         return { ok: false, error: `API ${resp.status}` };
+      } else {
+        return parseChatCompletion(await resp.text(), apiBaseUrl);
       }
-      const text = await resp.text();
-      return parseChatCompletion(text, apiBaseUrl);
     } catch (e) {
       const aborted = e?.name === "AbortError";
-      return {
-        ok: false,
-        error: aborted ? `request timed out after ${ENV.requestTimeoutMs}ms (reading response body)` : `failed reading response body: ${e}`
-      };
+      if (!receivedHeaders && attempt < ENV.apiMaxRetries) {
+        retryDelay = apiRetryDelay(null, attempt, ENV.requestTimeoutMs);
+      } else {
+        return { ok: false, error: aborted ? `request timed out after ${ENV.requestTimeoutMs}ms${receivedHeaders ? " (reading response body)" : ""}` : `${receivedHeaders ? "failed reading response body" : "fetch failed"}: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
+      }
     } finally {
+      ctrl.abort();
       clearTimeout(timer);
     }
+    await sleep(retryDelay);
   }
   return { ok: false, error: "exhausted API retries" };
 }
 async function runWorker(cwd, prompt, model, apiBaseUrl, apiKey, forbidden, sampling) {
   const api = await callApi(prompt, model, apiBaseUrl, apiKey, sampling ?? readSampling());
   const tokens = { promptTokens: api.usage?.prompt_tokens, completionTokens: api.usage?.completion_tokens };
-  if (!api.ok) return { ok: false, filesWritten: [], error: api.error, ...tokens };
+  if (!api.ok) return {
+    ok: false,
+    filesWritten: [],
+    error: api.error,
+    ...tokens,
+    ...api.retryable === false ? { retryable: false } : {}
+  };
   const blocks = extractFileBlocks(api.content);
   const filesWritten = [];
   for (const { path: filePath, body } of blocks) {
@@ -1873,7 +1922,14 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
       const ct = w.completionTokens ?? 0;
       base.promptTokens = pt;
       base.completionTokens = ct;
-      if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
+      if (!w.ok) return {
+        ...base,
+        filesWritten: w.filesWritten,
+        retryable: w.retryable,
+        note: redactSecrets(`worker error: ${w.error}`),
+        promptTokens: pt,
+        completionTokens: ct
+      };
       const sweep = postApplySweep(wt, w.filesWritten, forbidden);
       if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
       const testHashAfter = await deps.fileHash(path3.resolve(wt, t.test.path));
@@ -1929,7 +1985,8 @@ ${gate.tail}`), promptTokens: pt, completionTokens: ct };
     }
   }
   const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
-  return { winner, fatal, bestFailure, promptTokens, completionTokens, cleanup };
+  const deferred = outcomes.find((o) => o.retryable === false) ?? null;
+  return { winner, fatal, bestFailure, deferred, promptTokens, completionTokens, cleanup };
 }
 async function prepareEvaluationWorktree(wt, from, gitFn) {
   try {
@@ -2066,6 +2123,19 @@ ${gate.tail}`) };
       lastFilesWritten = worker.filesWritten;
       if (!worker.ok) {
         priorFailure = redactSecrets(`worker error: ${worker.error}`);
+        if (worker.retryable === false) {
+          return finish({
+            id: t.id,
+            status: "escalate",
+            attempts: attempt,
+            branch,
+            worktree: wt,
+            note: priorFailure,
+            filesWritten: lastFilesWritten,
+            promptTokens,
+            completionTokens
+          });
+        }
         continue;
       }
     } else {
@@ -2108,6 +2178,19 @@ ${gate.tail}`) };
           worktree: wt,
           note: sel.fatal.note,
           filesWritten: fatal?.kind === "fatal" && fatal.unsafe ? [] : sel.fatal.filesWritten,
+          promptTokens,
+          completionTokens
+        });
+      }
+      if (!sel.winner && sel.deferred) {
+        return finish({
+          id: t.id,
+          status: "escalate",
+          attempts: attempt,
+          branch,
+          worktree: wt,
+          note: sel.deferred.note,
+          filesWritten: sel.deferred.filesWritten,
           promptTokens,
           completionTokens
         });
@@ -2891,6 +2974,7 @@ export {
   WINDOWS_PIN_READY_TIMEOUT_MS,
   _resetAllowedWorktreeRoot,
   allowedWorktreeRoot,
+  apiRetryDelay,
   assertContainedWorktree,
   assertSafeRunId,
   assertSecureBaseUrl,

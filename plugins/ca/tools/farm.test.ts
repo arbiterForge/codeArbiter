@@ -1425,6 +1425,123 @@ describe("farm.ts smoke tests", () => {
     expect(lines).toHaveLength(2);
   });
 
+
+  // Real HTTP + Git paths for both delivered entry points. The server's forced
+  // finish is fixture cleanup only; the client must abort unused streams first.
+  describe.each(["source", "bundle"] as const)("HTTP transport lifecycle via %s", (entry) => {
+    const output = (file = "src/transport.ts") => JSON.stringify({
+      choices: [{ message: { content: `\`\`\`typescript:${file}\nexport function transport(value: number) { return value + value; }\n\`\`\`` } }],
+      usage: { prompt_tokens: 7, completion_tokens: 11 },
+    });
+    async function serverFor(select: (index: number, prompt: string) => { status: number; retryAfter?: string; stall?: boolean; body?: string }) {
+      const calls: string[] = [];
+      const discarded: Array<{ closedEarly: boolean; closed: boolean }> = [];
+      const server = createServer((req, res) => {
+        let raw = "";
+        req.on("data", data => { raw += data; });
+        req.on("end", () => {
+          const prompt = JSON.parse(raw).messages[0].content as string;
+          calls.push(prompt);
+          const reply = select(calls.length, prompt);
+          res.writeHead(reply.status, { "Content-Type": "application/json", ...(reply.retryAfter !== undefined ? { "Retry-After": reply.retryAfter } : {}) });
+          if (!reply.stall) { res.end(reply.body ?? "private provider diagnostic"); return; }
+          const state = { closedEarly: false, closed: false };
+          discarded.push(state);
+          let ended = false;
+          const timer = setTimeout(() => { ended = true; res.end(); }, 5000);
+          res.on("close", () => { state.closed = true; state.closedEarly = !ended; clearTimeout(timer); });
+          res.write("private provider diagnostic");
+        });
+      });
+      await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
+      mockServer = server;
+      port = (server.address() as { port: number }).port;
+      return { calls, discarded };
+    }
+    function planFor(tasks = [{ id: "transport", file: "src/transport.ts", deps: [] as string[] }]) {
+      writeFileSync(join(tmpDir, "immutable.txt"), "do not mutate this fixture test\n");
+      gitIn(tmpDir, "add", "--", "immutable.txt");
+      gitIn(tmpDir, "commit", "--no-gpg-sign", "-m", "transport fixture");
+      const base = gitIn(tmpDir, "rev-parse", "main");
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "transport fixture", model: "fixture", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: tasks.map(t => ({ id: t.id, description: `write ${t.file}`, deps: t.deps,
+          filesInScope: [t.file], test: { path: "immutable.txt" }, gate: { commands: ["node -p 0"] }, maxRetries: 2 })) }));
+      return { planPath, base };
+    }
+    const env = { FARM_API_KEY: "fixture-key", FARM_API_MAX_RETRIES: "1", FARM_MUTATION: "off", FARM_REQUEST_TIMEOUT_MS: "10000" };
+    function report() { return JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8")); }
+    function preserved(base: string) {
+      expect(gitIn(tmpDir, "rev-parse", "main")).toBe(base);
+      expect(readFileSync(join(tmpDir, "immutable.txt"), "utf8")).toBe("do not mutate this fixture test\n");
+    }
+
+    it.each([1, 2])("defers an excessive cooldown without multiplying %s planned sample(s)", async (samples) => {
+      const s = await serverFor(() => ({ status: 429, retryAfter: "2147484", stall: true }));
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_SAMPLES: String(samples) }, [], entry);
+      expect(result.code).toBe(2);
+      expect(s.calls).toHaveLength(samples);
+      expect(s.discarded.every(x => x.closed && x.closedEarly)).toBe(true);
+      expect(report().results[0]).toMatchObject({ status: "escalate", attempts: 1 });
+      expect(report().results[0].note).toMatch(/Retry-After exceeds the local wait budget/);
+      expect(result.out).not.toMatch(/TimeoutOverflowWarning|private provider diagnostic/);
+      expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(p.base);
+      preserved(p.base);
+    });
+
+    it.each([0, 1, 2])("uses %s transport retries once, rather than each authoring attempt", async (retries) => {
+      const s = await serverFor(() => ({ status: 503, retryAfter: "0", stall: true }));
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_API_MAX_RETRIES: String(retries) }, [], entry);
+      expect(result.code).toBe(2);
+      expect(s.calls).toHaveLength(retries + 1);
+      expect(s.discarded.every(x => x.closed && x.closedEarly)).toBe(true);
+      expect(report().results[0]).toMatchObject({ status: "escalate", attempts: 1 });
+      expect(report().results[0].note).toContain(`API 503 after ${retries} retries`);
+      preserved(p.base);
+    });
+
+    it("retries a transient error after closing its body and qualifies the eventual output", async () => {
+      const s = await serverFor(index => index === 1 ? { status: 429, retryAfter: "0", stall: true } : { status: 200, body: output() });
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, env, [], entry);
+      expect(result.code).toBe(0);
+      expect(s.calls).toHaveLength(2);
+      expect(s.discarded).toEqual([{ closed: true, closedEarly: true }]);
+      expect(report().results[0]).toMatchObject({ status: "green", attempts: 1, promptTokens: 7, completionTokens: 11 });
+      expect(gitIn(tmpDir, "show", "farm/integration:src/transport.ts")).toContain("return value + value");
+      preserved(p.base);
+    });
+
+    it("can accept an already-generated sibling without retrying a deferred sample", async () => {
+      const s = await serverFor(index => index === 1 ? { status: 503, retryAfter: "2147484" } : { status: 200, body: output() });
+      const p = planFor();
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_SAMPLES: "2" }, [], entry);
+      expect(result.code).toBe(0);
+      expect(s.calls).toHaveLength(2);
+      expect(report().results[0]).toMatchObject({ status: "green", attempts: 1,
+        promptTokens: 7, completionTokens: 11, acceptedPromptTokens: 7, acceptedCompletionTokens: 11 });
+      preserved(p.base);
+    });
+
+    it("continues independently eligible work while leaving a deferred prerequisite unaccepted", async () => {
+      const s = await serverFor((_index, prompt) => prompt.includes("src/deferred.ts")
+        ? { status: 429, retryAfter: "2147484" } : { status: 200, body: output("src/independent.ts") });
+      const p = planFor([{ id: "a", file: "src/deferred.ts", deps: [] },
+        { id: "b", file: "src/independent.ts", deps: [] }, { id: "c", file: "src/dependent.ts", deps: ["a"] }]);
+      const result = await runFarmWithArgs(tmpDir, [], p.planPath, { ...env, FARM_CONCURRENCY: "1" }, [], entry);
+      expect(result.code).toBe(2);
+      expect(s.calls).toHaveLength(2);
+      const r = report();
+      expect(r.results.find((x: { id: string }) => x.id === "a")).toMatchObject({ status: "escalate", attempts: 1 });
+      expect(r.results.find((x: { id: string }) => x.id === "b")).toMatchObject({ status: "green", attempts: 1 });
+      expect(r.blocked).toContainEqual(expect.objectContaining({ id: "c" }));
+      expect(gitIn(tmpDir, "show", "farm/integration:src/independent.ts")).toContain("return value + value");
+      preserved(p.base);
+    });
+  });
+
   // -------------------------------------------------------------------------
   // reliability-012 — callApi must bound the response BODY read, not just the
   // time-to-headers.

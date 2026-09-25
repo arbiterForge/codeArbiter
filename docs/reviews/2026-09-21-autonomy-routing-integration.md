@@ -703,3 +703,56 @@ bundle, tests and generated private cards if rejected. Preserve upstream release
 work, actual artifact authority, unrelated worktrees and historical evidence.
 Process resume, complete spend accounting, HTML farm qualification, remaining
 command migrations and measured production improvement remain separate work.
+
+
+## 2026-09-24 continuation: bounded provider retry lifecycle (partial F12)
+
+Baseline: `4e7ff2139480c25fe28bca5def14b8f857f8ffd6`. The HTTP loop waited on
+provider-controlled Retry-After after leaving an error stream open. The request
+abort timer did not bound that separate sleep, HTTP dates fell back to one second,
+and integer-overflow waits could collapse to an immediate runtime timer. Exhausted
+transport retries also re-entered the task's authoring loop as if changing code
+would repair a saturated provider.
+
+Use the existing private worker/result seam, not a new router or settings surface.
+Parse standard delay-seconds and HTTP-date forms; malformed input retains bounded
+local backoff. Honor a valid wait only within the existing request timeout budget
+and safe runtime timer range. Do not clamp a longer valid cooldown into an earlier
+request: defer the task instead. Close discarded responses before backoff or return,
+while keeping the successful-body read deadline. Keep request retry counts and
+normal implementation verification/retry policy intact.
+
+Carry that task-local non-retryable transport result through single-worker and
+best-of-N paths. Already-produced candidates still receive the full existing
+qualification; if no candidate qualifies, do not start another authoring round
+that bypasses the provider cooldown or exhausted HTTP retry budget. Preserve all
+known usage, failed-file evidence and cleanup reporting. Independently eligible
+work can continue under the unchanged circuit breaker; prerequisites remain
+unaccepted. This is not a provider-wide concurrency coordinator, automatic delayed
+resume, initial approval change, new status authority or additional human gate.
+
+Regressions use fake-clock policy tests, request-signal lifecycle tests, injected
+worker dispositions and real loopback HTTP/source-and-rebuilt-bundle CLI fixtures.
+Verify request counts, unchanged main/tests, pre-backoff stream closure, retained
+candidate success, independent-task continuation and blocked prerequisites. Preserve
+ordinary custom-worker retry, missing usage and successful-body timeout controls.
+Reference semantics: RFC 9110 sections 5.6.7 and 10.2.3; Node's timer range and Fetch
+abort/body lifecycle. No external provider or paid model call is required.
+
+Qualify the exact rebuilt candidate and both existing platforms, then normal
+current-head CI and review separately. Candidate versions, upstream release and
+authority files, secret controls, HTML farm restriction, thresholds and discovery
+registry remain unchanged. Roll back runtime, bundle, tests and private generated
+cards together if rejected. Full accounting, process resume, HTML farm enablement,
+coverage completion and measured quality/resource outcomes remain separate work.
+
+The baseline normal run 36079154677 also exposed a Pi Windows test failure in
+`test/runner-isolation.test.ts`, outside the farm runtime. A single test packed
+three early refusals and eight asynchronous child-failure lifecycles into one
+five-second budget. Its timeout left asynchronous cleanup able to touch the next
+test's shared mocks. Split those exact scenarios into individual awaited tests;
+retain every degraded-result, auth-preservation and cleanup assertion, including
+the existing pending/idempotent cleanup controls. Do not enlarge test or product
+deadlines, change runner containment, or skip the Windows cell. Qualify the full
+Pi isolation file and its surrounding suite on native Windows in addition to the
+farm matrix; treat any remaining failure as evidence rather than silencing it.
