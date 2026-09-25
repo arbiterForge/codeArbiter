@@ -4076,7 +4076,7 @@ describe("verified merge recovery", () => {
     }
     for (const root of roots.splice(0)) await fsRm(root, { recursive: true, force: true });
   });
-  async function fixture(samples = 1, failure = "") {
+  async function fixture(samples = 1, failure = "", reverseArrival = false) {
     process.env.FARM_SAMPLES = String(samples);
     process.env.FARM_TEMPERATURE = "0";
     const id = `merge-recovery-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -4088,6 +4088,10 @@ describe("verified merge recovery", () => {
     const baseline = "a".repeat(40);
     const prompts: string[] = [], events: string[] = [], resets: string[][] = [];
     let calls = 0, merges = 0, commits = 0, gateCalls = 0;
+    const firstCandidates = new Map<string, string>();
+    const arrivals: string[] = [];
+    let sampleOneStarted!: () => void;
+    const sampleOneReady = new Promise<void>(done => { sampleOneStarted = done; });
     let protectedTest = "original protected test", head = "b".repeat(40);
     const deps: RunTaskDeps = {
       prepareWorktree: async (_branch, dir) => {
@@ -4102,8 +4106,15 @@ describe("verified merge recovery", () => {
       runGate: async () => { gateCalls++; return { ok: true }; },
       antiGamingCheck: async () => ({ risk: "none" }), mutationCheck: async () => null,
       worker: { async apply(ctx) {
-        prompts.push(ctx.prompt); calls++;
-        await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"), `worker-candidate-${calls}\n`);
+        // Arrival order is not sample index. Force the opposite order in one
+        // case without changing runtime concurrency or accepting either answer.
+        if (reverseArrival && ctx.cwd === wt + "__s0" && !firstCandidates.has(ctx.cwd))
+          await sampleOneReady;
+        prompts.push(ctx.prompt); calls++; arrivals.push(ctx.cwd);
+        const candidate = `worker-candidate-${calls}\n`;
+        if (!firstCandidates.has(ctx.cwd)) firstCandidates.set(ctx.cwd, candidate);
+        if (ctx.cwd === wt + "__s1") sampleOneStarted();
+        await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"), candidate);
         if (failure === "worker-tamper" && merges > 0)
           await fsWriteFile(path.join(ctx.cwd, "test.txt"), "worker changed the protected test");
         return { ok: true, filesWritten: ["src/impl.ts"], promptTokens: 7, completionTokens: 11 };
@@ -4142,12 +4153,12 @@ describe("verified merge recovery", () => {
         return good();
       },
     };
-    return { task, deps, wt, baseline, prompts, events, resets,
+    return { task, deps, wt, baseline, prompts, events, resets, firstCandidates, arrivals,
       state: () => ({ calls, merges, commits, gateCalls }) };
   }
-  for (const samples of [1, 2]) {
-    it(`recovers on the exact advanced baseline and keeps previous candidate with ${samples} samples`, async () => {
-      const f = await fixture(samples);
+  for (const [samples, reverseArrival] of [[1, false], [2, false], [2, true]] as const) {
+    it(`recovers on the exact advanced baseline and keeps previous candidate with ${samples} samples, reversed arrival=${reverseArrival}`, async () => {
+      const f = await fixture(samples, "", reverseArrival);
       const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
       expect(r.status).toBe("green"); expect(r.attempts).toBe(2);
       expect(f.state().calls).toBe(2 * samples); expect(f.state().merges).toBe(2);
@@ -4157,7 +4168,19 @@ describe("verified merge recovery", () => {
       expect(next).toContain("advanced protected test");
       expect(next).toContain("advanced implementation");
       const prior = next.split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
-      expect(prior).toContain("worker-candidate-1");
+      const selectedPath = samples === 1 ? f.wt : f.wt + "__s0";
+      const selected = f.firstCandidates.get(selectedPath);
+      expect(selected, "sample zero remains the deterministic selection").toBeDefined();
+      expect(prior).toContain(selected!.trim());
+      if (samples === 2) {
+        const sibling = f.firstCandidates.get(f.wt + "__s1");
+        expect(sibling).toBeDefined();
+        expect(prior).not.toContain(sibling!.trim());
+      }
+      if (reverseArrival) {
+        expect(f.arrivals.slice(0, 2)).toEqual([f.wt + "__s1", f.wt + "__s0"]);
+        expect(selected).toBe("worker-candidate-2\n");
+      }
       expect(prior).not.toContain("advanced implementation");
       expect(f.state().gateCalls).toBeGreaterThanOrEqual(2);
       const read = f.events.indexOf("integration-head");
