@@ -34,9 +34,7 @@ on:
       - ".github/scripts/check_site_voice.py"
       - "core/pysrc/_sloplib.py"
   pull_request:
-    # C04 is reviewed above the still-open C02/C03 branch. PRs stay validation-only.
-    # Remove this exact campaign entry after the stack lands on main.
-    branches: [main, docs/concepts-decisions-evidence]
+    branches: [main]
     paths:
       - "site/**"
       - "plugins/ca/**"
