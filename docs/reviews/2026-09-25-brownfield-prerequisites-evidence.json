@@ -1,0 +1,461 @@
+{
+  "record_type": "bounded-prerequisite-execution-evidence",
+  "date": "2026-09-25",
+  "repository": "arbiterForge/codeArbiter",
+  "base_commit": "4187f1e22dc7da3cf755a2654bbf7ec268236126",
+  "campaign_commit": "4decde20df14cf4dfcd1e2762723772d1d5c8b53",
+  "campaign_pr": 872,
+  "scope": "Three prerequisite fixes, test-fixture correction and necessary distribution metadata. Not campaign acceptance or release qualification.",
+  "authoring_environment": {
+    "platform": "windows/amd64",
+    "python": "3.14.6"
+  },
+  "native_payload": {
+    "tag": "v2.21.16",
+    "asset": "codearbiter-ca-2.21.16.tar.gz",
+    "sha256": "32588a10eb5070b408443e5a0ef23453128725d33574c49a93f5edf5edf22fb8",
+    "matches_release_metadata": true,
+    "mode": "Released engine plus candidate resources in disposable integration fixtures; no live model/marketplace installation."
+  },
+  "tests": [
+    {
+      "label": "intent-red-corrected",
+      "argv": [
+        "python",
+        "plugins/ca/hooks/tests/test_intentlib.py",
+        "HTMLIntentResponseTest"
+      ],
+      "exit": 1,
+      "seconds": 0.163,
+      "stdout": "",
+      "stderr": "...FFFFFFF..FFFFFFFFFF\n======================================================================\nFAIL: test_fresh_identity_must_name_same_artifact (__main__.HTMLIntentResponseTest.test_fresh_identity_must_name_same_artifact)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 359, in test_fresh_identity_must_name_same_artifact\n    self.assertEqual(self.invoke(self.response(diagnostics=[]), fresh=fresh)[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_invalid_result_with_empty_diagnostics_stays_invalid (__main__.HTMLIntentResponseTest.test_invalid_result_with_empty_diagnostics_stays_invalid) (diagnostics=None)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 316, in test_invalid_result_with_empty_diagnostics_stays_invalid\n    self.assertEqual(self.invoke(self.response(False, diagnostics))[0], 1)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2 != 1\n\n======================================================================\nFAIL: test_issue_checkbox_coverage_and_retirement_are_preserved (__main__.HTMLIntentResponseTest.test_issue_checkbox_coverage_and_retirement_are_preserved)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 368, in test_issue_checkbox_coverage_and_retirement_are_preserved\n    self.assertEqual(self.invoke(result, issue=\"- [ ] guard detects deployment mistakes\")[0], 0)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2 != 0\n\n======================================================================\nFAIL: test_malformed_diagnostics_are_errors_not_empty_success (__main__.HTMLIntentResponseTest.test_malformed_diagnostics_are_errors_not_empty_success) (diagnostics={})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 332, in test_malformed_diagnostics_are_errors_not_empty_success\n    self.assertEqual(self.invoke(self.response(diagnostics=diagnostics))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_malformed_diagnostics_are_errors_not_empty_success (__main__.HTMLIntentResponseTest.test_malformed_diagnostics_are_errors_not_empty_success) (diagnostics='')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 332, in test_malformed_diagnostics_are_errors_not_empty_success\n    self.assertEqual(self.invoke(self.response(diagnostics=diagnostics))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_missing_required_response_field_is_an_error (__main__.HTMLIntentResponseTest.test_missing_required_response_field_is_an_error) (field='artifact_id')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 351, in test_missing_required_response_field_is_an_error\n    self.assertEqual(self.invoke(result)[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_missing_required_response_field_is_an_error (__main__.HTMLIntentResponseTest.test_missing_required_response_field_is_an_error) (field='gate')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 351, in test_missing_required_response_field_is_an_error\n    self.assertEqual(self.invoke(result)[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_native_null_diagnostics_succeeds_without_approval (__main__.HTMLIntentResponseTest.test_native_null_diagnostics_succeeds_without_approval)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 307, in test_native_null_diagnostics_succeeds_without_approval\n    self.assertEqual((code, out, err), (0, \"\", \"\"))\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Tuples differ: (2, '', \"_intentlib.py: HTML validation fa[38 chars]e\\n\") != (0, '', '')\n\nFirst differing element 0:\n2\n0\n\n+ (0, '', '')\n- (2,\n-  '',\n-  \"_intentlib.py: HTML validation failed: 'NoneType' object is not iterable\\n\")\n\n======================================================================\nFAIL: test_response_must_name_selected_artifact_and_ready_gate (__main__.HTMLIntentResponseTest.test_response_must_name_selected_artifact_and_ready_gate) (field='artifact_id')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 344, in test_response_must_name_selected_artifact_and_ready_gate\n    self.assertEqual(self.invoke(result)[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_response_must_name_selected_artifact_and_ready_gate (__main__.HTMLIntentResponseTest.test_response_must_name_selected_artifact_and_ready_gate) (field='gate')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 344, in test_response_must_name_selected_artifact_and_ready_gate\n    self.assertEqual(self.invoke(result)[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_valid_flag_requires_actual_boolean (__main__.HTMLIntentResponseTest.test_valid_flag_requires_actual_boolean) (valid=None)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 337, in test_valid_flag_requires_actual_boolean\n    self.assertEqual(self.invoke(self.response(valid, []))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 1 != 2\n\n======================================================================\nFAIL: test_valid_flag_requires_actual_boolean (__main__.HTMLIntentResponseTest.test_valid_flag_requires_actual_boolean) (valid=0)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 337, in test_valid_flag_requires_actual_boolean\n    self.assertEqual(self.invoke(self.response(valid, []))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 1 != 2\n\n======================================================================\nFAIL: test_valid_flag_requires_actual_boolean (__main__.HTMLIntentResponseTest.test_valid_flag_requires_actual_boolean) (valid=1)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 337, in test_valid_flag_requires_actual_boolean\n    self.assertEqual(self.invoke(self.response(valid, []))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_valid_flag_requires_actual_boolean (__main__.HTMLIntentResponseTest.test_valid_flag_requires_actual_boolean) (valid='false')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 337, in test_valid_flag_requires_actual_boolean\n    self.assertEqual(self.invoke(self.response(valid, []))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_valid_flag_requires_actual_boolean (__main__.HTMLIntentResponseTest.test_valid_flag_requires_actual_boolean) (valid='true')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 337, in test_valid_flag_requires_actual_boolean\n    self.assertEqual(self.invoke(self.response(valid, []))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 0 != 2\n\n======================================================================\nFAIL: test_valid_flag_requires_actual_boolean (__main__.HTMLIntentResponseTest.test_valid_flag_requires_actual_boolean) (valid=[])\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 337, in test_valid_flag_requires_actual_boolean\n    self.assertEqual(self.invoke(self.response(valid, []))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 1 != 2\n\n======================================================================\nFAIL: test_valid_flag_requires_actual_boolean (__main__.HTMLIntentResponseTest.test_valid_flag_requires_actual_boolean) (valid={})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\plugins\\ca\\hooks\\tests\\test_intentlib.py\", line 337, in test_valid_flag_requires_actual_boolean\n    self.assertEqual(self.invoke(self.response(valid, []))[0], 2)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 1 != 2\n\n----------------------------------------------------------------------\nRan 13 tests in 0.091s\n\nFAILED (failures=17)\n"
+    },
+    {
+      "label": "provenance-red-corrected",
+      "argv": [
+        "python",
+        ".github/scripts/test_provenancelib.py",
+        "SharedSourceHealingTest",
+        "CodeMapByteBudgetTest"
+      ],
+      "exit": 1,
+      "seconds": 0.13,
+      "stdout": "",
+      "stderr": "FF..FFFF.F.FFFFF\n======================================================================\nFAIL: test_all_document_orders_preserve_stale_dependents (__main__.SharedSourceHealingTest.test_all_document_orders_preserve_stale_dependents) (order=['fresh', 'old', 'older'])\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2871, in test_all_document_orders_preserve_stale_dependents\n    self.assertEqual(pl.heal_worklist([\"package.json\"], by_doc,\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                     {\"package.json\": \"current\"}), [\"package.json\"])\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Lists differ: [] != ['package.json']\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n'package.json'\n\n- []\n+ ['package.json']\n\n======================================================================\nFAIL: test_all_document_orders_preserve_stale_dependents (__main__.SharedSourceHealingTest.test_all_document_orders_preserve_stale_dependents) (order=['fresh', 'older', 'old'])\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2871, in test_all_document_orders_preserve_stale_dependents\n    self.assertEqual(pl.heal_worklist([\"package.json\"], by_doc,\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                     {\"package.json\": \"current\"}), [\"package.json\"])\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Lists differ: [] != ['package.json']\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n'package.json'\n\n- []\n+ ['package.json']\n\n======================================================================\nFAIL: test_duplicate_entries_do_not_make_first_hash_authoritative (__main__.SharedSourceHealingTest.test_duplicate_entries_do_not_make_first_hash_authoritative)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2879, in test_duplicate_entries_do_not_make_first_hash_authoritative\n    self.assertEqual(pl.heal_worklist([\"package.json\"], {\"stack\": record},\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                     {\"package.json\": \"current\"}), [\"package.json\"])\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Lists differ: [] != ['package.json']\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n'package.json'\n\n- []\n+ ['package.json']\n\n======================================================================\nFAIL: test_fresh_first_document_does_not_hide_stale_second (__main__.SharedSourceHealingTest.test_fresh_first_document_does_not_hide_stale_second)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2862, in test_fresh_first_document_does_not_hide_stale_second\n    self.assertEqual(pl.heal_worklist([\"package.json\"], records, current), [\"package.json\"])\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Lists differ: [] != ['package.json']\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n'package.json'\n\n- []\n+ ['package.json']\n\n======================================================================\nFAIL: test_malformed_neighbors_do_not_hide_valid_stale_evidence (__main__.SharedSourceHealingTest.test_malformed_neighbors_do_not_hide_valid_stale_evidence)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2909, in test_malformed_neighbors_do_not_hide_valid_stale_evidence\n    self.assertEqual(pl.heal_worklist([None, [], \"package.json\"], records,\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                     {\"package.json\": \"current\"}), [\"package.json\"])\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Lists differ: [] != ['package.json']\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n'package.json'\n\n- []\n+ ['package.json']\n\n======================================================================\nFAIL: test_staged_order_dedup_and_document_scope_remain_stable (__main__.SharedSourceHealingTest.test_staged_order_dedup_and_document_scope_remain_stable)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2899, in test_staged_order_dedup_and_document_scope_remain_stable\n    self.assertEqual(pl.heal_worklist([\"go.mod\", \"package.json\", \"go.mod\", \"README.md\"],\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                     records, current), [\"go.mod\", \"package.json\"])\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Lists differ: ['go.mod'] != ['go.mod', 'package.json']\n\nSecond list contains 1 additional elements.\nFirst extra element 1:\n'package.json'\n\n- ['go.mod']\n+ ['go.mod', 'package.json']\n\n======================================================================\nFAIL: test_bad_unicode_is_not_a_clean_result (__main__.CodeMapByteBudgetTest.test_bad_unicode_is_not_a_clean_result)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2945, in test_bad_unicode_is_not_a_clean_result\n    self.assertTrue(result)\n    ~~~~~~~~~~~~~~~^^^^^^^^\nAssertionError: [] is not true\n\n======================================================================\nFAIL: test_exact_budget_passes_and_one_byte_over_warns (__main__.CodeMapByteBudgetTest.test_exact_budget_passes_and_one_byte_over_warns)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2941, in test_exact_budget_passes_and_one_byte_over_warns\n    self.assertTrue(any(\"bytes\" in warning for warning in pl.lint_code_map(value + \"x\")))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n======================================================================\nFAIL: test_existing_entry_and_multiline_checks_still_run (__main__.CodeMapByteBudgetTest.test_existing_entry_and_multiline_checks_still_run)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2952, in test_existing_entry_and_multiline_checks_still_run\n    self.assertTrue(any(\"bytes\" in warning for warning in result))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n======================================================================\nFAIL: test_map_byte_budget_is_explicit (__main__.CodeMapByteBudgetTest.test_map_byte_budget_is_explicit)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2926, in test_map_byte_budget_is_explicit\n    self.assertEqual(getattr(pl, \"CODE_MAP_MAX_BYTES\", None), 20 * 1024)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: None != 20480\n\n======================================================================\nFAIL: test_single_oversized_role_is_diagnosed (__main__.CodeMapByteBudgetTest.test_single_oversized_role_is_diagnosed)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2930, in test_single_oversized_role_is_diagnosed\n    self.assertTrue(any(\"bytes\" in warning for warning in result), result)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true : []\n\n======================================================================\nFAIL: test_utf8_bytes_not_character_count (__main__.CodeMapByteBudgetTest.test_utf8_bytes_not_character_count)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"REPOSITORY\\.github\\scripts\\test_provenancelib.py\", line 2935, in test_utf8_bytes_not_character_count\n    self.assertTrue(any(\"bytes\" in warning for warning in pl.lint_code_map(value)))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 15 tests in 0.003s\n\nFAILED (failures=12)\n"
+    },
+    {
+      "label": "read-injection",
+      "argv": [
+        "python",
+        ".github/scripts/test_readinjectlib.py"
+      ],
+      "exit": 0,
+      "seconds": 0.412,
+      "stdout": "",
+      "stderr": "..........................................................................................................................................................................................................\n----------------------------------------------------------------------\nRan 202 tests in 0.286s\n\nOK\n"
+    },
+    {
+      "label": "native-baseline-red",
+      "argv": [
+        "python",
+        "BASELINE\\.github\\scripts\\test_artifact_authoring.py",
+        "ArtifactAuthoringTest.test_installed_intent_cli_accepts_native_empty_diagnostics",
+        "ArtifactAuthoringTest.test_installed_intent_cli_reports_incomplete_native_draft"
+      ],
+      "exit": 1,
+      "seconds": 0.929,
+      "stdout": "",
+      "stderr": "test_installed_intent_cli_accepts_native_empty_diagnostics (__main__.ArtifactAuthoringTest.test_installed_intent_cli_accepts_native_empty_diagnostics) ... FAIL\ntest_installed_intent_cli_reports_incomplete_native_draft (__main__.ArtifactAuthoringTest.test_installed_intent_cli_reports_incomplete_native_draft) ... ok\n\n======================================================================\nFAIL: test_installed_intent_cli_accepts_native_empty_diagnostics (__main__.ArtifactAuthoringTest.test_installed_intent_cli_accepts_native_empty_diagnostics)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"BASELINE\\.github\\scripts\\test_artifact_authoring.py\", line 1138, in test_installed_intent_cli_accepts_native_empty_diagnostics\n    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2 != 0 : _intentlib.py: HTML validation failed: 'NoneType' object is not iterable\n\n\n----------------------------------------------------------------------\nRan 2 tests in 0.771s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "label": "host-descriptors-reconciled",
+      "argv": [
+        "python",
+        ".github/scripts/test_host_descriptors.py"
+      ],
+      "exit": 0,
+      "seconds": 1.491,
+      "stdout": "",
+      "stderr": "test_packaged_adapter_versions_match_manifests (__main__.AdapterVersionIdentityTest.test_packaged_adapter_versions_match_manifests) ... ok\ntest_codex_root_contract_uses_native_hook_token_and_legacy_corroboration (__main__.DescriptorContractTest.test_codex_root_contract_uses_native_hook_token_and_legacy_corroboration) ... ok\ntest_live_experience_catalog_paths_are_host_specific (__main__.DescriptorContractTest.test_live_experience_catalog_paths_are_host_specific) ... ok\ntest_pi_ac_01_descriptor_objects_are_deeply_immutable (__main__.DescriptorContractTest.test_pi_ac_01_descriptor_objects_are_deeply_immutable) ... ok\ntest_pi_ac_01_schema_rejects_invalid_documents (__main__.DescriptorContractTest.test_pi_ac_01_schema_rejects_invalid_documents) ... ok\ntest_pi_ac_01_schema_rejects_unknown_or_malformed_condition_tags (__main__.DescriptorContractTest.test_pi_ac_01_schema_rejects_unknown_or_malformed_condition_tags) ... ok\ntest_pi_ac_01_three_governance_hosts_are_data_not_binary_switches (__main__.DescriptorContractTest.test_pi_ac_01_three_governance_hosts_are_data_not_binary_switches) ... ok\ntest_pi_decision_0018_oracle_is_exact_versioned_and_descriptor_owned (__main__.DescriptorContractTest.test_pi_decision_0018_oracle_is_exact_versioned_and_descriptor_owned) ... ok\ntest_pi_permission_policy_surfaces_are_exact_and_descriptor_owned (__main__.DescriptorContractTest.test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned) ... ok\ntest_descriptor_suite_is_a_required_path_scoped_ci_job (__main__.GenerationContractTest.test_descriptor_suite_is_a_required_path_scoped_ci_job) ... ok\ntest_pi_ac_02_generation_is_clean_on_second_run (__main__.GenerationContractTest.test_pi_ac_02_generation_is_clean_on_second_run) ... ok\ntest_pi_ac_03_shared_python_is_byte_identical_for_every_host (__main__.GenerationContractTest.test_pi_ac_03_shared_python_is_byte_identical_for_every_host) ... ok\ntest_pi_ac_04_charters_are_canonical_and_claude_bytes_are_unchanged (__main__.GenerationContractTest.test_pi_ac_04_charters_are_canonical_and_claude_bytes_are_unchanged) ... ok\ntest_pi_ac_04_exact_task_2_through_14_non_policy_files_are_the_only_new_exemptions (__main__.GenerationContractTest.test_pi_ac_04_exact_task_2_through_14_non_policy_files_are_the_only_new_exemptions) ... ok\ntest_pi_ac_04_independent_oracle_rejects_hardcoded_pi_governance (__main__.GenerationContractTest.test_pi_ac_04_independent_oracle_rejects_hardcoded_pi_governance) ... ok\ntest_pi_ac_04_pi_governance_bodies_are_generated_only (__main__.GenerationContractTest.test_pi_ac_04_pi_governance_bodies_are_generated_only) ... ok\ntest_pi_ac_04_unlisted_tools_and_governance_mutations_fail_closed (__main__.GenerationContractTest.test_pi_ac_04_unlisted_tools_and_governance_mutations_fail_closed) ... ok\ntest_pi_command_catalog_oracle_preserves_loader_frontmatter_and_metadata (__main__.GenerationContractTest.test_pi_command_catalog_oracle_preserves_loader_frontmatter_and_metadata) ... ok\ntest_pi_notices_match_owning_bytes_and_are_not_exemptions (__main__.GenerationContractTest.test_pi_notices_match_owning_bytes_and_are_not_exemptions) ... ok\ntest_plugin_reference_checker_follows_custom_pi_catalog_descriptor_path (__main__.GenerationContractTest.test_plugin_reference_checker_follows_custom_pi_catalog_descriptor_path) ... ok\ntest_explicit_owner_quotes_are_preserved (__main__.QuotedOwnerOracleTest.test_explicit_owner_quotes_are_preserved) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 1.417s\n\nOK\n"
+    },
+    {
+      "label": "wiring-reconciled",
+      "argv": [
+        "python",
+        ".github/scripts/test_provenance_wiring.py"
+      ],
+      "exit": 0,
+      "seconds": 0.103,
+      "stdout": "PASS  test_commit_gate_heal_phase\nPASS  test_context_creation_provenance\nPASS  test_context_creation_scout_isolation\nPASS  test_decompose_provenance_stub\nPASS  test_code_map_read_on_demand\nPASS  test_context_check_command\nPASS  test_code_map_installable_manifest_claims_are_current\nPASS  test_code_map_manifest_claim_rejects_version_prefix_collision\n\nOK: 8 check(s) green\n",
+      "stderr": ""
+    },
+    {
+      "label": "overlap854-authoring",
+      "argv": [
+        "python",
+        ".github/scripts/test_artifact_authoring.py"
+      ],
+      "exit": 0,
+      "seconds": 9.595,
+      "stdout": "",
+      "stderr": "test_incomplete_draft_is_named_without_inventing_contract_fields (__main__.ArtifactAuthoringTest.test_incomplete_draft_is_named_without_inventing_contract_fields) ... ok\ntest_installed_intent_cli_accepts_native_empty_diagnostics (__main__.ArtifactAuthoringTest.test_installed_intent_cli_accepts_native_empty_diagnostics) ... ok\ntest_installed_intent_cli_reports_incomplete_native_draft (__main__.ArtifactAuthoringTest.test_installed_intent_cli_reports_incomplete_native_draft) ... ok\ntest_missing_payload_fails_closed_without_markdown_fallback (__main__.ArtifactAuthoringTest.test_missing_payload_fails_closed_without_markdown_fallback) ... ok\ntest_plan_preflight_rechecks_namespace_after_identity_or_validation (__main__.ArtifactAuthoringTest.test_plan_preflight_rechecks_namespace_after_identity_or_validation) ... ok\ntest_plan_preflight_rejects_forged_client_before_any_call (__main__.ArtifactAuthoringTest.test_plan_preflight_rejects_forged_client_before_any_call) ... ok\ntest_plan_preflight_rejects_unapproved_wrong_identity_and_wrong_digest (__main__.ArtifactAuthoringTest.test_plan_preflight_rejects_unapproved_wrong_identity_and_wrong_digest) ... ok\ntest_plan_preflight_requires_exact_approved_spec_and_binds_exact_html_pair (__main__.ArtifactAuthoringTest.test_plan_preflight_requires_exact_approved_spec_and_binds_exact_html_pair) ... ok\ntest_producers_create_and_read_canonical_html_pair (__main__.ArtifactAuthoringTest.test_producers_create_and_read_canonical_html_pair) ... ok\ntest_real_plan_bind_rejects_unapproved_or_wrong_spec_binding (__main__.ArtifactAuthoringTest.test_real_plan_bind_rejects_unapproved_or_wrong_spec_binding) ... ok\ntest_composed_authoring_instructions_define_one_default_contract (__main__.AuthoringRouteContractTest.test_composed_authoring_instructions_define_one_default_contract) ... ok\ntest_feature_small_lane_remains_inline_and_does_not_create_an_artifact (__main__.AuthoringRouteContractTest.test_feature_small_lane_remains_inline_and_does_not_create_an_artifact) ... ok\ntest_html_is_the_full_lane_default_without_markdown_fallback (__main__.AuthoringRouteContractTest.test_html_is_the_full_lane_default_without_markdown_fallback) ... ok\ntest_plan_creation_uses_engine_and_binds_the_approved_html_spec (__main__.AuthoringRouteContractTest.test_plan_creation_uses_engine_and_binds_the_approved_html_spec) ... ok\ntest_tdd_reads_typed_obligations_without_parsing_rendered_html (__main__.AuthoringRouteContractTest.test_tdd_reads_typed_obligations_without_parsing_rendered_html) ... ok\ntest_disabled_or_read_only_capability_fails_before_authoring_writes (__main__.AuthoringRouteSelectionTest.test_disabled_or_read_only_capability_fails_before_authoring_writes) ... ok\ntest_existing_pair_selection_delegates_to_exact_format_resolver (__main__.AuthoringRouteSelectionTest.test_existing_pair_selection_delegates_to_exact_format_resolver) ... ok\ntest_forged_client_is_rejected_before_authoring_capability_call (__main__.AuthoringRouteSelectionTest.test_forged_client_is_rejected_before_authoring_capability_call) ... ok\ntest_full_feature_and_sprint_default_to_html_after_capability_probe (__main__.AuthoringRouteSelectionTest.test_full_feature_and_sprint_default_to_html_after_capability_probe) ... ok\ntest_legacy_html_requested_flag_does_not_change_the_html_default (__main__.AuthoringRouteSelectionTest.test_legacy_html_requested_flag_does_not_change_the_html_default) ... ok\ntest_missing_or_invalid_capability_fails_before_authoring_writes (__main__.AuthoringRouteSelectionTest.test_missing_or_invalid_capability_fails_before_authoring_writes) ... ok\ntest_real_client_for_another_root_is_rejected_before_capability_call (__main__.AuthoringRouteSelectionTest.test_real_client_for_another_root_is_rejected_before_capability_call) ... ok\ntest_selection_rechecks_namespace_after_capability_probe (__main__.AuthoringRouteSelectionTest.test_selection_rechecks_namespace_after_capability_probe) ... ok\ntest_small_lane_stays_inline_without_resolving_or_writing_artifacts (__main__.AuthoringRouteSelectionTest.test_small_lane_stays_inline_without_resolving_or_writing_artifacts) ... ok\ntest_admission_accepts_current_codex_resources_without_conveying_authority (__main__.HostWorkflowAdmissionTest.test_admission_accepts_current_codex_resources_without_conveying_authority) ... ok\ntest_admission_accepts_merged_claude_authority_resources (__main__.HostWorkflowAdmissionTest.test_admission_accepts_merged_claude_authority_resources) ... ok\ntest_admission_checks_the_platform_specific_hook_command (__main__.HostWorkflowAdmissionTest.test_admission_checks_the_platform_specific_hook_command) ... ok\ntest_admission_does_not_follow_environment_or_project_host_claims (__main__.HostWorkflowAdmissionTest.test_admission_does_not_follow_environment_or_project_host_claims) ... ok\ntest_admission_preserves_small_lane_and_existing_markdown_on_pi (__main__.HostWorkflowAdmissionTest.test_admission_preserves_small_lane_and_existing_markdown_on_pi) ... ok\ntest_admission_rechecks_before_plan_identity_reads (__main__.HostWorkflowAdmissionTest.test_admission_rechecks_before_plan_identity_reads) ... ok\ntest_admission_rechecks_namespace_after_host_resource_scan (__main__.HostWorkflowAdmissionTest.test_admission_rechecks_namespace_after_host_resource_scan) ... ok\ntest_admission_rechecks_resources_after_initial_success (__main__.HostWorkflowAdmissionTest.test_admission_rechecks_resources_after_initial_success) ... ok\ntest_admission_refuses_missing_producers_and_host_helpers (__main__.HostWorkflowAdmissionTest.test_admission_refuses_missing_producers_and_host_helpers) ... ok\ntest_admission_refuses_pi_before_any_new_full_lane_artifact (__main__.HostWorkflowAdmissionTest.test_admission_refuses_pi_before_any_new_full_lane_artifact) ... ok\ntest_admission_rejects_bare_engine_installation (__main__.HostWorkflowAdmissionTest.test_admission_rejects_bare_engine_installation) ... ok\ntest_admission_rejects_linked_helper_ancestors (__main__.HostWorkflowAdmissionTest.test_admission_rejects_linked_helper_ancestors) ... ok\ntest_admission_rejects_malformed_duplicate_and_oversized_registry (__main__.HostWorkflowAdmissionTest.test_admission_rejects_malformed_duplicate_and_oversized_registry) ... ok\ntest_admission_rejects_nonregular_required_resource (__main__.HostWorkflowAdmissionTest.test_admission_rejects_nonregular_required_resource) ... ok\ntest_admission_rejects_nonstring_registered_commands (__main__.HostWorkflowAdmissionTest.test_admission_rejects_nonstring_registered_commands) ... ok\ntest_admission_rejects_unknown_ambiguous_or_missing_host_identity (__main__.HostWorkflowAdmissionTest.test_admission_rejects_unknown_ambiguous_or_missing_host_identity) ... ok\ntest_admission_rejects_wrong_matchers_redirected_commands_and_async_hooks (__main__.HostWorkflowAdmissionTest.test_admission_rejects_wrong_matchers_redirected_commands_and_async_hooks) ... ok\ntest_admission_requires_claude_failure_event_and_reviewer_charter (__main__.HostWorkflowAdmissionTest.test_admission_requires_claude_failure_event_and_reviewer_charter) ... ok\ntest_admission_requires_every_authority_event (__main__.HostWorkflowAdmissionTest.test_admission_requires_every_authority_event) ... ok\ntest_fixture_copy_excludes_stale_payload_before_building_artifacts (__main__.InstalledFixtureCopyTest.test_fixture_copy_excludes_stale_payload_before_building_artifacts) ... ok\ntest_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts (__main__.InstalledFixtureCopyTest.test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts) ... ok\ntest_resolves_a_test_owned_linked_ancestor (__main__.PhysicalTestDirectoryTest.test_resolves_a_test_owned_linked_ancestor) ... ok\n\n----------------------------------------------------------------------\nRan 46 tests in 9.453s\n\nOK\n"
+    },
+    {
+      "label": "version-contract",
+      "argv": [
+        "python",
+        ".github/scripts/test_payload_version_gate.py"
+      ],
+      "exit": 0,
+      "seconds": 9.19,
+      "stdout": "",
+      "stderr": "test_a_later_valid_row_does_not_mask_an_earlier_collision (__main__.TestBasenameCollisionRefusal.test_a_later_valid_row_does_not_mask_an_earlier_collision) ... ok\ntest_different_prefix_basename_collision_is_refused_before_overwrite (__main__.TestBasenameCollisionRefusal.test_different_prefix_basename_collision_is_refused_before_overwrite) ... ok\ntest_equal_prefix_is_rejected_before_basename_collision (__main__.TestBasenameCollisionRefusal.test_equal_prefix_is_rejected_before_basename_collision) ... ok\ntest_gate_surfaces_the_collision_as_a_clean_failure_not_a_traceback (__main__.TestBasenameCollisionRefusal.test_gate_surfaces_the_collision_as_a_clean_failure_not_a_traceback)\nThe refusal must actually reach the operator through `gate()`. ... ok\ntest_todays_real_declared_targets_still_resolve_correctly (__main__.TestBasenameCollisionRefusal.test_todays_real_declared_targets_still_resolve_correctly)\nExisting non-colliding mapping is completely unaffected. ... ok\ntest_absent_declaration_file_raises_a_declared_exception (__main__.TestDeclarationErrorReporting.test_absent_declaration_file_raises_a_declared_exception) ... ok\ntest_empty_declaration_file_raises (__main__.TestDeclarationErrorReporting.test_empty_declaration_file_raises) ... ok\ntest_gate_does_not_confuse_a_declaration_error_with_no_declared_namespace (__main__.TestDeclarationErrorReporting.test_gate_does_not_confuse_a_declaration_error_with_no_declared_namespace)\nBefore this fix, an uncaught exception here crashed the process \u2014 ... ok\ntest_gate_reports_a_declaration_error_as_a_clean_FAIL_not_a_traceback (__main__.TestDeclarationErrorReporting.test_gate_reports_a_declaration_error_as_a_clean_FAIL_not_a_traceback)\nThe refusal must reach `gate()` as (FAIL, message) with a ... ok\ntest_malformed_declaration_file_with_no_block_raises (__main__.TestDeclarationErrorReporting.test_malformed_declaration_file_with_no_block_raises) ... ok\ntest_todays_real_declared_targets_file_never_trips_the_new_branch (__main__.TestDeclarationErrorReporting.test_todays_real_declared_targets_file_never_trips_the_new_branch)\nNo mock \u2014 the CURRENT declared file always resolves cleanly, so ... ok\ntest_unreadable_declaration_file_raises (__main__.TestDeclarationErrorReporting.test_unreadable_declaration_file_raises) ... ok\ntest_a_manifest_without_a_version_key_fails (__main__.TestTheGateRefusesTheOtherDirections.test_a_manifest_without_a_version_key_fails) ... ok\ntest_a_version_that_goes_BACKWARDS_fails (__main__.TestTheGateRefusesTheOtherDirections.test_a_version_that_goes_BACKWARDS_fails) ... ok\ntest_an_advance_onto_an_ALREADY_TAGGED_version_fails (__main__.TestTheGateRefusesTheOtherDirections.test_an_advance_onto_an_ALREADY_TAGGED_version_fails)\nThe backstop: advanced from base, but that version is released. ... ok\ntest_an_unparseable_manifest_version_fails_and_SAYS_SO (__main__.TestTheGateRefusesTheOtherDirections.test_an_unparseable_manifest_version_fails_and_SAYS_SO)\nThe diagnosis must name the real problem. ... ok\ntest_an_unresolvable_base_fails_rather_than_passing (__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing) ... ok\ntest_regressing_to_a_prerelease_of_the_same_version_fails (__main__.TestTheGateRefusesTheOtherDirections.test_regressing_to_a_prerelease_of_the_same_version_fails) ... ok\ntest_a_first_introduction_passes (__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes)\nA plugin absent from the base is not published anywhere. AC-2. ... ok\ntest_a_prerelease_advancing_to_its_release_passes (__main__.TestTheGateStillAllowsWhatItShould.test_a_prerelease_advancing_to_its_release_passes) ... ok\ntest_advancing_the_version_passes (__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes) ... ok\ntest_no_payload_change_passes_without_a_bump (__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump) ... ok\ntest_an_undeclared_gated_payload_fails_with_a_named_reason (__main__.TestTheGatedSetMatchesTheRepository.test_an_undeclared_gated_payload_fails_with_a_named_reason) ... ok\ntest_ca_pi_is_gated_elsewhere_and_not_here (__main__.TestTheGatedSetMatchesTheRepository.test_ca_pi_is_gated_elsewhere_and_not_here)\nDouble-gating ca-pi would apply two rules to one plugin. ... ok\ntest_every_gated_manifest_exists (__main__.TestTheGatedSetMatchesTheRepository.test_every_gated_manifest_exists) ... ok\ntest_every_gated_plugin_has_a_release_tag_namespace (__main__.TestTheGatedSetMatchesTheRepository.test_every_gated_plugin_has_a_release_tag_namespace) ... ok\ntest_every_payload_scoped_plugin_is_gated_somewhere (__main__.TestTheGatedSetMatchesTheRepository.test_every_payload_scoped_plugin_is_gated_somewhere)\nA new plugin cannot be added to payload_scope and left ungated. ... ok\ntest_no_prefix_literal_remains_in_the_gate (__main__.TestTheGatedSetMatchesTheRepository.test_no_prefix_literal_remains_in_the_gate)\nA-4.1: the gate derives every tag namespace from the declared ... ok\ntest_the_derived_map_agrees_with_the_declared_file (__main__.TestTheGatedSetMatchesTheRepository.test_the_derived_map_agrees_with_the_declared_file) ... ok\ntest_the_exit_codes_are_distinguishable_to_a_SHELL (__main__.TestTheGatedSetMatchesTheRepository.test_the_exit_codes_are_distinguishable_to_a_SHELL)\nCI reads the process exit code, not the constant's name. ... ok\ntest_unknown_plugin_is_a_usage_error (__main__.TestTheGatedSetMatchesTheRepository.test_unknown_plugin_is_a_usage_error) ... unknown plugin 'plugins/nope'; declare its manifest in payload_version_gate.py before gating it (ca-pi is gated by tools/build-host-packages.py instead - see this file's docstring)\nok\ntest_a_shipped_tools_artifact_counts_as_payload (__main__.TestTheUntaggedButInstalledCase.test_a_shipped_tools_artifact_counts_as_payload) ... ok\ntest_payload_change_on_an_untagged_shipped_version_fails (__main__.TestTheUntaggedButInstalledCase.test_payload_change_on_an_untagged_shipped_version_fails) ... ok\ntest_the_failure_does_not_depend_on_the_tag_check (__main__.TestTheUntaggedButInstalledCase.test_the_failure_does_not_depend_on_the_tag_check)\nThe advance check must be what fails it \u2014 not the tag backstop. ... ok\n\n----------------------------------------------------------------------\nRan 34 tests in 9.088s\n\nOK\n"
+    },
+    {
+      "label": "python-compile",
+      "argv": [
+        "python",
+        "-m",
+        "py_compile",
+        "core/pysrc/_intentlib.py",
+        "core/pysrc/_provenancelib.py",
+        "core/pysrc/hostapi.py",
+        "plugins/ca/hooks/tests/test_intentlib.py",
+        ".github/scripts/test_provenancelib.py",
+        ".github/scripts/test_artifact_authoring.py"
+      ],
+      "exit": 0,
+      "seconds": 0.091,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "final-provenance",
+      "argv": [
+        "python",
+        ".github/scripts/test_provenancelib.py"
+      ],
+      "exit": 0,
+      "seconds": 0.548,
+      "stdout": "",
+      "stderr": "............................................................................................................................................\n----------------------------------------------------------------------\nRan 140 tests in 0.420s\n\nOK\n"
+    },
+    {
+      "label": "final-intent",
+      "argv": [
+        "python",
+        "plugins/ca/hooks/tests/test_intentlib.py"
+      ],
+      "exit": 0,
+      "seconds": 0.162,
+      "stdout": "",
+      "stderr": ".................................\n----------------------------------------------------------------------\nRan 33 tests in 0.098s\n\nOK\n"
+    },
+    {
+      "label": "final-authoring",
+      "argv": [
+        "python",
+        ".github/scripts/test_artifact_authoring.py"
+      ],
+      "exit": 0,
+      "seconds": 10.621,
+      "stdout": "",
+      "stderr": "test_incomplete_draft_is_named_without_inventing_contract_fields (__main__.ArtifactAuthoringTest.test_incomplete_draft_is_named_without_inventing_contract_fields) ... ok\ntest_installed_intent_cli_accepts_native_empty_diagnostics (__main__.ArtifactAuthoringTest.test_installed_intent_cli_accepts_native_empty_diagnostics) ... ok\ntest_installed_intent_cli_reports_incomplete_native_draft (__main__.ArtifactAuthoringTest.test_installed_intent_cli_reports_incomplete_native_draft) ... ok\ntest_missing_payload_fails_closed_without_markdown_fallback (__main__.ArtifactAuthoringTest.test_missing_payload_fails_closed_without_markdown_fallback) ... ok\ntest_plan_preflight_rechecks_namespace_after_identity_or_validation (__main__.ArtifactAuthoringTest.test_plan_preflight_rechecks_namespace_after_identity_or_validation) ... ok\ntest_plan_preflight_rejects_forged_client_before_any_call (__main__.ArtifactAuthoringTest.test_plan_preflight_rejects_forged_client_before_any_call) ... ok\ntest_plan_preflight_rejects_unapproved_wrong_identity_and_wrong_digest (__main__.ArtifactAuthoringTest.test_plan_preflight_rejects_unapproved_wrong_identity_and_wrong_digest) ... ok\ntest_plan_preflight_requires_exact_approved_spec_and_binds_exact_html_pair (__main__.ArtifactAuthoringTest.test_plan_preflight_requires_exact_approved_spec_and_binds_exact_html_pair) ... ok\ntest_producers_create_and_read_canonical_html_pair (__main__.ArtifactAuthoringTest.test_producers_create_and_read_canonical_html_pair) ... ok\ntest_real_plan_bind_rejects_unapproved_or_wrong_spec_binding (__main__.ArtifactAuthoringTest.test_real_plan_bind_rejects_unapproved_or_wrong_spec_binding) ... ok\ntest_composed_authoring_instructions_define_one_default_contract (__main__.AuthoringRouteContractTest.test_composed_authoring_instructions_define_one_default_contract) ... ok\ntest_feature_small_lane_remains_inline_and_does_not_create_an_artifact (__main__.AuthoringRouteContractTest.test_feature_small_lane_remains_inline_and_does_not_create_an_artifact) ... ok\ntest_html_is_the_full_lane_default_without_markdown_fallback (__main__.AuthoringRouteContractTest.test_html_is_the_full_lane_default_without_markdown_fallback) ... ok\ntest_plan_creation_uses_engine_and_binds_the_approved_html_spec (__main__.AuthoringRouteContractTest.test_plan_creation_uses_engine_and_binds_the_approved_html_spec) ... ok\ntest_tdd_reads_typed_obligations_without_parsing_rendered_html (__main__.AuthoringRouteContractTest.test_tdd_reads_typed_obligations_without_parsing_rendered_html) ... ok\ntest_disabled_or_read_only_capability_fails_before_authoring_writes (__main__.AuthoringRouteSelectionTest.test_disabled_or_read_only_capability_fails_before_authoring_writes) ... ok\ntest_existing_pair_selection_delegates_to_exact_format_resolver (__main__.AuthoringRouteSelectionTest.test_existing_pair_selection_delegates_to_exact_format_resolver) ... ok\ntest_forged_client_is_rejected_before_authoring_capability_call (__main__.AuthoringRouteSelectionTest.test_forged_client_is_rejected_before_authoring_capability_call) ... ok\ntest_full_feature_and_sprint_default_to_html_after_capability_probe (__main__.AuthoringRouteSelectionTest.test_full_feature_and_sprint_default_to_html_after_capability_probe) ... ok\ntest_legacy_html_requested_flag_does_not_change_the_html_default (__main__.AuthoringRouteSelectionTest.test_legacy_html_requested_flag_does_not_change_the_html_default) ... ok\ntest_missing_or_invalid_capability_fails_before_authoring_writes (__main__.AuthoringRouteSelectionTest.test_missing_or_invalid_capability_fails_before_authoring_writes) ... ok\ntest_real_client_for_another_root_is_rejected_before_capability_call (__main__.AuthoringRouteSelectionTest.test_real_client_for_another_root_is_rejected_before_capability_call) ... ok\ntest_selection_rechecks_namespace_after_capability_probe (__main__.AuthoringRouteSelectionTest.test_selection_rechecks_namespace_after_capability_probe) ... ok\ntest_small_lane_stays_inline_without_resolving_or_writing_artifacts (__main__.AuthoringRouteSelectionTest.test_small_lane_stays_inline_without_resolving_or_writing_artifacts) ... ok\ntest_admission_accepts_current_codex_resources_without_conveying_authority (__main__.HostWorkflowAdmissionTest.test_admission_accepts_current_codex_resources_without_conveying_authority) ... ok\ntest_admission_accepts_merged_claude_authority_resources (__main__.HostWorkflowAdmissionTest.test_admission_accepts_merged_claude_authority_resources) ... ok\ntest_admission_checks_the_platform_specific_hook_command (__main__.HostWorkflowAdmissionTest.test_admission_checks_the_platform_specific_hook_command) ... ok\ntest_admission_does_not_follow_environment_or_project_host_claims (__main__.HostWorkflowAdmissionTest.test_admission_does_not_follow_environment_or_project_host_claims) ... ok\ntest_admission_preserves_small_lane_and_existing_markdown_on_pi (__main__.HostWorkflowAdmissionTest.test_admission_preserves_small_lane_and_existing_markdown_on_pi) ... ok\ntest_admission_rechecks_before_plan_identity_reads (__main__.HostWorkflowAdmissionTest.test_admission_rechecks_before_plan_identity_reads) ... ok\ntest_admission_rechecks_namespace_after_host_resource_scan (__main__.HostWorkflowAdmissionTest.test_admission_rechecks_namespace_after_host_resource_scan) ... ok\ntest_admission_rechecks_resources_after_initial_success (__main__.HostWorkflowAdmissionTest.test_admission_rechecks_resources_after_initial_success) ... ok\ntest_admission_refuses_missing_producers_and_host_helpers (__main__.HostWorkflowAdmissionTest.test_admission_refuses_missing_producers_and_host_helpers) ... ok\ntest_admission_refuses_pi_before_any_new_full_lane_artifact (__main__.HostWorkflowAdmissionTest.test_admission_refuses_pi_before_any_new_full_lane_artifact) ... ok\ntest_admission_rejects_bare_engine_installation (__main__.HostWorkflowAdmissionTest.test_admission_rejects_bare_engine_installation) ... ok\ntest_admission_rejects_linked_helper_ancestors (__main__.HostWorkflowAdmissionTest.test_admission_rejects_linked_helper_ancestors) ... ok\ntest_admission_rejects_malformed_duplicate_and_oversized_registry (__main__.HostWorkflowAdmissionTest.test_admission_rejects_malformed_duplicate_and_oversized_registry) ... ok\ntest_admission_rejects_nonregular_required_resource (__main__.HostWorkflowAdmissionTest.test_admission_rejects_nonregular_required_resource) ... ok\ntest_admission_rejects_nonstring_registered_commands (__main__.HostWorkflowAdmissionTest.test_admission_rejects_nonstring_registered_commands) ... ok\ntest_admission_rejects_unknown_ambiguous_or_missing_host_identity (__main__.HostWorkflowAdmissionTest.test_admission_rejects_unknown_ambiguous_or_missing_host_identity) ... ok\ntest_admission_rejects_wrong_matchers_redirected_commands_and_async_hooks (__main__.HostWorkflowAdmissionTest.test_admission_rejects_wrong_matchers_redirected_commands_and_async_hooks) ... ok\ntest_admission_requires_claude_failure_event_and_reviewer_charter (__main__.HostWorkflowAdmissionTest.test_admission_requires_claude_failure_event_and_reviewer_charter) ... ok\ntest_admission_requires_every_authority_event (__main__.HostWorkflowAdmissionTest.test_admission_requires_every_authority_event) ... ok\ntest_fixture_copy_excludes_stale_payload_before_building_artifacts (__main__.InstalledFixtureCopyTest.test_fixture_copy_excludes_stale_payload_before_building_artifacts) ... ok\ntest_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts (__main__.InstalledFixtureCopyTest.test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts) ... ok\ntest_resolves_a_test_owned_linked_ancestor (__main__.PhysicalTestDirectoryTest.test_resolves_a_test_owned_linked_ancestor) ... ok\n\n----------------------------------------------------------------------\nRan 46 tests in 10.487s\n\nOK\n"
+    },
+    {
+      "label": "final-consumers",
+      "argv": [
+        "python",
+        ".github/scripts/test_artifact_consumers.py"
+      ],
+      "exit": 0,
+      "seconds": 0.585,
+      "stdout": "",
+      "stderr": "test_consumer_closure (__main__.ArtifactConsumerClosureTest.test_consumer_closure) ... ok\ntest_default_path_consumer_closure_is_complete (__main__.ArtifactConsumerClosureTest.test_default_path_consumer_closure_is_complete) ... ok\ntest_default_rollout_is_enabled_but_farm_remains_disabled (__main__.ArtifactConsumerClosureTest.test_default_rollout_is_enabled_but_farm_remains_disabled) ... ok\ntest_diagnostic_readers_are_on_demand_and_schema_free (__main__.ArtifactConsumerClosureTest.test_diagnostic_readers_are_on_demand_and_schema_free) ... ok\ntest_doctor_defines_bounded_artifact_diagnostics (__main__.ArtifactConsumerClosureTest.test_doctor_defines_bounded_artifact_diagnostics) ... ok\ntest_ephemeral_site_outputs_have_generator_and_ci_ownership (__main__.ArtifactConsumerClosureTest.test_ephemeral_site_outputs_have_generator_and_ci_ownership) ... ok\ntest_farm_and_future_kinds_stay_outside_default_closure (__main__.ArtifactConsumerClosureTest.test_farm_and_future_kinds_stay_outside_default_closure) ... ok\ntest_generated_host_copies_are_current (__main__.ArtifactConsumerClosureTest.test_generated_host_copies_are_current) ... ok\ntest_historical_records_are_explicitly_excluded (__main__.ArtifactConsumerClosureTest.test_historical_records_are_explicitly_excluded) ... ok\ntest_inventory_contract_is_complete (__main__.ArtifactConsumerClosureTest.test_inventory_contract_is_complete) ... ok\ntest_inventory_paths_exist (__main__.ArtifactConsumerClosureTest.test_inventory_paths_exist) ... ok\ntest_live_directory_cannot_mask_unknown_descendant (__main__.ArtifactConsumerClosureTest.test_live_directory_cannot_mask_unknown_descendant) ... ok\ntest_narrowed_search_scope_is_rejected (__main__.ArtifactConsumerClosureTest.test_narrowed_search_scope_is_rejected) ... ok\ntest_pi_native_plan_is_enforced_as_legacy_pair_only (__main__.ArtifactConsumerClosureTest.test_pi_native_plan_is_enforced_as_legacy_pair_only) ... ok\ntest_t017_status_deviation_remains_open_and_machine_readable (__main__.ArtifactConsumerClosureTest.test_t017_status_deviation_remains_open_and_machine_readable) ... ok\ntest_unknown_live_reader_negative_control (__main__.ArtifactConsumerClosureTest.test_unknown_live_reader_negative_control) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.519s\n\nOK\n"
+    },
+    {
+      "label": "bridge-baseline-control",
+      "argv": [
+        "python",
+        "BASELINE\\.github\\scripts\\test_artifact_bridge.py",
+        "BridgeTests.test_new_html_route_reports_actionable_capability_error_before_writing"
+      ],
+      "exit": 1,
+      "seconds": 0.411,
+      "stdout": "",
+      "stderr": "test_new_html_route_reports_actionable_capability_error_before_writing (__main__.BridgeTests.test_new_html_route_reports_actionable_capability_error_before_writing) ... \n  test_new_html_route_reports_actionable_capability_error_before_writing (__main__.BridgeTests.test_new_html_route_reports_actionable_capability_error_before_writing) (payload='corrupt') ... FAIL\n\n======================================================================\nFAIL: test_new_html_route_reports_actionable_capability_error_before_writing (__main__.BridgeTests.test_new_html_route_reports_actionable_capability_error_before_writing) (payload='corrupt')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"BASELINE\\.github\\scripts\\test_artifact_bridge.py\", line 128, in test_new_html_route_reports_actionable_capability_error_before_writing\n    self.assertEqual(got.exception.code, \"CAPABILITY_MISSING\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'HOST_WORKFLOW_UNAVAILABLE' != 'CAPABILITY_MISSING'\n- HOST_WORKFLOW_UNAVAILABLE\n+ CAPABILITY_MISSING\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.268s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "label": "bridge-multiplatform-fixed",
+      "argv": [
+        "python",
+        ".github/scripts/test_artifact_bridge.py"
+      ],
+      "exit": 0,
+      "seconds": 1.241,
+      "stdout": "",
+      "stderr": "test_artifact_mutations_never_execute_content (__main__.BridgeTests.test_artifact_mutations_never_execute_content) ... ok\ntest_changed_installed_binary (__main__.BridgeTests.test_changed_installed_binary) ... ok\ntest_darwin_staging_uses_only_the_verified_open_descriptor (__main__.BridgeTests.test_darwin_staging_uses_only_the_verified_open_descriptor) ... ok\ntest_existing_html_mutation_revalidates_payload_before_writing (__main__.BridgeTests.test_existing_html_mutation_revalidates_payload_before_writing) ... ok\ntest_helper_child_receives_no_parent_environment (__main__.BridgeTests.test_helper_child_receives_no_parent_environment) ... ok\ntest_legacy_markdown_route_remains_usable_with_missing_payload (__main__.BridgeTests.test_legacy_markdown_route_remains_usable_with_missing_payload) ... ok\ntest_linked_or_reparse_installation_directory_rejected (__main__.BridgeTests.test_linked_or_reparse_installation_directory_rejected) ... ok\ntest_new_html_route_reports_actionable_capability_error_before_writing (__main__.BridgeTests.test_new_html_route_reports_actionable_capability_error_before_writing) ... ok\ntest_real_cli_draft_and_index (__main__.BridgeTests.test_real_cli_draft_and_index) ... ok\ntest_symlink_binary_rejected (__main__.BridgeTests.test_symlink_binary_rejected) ... ok\ntest_tampered_view_is_not_readable (__main__.BridgeTests.test_tampered_view_is_not_readable) ... ok\ntest_unknown_request_fields (__main__.BridgeTests.test_unknown_request_fields) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 1.109s\n\nOK\n"
+    },
+    {
+      "label": "final-core-parity",
+      "argv": [
+        "python",
+        "tools/sync-core.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.086,
+      "stdout": "sync-core --check: OK (78 core file(s) x 3 plugin(s), all byte-identical)\n",
+      "stderr": ""
+    },
+    {
+      "label": "final-surface-parity",
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.214,
+      "stdout": "build-surface --check: OK (claude, codex, pi in sync)\n",
+      "stderr": ""
+    },
+    {
+      "label": "final-package-parity",
+      "argv": [
+        "python",
+        "tools/build-host-packages.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.12,
+      "stdout": "package.json matches plugins/ca-pi/package.json and the Pi descriptor\n",
+      "stderr": ""
+    },
+    {
+      "label": "overlap854-final-intent",
+      "argv": [
+        "python",
+        "plugins/ca/hooks/tests/test_intentlib.py"
+      ],
+      "exit": 0,
+      "seconds": 0.16,
+      "stdout": "",
+      "stderr": ".................................\n----------------------------------------------------------------------\nRan 33 tests in 0.090s\n\nOK\n"
+    },
+    {
+      "label": "overlap854-final-provenance",
+      "argv": [
+        "python",
+        ".github/scripts/test_provenancelib.py"
+      ],
+      "exit": 0,
+      "seconds": 0.553,
+      "stdout": "",
+      "stderr": "............................................................................................................................................\n----------------------------------------------------------------------\nRan 140 tests in 0.418s\n\nOK\n"
+    },
+    {
+      "label": "overlap854-final-bridge",
+      "argv": [
+        "python",
+        ".github/scripts/test_artifact_bridge.py"
+      ],
+      "exit": 0,
+      "seconds": 1.24,
+      "stdout": "",
+      "stderr": "test_artifact_mutations_never_execute_content (__main__.BridgeTests.test_artifact_mutations_never_execute_content) ... ok\ntest_changed_installed_binary (__main__.BridgeTests.test_changed_installed_binary) ... ok\ntest_darwin_staging_uses_only_the_verified_open_descriptor (__main__.BridgeTests.test_darwin_staging_uses_only_the_verified_open_descriptor) ... ok\ntest_existing_html_mutation_revalidates_payload_before_writing (__main__.BridgeTests.test_existing_html_mutation_revalidates_payload_before_writing) ... ok\ntest_helper_child_receives_no_parent_environment (__main__.BridgeTests.test_helper_child_receives_no_parent_environment) ... ok\ntest_legacy_markdown_route_remains_usable_with_missing_payload (__main__.BridgeTests.test_legacy_markdown_route_remains_usable_with_missing_payload) ... ok\ntest_linked_or_reparse_installation_directory_rejected (__main__.BridgeTests.test_linked_or_reparse_installation_directory_rejected) ... ok\ntest_new_html_route_reports_actionable_capability_error_before_writing (__main__.BridgeTests.test_new_html_route_reports_actionable_capability_error_before_writing) ... ok\ntest_real_cli_draft_and_index (__main__.BridgeTests.test_real_cli_draft_and_index) ... ok\ntest_symlink_binary_rejected (__main__.BridgeTests.test_symlink_binary_rejected) ... ok\ntest_tampered_view_is_not_readable (__main__.BridgeTests.test_tampered_view_is_not_readable) ... ok\ntest_unknown_request_fields (__main__.BridgeTests.test_unknown_request_fields) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 1.096s\n\nOK\n"
+    }
+  ],
+  "source_files": [
+    {
+      "path": ".codearbiter/.provenance/code-map.json",
+      "sha256": "344d1b65b76db4e122eddaaec797153025f7c2623e0a18ec52f2f0eb5d5cfed7"
+    },
+    {
+      "path": ".codearbiter/.provenance/release-targets.json",
+      "sha256": "71ba144fb3c0e00b5d66b29018ece8539cffe3265c02cfd5626a7a7619ce49fc"
+    },
+    {
+      "path": ".github/scripts/test_artifact_authoring.py",
+      "sha256": "5bc80404cd14743e2bec0695558177e523d5412b4d5666339de8b564db200541"
+    },
+    {
+      "path": ".github/scripts/test_artifact_bridge.py",
+      "sha256": "a4af99e52a9de51a17f59982641e34987840a1a06d5fc690d473b1b6a662558f"
+    },
+    {
+      "path": ".github/scripts/test_provenancelib.py",
+      "sha256": "930f80eb896da2e2630aea0c426ea338459ec1095df89870c3689506a4ed262b"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "020294684ef404d3137325366e98fb24fd033fe8603f88c96932d3181bc354af"
+    },
+    {
+      "path": "core/pysrc/_intentlib.py",
+      "sha256": "949a5def945a25d37fcf3ce09fa3f6c9b69b4e8f12dffe3d07e891d582cacb50"
+    },
+    {
+      "path": "core/pysrc/_provenancelib.py",
+      "sha256": "410df35b13cafba2feff94277ee77ca9e1fd6259b638ef50c3ec2bd6c10db633"
+    },
+    {
+      "path": "core/pysrc/hostapi.py",
+      "sha256": "b3ad7947913207f2bcba94954625d48686f139c642365dd4f2fd2426a668cb60"
+    },
+    {
+      "path": "package.json",
+      "sha256": "5cc3f69183d03383c77d49a3a9b7e079627217b156c26b02b08ca899c0a68cb7"
+    },
+    {
+      "path": "plugins/ca-codex/.codex-plugin/plugin.json",
+      "sha256": "4b2b306eaed6b2d047c3912739bf078ee9115870b804106712c7fd1cec5d9ea6"
+    },
+    {
+      "path": "plugins/ca-codex/CHANGELOG.md",
+      "sha256": "b549192b399801254a65e4d9d5bb073ccc9a84e2ba09e5fe945ae52eaa369c97"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/_host.py",
+      "sha256": "d9c31babbe7a84c3afdc152008fe9fc27d0b065b194ba3fd9dab321fc42295bb"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/_intentlib.py",
+      "sha256": "949a5def945a25d37fcf3ce09fa3f6c9b69b4e8f12dffe3d07e891d582cacb50"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/_provenancelib.py",
+      "sha256": "410df35b13cafba2feff94277ee77ca9e1fd6259b638ef50c3ec2bd6c10db633"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/hostapi.py",
+      "sha256": "b3ad7947913207f2bcba94954625d48686f139c642365dd4f2fd2426a668cb60"
+    },
+    {
+      "path": "plugins/ca-codex/package.json",
+      "sha256": "3826defbb9023275b982746c8ffc4b1754381c17df6bc5ae710058912ab46061"
+    },
+    {
+      "path": "plugins/ca-pi/CHANGELOG.md",
+      "sha256": "f042c2ef15e2587626102a2f0c33603eb4b7460bd427a486b89276ba90a6654e"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_host.py",
+      "sha256": "4992435215b8a14901bc93113f70640394a1141bf33b08956c30a00e776710a9"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_intentlib.py",
+      "sha256": "949a5def945a25d37fcf3ce09fa3f6c9b69b4e8f12dffe3d07e891d582cacb50"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_provenancelib.py",
+      "sha256": "410df35b13cafba2feff94277ee77ca9e1fd6259b638ef50c3ec2bd6c10db633"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/hostapi.py",
+      "sha256": "b3ad7947913207f2bcba94954625d48686f139c642365dd4f2fd2426a668cb60"
+    },
+    {
+      "path": "plugins/ca-pi/package.json",
+      "sha256": "d9f812849763ecfcc97291c641c25ba46f2214884e522b111c9f28108b9ece5e"
+    },
+    {
+      "path": "plugins/ca/.claude-plugin/plugin.json",
+      "sha256": "535f3809d67187a8616693f7128d77ce6885e02742101b85a92eb95b73624555"
+    },
+    {
+      "path": "plugins/ca/hooks/_host.py",
+      "sha256": "ce2816b27ca2818844e008e4a697a93e6af3b7047a77260dd1de6cd3dd277be9"
+    },
+    {
+      "path": "plugins/ca/hooks/_intentlib.py",
+      "sha256": "949a5def945a25d37fcf3ce09fa3f6c9b69b4e8f12dffe3d07e891d582cacb50"
+    },
+    {
+      "path": "plugins/ca/hooks/_provenancelib.py",
+      "sha256": "410df35b13cafba2feff94277ee77ca9e1fd6259b638ef50c3ec2bd6c10db633"
+    },
+    {
+      "path": "plugins/ca/hooks/hostapi.py",
+      "sha256": "b3ad7947913207f2bcba94954625d48686f139c642365dd4f2fd2426a668cb60"
+    },
+    {
+      "path": "plugins/ca/hooks/tests/test_intentlib.py",
+      "sha256": "b1dec8ccbba172030334ed7d1d02c354dfe26a5610c9271cb0fe358b62663b51"
+    }
+  ],
+  "provenance_updates": [
+    {
+      "record": ".codearbiter/.provenance/code-map.json",
+      "source": "plugins/ca/.claude-plugin/plugin.json",
+      "hash": "1e5d1de0125d8f10c25e3140348c16167644b609"
+    },
+    {
+      "record": ".codearbiter/.provenance/code-map.json",
+      "source": "plugins/ca-codex/.codex-plugin/plugin.json",
+      "hash": "0eaf6a8aea61c5d3df0c6fae1e2707e2aa719451"
+    },
+    {
+      "record": ".codearbiter/.provenance/code-map.json",
+      "source": "plugins/ca-pi/package.json",
+      "hash": "c8c8e0ac3af2c978a0c90aa4581bf2494aa35457"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "CHANGELOG.md",
+      "hash": "0bde7e5722e0dd57242942e196f747875ca2da8c"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-codex/.codex-plugin/plugin.json",
+      "hash": "0eaf6a8aea61c5d3df0c6fae1e2707e2aa719451"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-codex/CHANGELOG.md",
+      "hash": "9f9ac213a435a2f3e461a0401293f81d0b1a54d8"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-pi/CHANGELOG.md",
+      "hash": "c01a2bf51fc9af4f804f8f3d15851e3e641186d9"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-pi/package.json",
+      "hash": "c8c8e0ac3af2c978a0c90aa4581bf2494aa35457"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca/.claude-plugin/plugin.json",
+      "hash": "1e5d1de0125d8f10c25e3140348c16167644b609"
+    }
+  ],
+  "overlap": {
+    "pr854_tested_head": "0aa030b33789d57fc23cbe864469f50923ce6ce8",
+    "pr854_later_observed_head": "21ba930102c9fa3a1068c45f88cb83b02c2147e2",
+    "later_delta": [
+      ".github/scripts/test_build_surface.py"
+    ],
+    "pr871_head": "2b6e5a5bcfdb5d4713ba6d8f655d9cc99bfd4827",
+    "overlay_source_paths": [
+      "core/pysrc/_intentlib.py",
+      "core/pysrc/_provenancelib.py",
+      "plugins/ca/hooks/tests/test_intentlib.py",
+      ".github/scripts/test_provenancelib.py",
+      ".github/scripts/test_artifact_authoring.py",
+      ".github/scripts/test_artifact_bridge.py"
+    ],
+    "full_merge_tested": false
+  },
+  "retained_limitations": [
+    "No native campaign approval or task-acceptance receipt was created. User authorization is real and recorded in the review.",
+    "Before-commit version guards saw no changed committed payload; post-commit guards required.",
+    "Initial syntax/escaping fixture failures were corrected before regression evidence.",
+    "Initial Git-metadata and fallback-version failures were corrected without changing assertions.",
+    "Original multi-platform bridge fixture failed on baseline and candidate; fixed to corrupt the actual native cell.",
+    "No global configuration, consumer instructions, new kind, migration, workflow or threshold change.",
+    "No real-model task, paid trial, cold host installation, merge or release.",
+    "Initial secrets scan flagged four verified source checksums next to hostapi path keys. Recomputed every checksum and retained them as explicit path/sha256 records. No credential or scanner allowlist change."
+  ]
+}

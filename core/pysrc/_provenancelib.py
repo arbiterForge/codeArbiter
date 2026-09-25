@@ -89,7 +89,7 @@
 #                                        drift_trigger:true with a diverged or absent
 #                                        current hash; [] when no staged file is tracked
 #                                        (cost guarantee — ordinary commits pay nothing, AC-13)
-#   lint_code_map(text)                  -> list[str]  cap / multi-line violations
+#   lint_code_map(text)                  -> list[str]  UTF-8 size / entry cap / multi-line violations
 #   write_stub(path, doc, *, interview_derived=True, created=None) -> None
 #                                        write greenfield stub: interview_derived=True, entries=[]
 
@@ -122,6 +122,10 @@ GIT_TIMEOUT = 5  # seconds; a git read must never stall SessionStart
 # concerns than this.  The lint is the guard against the code map drifting into
 # a full file index — never allow it to grow past this without deliberate review.
 CODE_MAP_MAX_ENTRIES = 50
+
+# Bound actual UTF-8 content, including a single oversized role or heading.
+# This is an advisory lint budget, never permission to truncate human content.
+CODE_MAP_MAX_BYTES = 20 * 1024
 
 # Regex matching a column-0 entry bullet: starts with '- `' (dash, space, backtick).
 # Concern '## heading' lines are NOT entries.  Captures the path between backticks.
@@ -583,8 +587,8 @@ def heal_worklist(staged_paths, provenance, current_hashes):
       (b) diverged — current_hashes.get(path) differs from the stored hash,
           OR path is absent from current_hashes (staged deletion/rename).
 
-    A staged path that is not a provenance entry, or is drift_trigger:false, or
-    whose hash matches → excluded. Preserves staged_paths order; deduplicates.
+    A staged path is excluded only when it has no enabled dependency or ALL
+    enabled document baselines match. Preserves staged_paths order; deduplicates.
     Empty staged_paths, or no staged file tracked → [] (cost guarantee: ordinary
     commits touching no provenance source do zero re-scout work, AC-13).
 
@@ -594,8 +598,8 @@ def heal_worklist(staged_paths, provenance, current_hashes):
         if not staged_paths:
             return []
 
-        # Build {path: stored_hash} for every drift_trigger:true entry across all docs.
-        # First occurrence wins for a path that appears in multiple docs.
+        # Keep every enrolled document baseline until divergence is evaluated.
+        # Reducing to the legacy path-only worklist must not hide a later stale doc.
         drift_trigger_map = {}
         try:
             items = provenance.items()
@@ -616,8 +620,7 @@ def heal_worklist(staged_paths, provenance, current_hashes):
                         path = entry.get("path")
                         if path is None:
                             continue
-                        if path not in drift_trigger_map:
-                            drift_trigger_map[path] = entry.get("hash")
+                        drift_trigger_map.setdefault(path, []).append(entry.get("hash"))
                     except Exception:
                         continue
             except Exception:
@@ -640,10 +643,10 @@ def heal_worklist(staged_paths, provenance, current_hashes):
                 seen.add(path)
                 if path not in drift_trigger_map:
                     continue
-                stored_hash = drift_trigger_map[path]
-                # Include when absent from current_hashes (staged deletion/rename)
-                # OR when the hash has diverged.
-                if path not in hashes or hashes[path] != stored_hash:
+                stored_hashes = drift_trigger_map[path]
+                # A mismatch in ANY dependent document schedules this source.
+                # compute_drift/changed_scope retain the per-document detail.
+                if path not in hashes or any(hashes[path] != stored for stored in stored_hashes):
                     result.append(path)
             except Exception:
                 continue
@@ -888,12 +891,14 @@ def startup_drift_line(root, runner=None, cmd_ref=None):
 
 
 def lint_code_map(text):
-    """Lint a code-map.md string for entry-cap and multi-line-role violations.
+    """Lint a code map for UTF-8 size, entry-cap and multi-line-role violations.
 
     Code-map format: markdown where entries are column-0 '- `path` -- role'
     bullets.  Concern '## <name>' headings are structural labels, NOT entries.
 
     Checks applied:
+      0. UTF-8 byte length > CODE_MAP_MAX_BYTES -> one advisory warning.
+         Invalid Unicode/text is diagnosed, never silently called clean.
       1. Entry count > CODE_MAP_MAX_ENTRIES  ->  one warning naming count and cap.
          The cap enforces module/concern granularity: the code map must stay a
          coarse index, never a full file listing.
@@ -909,6 +914,17 @@ def lint_code_map(text):
     """
     if not text:
         return []
+    try:
+        size = len(text.encode("utf-8"))
+    except (AttributeError, UnicodeError):
+        return ["code map is not valid UTF-8 text"]
+    byte_warnings = []
+    if size > CODE_MAP_MAX_BYTES:
+        byte_warnings.append(
+            "code map has {} UTF-8 bytes (cap {}) -- coarsen without truncating guidance".format(
+                size, CODE_MAP_MAX_BYTES
+            )
+        )
     try:
         lines = text.splitlines()
         entry_paths = []       # ordered list of extracted paths (one per entry)
@@ -935,7 +951,7 @@ def lint_code_map(text):
                         )
                     )
 
-        result = []
+        result = list(byte_warnings)
         count = len(entry_paths)
         if count > CODE_MAP_MAX_ENTRIES:
             result.append(

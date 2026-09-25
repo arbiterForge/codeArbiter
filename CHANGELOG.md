@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.17] - 2026-09-25
+
+### Fixed
+
+- Accept the native artifact validator's empty diagnostics in the HTML intent
+  checker while rejecting malformed results and retaining freshness checks.
+- Schedule provenance healing when any dependent document has stale evidence
+  for a shared source, regardless of record ordering.
+- Warn when a code map exceeds 20 KiB of UTF-8 content, including a single
+  oversized role. Existing maps are diagnosed, not truncated or rewritten.
+
 ## [2.21.16] - 2026-09-25
 
 ### Changed

@@ -239,8 +239,25 @@ def main(argv):
             from _artifactlib import resolve_spec_file, helper_installation
             client, entry = resolve_spec_file(positional[0], helper_installation(__file__))
             result = client.call("validate", {"artifact_id": entry["artifact_id"], "gate": "ready"}, permit_invalid=True)
-            findings = ["[INVALID-HTML-SPEC] " + item["code"] + ": " + item["message"]
-                        for item in result.get("diagnostics", [])]
+            # Native success uses null for an empty diagnostic slice. Normalize
+            # only that documented absence, never arbitrary falsey malformed data.
+            if (result.get("artifact_id") != entry["artifact_id"]
+                    or result.get("gate") != "ready"
+                    or type(result.get("valid")) is not bool
+                    or not re.fullmatch(r"[0-9a-f]{64}", result.get("model_sha256", ""))):
+                raise RuntimeError("malformed HTML validation result")
+            diagnostics = result.get("diagnostics")
+            if diagnostics is None:
+                diagnostics = []
+            if not isinstance(diagnostics, list):
+                raise RuntimeError("malformed HTML validation diagnostics")
+            findings = []
+            for item in diagnostics:
+                if (not isinstance(item, dict)
+                        or not isinstance(item.get("code"), str)
+                        or not isinstance(item.get("message"), str)):
+                    raise RuntimeError("malformed HTML validation diagnostic")
+                findings.append("[INVALID-HTML-SPEC] " + item["code"] + ": " + item["message"])
             # Explicit source->criterion mappings replace fuzzy scope matching.
             # The legacy issue-checkbox heuristic is retained ONLY for external
             # issue text until issue-source records receive their own schema.
@@ -254,7 +271,8 @@ def main(argv):
                     if not _cited(box, criteria_tokens):
                         findings.append("[UNCOVERED-CHECKBOX] " + box)
             fresh = client.call("identity", {"artifact_id": entry["artifact_id"]})
-            if fresh["model_sha256"] != result["model_sha256"]:
+            if (fresh.get("artifact_id") != entry["artifact_id"]
+                    or fresh["model_sha256"] != result["model_sha256"]):
                 raise RuntimeError("HTML spec changed during intent verification; retry a fresh read")
             for finding in findings:
                 print(finding)
