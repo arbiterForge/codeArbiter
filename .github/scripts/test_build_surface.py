@@ -2160,18 +2160,23 @@ class AdrMarkerRootJourneyTest(unittest.TestCase):
             unrelated = wrong_marker.parent / 'unrelated-sentinel'
             unrelated.write_bytes(b'preserve')
             guard_code = ("import sys, importlib.util; sys.path.insert(0, sys.argv[1]); "
-                          "from _hooklib import project_root; "
+                          "from _hooklib import project_root, utf8_stdio; utf8_stdio(); "
                           "s=importlib.util.spec_from_file_location('adr_guard', sys.argv[1]+'/pre-write.py'); "
                           "m=importlib.util.module_from_spec(s); s.loader.exec_module(m); "
                           "m._guard_op(project_root(), {'kind':'write','file_path':sys.argv[2],'content':'# fixture'})")
             target = expected / '.codearbiter/decisions/0001-fixture.md'
+            # Start this test-owned child with a deliberately non-UTF-8 pipe
+            # encoding. Its production stdio initialization must establish the
+            # strict UTF-8 contract, independently of the developer's environment.
             def guard():
                 return subprocess.run([sys.executable, '-c', guard_code, str(hooks), str(target)],
-                                      cwd=cwd, env=env, capture_output=True, text=True,
+                                      cwd=cwd, env=dict(env, PYTHONIOENCODING='cp1252'),
+                                      capture_output=True, text=True,
                                       encoding='utf-8', timeout=15)
             denied = guard()
             self.assertEqual(denied.returncode, 2, denied.stdout + denied.stderr)
             self.assertIn('H-11', denied.stderr + denied.stdout)
+            self.assertIn('ORCHESTRATOR \u00a73', denied.stderr + denied.stdout)
             marker.parent.mkdir(parents=True, exist_ok=True)
             marker.touch()
             admitted = guard()
