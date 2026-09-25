@@ -777,7 +777,8 @@ runs:
       run: |
         set -euo pipefail
         NPM_ROOT="$RUNNER_TEMP/codex-npm-package"
-        METADATA="$RUNNER_TEMP/codex-npm-package.json"
+        METADATA="$NPM_ROOT/codex-npm-package.json"
+        mkdir -p "$NPM_ROOT"
         python3 tools/build-host-packages.py \
           --codex-npm-package-root "$PACKAGE_ROOT" \
           --codex-npm-cohort-sha256 "$COHORT_SHA256" \

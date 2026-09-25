@@ -244,6 +244,133 @@ def _resolve_workflow_pair(root: str | Path, slug: str) -> dict[str, object]:
     }
 
 
+def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
+    """Inspect installed prerequisites, not host trust or live-event evidence.
+
+    This never imports an adapter, executes a hook, or writes consumer state.
+    Package integrity and the actual authority boundaries remain separate checks.
+    A successful engine capabilities call alone cannot admit a host workflow.
+    """
+    result: dict[str, object] = {
+        "host": None, "adapter_version": None, "resources_available": False,
+        "evidence_kind": "installed-resource-preflight", "live_host_verified": False,
+        "missing": [],
+    }
+    missing: list[str] = []
+    if installation.name != "artifacts" or installation.parent.name != "helpers":
+        result["missing"] = ["installed host package layout"]
+        return result
+    plugin = installation.parent.parent
+
+    def resource(relative: str, *, document: bool = False):
+        path = plugin / relative
+        try:
+            _trusted_directory(installation, "HOST_WORKFLOW_UNAVAILABLE")
+            _trusted_directory(path.parent, "HOST_WORKFLOW_UNAVAILABLE")
+            descriptor = _open_pinned_regular(path)
+            try:
+                info = os.fstat(descriptor)
+                reparse = getattr(info, "st_file_attributes", 0) & getattr(
+                    stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+                if reparse or not stat.S_ISREG(info.st_mode) or info.st_size <= 0:
+                    raise OSError("required installed resource is not a nonempty regular file")
+                return _decode(os.read(descriptor, MAX_RESPONSE + 1)) if document else True
+            finally:
+                os.close(descriptor)
+        except (OSError, ArtifactError):
+            missing.append(relative)
+            return None
+
+    manifests = [("claude", "ca", ".claude-plugin/plugin.json"),
+                 ("codex", "ca-codex", ".codex-plugin/plugin.json")]
+    present = [row for row in manifests if (plugin / row[2]).exists()
+               or (plugin / row[2]).is_symlink()]
+    if not present:
+        present = [("pi", "ca-pi", "package.json")]
+    if len(present) != 1:
+        result["missing"] = ["one unambiguous installed host manifest"]
+        return result
+    host, name, manifest_path = present[0]
+    manifest = resource(manifest_path, document=True)
+    if (not isinstance(manifest, dict) or manifest.get("name") != name
+            or not isinstance(manifest.get("version"), str)
+            or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?",
+                            manifest["version"]) is None):
+        result["missing"] = ["matching installed host identity"]
+        return result
+    result.update(host=host, adapter_version=manifest["version"])
+    if host == "pi":
+        result["missing"] = ["Pi production prompt, verification and review authority"]
+        return result
+
+    for filename in ("_approvallib.py", "_prerequisitelib.py", "_sprintapprovallib.py",
+                     "_reconciliationlib.py", "_artifactauthoritylib.py", "_gitexec.py",
+                     "artifact-authority.py", "artifact-authority-hook.py", "prompt-submit.py"):
+        resource("hooks/" + filename)
+    if host == "claude":
+        resource("agents/authority-reviewer.md")
+    registry = resource("hooks/hooks.json", document=True)
+    hooks = registry.get("hooks") if isinstance(registry, dict) else None
+    if not isinstance(hooks, dict):
+        result["missing"] = sorted(set(missing + ["valid installed hook registry"]))
+        return result
+
+    token = "${CLAUDE_PLUGIN_ROOT}" if host == "claude" else "${PLUGIN_ROOT}"
+    command_field = "commandWindows" if host == "codex" and platform.system() == "Windows" else "command"
+
+    def registered(event: str, tool: str | None, script: str) -> bool:
+        groups = hooks.get(event)
+        if not isinstance(groups, list):
+            return False
+        commands = {f'{python} "{token}/hooks/{script}"' for python in ("python", "python3")}
+        for group in groups:
+            if not isinstance(group, dict):
+                continue
+            matcher = group.get("matcher", "")
+            if not isinstance(matcher, str):
+                continue
+            # Check the shipped literal alternatives, not a second regex DSL.
+            if (tool is None and matcher not in {"", "*"}) or (
+                    tool is not None and tool not in matcher.split("|")):
+                continue
+            entries = group.get("hooks")
+            if not isinstance(entries, list):
+                continue
+            if any(isinstance(entry, dict) and entry.get("type") == "command"
+                   and entry.get("async", False) is False
+                   and isinstance(entry.get(command_field), str)
+                   and entry[command_field] in commands for entry in entries):
+                return True
+        return False
+
+    required = [("UserPromptSubmit", None, "prompt-submit.py")]
+    tools = ("Bash", "Agent") if host == "claude" else (
+        "Bash", "shell_command", "exec_command", "unified_exec", "spawn_agent")
+    required += [(event, tool, "artifact-authority-hook.py")
+                 for event in ("PreToolUse", "PostToolUse") for tool in tools]
+    required += [(event, None, "artifact-authority-hook.py")
+                 for event in ("SubagentStart", "SubagentStop")]
+    if host == "claude":
+        required += [("PostToolUseFailure", "Bash", "artifact-authority-hook.py"),
+                     ("PreToolUse", "SendMessage", "artifact-authority-hook.py")]
+    missing.extend(f"{event}:{tool or '*'}:{script}"
+                   for event, tool, script in required if not registered(event, tool, script))
+    result["missing"] = sorted(set(missing))
+    result["resources_available"] = not missing
+    return result
+
+
+def _require_host_workflow(client: "ArtifactClient") -> None:
+    readiness = client.workflow_preflight()
+    if readiness["resources_available"] is not True:
+        raise ArtifactError(
+            "HOST_WORKFLOW_UNAVAILABLE",
+            ("installed HTML workflow prerequisites are unavailable: "
+             + ", ".join(readiness["missing"]))[:400]
+            + "; repair this package or use a supported host; no fallback artifacts",
+        )
+
+
 def _require_authoring_capability(client: "ArtifactClient") -> None:
     """Fail one default-HTML route with a bounded repair diagnostic."""
     try:
@@ -306,9 +433,12 @@ def _select_authoring_route(
             )
         _require_authoring_capability(client)
         if _resolve_workflow_pair(root, slug) != selected:
+            raise ArtifactError("STALE_ROUTE", "artifact namespace changed during the capability probe")
+        _require_host_workflow(client)
+        if _resolve_workflow_pair(root, slug) != selected:
             raise ArtifactError(
                 "STALE_ROUTE",
-                "artifact namespace changed during the capability probe",
+                "artifact namespace changed during the installed host preflight",
             )
     return {"workflow": workflow, "lane": lane, "mode": "artifact", **selected}
 
@@ -371,6 +501,7 @@ def _preflight_plan_authoring(
     ):
         raise ArtifactError("AUTHORITY_MISMATCH", "spec normative digest is invalid")
 
+    _require_host_workflow(client)
     identity = client.call("identity", {"artifact_id": spec_artifact_id})
     expected_path = f".codearbiter/specs/{slug}.html"
     if (
@@ -653,6 +784,10 @@ class ArtifactClient:
         self.root = _trusted_directory(root, "UNSAFE_ROOT")
         self.installation = _trusted_directory(installation, "CAPABILITY_MISSING")
         self.timeout = timeout
+
+    def workflow_preflight(self) -> dict[str, object]:
+        """Read fresh installed prerequisites; never attest live host authority."""
+        return _installed_workflow_preflight(self.installation)
 
     def _open_binary(self) -> int:
         system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}.get(platform.system())

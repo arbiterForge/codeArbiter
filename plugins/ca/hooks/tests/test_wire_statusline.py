@@ -133,6 +133,17 @@ class TestFreshInstall(_WireStatuslineTest):
         self.assertIn(ws.BACKUP_KEY, data)
         self.assertIsNone(data[ws.BACKUP_KEY])
 
+    def test_uninstall_removes_statusline_when_no_prior_existed(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        self.assertIsNone(_read(self.settings)[ws.BACKUP_KEY])
+        ws.main(["uninstall", "--settings", self.settings,
+                 "--plugin-root", self.root])
+        data = _read(self.settings)
+        self.assertNotIn("statusLine", data)
+        self.assertNotIn(ws.BACKUP_KEY, data)
+        self.assertNotIn(ws.OWNER_KEY, data)
+
     def test_settings_file_created_if_absent(self):
         absent = os.path.join(self.tmp.name, "other", "settings.json")
         os.makedirs(os.path.dirname(absent))
@@ -161,6 +172,15 @@ class TestInstallWithPriorThirdParty(_WireStatuslineTest):
         data = _read(self.settings)
         cmd = (data.get("statusLine") or {}).get("command", "")
         self.assertIn("statusline.py", cmd)
+
+    def test_reinstall_then_uninstall_preserves_the_prior_statusline(self):
+        for action in ("install", "install"):
+            ws.main([action, "--settings", self.settings,
+                "--plugin-root", self.root, "--interp", "python"])
+        self.assertEqual(_read(self.settings)[ws.BACKUP_KEY]["command"], self.prior_cmd)
+        ws.main(["uninstall", "--settings", self.settings,
+            "--plugin-root", self.root])
+        self.assertEqual(_read(self.settings)["statusLine"]["command"], self.prior_cmd)
 
     def test_prior_line_backed_up(self):
         ws.main(["install", "--settings", self.settings,

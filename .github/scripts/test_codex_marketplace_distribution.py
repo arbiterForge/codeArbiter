@@ -786,6 +786,61 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.assertIn("NPM_CONFIG_USERCONFIG:", cold_block)
         self.assertNotIn("NODE_AUTH_TOKEN", cold_block)
 
+    def test_codex_npm_metadata_is_sibling_to_qualified_tarball(self):
+        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
+            encoding="utf-8"
+        )
+        start = action.index("Prepare exact qualified Codex npm package")
+        end = action.index(
+            "Configure authenticated npm scope for exact qualified Codex package",
+            start,
+        )
+        block = action[start:end]
+        self.assertIn('NPM_ROOT="$RUNNER_TEMP/codex-npm-package"', block)
+        metadata_assignment = next(
+            line.strip() for line in block.splitlines()
+            if line.strip().startswith("METADATA=")
+        )
+        self.assertEqual(
+            metadata_assignment,
+            'METADATA="$NPM_ROOT/codex-npm-package.json"',
+            "Codex pre-publication validation requires metadata to be a direct "
+            "sibling of the qualified tarball in the generated package directory",
+        )
+        self.assertIn('--codex-npm-output "$NPM_ROOT" > "$METADATA"', block)
+        self.assertIn(
+            'TARBALL=$(python3 - "$METADATA" "$NPM_ROOT" <<\'PY\'', block
+        )
+        self.assertIn('path=(root/metadata["file"]).resolve(strict=True)', block)
+        self.assertIn("path.relative_to(root)", block)
+
+    def test_codex_npm_output_directory_exists_before_metadata_redirection(self):
+        action = (REPO / ".github/actions/publish-release/action.yml").read_text(
+            encoding="utf-8"
+        )
+        start = action.index("Prepare exact qualified Codex npm package")
+        end = action.index(
+            "Configure authenticated npm scope for exact qualified Codex package",
+            start,
+        )
+        lines = [line.strip() for line in action[start:end].splitlines()]
+        mkdir_index = next(
+            (index for index, line in enumerate(lines)
+             if line == 'mkdir -p "$NPM_ROOT"'),
+            None,
+        )
+        build_index = next(
+            (index for index, line in enumerate(lines)
+             if line == "python3 tools/build-host-packages.py \\"),
+            None,
+        )
+        self.assertIsNotNone(
+            mkdir_index,
+            "the metadata redirection parent must exist before the builder runs",
+        )
+        self.assertIsNotNone(build_index, "the qualified package builder must run")
+        self.assertLess(mkdir_index, build_index)
+
     def test_competing_marketplace_update_wins_and_expected_head_lease_fails(self):
         remote = self.root / "race.git"
         git_run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
