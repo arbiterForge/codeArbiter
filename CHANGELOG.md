@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.17] - 2026-09-25
+
+### Fixed
+
+- Accept null diagnostics from successful HTML intent validation without bypassing
+  invalid-spec, stale-read or issue-coverage checks; reject malformed collections.
+
 ## [2.21.16] - 2026-09-25
 
 ### Changed
