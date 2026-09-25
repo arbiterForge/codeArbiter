@@ -1,0 +1,9 @@
+{
+ "agent_id": "agent-1",
+ "agent_type": "general-purpose",
+ "cwd": "<cwd>",
+ "hook_event_name": "SubagentStart",
+ "prompt_id": "prompt-1",
+ "session_id": "session-1",
+ "transcript_path": "<transcript-path>"
+}

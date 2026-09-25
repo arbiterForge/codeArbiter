@@ -1,0 +1,30 @@
+{
+ "cwd": "<cwd>",
+ "duration_ms": 6,
+ "effort": {
+  "level": "medium"
+ },
+ "hook_event_name": "PostToolUse",
+ "permission_mode": "auto",
+ "prompt_id": "prompt-1",
+ "session_id": "session-1",
+ "tool_input": {
+  "description": "Hook probe subagent",
+  "model": "haiku",
+  "prompt": "[CODEARBITER_PROBE] Diagnostic probe. Do not use any tools. Reply with exactly: {\"decision\":\"pass\",\"findings\":[]}",
+  "subagent_type": "general-purpose"
+ },
+ "tool_name": "Agent",
+ "tool_response": {
+  "agentId": "agent-1",
+  "canReadOutputFile": true,
+  "description": "Hook probe subagent",
+  "isAsync": true,
+  "outputFile": "<output-file>",
+  "prompt": "[CODEARBITER_PROBE] Diagnostic probe. Do not use any tools. Reply with exactly: {\"decision\":\"pass\",\"findings\":[]}",
+  "resolvedModel": "claude-haiku-4-5-20251001",
+  "status": "async_launched"
+ },
+ "tool_use_id": "toolu-3",
+ "transcript_path": "<transcript-path>"
+}

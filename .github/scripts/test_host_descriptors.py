@@ -941,8 +941,20 @@ class GenerationContractTest(unittest.TestCase):
         claude = REPO / claude_host.plugin_dir / "agents"
         pi = REPO / pi_host.plugin_dir / "agents"
         source_names = sorted(p.name for p in canonical.glob("*.md"))
-        self.assertEqual(source_names, sorted(p.name for p in claude.glob("*.md")))
-        self.assertEqual(source_names, sorted(p.name for p in pi.glob("*.md")))
+
+        def host_names(host):
+            # A charter may be scoped to some hosts by a declared agents/ exclusion.
+            excluded = {
+                rel.split("/", 1)[1] for rule in host.surface_rules
+                if rule.source_prefix == "agents/" for rel in rule.exclude
+            }
+            return sorted(set(source_names) - excluded)
+
+        self.assertEqual(host_names(claude_host), sorted(p.name for p in claude.glob("*.md")))
+        self.assertEqual(host_names(pi_host), sorted(p.name for p in pi.glob("*.md")))
+        self.assertIn("authority-reviewer.md", host_names(claude_host))
+        self.assertNotIn("authority-reviewer.md", host_names(pi_host))
+        source_names = host_names(claude_host)
         expected = _independent_expected_surfaces(claude_host, descriptors)
         for name in source_names:
             text = expected[f"agents/{name}"]

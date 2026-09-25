@@ -6,13 +6,24 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.15] - 2026-09-24
+## [0.13.16] - 2026-09-24
 
 ### Fixed
 
-- Include the complete governing license and Go runtime notice in every
-  installable governance-plugin subtree; reject omitted or changed notice bytes
-  during exact-source package assembly.
+- Check the installed host's required HTML workflow resources and hook
+  registrations before new full-lane authoring. Unsupported or incomplete
+  hosts stop early without creating fallback artifacts; legacy Markdown and
+  the inline small feature lane retain their existing behavior.
+- Include complete LICENSE and Go runtime notices in every installable
+  governance-plugin subtree and verify their exact-source package bytes.
+
+## [0.13.15] - 2026-09-24
+
+### Changed
+
+- Vendor the shared authority adapter with Claude Code verification and review
+  seams and the `claude-review/0.1.0` engine profile. This package's own
+  authority behavior is unchanged; the Claude-only reviewer charter is excluded.
 
 ## [0.13.14] - 2026-09-24
 

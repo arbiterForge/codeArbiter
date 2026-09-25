@@ -15,6 +15,22 @@ and continues on the legacy path without automatic conversion. The feature
 small lane remains an inline mini-spec and creates no artifact. HTML `--farm`
 dispatch remains disabled and outside this rollout.
 
+## Installed host admission
+
+Before new full-lane or plan authoring, the bridge checks the exact installed
+host's required producers, helpers, reviewer charter where applicable, and
+platform-specific hook registrations. `_select_authoring_route` and
+`_preflight_plan_authoring` require this read-only preflight in addition to the
+native engine capability. `HOST_WORKFLOW_UNAVAILABLE` stops before authoring;
+repair the installed package or use a supported host. Never create a fallback
+artifact, substitute another package, or mint an authority event to proceed.
+
+`ArtifactClient.workflow_preflight()` reports only installed resources. It does
+not prove host trust, enabled hooks, supported host-version behavior, reviewer
+independence, or a completed live workflow. Actual authority producers and their
+existing validation remain required. Pi currently fails this admission check;
+existing Markdown pairs and the inline small feature lane are unchanged.
+
 ## Internal execution contract
 
 The normal qualified package's installation-owned `release.json` pins the native
@@ -173,9 +189,9 @@ scope evidence. Provisional progress never counts as completion.
 The orchestrator executes the declared verification through its existing governed
 execution tool through the installed production authority adapter; it never
 constructs a successful workflow event itself. Arm an exact task request first.
-Verification and review authority below is currently Codex-only. On Claude or
-Pi, stop at this boundary rather than treating model-authored results as
-authority; their installed prompt approval seams do not imply verification or
+Verification and review authority below is supported on Codex and Claude Code.
+On Pi, stop at this boundary rather than treating model-authored results as
+authority; its installed prompt approval seam does not imply verification or
 review support.
 Every distinct `cwd` label in the engine context must be mapped once to an exact
 linked Git worktree root. Mapped worktrees must share the artifact repository's
@@ -204,8 +220,18 @@ attempt under the same request.
 
 For `spec_review` or `quality_review`, arm the corresponding activity without
 workspace mappings and dispatch the returned `launch_envelope` unchanged to one
-fresh host subagent. The Codex hooks bind the exact spawn call, child start and
-child stop; a pasted or coordinator-authored decision is not review authority.
+fresh host subagent. The host hooks bind the exact launch call, child start and
+the child's first stop; a pasted or coordinator-authored decision is not review
+authority.
+On Claude Code, pass the envelope's four fields as the Agent tool's entire
+input: no `run_in_background`, `isolation` or other option. It launches the
+read-only `ca:authority-reviewer`; arming refuses while a project or user agent
+could shadow that name. While the reviewer runs, send no SendMessage from this
+session to any recipient: any message rejects the request. For verification,
+`arm` returns `verify_command` with literal absolute paths; run it unchanged as
+its own foreground Bash call, without disabling the sandbox. The hook refuses a
+command that still contains `$` or another shell metacharacter. A rejected
+request is never retried; arm a new one.
 Publish the completed request through the same `publish` command. `task-review`
 records the separate verification and spec-review receipts. After every task in
 the scope reaches `REVIEW`, reverify against one current source snapshot, run the

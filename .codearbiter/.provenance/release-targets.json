@@ -14,7 +14,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "5b019ca0d0854bd9a7787b13130cceeb1ca367a5",
+      "hash": "811f2a471fd5154afe6be089fd1adade785d3fed",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
@@ -39,7 +39,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "6eefc114176b56ab8853bb45a1c697af579af3f8",
+      "hash": "59a23f934a3e647fe672bbb38a2ef2291336433f",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -64,7 +64,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "cb6cd37695c58a43a951ceccbba06642220d4b77",
+      "hash": "acfe33e04e12fcf60560d1f4c1e4c3428ce81349",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {

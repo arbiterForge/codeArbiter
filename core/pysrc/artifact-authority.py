@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _artifactauthoritylib  # noqa: E402
 import _artifactlib  # noqa: E402
+import hostapi  # noqa: E402
 
 
 def _workspace_map(values: list[str]) -> dict[str, Path]:
@@ -37,6 +38,14 @@ def main(argv=None) -> int:
         choices=("verification", "spec_review", "quality_review"),
     )
     arm.add_argument("--workspace", action="append", default=[], metavar="LABEL=PATH")
+    arm.add_argument(
+        "--host", choices=sorted(_artifactauthoritylib.HOSTS), default=None,
+        help="observing host; defaults to the host this package was built for",
+    )
+    arm.add_argument(
+        "--reviewer-model", choices=sorted(_artifactauthoritylib.CLAUDE_REVIEWER_MODELS),
+        default="opus", help="Claude reviewer model pinned into the launch envelope",
+    )
     verify = sub.add_parser("verify")
     verify.add_argument("--root", required=True)
     verify.add_argument("--request-id", required=True)
@@ -54,10 +63,23 @@ def main(argv=None) -> int:
     )
     if args.command == "arm":
         workspaces = _workspace_map(args.workspace)
+        host = args.host or hostapi.load_host().name
+        if host not in _artifactauthoritylib.HOSTS:
+            raise _artifactauthoritylib.AuthorityError(
+                "UNSUPPORTED_HOST_SEAM", f"host {host} has no verification or review authority"
+            )
         result = _artifactauthoritylib.arm_request(
             root, client, args.artifact_id, args.record_id, args.activity,
-            workspace_roots=workspaces or None,
+            workspace_roots=workspaces or None, host=host,
+            reviewer_model=args.reviewer_model,
         )
+        if host == "claude" and args.activity == "verification":
+            # The Claude verifier hook pins this exact shipped script and
+            # refuses shell expansion, so hand back literal paths.
+            script = Path(__file__).resolve().parent / "artifact-authority.py"
+            result["verify_command"] = (
+                f'python "{script}" verify --root "{root}" --request-id {result["request_id"]}'
+            )
     elif args.command == "verify":
         result = _artifactauthoritylib.run_verification(
             root, client, args.request_id,

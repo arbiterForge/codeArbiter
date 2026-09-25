@@ -12,16 +12,30 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.14] - 2026-09-24
+## [2.21.15] - 2026-09-24
 
 ### Fixed
 
-- Include the complete governing license and Go runtime notice in every
-  installable governance-plugin subtree; reject omitted or changed notice bytes
-  during exact-source package assembly.
-- Clarify native-helper and host-workflow qualification in the security policy,
-  retire operative wording from the inactive CLA, and document explicit
-  statusline uninstall rather than treating reinstall as a toggle.
+- Check the installed host's required HTML workflow resources and hook
+  registrations before new full-lane authoring. Unsupported or incomplete
+  hosts stop early without creating fallback artifacts; legacy Markdown and
+  the inline small feature lane retain their existing behavior.
+- Include complete LICENSE and Go runtime notices in every installable
+  governance-plugin subtree and verify their exact-source package bytes.
+- Clarify the native-helper security inventory, retire operative wording
+  from the inactive CLA, and document explicit statusline uninstall.
+
+## [2.21.14] - 2026-09-24
+
+### Added
+
+- Claude Code verification and independent-review authority for structured
+  HTML plans: the verify wrapper is authorized and corroborated from Claude's
+  Bash hooks, and spec and quality reviews run through a pinned read-only
+  `ca:authority-reviewer` bound by launch `tool_use_id`, child `agentId`, and
+  the reviewer's first stop only. The engine accepts a separate
+  `claude-review/0.1.0` profile; Codex behavior is unchanged and Pi still stops
+  at this boundary.
 
 ## [2.21.13] - 2026-09-24
 

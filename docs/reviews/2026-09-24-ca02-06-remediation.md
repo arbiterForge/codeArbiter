@@ -2,42 +2,48 @@
 
 ## Source boundary
 
-Prepared from `arbiterForge/codeArbiter@48c32f3516320469957ed0bd387534a6a76d3594`.
-This is a review candidate, not a release, package qualification or approval
-receipt. The September 24 CA findings are distinct from the August RA findings.
-CA-01 is not part of this change.
+Integrated `arbiterForge/codeArbiter@28f14f59f1a5e7231ee21d5f75d161ad1c51939a`,
+which merged #860, into the existing #861 branch without rewriting its history.
+This is a source review candidate, not a published release or host qualification.
+CA-01 and the August RA findings are not this change's scope.
 
-## Disposition
+## Implementation disposition
 
-| Finding | Change and remaining evidence |
-| --- | --- |
-| CA-02 | Claude production authority is owned by open PR #860, inspected at `22a100e10d47823b742c382ee2a3c2a53b4781bb`. Do not duplicate it or treat it as released. Early host-workflow admission remains unimplemented here. Pi's unsupported boundaries and production consumer-journey qualification remain open. |
-| CA-03 | Sync owning LICENSE and Go runtime notices into each installable subtree. Exact-source archive assembly independently requires complete matching bytes. Pi's package allowlist includes its nested LICENSE. Hosted candidate packages and normal installed channels still need read-back after release. |
-| CA-04 | Companion review branches in `arbiterForge/arbiterforge-site` and `arbiterForge/.github` replace stale copied installation, version and broad policy claims with product-owned links. Historical proof assets remain unchanged. |
-| CA-05 | SECURITY discloses the native helper and separates engine capability from host qualification. CLA is a status notice, not an active agreement. LICENSE is unchanged; legal approval remains a maintainer responsibility. |
-| CA-06 | README names explicit statusline uninstall. Reinstall still refreshes the path and preserves the prior backup. A fixture exercises install, reinstall and restoration without touching real user settings. |
+| Finding | Change | Remaining release evidence |
+| --- | --- | --- |
+| CA-02 | Preserve #860's Claude authority producers. Before HTML authoring, inspect the installed host identity, required resources and OS-specific hook registrations. Pi and incomplete installations fail early with `HOST_WORKFLOW_UNAVAILABLE`. Recheck before plan authoring; preserve existing Markdown and the inline small lane. | Normal supported-channel installation and live host lifecycle qualification are separate from resource presence. No Pi authority or new maturity claim is implied. |
+| CA-03 | Synchronize complete owning LICENSE and Go runtime notices into each installable subtree. Exact-source archive and Codex npm assembly require matching bytes; the Pi allowlist includes its nested LICENSE. | Inspect corrected published archives and installed channels after an authorized release. |
+| CA-04 | Companion PRs `arbiterForge/arbiterforge-site#2` and `arbiterForge/.github#2` replace stale copied installation and trust claims with product-owned links. | Rendered review and authorized deployment read-back. |
+| CA-05 | SECURITY discloses the native helper and host qualification boundary. CLA becomes a non-operative status notice; LICENSE remains unchanged. | Maintainer policy review and qualified legal advice where needed. |
+| CA-06 | README names explicit statusline uninstall. Reinstallation still refreshes its path and preserves the prior backup. | Publication and operator-facing read-back. |
 
-## Integration and verification
+## Verification boundaries
 
-PR #860 and the separate farm work may advance adapter versions. Rebase the
-second-to-merge change and derive fresh candidate versions from main; do not
-retarget tags or reuse published package identities. Regenerate host projections
-and recheck the exact integration head.
+`ArtifactClient.workflow_preflight()` is a read-only installed-resource inventory.
+It cannot grant authority, authenticate the user, prove hook trust or turn a
+fixture into live host evidence. Existing native digest checks, approval,
+prerequisite, verification, review and acceptance gates remain unchanged.
 
-Package tests must inspect the actual archive and Codex npm projection, not only
-the checkout. Source-contract tests for public wording do not establish live
-network behavior, legal interpretation or deployed-site state.
+Admission regressions cover current Claude and Codex registrations, Pi refusal,
+missing and nonregular helpers, linked ancestors, malformed/duplicate/oversized
+registries, redirected and asynchronous hooks, OS-specific handler selection,
+ambiguous host identities, repeated checks, and unchanged small/legacy routes.
+Fixtures provide actual installed source resources rather than a production
+bypass flag. The cold Pi test first proves that normal authoring is refused,
+then separately exercises the explicitly synthetic engine lifecycle.
 
-For CA-02, the remaining acceptance evidence is a fresh supported consumer
-installation followed by approval, prerequisite satisfaction, verification,
-independent review, acceptance and interruption recovery. Missing host authority
-must be detected before new full-lane authoring, while existing Markdown pairs
-and the inline small lane retain their existing behavior. No fallback artifact,
-fabricated receipt, relaxed validation or automatic maturity promotion is allowed.
+Package tests inspect the actual archives and Codex npm projection. Public claim
+checks validate source text and links, not deployed behavior or legal meaning.
+The exact-head hosted merge-readiness gate and independent review must complete
+before merge. Record actual run identities and outcomes in the PR, not invented
+verification receipts in this document.
 
-## Rollback
+## Integration and rollback
 
-Revert this candidate through a reviewed change if its contracts regress.
-Preserve original LICENSE bytes, published tags, old package bytes and all
-historical evidence. Reverting the wording does not qualify an unsupported host;
-retain explicit limitations until an independently verified correction ships.
+Recompute candidate versions from the integrated main; never reuse a published
+identity. A later main advance requires a preserving merge and fresh exact-head
+checks. Regenerate all host surfaces together.
+
+Rollback is a reviewed revert. Preserve published tags, package bytes, LICENSE,
+and historical authority evidence. Do not relax validation, manufacture receipts,
+substitute a different runtime package or create fallback artifacts to proceed.
