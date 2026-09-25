@@ -14,6 +14,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [2.21.16] - 2026-09-24
 
+### Removed
+
+- Retire the `new-skill` command, `skill-author` workflow and bundled template,
+  including generated host entries. This maintainer-approved compatibility break
+  has no replacement alias; resource edits use the existing change workflows.
+
 ### Fixed
 
 - Generate debug and refactor entries from their owning skills, retaining all

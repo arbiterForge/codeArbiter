@@ -9,12 +9,12 @@ skill is invoked — never bulk-read this directory.
 | Visibility | Count |
 |---|---:|
 | Core | 18 |
-| Advanced | 12 |
-| Canonical total | 30 |
+| Advanced | 11 |
+| Canonical total | 29 |
 | Compatibility aliases | 5 |
 | Internal | 1 |
 | Deprecated | 1 |
-| **Total** | **37** |
+| **Total** | **36** |
 
 ## Core
 
@@ -102,12 +102,6 @@ skill is invoked — never bulk-read this directory.
 | `/ca-metrics` | Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window. |
 | `/ca-prune` | Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn. |
 | `/ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |
-
-### Extend
-
-| Skill | Purpose |
-|---|---|
-| `/ca-new-skill` | Assess a request for a new reusable codeArbiter skill, prove the uncovered gap, agree scope, author and integrate it. Questions and one-off tasks do not authorize adding a skill. |
 
 ### Help
 

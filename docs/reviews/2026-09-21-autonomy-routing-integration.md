@@ -8,6 +8,99 @@ Source baseline: `arbiterForge/codeArbiter@5c876dd885598c248fa777e951dac4e628688
 
 This document carries the sprint/farm and structured-artifact reassessment into a review branch. It is not a new runtime registry, skill, command, agent, or always-loaded instruction. The implementation must be verified against the actual checkout rather than treating the preceding audits as authority.
 
+## Current progress: skill-authoring retirement (2026-09-25)
+
+This section supersedes earlier slice status only where stated. Baseline inspected:
+`arbiterForge/codeArbiter@b075a61717f16ebb18c4f7f5e94b71b5a2ef56fe`.
+The maintainer explicitly requested deletion of both `new-skill` and its owning
+skill on the same PR. It is an intentional compatibility break for this one
+workflow, not a removal of other aliases or permission to invent a replacement.
+
+### Surface reduction, counted by kind
+
+| Work | Current disposition |
+|---|---|
+| `commit` / `commit-gate`, `debug` / `debug`, `refactor` / `refactor` | Three retained single-source owners; explicit entries are generated derivatives. |
+| `new-skill` / `skill-author` | Previously consolidated; now retired, including the template, host entries and public reference pages. |
+| `watch`, `cleanup`, `decompose`, `create-context`, `context-check` | Five previously implemented catalog aliases to PR, init and status modes; bodies/windows unchanged. These are not five new deletions. |
+| `release`, `tribunal`, `decompose`, `context-check`, `create-context`, `cleanup`, `threat-model` | Seven named owner-consolidation candidates still pending mode/authority/terminal-effect reconciliation. |
+| ADR entry family; PR/finishing relationship | Separate family/lifecycle work, not assumed to be trivial wrappers. |
+
+The named owner inventory was eleven relationships plus the ADR family, not a
+four-item plan. After this slice, three are consolidated and retained, one is
+removed, and seven plus the ADR family remain. The broader RA-11 umbrella-command
+proposal is a different backlog from these ownership migrations.
+
+Active canonical command records go from 38 to 37 and top-level source skills
+from 23 to 22. Host command-entry totals go from 38/36/37 to 37/35/36 for
+Claude/Codex/Pi respectively. Public command classifications become 18 core,
+12 advanced, five aliases, one internal and one deprecated. No token, model
+quality, installed-host discovery or released-artifact result is inferred from
+these source/package counts.
+
+### HTML farm: integration work remains, not another general-hardening queue
+
+The baseline already implements native `farm-project`, `farm-seal` and
+`farm-verify` operations in `core/artifacts/internal/operations/farm_projection.go`.
+The dispatcher checks source binding and exact execution bytes; ordinary typed
+spec/plan approval, bounded method delegation, verification and review adapters
+exist. Native packaging is exercised by normal CI. None of that by itself
+qualifies an HTML-backed farm session.
+
+Three remaining work packages should lead directly toward enablement:
+
+1. **Farm-specific authority capture.** Wire actual user/authorized workflow intent
+   and freshly executed RED results into the required `farm_authorization` event.
+   The inspected approval CLI supports single/pair approval and method delegation;
+   the production authority CLI handles verification and reviews. Neither exposes
+   the farm authorization producer used synthetically by `test_artifact_farm.py`.
+   A method grant is not implicit approval of arbitrary providers or new spending.
+2. **Complete typed execution and reconciliation.** Exercise real approved HTML
+   pair -> current checkpoint/slice projection -> authorized provider seal ->
+   shared author backend -> task-ID reconciliation -> independent review and fresh
+   verification -> checkpoint acceptance -> commit preflight. Test stale inputs,
+   interruptions and resumed review without fabricating receipts, writing shadow
+   Markdown or repeating approval when existing authority is still sufficient.
+3. **Exact-payload and current-model qualification.** Run that whole path from the
+   built installed candidate on the declared host cells, then execute the fresh
+   frontier/low-tier matrix required by the existing rollout policy. Record output
+   quality, escaped defects, interventions and known resources, not price alone.
+
+The owning leaf cards `skills/writing-plans/references/farm-plan.md` and
+`skills/subagent-driven-development/references/farm-dispatch.md` still explicitly
+prohibit ordinary HTML farm use; their qualification descriptions are not proof
+of completed integration. Current native farm tests explicitly label their
+receipts synthetic. No honest completion percentage follows from this evidence.
+
+Full billing accounting, more command migrations, universal language-aware
+mutation analysis and a general durable process-resume feature are separate
+improvements, not automatic prerequisites to the bounded HTML author backend.
+Required interruption safety and typed acceptance still need their actual tests.
+The next implementation priority after this retirement should be the farm-specific
+authority producer and its end-to-end consumer, not another unrelated micro-fix.
+HTML farm is not enabled or modified by this removal slice.
+
+### Retirement propagation and verification boundary
+
+The command, owning skill and bundled template are deleted from canonical and
+generated trees. Callers, catalogs, the architecture diagram, curated references
+and source documentation agree. Useful format conventions are in the existing
+`core/surface/README.md`, outside installed discovery; the five-phase authoring
+ceremony was not moved to another card. Ordinary authorized repository work owns
+future edits. No other approval, commit or acceptance boundary was removed.
+
+The immutable artifact-policy registration baseline and original digest remain.
+Two named, attributed reviewed-removal records explain the current delta. Tests
+reject any other removal and reintroduction of either retired registration.
+The compatibility test keeps the original route set except this one approved
+exception; its five alias bodies and clocks remain protected. Generic link/catalog
+fixtures replace the deleted skill as test data, preserving those assertions.
+
+Revert this removal, generated derivatives and documentation together if rejected.
+Preserve earlier farm work, real artifact authority, accepted ADR/history and
+unrelated resources. Source and generated checks do not substitute for current-head
+CI, installed-host validation or a real-model farm qualification run.
+
 ## Intended outcome
 
 Enable quality autonomous work with fewer avoidable human interruptions. Infer the user's intended outcome, choose the applicable existing workflow, and satisfy its actual authorization and evidence requirements. Explicit commands remain useful entry points; they must not become a compulsory interaction ritual.

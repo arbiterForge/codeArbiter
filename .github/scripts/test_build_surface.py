@@ -543,7 +543,7 @@ class CodexMappingTest(_RepoCase):
         self.assertIn(
             "<!-- codearbiter-codex-agent-route-contract: "
             "literal_route_lines=21 literal_route_occurrences=22 "
-            "generic_route_lines=8 generic_route_occurrences=8 -->",
+            "generic_route_lines=2 generic_route_occurrences=2 -->",
             index,
         )
         self.assertNotIn("\nmodel:", index)
@@ -933,7 +933,7 @@ class CommandCatalogTest(_RepoCase):
             },
             "advanced": {
                 "adr-status", "audit", "checkpoint", "commands", "debug", "metrics",
-                "new-skill", "prune", "reconcile", "standup", "statusline",
+                "prune", "reconcile", "standup", "statusline",
                 "threat-model", "tribunal",
             },
             "alias": {"cleanup", "context-check", "create-context", "decompose", "watch"},
@@ -980,15 +980,13 @@ class PiMappingTest(_RepoCase):
         self.assertFalse(old_catalog.exists())
         self.assertEqual(list((plugin / "skills").glob("*.md")), [])
 
-    def test_pi_skill_author_keeps_the_routine_catalog_for_authoring(self):
-        template = (
-            REPO_ROOT / "core/surface/skills/skill-author/SKILL.md"
-        ).read_text(encoding="utf-8")
-        _write(self.repo, "core/surface/skills/skill-author/SKILL.md", template)
+    def test_pi_routine_reference_keeps_the_internal_catalog(self):
+        # Synthetic fixture: catalog relocation applies to any internal resource.
+        template = "---\nname: catalog-reader\ndescription: Inspect routines.\n---\n\nRead `{{PLUGIN_ROOT}}/skills/INDEX.md`.\n"
+        _write(self.repo, "core/surface/skills/catalog-reader/SKILL.md", template)
         _write(self.repo, "core/surface/skills/INDEX.md", "# routine catalog\n")
-
-        pi_text = self.render("pi")["routines/skill-author/SKILL.md"].decode()
-        codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()
+        pi_text = self.render("pi")["routines/catalog-reader/SKILL.md"].decode()
+        codex_text = self.render("codex")["routines/catalog-reader/SKILL.md"].decode()
         self.assertIn("<plugin-root>/routines/INDEX.md", pi_text)
         self.assertNotIn("<plugin-root>/SKILLS.md", pi_text)
         self.assertIn("[routines/INDEX.md](../INDEX.md)", codex_text)
@@ -1552,7 +1550,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
 
     def test_selected_wrappers_have_no_separately_authored_policy(self):
         """Only the skill owns its description, arguments and execution procedure."""
-        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author'), ('debug', 'debug'), ('refactor', 'refactor')):
+        for command, owner in (('commit', 'commit-gate'), ('debug', 'debug'), ('refactor', 'refactor')):
             with self.subTest(command=command):
                 declaration = (REPO_ROOT / f'core/surface/commands/{command}.md').read_text()
                 self.assertEqual(declaration, '{{SKILL_ENTRY:' + owner + '}}\n')
@@ -1563,7 +1561,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
     def test_claude_explicit_entries_preserve_complete_owner_bodies(self):
         """ADR-0028 owners stay discoverable; explicit spellings remain available."""
         out = B.render_all(REPO_ROOT, 'claude')
-        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author'), ('debug', 'debug'), ('refactor', 'refactor')):
+        for command, owner in (('commit', 'commit-gate'), ('debug', 'debug'), ('refactor', 'refactor')):
             with self.subTest(command=command):
                 entry = out[f'commands/{command}.md'].decode()
                 skill = out[f'skills/{owner}/SKILL.md'].decode()
@@ -1579,7 +1577,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
         """Routine owners are private resources, so synthesized entries stay visible."""
         for host in ('codex', 'pi'):
             out = B.render_all(REPO_ROOT, host)
-            for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author'), ('debug', 'debug'), ('refactor', 'refactor')):
+            for command, owner in (('commit', 'commit-gate'), ('debug', 'debug'), ('refactor', 'refactor')):
                 with self.subTest(host=host, command=command):
                     entry = out[f'skills/ca-{command}/SKILL.md'].decode()
                     self.assertIn(f'name: ca-{command}', _frontmatter(entry))
@@ -1652,7 +1650,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
         debug = (REPO_ROOT / 'core/surface/skills/debug/SKILL.md').read_text()
         refactor = (REPO_ROOT / 'core/surface/skills/refactor/SKILL.md').read_text()
         routing = (REPO_ROOT / 'core/surface/includes/routing-table.md').read_text()
-        for owner in ('debug', 'refactor', 'commit-gate', 'skill-author'):
+        for owner in ('debug', 'refactor', 'commit-gate'):
             self.assertIn('{{PLUGIN_ROOT}}/skills/' + owner + '/SKILL.md', routing)
         self.assertIn('Do not re-enter from an active', debug)
         self.assertIn('known bug with a named regression test', debug)
@@ -1661,6 +1659,47 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
         self.assertIn('No commit, push, or PR is implied', refactor)
 
 
+
+
+class RemovedSkillAuthorTest(unittest.TestCase):
+    """The explicitly retired workflow must not survive as an alias or hidden skill."""
+
+    def test_canonical_command_owner_and_template_are_absent(self):
+        self.assertFalse((REPO_ROOT / 'core/surface/commands/new-skill.md').exists())
+        self.assertFalse((REPO_ROOT / 'core/surface/skills/skill-author').exists())
+
+    def test_every_host_omits_the_retired_entry_and_owner(self):
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                out = B.render_all(REPO_ROOT, host)
+                self.assertNotIn('commands/new-skill.md', out)
+                self.assertNotIn('skills/ca-new-skill/SKILL.md', out)
+                self.assertFalse(any('/skill-author/' in p for p in out))
+                catalog = json.loads(out['generated/command-catalog.json'])['commands']
+                self.assertNotIn('new-skill', catalog)
+                self.assertIn('commit', catalog)
+                self.assertIn('debug', catalog)
+                self.assertIn('refactor', catalog)
+
+    def test_no_active_route_or_replacement_extension_entry(self):
+        registry = json.loads((REPO_ROOT / 'core/surface/command-routes.json').read_text())
+        self.assertNotIn('new-skill', registry['commands'])
+        self.assertNotIn('extend', registry['commands'])
+        for name in ('COMMANDS.md', 'skills/INDEX.md', 'includes/routing-table.md'):
+            text = (REPO_ROOT / 'core/surface' / name).read_text(encoding='utf-8')
+            self.assertNotIn('new-skill', text, name)
+            self.assertNotIn('skill-author', text, name)
+        for category, name in (('commands', 'new-skill'), ('skills', 'skill-author')):
+            self.assertFalse((REPO_ROOT / f'site/src/curated/{category}/{name}.md').exists())
+
+    def test_reusable_format_guidance_is_not_a_registered_workflow(self):
+        text = (REPO_ROOT / 'core/surface/README.md').read_text(encoding='utf-8')
+        self.assertIn('## Authoring governed resources', text)
+        self.assertIn('JSON-quoted', text)
+        self.assertIn('directly referenced information card', text)
+        self.assertIn('check_routing_index_parity.py', text)
+        self.assertNotIn('commands/new-skill.md', text)
+        self.assertNotIn('Return with evidence', text)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

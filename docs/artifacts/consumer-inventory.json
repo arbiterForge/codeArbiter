@@ -9,6 +9,20 @@
     "typed_html_farm_enabled": false
   },
   "public_surface_baseline": {
+    "reviewed_removals": [
+      {
+        "category": "commands",
+        "name": "new-skill",
+        "rationale": "Retire the dedicated skill-authoring workflow without an alias or replacement registration.",
+        "approved_by": "Explicit maintainer instruction, 2026-09-25, PR #854"
+      },
+      {
+        "category": "top_level_skills",
+        "name": "skill-author",
+        "rationale": "Retire the dedicated skill-authoring workflow without an alias or replacement registration.",
+        "approved_by": "Explicit maintainer instruction, 2026-09-25, PR #854"
+      }
+    ],
     "reviewed_additions": [
       {
         "category": "agents",

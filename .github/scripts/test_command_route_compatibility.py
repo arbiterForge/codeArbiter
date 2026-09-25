@@ -14,7 +14,7 @@ REPO = Path(__file__).resolve().parents[2]
 COMMANDS = REPO / "core" / "surface" / "commands"
 REGISTRY = REPO / "core" / "surface" / "command-routes.json"
 
-EXPECTED_SOURCE_ROUTES = frozenset({
+HISTORICAL_SOURCE_ROUTES = frozenset({
     "add-dep", "adr", "adr-status", "audit", "btw", "checkpoint", "chore",
     "cleanup", "commands", "commit", "conflict", "context-check", "create-context",
     "debug", "decompose", "doctor", "feature", "fix", "init", "metrics",
@@ -22,6 +22,9 @@ EXPECTED_SOURCE_ROUTES = frozenset({
     "release", "review", "spike", "sprint", "standup", "status", "statusline",
     "task", "threat-model", "tribunal", "watch",
 })
+
+# Maintainer-approved removal on 2026-09-25; every other route remains frozen.
+EXPECTED_SOURCE_ROUTES = HISTORICAL_SOURCE_ROUTES - {"new-skill"}
 
 EXPECTED_REPLACEMENTS = {
     "cleanup": ("pr", "pr --cleanup"),
@@ -94,7 +97,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
     def registry(self) -> dict:
         return json.loads(REGISTRY.read_text(encoding="utf-8"))
 
-    def test_source_route_set_is_frozen_during_the_compatibility_window(self):
+    def test_source_route_set_is_frozen_except_explicit_retirement(self):
         actual = frozenset(path.stem for path in COMMANDS.glob("*.md"))
         self.assertEqual(actual, EXPECTED_SOURCE_ROUTES)
 
@@ -115,7 +118,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
         }
         self.assertEqual(
             counts,
-            {"core": 18, "advanced": 13, "alias": 5, "internal": 1, "deprecated": 1},
+            {"core": 18, "advanced": 12, "alias": 5, "internal": 1, "deprecated": 1},
         )
         actual = {
             slug: (entry["canonical"], entry["replacement"])

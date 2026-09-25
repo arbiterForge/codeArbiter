@@ -225,15 +225,6 @@
       "canonical": "metrics",
       "legacyRoutes": []
     },
-    "new-skill": {
-      "name": "new-skill",
-      "description": "Assess a request for a new reusable codeArbiter skill, prove the uncovered gap, agree scope, author and integrate it. Questions and one-off tasks do not authorize adding a skill.",
-      "commandPath": "commands/new-skill.md",
-      "visibility": "advanced",
-      "workflow": "extend",
-      "canonical": "new-skill",
-      "legacyRoutes": []
-    },
     "override": {
       "name": "override",
       "description": "Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed.",

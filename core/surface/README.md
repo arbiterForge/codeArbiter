@@ -41,7 +41,7 @@ including orphans). Workflow: edit the template here, run
 
 A command template that only routes to a skill may contain just the whole-file
 SKILL_ENTRY declaration (double braces, colon, then the skill directory name).
-The current examples are `commands/commit.md` and `commands/new-skill.md`.
+The current examples are `commands/commit.md`, `commands/debug.md`, and `commands/refactor.md`.
 The generator reads the named `skills/<name>/SKILL.md` at build time and emits the
 complete procedure under the existing host-native command or entry-skill name.
 There is no new runtime include service, route registry, or model-facing capability.
@@ -68,6 +68,32 @@ compatibility file does not imply its description is model-visible. Compare actu
 host discovery, invoked payload and retained context separately; file/byte counts
 alone are not measured token savings. A generated full public body avoids a second
 load merely to reach the same owner, but supporting references still load on demand.
+
+## Authoring governed resources
+
+Resource authoring is ordinary scoped repository work, not a separate installed
+workflow. Prefer improving the applicable owner to adding another public entry.
+A directly referenced information card can live beneath that owner's `references/`
+directory without skill frontmatter or a discovery/index entry. The existing
+change, verification, review and commit requirements still apply.
+
+For a genuine reusable skill, use its existing neighbors as format examples:
+`name` and an intent-focused `description`, prerequisites, executable instructions,
+observable completion evidence and material boundaries. A command-backed owner
+also supplies `argument-hint`. Keep explanatory questions non-mutating; do not
+require users to name or repeat a command to select the relevant procedure.
+
+Use JSON-quoted frontmatter scalars when they start with `[` or `{`, contain
+colon-space or ` | `, and preserve explicit string quoting. Chain-internal skills
+are path-routed and registry-hidden under ADR-0028. Do not hide a discoverable
+owning skill merely because an explicit alias also exists. Use the rooted
+resource syntax above and the selected host's descriptor, not guessed host paths.
+
+Update the applicable index and caller when adding a resource. Generate all host
+copies, then run `check_routing_index_parity.py`, the surface/host-descriptor tests
+and the three plugin-resource checks. New host metadata needs explicit compiler
+support and tests. These are repository conventions, not a replacement authoring
+command, skill, fixed-number interview, or additional approval ceremony.
 
 ## House rules for shared prose
 

@@ -6,6 +6,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [0.14.16] - 2026-09-24
 
+### Removed
+
+- Retire the `new-skill` command, `skill-author` workflow and bundled template,
+  including generated host entries. This maintainer-approved compatibility break
+  has no replacement alias; resource edits use the existing change workflows.
+
 ### Fixed
 
 - Generate debug and refactor entries from their owning skills, retaining all

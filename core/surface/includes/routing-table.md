@@ -46,7 +46,6 @@ reached the same way.
 | New / aged ADR, unresolved `[CONFIRM-NN]` | `/adr`, `/adr-status` → `decision-lifecycle` | `decision-challenger` (optional) | No `[CONFIRM-NN]` resolved by guessing |
 | Rule conflict (persona vs docs vs code) | `/conflict` | — | STOP all other work immediately |
 | Unsure `/reconcile` vs `/conflict`? | rules contradict and work cannot safely continue → `/conflict`; artifacts drifted, work continues → `/reconcile` | — | When genuinely ambiguous, `/conflict` wins — stopping is recoverable, drifting past a rule conflict is not |
-| New skill needed | `skill-author` skill at `{{PLUGIN_ROOT}}/skills/skill-author/SKILL.md` (explicit `/new-skill` uses the same owner) | — | No skill until the gap is proven uncovered |
 | Subagent raises an out-of-scope finding | inline `[NEEDS-TRIAGE]` marker | — | Never an ADR disposition; never silently dropped |
 {{IF:claude}}
 | Session context bloated / want longer sessions | `{{CMD:prune}}` → `prune-transcript.py` | — | Never `--execute` the live transcript; dry-run by default; resume/compaction gains only, not live |

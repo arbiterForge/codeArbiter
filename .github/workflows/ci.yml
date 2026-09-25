@@ -2058,7 +2058,7 @@ jobs:
         # includes/routing-table.md are the orchestrator's routing surface,
         # not passive docs -- a stale row can send it to a skill that no
         # longer exists, or leave a real one unreachable. This was an
-        # authoring discipline (skill-author Phase 5 prose) with nothing
+        # authoring discipline (formerly maintained as prose) with nothing
         # mechanical behind it; check_routing_index_parity.py makes it a
         # CI-checked invariant: every skill/routine/agent/ca-codex
         # command-wrapper skill has exactly one INDEX row pointing at a
