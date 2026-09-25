@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Bound shared farm prompt enrichment and retain neutral retry evidence; existing
+  preview authority and HTML farm restrictions remain unchanged.
 - Recover farm merge conflicts against a verified integration commit, retaining
   prior output and rechecking the current protected-test baseline.
 - Cover connection and response-body failure lifecycles; clarify that unavailable

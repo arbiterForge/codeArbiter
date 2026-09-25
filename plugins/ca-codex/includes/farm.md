@@ -35,8 +35,14 @@ the same hard gates; **only the cheap HTTP-chat worker ships today** — premium
 model) and agentic (a worker that reads files and iterates) are what the seam is designed for, roadmap
 not built. Cost arbitrage is one worker policy, not the definition.
 
-The worker prompt is enriched with the failing-test source and current in-scope file contents, byte-capped
-(`FARM_ENRICH_MAX_BYTES`) and secret-redacted before transmission to the endpoint.
+The worker prompt includes the failing-test source, current in-scope files, and available prior output.
+`FARM_ENRICH_MAX_BYTES` limits their rendered UTF-8 enrichment, including section text, file labels,
+separators, and any truncation notice. Complete source is redacted before truncation; a cut never splits
+an encoded code point. Current source takes priority over prior output. When a file does not fit, its
+body is shortened and later files are omitted. A label that cannot fit is omitted rather than split.
+Small limits use a compact notice; limits too small for that notice omit enrichment entirely.
+This is not a cap on task instructions, failure details, the full JSON request, model tokens, or local
+file-read memory. No additional model request or user checkpoint is made solely because context was cut.
 
 **Swapping the worker changes who writes the code, never whether it's reviewed.** Every task the farm
 reports green is still routed through the normal spec-compliance, quality, and fresh-verification
@@ -158,10 +164,13 @@ defaults to `0.7`; `FARM_TEMPERATURE` remains the operator override. An explicit
 bump. Leave the override unset or choose a supported nonzero temperature when seeking
 more varied candidates; a temperature setting is not a guarantee of distinct outputs.
 
-On a **retry** — a failed gate, or a sampling round with no qualified candidate — the worker is shown its own previous
-in-scope output, not just the gate-failure tail, so it refines rather than restarts blind. That prior
-output rides the same byte-cap (`FARM_ENRICH_MAX_BYTES`) and secret-redaction chokepoint as all other
-injected context; out-of-scope drift is never carried forward.
+On a **retry**, available output reported written by the selected previous candidate is retained only
+where it intersects implementation scope. Untouched baseline files remain current-source context, not
+previous work. Partial output and file evidence can survive rejection or a later qualification exception;
+sibling candidates are not mixed. Prior output uses the same byte cap and redaction as other context.
+Labels say **not accepted**, not that a test necessarily failed. Actual failure details distinguish a
+worker response, qualification, transport, or integration problem so valid work need not be rewritten
+blindly. Retained context grants no acceptance, new retry allowance, or permission.
 If the retry cannot reset its worktree, the task escalates without another model call.
 Its report retains the completed attempts' known token usage, last output/risk evidence,
 and any unresolved sample cleanup outcomes; a failed reset cannot erase them.
@@ -239,7 +248,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout. A valid provider `Retry-After` longer than this is not shortened; the task is deferred without another authoring attempt. |
 | `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx. Bounded `Retry-After` is honored; exhaustion defers new authoring for that task. |
 | `FARM_ENTITLEMENT_PROBE_TIMEOUT_MS` | `35000` | Per-candidate wall-clock cap for the `--canary` entitlement pre-screen (drops 401 promo-expired models). |
-| `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on bytes of test-source + in-scope file context injected into the worker prompt (data-minimization; redacted for secrets). |
+| `FARM_ENRICH_MAX_BYTES` | `131072` | UTF-8 cap on rendered current/prior file context, labels, separators and notices; not the complete prompt or request. |
 | `FARM_ABORT_ESCALATION_RATE` | `0.5` | Circuit breaker: abort once escalations exceed this fraction… |
 | `FARM_ABORT_MIN_TASKS` | `3` | …after at least this many tasks have settled. |
 | `FARM_MUTATION` | `on` | Mutation guard on/off. |

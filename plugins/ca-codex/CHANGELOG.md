@@ -10,6 +10,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Clarify rendered farm context budgets and neutral rejection feedback in the shared
+  private card; no new Codex backend or HTML farm support is introduced.
 - Recover farm merge conflicts against a verified integration commit, retaining
   prior output and rechecking the current protected-test baseline.
 - Cover connection and response-body failure lifecycles; clarify that unavailable

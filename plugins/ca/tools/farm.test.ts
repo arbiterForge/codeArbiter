@@ -1141,6 +1141,12 @@ describe("farm.ts smoke tests", () => {
     // Content past the cap is not transmitted; a visible truncation marker is.
     expect(prompts[0]).not.toContain(TAIL_MARKER);
     expect(prompts[0]).toContain("TRUNCATED");
+    // Compare the actual transmitted enrichment, including its framing. The
+    // two pre-existing separators remain even when no context is injected.
+    const boundary = "Touch nothing else. Do not run git. Do not install global packages.";
+    const context = prompts[0].slice(prompts[0].indexOf(boundary) + boundary.length,
+      prompts[0].indexOf("Solve the task with REAL logic."));
+    expect(Buffer.byteLength(context, "utf8") - 2).toBeLessThanOrEqual(2048);
   });
 
   it("serializes scope-overlapping tasks so the second inherits the first's merged change (AC-06)", async () => {
@@ -2774,5 +2780,82 @@ describe("verified merge recovery CLI", () => {
         }
       });
     }
+  }
+});
+
+/** Observe the actual source/bundle prompt at a loopback provider boundary. */
+describe("bounded prompt assembly CLI", () => {
+  let root: string; let server: Server | undefined;
+  const gitIn = (dir: string, ...args: string[]) => execFileSync("git", args,
+    { cwd: dir, env: fixtureEnv(), encoding: "utf8", stdio: "pipe" }).trim();
+  beforeEach(() => {
+    root = join(tmpdir(), `farm-prompt-budget-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    createTempRepo(root);
+    writeFileSync(join(root, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(root, "src/impl.cjs"), "module.exports = n => n * 0;\n");
+    writeFileSync(join(root, "src/check.cjs"), "// " + "😀界é".repeat(400) + "\n" +
+      "require('node:assert/strict').equal(require('./impl.cjs')(6), 12);\n");
+    gitIn(root, "add", "--", ".gitignore", "src"); gitIn(root, "commit", "-m", "prompt budget obligation");
+  });
+  afterEach(async () => {
+    await reapStrayChildren();
+    if (server) { server.closeAllConnections(); await new Promise<void>(done => server!.close(() => done())); server = undefined; }
+    rmWithRetry(root);
+  });
+  const code = "module.exports = n => n + n;\n";
+  const block = "```javascript:src/impl.cjs\n" + code + "```";
+  for (const entry of ["source", "bundle"] as const) {
+    it.each([1, 256, 512])(`${entry}: respects the actual %s-byte enrichment allowance`, async budget => {
+      const prompts: string[] = [];
+      const mock = await startMockServer(body => {
+        prompts.push((body as { messages: Array<{ content: string }> }).messages[0].content); return block;
+      }, { prompt_tokens: 7, completion_tokens: 11 });
+      server = mock.server;
+      const planPath = join(root, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "prompt budget", model: "fixture" }, tasks: [{
+        id: "bounded", description: "Implement arithmetic without editing tests", deps: [], filesInScope: ["src/impl.cjs"],
+        test: { path: "src/check.cjs" }, gate: { commands: ["node src/check.cjs"] }, maxRetries: 0 }] }));
+      const before = gitIn(root, "rev-parse", "main"); const testBefore = readFileSync(join(root, "src/check.cjs"));
+      const result = await runFarmWithArgs(root, [], planPath, { FARM_API_KEY: "fixture-key",
+        FARM_API_BASE_URL: `http://127.0.0.1:${mock.port}`, FARM_ENRICH_MAX_BYTES: String(budget),
+        FARM_MUTATION: "off", FARM_API_MAX_RETRIES: "0" }, [], entry);
+      expect(result.code, result.out).toBe(0); expect(prompts).toHaveLength(1);
+      const boundary = "Touch nothing else. Do not run git. Do not install global packages.";
+      const start = prompts[0].indexOf(boundary) + boundary.length;
+      const end = prompts[0].indexOf("Solve the task with REAL logic.");
+      expect(start).toBeGreaterThan(boundary.length); expect(end).toBeGreaterThan(start);
+      expect(Buffer.byteLength(prompts[0].slice(start, end), "utf8") - 2).toBeLessThanOrEqual(budget);
+      expect(prompts[0]).not.toContain("\uFFFD");
+      if (budget > 1) expect(prompts[0]).toContain("TRUNCATED");
+      expect(prompts[0]).toContain("Make it pass WITHOUT modifying, deleting, or weakening that test.");
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "green", attempts: 1, promptTokens: 7, completionTokens: 11 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before); expect(readFileSync(join(root, "src/check.cjs"))).toEqual(testBefore);
+      expect(gitIn(root, "show", "farm/integration:src/impl.cjs")).toBe(code.trim());
+    });
+    it(`${entry}: does not tell a worker that an empty response failed a test`, async () => {
+      const prompts: string[] = [];
+      const mock = await startMockServer(body => {
+        prompts.push((body as { messages: Array<{ content: string }> }).messages[0].content);
+        return prompts.length === 1 ? "" : block;
+      }, { prompt_tokens: 7, completion_tokens: 11 });
+      server = mock.server;
+      const planPath = join(root, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "no output retry", model: "fixture" }, tasks: [{
+        id: "retry", description: "Implement arithmetic without editing tests", filesInScope: ["src/impl.cjs"],
+        test: { path: "src/check.cjs" }, gate: { commands: ["node src/check.cjs"] }, maxRetries: 1 }] }));
+      const before = gitIn(root, "rev-parse", "main"); const testBefore = readFileSync(join(root, "src/check.cjs"));
+      const result = await runFarmWithArgs(root, [], planPath, { FARM_API_KEY: "fixture-key",
+        FARM_API_BASE_URL: `http://127.0.0.1:${mock.port}`, FARM_ENRICH_MAX_BYTES: "512",
+        FARM_MUTATION: "off", FARM_API_MAX_RETRIES: "0" }, [], entry);
+      expect(result.code, result.out).toBe(0); expect(prompts).toHaveLength(2);
+      expect(prompts[1]).toContain("Previous attempt was not accepted");
+      expect(prompts[1]).toContain("worker error:"); expect(prompts[1]).not.toContain("FAILED the gate");
+      expect(prompts[1]).not.toContain("your previous attempt — FAILED");
+      const report = JSON.parse(readFileSync(join(root, ".farm/farm-report.json"), "utf8"));
+      expect(report.results[0]).toMatchObject({ status: "green", attempts: 2, promptTokens: 14, completionTokens: 22 });
+      expect(gitIn(root, "rev-parse", "main")).toBe(before); expect(readFileSync(join(root, "src/check.cjs"))).toEqual(testBefore);
+      expect(gitIn(root, "show", "farm/integration:src/impl.cjs")).toBe(code.trim());
+    });
   }
 });

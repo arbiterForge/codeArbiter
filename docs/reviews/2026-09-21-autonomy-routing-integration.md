@@ -936,3 +936,51 @@ No test exclusion, required check, runtime timeout, authority or dependency chan
 Also correct the reviewed FARM_REQUEST_TIMEOUT_MS table: a valid excessive
 Retry-After defers the task; it is not shortened into an early retry. Regenerate
 all three host cards. Normal final-head CI and independent review remain separate.
+
+## 2026-09-25: rendered enrichment budget and neutral retry evidence
+
+Baseline: `arbiterForge/codeArbiter@9be3880514256cc8a2273b9800d07840e55d0188`.
+This continues the attributed-feedback slice without changing its snapshots,
+selection, retry allowance, or authority. The remaining retry footer and prior-file
+label still asserted a failed gate; both now describe an unaccepted attempt and
+retain the actual failure details. CodeRabbit independently identified that wording.
+
+The old cap budgeted individual file renderings before the final prompt assembled
+its section text and separators. Its marker-only fallback could exceed a tiny
+limit, and decoding an arbitrary UTF-8 byte prefix could insert replacement
+characters. The new single rendering boundary budgets the actual enrichment,
+including its joining separator, section text, complete file frames and notices.
+It reserves an omission notice before consuming the available space, preserves
+code-point boundaries, and retains current-before-prior ordering. Too-small limits
+omit enrichment rather than exceed the operator's setting. Task instructions and
+failure details remain outside this specific cap; JSON escaping, token counts and
+local file-read memory are not claimed bounded by it.
+
+The default setting and discovery footprint are unchanged. An optional argument on
+the existing pure prompt builder is only a test seam; runtime callers use the
+existing environment setting. No provider request, permission, new user checkpoint,
+registered operation, configuration knob or dependency is introduced. Protected
+tests, actual verification, independent review, redaction and integration remain.
+The canonical private card and its host projections explain the budget's extent.
+This is source behavior, not a release or measured quality/cost claim.
+
+Verification added 21 unit cases and eight real source/bundle CLI cases, and
+strengthened the existing transmitted-context assertion. The same 30-case selection
+against unchanged baseline source/bundle produced 28 assertion failures and two
+preservation passes; the candidate passes all 30. The baseline CLI transmitted
+2137 enrichment bytes for a 2048-byte limit, and 214 for a one-byte limit. Its
+runtime and bundle were unchanged in a separate disposable baseline worktree.
+No import failure or unselected test is counted as reproduction or a pass.
+
+The candidate's complete native-Windows farm suite passed 895 tests with three
+existing platform skips (898 cases). Local Node was 24.18.0. Coverage measured
+73.85% lines and 71.83% branches, with no threshold, exclusion, collector or
+source-scope change. Typecheck, exact bundle rebuild, official generation, all
+19 selected static/host/resource/version checks passed. Current-head normal CI and
+independent review remain separate obligations; no hosted result is inferred from
+this local run. Native fixtures do not establish real-model quality or billing.
+
+Revert this renderer, rebuilt bundle, tests, private projections and affected input
+hashes together if rejected. Preserve earlier PR work, release identities and
+ledger history. HTML farm remains disabled; durable process resume, complete
+accounting and remaining command consolidation are not implemented by this slice.

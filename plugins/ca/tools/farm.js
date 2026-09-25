@@ -1201,32 +1201,55 @@ async function runGate(cwd, commands) {
   return { ok: true };
 }
 function renderInjectedFile(file) {
-  const label = file.prior ? `${file.path} (your previous attempt \u2014 FAILED)` : file.readOnly ? `${file.path} (read-only \u2014 the failing test)` : file.path;
-  return [`--- ${label} ---`, redactSecrets(file.contents)].join("\n");
+  const label = file.prior ? `${file.path} (your previous attempt \u2014 not accepted)` : file.readOnly ? `${file.path} (read-only \u2014 the failing test)` : file.path;
+  return { frame: `--- ${label} ---
+`, body: redactSecrets(file.contents) };
 }
 var TRUNCATION_MARKER = "--- [TRUNCATED \u2014 injected context exceeded FARM_ENRICH_MAX_BYTES] ---";
+var CURRENT_CONTEXT = "Current source of the relevant files (the test is read-only; implement against it):";
+var PRIOR_CONTEXT = "Your PREVIOUS attempt was not accepted. Its retained in-scope output follows; use the current baseline and failure below to decide what to keep or repair:";
+function utf8Prefix(text, maxBytes) {
+  const bytes = Buffer.from(text, "utf8");
+  let end = Math.min(bytes.length, Math.max(0, Math.floor(maxBytes)));
+  while (end > 0 && end < bytes.length && (bytes[end] & 192) === 128) end--;
+  return bytes.subarray(0, end).toString("utf8");
+}
 function capInjected(injected, maxBytes) {
-  const out = [];
-  let used = 0;
-  for (const file of injected) {
-    const renderedBytes = Buffer.byteLength(renderInjectedFile(file), "utf8");
-    if (used + renderedBytes <= maxBytes) {
-      out.push(file);
-      used += renderedBytes;
-      continue;
+  const budget = Number.isFinite(maxBytes) ? Math.max(0, Math.floor(maxBytes) - 1) : 0;
+  if (budget === 0 || injected.length === 0) return "";
+  const pieces = [];
+  for (const prior of [false, true]) {
+    const group = injected.filter((file) => Boolean(file.prior) === prior);
+    for (const [index, file] of group.entries()) {
+      const rendered = renderInjectedFile(file);
+      const lead = index === 0 ? `${prior ? PRIOR_CONTEXT : CURRENT_CONTEXT}
+
+` : "";
+      const separator = pieces.length === 0 ? "" : index === 0 ? "\n\n" : "\n";
+      pieces.push({ frame: separator + lead + rendered.frame, body: rendered.body });
     }
-    const contentBytes = Buffer.byteLength(redactSecrets(file.contents), "utf8");
-    const overhead = renderedBytes - contentBytes;
-    const remaining = maxBytes - used - overhead - Buffer.byteLength("\n" + TRUNCATION_MARKER, "utf8");
-    if (remaining > 0) {
-      const safe = Buffer.from(redactSecrets(file.contents), "utf8").subarray(0, remaining).toString("utf8");
-      out.push({ ...file, contents: safe + "\n" + TRUNCATION_MARKER });
-    } else {
-      out.push({ ...file, contents: TRUNCATION_MARKER });
-    }
-    break;
   }
-  return out;
+  const bytes = (value) => Buffer.byteLength(value, "utf8");
+  const total = pieces.reduce((sum, piece) => sum + bytes(piece.frame) + bytes(piece.body), 0);
+  if (total <= budget) return pieces.map((piece) => piece.frame + piece.body).join("");
+  const marker = bytes(TRUNCATION_MARKER) <= budget ? TRUNCATION_MARKER : bytes("[TRUNCATED]") <= budget ? "[TRUNCATED]" : "";
+  if (!marker) return "";
+  let remaining = budget - bytes(marker) - 1;
+  let out = "";
+  for (const piece of pieces) {
+    const frameBytes = bytes(piece.frame);
+    if (frameBytes > remaining) break;
+    out += piece.frame;
+    remaining -= frameBytes;
+    if (bytes(piece.body) > remaining) {
+      out += utf8Prefix(piece.body, remaining);
+      break;
+    }
+    out += piece.body;
+    remaining -= bytes(piece.body);
+  }
+  return out ? `${out}
+${marker}` : marker;
 }
 async function buildEnrichment(wt, t, priorInScope = []) {
   const injected = [];
@@ -1255,7 +1278,7 @@ async function buildEnrichment(wt, t, priorInScope = []) {
     if (isSecretBearingFilename(pf.path)) continue;
     injected.push({ path: pf.path, contents: pf.contents, readOnly: true, prior: true });
   }
-  return capInjected(injected, ENV.enrichMaxBytes);
+  return injected;
 }
 async function captureInScope(wt, t, filesWritten = t.filesInScope) {
   const written = new Set(filesWritten);
@@ -1270,23 +1293,8 @@ async function captureInScope(wt, t, filesWritten = t.filesInScope) {
   }
   return out;
 }
-function buildPrompt(t, injected, priorFailure, forbiddenExtra) {
-  const current = injected.filter((f) => !f.prior);
-  const priorFiles = injected.filter((f) => f.prior);
-  const enrichment = current.length ? [
-    ``,
-    `Current source of the relevant files (the test is read-only; implement against it):`,
-    ``,
-    ...current.map(renderInjectedFile),
-    ``
-  ] : [];
-  const priorBlock = priorFiles.length ? [
-    ``,
-    `Your PREVIOUS attempt was not accepted. Its retained in-scope output follows; use the current baseline and failure below to decide what to keep or repair:`,
-    ``,
-    ...priorFiles.map(renderInjectedFile),
-    ``
-  ] : [];
+function buildPrompt(t, injected, priorFailure, forbiddenExtra, enrichmentBudget = ENV.enrichMaxBytes) {
+  const enrichment = capInjected(injected, enrichmentBudget);
   return [
     `Implement exactly ONE task. Your only goal: make the failing test pass.`,
     ``,
@@ -1305,8 +1313,7 @@ ${t.context}
     forbiddenExtra && forbiddenExtra.length ? `
 Your previous attempt wrote these FORBIDDEN paths \u2014 do NOT touch them again:
 ${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}` : ``,
-    ...enrichment,
-    ...priorBlock,
+    ...enrichment ? [enrichment] : [],
     `Solve the task with REAL logic. Do not hard-code the literal values the`,
     `test asserts \u2014 an implementation that only returns the expected constant`,
     `will be rejected.`,
@@ -1321,9 +1328,8 @@ ${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}` : ``,
     ``,
     `Do not include any explanation outside the code blocks.`,
     priorFailure ? `
-Your previous attempt FAILED the gate. Fix it.
-Gate output (tail):
-${priorFailure}` : ``
+Previous attempt was not accepted. Use the failure details to decide what to repair:
+${redactSecrets(priorFailure)}` : ``
   ].join("\n");
 }
 function extractFileBlocks(content) {

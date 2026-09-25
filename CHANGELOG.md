@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Bound rendered farm enrichment, including labels and notices; preserve UTF-8
+  boundaries and actual retry failure context without extra authoring calls.
 - Recover farm merge conflicts against a verified integration commit, retaining
   prior output and rechecking the current protected-test baseline.
 - Cover connection and response-body failure lifecycles; clarify that unavailable

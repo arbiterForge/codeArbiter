@@ -4351,3 +4351,84 @@ describe("attributed retry context", () => {
     expect((await captureInScope(f.wt, f.task)).map(file => file.path)).toEqual(f.task.filesInScope);
   });
 });
+
+/** The limit covers emitted enrichment, not merely pre-rendered file bodies. */
+describe("rendered enrichment budget", () => {
+  const task: Task = { id: "prompt-budget", description: "Implement current requirements",
+    filesInScope: ["src/impl.ts"], test: { path: "src/check.ts" }, gate: { commands: ["fixture"] } };
+  // Compatible baseline invocation: old code ignores the proposed optional budget.
+  const prompt = buildPrompt as (t: Task, files: InjectedFile[], failure?: string,
+    forbidden?: string[], budget?: number) => string;
+  const size = (text: string) => Buffer.byteLength(text, "utf8");
+  function measure(files: InjectedFile[], budget: number, failure?: string) {
+    const rendered = prompt(task, files, failure, undefined, budget);
+    return { rendered, added: size(rendered) - size(prompt(task, [], failure, undefined, budget)) };
+  }
+  it.each([1, 11, 12, 65, 96, 128, 256, 512])("never expands a %s-byte budget to fit a file label or notice", budget => {
+    const { rendered, added } = measure([{ path: "x".repeat(600) + ".ts", contents: "BODY_MUST_NOT_FIT", readOnly: false }], budget);
+    expect(added).toBeLessThanOrEqual(budget);
+    expect(rendered).not.toContain("BODY_MUST_NOT_FIT");
+    expect(rendered).not.toContain("--- " + "x".repeat(100));
+    if (budget >= 12) expect(rendered).toContain("TRUNCATED");
+    expect(rendered).toContain("Make it pass WITHOUT modifying, deleting, or weakening that test.");
+    expect(rendered).toContain("Respond with ONLY the files you need to create or modify.");
+  });
+  it("keeps exact-fit enrichment whole and counts framing and separators", () => {
+    const files: InjectedFile[] = [{ path: "src/check.ts", contents: "TEST_SOURCE", readOnly: true },
+      { path: "src/impl.ts", contents: "CURRENT_SOURCE", readOnly: false },
+      { path: "src/impl.ts", contents: "PRIOR_SOURCE", readOnly: true, prior: true }];
+    const full = measure(files, 10000);
+    expect(measure(files, full.added).rendered).toBe(full.rendered);
+    const trimmed = measure(files, full.added - 1);
+    expect(trimmed.added).toBeLessThanOrEqual(full.added - 1); expect(trimmed.rendered).toContain("TRUNCATED");
+  });
+  it.each(["é", "界", "😀", "e\u0301"])("truncates %s on UTF-8 code-point boundaries at every nearby cut", token => {
+    const files: InjectedFile[] = [{ path: "src/impl.ts", contents: token.repeat(2000), readOnly: false }];
+    for (let budget = 170; budget < 200; budget++) {
+      const { rendered, added } = measure(files, budget);
+      expect(added).toBeLessThanOrEqual(budget); expect(rendered).not.toContain("\uFFFD");
+      expect(rendered).toContain("TRUNCATED");
+      const body = rendered.split("--- src/impl.ts ---\n")[1]?.split("\n--- [TRUNCATED")[0];
+      if (body) expect(token.repeat(2000).startsWith(body)).toBe(true);
+    }
+  });
+  it("gives current source priority over prior samples even when input order differs", () => {
+    const files: InjectedFile[] = [{ path: "src/impl.ts", contents: "OLD_CANDIDATE_".repeat(200), readOnly: true, prior: true },
+      { path: "src/impl.ts", contents: "CURRENT_FIRST\n" + "x".repeat(2000), readOnly: false }];
+    const { rendered, added } = measure(files, 512);
+    expect(added).toBeLessThanOrEqual(512); expect(rendered).toContain("CURRENT_FIRST");
+    expect(rendered).not.toContain("OLD_CANDIDATE"); expect(rendered).not.toContain("Your PREVIOUS attempt");
+  });
+  it("drops files after the first overflow instead of filling with later smaller files", () => {
+    const { rendered, added } = measure([
+      { path: "src/impl.ts", contents: "A".repeat(3000), readOnly: false },
+      { path: "src/later.ts", contents: "LATER_MUST_NOT_APPEAR", readOnly: false }], 256);
+    expect(added).toBeLessThanOrEqual(256); expect(rendered).toContain("TRUNCATED");
+    expect(rendered).not.toContain("LATER_MUST_NOT_APPEAR"); expect(rendered).not.toContain("--- src/later.ts");
+  });
+  it("redacts complete source before choosing a prefix, not after breaking a sensitive span", () => {
+    const contents = ["SAFE_START", "-----BEGIN PRIVATE KEY-----", "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
+      "-----END PRIVATE KEY-----", "SAFE_END"].join("\n");
+    const { rendered, added } = measure([{ path: "src/impl.ts", contents, readOnly: false }], 256);
+    expect(added).toBeLessThanOrEqual(256); expect(rendered).not.toContain("NOT_REAL_PRIVATE_MATERIAL");
+    expect(rendered).toContain("SAFE_START"); expect(rendered).toContain("[REDACTED");
+  });
+  it.each(["worker error: no file blocks", "merge conflict: verified baseline changed", "failed: npm test\nassertion failed"])(
+    "retains the real failure without claiming a different failure phase: %s", failure => {
+      const { rendered } = measure([{ path: "src/impl.ts", contents: "VALID_PRIOR_CODE", readOnly: true, prior: true }], 4096, failure);
+      expect(rendered).toContain(failure); expect(rendered).toContain("VALID_PRIOR_CODE");
+      expect(rendered).toContain("was not accepted"); expect(rendered).not.toContain("FAILED the gate");
+      expect(rendered).not.toContain("previous attempt — FAILED");
+      expect(rendered).not.toContain("Gate output (tail)");
+    });
+  it("leaves non-enrichment task instructions and failure evidence outside this specific cap", () => {
+    const reason = "diagnostic-detail-".repeat(50);
+    const { rendered, added } = measure([{ path: "src/impl.ts", contents: "LARGE_SOURCE".repeat(100), readOnly: false }], 1, reason);
+    expect(added).toBe(0); expect(rendered).toContain(reason);
+    expect(rendered).toContain(task.description); expect(rendered).toContain(task.test.path);
+    expect(rendered).toContain("Respond with ONLY the files you need to create or modify.");
+  });
+  it("adds nothing for an empty source list", () => {
+    expect(measure([], 1).added).toBe(0); expect(measure([], 1000).rendered).not.toContain("TRUNCATED");
+  });
+});

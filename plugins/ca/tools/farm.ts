@@ -728,14 +728,10 @@ export async function runGate(cwd: string, commands: string[]) {
 // against. Reads reflect the per-attempt worktree state because runTask calls
 // this AFTER any inter-attempt reset.
 //
-// ALL injected content is funneled through this ONE chokepoint and rendered by
-// `renderInjectedFile`, so T-05 can wrap the byte cap + secret redaction here
-// without touching buildPrompt or the call site. (T-04 does the injection +
-// shared reader only — cap and redaction are explicitly NOT done here.)
-// --------------------------------------------------------------------------
-// `prior` (F2): this file is the worker's OWN output from a FAILED previous
-// attempt, captured before the inter-attempt reset and shown read-only so a
-// retry refines rather than restarts. Rendered in its own labeled section.
+// buildPrompt is the outbound formatting boundary; collection does not truncate
+// file bodies before redaction or account for labels using a different renderer.
+// `prior` labels retained output from an unaccepted attempt, not proof that a
+// test gate ran or that otherwise qualified code must be rewritten.
 export type InjectedFile = { path: string; contents: string; readOnly: boolean; prior?: boolean };
 
 // AC-05 secret redaction + the secret-bearing-filename denylist now live in
@@ -743,61 +739,61 @@ export type InjectedFile = { path: string; contents: string; readOnly: boolean; 
 // imported at the top; behaviour, the span-aware PEM handling, and the
 // corpus-parity pin (architecture-001) are unchanged.
 
-// The single chokepoint for content that leaves the trust boundary. The byte
-// cap (applied over the rendered array in buildEnrichment) and the per-line
-// secret redaction (here) wrap every injected file body. Keep this the only
-// place injected file bodies are formatted so the boundary stays in one spot.
-function renderInjectedFile(file: InjectedFile): string {
+// One renderer owns file labels, redaction and the emitted enrichment budget.
+// Section text and separators count too; task instructions and failure details
+// are separate prompt fields. This does not bound the complete JSON request.
+function renderInjectedFile(file: InjectedFile): { frame: string; body: string } {
   const label = file.prior
-    ? `${file.path} (your previous attempt — FAILED)`
-    : file.readOnly
-      ? `${file.path} (read-only — the failing test)`
-      : file.path;
-  return [`--- ${label} ---`, redactSecrets(file.contents)].join("\n");
+    ? `${file.path} (your previous attempt — not accepted)`
+    : file.readOnly ? `${file.path} (read-only — the failing test)` : file.path;
+  return { frame: `--- ${label} ---\n`, body: redactSecrets(file.contents) };
 }
 
-// Deterministic byte cap over the TOTAL injected enrichment. Operates on the
-// InjectedFile[] (BEFORE buildPrompt renders it, so buildPrompt and the runTask
-// call site stay untouched) but budgets against each file's FULLY RENDERED size
-// — i.e. `renderInjectedFile` output, including the redaction substitutions and
-// the path label — so the cap reflects exactly what crosses the boundary.
-// Files are kept in order until the next would exceed the budget; the
-// overflowing file's contents are hard-truncated (UTF-8 safe) to fit and a
-// visible TRUNCATED marker appended; everything after is dropped. The prompt is
-// never unbounded. Measured in UTF-8 bytes — the unit the request body is
-// serialized in.
 const TRUNCATION_MARKER = "--- [TRUNCATED — injected context exceeded FARM_ENRICH_MAX_BYTES] ---";
+const CURRENT_CONTEXT = "Current source of the relevant files (the test is read-only; implement against it):";
+const PRIOR_CONTEXT = "Your PREVIOUS attempt was not accepted. Its retained in-scope output follows; use the current baseline and failure below to decide what to keep or repair:";
 
-function capInjected(injected: InjectedFile[], maxBytes: number): InjectedFile[] {
-  const out: InjectedFile[] = [];
-  let used = 0;
-  for (const file of injected) {
-    const renderedBytes = Buffer.byteLength(renderInjectedFile(file), "utf8");
-    if (used + renderedBytes <= maxBytes) {
-      out.push(file);
-      used += renderedBytes;
-      continue;
+/** Return a code-point-aligned UTF-8 prefix without replacement characters. */
+function utf8Prefix(text: string, maxBytes: number): string {
+  const bytes = Buffer.from(text, "utf8");
+  let end = Math.min(bytes.length, Math.max(0, Math.floor(maxBytes)));
+  while (end > 0 && end < bytes.length && (bytes[end] & 0xc0) === 0x80) end--;
+  return bytes.subarray(0, end).toString("utf8");
+}
+
+/** Bound actual rendered context, keeping current files ahead of prior output. */
+function capInjected(injected: InjectedFile[], maxBytes: number): string {
+  // Inserting one context element adds one separator in buildPrompt's join.
+  const budget = Number.isFinite(maxBytes) ? Math.max(0, Math.floor(maxBytes) - 1) : 0;
+  if (budget === 0 || injected.length === 0) return "";
+  const pieces: Array<{ frame: string; body: string }> = [];
+  for (const prior of [false, true]) {
+    const group = injected.filter(file => Boolean(file.prior) === prior);
+    for (const [index, file] of group.entries()) {
+      const rendered = renderInjectedFile(file);
+      const lead = index === 0 ? `${prior ? PRIOR_CONTEXT : CURRENT_CONTEXT}\n\n` : "";
+      const separator = pieces.length === 0 ? "" : index === 0 ? "\n\n" : "\n";
+      pieces.push({ frame: separator + lead + rendered.frame, body: rendered.body });
     }
-    // Fixed overhead this file's render adds around its contents (label line +
-    // joins): the difference between the rendered size and the contents size.
-    const contentBytes = Buffer.byteLength(redactSecrets(file.contents), "utf8");
-    const overhead = renderedBytes - contentBytes;
-    const remaining = maxBytes - used - overhead - Buffer.byteLength("\n" + TRUNCATION_MARKER, "utf8");
-    if (remaining > 0) {
-      // Truncate the (already redaction-safe) contents to the remaining byte
-      // budget on a UTF-8 boundary, then append the marker.
-      const safe = Buffer.from(redactSecrets(file.contents), "utf8")
-        .subarray(0, remaining)
-        .toString("utf8");
-      out.push({ ...file, contents: safe + "\n" + TRUNCATION_MARKER });
-    } else {
-      // No room even for this file's frame — emit a marker-only stub so the
-      // truncation is visible, then stop.
-      out.push({ ...file, contents: TRUNCATION_MARKER });
-    }
-    break;
   }
-  return out;
+  const bytes = (value: string) => Buffer.byteLength(value, "utf8");
+  const total = pieces.reduce((sum, piece) => sum + bytes(piece.frame) + bytes(piece.body), 0);
+  if (total <= budget) return pieces.map(piece => piece.frame + piece.body).join("");
+  // Reserve the notice before consuming the budget, including its separator.
+  // Never exceed an explicitly tiny limit just to fit a label or a notice.
+  const marker = bytes(TRUNCATION_MARKER) <= budget ? TRUNCATION_MARKER
+    : bytes("[TRUNCATED]") <= budget ? "[TRUNCATED]" : "";
+  if (!marker) return "";
+  let remaining = budget - bytes(marker) - 1;
+  let out = "";
+  for (const piece of pieces) {
+    const frameBytes = bytes(piece.frame);
+    if (frameBytes > remaining) break; // no partial path or orphan section label
+    out += piece.frame; remaining -= frameBytes;
+    if (bytes(piece.body) > remaining) { out += utf8Prefix(piece.body, remaining); break; }
+    out += piece.body; remaining -= bytes(piece.body);
+  }
+  return out ? `${out}\n${marker}` : marker;
 }
 
 async function buildEnrichment(
@@ -849,12 +845,8 @@ async function buildEnrichment(
     injected.push({ path: pf.path, contents: pf.contents, readOnly: true, prior: true });
   }
 
-  // AC-05: byte-cap the TOTAL injected context before it leaves the trust
-  // boundary. Redaction is applied per-file inside renderInjectedFile (the
-  // chokepoint), but the truncation stub here means contents already carry the
-  // redaction by the time they are re-rendered — redactSecrets is idempotent on
-  // the marker, so a redacted-then-truncated body stays redacted.
-  return capInjected(injected, ENV.enrichMaxBytes);
+  // Rendering and its exact byte limit are owned by buildPrompt.
+  return injected;
 }
 
 // F2: snapshot the worker's in-scope output from the worktree BEFORE the
@@ -886,35 +878,17 @@ export async function captureInScope(
 // --------------------------------------------------------------------------
 // worker prompt
 // --------------------------------------------------------------------------
+/** Assemble governed instructions with one bounded source/feedback block.
+ * The optional budget is a pure-test seam; runtime callers use the existing ENV setting.
+ */
 export function buildPrompt(
   t: Task,
   injected: InjectedFile[],
   priorFailure?: string,
   forbiddenExtra?: string[],
+  enrichmentBudget = ENV.enrichMaxBytes,
 ) {
-  // F2: split current source (the baseline + the read-only test) from the
-  // worker's prior failed output, so each renders in its own clearly-labeled
-  // section. A retry then sees BOTH what to build against and what it tried last.
-  const current = injected.filter((f) => !f.prior);
-  const priorFiles = injected.filter((f) => f.prior);
-  const enrichment = current.length
-    ? [
-        ``,
-        `Current source of the relevant files (the test is read-only; implement against it):`,
-        ``,
-        ...current.map(renderInjectedFile),
-        ``,
-      ]
-    : [];
-  const priorBlock = priorFiles.length
-    ? [
-        ``,
-        `Your PREVIOUS attempt was not accepted. Its retained in-scope output follows; use the current baseline and failure below to decide what to keep or repair:`,
-        ``,
-        ...priorFiles.map(renderInjectedFile),
-        ``,
-      ]
-    : [];
+  const enrichment = capInjected(injected, enrichmentBudget);
   return [
     `Implement exactly ONE task. Your only goal: make the failing test pass.`,
     ``,
@@ -930,8 +904,7 @@ export function buildPrompt(
     forbiddenExtra && forbiddenExtra.length
       ? `\nYour previous attempt wrote these FORBIDDEN paths — do NOT touch them again:\n${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}`
       : ``,
-    ...enrichment,
-    ...priorBlock,
+    ...(enrichment ? [enrichment] : []),
     `Solve the task with REAL logic. Do not hard-code the literal values the`,
     `test asserts — an implementation that only returns the expected constant`,
     `will be rejected.`,
@@ -946,7 +919,7 @@ export function buildPrompt(
     ``,
     `Do not include any explanation outside the code blocks.`,
     priorFailure
-      ? `\nYour previous attempt FAILED the gate. Fix it.\nGate output (tail):\n${priorFailure}`
+      ? `\nPrevious attempt was not accepted. Use the failure details to decide what to repair:\n${redactSecrets(priorFailure)}`
       : ``,
   ].join("\n");
 }

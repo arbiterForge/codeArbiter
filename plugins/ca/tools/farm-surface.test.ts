@@ -1079,7 +1079,7 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
     expect(p).toContain("--- src/impl.test.ts (read-only — the failing test) ---");
   });
 
-  it("re-shows the previous attempt's own output, labelled as the failed attempt", async () => {
+  it("re-shows the previous attempt's own output, labelled as an unaccepted attempt", async () => {
     const id = "s5-enrich-prior";
     await seedWorktree(id, {
       "src/impl.test.ts": "expect(add(1, 2)).toBe(3);",
@@ -1094,8 +1094,8 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
       }),
     );
     expect(prompts).toHaveLength(2);
-    expect(prompts[0]).not.toContain("your previous attempt — FAILED");
-    expect(prompts[1]).toContain("--- src/impl.ts (your previous attempt — FAILED) ---");
+    expect(prompts[0]).not.toContain("your previous attempt — not accepted");
+    expect(prompts[1]).toContain("--- src/impl.ts (your previous attempt — not accepted) ---");
   });
 
   it("never re-shows a secret-bearing file as previous-attempt output", async () => {
@@ -1120,7 +1120,7 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
     );
     expect(prompts).toHaveLength(2);
     // The retry DOES get its own prior output — just not this file.
-    expect(prompts[1]).toContain("--- src/impl.ts (your previous attempt — FAILED) ---");
+    expect(prompts[1]).toContain("--- src/impl.ts (your previous attempt — not accepted) ---");
     expect(prompts[1]).not.toContain("zzz-prior-canary-zzz");
     expect(prompts[1]).not.toContain(".env (your previous attempt");
   });
@@ -1170,12 +1170,12 @@ describe("prompt enrichment reads the worktree and refuses secret-bearing names"
       }),
     );
     expect(prompts).toHaveLength(2);
-    expect(prompts[1]).not.toContain("your previous attempt — FAILED");
+    expect(prompts[1]).not.toContain("your previous attempt — not accepted");
   });
 });
 
 // ---------------------------------------------------------------------------
-// Enrichment byte cap — the prompt is never unbounded
+// Enrichment byte cap: source context, not the complete request
 // ---------------------------------------------------------------------------
 describe("enrichment is byte-capped before it leaves the trust boundary", () => {
   const MARKER = "--- [TRUNCATED — injected context exceeded FARM_ENRICH_MAX_BYTES] ---";
