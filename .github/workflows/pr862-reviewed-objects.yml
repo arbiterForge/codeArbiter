@@ -1,0 +1,151 @@
+name: PR862 reviewed objects
+on:
+  push:
+    branches: [prep/pr862-review-final-0921]
+    paths: [.github/workflows/pr862-reviewed-objects.yml]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 470213c2e3bd4105adef0250ecef41922090bb45
+          persist-credentials: false
+      - name: Reconstruct reviewed text and create only unreferenced Git blobs
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request
+          root = pathlib.Path('.')
+          expected = {
+            'site/reviews/CONCEPTS-C04-SOURCES.md': '44e0b20bdac026335a392071b02dfa56ed9ee5fa',
+            'site/scripts/execution-maps/workflows.test.ts': 'bdb8e199ffe5a1cdbf5d2657676c63b362e7eeb1',
+            'site/scripts/execution-maps/workflows.ts': 'a00c70cfbd4f5e69a19eccc5bc6d4e09e0fb0305',
+            'site/src/content/docs/guides/plan-a-new-project.mdx': 'c71a04e68c5fa68710e6d86e122343d0ce7d7771',
+            'site/src/content/docs/guides/recording-adrs.mdx': '3d6e633b2c90414b91f417d79e3be0dc29237eb7',
+            'site/src/content/docs/guides/understand-an-existing-project.md': 'dc6017b732d9afdb70c2317e2b53c3ba3c4c16a9',
+            'site/test/browser/workflow-navigation.spec.ts': '3041947c4dff803dc3687677175f828a065a0950',
+            'site/test/content/c04-stack-ci.test.ts': '1f02a9b00f5f2ac49d99524970d768b4ec904aa1',
+            'site/test/content/execution-navigation.test.ts': 'dcb3e7fc3780ea311803dc9ff13c91acba32351a',
+          }
+          assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == '470213c2e3bd4105adef0250ecef41922090bb45'
+          def replace(path, old, new, count=1):
+              p = root / path
+              text = p.read_text(encoding='utf-8')
+              assert text.count(old) == count, path
+              p.write_text(text.replace(old,new), encoding='utf-8', newline='\n')
+          def append(path, text):
+              p = root / path
+              p.write_text(p.read_text(encoding='utf-8') + text, encoding='utf-8', newline='\n')
+          replace('site/scripts/execution-maps/workflows.ts', '"reviewedAt": "090773ec6aa98687cd7b207985cb29ebb8f9c8e1"', '"reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729"', 6)
+          replace('site/test/content/c04-stack-ci.test.ts', "const base = '703abc9ed45b68d075ff867c75bc81ea06084b6f';", "// Identical executable workflows, pinned in retained main history rather than the open stack.\nconst base = '929229354e3a15ae3002c82116b66c837ab43729';")
+          for file, old, new in [('plan-a-new-project.mdx','greenfield-execution-map','init-greenfield-begin-greenfield'), ('understand-an-existing-project.md','brownfield-execution-map','init-brownfield-inspect-code')]:
+              replace('site/src/content/docs/guides/'+file, '/guides/opt-in-a-repo/#'+old, '/guides/opt-in-a-repo/#'+new)
+          replace('site/src/content/docs/guides/recording-adrs.mdx', '<summary>Trace the adr workflow', '<summary>Trace the ADR workflow')
+          addition = """
+            it('keeps historical map sources reachable from the inspected main history', () => {
+              // Main's 9292293 commit was inspected before this correction. A fresh main
+              // clone must retain the cited objects after the stacked branches are removed.
+              const retainedMain = '929229354e3a15ae3002c82116b66c837ab43729';
+              for (const revision of new Set(workflows.map(w => w.map.reviewedAt))) {
+                execFileSync('git', ['merge-base', '--is-ancestor', revision, retainedMain]);
+              }
+            });
+          """
+          needle = "describe('C04 distinct workflow routes', () => {"
+          replace('site/scripts/execution-maps/workflows.test.ts', needle, needle+addition)
+          append('site/test/content/execution-navigation.test.ts', '''
+
+          describe('guide links and map vocabulary', () => {
+            for (const [id, file] of [
+              ['greenfield', 'plan-a-new-project.mdx'],
+              ['brownfield', 'understand-an-existing-project.md'],
+            ]) it(`${id} guidance links to the source-owned first chapter`, () => {
+              const definition = workflows.find(w => w.id === id)!;
+              const source = readFileSync(`src/content/docs/guides/${file}`, 'utf8');
+              expect(source).toContain(`](${workflowMapHref(definition)})`);
+              expect(source).not.toContain(`#${id}-execution-map`);
+            });
+            it('keeps the standard ADR acronym in the workflow disclosure', () => {
+              const source = readFileSync('src/content/docs/guides/recording-adrs.mdx', 'utf8');
+              expect(source).toContain('<summary>Trace the ADR workflow');
+              expect(source).not.toContain('<summary>Trace the adr workflow');
+            });
+          });
+          ''')
+          append('site/test/browser/workflow-navigation.spec.ts', '''
+
+          for (const w of workflows.filter(w => ['greenfield', 'brownfield'].includes(w.id))) {
+            test(`${w.id}: its dedicated guide opens the requested initialization chapter`, async ({ page }) => {
+              await page.setViewportSize({ width: 390, height: 1000 });
+              await page.goto(w.guide);
+              const link = page.getByRole('link', { name: `${w.id} execution map`, exact: true });
+              await expect(link).toHaveAttribute('href', workflowMapHref(w));
+              await link.focus(); await link.press('Enter');
+              await expect(page).toHaveURL(new URL(workflowMapHref(w), 'http://127.0.0.1:4322').href);
+              const map = page.locator(`[data-workflow="${w.id}"]`);
+              await expect(map.locator(`[data-map-chapter="${w.map.chapters[0].id}"]`)).toBeVisible();
+              await expect(map.locator(`[data-map-select="${w.map.chapters[0].id}"]`)).toHaveAttribute('aria-pressed', 'true');
+              const sibling = w.id === 'greenfield' ? 'brownfield' : 'greenfield';
+              await expect(page.locator(`[data-workflow="${sibling}"]`)).toBeHidden();
+            });
+          }
+          ''')
+          append('site/reviews/CONCEPTS-C04-SOURCES.md', '''
+
+          ### Final external-review reconciliation
+
+          CodeRabbit review `5315817146` identified three remaining presentation/source issues
+          on candidate `470213c2e3bd4105adef0250ecef41922090bb45`. The dedicated greenfield and
+          brownfield guides still linked to obsolete wrapper IDs instead of their registered
+          first chapters. They now use the same destinations as the workflow directory, with
+          source-driven link checks and explicit keyboard navigation tests for both guides.
+          The ADR disclosure keeps the standard uppercase acronym.
+
+          The six maps' reviewed source is now
+          `arbiterForge/codeArbiter@929229354e3a15ae3002c82116b66c837ab43729:`. GitHub comparison
+          confirmed this commit is an ancestor of the inspected main head
+          `13013b2fb021df623f4ba328ddb15f8b287590ad`. All 14 owning source files are byte-for-byte
+          identical to the original map baseline, and all 39 source-excerpt checks pass. This
+          is a revalidated, retained-main source pin, not an assumption that newer means
+          released. The original discovery identity above is retained as historical context.
+          The whole-workflow allowlist check also uses this retained-main commit; both CI
+          workflow files are identical to the previously tested parent baseline. No assertions
+          or required jobs are dropped. A new ancestry assertion rejects future unmerged-only
+          map pins rather than depending on preservation of a deleted review branch.
+
+          The four new focused source regressions reproduced their failures before the
+          correction. Generated diagrams are rebuilt from the updated source model, with no
+          route or arrow-geometry change. All final outcomes, captures and exact-head CI
+          identities remain owned by the PR completion evidence, not predeclared here.
+          ''')
+          for path, sha in expected.items():
+              raw = (root/path).read_bytes()
+              assert hashlib.sha1(f'blob {len(raw)}\0'.encode()+raw).hexdigest() == sha, path
+          subprocess.run(['git','add','--',*expected], check=True)
+          paths = subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines()
+          assert sorted(paths) == sorted(expected)
+          tree = subprocess.check_output(['git','write-tree'], text=True).strip()
+          assert tree == 'b9d38fc9f8a55ae54823e68db69119d8538f44a8'
+          entries = []
+          for path, sha in expected.items():
+              raw = (root/path).read_bytes()
+              request = urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs', data=json.dumps({'content':base64.b64encode(raw).decode(),'encoding':'base64'}).encode(), headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'}, method='POST')
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  returned = json.load(response)
+              assert returned['sha'] == sha
+              entries.append({'path':path,'mode':'100644','type':'blob','sha':sha})
+          out = pathlib.Path(os.environ['RUNNER_TEMP'])/'pr862-reviewed-objects'
+          out.mkdir()
+          (out/'objects.json').write_text(json.dumps({'base':'470213c2e3bd4105adef0250ecef41922090bb45','tree':tree,'entries':entries},indent=2)+'\n')
+          print(json.dumps({'tree':tree,'blobs':len(entries)}))
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr862-reviewed-objects
+          path: ${{ runner.temp }}/pr862-reviewed-objects/
+          if-no-files-found: error
+          retention-days: 1
