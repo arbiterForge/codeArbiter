@@ -12,7 +12,7 @@ const sourceUrl = (key: string) => `https://github.com/arbiterForge/codeArbiter/
     limits="This route has its own endpoint. Row membership does not imply every role participates, and a source-traced relationship is not an installed-host verification." />
   <aside class="ca-workflow-map__limits not-content" aria-label={`${definition.title}: conditions and limits`}>
     <h4>Conditions that change this route</h4>
-    <dl>{definition.notes.map(note => <div><dt>{note.title}</dt><dd>{note.detail} <a href={sourceUrl(note.source)}>Owning source</a></dd></div>)}</dl>
+    <dl>{definition.notes.map(note => <div><dt>{note.title}</dt><dd>{note.detail} <a data-astro-prefetch="false" href={sourceUrl(note.source)}>Owning source</a></dd></div>)}</dl>
   </aside>
 </div>
 <style>
