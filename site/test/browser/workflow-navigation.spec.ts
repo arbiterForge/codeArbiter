@@ -33,8 +33,14 @@ test('chapter links advance, restore Back, reload and same-fragment selection wi
   await next.press('Enter');
   const second = map.locator('[data-map-chapter="execute-tasks"]');
   await expect(second).toBeVisible(); await expect(first).toBeHidden();
+  await expect(second).toBeFocused();
   await expect(page).toHaveURL(/#sprint-execution-map-execute-tasks$/);
+  // In-document links must not persist anything. A full reload is a separate
+  // lifecycle: Starlight stores its sidebar state on visibilitychange. Snapshot
+  // again afterward rather than attributing that shell write to a chapter link.
+  expect(await state()).toEqual(before);
   await page.reload(); await expect(second).toBeVisible();
+  const afterReload = await state();
   await map.locator('[data-map-select="all"]').click();
   await second.locator('[data-map-permalink]').click(); // Same hash still restores this view.
   await expect(map.locator('[data-map-chapter]:visible')).toHaveCount(1);
@@ -44,7 +50,55 @@ test('chapter links advance, restore Back, reload and same-fragment selection wi
   await page.goForward(); await expect(second).toBeVisible();
   await expect(first).toBeHidden();
   await expect(page).toHaveURL(/#sprint-execution-map-execute-tasks$/);
+  expect(await state()).toEqual(afterReload);
+});
+
+
+for (const w of workflows) test(`${w.id}: explicit chapter navigation makes no storage writes or network requests`, async ({ page }) => {
+  await page.goto(workflowMapHref(w));
+  const map = page.locator(`[data-workflow="${w.id}"]`);
+  await expect(map.locator('.ca-execution-map__controls')).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  const state = () => page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }));
+  const before = await state();
+  // Observe, but do not block or replace, the real storage behavior. No key is
+  // allowlisted. The fresh page owns these temporary test instrumentation hooks.
+  await page.evaluate(() => {
+    const writes: string[][] = [];
+    Object.defineProperty(window, '__mapStorageWrites', { value: writes });
+    for (const name of ['setItem', 'removeItem', 'clear'] as const) {
+      const original = Storage.prototype[name];
+      Object.defineProperty(Storage.prototype, name, {
+        configurable: true, writable: true,
+        value: function(this: Storage, ...args: string[]) {
+          writes.push([this === localStorage ? 'local' : 'session', name, ...args]);
+          return Reflect.apply(original, this, args);
+        },
+      });
+    }
+  });
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
+  for (const [index, chapter] of w.map.chapters.entries()) {
+    const section = map.locator(`[data-map-chapter="${chapter.id}"]`);
+    await expect(section).toBeVisible();
+    await section.locator('[data-map-permalink]').focus();
+    await section.locator('[data-map-permalink]').press('Enter');
+    await expect(section).toBeFocused();
+    if (index + 1 < w.map.chapters.length) {
+      await section.locator('[data-map-next]').focus();
+      await section.locator('[data-map-next]').press('Enter');
+      await expect(map.locator(`[data-map-chapter="${w.map.chapters[index + 1].id}"]`)).toBeFocused();
+    }
+  }
+  const last = map.locator(`[data-map-chapter="${w.map.chapters.at(-1)!.id}"]`);
+  await map.locator('[data-map-select="all"]').click();
+  await last.locator('[data-map-permalink]').click();
+  await expect(last).toBeFocused();
+  await expect(map.locator('[data-map-chapter]:visible')).toHaveCount(1);
   expect(await state()).toEqual(before);
+  expect(await page.evaluate(() => (window as unknown as { __mapStorageWrites: string[][] }).__mapStorageWrites)).toEqual([]);
+  expect(requests).toEqual([]);
 });
 
 test('all chapter permalinks, previous/next links and final outcomes agree with the source map', async ({ page }) => {

@@ -12,8 +12,9 @@ describe('C04 stacked review runs the unchanged required gates', () => {
     const path = `.github/workflows/${file}`;
     const before = execFileSync('git', ['show', `${base}:${path}`], { encoding: 'utf8' });
     const current = readFileSync(`../${path}`, 'utf8');
-    const original = file === 'ci.yml' ? 'branches: [main, feat/codex-support-m0]' : 'branches: [main]';
-    const replacement = original.replace(']', `, ${parent}]`);
+    const allowed = file === 'ci.yml' ? ['main', 'feat/codex-support-m0'] : ['main'];
+    const original = `branches: [${allowed.join(', ')}]`;
+    const replacement = `branches: [${[...allowed, parent].join(', ')}]`;
     // Replace only inside pull_request, never a push or deployment trigger.
     const position = before.indexOf('  pull_request:');
     expect(position).toBeGreaterThan(0);

@@ -184,3 +184,31 @@ Exact final-head CI, visual artifacts and review outcomes belong in PR #862's
 verification comment. Local browser navigation is administratively blocked; no local
 browser pass or relaxed network policy is claimed. Broader browser/screen-reader
 coverage and moderated reader-task acceptance remain separate.
+
+
+### Final navigation acceptance correction
+
+At `ee95688bfb2a0f1243d60dddc0b19726bf447859`, repository CI passed and the website
+suite had 163 passes and one failure. The failure compared all browser storage
+before and after a full reload. The pinned Starlight sidebar writer stores
+`sl-sidebar-state` when the document becomes hidden; that framework lifecycle write
+was incorrectly attributed to the map's in-document fragment navigation.
+
+The corrected test keeps complete storage equality assertions on each side of the
+reload, using the reloaded document's own baseline. Six additional route tests
+observe `setItem`, `removeItem` and `clear` without changing their behavior, reject
+all writes (including temporary writes removed before the final snapshot), and
+assert no requests during explicit chapter links. No storage key is allowlisted,
+no browser setting is changed, and the original Back/Forward/reload behavior checks
+remain. The next reading slice also moves keyboard focus to explicit chapter-link
+destinations; ordinary selection buttons retain focus and do not create history.
+
+This closes navigation-specific implementation and regression work within the
+approved C04 continuation. Final candidate, hosted results, screenshots and the
+still-open parent PR dependency belong in #862's completion evidence; the source
+record does not invent final hashes or claim deployment.
+
+The CodeQL review also identified a first-occurrence bracket replacement in the
+stack-trigger regression. That test now constructs both literal branch lists from
+the expected allowlist instead of rewriting a closing bracket. Its whole-workflow
+comparison remains unchanged: only the exact additional PR base is permitted.
