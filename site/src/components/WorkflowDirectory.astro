@@ -1,5 +1,6 @@
 ---
 import { workflows } from '../../scripts/execution-maps/workflows';
+import { workflowMapHref } from '../../scripts/execution-maps/locations';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <ol class="ca-workflow-directory not-content" data-ca-layout="peers" role="list" aria-label="Source-traced workflow routes">
@@ -8,7 +9,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <h3><a href={`${base}${workflow.guide}`}>{workflow.title}</a></h3>
     <p>{workflow.summary}</p>
     <div><span class="ca-workflow-directory__label">Actual endpoint</span><p>{workflow.endpoint}</p></div>
-    <p class="ca-workflow-directory__links"><a href={`${base}${workflow.guide}`}>Read the procedure and map</a><a href={`${base}/diagrams/${workflow.asset}`}>Full SVG</a></p>
+    <p class="ca-workflow-directory__links"><a href={`${base}${workflow.guide}`}>Read the procedure</a><a data-workflow-map-link href={`${base}${workflowMapHref(workflow)}`}>Trace the route</a><a href={`${base}/diagrams/${workflow.asset}`}>Full SVG</a></p>
   </li>)}
 </ol>
 <style>

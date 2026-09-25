@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const base = '090773ec6aa98687cd7b207985cb29ebb8f9c8e1';
+const base = '703abc9ed45b68d075ff867c75bc81ea06084b6f';
 const parent = 'docs/concepts-decisions-evidence';
 /** Ignore explanatory comments, but compare every executable workflow line. */
 const executable = (text: string) => text.split('\n').filter(line => !/^\s*#/.test(line)).join('\n');

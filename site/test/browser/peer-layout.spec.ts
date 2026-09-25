@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { getWorkflow } from '../../scripts/execution-maps/workflows';
 
 const guides = ['opt-in-a-repo', 'feature-lane', 'autonomous-sprints'];
 const routes = ['/', '/academy/', '/academy/f01-fork-clone-doctor/', '/product-tour/', ...guides.map(slug => `/guides/${slug}/`)];
@@ -99,6 +100,35 @@ test('the first peer has no layout privilege when content and order change', asy
   expect(await paragraph.evaluate(node => getComputedStyle(node).lineHeight)).not.toBe('0px');
 });
 
+/** Exercise every native disclosure, including both independent init routes. */
+async function readImplementation(page: Page, slug: string, script: boolean) {
+  const disclosures = page.locator('details.ca-implementation-view');
+  await expect(disclosures).toHaveCount(slug === 'opt-in-a-repo' ? 3 : 1);
+  for (const detail of await disclosures.all()) await expect(detail).not.toHaveAttribute('open');
+  // DOM order is outer-first. Scope to the immediate summary, never descendants.
+  for (const detail of await disclosures.all()) {
+    const summary = detail.locator(':scope > summary');
+    await summary.focus(); await summary.press('Enter');
+    await expect(detail).toHaveAttribute('open', '');
+  }
+  if (slug === 'feature-lane') {
+    await expect(disclosures.locator('img')).toBeVisible();
+    return;
+  }
+  for (const id of slug === 'opt-in-a-repo' ? ['greenfield', 'brownfield'] : ['sprint']) {
+    const model = getWorkflow(id).map;
+    const map = page.locator(`[data-workflow="${id}"]`);
+    await expect(map).toBeVisible();
+    if (script) await map.getByRole('button', { name: 'Read whole path', exact: true }).click();
+    else await expect(map.locator('[data-map-select]:visible')).toHaveCount(0);
+    await expect(map.locator('[data-map-step]:visible')).toHaveCount(model.chapters.flatMap(c => c.nodes).length);
+    for (const chapter of model.chapters) {
+      await expect(map.locator(`[data-map-chapter="${chapter.id}"]`)).toContainText(chapter.output);
+    }
+    await expect(map).toContainText(model.outcome);
+  }
+}
+
 test('reader maps precede optional implementation detail and preserve authority boundaries', async ({ page }) => {
   for (const slug of guides) {
     await page.goto(`/guides/${slug}/`);
@@ -107,18 +137,15 @@ test('reader maps precede optional implementation detail and preserve authority 
     await expect(map.getByText('What you get', { exact: true })).toHaveCount(4);
     await expect(map.getByText('Before moving on', { exact: true })).toHaveCount(4);
     await expect(map).toContainText('Reading map, not a captured run or live status');
-    const detail = page.locator('details.ca-implementation-view');
-    await expect(detail).not.toHaveAttribute('open');
-    expect(await map.evaluate(node => !!(node.compareDocumentPosition(document.querySelector('.ca-implementation-view')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
-    await detail.locator('summary').focus();
-    await page.keyboard.press('Enter');
-    await expect(detail).toHaveAttribute('open', '');
-    await expect(detail.locator('img')).toBeVisible();
+    expect(await map.evaluate(node => Array.from(document.querySelectorAll('.ca-implementation-view'))
+      .every(detail => !!(node.compareDocumentPosition(detail) & Node.DOCUMENT_POSITION_FOLLOWING)))).toBe(true);
+    await readImplementation(page, slug, true);
     const result = await new AxeBuilder({ page }).include('[data-reader-journey]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(result.violations).toEqual([]);
   }
   await expect(page.locator('[data-reader-journey]')).toContainText('currently limited to Codex and Claude Code');
-  await expect(page.locator('[data-reader-journey]')).toContainText('A generic reply does not approve both files');
+  await expect(page.locator('[data-reader-journey]')).toContainText('a generic reply or an unobserved approval cannot start execution');
+  await expect(page.locator('[data-reader-journey]')).toContainText('One host-observed reply approving both exact initial artifact identities');
 });
 
 test('maps and implementation disclosure work without JavaScript', async ({ browser }) => {
@@ -128,8 +155,7 @@ test('maps and implementation disclosure work without JavaScript', async ({ brow
     for (const slug of guides) {
       await page.goto(`/guides/${slug}/`);
       await expect(page.locator('.ca-reader-journey__step')).toHaveCount(4);
-      await page.locator('.ca-implementation-view > summary').click();
-      await expect(page.locator('.ca-implementation-view img')).toBeVisible();
+      await readImplementation(page, slug, false);
       await page.locator('.ca-reader-journey__step a').first().click();
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('h1')).not.toHaveText('404');

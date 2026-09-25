@@ -62,9 +62,10 @@ command/skill curated explanations, not generated reference output.
 
 The independently merged #860 source supports verification/review authority on
 Claude Code and Codex, while Pi remains unsupported at that boundary. An old C02
-source assertion still demanded the removed Codex-only sentence. The authority
-entry now has its own exact current revision and quote; all other historical C02
-source links and preserved-heading tests retain their original revision. Existing
+source assertion still demanded the removed Codex-only sentence. The initial C04 candidate gave that unused authority entry a current revision.
+The integrated parent subsequently removed the unused entry, and this continuation
+preserves its removal. Other historical C02 source links and preserved-heading tests
+retain their original revision. Existing
 installed-capability and exact-artifact qualifications remain, rather than treating
 new source as proof of a released package.
 
@@ -139,3 +140,47 @@ curated corrections, navigation and tests together. Preserve public URLs and C01
 and earlier guide/mobile fixes. The two exact campaign trigger entries can be
 removed after the stack lands. No release receipt, accepted decision, learner state,
 main history or runtime qualification is changed by this documentation rollback.
+
+## Continuation on PR #862: reader navigation and CI closure
+
+The owner requested the next slice on the same PR after the initial browser run.
+The original candidate `a0eec5035c31d804146cc9480324879f1e928856` had 151 browser
+passes and three failures. Two older tests assumed exactly one disclosure containing
+an image; initialization now has two independent maps inside an outer chooser, and
+sprint has an inline map. The tests now open every actual native disclosure and
+inspect complete source-shared stages and endpoints, including without JavaScript.
+The third failure queried ancestors before Astro finished replacing the document on
+Back. It now waits for the destination map before inspecting and opening its ancestors.
+No sleep, retry, skipped assertion or publication-gate relaxation is used.
+
+The same continuation completes the cross-surface reader handoff: procedure links
+remain distinct from direct map links; each chapter has an explicit address and
+previous/next reading links. Opening a chapter address reveals that chapter and only
+its enclosing disclosures. The initialization alternatives remain independent.
+Ordinary chapter buttons still do not change URLs or save state. Explicit native
+links change only the address fragment; a visible chapter is not product completion.
+Malformed fragments are ignored and resolved as literal IDs, never CSS selectors.
+
+All six route destinations are owned alongside the workflow metadata and checked
+against built output. This is C04's already-approved navigation and cross-surface
+completion, not a new runtime workflow or a new Concepts program. The record does
+not equate the diagram's reading state with approval, execution or verification.
+
+The current parent was integrated at
+`703abc9ed45b68d075ff867c75bc81ea06084b6f`, preserving its unrelated main work and
+Codex metadata-path correction. Its intentional removal of the unused old C02
+`authority` citation is retained. The conflict with C04's replacement of that same
+unused entry was resolved by keeping the removal; live authority explanations still
+trace their real owning sources. The workflow allowlist regression compares against
+this actual parent, permitting only the campaign's exact PR-base addition. No parent
+branch or main write, history rewrite, tag change or release was performed.
+
+Capture tests now take chapter regions from the page at scroll position zero, rather
+than letting locator screenshots scroll a chapter underneath the sticky navigation.
+The page's CSS and content are not modified for screenshots. This corrects evidence
+presentation, not the application in order to satisfy an image comparison.
+
+Exact final-head CI, visual artifacts and review outcomes belong in PR #862's
+verification comment. Local browser navigation is administratively blocked; no local
+browser pass or relaxed network policy is claimed. Broader browser/screen-reader
+coverage and moderated reader-task acceptance remain separate.

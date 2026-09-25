@@ -10,6 +10,9 @@ const root = (page: Page, w: WorkflowDefinition) => page.locator(`[data-workflow
 
 /** Use the actual native disclosures, outermost first; never reveal content by patching app state. */
 async function openMap(page: Page, w: WorkflowDefinition) {
+  // URL changes precede Astro's DOM replacement on Back. Wait for the actual
+  // destination map before discovering its (possibly nested) closed ancestors.
+  await expect(root(page, w)).toHaveCount(1);
   const ancestors = page.locator(`details:has([data-workflow="${w.id}"])`);
   for (let index = 0; index < await ancestors.count(); index++) {
     const details = ancestors.nth(index);
@@ -190,7 +193,7 @@ test('the route chooser and full-text search reach current procedures rather tha
   expect(results['arm-sprint']).toContain('/guides/autonomous-sprints/');
   expect(results['release PR']).toContain('/guides/releasing-a-version/');
   expect(results['subsequent commit']).toContain('/guides/recording-adrs/');
-  await cards.first().getByRole('link', { name: 'Read the procedure and map', exact: true }).click();
+  await cards.first().getByRole('link', { name: 'Read the procedure', exact: true }).click();
   await expect(page).toHaveURL(/\/guides\/autonomous-sprints\/$/); await openMap(page, workflows[0]);
 });
 
@@ -214,7 +217,11 @@ test('record C04 full guide pages, role-row chapters and mobile reading paths', 
         evidence[`${w.id}-${chapter.id}-${width}`] = await inspect(page, w);
         await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
         if (chapter === w.map.chapters[0]) await page.screenshot({ path: join(directory, `c04-${w.id}-${width}.png`), fullPage: true });
-        await root(page, w).locator(`[data-map-chapter="${chapter.id}"]`).screenshot({ path: join(directory, `c04-${w.id}-${chapter.id}-${width}.png`) });
+        // Capture beyond the viewport without locator.screenshot scrolling the
+        // chapter beneath the sticky header. No page styles or content are changed.
+        const box = await root(page, w).locator(`[data-map-chapter="${chapter.id}"]`).boundingBox();
+        expect(box).not.toBeNull();
+        await page.screenshot({ path: join(directory, `c04-${w.id}-${chapter.id}-${width}.png`), clip: box! });
       }
     }
   }

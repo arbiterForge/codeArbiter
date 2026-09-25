@@ -133,3 +133,16 @@ No runtime, approval/gate weakening, host maturity promotion, release/tag manipu
 Revert a slice with its map data, renderer, generator changes, asset outputs, consumers and tests as one coherent unit. Preserve public routes and previous guide/mobile improvements. Do not revert valid publication receipts or independent runtime work to roll back a website.
 
 Before the next slice: read this plan, inspect the merged PR and fresh main, revalidate the owning contracts, and update only the relevant slice state with evidence. Do not reconstruct the program from conversation memory or silently expand its approval.
+
+### C04 continuation in PR #862
+
+The 2026-09-25 request "next slice same PR" retains #862 and adds the final reader
+handoff: direct route/chapter addresses, previous/next reading navigation and an
+explicit distinction between procedure selection and map selection. It also requires
+closure of the initial three browser failures and refreshed integration with parent
+#859. This remains within C04's diagram propagation and cross-surface acceptance,
+not a newly implied runtime or branding program.
+
+Implementation is recorded in the same source record and PR. Final-head website,
+repository CI, reviewed captures and any remaining parent dependency must be read
+from #862 before merge; neither older green runs nor this plan establish them.

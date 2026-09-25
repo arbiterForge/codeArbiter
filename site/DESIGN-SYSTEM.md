@@ -296,3 +296,18 @@ base-prefixed links. Inspect actual desktop/mobile captures, arrow endpoints,
 text bounds, expanded disclosures, no-script reading, doubled text, forced colors,
 print and useful full-text search results. Source excerpts and successful rendering
 are not proof of an installed workflow or a universal accessibility certification.
+
+### Execution-map reading addresses
+
+Procedure URLs and exact map URLs serve different reader tasks. Keep both in the
+workflow metadata; the route directory labels them separately. A chapter's explicit
+native permalink reveals its enclosing disclosures and selects that chapter. Add
+previous/next reading links at the end so a reader need not scroll back to the chooser.
+These links do not signal executed work or approval. Ordinary chooser buttons do not
+write history, storage or network requests; explicit links use native URL fragments.
+
+Resolve fragments as bounded literal element IDs within the owning map. Ignore
+invalid encoding and unrelated targets. Preserve all content without JavaScript,
+restore the complete path in print, and disconnect page-specific listeners during
+client navigation. Test direct load, reload, repeated navigation, Back, nested
+initialization alternatives, same-fragment links and keyboard focus against built HTML.
