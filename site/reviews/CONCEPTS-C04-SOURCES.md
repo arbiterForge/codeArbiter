@@ -212,3 +212,23 @@ The CodeQL review also identified a first-occurrence bracket replacement in the
 stack-trigger regression. That test now constructs both literal branch lists from
 the expected allowlist instead of rewriting a closing bracket. Its whole-workflow
 comparison remains unchanged: only the exact additional PR base is permitted.
+
+
+### Native browser traffic is not an application request
+
+The stricter six-route tests at `49151a49e7715b0a664f3ef3bf36e109b5aaa788`
+confirmed all storage and focus assertions. Five failed their blanket network
+assertion because Chrome revalidated the unchanged `/favicon.svg` after native
+fragment navigation. The retained HTTP traces identify same-origin GETs with image
+fetch destinations, no request body and no query. The greenfield trace also exposed
+Starlight's automatic hover prefetch of a newly revealed reference link.
+
+Map links now explicitly opt out of that speculative prefetch. Actual clicks still
+navigate normally; no global prefetch or network policy is changed. The observer
+classifies only the exact published favicon GET with the recorded browser resource
+and fetch metadata. Fetch/XHR requests, changed URLs, query strings, bodies, other
+methods, origins and resource types remain failures, with negative unit fixtures.
+All storage mutations and WebSockets remain prohibited by these reading tests.
+Observed icon reads are attached to the test result instead of silently discarded.
+This distinguishes a native browser resource fetch from map telemetry; it is not a
+claim that ordinary page navigation makes no network requests.

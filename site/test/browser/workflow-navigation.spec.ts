@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Request } from '@playwright/test';
+import { isNativeIconRead } from '../chapter-request-contract';
 import { workflows } from '../../scripts/execution-maps/workflows';
 import { workflowMapHref } from '../../scripts/execution-maps/locations';
 
@@ -54,7 +55,7 @@ test('chapter links advance, restore Back, reload and same-fragment selection wi
 });
 
 
-for (const w of workflows) test(`${w.id}: explicit chapter navigation makes no storage writes or network requests`, async ({ page }) => {
+for (const w of workflows) test(`${w.id}: chapter navigation preserves storage and makes no application requests`, async ({ page }) => {
   await page.goto(workflowMapHref(w));
   const map = page.locator(`[data-workflow="${w.id}"]`);
   await expect(map.locator('.ca-execution-map__controls')).toBeVisible();
@@ -77,8 +78,17 @@ for (const w of workflows) test(`${w.id}: explicit chapter navigation makes no s
       });
     }
   });
-  const requests: string[] = [];
-  page.on('request', request => requests.push(request.url()));
+  // Native hash navigation can revalidate the document's favicon. Keep that
+  // exact browser read visible, but reject fetch/XHR, prefetch and all other URLs.
+  const iconUrl = await page.locator('link[rel="icon"]').evaluate(node => (node as HTMLLinkElement).href);
+  expect(iconUrl).toBe(new URL('/favicon.svg', page.url()).href);
+  for (const link of await map.locator('a').all()) {
+    await expect(link).toHaveAttribute('data-astro-prefetch', 'false');
+  }
+  const requests: Request[] = [];
+  const sockets: string[] = [];
+  page.on('request', request => requests.push(request));
+  page.on('websocket', socket => sockets.push(socket.url()));
   for (const [index, chapter] of w.map.chapters.entries()) {
     const section = map.locator(`[data-map-chapter="${chapter.id}"]`);
     await expect(section).toBeVisible();
@@ -98,7 +108,17 @@ for (const w of workflows) test(`${w.id}: explicit chapter navigation makes no s
   await expect(map.locator('[data-map-chapter]:visible')).toHaveCount(1);
   expect(await state()).toEqual(before);
   expect(await page.evaluate(() => (window as unknown as { __mapStorageWrites: string[][] }).__mapStorageWrites)).toEqual([]);
-  expect(requests).toEqual([]);
+  const network = await Promise.all(requests.map(async request => ({
+    url: request.url(), method: request.method(), resourceType: request.resourceType(),
+    body: request.postData(), headers: await request.allHeaders(),
+  })));
+  expect(network.filter(request => !isNativeIconRead(request, iconUrl))).toEqual([]);
+  expect(sockets).toEqual([]);
+  // Retain the observed exception rather than hiding it from the evidence.
+  await test.info().attach(`${w.id}-chapter-network`, {
+    body: JSON.stringify({ nativeIconReads: network, applicationRequests: [], storageWrites: [] }, null, 2),
+    contentType: 'application/json',
+  });
 });
 
 test('all chapter permalinks, previous/next links and final outcomes agree with the source map', async ({ page }) => {
