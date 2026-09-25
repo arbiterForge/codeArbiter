@@ -92,12 +92,14 @@ jobs:
           echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "ci-run-id=${CI_RUN_ID:-}" >> "$GITHUB_OUTPUT"
 
-      - name: Require prior published tags to be recorded and unmoved
+      # A moved or deleted recorded tag blocks; an unrecorded new tag only warns
+      # (ADR-0040) — the tag rulesets already refuse moving or deleting one.
+      - name: Require recorded published tags to be unmoved
         if: steps.source.outputs.source != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
+          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" \
             --manifest .github/published-tags.json \
             --legacy-manifest .github/legacy-published-tags.json
 

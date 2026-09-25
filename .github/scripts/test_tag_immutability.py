@@ -862,19 +862,16 @@ class RawHttpInventoryBoundary(unittest.TestCase):
 class RepositoryWiring(unittest.TestCase):
     """The audit is only a control if something runs it and something says so."""
 
-    def test_release_preflights_require_prior_tag_records(self):
+    def test_release_preflight_audits_recorded_tags_without_requiring_new_records(self):
         workflow = (REPO_ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
         # One preflight serves both merge-triggered and dispatched releases.
-        for job in ("preflight",):
-            with self.subTest(job=job):
-                body = re.search(
-                    rf"(?ms)^  {re.escape(job)}:\n(.*?)(?=^  [A-Za-z0-9_-]+:|\Z)",
-                    workflow,
-                )
-                self.assertIsNotNone(body, f"missing release preflight {job}")
-                self.assertIn("check_tag_immutability.py", body.group(1))
-                self.assertIn("--require-recorded", body.group(1))
-                self.assertIn("--legacy-manifest .github/legacy-published-tags.json", body.group(1))
+        # ADR-0040: a moved/deleted recorded tag blocks; an unrecorded new tag warns.
+        body = re.search(r"(?ms)^  preflight:\n(.*?)(?=^  [A-Za-z0-9_-]+:|\Z)", workflow)
+        self.assertIsNotNone(body, "missing release preflight")
+        self.assertIn("check_tag_immutability.py", body.group(1))
+        self.assertNotIn("--require-recorded", body.group(1))
+        self.assertIn("--manifest .github/published-tags.json", body.group(1))
+        self.assertIn("--legacy-manifest .github/legacy-published-tags.json", body.group(1))
 
     def test_required_ci_audit_names_both_ledgers_explicitly(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")

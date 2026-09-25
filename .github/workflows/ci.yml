@@ -2957,11 +2957,12 @@ jobs:
     #
     # UNLIKE the branch-protection audit beside it, this one runs LIVE in
     # ordinary CI: listing `/git/matching-refs/tags/` needs only contents:read,
-    # which the default GITHUB_TOKEN grants. Required CI uses --require-recorded:
-    # missing receipts, credentials, transport availability, or trustworthy
-    # inventory block merge. This read-only gate adds no receipt writer or
-    # permission to bypass reviewed-PR ingestion. Tag publication after this
-    # check can still race a merge; release preflight remains independently strict.
+    # which the default GITHUB_TOKEN grants. A recorded tag that moved or was
+    # deleted blocks merge. A newly published tag not yet in the ledgers only
+    # warns (ADR-0040, maintainer-directed 2026-09-25): release-on-merge
+    # publishes tags no PR has recorded yet, and the live "Published plugin tag
+    # immutability" ruleset already refuses deletion or movement of every
+    # release tag, so blocking every merge on ledger bookkeeping protected no one.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -2976,7 +2977,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
-          python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded
+          python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
           --manifest .github/published-tags.json
           --legacy-manifest .github/legacy-published-tags.json
       - name: Test the audit's own logic
