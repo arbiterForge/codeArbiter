@@ -548,6 +548,7 @@
       "canonical_paths": [
         "core/surface/skills/decompose/SKILL.md",
         "core/surface/skills/decision-variance/SKILL.md",
+        "core/surface/skills/decision-variance/references/analysis.md",
         "core/surface/commands/reconcile.md",
         "site/src/content/docs/guides/plan-a-new-project.mdx",
         "site/src/curated/commands/decompose.md",
@@ -556,12 +557,15 @@
       "generated_paths": [
         "plugins/ca/skills/decompose/SKILL.md",
         "plugins/ca/skills/decision-variance/SKILL.md",
+        "plugins/ca/skills/decision-variance/references/analysis.md",
         "plugins/ca/commands/reconcile.md",
         "plugins/ca-codex/routines/decompose/SKILL.md",
         "plugins/ca-codex/routines/decision-variance/SKILL.md",
+        "plugins/ca-codex/routines/decision-variance/references/analysis.md",
         "plugins/ca-codex/skills/ca-reconcile/SKILL.md",
         "plugins/ca-pi/routines/decompose/SKILL.md",
         "plugins/ca-pi/routines/decision-variance/SKILL.md",
+        "plugins/ca-pi/routines/decision-variance/references/analysis.md",
         "plugins/ca-pi/skills/ca-reconcile/SKILL.md",
         "site/src/content/docs/reference/commands/reconcile.md",
         "site/src/content/docs/reference/commands/decompose.md",

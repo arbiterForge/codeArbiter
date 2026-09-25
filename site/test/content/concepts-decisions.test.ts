@@ -125,3 +125,28 @@ describe('ADR owner modes', () => {
     expect(author).not.toContain('`/adr` is the only path that can arm it');
   });
 });
+
+
+describe('D14 owner and operator guidance', () => {
+  it('teaches report-only scope without adding a decision interview', () => {
+    const command = read('src/curated/commands/reconcile.md');
+    const skill = read('src/curated/skills/decision-variance.md');
+    for (const text of [command, skill]) {
+      expect(text).toContain('scoped');
+      expect(text).toContain('Report-only');
+      expect(text).toContain('separately authorized');
+      expect(text).not.toContain('Route to /ca:adr');
+    }
+    expect(command).toContain('unrelated decomposition files are not prerequisites');
+    expect(skill).toContain('without file changes or a decision interview');
+    expect(decisionRoutes[0].steps[0].detail).toContain('full or named scope');
+  });
+  it('teaches append-only stale ratification and preserves selected continuation', () => {
+    const command = read('src/curated/commands/reconcile.md');
+    const skill = read('src/curated/skills/decision-variance.md');
+    expect(command).toContain('never edits the old entry');
+    expect(command).toContain('without another routing menu');
+    expect(skill).toContain('does not duplicate a choice');
+    expect(skill).toContain('does not restrict delegated sprint methods');
+  });
+});

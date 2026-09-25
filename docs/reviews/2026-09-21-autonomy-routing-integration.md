@@ -8,12 +8,12 @@ Source baseline: `arbiterForge/codeArbiter@5c876dd885598c248fa777e951dac4e628688
 
 This document carries the sprint/farm and structured-artifact reassessment into a review branch. It is not a new runtime registry, skill, command, agent, or always-loaded instruction. The implementation must be verified against the actual checkout rather than treating the preceding audits as authority.
 
-## Current progress: ADR owner consolidation (2026-09-25)
+## Current progress: reconciliation owner consolidation (2026-09-25)
 
-This rollup reflects the implemented D12/D13 source at
-`arbiterForge/codeArbiter@1584e4aa95b889e0061c3d3d81e86f22b0fa0242`, preserved by
-main merge `680cb03d39f91fd3e4a8ad968f0536a84dde9f0d`. Earlier dated implementation
-sections below remain historical records, not competing current status.
+This rollup includes D14 in the current change, based on inspected PR head
+`arbiterForge/codeArbiter@21ba930102c9fa3a1068c45f88cb83b02c2147e2` and incorporated
+main `4187f1e22dc7da3cf755a2654bbf7ec268236126`. Earlier dated implementation sections
+remain historical records, not competing current status or proof of this head.
 
 ### Surface reduction, counted by kind
 
@@ -23,12 +23,13 @@ sections below remain historical records, not competing current status.
 | D02 new-skill / skill-author | Retired by maintainer instruction, including template, host entries and public reference pages; no replacement. |
 | D08/D09/D10/D11/D15 tribunal, threat-model, context-check, cleanup and PR | Five additional retained single-source relationships, completed at `34b459c02bca520a31a9b25ba227f756e0633541`. |
 | D12/D13 ADR authoring and status | Two retained relationships share one procedure owner: composed ADR entry plus read-only status adapter. Authoring is an on-demand reference. |
-| D03/D04/D07/D14 | Four pending candidates: context-creation, decompose, release and decision-variance. No further deletion is approved. |
+| D14 reconcile / decision-variance | One retained single-source relationship; report-only isolation, scoped analysis and append-only choice capture. |
+| D03/D04/D07 | Three pending candidates: context-creation, decompose and release. No further deletion is approved. |
 
 The original 17 September `REVIEW.html` names **fifteen** candidate relationships,
 D01-D15, against archive baseline `5e7b2dac4e0f82560c1301144f3a20c35b7e0878`.
-**Ten retained relationships are addressed, one workflow is retired, and four
-candidates remain.** This is not ten distinct composed owners: D12 and D13 share
+**Eleven retained relationships are addressed, one workflow is retired, and three
+candidates remain.** These are eleven relationships, not eleven distinct composed owners: D12 and D13 share
 `decision-lifecycle`, with only D12 composed. Existing catalog aliases and the
 broader RA-11 umbrella-verb proposal remain distinct from owner consolidation.
 Counts describe source ownership, not live-model routing or token savings.
@@ -48,7 +49,7 @@ Counts describe source ownership, not live-model routing or token savings.
 | D11 | cleanup / post-merge-cleanup | Complete: containment and per-item consent retained; PR alias retained |
 | D12 | adr / decision-lifecycle | Complete: composed entry; authoring and acceptance loaded on demand |
 | D13 | adr-status / decision-lifecycle | Complete: small read-only adapter selects shared owner before writing prerequisites |
-| D14 | reconcile / decision-variance | Pending; arbitration is not ADR recording |
+| D14 | reconcile / decision-variance | Complete: one owner, on-demand analysis, report-only isolation and explicit append-only capture |
 | D15 | pr / finishing-a-development-branch | Complete: one opening procedure with watch/cleanup selected before creation gates |
 
 Active canonical command records go from 38 to 37 and top-level source skills
@@ -1386,3 +1387,115 @@ anti-downgrade case; the same local case and one unchanged job-specific hosted
 retry passed. Attempt 2 completed all 70 jobs successfully on 680cb03. No test,
 assertion, production watchdog or workflow setting was changed, and no durable
 cause/fix of that intermittent timeout is claimed by these review corrections.
+
+
+## D14 reconciliation ownership and D12 cleanup follow-up (2026-09-25)
+
+Baseline: `arbiterForge/codeArbiter@21ba930102c9fa3a1068c45f88cb83b02c2147e2`.
+Incorporated main: `4187f1e22dc7da3cf755a2654bbf7ec268236126`.
+This is source implementation on PR #854, not a release or live-model qualification.
+
+### Owning sources and route traces
+
+`core/surface/commands/reconcile.md` is the existing whole-file composition
+entry for `core/surface/skills/decision-variance/SKILL.md`. The owner selects
+explanation, report-only or reconciliation before loading its new private
+`references/analysis.md`. That card has no frontmatter or registry entry. The
+existing duplicate-owner compiler guard is unchanged. Host projections retain
+all explicit spellings and catalog classifications; Claude suppresses the
+redundant command description while Codex/Pi expose the existing entry skill.
+
+The scoped/full distinction is now explicit. A full pass still locates the three
+exact Markdown decomposition documents. A named ADR/area/artifact reads only
+relevant architectural records and reports missing or ambiguous sources. A typed
+HTML feature spec/plan remains with its typed workflow owner, not this Markdown
+hash procedure. Report-only returns findings without initialization, an on-disk
+evidence index, a log append, questions, ADR authoring or a decision interview.
+Scout/grader handoffs carry the same read-only boundary. An explanation needs
+neither the analysis card nor the arbitration phases.
+
+A stale section hash is no longer rewritten in an old decision. Explicit
+reaffirmation appends a new user-attributed entry, current section hash and
+forward Supersedes reference; missing/ambiguous sections remain unknown. Reports
+can continue independent analysis while stale choices and UNKNOWN categories
+remain unresolved. Same-level disagreement stays visible even if the separate
+artifact/scaffold comparison agrees; it is not mislabeled both-silent.
+
+Explicit prior choices and separately authorized continuations survive the
+handoff without another menu. Arbitration still cannot invent the user's
+architectural decision. Sprint internal method autonomy reuses scoring only and
+does not inherit this interactive interview; real contradiction gates remain.
+The complete prior Phase 3 scoring/precedent/scout/grader procedure is byte-preserved
+in the card. SMARTS core, log format, SPRINT, debug and decompose remain unchanged.
+
+### Prior review 5322039706, comment 4108098755
+
+The valid remaining ADR finding concerned a marker left active after a controlled
+write failure. The authoring reference now requires removal on every controlled
+exit after arming: ADR-write, log-append, status-edit failures, cancellation and
+pause, using the exact captured root. It explicitly avoids an exit trap on the
+marker-creation shell, which would remove authority before later host writes.
+Cleanup failure is surfaced rather than called complete. This is not crash-safe
+cleanup after forced termination. The actual guards, resolver, expiry, acceptance
+binding and shared ADR template are unchanged.
+
+### Measured footprint and proof boundary
+
+The owner description falls from 439 to 117 Unicode characters. The Codex/Pi
+public entry description falls from 160 to 117 (43 fewer, 26.875%). A real Codex
+CLI 0.145.0 app-server initialize/skills-list probe parsed exact before/after files
+in separate isolated repository skill roots and fresh CODEX_HOME directories:
+one enabled ca-reconcile entry, zero skill errors, no model turns or credential
+files copied. Candidate entry SHA-256:
+`2f95e03c93f917323c0bee8128ebb8f1e1d65e98c6ef78aa2a36b724509264a6`.
+An earlier probe did not initialize within its deadline; it is not counted passing.
+
+The source owner is 7,573 UTF-8 bytes versus 9,822 before; the private analysis
+card is 8,220 bytes. The full two-file procedure is larger than the former skill.
+These are source/discovery measurements, not prompt-token, billing or invocation
+quality claims. No command, skill, agent or runtime registry is added. The command
+registry remains 37 records and the source skill count remains 22.
+
+### Regression and validation evidence
+
+Twelve new source/host-projection methods pass. Against unchanged baseline source,
+all twelve fail by assertion (fourteen failed assertions/subtests), with no runtime
+or collection errors. They cover mode-first loading, scoped sources, non-mutating
+reports, explicit append-only capture, owner handoffs, protected neighboring
+contracts, exact scoring preservation and the unchanged duplicate-owner guard.
+The last is preservation evidence, not proof of a previously allowed duplicate.
+Two operator-document cases cover report/record separation and continuation.
+
+The new card initially lacked consumer-inventory accounting. It now belongs to the
+existing decomposition-plans exclusion with its three generated copies; no search
+root, pattern or closure assertion was narrowed. Its sixteen-case closure suite passes.
+
+An existing site's malformed-sidebar test again exhausted its unchanged five-second
+limit while importing unrelated framework integrations. The fixture now mocks only
+external Astro/Starlight/markdown integration factories, retaining the real config,
+JSON parser and sidebar projection. Valid generated metadata and ENOENT pass;
+malformed JSON, incompatible metadata and EACCES reject. The original malformed
+assertion fails when the config is deliberately mutated to swallow that error;
+production config bytes are restored unchanged. All seven fixture cases and the
+normal site pipeline pass, including 925 tests in 87 files, actual Astro build,
+base-path/rendered checks and typecheck. No deadline, gate, coverage threshold or
+production configuration is weakened. Historical farm timeout evidence remains open.
+
+The remaining source/package/version validation and exact published tree identity
+are recorded in the PR's commit-bound checks. Local evidence is not a substitute
+for the final head's normal Actions matrix or an independent review.
+
+### Propagation, remaining work and rollback
+
+Canonical owner/entry/card, existing routing/index rows, generated host copies,
+curated docs, candidate changelogs and existing consumer inventory move together.
+Only the three existing changelog Git-object hashes in release-target provenance
+are refreshed through its owning hash routine. Versions and HTML-farm rollout
+state are unchanged. The current D01-D15 rollup now records eleven addressed
+retained relationships, one retirement and D03/D04/D07 pending; D12/D13 share one owner.
+Project bootstrap canon and cross-product claim registries remain historical and unchanged.
+
+Rollback this slice's owner, entry, private card, generated projections and targeted
+tests/docs together; retain actual ADR history, protected runtime authority and the
+other agents' work. Final review, actual model side-effect traces, installed-session
+context accounting and release qualification remain separate obligations.

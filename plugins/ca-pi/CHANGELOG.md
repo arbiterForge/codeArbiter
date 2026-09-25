@@ -14,6 +14,11 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Consolidate `reconcile` under `decision-variance` with shorter discovery metadata
+  and a private analysis card. Report-only and scoped requests avoid an unnecessary
+  decision interview; prior choices and sprint method authority are retained.
+- Preserve append-only history when reaffirming a stale architectural decision,
+  and require ADR marker cleanup on controlled failure as well as success.
 - Resolve ADR authoring markers through the same host project-root function as
   the ADR guards, retain that path for cleanup, and distinguish first-record
   directory creation from unreadable storage.

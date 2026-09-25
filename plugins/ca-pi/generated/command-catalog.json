@@ -266,7 +266,7 @@
     },
     "reconcile": {
       "name": "reconcile",
-      "description": "SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice.",
+      "description": "Inspect architectural variances with SMARTS; record only explicit user choices. Report-only requests make no changes.",
       "skillPath": "skills/ca-reconcile/SKILL.md",
       "visibility": "advanced",
       "workflow": "decide",

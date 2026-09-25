@@ -92,7 +92,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose |
 |---|---|
 | `/ca-adr-status` | Inspect ADR health read-only; optionally select one ADR with --adr N. |
-| `/ca-reconcile` | SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice. |
+| `/ca-reconcile` | Inspect architectural variances with SMARTS; record only explicit user choices. Report-only requests make no changes. |
 
 ### Operate
 

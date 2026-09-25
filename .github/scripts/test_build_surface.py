@@ -2080,9 +2080,9 @@ class AdrModeOwnershipTest(unittest.TestCase):
         rows = re.findall(r'^\| (D\d{2}) \| [^|]+ \| (.+) \|$', current, re.M)
         self.assertEqual(len(rows), 15)
         self.assertEqual({key for key, value in rows if value.startswith('Pending')},
-                         {'D03', 'D04', 'D07', 'D14'})
-        self.assertEqual(sum(value.startswith('Complete') for _, value in rows), 10)
-        self.assertIn('not ten distinct composed owners', current)
+                         {'D03', 'D04', 'D07'})
+        self.assertEqual(sum(value.startswith('Complete') for _, value in rows), 11)
+        self.assertIn('eleven relationships, not eleven distinct composed owners', current)
 
     def test_status_adapter_never_becomes_a_second_composed_owner(self):
         """Retain the compiler guard that rejects duplicate discovery ownership."""
@@ -2202,6 +2202,148 @@ class AdrMarkerRootJourneyTest(unittest.TestCase):
             with self.subTest(host=host):
                 self.exercise(host, 'primary')
 
+
+
+
+
+class ReconcileOwnershipTest(unittest.TestCase):
+    """D14 ownership, mode isolation and evidence preservation; not model behavior."""
+
+    owner = 'core/surface/skills/decision-variance/SKILL.md'
+    analysis = 'core/surface/skills/decision-variance/references/analysis.md'
+
+    def text(self, path):
+        """Read a canonical contract without importing a generated copy."""
+        self.assertTrue((REPO_ROOT / path).is_file(), path)
+        return (REPO_ROOT / path).read_text(encoding='utf-8')
+
+    def test_one_composed_entry_and_concise_intent_metadata(self):
+        """Keep the public name while removing its independently authored wrapper."""
+        import re
+        self.assertEqual(self.text('core/surface/commands/reconcile.md'), '{{SKILL_ENTRY:decision-variance}}\n')
+        header = _frontmatter(self.text(self.owner))
+        self.assertIn('name: decision-variance', header)
+        self.assertIn('argument-hint: "(none) | \\"<ADR-id | artifact | scope>\\""'.replace('\\\\', '\\'), header)
+        description = re.search(r'^description: (.+)$', header, re.M).group(1)
+        value = json.loads(description) if description.startswith('"') else description
+        self.assertLess(len(value), 160)
+        self.assertNotIn('disable-model-invocation', header)
+
+    def test_public_host_entries_and_private_card_are_closed(self):
+        """All adapters expose the existing entry and include the inert analysis card."""
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                out = B.render_all(REPO_ROOT, host)
+                public = 'commands/reconcile.md' if host == 'claude' else 'skills/ca-reconcile/SKILL.md'
+                prefix = 'skills' if host == 'claude' else 'routines'
+                body = out[public].decode()
+                self.assertEqual('disable-model-invocation: true' in _frontmatter(body), host == 'claude')
+                self.assertIn('## Entry and scope', body)
+                self.assertIn('## Phase 4', body)
+                self.assertNotIn('## Phase 3', body)
+                card = out[f'{prefix}/decision-variance/references/analysis.md'].decode()
+                self.assertTrue(card.startswith('# Reconciliation analysis'))
+                self.assertNotIn('\nname:', card)
+                self.assertNotIn('\ndescription:', card)
+                registry = json.loads(self.text('core/surface/command-routes.json'))['commands']['reconcile']
+                metadata = json.loads(out['generated/command-catalog.json'])['commands']['reconcile']
+                for key in ('canonical', 'visibility'):
+                    self.assertEqual(metadata[key], registry[key])
+
+    def test_direct_routing_does_not_return_through_wrapper(self):
+        """Natural requests reach the existing owner, not another advertised resource."""
+        self.assertIn('{{PLUGIN_ROOT}}/skills/decision-variance/SKILL.md', self.text('core/surface/includes/routing-table.md'))
+        text = self.text(self.owner)
+        self.assertIn('Natural-language requests', text)
+        self.assertIn('Do not re-invoke the command wrapper', text)
+        self.assertIn('Return to the caller', text)
+        self.assertNotIn('Never volunteer this fast-path', text)
+
+    def test_report_only_returns_before_decision_capture(self):
+        """A variance report is a result, not consent to enter a writing interview."""
+        text = self.text(self.owner)
+        entry = text.split('## Phase 4', 1)[0]
+        for term in ('report-only', 'no file changes', 'Do not load the analysis card', 'returns before Phase 4'):
+            self.assertIn(term, entry)
+        self.assertIn('No marker, directory, log, question, ADR, staging or commit', entry)
+        self.assertIn('returned report', self.text(self.analysis))
+        self.assertIn('no evidence-index file', self.text(self.analysis))
+
+    def test_scoped_inputs_do_not_require_unrelated_decomposition(self):
+        """Full passes retain exact-name inputs; bounded targets disclose their coverage."""
+        text = self.text(self.analysis)
+        for term in ('01-architecture-breakdown.md', '02-phased-build-plan.md', '03-task-backlog.md',
+                     'full pass', 'scoped pass', 'not a full-project clearance',
+                     'Unreadable', 'exact filename', 'full filename stem'):
+            self.assertIn(term, text)
+        self.assertIn('do not require unrelated decomposition files', text)
+        self.assertIn('not interchangeable with HTML feature specs/plans', ' '.join(text.split()))
+
+    def test_stale_ratification_appends_instead_of_rewriting_hash(self):
+        """A refreshed source binding is a new attributed record, never an old-row edit."""
+        text = self.text(self.owner) + self.text(self.analysis)
+        for term in ('append a new entry', 'Supersedes:', 'current section hash',
+                     'not in-place', 'missing or ambiguous section', 'before generating new variances'):
+            self.assertIn(term, text)
+        self.assertNotIn('keep (update the', text)
+        self.assertNotIn('recorded hash to current', text)
+
+    def test_unresolved_report_does_not_stop_all_analysis(self):
+        """Staleness and unknown categories remain visible without a new report gate."""
+        text = self.text(self.analysis)
+        self.assertIn('continue independent analysis', text)
+        self.assertIn('category: UNKNOWN', text)
+        self.assertIn('not a reason to pause a report', text)
+        self.assertIn('same-level-conflict', self.text(self.owner))
+        self.assertNotIn('treat both as silent', self.text(self.owner))
+
+    def test_recorded_choice_and_sprint_authority_stay_distinct(self):
+        """Do not impose the arbitration interview on delegated sprint methods."""
+        text = self.text(self.owner)
+        for term in ('already selected', 'do not ask again', 'sprint', 'scoring only',
+                     'No mid-sprint reconciliation', 'explicit user choice', 'general trust'):
+            self.assertIn(term, text)
+        self.assertIn('confirm it back in one sentence, then append the decision', text)
+        self.assertIn('(1) an explicit user decision this session, (2) a', text)
+        self.assertIn('(6) inferred intent', text)
+
+    def test_outcomes_have_one_authorized_continuation(self):
+        """Recording, ADR authoring and implementation are different authorities."""
+        text = self.text(self.owner)
+        for term in ('**Ratify**', '**Supersede**', '**Defer**', '[CONFIRM-NN]',
+                     '{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md',
+                     'separately authorized', 'not authorization to commit', 'Never edit the artifacts'):
+            self.assertIn(term, text)
+        self.assertIn('re-read the log', text)
+        self.assertIn('never duplicate', text)
+
+    def test_scoring_and_adjacent_contracts_are_preserved(self):
+        """Extraction changes loading, not SMARTS scoring or another agent's scope."""
+        import hashlib
+        card = self.text(self.analysis)
+        self.assertEqual(hashlib.sha256(card[card.index('## Phase 3'):card.index('## Return boundary')].encode()).hexdigest(), 'd2129e34ce0bd412801d93c6372b5ca09617c90499940028fd9bcb75251d4c37')
+        for path, expected in {'core/surface/SPRINT.md': 'f4febee07ef7446307c14cf8a52d40224daaddcf1e43bc1e84e9ca36af1f99ec', 'core/surface/includes/smarts/core.md': 'bec35848cb148b0c1ff8e05c39e561012ab74385074d11cc38d6d8315462b434', 'core/surface/includes/smarts/decision-log-format.md': 'bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6', 'core/surface/command-routes.json': '2ced3f30fea81d5318e5b22dcf05e14edd6d516c2920bf5bcfbd74596d1059cb', 'core/surface/skills/decompose/SKILL.md': 'cd8bdd5b2e7f347fd6d8f07118bdc2bab8fdd74ce2411a1dc64b21f373d05393', 'core/surface/skills/debug/SKILL.md': '86824be48ec461399920bb3ea8d5a9150f7908b928b3f611ea4f4e7b4203436a'}.items():
+            with self.subTest(path=path):
+                self.assertEqual(hashlib.sha256((REPO_ROOT / path).read_bytes()).hexdigest(), expected)
+
+    def test_duplicate_composed_owner_remains_rejected(self):
+        """The consolidation cannot add a second model-facing procedure owner."""
+        import shutil
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            shutil.copytree(REPO_ROOT / 'core', root / 'core')
+            _write(root, 'core/surface/commands/adr-status.md', '{{SKILL_ENTRY:decision-variance}}\n')
+            with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
+                B.render_all(root, 'claude')
+
+    def test_adr_cleanup_covers_controlled_failures_at_captured_path(self):
+        """The remaining D12 review finding must not leave a fresh marker on a stop."""
+        text = self.text('core/surface/skills/decision-lifecycle/references/authoring.md')
+        for term in ('every exit after arming', 'ADR-write', 'decision-log-append', 'status-edit',
+                     'before returning or stopping', 'Do not resolve a different root during cleanup',
+                     'cleanup failure', 'not crash-safe'):
+            self.assertIn(term, text)
+        self.assertIn('rm -f "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"', text)
 
 
 if __name__ == "__main__":

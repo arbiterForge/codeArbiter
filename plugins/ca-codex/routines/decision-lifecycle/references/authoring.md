@@ -70,7 +70,17 @@ by ADR-NNNN" — so a recorded decision pushes back at edit time instead of wait
 sweep. Offer the field whenever a decision constrains identifiable files; omit it for decisions
 without a file footprint. Globs are fnmatch-style against repo-relative forward-slash paths.
 
-Once the ADR file and its log entry are written (and any user-instructed status edit is applied), remove the marker at the exact previously resolved path, even if the shell cwd changed. Do not resolve a different root during cleanup; it exists only for one authoring pass:
+On every exit after arming it, remove the marker, including ADR-write,
+decision-log-append and status-edit failures, cancellation, or a controlled pause.
+Run cleanup before returning or stopping after marker creation. On success, remove
+it after the ADR file, log entry and any authorized status edit are written. Use
+the exact previously resolved path, even if cwd changed or shell calls are separate.
+Do not resolve a different root during cleanup; it exists only for one authoring pass.
+Do not install an exit trap on the marker-creation shell alone: that would remove
+authority before subsequent host Write/Edit calls. On a cleanup failure, report
+the exact remaining marker path and original failure; do not claim the pass closed
+or continue ADR writes. This cooperative procedure is not crash-safe cleanup after
+a forcibly terminated process; the existing freshness limit is not immediate cleanup.
 
 ```bash
 rm -f "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"
