@@ -782,6 +782,8 @@ runs:
           --codex-npm-package-root "$PACKAGE_ROOT" \
           --codex-npm-cohort-sha256 "$COHORT_SHA256" \
           --codex-npm-output "$NPM_ROOT" > "$METADATA"
+        mv -- "$METADATA" "$NPM_ROOT/codex-npm-package.json"
+        METADATA="$NPM_ROOT/codex-npm-package.json"
         TARBALL=$(python3 - "$METADATA" "$NPM_ROOT" <<'PY'
         import json,pathlib,sys
         metadata=json.load(open(sys.argv[1],encoding="utf-8"))
