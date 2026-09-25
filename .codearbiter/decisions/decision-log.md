@@ -2080,3 +2080,28 @@ Maintainable: the audit trail states the true supersession and sequencing withou
 The follow-up catalog-flip PR cites ADR-0040 decision 2 and this entry.
 
 ---
+
+## DECISION-0072 — adr-0040-history-restore — Restore the ADR-0040 acceptance commit to main's history
+
+**Date:** 2026-09-25
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — merged #865 and #867; directed fixing the ADR-0040 lifecycle break.
+**Decision category:** governance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0070 requires the ADR-0040 acceptance commit to stay in main's history: merge commit, not squash.
+- **Scaffold position:** #865 and #867 were squash-merged. The acceptance commit bb23701e is not an ancestor of main, so the ADR lifecycle check fails on main and on every pull request.
+- **Status type:** divergent
+
+### Decision
+Restore ancestry with a merge commit whose second parent is the original #865 branch, using the ours strategy so no file changes. The sealed acceptance event is left unchanged.
+
+### SMARTS rationale
+Securable: the acceptance stays bound to its exact sealed bytes instead of being rebound. Reliable: a history-only merge fixes every downstream check at once.
+
+### Implementation implication
+Merge this change with a merge commit. A squash would drop the second parent again.
+
+---
