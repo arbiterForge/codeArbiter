@@ -12,7 +12,6 @@ export const evidenceSources = {
   checkpointWriter: { path: 'core/surface/agents/checkpoint-aggregator.md', quote: 'Runs only after `verdict-aggregator` returns' },
   audit: { path: 'core/surface/commands/audit.md', quote: '**Triage** — every small-lane classification' },
   override: { path: 'core/surface/commands/override.md', quote: 'MUST write the log line before proceeding' },
-  authority: { path: 'core/surface/includes/artifacts.md', quote: 'Verification and review authority below is currently Codex-only' },
 } as const;
 export type EvidenceSource = keyof typeof evidenceSources;
 export const evidenceSourceUrl = (key: EvidenceSource) =>
