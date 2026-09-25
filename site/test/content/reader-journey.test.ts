@@ -20,8 +20,15 @@ describe('reader-first workflow contract', () => {
         const path = step.href.split('#')[0].replace(/^\//, '').replace(/\/$/, '');
         expect(['.md', '.mdx'].some(extension => existsSync(join(process.cwd(), `src/content/docs/${path}${extension}`))), step.href).toBe(true);
       }
-      expect(source.indexOf('<ReaderJourney')).toBeLessThan(source.indexOf('<details class="ca-implementation-view">'));
-      expect(source).toMatch(/<details class="ca-implementation-view">[\s\S]*<figure class="ca-diagram">[\s\S]*<\/figure>\s*<\/details>/);
+      expect(source.indexOf('<ReaderJourney')).toBeLessThan(source.indexOf('<details class="ca-implementation-view"'));
+      if (route === 'feature-lane') {
+        expect(source).toMatch(/<details class="ca-implementation-view">[\s\S]*<figure class="ca-diagram">[\s\S]*<\/figure>\s*<\/details>/);
+      } else {
+        expect(source).toMatch(/<details class="ca-implementation-view"[^>]*>[\s\S]*<WorkflowMap[\s\S]*<\/details>/);
+        const asset = route === 'opt-in-a-repo' ? 'lane-opt-in.svg' : 'lane-sprint.svg';
+        expect(source).toContain(`/diagrams/${asset}`);
+        expect(existsSync(join(process.cwd(), 'public/diagrams', asset))).toBe(true);
+      }
     });
   }
   it('does not represent numbered steps as proof or progress', () => {

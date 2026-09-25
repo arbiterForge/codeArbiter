@@ -37,6 +37,8 @@ const DIAGRAMS = [
   "lane-release.svg",
   "lane-opt-in.svg",
   "lane-add-dep.svg",
+  "lane-init-greenfield.svg",
+  "lane-init-brownfield.svg",
   // pipeline + host fan-out diagrams
   "commit-gate-phases.svg",
   "core-fanout.svg",

@@ -15,6 +15,7 @@ import zipfile
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROLE_CONCEPT = "site/src/content/docs/concepts/persona-and-context.mdx"
 REQUIRE_CURRENT_CANDIDATE = "--require-current-candidate" in sys.argv
 if REQUIRE_CURRENT_CANDIDATE:
     sys.argv.remove("--require-current-candidate")
@@ -909,7 +910,7 @@ class PublicCodexDocsTest(unittest.TestCase):
             "docs/architecture.md",
             "docs/parity.md",
             "site/src/content/docs/overview.md",
-            "site/src/content/docs/concepts/persona-and-context.md",
+            ROLE_CONCEPT,
             "site/src/content/docs/glossary.md",
             "site/src/content/docs/getting-started/claude-code-and-codex.md",
             "site/src/curated/commands/checkpoint.md",
@@ -954,7 +955,7 @@ class PublicCodexDocsTest(unittest.TestCase):
 
         public_role_docs = (
             "site/src/content/docs/overview.md",
-            "site/src/content/docs/concepts/persona-and-context.md",
+            ROLE_CONCEPT,
             "site/src/content/docs/glossary.md",
             "site/src/content/docs/getting-started/claude-code-and-codex.md",
             "site/src/curated/commands/checkpoint.md",
@@ -984,7 +985,7 @@ class PublicCodexDocsTest(unittest.TestCase):
 
         for path in (
             "site/src/content/docs/overview.md",
-            "site/src/content/docs/concepts/persona-and-context.md",
+            ROLE_CONCEPT,
             "site/src/content/docs/glossary.md",
         ):
             with self.subTest(release_scoped_charters_path=path):
@@ -993,7 +994,7 @@ class PublicCodexDocsTest(unittest.TestCase):
                 self.assertIn("complete packaged resource charter set for that release", normalized)
 
         roster = (
-            ROOT / "site" / "src" / "content" / "docs" / "concepts" / "persona-and-context.md"
+            ROOT / ROLE_CONCEPT
         ).read_text(encoding="utf-8")
         for charter in charter_files:
             with self.subTest(roster_charter=charter):

@@ -57,3 +57,5 @@ Routing to commit-gate, then finishing-a-development-branch (opening a PR — sp
 Reach for `/ca:sprint` when the spec can be made concrete up front and you want the whole plan to run
 without per-batch checkpoints. `/ca:feature` is the better fit when you want to review progress
 between batches.
+
+For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/autonomous-sprints/) and [Compare workflow routes](/concepts/workflow-routes/).

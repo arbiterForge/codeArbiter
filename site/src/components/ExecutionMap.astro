@@ -1,10 +1,12 @@
 ---
-import { featureMap, validateExecutionMap } from '../../scripts/execution-maps/model';
-import { renderChapterSvg } from '../../scripts/execution-maps/render';
-interface Props { id: string; initial?: string }
-const { id, initial = 'define' } = Astro.props;
+import { featureMap, validateExecutionMap, type ExecutionMap as Model } from '../../scripts/execution-maps/model';
+import { renderChapterSvg, chapterOffset } from '../../scripts/execution-maps/render';
+interface Props { id: string; initial?: string; model?: Model; asset?: string; label?: string; limits?: string }
+const { id, model = featureMap, asset = 'lane-feature.svg', label = 'Feature execution map', limits } = Astro.props;
+const initial = Astro.props.initial ?? model.chapters[0]?.id;
 if (!/^[a-z][a-z0-9-]*$/.test(id)) throw new Error('ExecutionMap requires a stable, unique ID');
-const map = featureMap;
+const map = model;
+if (!/^[a-z0-9-]+\.svg$/.test(asset)) throw new Error('Invalid diagram asset');
 const errors = validateExecutionMap(map);
 if (errors.length) throw new Error(errors.join('; '));
 if (!map.chapters.some(chapter => chapter.id === initial)) throw new Error('Unknown initial chapter');
@@ -12,7 +14,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const sourceUrl = (key: string) => `https://github.com/arbiterForge/codeArbiter/blob/${map.reviewedAt}/${map.sources[key].path}`;
 const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
 ---
-<ca-execution-map class="ca-execution-map not-content" id={id} data-initial={initial} aria-label="Feature execution map">
+<ca-execution-map class="ca-execution-map not-content" id={id} data-initial={initial} aria-label={label}>
   <header class="ca-execution-map__header">
     <p class="ca-eyebrow">Follow the work, not a catalog</p>
     <h3>{map.title}</h3>
@@ -26,58 +28,51 @@ const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
     <p role="status" aria-live="polite" data-map-status></p>
   </div>
   <p class="ca-execution-map__legend"><strong>Rows identify roles.</strong> Gold commands enter or define a procedure; blue skills coordinate work; green agents perform bounded roles. Arrows cross rows in execution order. A dashed arrow reuses a procedure rather than calling its entry again. Dashed nodes are path-selected reviewers, not mandatory roles for every change.</p>
-  {map.chapters.map((chapter, chapterIndex) => <section class="ca-execution-map__chapter" data-map-chapter={chapter.id} id={`${id}-${chapter.id}`} aria-labelledby={`${id}-${chapter.id}-title`}>
+  {map.chapters.map((chapter, chapterIndex) => <section class="ca-execution-map__chapter" data-map-chapter={chapter.id} id={`${id}-${chapter.id}`} tabindex="-1" aria-labelledby={`${id}-${chapter.id}-title`}>
     <header>
       <p class="ca-eyebrow">Chapter {chapterIndex + 1} / {map.chapters.length}</p>
       <h4 id={`${id}-${chapter.id}-title`}>{chapter.title}</h4>
       <p>{chapter.question}</p>
+      <a data-astro-prefetch="false" class="ca-execution-map__permalink" data-map-permalink href={`#${id}-${chapter.id}`} aria-label={`Link to chapter ${chapterIndex + 1}: ${chapter.title}`}>Link to this chapter</a>
     </header>
-    <div class="ca-execution-map__plot" aria-hidden="true" data-pagefind-ignore="all" set:html={renderChapterSvg(chapter, `${id}-${chapter.id}`, chapterIndex * 4)} />
-    <ol class="ca-execution-map__reading" start={chapterIndex * 4 + 1} role="list" data-ca-layout="peers">
+    <div class="ca-execution-map__plot" aria-hidden="true" data-pagefind-ignore="all" set:html={renderChapterSvg(chapter, `${id}-${chapter.id}`, chapterOffset(map, chapterIndex))} />
+    <ol class="ca-execution-map__reading" start={chapterOffset(map, chapterIndex) + 1} role="list" data-ca-layout="peers">
       {chapter.nodes.map((node, nodeIndex) => <li data-map-step={node.id} data-role={node.role}>
-        <div class="ca-execution-map__step-heading"><span class="ca-execution-map__number" aria-hidden="true">{String(chapterIndex * 4 + nodeIndex + 1).padStart(2, '0')}</span><span class="ca-execution-map__role">{node.role}{node.conditional && ' · if applicable'}</span></div>
-        <h5><a href={`${base}${node.href}`}>{node.title}</a></h5>
+        <div class="ca-execution-map__step-heading"><span class="ca-execution-map__number" aria-hidden="true">{String(chapterOffset(map, chapterIndex) + nodeIndex + 1).padStart(2, '0')}</span><span class="ca-execution-map__role">{node.role}{node.conditional && ' · if applicable'}</span></div>
+        <h5><a data-astro-prefetch="false" href={`${base}${node.href}`}>{node.title}</a></h5>
         <p>{node.detail}</p>
         <p class="ca-execution-map__result"><strong>Result:</strong> {node.output}</p>
         {node.checks && <details><summary>Inspect all six TDD phases</summary><ol>{node.checks.map(check => <li>{check}</li>)}</ol></details>}
         {chapter.edges[nodeIndex] && <p class="ca-execution-map__handoff"><strong>{chapter.edges[nodeIndex].label} →</strong> {chapter.edges[nodeIndex].detail}</p>}
-        <a class="ca-execution-map__source" href={sourceUrl(node.source)}>Source for step {chapterIndex * 4 + nodeIndex + 1}</a>
+        <a data-astro-prefetch="false" class="ca-execution-map__source" href={sourceUrl(node.source)}>Source for step {chapterOffset(map, chapterIndex) + nodeIndex + 1}</a>
       </li>)}
     </ol>
     <p class="ca-execution-map__boundary"><strong>Before continuing:</strong> {chapter.output}</p>
     <details class="ca-execution-map__returns"><summary>Continuations, returns and repeat paths</summary>
-      <ul>{map.alternatives.filter(edge => chapter.nodes.some(node => node.id === edge.from)).map(edge => <li><strong>{edge.label}.</strong> {edge.detail} <span>Next: {allNodes.find(node => node.id === edge.to)?.title}.</span> <a href={sourceUrl(edge.source)}>Owning contract</a></li>)}</ul>
-      {chapter.id === 'deliver' && <p>{map.outcome}</p>}
+      <ul>{map.alternatives.filter(edge => chapter.nodes.some(node => node.id === edge.from)).map(edge => <li><strong>{edge.label}.</strong> {edge.detail} <span>Next: {allNodes.find(node => node.id === edge.to)?.title}.</span> <a data-astro-prefetch="false" href={sourceUrl(edge.source)}>Owning contract</a></li>)}</ul>
+      {chapterIndex === map.chapters.length - 1 && <p>{map.outcome}</p>}
     </details>
+    <nav class="ca-execution-map__continuation" aria-label={`${chapter.title}: continue reading`}>
+      {chapterIndex > 0 && <a data-astro-prefetch="false" data-map-previous href={`#${id}-${map.chapters[chapterIndex - 1].id}`}><span>Previous chapter</span>{map.chapters[chapterIndex - 1].title}</a>}
+      {chapterIndex + 1 < map.chapters.length
+        ? <a data-astro-prefetch="false" data-map-next href={`#${id}-${map.chapters[chapterIndex + 1].id}`}><span>Next chapter</span>{map.chapters[chapterIndex + 1].title}</a>
+        : <a data-astro-prefetch="false" data-map-end href={`${base}/concepts/workflow-routes/`}><span>End of this reading path</span>Compare other workflow outcomes</a>}
+    </nav>
   </section>)}
   <footer>
     <p><strong>Actual endpoint:</strong> {map.outcome}</p>
-    <p>Command labels use Claude Code spelling for the illustrated route. Codex and Pi use their own entries; shared names do not establish equal execution or authority support. <a href={`${base}/guides/review-artifacts/#check-your-hosts-authority-capability`}>Check the installed-host boundary.</a></p>
-    <details><summary>Source identity and diagram limits</summary><p>Reviewed source: <code>{map.reviewedAt}</code>. The numbered stages explain one ordinary success path. The return notes retain task retries, scope repetition and caller ownership. Optional reviewers depend on the changed paths. Existing Markdown, small-lane and sprint paths retain their separate contracts.</p><p><a href={`${base}/diagrams/lane-feature.svg`}>Open the complete three-row diagram</a>. The reading view and image are generated from the same editorial map. They neither run tools nor record approvals.</p></details>
+    <p>Command labels use Claude Code spelling for the illustrated route. Codex and Pi use their own entries; shared names do not establish equal execution or authority support. <a data-astro-prefetch="false" href={`${base}/guides/review-artifacts/#check-your-hosts-authority-capability`}>Check the installed-host boundary.</a></p>
+    <details><summary>Source identity and diagram limits</summary><p>Reviewed source: <code>{map.reviewedAt}</code>. The numbered stages explain one ordinary success path. The return notes retain the caller’s conditions and alternate paths. A conditional role participates only when its owning contract selects it. {limits ?? 'Existing Markdown, small-lane and sprint paths retain their separate contracts.'}</p><p><a data-astro-prefetch="false" href={`${base}/diagrams/${asset}`}>Open the complete three-row diagram</a>. The reading view and image are generated from the same editorial map. They neither run tools nor record approvals.</p></details>
   </footer>
 </ca-execution-map>
 <script>
-  /** Progressive chapter selection: no persistence, network, autoplay or product authority. */
+  import { installMapNavigation } from '../scripts/execution-map-navigation';
+  /** New page instances own listeners; detached maps cannot react to later links. */
   class ExecutionMap extends HTMLElement {
     private controller?: AbortController;
     connectedCallback() {
       this.controller?.abort();
-      this.controller = new AbortController();
-      const controls = this.querySelector<HTMLElement>('.ca-execution-map__controls');
-      const status = this.querySelector<HTMLElement>('[data-map-status]');
-      const sections = Array.from(this.querySelectorAll<HTMLElement>('[data-map-chapter]'));
-      const buttons = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-map-select]'));
-      if (!controls || !status || !sections.length || !buttons.length) return;
-      const choose = (selection: string) => {
-        if (selection !== 'all' && !sections.some(section => section.dataset.mapChapter === selection)) return;
-        sections.forEach(section => { section.hidden = selection !== 'all' && section.dataset.mapChapter !== selection; });
-        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mapSelect === selection)));
-        status.textContent = selection === 'all' ? 'All four chapters. Read in numbered order.'
-          : `Chapter ${sections.findIndex(section => section.dataset.mapChapter === selection) + 1} of ${sections.length}. Choose another chapter or read the whole path.`;
-      };
-      buttons.forEach(button => button.addEventListener('click', () => choose(button.dataset.mapSelect!), { signal: this.controller!.signal }));
-      choose(this.dataset.initial ?? sections[0].dataset.mapChapter!);
-      controls.hidden = false;
+      this.controller = installMapNavigation(this);
     }
     disconnectedCallback() { this.controller?.abort(); }
   }
@@ -87,6 +82,12 @@ const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
   .ca-execution-map { display: block; container-type: inline-size; margin-block: var(--ca-space-6); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-lg); background: var(--ca-bg-raised); overflow-wrap: anywhere; }
   .ca-execution-map [hidden] { display: none !important; }
   .ca-execution-map :is(h3,h4,h5,p) { margin: 0; }
+  .ca-execution-map__chapter { scroll-margin-block-start: calc(var(--sl-nav-height, 4rem) + 1rem); }
+  .ca-execution-map__chapter:focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: -3px; }
+  .ca-execution-map__permalink { display: inline-block; margin-block-start: var(--ca-space-3); font-size: var(--ca-text-xs); }
+  .ca-execution-map__continuation { display: flex; flex-wrap: wrap; gap: var(--ca-space-4); margin-block-start: var(--ca-space-5); padding-block-start: var(--ca-space-4); border-block-start: 1px solid var(--ca-line-strong); }
+  .ca-execution-map__continuation a { flex: 1 1 14rem; min-inline-size: 0; border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-sm); padding: var(--ca-space-3); font-size: var(--ca-text-sm); line-height: 1.6; }
+  .ca-execution-map__continuation span { display: block; color: var(--ca-ink-muted); font-size: var(--ca-text-xs); text-decoration: none; }
   .ca-execution-map__header, .ca-execution-map footer { padding: var(--ca-space-5); }
   .ca-execution-map__header h3 { margin-block: var(--ca-space-3); font-size: var(--ca-text-xl); line-height: 1.35; }
   .ca-execution-map p { color: var(--ca-ink-soft); line-height: 1.7; font-size: var(--ca-text-sm); }
@@ -128,7 +129,7 @@ const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
   }
   @media print {
     .ca-execution-map { container-type: normal; }
-    .ca-execution-map__controls, .ca-execution-map__plot { display: none !important; }
+    .ca-execution-map__controls, .ca-execution-map__plot, .ca-execution-map__permalink, .ca-execution-map__continuation { display: none !important; }
     .ca-execution-map__chapter[hidden] { display: block !important; }
     .ca-execution-map__reading { display: block; }
     .ca-execution-map__reading > li { break-inside: avoid; margin-block: 1rem; }

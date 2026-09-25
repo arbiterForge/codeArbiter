@@ -1,0 +1,140 @@
+---
+title: Checkpoints
+description: "Understand whole-repository review, its read-only verdict and separate report writer, and distinguish periodic reports from attended checkpoints and typed task acceptance."
+journey:
+  level: Power user
+  time: "10–15 min"
+  outcome: "Read a complete checkpoint report, preserve incomplete evidence, and route findings without treating the report or override counter as delivery authority."
+  prerequisites:
+    - An initialized repository with a known review target
+  proof: "You can follow reviewer dispatch through verdict and persistence, locate the exact output, and distinguish three uses of checkpoint."
+---
+
+import CheckpointMap from '../../../components/CheckpointMap.astro';
+
+A periodic checkpoint asks what the whole repository needs attention on, beyond the current change.
+It dispatches reviewers against project context and preserves their consolidated findings in a
+dated report. It helps expose accumulated drift, uncovered behavior and dependencies that a narrow
+diff review might not revisit. It does not implement the findings or certify the repository as safe.
+
+The word checkpoint also appears inside feature execution. That reuse is easy to misunderstand.
+The periodic `/ca:checkpoint` command produces a repository review report. An **attended execution
+checkpoint** is where the coordinator reports a batch and waits for acknowledgement. A **typed-plan
+checkpoint scope** groups authored tasks for the required combined evidence and acceptance. A file
+from the first does not satisfy either of the other two.
+
+## The fleet
+
+The periodic command names security-reviewer, auth-crypto-reviewer, dependency-reviewer,
+migration-reviewer, coverage-auditor and architecture-drift-reviewer. Their evidence comes from
+security controls, manifest/lockfile state, migration history, test obligations and accepted ADRs.
+They are the familiar review roles, but this caller asks about the whole repository rather than
+only the current diff.
+
+- **[security-reviewer](/reference/agents/security-reviewer/)** reads security controls and reviews the repository's security posture.
+- **[auth-crypto-reviewer](/reference/agents/auth-crypto-reviewer/)** checks authentication, cryptography, keys and secret-handling paths against those controls.
+- **[dependency-reviewer](/reference/agents/dependency-reviewer/)** inspects manifest, license and supply-chain posture.
+- **[migration-reviewer](/reference/agents/migration-reviewer/)** checks migration history, safety and classification.
+- **[coverage-auditor](/reference/agents/coverage-auditor/)** compares test coverage with obligations across the tree.
+- **[architecture-drift-reviewer](/reference/agents/architecture-drift-reviewer/)** compares code with accepted ADRs.
+
+The report must name the units actually dispatched and preserve incomplete-unit results. Do not
+infer that every relevant path was reviewed just because a template lists a reviewer. The same
+reviewer names in two operations do not imply identical scope, coverage or persistence.
+
+## The funnel
+
+<CheckpointMap />
+
+This order matters. The generic parallel-review funnel ends in a verdict, not a file write.
+Checkpoint persistence is a separate caller-owned step. An ordinary diff or inbound-PR review
+must not acquire a checkpoint file merely because it used the same reviewers. The
+[review-and-delivery guide](/guides/review-and-ship/) follows that read-only path.
+
+## What gets written
+
+The report is `.codearbiter/checkpoints/YYYY-MM-DD.md`. If that date already exists, the writer
+selects `YYYY-MM-DD-2.md`, then `-3`, and returns the exact selected path. An existing report is
+never overwritten. Its content retains every finding and incomplete-unit result from the complete
+verdict, with severity, location and the relevant dispositions.
+
+The caller also writes a **bare integer** to `.codearbiter/last-checkpoint`: the count of nonblank,
+noncomment override rows at that point. The statusline or startup briefing subtracts it from the
+current total. For example, 12 current overrides and a baseline of 9 means three since the last
+checkpoint. After a new checkpoint records 12, the displayed difference becomes zero. The 12
+historical rows remain; no exceptions were erased and no defect was repaired.
+
+That integer is not a timestamp, Git ref, commit-gate receipt or acceptance record. A stale baseline
+above the current total falls back to displaying the whole override total. A zero difference
+cannot establish that the reviewed work is correct.
+
+The writer can surface DEFERRABLE findings for the existing follow-up harvest. It does not write
+the task board itself. The orchestrator owns the harvest and its applicable confirmation or sprint
+authority. A dated report and a queued task are separate outputs.
+
+## Read a report as a diagnosis, not a certificate
+
+Suppose the saved-search export is implemented and its focused CSV tests pass. A repository sweep
+could still find an old route that bypasses the intended exporter or an unrelated manifest needing
+review. Those observations say different things about scope. A finding against an obsolete revision
+needs revalidation; an unrelated issue needs a scoped follow-up, not silent expansion of the current
+feature.
+
+An illustrative report excerpt could read:
+
+```text wrap
+Illustrative findings, not captured execution:
+Export route: old caller bypasses the shared serializer.
+Evidence: named source path and current revision required.
+Dependency review: inventory unavailable; unit incomplete.
+Next: verify the route finding and obtain the missing inventory.
+```
+
+“Dependency review incomplete” is not interchangeable with “no dependency findings.” Keep that
+absence visible. Check whether the report retained the uncertainty and whether the final summary
+accurately distinguishes completed review from unavailable evidence.
+
+A report can use severity or disposition labels that describe a finding's consequence for later
+work. The periodic command itself still has no promotion sign-off. Any correction returns through
+its actual fix, refactor, feature or decision lane and the relevant gates.
+
+## Run and Act on a Checkpoint
+
+Invoke `/ca:checkpoint`, `$ca-checkpoint`, or `/ca-checkpoint` in Claude Code, Codex, or Pi
+respectively. Identify the checkout, revision and dirty work before interpreting the result. Avoid
+editing the reviewed tree concurrently, or explicitly account for its changed scope rather than
+calling a moving target a fixed review.
+
+Open the returned path, including any suffix. Read severe findings first, but also inspect the
+reviewer coverage and incomplete-unit results. Reproduce or substantiate a finding before asking
+for its smallest correction. Preserve `[CONFIRM-NN]` questions for the decision owner, and route
+out-of-scope `[NEEDS-TRIAGE]` findings to an explicit follow-up or defer condition.
+
+A useful handoff names the checkpoint path, reviewed revision and scope, complete versus incomplete
+review, confirmed findings, unresolved decisions and next actions. Then verify the override counter
+as a separate accounting check. It is not the sweep's completion evidence.
+
+## The deep counterpart
+
+Tribunal is the rare, deeper review, not a prerequisite added before every PR. Its seven-phase
+contract begins with a token/cost estimate that the user acknowledges. The actual estimate matters;
+this page makes no universal cost prediction. It retains per-finding files and append-only run and
+triage records under `.codearbiter/reports/<run-id>/`, supports interruption recovery, and separately
+asks which findings should become GitHub issues. Optional KPI submission has its own approval.
+
+The [tribunal reference](/reference/commands/tribunal/) describes that larger process. A
+[diff review](/reference/commands/review/) answers a narrower question without writing the periodic
+report. An [audit packet](/concepts/auditability/) assembles records already present; it does not
+run either review again.
+
+## Common category errors
+
+An attended “ready for feedback” checkpoint is not a whole-tree sweep. Typed `REVIEW` is not final
+scope acceptance. A quiet override counter does not attest a commit. A saved report is not proof
+of complete reviewer coverage, and an incomplete review is not a reason to invent clean results.
+
+Use [Test-first development in context](/concepts/test-first/) for the task-level proof path,
+[ADRs](/concepts/adrs/) for governing decisions, and [Investigate and fix](/guides/investigate-and-fix/)
+for a confirmed defect. The owning [checkpoint command](/reference/commands/checkpoint/),
+[verdict aggregator](/reference/agents/verdict-aggregator/) and
+[checkpoint writer](/reference/agents/checkpoint-aggregator/) retain the exact source contracts.

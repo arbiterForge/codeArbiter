@@ -1,31 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 360" role="img" data-diagram-system="ca-v2">
-  <title>Dependency lane</title>
-  <desc>Review the supply chain before installation.</desc>
-  <defs>
-    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#090d12"/>
-      <stop offset="1" stop-color="#0e141c"/>
-    </linearGradient>
-    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
-    </pattern>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
-    </marker>
-  </defs>
-  <rect width="1120" height="360" rx="14" fill="url(#canvas)"/>
-  <rect width="1120" height="360" rx="14" fill="url(#grid)"/>
-  <rect x="1" y="1" width="1118" height="358" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="52" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1044">DEPENDENCY LANE</text>
-<text x="52" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1044">Review the supply chain before installation.</text>
-<rect x="52" y="112" width="489" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="70" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="1026">COMMAND</text>
-<rect x="68" y="160" width="457" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
-<text x="296.5" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="447">/ca:add-dep</text>
-<path d="M547 202 L571 202" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="579" y="112" width="489" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="597" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#58d68d" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="499">AGENT</text>
-<rect x="595" y="160" width="457" height="30" rx="6" fill="#17212d" stroke="#58d68d" stroke-width="1.5"/>
-<text x="823.5" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="447">dependency-reviewer</text>
-<text x="1068" y="329" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1044">license · provenance · vulnerability review must clear before install</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 630" role="img" data-diagram-system="ca-v2" data-execution-map="dependency">
+<title>Review before adopting a dependency</title><desc>The adoption path is shown here. A one-time named inspection tool is a separate bounded branch inside the same command. The reviewer does not install the package. Actual endpoint: A reviewed and explicitly confirmed dependency change. Inspect the manifest and lockfile, then deliver them together through the owning change and commit/PR procedure. Conditions and return paths remain in the companion reading view.</desc>
+<rect width="900" height="630" fill="#090d12"/>
+<text x="24" y="35" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="852">DEPENDENCY • COMMANDS / SKILLS / AGENTS</text>
+<text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Select the package → review → confirm → inspect the change</text>
+<svg x="0" y="94" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="adopt">
+<title>Review, confirm, then adopt</title><desc>command: /ca:add-dep: identify the package → agent: dependency-reviewer → command: /ca:add-dep: installation confirmation → command: /ca:add-dep: inspect the adoption. The reviewer verdict and install confirmation are separate. A denied license or unresolved provenance concern blocks adoption.</desc>
+<defs><marker id="asset-dependency-adopt-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Review, confirm, then adopt</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="dep-entry:dep-reviewer" data-relation="dispatch" d="M299 120H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-dependency-adopt-arrow)"><title>review first: The command dispatches its dependency reviewer before any install.</title></path>
+<path data-map-edge="dep-reviewer:dep-confirm" data-relation="return" d="M488 384H493V120H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-dependency-adopt-arrow)"><title>cleared package: Return a verdict before asking for the install action.</title></path>
+<path data-map-edge="dep-confirm:dep-change" data-relation="sequence" d="M677 120H682V120H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-dependency-adopt-arrow)"><title>confirmed command: Run only the confirmed adoption and inspect its resulting files.</title></path>
+<g data-map-node="dep-entry" data-role="command"><title>/ca:add-dep: identify the package. Name the package and exact version. Read the project policy and stack requirements; an omitted version must be resolved before treating a review as specific.</title>
+<rect x="130" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="143" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">01</text>
+<text x="214.5" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:add-dep</text>
+</g>
+<g data-map-node="dep-reviewer" data-role="agent"><title>dependency-reviewer. Inspect license, registry, provenance, maintenance, audit findings and install-script posture. Return findings; do not install or modify files.</title>
+<rect x="319" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7"/>
+<text x="332" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">02</text>
+<text x="403.5" y="381" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Dependency</text>
+<text x="403.5" y="403" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">reviewer</text>
+</g>
+<g data-map-node="dep-confirm" data-role="command"><title>/ca:add-dep: installation confirmation. After the reviewer clears the package, the orchestrator presents the exact install command for your confirmation. A review pass is not that instruction.</title>
+<rect x="508" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="521" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">03</text>
+<text x="592.5" y="117" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Confirm</text>
+<text x="592.5" y="139" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">install</text>
+</g>
+<g data-map-node="dep-change" data-role="command"><title>/ca:add-dep: inspect the adoption. Check the actual manifest and lockfile changes. The command requires them to be committed together, never one without the other; use the existing delivery procedure.</title>
+<rect x="697" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="710" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">04</text>
+<text x="781.5" y="117" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Inspect paired</text>
+<text x="781.5" y="139" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">changes</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="586" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Reviewed adoption; deliver manifest and lockfile together.</text>
 </svg>

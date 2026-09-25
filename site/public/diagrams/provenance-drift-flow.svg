@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 310" role="img" data-diagram-system="ca-v2">
-  <title>Context-drift provenance</title>
-  <desc>Detect, surface, and heal stale documentation claims.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1128 580" role="img" data-diagram-system="ca-v2">
+  <title>A recorded source change is not yet a corrected claim</title>
+  <desc>A provenance hash mismatch can suppress read-time advice and identify stale context. Before commit, scoped re-scout distinguishes unchanged claims from proposed content edits. The manual route asks for re-scout, re-baseline or defer; it does not commit.</desc>
   <defs>
     <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
       <stop stop-color="#090d12"/>
@@ -9,29 +9,39 @@
     <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
       <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
+    <marker id="arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0L9 4L0 8Z" fill="context-stroke"/>
     </marker>
   </defs>
-  <rect width="1200" height="310" rx="14" fill="url(#canvas)"/>
-  <rect width="1200" height="310" rx="14" fill="url(#grid)"/>
-  <rect x="1" y="1" width="1198" height="308" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1134">CONTEXT-DRIFT PROVENANCE</text>
-<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1134">Detect, surface, and heal stale documentation claims.</text>
-<rect x="42" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
-<text x="165.75" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="223.5">Source changes</text>
-<text x="165.75" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="223.5">tracked file edited</text>
-<path d="M295.5 166 L323.5 166" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="331.5" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
-<text x="455.25" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="223.5">Drift detected</text>
-<text x="455.25" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="223.5">hash mismatch</text>
-<path d="M585 166 L613 166" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="621" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
-<text x="744.75" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="223.5">SessionStart</text>
-<text x="744.75" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="223.5">one passive line</text>
-<path d="M874.5 166 L902.5 166" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="910.5" y="120" width="247.5" height="92" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="2"/>
-<text x="1034.25" y="151" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="223.5">Commit-gate</text>
-<text x="1034.25" y="194" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="223.5">re-baseline or update</text>
-<text x="1158" y="274" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1134">A drifted claim is suppressed; /ca:context-check performs the same detection manually.</text>
+  <rect width="1128" height="580" rx="14" fill="url(#canvas)"/>
+  <rect width="1128" height="580" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1126" height="578" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
+  <text x="42" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1062">PROVENANCE AND CONTEXT DRIFT</text>
+<text x="42" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1062">Recorded bytes changed. Inspect the meaning before accepting a new baseline.</text>
+<rect x="42" y="142" width="264" height="94" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="174" y="173" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="240">Stored / current hash</text>
+<text x="174" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="240">only recorded source paths</text>
+<rect x="390" y="142" width="264" height="94" rx="10" fill="#121a24" stroke="#ff7b72" stroke-width="2"/>
+<text x="522" y="173" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="240">Mismatch identified</text>
+<text x="522" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="240">changed or actually missing</text>
+<rect x="738" y="142" width="308" height="94" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="892" y="173" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="284">Stale pointer suppressed</text>
+<text x="892" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="284">not a block on reading source</text>
+<path d="M312 189 L380 189" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<path d="M660 189 L728 189" fill="none" stroke="#ff7b72" stroke-width="2.25" marker-end="url(#arrow)"/>
+<rect x="42" y="306" width="478" height="104" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="2"/>
+<text x="281" y="337" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="454">Before commit: incremental re-scout</text>
+<text x="281" y="392" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="454">staged drift-trigger paths intersect claims</text>
+<rect x="590" y="306" width="478" height="104" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="2"/>
+<text x="829" y="337" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="454">Optional manual context check</text>
+<text x="829" y="392" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="454">you choose the disposition for each document</text>
+<polyline points="522,242 522,274 281,274 281,300" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
+<polyline points="522,242 522,274 829,274 829,300" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
+<text x="62" y="450" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" fill="#c7d0da" text-anchor="start" data-max-width="458">Claim unchanged: re-baseline available hashes.</text>
+<text x="62" y="469" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" fill="#c7d0da" text-anchor="start" data-max-width="458">Claim changed: propose the edit for review.</text>
+<text x="62" y="488" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" fill="#c7d0da" text-anchor="start" data-max-width="458">Approved updates can join the work commit.</text>
+<text x="610" y="450" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" fill="#c7d0da" text-anchor="start" data-max-width="458">Re-scout, re-baseline, or defer the mismatch.</text>
+<text x="610" y="469" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" fill="#c7d0da" text-anchor="start" data-max-width="458">Missing source needs a deliberate resolution.</text>
+<text x="610" y="488" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" fill="#c7d0da" text-anchor="start" data-max-width="458">This manual path neither stages nor commits.</text>
+<text x="42" y="550" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation" data-max-width="1062">Startup summaries are passive. Missing/invalid records and unavailable hashes are not proof of freshness.</text>
 </svg>

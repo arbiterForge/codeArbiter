@@ -93,7 +93,8 @@ try {
     const map = html.match(/<section[^>]*data-reader-journey=[\s\S]*?<\/section>/)?.[0];
     const links = [...(map ?? "").matchAll(/href="([^"]+)"/g)].map(match => match[1]);
     if (links.length !== 4 || links.some(href => !href.startsWith("/docs/")) ||
-        !html.includes(`src="/docs/diagrams/${diagram}.svg"`)) {
+        !(html.includes(`src="/docs/diagrams/${diagram}.svg"`) ||
+          (slug !== "feature-lane" && html.includes(`href="/docs/diagrams/${diagram}.svg"`) && html.includes('data-workflow=')))) {
       throw new Error(`Reader map ${slug} lost a base-prefixed link or implementation diagram`);
     }
     readFileSync(join(outputRoot, "diagrams", `${diagram}.svg`));
@@ -141,7 +142,7 @@ try {
   const dependencyMap = dependency.match(/<section[^>]*data-reader-journey="dependency-decision-map"[\s\S]*?<\/section>/)?.[0] ?? "";
   const dependencyLinks = [...dependencyMap.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
   if (dependencyLinks.length !== 4 || dependencyLinks.some(href => !href.startsWith("/docs/")) ||
-      !dependency.includes('src="/docs/diagrams/lane-add-dep.svg"') ||
+      !dependency.includes('href="/docs/diagrams/lane-add-dep.svg"') || !dependency.includes('data-workflow="dependency"') ||
       !dependency.includes('id="one-time-inspection-nothing-adopted"') ||
       !dependency.includes('data-ca-table="stacked"') ||
       !dependency.includes('No package was downloaded or executed')) {
@@ -174,7 +175,61 @@ try {
   }
   process.stdout.write("Concepts: all three execution maps preserve 16 steps and /docs/ destinations.\n");
 
+  // C04: check the real model output, not just an imported component tag.
+  const c04 = [
+    ["autonomous-sprints", "sprint", 15], ["adding-a-dependency", "dependency", 4],
+    ["recording-adrs", "adr", 7], ["releasing-a-version", "release", 13],
+    ["opt-in-a-repo", "greenfield", 8], ["opt-in-a-repo", "brownfield", 9],
+  ];
+  for (const [slug, id, count] of c04) {
+    const html = readFileSync(join(outputRoot, "guides", slug, "index.html"), "utf8");
+    const map = html.match(new RegExp(`<ca-execution-map[^>]*id="(?:init-)?${id}(?:-execution-map)?"[\\s\\S]*?<\\/ca-execution-map>`))?.[0] ?? "";
+    const steps = [...map.matchAll(/data-map-step="([^"]+)"/g)];
+    const links = [...map.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+    if (steps.length !== count || !links.length || links.some(href => href.startsWith("/") && !href.startsWith("/docs/"))) {
+      throw new Error(`C04 ${id} lost its full ordered text or a base-prefixed destination`);
+    }
+  }
+  const routes = readFileSync(join(outputRoot, "concepts", "workflow-routes", "index.html"), "utf8");
+  if ((routes.match(/data-workflow-link=/g) ?? []).length !== c04.length) throw new Error("Workflow comparison lost a route");
+  process.stdout.write("C04: all six workflow maps retain 56 stages and /docs/ destinations.\n");
+
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
+  for (const slug of ["smarts", "adrs", "checkpoints", "auditability"]) {
+    const html = readFileSync(join(outputRoot, "concepts", slug, "index.html"), "utf8");
+    const contract = {
+      smarts: ['data-smarts-lens="scalable"', 'data-decision-route="reconcile"', 'data-decision-route="sprint"'],
+      adrs: ['data-evidence-case="accepted"', 'data-evidence-case="verified"', 'data-evidence-case="stale"'],
+      checkpoints: ['data-checkpoint-step="sweep-verdict"', 'data-checkpoint-step="sweep-write"', 'data-checkpoint-step="sweep-return"'],
+      auditability: ['data-evidence-case="choice"', 'data-evidence-case="packet"'],
+    }[slug];
+    if (!contract.every(value => html.includes(value))) throw new Error(`C02 ${slug} lost its evidence content`);
+    for (const [, href] of html.matchAll(/href="(\/(?:concepts|guides|reference)\/[^"]*)"/g)) {
+      throw new Error(`C02 ${slug} link escaped the base: ${href}`);
+    }
+  }
+  process.stdout.write("C02: comparison, caller routes, ADR/audit views and seven-step checkpoint remain beneath /docs/.\n");
+
+  for (const slug of ["provenance-drift", "jit-context-injection", "persona-and-context"]) {
+    const html = readFileSync(join(outputRoot, "concepts", slug, "index.html"), "utf8");
+    if (slug === "persona-and-context") {
+      if (!html.includes('id="roles-task-handoff"') ||
+          (html.match(/data-map-step=/g) ?? []).length !== 16) {
+        throw new Error("C03 role separation lost the complete feature handoff");
+      }
+    } else if ((html.match(/data-context-case=/g) ?? []).length !== 4 ||
+               !html.includes('href="/docs/examples/context-observations.json"')) {
+      throw new Error(`C03 ${slug} lost its recorded helper evidence or data link`);
+    }
+    for (const [, href] of html.matchAll(/(?:href|src)="(\/(?:concepts|guides|reference|diagrams|examples)\/[^"]*)"/g)) {
+      throw new Error(`C03 ${slug} destination escaped the base: ${href}`);
+    }
+  }
+  const servedCapture = JSON.parse(readFileSync(join(outputRoot, "examples", "context-observations.json"), "utf8"));
+  const sourceCapture = JSON.parse(readFileSync(join(siteRoot, "src", "data", "context-examples.json"), "utf8"));
+  if (JSON.stringify(servedCapture) !== JSON.stringify(sourceCapture)) throw new Error("Context evidence endpoint differs from its capture");
+  process.stdout.write("C03: all recorded context cases, full role map and exact JSON evidence remain beneath /docs/.\n");
+
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
 }
