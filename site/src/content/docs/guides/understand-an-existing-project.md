@@ -86,3 +86,7 @@ appropriate re-scout or re-baseline procedure. Do not erase the context to silen
 The [context-creation reference](/reference/skills/context-creation/) owns the exact extraction
 contract. Academy [U04](/academy/u04-initialize-projects/) practices the distinct greenfield and
 brownfield routes after its earlier lessons; this guide does not change those prerequisites.
+
+## Follow the complete initialization route
+
+Open the [brownfield execution map](/guides/opt-in-a-repo/#brownfield-execution-map) to follow the command, owning skill and applicable roles from entry to initialized state. The other initialization route is an alternative, not a next phase.

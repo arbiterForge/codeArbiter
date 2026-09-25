@@ -12,6 +12,8 @@ journey:
   proof: "A fresh session shows the startup briefing, and doctor completes its harmless live-fire probe."
 ---
 
+import WorkflowMap from '../../../components/WorkflowMap.astro';
+
 import ReaderJourney from '../../../components/ReaderJourney.astro';
 
 export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -65,18 +67,26 @@ The plugin installs once, globally. Enabling enforcement is a per-repo step you 
 ]}
 />
 
-<details class="ca-implementation-view">
-  <summary>Implementation routing: commands, skills and agents</summary>
-<figure class="ca-diagram">
-  <img
-    src={`${baseUrl}/diagrams/lane-opt-in.svg`}
-    alt="The /ca:init lane in two rows: Commands (/ca:init, which forks to /ca:create-context for existing code or /ca:decompose for a new project) and Skills (create-context backs the first path, decompose the second). Two connectors fork from /ca:init, one to each path."
-    loading="lazy"
-    width="920"
-    height="190"
-  />
-  <figcaption>The <code>/ca:init</code> lane by piece type: commands (gold) and the skills behind them (violet). Init forks to one context-builder path: create-context for existing code, decompose for a new project.</figcaption>
-</figure>
+<details class="ca-implementation-view" id="initialization-routes">
+  <summary>Follow the initialization route that matches this repository</summary>
+  <p>These are alternatives, not consecutive phases. The greenfield interview creates project-planning documents; brownfield extraction derives context from existing code. Neither route ends in an implemented feature or a pull request.</p>
+  <details class="ca-implementation-view" id="greenfield-execution-map">
+
+<summary>New project: interview, three documents, initialization</summary>
+
+<WorkflowMap id="init-greenfield" workflow="greenfield" />
+
+</details>
+
+  <details class="ca-implementation-view" id="brownfield-execution-map">
+
+<summary>Existing code: six scouts, evidence, initialization</summary>
+
+<WorkflowMap id="init-brownfield" workflow="brownfield" />
+
+</details>
+
+  <p><a href={`${baseUrl}/diagrams/lane-opt-in.svg`}>Open the two-route diagram</a> · <a href={`${baseUrl}/diagrams/lane-init-greenfield.svg`}>Greenfield diagram</a> · <a href={`${baseUrl}/diagrams/lane-init-brownfield.svg`}>Brownfield diagram</a>. The same source-bound models drive these images and the reading views above.</p>
 </details>
 
 ## Know what completion means

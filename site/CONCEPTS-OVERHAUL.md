@@ -74,7 +74,21 @@ in its evidence; implemented does not mean verified, merged or released.
 
 ### C04: diagram propagation and final cross-surface review
 
-Status: NOT_STARTED. Depends on C01-C03.
+Status: IMPLEMENTED_PENDING_REVIEW on `docs/concepts-workflow-propagation`.
+C04 is a separate stacked review over the still-open C02/C03 PR #859. Its inspected
+parent head is `090773ec6aa98687cd7b207985cb29ebb8f9c8e1`; current main at discovery was
+`28f14f59f1a5e7231ee21d5f75d161ad1c51939a`. Do not call C02/C03 merged, merge the
+stack out of order, or close unperformed human validation by inference.
+
+Source tracing and the final cross-surface acceptance record are in
+`site/reviews/CONCEPTS-C04-SOURCES.md`. The new PR records exact final candidate,
+workflow and screenshot identities. All six route models and their guide/reference
+joins are implemented; external review, actual-candidate browser inspection and
+aggregate CI remain requirements, not claims made by this plan status.
+Broader screen-reader/cross-browser and moderated reader testing remain separately scoped.
+
+The owner closed historical issue #856. That issue state does not prove this slice
+implemented or verified; the source plan and its linked PR evidence retain those distinctions.
 
 - Apply the validated visual language to sprint, dependency, ADR, release and initialization diagrams, with each route traced independently.
 - Restore semantic coverage, not blindly identical PR endings: initialization can end in populated context, a read-only review in a verdict, and a spike in findings. Only actual delivery paths should end in commit/PR.

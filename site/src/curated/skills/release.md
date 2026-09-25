@@ -12,7 +12,7 @@ gates:
     when: after surfaces are updated, before the tag
     effect: the row's declared checks run in order and stop at the first failure; a check that mutates the working tree blocks, because a check is not allowed to be a fixer
   - gate: publication authorization
-    when: after the local tag is composed
+    when: at the qualifying hosted publication boundary
     effect: pushing the tag and creating the public release both wait for your explicit go-ahead — nothing about the tag composition authorizes publishing it
 ---
 
@@ -27,26 +27,37 @@ single-artifact repository and a monorepo without a repo-local variant.
 It resolves the last tag *within the selected target's own series* rather than using a bare
 `git describe`, because in a multi-artifact repository the nearest tag may belong to a sibling. It
 then derives the version bump from the Conventional Commits history in that target's payload, rolls
-the qualifying commits into the declared changelog, composes an annotated tag locally, and — only
-once you authorize it — pushes the tag and publishes it as a public release using that same
-changelog section as its notes.
+the qualifying commits into the declared changelog, prepares a reviewed release PR and stops. After merge and exact-head CI, the qualifying hosted
+publisher composes the tag in its isolated checkout and consumes explicit cohort-specific
+publication authority. No interactive local tag fallback is permitted.
 
 ## Phases
 
-1. Resolve the declared row for the target, scope the commit window to its payload, and confirm
-   the last tag belongs to its own series.
-2. Derive the version bump mechanically from that window, confirm it against every declared
-   manifest, and roll the qualifying commits into a new changelog section.
-3. Update the declared surfaces and run the row's declared pre-tag checks in order — check-only,
-   so one that mutates the tree stops the release.
-4. Compose the annotated tag locally and report the target, the version, the bump rationale, and
-   the tag — without publishing anything yet.
-5. On your explicit authorization, push the tag, create the public release from the same
-   changelog section, and read the result back to confirm it actually published.
+1. Resolve the declared row and target-scoped history, then derive the version through the
+   declared policy. Missing declarations, required notes and ambiguous selections remain stops.
+2. Update the declared surfaces, run ordered check-only pre-tag checks, and commit through
+   `commit-gate`. Report asset names and the reviewed hosted qualification path, then open the
+   release PR and stop this invocation. A local build is not a transferable publication payload.
+3. After the PR merges, the qualifying hosted publisher verifies the exact fetched default-branch
+   candidate and current green evidence. Qualify the declared inventory, classify existing tag
+   state, and compose/verify the annotated tag only in that hosted checkout.
+4. Consume explicit one-cohort publication permission, publish the verified identity and assets,
+   then read back the remote result. A declared protected publisher can consume the instruction
+   given to merge the already-reported release PR; green CI alone supplies no authority.
+5. When provenance is declared, retain its original receipt for a separate reviewed closeout PR.
+   Publication and a merged provenance record are distinct completion boundaries.
 
 ## Exits
 
-A completed run leaves a pushed tag and a confirmed, non-draft public release whose notes are
-exactly the changelog section composed earlier. Without your authorization, the tag and changelog
-stay staged locally and nothing leaves the repository. A project with no declared target file
-enters the back-fill lane instead, which proposes a row and writes nothing unconfirmed.
+Preparation ends at the release PR. A qualified hosted tag report without applicable publication
+authority leaves nothing published. After authorized publication, read-back must confirm the exact
+non-draft release and declared inventory. A declared provenance receipt remains pending until its
+separate PR merges; without a declared manifest, explicitly report the skip. Preserve evidence on
+partial failure instead of re-creating published tags or hiding an incomplete result.
+
+A project with no target file uses confirmed back-fill for a real run. A dry run only reports the
+proposal and locally evaluable derivation; it never fetches, executes declared checks, writes,
+commits, tags or publishes. See [the release guide](/guides/releasing-a-version/) and its
+[execution map](/guides/releasing-a-version/#execution-map) for the complete human handoff.
+
+The [workflow comparison](/concepts/workflow-routes/) distinguishes this publication route from feature delivery and initialization.

@@ -49,3 +49,5 @@ Decision log entry appended — Decided by: dev@example.com
 
 Recording a decision you've already made. If the question is which option to pick, that's
 `/ca:reconcile`; if you just want to know an ADR's health, that's `/ca:adr-status`.
+
+For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/recording-adrs/) and [Compare workflow routes](/concepts/workflow-routes/).

@@ -7,12 +7,12 @@ gates:
     effect: the target is looked up in the project's declared release-targets file; an unrecognised or ambiguous name stops rather than being resolved to a guess
   - gate: version derivation
     when: before a tag is composed
-    effect: the SemVer bump is computed mechanically from Conventional Commits in the target's own payload — there is no way to supply a version by hand
+    effect: the bump under the declared version policy is computed mechanically from Conventional Commits in the target's own payload — there is no way to supply a version by hand
   - gate: changelog completeness
     when: same phase as version derivation
-    effect: every feat/fix/perf commit in the release window must carry its own changelog note; a missing one blocks rather than being auto-filled
+    effect: every bumping commit in the release window must carry its own changelog note; a missing one blocks rather than being auto-filled
   - gate: publish authorization
-    when: after the tag is composed locally
+    when: after the qualifying hosted tag report or its narrowly authorized release-PR handoff
     effect: the tag and the GitHub Release publish together, and only once you explicitly say to
 ---
 
@@ -30,9 +30,11 @@ earns (a breaking change beats a feature, a feature beats a fix). The window is 
 target, so a sibling's commit can never bump this one or land in its changelog. The changelog
 section is assembled the same mechanical way, pulled from commit footers rather than freehand
 summary, and a commit that should have carried one but didn't is a hard stop rather than a gap
-silently papered over. Composing the tag locally and publishing it are two separate moments:
-nothing pushes to the remote or shows up as a GitHub Release until you explicitly authorize that
-second step.
+silently papered over. Preparation stops at a release PR. Only after that PR merges and its exact merged commit passes
+required checks can a qualifying hosted publisher compose the tag. Publication consumes explicit
+one-cohort permission, not CI success alone. A declared protected automatic publisher can consume
+the merge instruction given after the release-PR report and before merge; it must not ask twice
+for the same cohort or reuse that authority for a different candidate.
 
 ## Usage
 
@@ -58,18 +60,13 @@ your confirmation.
 ## Example
 
 ```text
-> /ca:release ca-codex
-
-Resolved target `ca-codex` from .codearbiter/release-targets.md.
-  tag series: ca-codex-v*   payload: plugins/ca-codex/
-Working tree clean. Branch: release/prep (not the default branch — OK).
-Last tag in this series: ca-codex-v0.2.4 (a sibling's v2.8.13 is ignored).
-Scanning 9 commits in the payload...
-Classification: 2 feat, 4 fix, 3 chore -> minor bump.
-Derived version: 0.3.0. Declared manifest plugins/ca-codex/.codex-plugin/plugin.json reads 0.2.4 — will update.
-Changelog: all 6 feat/fix commits carry a CHANGELOG: footer.
-Declared pre-tag checks: 2 ran, both clean, tree unchanged.
-Composed annotated tag ca-codex-v0.3.0 locally. Nothing pushed — authorize to publish.
+Illustrative report, not a captured release:
+Target: the selected project declaration.
+Derived identity and declared surfaces: reported.
+Release changes: committed through commit-gate.
+Asset names and hosted qualification path: reported.
+Next: release PR, owner decision, exact merged-head CI.
+No interactive tag composition or publication occurred.
 ```
 
 ## When to reach for it
@@ -77,3 +74,5 @@ Composed annotated tag ca-codex-v0.3.0 locally. Nothing pushed — authorize to 
 Reach for `/ca:release` once the target's branch is clean and its suite is green and you're ready to
 cut a version. Work still in progress lands through `/ca:feature` or `/ca:fix` first — a release
 aggregates what already passed, it doesn't chase down anything new.
+
+The [workflow comparison](/concepts/workflow-routes/) distinguishes this publication route from feature delivery and initialization.

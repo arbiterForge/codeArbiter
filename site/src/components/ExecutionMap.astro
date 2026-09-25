@@ -1,10 +1,12 @@
 ---
-import { featureMap, validateExecutionMap } from '../../scripts/execution-maps/model';
-import { renderChapterSvg } from '../../scripts/execution-maps/render';
-interface Props { id: string; initial?: string }
-const { id, initial = 'define' } = Astro.props;
+import { featureMap, validateExecutionMap, type ExecutionMap as Model } from '../../scripts/execution-maps/model';
+import { renderChapterSvg, chapterOffset } from '../../scripts/execution-maps/render';
+interface Props { id: string; initial?: string; model?: Model; asset?: string; label?: string; limits?: string }
+const { id, model = featureMap, asset = 'lane-feature.svg', label = 'Feature execution map', limits } = Astro.props;
+const initial = Astro.props.initial ?? model.chapters[0]?.id;
 if (!/^[a-z][a-z0-9-]*$/.test(id)) throw new Error('ExecutionMap requires a stable, unique ID');
-const map = featureMap;
+const map = model;
+if (!/^[a-z0-9-]+\.svg$/.test(asset)) throw new Error('Invalid diagram asset');
 const errors = validateExecutionMap(map);
 if (errors.length) throw new Error(errors.join('; '));
 if (!map.chapters.some(chapter => chapter.id === initial)) throw new Error('Unknown initial chapter');
@@ -12,7 +14,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const sourceUrl = (key: string) => `https://github.com/arbiterForge/codeArbiter/blob/${map.reviewedAt}/${map.sources[key].path}`;
 const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
 ---
-<ca-execution-map class="ca-execution-map not-content" id={id} data-initial={initial} aria-label="Feature execution map">
+<ca-execution-map class="ca-execution-map not-content" id={id} data-initial={initial} aria-label={label}>
   <header class="ca-execution-map__header">
     <p class="ca-eyebrow">Follow the work, not a catalog</p>
     <h3>{map.title}</h3>
@@ -32,28 +34,28 @@ const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
       <h4 id={`${id}-${chapter.id}-title`}>{chapter.title}</h4>
       <p>{chapter.question}</p>
     </header>
-    <div class="ca-execution-map__plot" aria-hidden="true" data-pagefind-ignore="all" set:html={renderChapterSvg(chapter, `${id}-${chapter.id}`, chapterIndex * 4)} />
-    <ol class="ca-execution-map__reading" start={chapterIndex * 4 + 1} role="list" data-ca-layout="peers">
+    <div class="ca-execution-map__plot" aria-hidden="true" data-pagefind-ignore="all" set:html={renderChapterSvg(chapter, `${id}-${chapter.id}`, chapterOffset(map, chapterIndex))} />
+    <ol class="ca-execution-map__reading" start={chapterOffset(map, chapterIndex) + 1} role="list" data-ca-layout="peers">
       {chapter.nodes.map((node, nodeIndex) => <li data-map-step={node.id} data-role={node.role}>
-        <div class="ca-execution-map__step-heading"><span class="ca-execution-map__number" aria-hidden="true">{String(chapterIndex * 4 + nodeIndex + 1).padStart(2, '0')}</span><span class="ca-execution-map__role">{node.role}{node.conditional && ' · if applicable'}</span></div>
+        <div class="ca-execution-map__step-heading"><span class="ca-execution-map__number" aria-hidden="true">{String(chapterOffset(map, chapterIndex) + nodeIndex + 1).padStart(2, '0')}</span><span class="ca-execution-map__role">{node.role}{node.conditional && ' · if applicable'}</span></div>
         <h5><a href={`${base}${node.href}`}>{node.title}</a></h5>
         <p>{node.detail}</p>
         <p class="ca-execution-map__result"><strong>Result:</strong> {node.output}</p>
         {node.checks && <details><summary>Inspect all six TDD phases</summary><ol>{node.checks.map(check => <li>{check}</li>)}</ol></details>}
         {chapter.edges[nodeIndex] && <p class="ca-execution-map__handoff"><strong>{chapter.edges[nodeIndex].label} →</strong> {chapter.edges[nodeIndex].detail}</p>}
-        <a class="ca-execution-map__source" href={sourceUrl(node.source)}>Source for step {chapterIndex * 4 + nodeIndex + 1}</a>
+        <a class="ca-execution-map__source" href={sourceUrl(node.source)}>Source for step {chapterOffset(map, chapterIndex) + nodeIndex + 1}</a>
       </li>)}
     </ol>
     <p class="ca-execution-map__boundary"><strong>Before continuing:</strong> {chapter.output}</p>
     <details class="ca-execution-map__returns"><summary>Continuations, returns and repeat paths</summary>
       <ul>{map.alternatives.filter(edge => chapter.nodes.some(node => node.id === edge.from)).map(edge => <li><strong>{edge.label}.</strong> {edge.detail} <span>Next: {allNodes.find(node => node.id === edge.to)?.title}.</span> <a href={sourceUrl(edge.source)}>Owning contract</a></li>)}</ul>
-      {chapter.id === 'deliver' && <p>{map.outcome}</p>}
+      {chapterIndex === map.chapters.length - 1 && <p>{map.outcome}</p>}
     </details>
   </section>)}
   <footer>
     <p><strong>Actual endpoint:</strong> {map.outcome}</p>
     <p>Command labels use Claude Code spelling for the illustrated route. Codex and Pi use their own entries; shared names do not establish equal execution or authority support. <a href={`${base}/guides/review-artifacts/#check-your-hosts-authority-capability`}>Check the installed-host boundary.</a></p>
-    <details><summary>Source identity and diagram limits</summary><p>Reviewed source: <code>{map.reviewedAt}</code>. The numbered stages explain one ordinary success path. The return notes retain task retries, scope repetition and caller ownership. Optional reviewers depend on the changed paths. Existing Markdown, small-lane and sprint paths retain their separate contracts.</p><p><a href={`${base}/diagrams/lane-feature.svg`}>Open the complete three-row diagram</a>. The reading view and image are generated from the same editorial map. They neither run tools nor record approvals.</p></details>
+    <details><summary>Source identity and diagram limits</summary><p>Reviewed source: <code>{map.reviewedAt}</code>. The numbered stages explain one ordinary success path. The return notes retain the caller’s conditions and alternate paths. A conditional role participates only when its owning contract selects it. {limits ?? 'Existing Markdown, small-lane and sprint paths retain their separate contracts.'}</p><p><a href={`${base}/diagrams/${asset}`}>Open the complete three-row diagram</a>. The reading view and image are generated from the same editorial map. They neither run tools nor record approvals.</p></details>
   </footer>
 </ca-execution-map>
 <script>
@@ -72,7 +74,7 @@ const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
         if (selection !== 'all' && !sections.some(section => section.dataset.mapChapter === selection)) return;
         sections.forEach(section => { section.hidden = selection !== 'all' && section.dataset.mapChapter !== selection; });
         buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mapSelect === selection)));
-        status.textContent = selection === 'all' ? 'All four chapters. Read in numbered order.'
+        status.textContent = selection === 'all' ? `All ${sections.length} chapters. Read in numbered order.`
           : `Chapter ${sections.findIndex(section => section.dataset.mapChapter === selection) + 1} of ${sections.length}. Choose another chapter or read the whole path.`;
       };
       buttons.forEach(button => button.addEventListener('click', () => choose(button.dataset.mapSelect!), { signal: this.controller!.signal }));

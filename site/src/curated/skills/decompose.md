@@ -51,3 +51,5 @@ A completed run leaves the project initialized with populated foundational docum
 decision records outstanding, and the working draft directory removed — ready for feature work.
 It never writes a project document before all six layers are solid on disk, and it never closes
 while a draft directory or an unpromoted decision record remains.
+
+For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/plan-a-new-project/) and [Compare workflow routes](/concepts/workflow-routes/).

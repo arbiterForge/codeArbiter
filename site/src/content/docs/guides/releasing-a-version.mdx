@@ -11,6 +11,8 @@ journey:
   proof: "The declared target, derived version, exact tag, artifact inventory and published read-back identify the same release."
 ---
 
+import WorkflowMap from '../../../components/WorkflowMap.astro';
+
 The release lane belongs to **your project**, not only to codeArbiter maintainers. It reads
 `.codearbiter/release-targets.md` for target names, tag prefixes, version policy, manifests,
 changelog, payload and optional qualification/build declarations. It does not contain an
@@ -25,17 +27,19 @@ implicit list of codeArbiter plugins that every consumer must use.
 `app` is an illustrative target name. Use your declaration's actual name. You can also describe
 the release intent naturally; the same target and authorization requirements apply.
 
-<figure class="ca-diagram">
-  <img src="/diagrams/lane-release.svg" alt="Release work selects a declared target, derives a version, prepares verified artifacts and stops for publication authorization." loading="lazy" />
-  <figcaption>The release lane is configured by your project's declared target, not by codeArbiter's own plugin names.</figcaption>
-</figure>
+<details class="ca-implementation-view" id="execution-map">
+  <summary>Trace the release workflow from entry to its actual endpoint</summary>
+  <WorkflowMap id="release-execution-map" workflow="release" />
+</details>
+
+[Open the full three-row diagram](/diagrams/lane-release.svg).
 
 ## Where the targets come from
 
 A single-application repository might have this declaration, **only when these files and this
 payload really describe that repository**:
 
-```text
+```text wrap
 <!-- release-targets -->
 [app]
 prefix: v
@@ -61,7 +65,9 @@ Confirm the current repository root, non-default branch and clean working tree. 
 selected target's payload changes since its own last compatible release, current verification,
 unresolved questions and required `CHANGELOG:` footers. Use the declared version policy rather
 than assigning a desired version by hand. Publication additionally needs the relevant remote
-permissions and explicit authorization.
+permissions, a reviewed qualifying hosted publisher and explicit authorization. The release
+preparation must merge through a PR before tag composition. Missing publisher capability is a
+stop to address in a separate reviewed change, not permission for a local tag fallback.
 
 Do not change commit history merely to silence a footer or version error. Preserve the failure
 and correct it through the project's governed development procedure.
@@ -70,14 +76,16 @@ and correct it through the project's governed development procedure.
 
 Start with a read-only preview:
 
-```text
+```text wrap
 /ca:release --dry-run app
 ```
 
-The dry run performs full pre-flight and read-only version derivation, including target resolution,
-commit classification and required footer checks. It reports the selected row, derived version,
-rationale and blockers. It does **not** edit manifests or changelog, commit, tag, execute `pre-tag`
-checks, run `release-build`, create assets or publish. Those declarations are listed, not run.
+The dry run performs only the **read-only, locally evaluable** pre-flight and version derivation:
+target resolution, current local history, classification and required footer checks. It reports
+the selected row, derived version, rationale and locally detectable blockers. It does **not** run
+`git fetch`, `commit-gate`, the declared suite, artifact rebuilds or post-bump `pre-tag` checks.
+It does not edit manifests or changelog, create assets, compose a tag or publish. Declared commands
+are listed, not executed. Remote freshness and the unexecuted checks remain unverified.
 A clean dry run is not proof that the later build or publication will succeed.
 
 Review the report: is the target correct, does the payload exclude siblings, and does the version
@@ -88,7 +96,7 @@ minor increment; this illustrative classification is not a version to force onto
 
 When the preview and prerequisites are satisfactory, invoke the same target without `--dry-run`:
 
-```text
+```text wrap
 /ca:release app
 ```
 
@@ -101,26 +109,49 @@ Inspect the resulting diff and checks. Changes pass through the normal commit ga
 of a sibling's change from this target's changelog is deliberate when that sibling is outside the
 selected payload.
 
+Report the exact declared asset names and their reviewed hosted build or retained-cohort path.
+Do not turn a local build into publication input. Route the committed changes through the
+[ordinary PR procedure](/guides/review-and-ship/), report the intended publisher and STOP this
+invocation. The release PR must merge before the hosted tag phase can begin.
+
 ## 3. Compose the local tag
 
-The lane prepares the annotated tag in the selected namespace. Declared assets are qualified by
-the protected publisher, either through the declared build or a reviewed retained exact-head
-cohort with provenance-bound packages. Arbitrary build failures, changed tracked files, mismatched
-provenance and unexpected inventory are stops.
+“Local” here means **inside the qualifying hosted publisher's isolated checkout**, not your
+interactive repository. This phase starts only after the release PR merges. The hosted checkout
+must equal the fetched default-branch revision, carry the current release-surface changes, and
+have green exact-head evidence before the publisher's write job can proceed. The PR head and a
+previous green commit are not substitutes for that merged identity.
 
-A local tag is not publication. A matching tag that has not completed publication can be a resume
-case; do not create another identity merely because an earlier session ended.
+The publisher qualifies declared assets through its reviewed build path or a retained exact-head
+cohort with provenance-bound packages. It confirms declared filenames, candidate source and
+manifest versions before composing the annotated tag in the selected namespace. Arbitrary build
+failures, changed tracked files, mismatched provenance and unexpected inventory are stops.
+
+A tag in that checkout is still not publication. A matching tag whose publication is incomplete
+can be a resume case; do not invent another identity or re-create a published tag merely because
+a session or job ended.
 
 ## 4. Review and authorize publication
 
 Read the selected target, derived version, tag identity, exact changelog section, verified asset
-inventory and intended destination. Explicitly authorize the publication action. Requirements
-approval or sprint autonomy is not a blanket grant to publish a release.
+inventory and intended destination. Publication needs explicit, cohort-specific authority. For a **declared protected automatic
+post-CI publisher**, an explicit instruction to merge or complete the already-reported release
+PR, given after its report and before merge, supplies that one cohort's publication permission.
+Do not require the same approval a second time. This exception does not authorize a later cohort,
+a rebuilt candidate or publication merely because CI is green. In other paths, follow the explicit
+publication handoff. Requirements approval or sprint autonomy is not blanket release permission.
 
 After publication, inspect the remote tag and dereferenced commit, non-draft release metadata,
 asset names and available provenance. Require the published inventory to match the declared,
 qualified inventory. The target's `latest-eligible` policy controls eligibility for the
 repository-wide Latest label; do not infer it from which tag was created most recently.
+
+When the target declares a provenance manifest, retain the **original** remote tag receipt and
+hand it off in a separate receipt PR from a non-default branch. Publication can be live while that
+closeout remains pending; a branch-local ledger append does not finish it. Do not write into the
+hosted default-branch checkout or recapture a new identity to replace a missing original receipt.
+When no manifest is declared, report that this step is skipped. Preserve scratch evidence on
+partial failure; clean up only positively identified run-owned files after the required read-back.
 
 ## Common stops
 

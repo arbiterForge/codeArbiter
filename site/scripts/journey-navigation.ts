@@ -18,6 +18,7 @@ const group = (label: string, items: Array<Group | Link>, collapsed = true): Gro
 
 /** Concise sidebar labels; group membership and order share the Concepts directory. */
 const conceptLabels: Record<string, string> = {
+  'concepts/workflow-routes': 'Compare Workflow Routes',
   'concepts/gated-lanes': 'The Gated-Lane Model',
   'concepts/artifacts': 'Project Knowledge and Artifacts',
   'concepts/test-first': 'Test-First Evidence',

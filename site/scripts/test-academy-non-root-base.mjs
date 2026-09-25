@@ -93,7 +93,8 @@ try {
     const map = html.match(/<section[^>]*data-reader-journey=[\s\S]*?<\/section>/)?.[0];
     const links = [...(map ?? "").matchAll(/href="([^"]+)"/g)].map(match => match[1]);
     if (links.length !== 4 || links.some(href => !href.startsWith("/docs/")) ||
-        !html.includes(`src="/docs/diagrams/${diagram}.svg"`)) {
+        !(html.includes(`src="/docs/diagrams/${diagram}.svg"`) ||
+          (slug !== "feature-lane" && html.includes(`href="/docs/diagrams/${diagram}.svg"`) && html.includes('data-workflow=')))) {
       throw new Error(`Reader map ${slug} lost a base-prefixed link or implementation diagram`);
     }
     readFileSync(join(outputRoot, "diagrams", `${diagram}.svg`));
@@ -141,7 +142,7 @@ try {
   const dependencyMap = dependency.match(/<section[^>]*data-reader-journey="dependency-decision-map"[\s\S]*?<\/section>/)?.[0] ?? "";
   const dependencyLinks = [...dependencyMap.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
   if (dependencyLinks.length !== 4 || dependencyLinks.some(href => !href.startsWith("/docs/")) ||
-      !dependency.includes('src="/docs/diagrams/lane-add-dep.svg"') ||
+      !dependency.includes('href="/docs/diagrams/lane-add-dep.svg"') || !dependency.includes('data-workflow="dependency"') ||
       !dependency.includes('id="one-time-inspection-nothing-adopted"') ||
       !dependency.includes('data-ca-table="stacked"') ||
       !dependency.includes('No package was downloaded or executed')) {
@@ -173,6 +174,25 @@ try {
     }
   }
   process.stdout.write("Concepts: all three execution maps preserve 16 steps and /docs/ destinations.\n");
+
+  // C04: check the real model output, not just an imported component tag.
+  const c04 = [
+    ["autonomous-sprints", "sprint", 15], ["adding-a-dependency", "dependency", 4],
+    ["recording-adrs", "adr", 7], ["releasing-a-version", "release", 13],
+    ["opt-in-a-repo", "greenfield", 8], ["opt-in-a-repo", "brownfield", 9],
+  ];
+  for (const [slug, id, count] of c04) {
+    const html = readFileSync(join(outputRoot, "guides", slug, "index.html"), "utf8");
+    const map = html.match(new RegExp(`<ca-execution-map[^>]*id="(?:init-)?${id}(?:-execution-map)?"[\\s\\S]*?<\\/ca-execution-map>`))?.[0] ?? "";
+    const steps = [...map.matchAll(/data-map-step="([^"]+)"/g)];
+    const links = [...map.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+    if (steps.length !== count || !links.length || links.some(href => href.startsWith("/") && !href.startsWith("/docs/"))) {
+      throw new Error(`C04 ${id} lost its full ordered text or a base-prefixed destination`);
+    }
+  }
+  const routes = readFileSync(join(outputRoot, "concepts", "workflow-routes", "index.html"), "utf8");
+  if ((routes.match(/data-workflow-link=/g) ?? []).length !== c04.length) throw new Error("Workflow comparison lost a route");
+  process.stdout.write("C04: all six workflow maps retain 56 stages and /docs/ destinations.\n");
 
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
   for (const slug of ["smarts", "adrs", "checkpoints", "auditability"]) {

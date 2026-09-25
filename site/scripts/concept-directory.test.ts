@@ -32,6 +32,8 @@ describe('concept discovery', () => {
     const plan = readFileSync('CONCEPTS-OVERHAUL.md', 'utf8');
     for (const scope of ['C01:', 'C02:', 'C03:', 'C04:']) expect(plan).toContain(scope);
     expect(plan).toContain('not a native artifact-engine approval');
-    expect(plan).toContain('NOT_STARTED');
+    expect(plan).toContain('IMPLEMENTED_PENDING_REVIEW');
+    expect(plan).toContain('still-open C02/C03 PR #859');
+    expect(plan).toContain('moderated reader testing remain separately scoped');
   });
 });
