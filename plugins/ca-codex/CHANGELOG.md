@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.18] - 2026-09-25
+
+### Fixed
+
+- Accept null diagnostics from successful HTML intent validation without bypassing
+  invalid-spec, stale-read or issue-coverage checks; reject malformed collections.
+
 ## [0.13.17] - 2026-09-25
 
 ### Changed
