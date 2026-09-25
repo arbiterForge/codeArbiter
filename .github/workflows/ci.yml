@@ -21,7 +21,10 @@ on:
     # the same CI gate PRs targeting main get - otherwise the whole codex
     # campaign merges with zero CI. Drop this once the campaign branch is
     # closed out and merged to main.
-    branches: [main, feat/codex-support-m0]
+    # The approved Concepts continuation is reviewed as a separate stacked PR.
+    # Run the same gate on its parent branch; remove this exact campaign entry
+    # after the stack lands. No write permission or test selection is changed.
+    branches: [main, feat/codex-support-m0, docs/concepts-decisions-evidence]
   # Issue #383. main's ONLY required context is the `[GATE ] | [REPO] | Merge
   # readiness` aggregate below, and it merges on `strict: false` - so a green
   # aggregate computed against an OLDER base is enough, and two individually

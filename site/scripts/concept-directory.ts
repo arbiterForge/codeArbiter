@@ -1,6 +1,7 @@
 /** Site-only conceptual order. Page frontmatter owns titles and descriptions. */
 export const conceptGroups = [
   { id: 'work-and-records', title: 'Work and its records', question: 'How does an intention become controlled work?', items: [
+    { slug: 'concepts/workflow-routes', question: 'How do other workflows reach their actual endpoints?' },
     { slug: 'concepts/gated-lanes', question: 'Why does the route depend on the kind of change?' },
     { slug: 'concepts/artifacts', question: 'Which record answers which question?' },
     { slug: 'concepts/test-first', question: 'What makes a passing test meaningful evidence?' },

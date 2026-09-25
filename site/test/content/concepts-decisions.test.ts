@@ -16,7 +16,8 @@ describe('C02 source and evidence distinctions', () => {
     expect(validateDecisionEvidence()).toEqual([]);
     for (const source of Object.values(evidenceSources)) {
       expect(read(`../${source.path}`)).toContain(source.quote);
-      expect(baseline(source.path)).toContain(source.quote);
+      const revision = 'revision' in source ? source.revision : evidenceSourceRevision;
+      expect(execFileSync('git', ['show', `${revision}:${source.path}`], { encoding: 'utf8' })).toContain(source.quote);
     }
   });
   it('retains every former public section heading when the source moves to MDX', () => {

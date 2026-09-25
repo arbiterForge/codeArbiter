@@ -1,0 +1,109 @@
+---
+title: Compare Workflow Routes
+description: "Follow sprint, dependency, decision, release and initialization work through commands, skills and agents to their actual outputs and stopping points."
+journey:
+  level: Practitioner
+  time: "Trace the route you need"
+  outcome: "Identify an entry, its actual handoffs, what comes back, and the decision that still belongs to you."
+  prerequisites:
+    - Read the Concept Map's feature example
+  proof: "You can explain why an initialization ends in project context, a decision in a record, and a release crosses a PR and hosted-publication boundary."
+---
+
+import WorkflowDirectory from '../../../components/WorkflowDirectory.astro';
+
+**The same parts do not imply the same procedure.** A feature, a sprint, a decision and a
+release can all involve review, yet their callers, records and stopping points differ. Start
+with the result you need, then trace the handoff that produces it. Do not run every command
+in a diagram as a checklist.
+
+The [feature example](/concepts/) follows attended work through its task loop to an open PR.
+These maps extend that visual language to six source-traced routes. Each route has an
+ordered reading view and full three-row SVG generated from the same model. Choose **Read the
+procedure** for the operating instructions or **Trace the route** to open its first chapter.
+The two initialization maps live together in the repository-initialization chooser. The reading view
+retains the conditions and source links that a compact image cannot fit.
+
+## Choose by the result, not the inventory
+
+<WorkflowDirectory />
+
+## Keep your place in a route
+
+The chapter chooser gives the overview. **Next chapter** and **Previous chapter** let you
+continue without scrolling back through the explanation. **Link to this chapter** gives that
+chapter an ordinary browser address. Following it reveals the requested chapter and opens
+its enclosing disclosures, including the appropriate initialization alternative. Keyboard focus
+follows an explicit chapter link into the requested chapter, so you can continue from that
+point instead of returning to a control that is now hidden.
+
+Chapter buttons only change the reading view. Explicit chapter links change the address fragment,
+so browser Back can return to the earlier linked chapter. No bookmark or progress record is saved.
+Without JavaScript every chapter remains in the document; open its native disclosure to read it.
+Printing includes the full path, not only the selected chapter. Reaching the end of the diagram
+means you have read the route, not performed or approved the work.
+
+## Read the arrows, not only the rows
+
+**Commands** are entries or caller-owned procedures. **Skills** own procedural work.
+**Agents** perform bounded roles. Those are three participant types, not three consecutive
+phases. Read the numbered steps left to right in a chapter, then continue to the next chapter.
+A handoff can cross rows and return to its caller. The horizontal dotted row is a visual guide,
+not an executable connection among every item on that row.
+
+A dashed reuse arrow means the current caller performs an existing procedure without invoking
+its entry again. Conditional reviewers participate only when their source contract selects them.
+The return notes preserve task repetition, correction and user decisions. An empty role row is
+intentional when the owning route names no participant of that type. It is better to show the
+absence than invent an agent to make a diagram look balanced.
+
+The common arrowhead is centered on its final straight segment. It marks a directed handoff,
+not completion, success or approval. None of the diagram controls runs a command or records a
+workflow transition. On narrow screens, use the complete text path rather than shrinking the
+full image until its labels become unreadable.
+
+## Boundaries that change the route
+
+**A sprint is not an attended feature with fewer pauses.** Its initial HTML pair can use one
+qualified, host-observed pair transaction. Its approved plan goes directly to the task engine
+without the attended batch coordinator. Security, authority and other named hard gates still
+stop; autonomy ends at the PR, not a merge. Existing Markdown and later single-artifact changes
+retain their own contracts.
+
+**Dependency review is not installation permission.** The command sends adoption review directly
+to its reviewer, gets the verdict back, and then asks for the exact installation confirmation.
+One-time tool inspection has separate eligibility conditions; it does not silently become a
+project dependency. Neither route is execution isolation or an unconditional safety guarantee.
+
+**Acceptance is not delivery.** An ADR begins Proposed. Explicit acceptance, reviewed obligations,
+committed content and a subsequent acceptance binding establish a narrower claim than current
+implementation or verification. Status inspection and optional challenge are separate operations.
+
+**A release has a mandatory PR boundary.** The interactive preparation commits release surfaces,
+reports asset names and the declared publisher, opens the release PR and stops. Only a qualifying
+hosted publisher at the exact merged and verified default-branch commit can compose the tag.
+Publication still needs its applicable one-cohort authority, and any declared provenance closeout
+uses a separate receipt PR. A dry run neither executes that sequence nor proves its checks passed.
+
+**Initialization has alternatives, not a longer universal chain.** Greenfield work interviews you,
+produces the three architecture/planning documents, obtains their approval and populates context.
+Brownfield work requires six isolated scout reports, synthesizes source evidence, resolves or
+defers gaps, and binds the derived context to its sources. Neither should be drawn as completed
+implementation, and brownfield does not retroactively invent the greenfield roadmap.
+
+## Use the map to inspect a real handoff
+
+Name the selected route, the current artifact or source identity, the caller and its next action.
+Ask what comes back and which condition permits continuation. A stopped step needs its own
+missing fact, decision or fresh evidence; a later green status does not replace it.
+
+These diagrams are **current-source explanations**, not recorded executions or certifications
+of an installed release. Each map names its reviewed commit and owning sources. Consult the
+[installed-host authority boundary](/guides/review-artifacts/#check-your-hosts-authority-capability)
+before relying on typed behavior. Keep an unknown capability visible rather than substituting a
+different format or inventing a receipt.
+
+For the ordinary commit/PR handoff, use [Review and ship](/guides/review-and-ship/). For interrupted
+state, use [Resume and recover](/guides/resume-and-recover/). For the difference between accepted,
+implemented and verified decisions, read [ADRs and their evidence](/concepts/adrs/). The existing
+[Concept Map](/concepts/) remains the starting point for the connected product model.

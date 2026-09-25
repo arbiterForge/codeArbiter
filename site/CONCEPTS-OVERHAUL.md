@@ -74,7 +74,21 @@ in its evidence; implemented does not mean verified, merged or released.
 
 ### C04: diagram propagation and final cross-surface review
 
-Status: NOT_STARTED. Depends on C01-C03.
+Status: IMPLEMENTED_PENDING_REVIEW on `docs/concepts-workflow-propagation`.
+C04 is a separate stacked review over the still-open C02/C03 PR #859. Its inspected
+parent head is `090773ec6aa98687cd7b207985cb29ebb8f9c8e1`; current main at discovery was
+`28f14f59f1a5e7231ee21d5f75d161ad1c51939a`. Do not call C02/C03 merged, merge the
+stack out of order, or close unperformed human validation by inference.
+
+Source tracing and the final cross-surface acceptance record are in
+`site/reviews/CONCEPTS-C04-SOURCES.md`. The new PR records exact final candidate,
+workflow and screenshot identities. All six route models and their guide/reference
+joins are implemented; external review, actual-candidate browser inspection and
+aggregate CI remain requirements, not claims made by this plan status.
+Broader screen-reader/cross-browser and moderated reader testing remain separately scoped.
+
+The owner closed historical issue #856. That issue state does not prove this slice
+implemented or verified; the source plan and its linked PR evidence retain those distinctions.
 
 - Apply the validated visual language to sprint, dependency, ADR, release and initialization diagrams, with each route traced independently.
 - Restore semantic coverage, not blindly identical PR endings: initialization can end in populated context, a read-only review in a verdict, and a spike in findings. Only actual delivery paths should end in commit/PR.
@@ -119,3 +133,16 @@ No runtime, approval/gate weakening, host maturity promotion, release/tag manipu
 Revert a slice with its map data, renderer, generator changes, asset outputs, consumers and tests as one coherent unit. Preserve public routes and previous guide/mobile improvements. Do not revert valid publication receipts or independent runtime work to roll back a website.
 
 Before the next slice: read this plan, inspect the merged PR and fresh main, revalidate the owning contracts, and update only the relevant slice state with evidence. Do not reconstruct the program from conversation memory or silently expand its approval.
+
+### C04 continuation in PR #862
+
+The 2026-09-25 request "next slice same PR" retains #862 and adds the final reader
+handoff: direct route/chapter addresses, previous/next reading navigation and an
+explicit distinction between procedure selection and map selection. It also requires
+closure of the initial three browser failures and refreshed integration with parent
+#859. This remains within C04's diagram propagation and cross-surface acceptance,
+not a newly implied runtime or branding program.
+
+Implementation is recorded in the same source record and PR. Final-head website,
+repository CI, reviewed captures and any remaining parent dependency must be read
+from #862 before merge; neither older green runs nor this plan establish them.

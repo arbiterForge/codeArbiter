@@ -1,44 +1,164 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 360" role="img" data-diagram-system="ca-v2">
-  <title>Autonomous sprint lane</title>
-  <desc>One approved target, then governed plan-to-PR execution.</desc>
-  <defs>
-    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#090d12"/>
-      <stop offset="1" stop-color="#0e141c"/>
-    </linearGradient>
-    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-      <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
-    </pattern>
-    <marker id="arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto">
-      <path d="M0 0L9 4L0 8Z" fill="context-stroke"/>
-    </marker>
-  </defs>
-  <rect width="1120" height="360" rx="14" fill="url(#canvas)"/>
-  <rect width="1120" height="360" rx="14" fill="url(#grid)"/>
-  <rect x="1" y="1" width="1118" height="358" rx="13" fill="none" stroke="#3a4c60" stroke-width="2"/>
-  <text x="52" y="48" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="2" data-max-width="1044">AUTONOMOUS SPRINT LANE</text>
-<text x="52" y="78" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#f6f7f9" text-anchor="start" data-max-width="1044">One approved target, then governed plan-to-PR execution.</text>
-<rect x="52" y="112" width="313.3333333333333" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="70" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#f0b92f" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="1026">COMMAND</text>
-<rect x="68" y="160" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#f0b92f" stroke-width="1.5"/>
-<text x="208.66666666666666" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="271.3333333333333">/ca:sprint</text>
-<path d="M371.3333333333333 202 L395.3333333333333 202" fill="none" stroke="#f0b92f" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="403.3333333333333" y="112" width="313.3333333333333" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="421.3333333333333" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#7ab7ff" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="674">SKILLS</text>
-<rect x="419.3333333333333" y="160" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="560" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="271.3333333333333">writing-plans</text>
-<rect x="419.3333333333333" y="198" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="560" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-label-kind="annotation" data-max-width="271.3333333333333">subagent-driven-development</text>
-<rect x="419.3333333333333" y="236" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#7ab7ff" stroke-width="1.5"/>
-<text x="560" y="256" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="271.3333333333333">commit-gate</text>
-<path d="M722.6666666666666 202 L746.6666666666666 202" fill="none" stroke="#7ab7ff" stroke-width="2.25" marker-end="url(#arrow)"/>
-<rect x="754.6666666666666" y="112" width="313.3333333333333" height="180" rx="12" fill="#121a24" stroke="#3a4c60" stroke-width="2"/>
-<text x="772.6666666666666" y="140" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="750" fill="#58d68d" text-anchor="start" letter-spacing="1.6" data-label-kind="annotation" data-max-width="323">ROLES</text>
-<rect x="770.6666666666666" y="160" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#58d68d" stroke-width="1.5"/>
-<text x="911.3333333333333" y="180" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="271.3333333333333">author worker</text>
-<rect x="770.6666666666666" y="198" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#58d68d" stroke-width="1.5"/>
-<text x="911.3333333333333" y="218" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="271.3333333333333">reviewer fleet</text>
-<rect x="770.6666666666666" y="236" width="281.3333333333333" height="30" rx="6" fill="#17212d" stroke="#58d68d" stroke-width="1.5"/>
-<text x="911.3333333333333" y="256" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="271.3333333333333">branch finisher</text>
-<text x="1068" y="329" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1044">SMARTS calls are logged; hard gates remain true stops</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 2208" role="img" data-diagram-system="ca-v2" data-execution-map="sprint">
+<title>An approved sprint reaches a PR</title><desc>New full-lane sprint, normal premium path. The initial HTML pair uses its qualified one-reply transaction. There are no attended per-batch pauses; real hard gates still stop. This is a source-traced route, not a captured host run. Actual endpoint: An open PR and sprint receipt with current evidence, decisions and remaining work. The sprint never merges or discards the branch. Conditions and return paths remain in the companion reading view.</desc>
+<rect width="900" height="2208" fill="#090d12"/>
+<text x="24" y="35" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="852">SPRINT • COMMANDS / SKILLS / AGENTS</text>
+<text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Review the pair → execute within scope → inspect the PR</text>
+<svg x="0" y="94" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="review-pair">
+<title>Review the whole sprint</title><desc>command: /ca:sprint: select the work → skill: brainstorming: sprint definition → skill: writing-plans: linked draft → command: /ca:sprint: initial pair approval. Both exact artifact identities are approved and bound. A draft, a generic yes or an unobserved reply cannot begin execution.</desc>
+<defs><marker id="asset-sprint-review-pair-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Review the whole sprint</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="sprint-entry:sprint-spec" data-relation="sequence" d="M299 120H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-review-pair-arrow)"><title>define scope: The selected new sprint enters the definition phase.</title></path>
+<path data-map-edge="sprint-spec:sprint-plan" data-relation="sequence" d="M488 252H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-review-pair-arrow)"><title>draft pair: Planning may read this ready draft only through the initial sprint pair path.</title></path>
+<path data-map-edge="sprint-plan:sprint-approve" data-relation="return" d="M677 252H682V120H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-review-pair-arrow)"><title>review together: Present the complete pair and exact delegation terms before the host observes approval.</title></path>
+<g data-map-node="sprint-entry" data-role="command"><title>/ca:sprint: select the work. Resolve an existing exact-format pair before starting new work. This map follows a new HTML pair; existing Markdown retains its own contract.</title>
+<rect x="130" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="143" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">01</text>
+<text x="214.5" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:sprint</text>
+</g>
+<g data-map-node="sprint-spec" data-role="skill"><title>brainstorming: sprint definition. Capture the outcome, exclusions, priorities and hard constraints. Consult recorded intent before asking for approval.</title>
+<rect x="319" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="332" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">02</text>
+<text x="403.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">brainstorming</text>
+</g>
+<g data-map-node="sprint-plan" data-role="skill"><title>writing-plans: linked draft. For the initial pair, use the draft-for-pair path. Review criteria, tasks, tests, paths, dependencies and checkpoints together.</title>
+<rect x="508" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="521" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">03</text>
+<text x="592.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">writing-plans</text>
+</g>
+<g data-map-node="sprint-approve" data-role="command"><title>/ca:sprint: initial pair approval. The qualified adapter arms both definitions. Its exact reply names both artifacts and approve-only or delegate-methods. One observed reply commits approval and binding in a recoverable transaction.</title>
+<rect x="697" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="710" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">04</text>
+<text x="781.5" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Approve pair</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="586" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Build and verify each task</text>
+<svg x="0" y="620" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="execute-tasks">
+<title>Build and verify each task</title><desc>skill: subagent-driven-development: select → agent: Scope-selected author → skill: tdd inside authoring → skill: Task engine: specification review and verification. Each task has specification review and fresh verification. Typed REVIEW remains provisional until scope acceptance.</desc>
+<defs><marker id="asset-sprint-execute-tasks-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Build and verify each task</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="sprint-engine:sprint-author" data-relation="dispatch" d="M299 252H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-execute-tasks-arrow)"><title>eligible task: Select a fresh author for this bounded task.</title></path>
+<path data-map-edge="sprint-author:sprint-tdd" data-relation="dispatch" d="M488 384H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-execute-tasks-arrow)"><title>test first: TDD happens inside the task, not after all authoring is done.</title></path>
+<path data-map-edge="sprint-tdd:sprint-proof" data-relation="return" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-execute-tasks-arrow)"><title>independent proof: The task caller obtains the separate review and fresh verification.</title></path>
+<g data-map-node="sprint-engine" data-role="skill"><title>subagent-driven-development: select. The sprint hands the approved plan directly to the task engine rather than inserting executing-plans human checkpoints. Eligibility and current context tickets still constrain the task.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">05</text>
+<text x="214.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Task engine</text>
+</g>
+<g data-map-node="sprint-author" data-role="agent"><title>Scope-selected author. Dispatch the appropriate backend, frontend or infrastructure author with the task context. The author is not the reviewer who accepts its result.</title>
+<rect x="319" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7"/>
+<text x="332" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">06</text>
+<text x="403.5" y="392" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Fresh author</text>
+</g>
+<g data-map-node="sprint-tdd" data-role="skill"><title>tdd inside authoring. Derive obligations, demonstrate the intended RED failure, then satisfy the same assertion and the declared quality requirements.</title>
+<rect x="508" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="521" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">07</text>
+<text x="592.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">tdd</text>
+</g>
+<g data-map-node="sprint-proof" data-role="skill"><title>Task engine: specification review and verification. Inspect specification compliance and run the plan verification afresh. A self-reported author pass cannot supply required host authority.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">08</text>
+<text x="781.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Review +</text>
+<text x="781.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">verify</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1112" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Accept the combined scope</text>
+<svg x="0" y="1146" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="accept-scope">
+<title>Accept the combined scope</title><desc>agent: Combined quality reviewers → agent: finding-triage → skill: Task engine: current acceptance. Complete current scope acceptance, or a persisted block. Only independently eligible work may continue after a blocked task.</desc>
+<defs><marker id="asset-sprint-accept-scope-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Accept the combined scope</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="sprint-quality:sprint-triage" data-relation="sequence" d="M299 384H398.5V384H411.5" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-accept-scope-arrow)"><title>classify: The active caller retains responsibility for severity and scope.</title></path>
+<path data-map-edge="sprint-triage:sprint-accepted" data-relation="return" d="M582.5 384H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-accept-scope-arrow)"><title>no blocker: Only applicable current evidence permits acceptance.</title></path>
+<g data-map-node="sprint-quality" data-role="agent"><title>Combined quality reviewers. Review the combined diff once the tasks have their required proof. Security, dependency and migration reviewers are path-selected rather than an unconditional roster.</title>
+<rect x="130" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7" stroke-dasharray="5 4"/>
+<text x="143" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">09 · if applicable</text>
+<text x="214.5" y="381" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Applicable</text>
+<text x="214.5" y="403" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">reviewers</text>
+</g>
+<g data-map-node="sprint-triage" data-role="agent"><title>finding-triage. Classify findings and keep out-of-scope work separate. Correct the affected work and rerun invalidated evidence instead of redispatching to evade a gate.</title>
+<rect x="413.5" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7" stroke-dasharray="5 4"/>
+<text x="426.5" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">10 · if applicable</text>
+<text x="498" y="392" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">finding-triage</text>
+</g>
+<g data-map-node="sprint-accepted" data-role="skill"><title>Task engine: current acceptance. Use the installed authority and current typed identities to accept the required scope. Missing or stale authority remains a stop; the board cannot substitute for the plan.</title>
+<rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">11</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Accept scope</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="1638" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Commit and hand off the PR</text>
+<svg x="0" y="1672" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="handoff">
+<title>Commit and hand off the PR</title><desc>skill: commit-gate → skill: finishing-a-development-branch → command: /ca:pr procedure reused in place → agent: PR reviewers and verdict funnel. Inspect the actual PR head, observed checks, low-confidence decisions and unresolved findings. A merge requires its own authority.</desc>
+<defs><marker id="asset-sprint-handoff-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
+<rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Commit and hand off the PR</text>
+<rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
+<rect x="12" y="198" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 252H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="257" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#7ab7ff" text-anchor="start" data-max-width="91">Skills</text>
+<rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
+<path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
+<text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
+<path data-map-edge="sprint-commit:sprint-finish" data-relation="sequence" d="M299 252H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-handoff-arrow)"><title>current commit: The normal completion path reaches finalization.</title></path>
+<path data-map-edge="sprint-finish:sprint-pr" data-relation="reuse" d="M488 252H493V120H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="5 4" marker-end="url(#asset-sprint-handoff-arrow)"><title>reuse procedure: Run the existing procedure without invoking its entry again.</title></path>
+<path data-map-edge="sprint-pr:sprint-pr-review" data-relation="dispatch" d="M677 120H682V384H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-sprint-handoff-arrow)"><title>review before PR: Only the actual reviewer results support the final verdict.</title></path>
+<g data-map-node="sprint-commit" data-role="skill"><title>commit-gate. Plan completion returns through the normal permission, selected-file and fresh-evidence gate. Recovery is not additional commit or publication authority.</title>
+<rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">12</text>
+<text x="214.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">commit-gate</text>
+</g>
+<g data-map-node="sprint-finish" data-role="skill"><title>finishing-a-development-branch. Sprint mode selects Open a PR instead of asking for attended terminal choices. Merge and discard are excluded.</title>
+<rect x="319" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
+<text x="332" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">13</text>
+<text x="403.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Finish branch</text>
+</g>
+<g data-map-node="sprint-pr" data-role="command"><title>/ca:pr procedure reused in place. The finisher executes the PR procedure here; the command is not re-invoked. Existing caller ownership prevents a routing loop.</title>
+<rect x="508" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
+<text x="521" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">14</text>
+<text x="592.5" y="117" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:pr</text>
+<text x="592.5" y="139" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">procedure</text>
+</g>
+<g data-map-node="sprint-pr-review" data-role="agent"><title>PR reviewers and verdict funnel. Complete the applicable review and resolve blockers before opening. The sprint summary includes logged decisions, low-confidence calls and follow-ups.</title>
+<rect x="697" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7"/>
+<text x="710" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">15</text>
+<text x="781.5" y="381" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">PR reviewers</text>
+<text x="781.5" y="403" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">+ verdict</text>
+</g>
+<text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
+</svg>
+<text x="24" y="2164" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Open PR; merge is a separate decision.</text>
 </svg>

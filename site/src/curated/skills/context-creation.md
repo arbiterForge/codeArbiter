@@ -38,3 +38,5 @@ A completed run leaves every foundational project document populated and the pro
 initialized, ready for feature work. It never proceeds past the interview with an unresolved gap,
 and it refuses to run at all if the project is already initialized or has no real source to
 extract from.
+
+For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/understand-an-existing-project/) and [Compare workflow routes](/concepts/workflow-routes/).

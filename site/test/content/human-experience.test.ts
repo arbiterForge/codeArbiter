@@ -37,7 +37,7 @@ describe("human-operable product window", () => {
   });
 
   it("documents the current generic release selection and dry-run boundary", () => {
-    const guide = read("src/content/docs/guides/releasing-a-version.md");
+    const guide = read("src/content/docs/guides/releasing-a-version.mdx");
     expect(guide).toContain("/ca:release --dry-run");
     expect(guide).toContain("exactly one target");
     expect(guide).not.toContain("A bare `/ca:release` means `ca`");
@@ -79,12 +79,15 @@ describe("human-operable product window", () => {
     expect(read("src/components/HostViews.astro")).toContain("verification and review authority are not supported");
   });
 
-  it("separates the sprint review package from per-artifact approval and scope acceptance", () => {
+  it("separates initial sprint pair approval from single-artifact and scope acceptance", () => {
     const adapter = read("../core/pysrc/_approvallib.py");
     expect(adapter).toContain("PENDING_APPROVAL");
     expect(adapter).toContain('"reply": f"approve {artifact_id} {token}"');
     const guide = read("src/content/docs/guides/autonomous-sprints.mdx");
-    expect(guide).toContain("current typed adapter arms one artifact at a time");
+    expect(read("../core/surface/SPRINT.md")).toContain("commits approval plus plan binding in one recoverable native transaction.");
+    expect(guide).toContain("arm-sprint");
+    expect(guide).toContain("sprint-approve");
+    expect(guide).toContain("Later single-artifact changes");
     expect(guide).not.toContain("This is not two approvals.");
     expect(guide).not.toContain("record the accepted task state on disk");
     expect(guide).toContain("checkpoint scope together");

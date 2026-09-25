@@ -24,7 +24,7 @@ function text(x: number, y: number, value: string, width: number, size = 18,
 /** Render a chapter with left-to-right order crossing the three role rows. */
 export function renderChapterSvg(chapter: MapChapter, namespace: string, offset = 0): string {
   if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(namespace)) throw new Error('Invalid SVG namespace');
-  const nodes = chapter.nodes.map((node, index) => ({ node, x: 130 + index * 189, y: rows[node.role].y }));
+  const nodes = chapter.nodes.map((node, index) => ({ node, x: 130 + index * (chapter.nodes.length > 1 ? 567 / (chapter.nodes.length - 1) : 0), y: rows[node.role].y }));
   const content: string[] = [];
   for (const { y, title, color } of Object.values(rows)) {
     content.push(`<rect x="12" y="${y - 54}" width="876" height="108" rx="10" fill="#0e141c"/>`);
@@ -58,24 +58,54 @@ ${text(24, 443, 'Order → across rows. Full step names, results and conditions 
 </svg>`;
 }
 
-/** Keep the existing public image URL, now generated from the same data as the reader. */
-export function renderExecutionSvg(map: ExecutionMap): string {
+/** Labels for a whole-map asset, separate from its authoritative editorial content. */
+export interface MapPresentation { kicker: string; summary: string; endpoint: string }
+
+/** Shared numbering also works when a chapter has fewer than four stages. */
+export function chapterOffset(map: ExecutionMap, index: number): number {
+  return map.chapters.slice(0, index).reduce((count, chapter) => count + chapter.nodes.length, 0);
+}
+
+/** Keep public image URLs; the static image and ordered reading use the same model. */
+export function renderExecutionSvg(map: ExecutionMap, presentation?: MapPresentation): string {
   const failures = validateExecutionMap(map);
   if (failures.length) throw new Error(failures.join('; '));
   const height = 104 + map.chapters.length * (H + 70);
   const chapters = map.chapters.map((chapter, index) => {
     const y = 94 + index * (H + 70);
-    const plot = renderChapterSvg(chapter, `asset-${map.id}-${chapter.id}`, index * 4)
+    const plot = renderChapterSvg(chapter, `asset-${map.id}-${chapter.id}`, chapterOffset(map, index))
       .replace('<svg ', `<svg x="0" y="${y}" width="900" height="456" `);
     const next = map.chapters[index + 1];
-    const bridge = next ? `Continue ↓ ${next.title}` : 'Outcome: open PR. Merge and release require their own decisions.';
+    const bridge = next ? `Continue ↓ ${next.title}` : presentation?.endpoint ?? 'Outcome: open PR. Merge and release require their own decisions.';
     return plot + '\n' + text(24, y + H + 36, bridge, 852, 18, '#ffd568');
   });
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${height}" role="img" data-diagram-system="ca-v2" data-execution-map="${xml(map.id)}">
-<title>${xml(map.title)}</title><desc>${xml(map.boundary)} PR command is not re-invoked; finishing reuses its procedure. Task and scope returns are explained in the companion Concepts reading view.</desc>
+<title>${xml(map.title)}</title><desc>${xml(map.boundary + ' Actual endpoint: ' + map.outcome)} Conditions and return paths remain in the companion reading view.</desc>
 <rect width="900" height="${height}" fill="#090d12"/>
-${text(24, 35, 'FEATURE • COMMANDS / SKILLS / AGENTS', 852, 14, '#f0b92f', true)}
-${text(24, 70, 'Definition → task loop → scope acceptance → PR handoff', 852, 20)}
+${text(24, 35, presentation?.kicker ?? 'FEATURE • COMMANDS / SKILLS / AGENTS', 852, 14, '#f0b92f', true)}
+${text(24, 70, presentation?.summary ?? 'Definition → task loop → scope acceptance → PR handoff', 852, 20)}
 ${chapters.join('\n')}
+</svg>\n`;
+}
+
+/** Two initialization alternatives, deliberately without a connector between them. */
+export function renderAlternativeMaps(entries: Array<{ map: ExecutionMap; presentation: MapPresentation }>): string {
+  if (entries.length !== 2) throw new Error('Initialization requires two independent alternatives');
+  let y = 112;
+  const parts = entries.map(({ map, presentation }, index) => {
+    const height = 104 + map.chapters.length * (H + 70);
+    const diagram = renderExecutionSvg(map, presentation)
+      .replace('<svg ', `<svg x="0" y="${y + 42}" width="900" height="${height}" `);
+    const label = text(24, y + 20, `Alternative ${index + 1}: ${map.title}`, 852, 20, '#ffd568');
+    y += height + 82;
+    return label + '\n' + diagram;
+  });
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 ${y}" role="img" data-diagram-system="ca-v2" data-workflow-alternatives="initialization">
+<title>Initialize one repository: choose the matching route</title>
+<desc>Greenfield and brownfield are alternatives, not consecutive phases. Each has its own entry, scope and terminal result. Read the companion guide for conditions and all output details.</desc>
+<rect width="900" height="${y}" fill="#090d12"/>
+${text(24, 38, 'INITIALIZATION • TWO ALTERNATIVES, NOT ONE SEQUENCE', 852, 14, '#f0b92f', true)}
+${text(24, 74, 'New project: interview. Existing source: isolated evidence collection.', 852, 20)}
+${parts.join('\n')}
 </svg>\n`;
 }

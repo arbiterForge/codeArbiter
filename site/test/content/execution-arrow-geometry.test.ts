@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { featureMap } from '../../scripts/execution-maps/model';
 import { checkpointMap } from '../../scripts/execution-maps/checkpoint';
+import { workflows } from '../../scripts/execution-maps/workflows';
 import { renderChapterSvg } from '../../scripts/execution-maps/render';
 
 /** Verify the generated geometry, not just a screenshot's page-width bounds. */
 describe('execution-map arrow approaches', () => {
-  for (const map of [featureMap, checkpointMap]) {
+  for (const map of [featureMap, checkpointMap, ...workflows.map(workflow => workflow.map)]) {
     for (const chapter of map.chapters) it(`${map.id}/${chapter.id}: joins the arrow at its centre behind the tip`, () => {
       const svg = renderChapterSvg(chapter, `test-${map.id}-${chapter.id}`);
       const marker = svg.match(/<marker\b([^>]+)>/)?.[1] ?? '';
@@ -22,8 +23,10 @@ describe('execution-map arrow approaches', () => {
         // leaving visible separation from its vertical elbow.
         expect(Number(tip) - Number(elbow), edge).toBeGreaterThanOrEqual(13);
         expect(Number(elbow) - Number(x1), edge).toBeGreaterThanOrEqual(4);
-        const target = chapter.nodes.findIndex(node => node.id === edge.split(':')[1]);
-        expect(130 + target * 189 - Number(tip), edge).toBe(2);
+        const target = edge.split(':')[1];
+        const x = svg.match(new RegExp(`data-map-node="${target}"[\\s\\S]*?<rect x="([\\d.]+)"`))?.[1];
+        expect(x, edge).toBeDefined();
+        expect(Number(x) - Number(tip), edge).toBeCloseTo(2, 6);
       }
     });
   }

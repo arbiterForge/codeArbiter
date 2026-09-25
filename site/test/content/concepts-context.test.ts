@@ -119,7 +119,9 @@ describe('C03 teaching and historical boundaries', () => {
     const plan = read('CONCEPTS-OVERHAUL.md');
     expect(plan).toContain('C03 baseline'); expect(plan).toContain('/pull/859');
     expect(plan).toContain('### C04: diagram propagation');
-    expect(plan).toContain('Status: NOT_STARTED. Depends on C01-C03.');
+    expect(plan).toContain('Status: IMPLEMENTED_PENDING_REVIEW');
+    expect(plan).toContain('separate stacked review over the still-open C02/C03 PR #859');
+    expect(plan).toContain('aggregate CI remain requirements');
     expect(read('reviews/CONCEPTS-C03-SOURCES.md')).toContain('Existing C02 contradictions remain open');
   });
   it('aligns generated pointer semantics and user-space arrowheads across all assets', () => {

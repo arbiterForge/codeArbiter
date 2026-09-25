@@ -1,5 +1,6 @@
 import { featureMap } from './execution-maps/model';
-import { renderExecutionSvg } from './execution-maps/render';
+import { renderExecutionSvg, renderAlternativeMaps } from './execution-maps/render';
+import { getWorkflow } from './execution-maps/workflows';
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -172,65 +173,6 @@ function shell(title: string, desc: string, width: number, height: number, body:
 `;
 }
 
-type LaneColumn = { heading: string; tone: "gold" | "info" | "positive"; items: string[] };
-
-function laneDiagram(title: string, desc: string, columns: LaneColumn[], note: string): string {
-  const width = 1120;
-  const height = 360;
-  const gap = 38;
-  const outer = 52;
-  const columnWidth = (width - outer * 2 - gap * (columns.length - 1)) / columns.length;
-  const tones = { gold: C.gold, info: C.info, positive: C.positive };
-  const body: string[] = [
-    label(52, 48, title.toUpperCase(), {
-      size: 14,
-      family: "mono",
-      color: C.gold,
-      weight: 750,
-      letterSpacing: 2,
-    }),
-    label(52, 78, desc, { size: 18, color: C.white, weight: 700 }),
-  ];
-
-  columns.forEach((column, index) => {
-    const x = outer + index * (columnWidth + gap);
-    const tone = tones[column.tone];
-    body.push(`<rect x="${x}" y="112" width="${columnWidth}" height="180" rx="12" fill="${C.panel}" stroke="${C.lineStrong}" stroke-width="2"/>`);
-    body.push(label(x + 18, 140, column.heading.toUpperCase(), {
-      size: 12,
-      annotation: true,
-      family: "mono",
-      color: tone,
-      weight: 750,
-      letterSpacing: 1.6,
-    }));
-    column.items.forEach((item, itemIndex) => {
-      const itemY = 160 + itemIndex * 38;
-      body.push(`<rect x="${x + 16}" y="${itemY}" width="${columnWidth - 32}" height="30" rx="6" fill="${C.soft}" stroke="${tone}" stroke-width="1.5"/>`);
-      body.push(label(x + columnWidth / 2, itemY + 20, item, {
-        size: item.length > 25 ? 12 : 14,
-        annotation: item.length > 25,
-        family: "mono",
-        color: C.white,
-        weight: 650,
-        anchor: "middle",
-        maxWidth: columnWidth - 42,
-      }));
-    });
-    if (index < columns.length - 1) {
-      body.push(arrow(x + columnWidth + 6, 202, x + columnWidth + gap - 8, 202, tone));
-    }
-  });
-
-  body.push(label(width - 52, 329, note, {
-    size: 12,
-    annotation: true,
-    family: "mono",
-    color: C.muted,
-    anchor: "end",
-  }));
-  return shell(title, desc, width, height, body.join("\n"));
-}
 
 function horizontalFlow(
   title: string,
@@ -550,30 +492,20 @@ function commitGatePhases(): string {
   return shell(title, desc, 1230, 540, body.join("\n"));
 }
 
+/** Render each route from the same reviewed model as its HTML reading path. */
+function workflowAsset(id: string): string {
+  const definition = getWorkflow(id);
+  return renderExecutionSvg(definition.map, { kicker: `${id.toUpperCase()} • COMMANDS / SKILLS / AGENTS`, summary: definition.summary, endpoint: definition.endpoint });
+}
+
 const diagrams: Record<string, string> = {
   "activation-states.svg": activationStates(),
   "commit-gate-phases.svg": commitGatePhases(),
   "core-fanout.svg": coreFanout(),
   "four-tier-map.svg": fourTierMap(),
   "gate-model.svg": gateModel(),
-  "lane-add-dep.svg": laneDiagram(
-    "Dependency lane",
-    "Review the supply chain before installation.",
-    [
-      { heading: "Command", tone: "gold", items: ["/ca:add-dep"] },
-      { heading: "Agent", tone: "positive", items: ["dependency-reviewer"] },
-    ],
-    "license · provenance · vulnerability review must clear before install",
-  ),
-  "lane-adr.svg": laneDiagram(
-    "Decision lane",
-    "Author a durable decision, then inspect its health.",
-    [
-      { heading: "Commands", tone: "gold", items: ["/ca:adr", "/ca:adr-status"] },
-      { heading: "Skill", tone: "info", items: ["decision-lifecycle"] },
-    ],
-    "the ADR is numbered, dated, user-attributed, and governed",
-  ),
+  "lane-add-dep.svg": workflowAsset("dependency"),
+  "lane-adr.svg": workflowAsset("adr"),
   "lane-feature.svg": renderExecutionSvg(featureMap),
   "lane-flow.svg": horizontalFlow(
     "Gated lane flow",
@@ -587,35 +519,14 @@ const diagrams: Record<string, string> = {
     ],
     "never a direct write to the default branch",
   ),
-  "lane-opt-in.svg": laneDiagram(
-    "Repository opt-in",
-    "Choose exactly one initialization path.",
-    [
-      { heading: "New project", tone: "gold", items: ["/ca:init", "/ca:decompose"] },
-      { heading: "Existing code", tone: "gold", items: ["/ca:create-context"] },
-      { heading: "Skills", tone: "info", items: ["decompose", "context-creation"] },
-    ],
-    "one repository routes to one initialization path",
-  ),
-  "lane-release.svg": laneDiagram(
-    "Release lane",
-    "Derive a version, update the record, and clear commit-gate.",
-    [
-      { heading: "Command", tone: "gold", items: ["/ca:release"] },
-      { heading: "Skills", tone: "info", items: ["release", "commit-gate"] },
-    ],
-    "SemVer, changelog, commit, and annotated tag move together",
-  ),
-  "lane-sprint.svg": laneDiagram(
-    "Autonomous sprint lane",
-    "One approved target, then governed plan-to-PR execution.",
-    [
-      { heading: "Command", tone: "gold", items: ["/ca:sprint"] },
-      { heading: "Skills", tone: "info", items: ["writing-plans", "subagent-driven-development", "commit-gate"] },
-      { heading: "Roles", tone: "positive", items: ["author worker", "reviewer fleet", "branch finisher"] },
-    ],
-    "SMARTS calls are logged; hard gates remain true stops",
-  ),
+  "lane-opt-in.svg": renderAlternativeMaps(['greenfield', 'brownfield'].map(id => {
+    const definition = getWorkflow(id);
+    return { map: definition.map, presentation: { kicker: `${id.toUpperCase()} • COMMANDS / SKILLS / AGENTS`, summary: definition.summary, endpoint: definition.endpoint } };
+  })),
+  "lane-init-greenfield.svg": workflowAsset('greenfield'),
+  "lane-init-brownfield.svg": workflowAsset('brownfield'),
+  "lane-release.svg": workflowAsset("release"),
+  "lane-sprint.svg": workflowAsset("sprint"),
   "provenance-drift-flow.svg": provenanceFlow(),
   "sandbox-boundary.svg": sandboxBoundary(),
   "two-axis-model.svg": twoAxisModel(),

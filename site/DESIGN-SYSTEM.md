@@ -267,3 +267,47 @@ Test each state, actual text bounds, enlarged text, normal/forced colors, keyboa
 no-script and print paths, navigation/back and base-prefixed links. Inspect real rendered
 captures after the final build. Keep arrowheads in explicit user-space units with their tips
 centred on the path endpoint; their shafts must approach straight without crossing the head.
+
+
+## Workflow-specific execution maps
+
+The six C04 route definitions in `scripts/execution-maps/workflows.ts` own their
+ordered role nodes, handoffs, conditional paths, important results and actual endpoint.
+`WorkflowMap` supplies the same model to the existing `ExecutionMap` component;
+`renderExecutionSvg` uses it for retained public diagram URLs. A guide's four-step
+reader orientation is not replaced by the implementation map. Keep the map behind
+a native disclosure, with a full ordered reading path for narrow screens and no JavaScript.
+
+Chapter numbering is cumulative, not a hard-coded four-step offset. An empty role
+row can be meaningful: dependency review does not acquire an invented intervening
+skill just to fill the picture. Greenfield and brownfield are independent routes,
+not phases joined by a connector. Command labels also identify owning procedures;
+they do not tell the user to repeatedly invoke the same command at each node.
+
+The source record must identify simplifications, current-source versus installed
+capability, approval boundaries, review returns, publication prerequisites and
+real alternate exits. No diagram endpoint may imply release or PR creation where
+the owning route ends in context, a decision record or a dependency change.
+Keep known source contradictions separate from presentation repairs.
+
+Before publishing map changes, validate canonical excerpts, source identities,
+endpoints, continuous numbering, unchanged public URLs, all map selections and
+base-prefixed links. Inspect actual desktop/mobile captures, arrow endpoints,
+text bounds, expanded disclosures, no-script reading, doubled text, forced colors,
+print and useful full-text search results. Source excerpts and successful rendering
+are not proof of an installed workflow or a universal accessibility certification.
+
+### Execution-map reading addresses
+
+Procedure URLs and exact map URLs serve different reader tasks. Keep both in the
+workflow metadata; the route directory labels them separately. A chapter's explicit
+native permalink reveals its enclosing disclosures and selects that chapter. Add
+previous/next reading links at the end so a reader need not scroll back to the chooser.
+These links do not signal executed work or approval. Ordinary chooser buttons do not
+write history, storage or network requests; explicit links use native URL fragments.
+
+Resolve fragments as bounded literal element IDs within the owning map. Ignore
+invalid encoding and unrelated targets. Preserve all content without JavaScript,
+restore the complete path in print, and disconnect page-specific listeners during
+client navigation. Test direct load, reload, repeated navigation, Back, nested
+initialization alternatives, same-fragment links and keyboard focus against built HTML.
