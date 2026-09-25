@@ -4217,3 +4217,114 @@ describe("verified merge recovery", () => {
     expect(f.resets).toHaveLength(0); expect(f.state().calls).toBe(1);
   });
 });
+
+/** Retry feedback is evidence from one candidate, not a copy of the baseline. */
+describe("attributed retry context", () => {
+  const roots: string[] = [];
+  const saved = { samples: process.env.FARM_SAMPLES, temperature: process.env.FARM_TEMPERATURE };
+  afterEach(async () => {
+    for (const [key, value] of [["FARM_SAMPLES", saved.samples], ["FARM_TEMPERATURE", saved.temperature]]) {
+      if (value === undefined) delete process.env[key!]; else process.env[key!] = value;
+    }
+    for (const root of roots.splice(0)) await fsRm(root, { recursive: true, force: true });
+  });
+  async function fixture(mode: string, samples = 2, maxRetries = 1) {
+    process.env.FARM_SAMPLES = String(samples); process.env.FARM_TEMPERATURE = "0";
+    const id = `feedback-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const task: Task = { id, description: "retain useful implementation without misattribution",
+      filesInScope: ["src/impl.ts", "src/untouched.ts"], test: { path: "test.txt" },
+      gate: { commands: ["fixture gate"] }, maxRetries };
+    const wt = path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+    roots.push(wt, wt + "__s0", wt + "__s1");
+    const prompts: string[] = [], calls = new Map<string, number>();
+    const seed = async (dir: string) => {
+      await fsMkdir(path.join(dir, "src"), { recursive: true });
+      await fsWriteFile(path.join(dir, "test.txt"), "IMMUTABLE TEST\n");
+      await fsWriteFile(path.join(dir, "src/impl.ts"), "BASELINE IMPLEMENTATION\n");
+      await fsWriteFile(path.join(dir, "src/untouched.ts"), "UNTOUCHED BASELINE\n");
+    };
+    const deps: RunTaskDeps = {
+      prepareWorktree: async (_branch, dir) => { await seed(dir); return null; },
+      resetWorktree: seed,
+      fileHash: async file => fsReadFile(file, "utf8").catch(() => null),
+      checkDrift: async dir => {
+        if (mode === "drift-throw" && (calls.get(dir) ?? 0) === 1) throw new Error("fixture drift read failed");
+        return [];
+      },
+      runGate: async dir => {
+        if ((calls.get(dir) ?? 0) !== 1) return { ok: true };
+        if (mode === "gate-throw") throw new Error("fixture gate launch failed");
+        return { ok: false, failed: "fixture gate", tail: "ordinary failed gate" };
+      },
+      antiGamingCheck: async () => ({ risk: "none" }), mutationCheck: async () => null,
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      worker: { async apply(ctx) {
+        prompts.push(ctx.prompt);
+        const round = (calls.get(ctx.cwd) ?? 0) + 1; calls.set(ctx.cwd, round);
+        const index = Number(ctx.cwd.match(/__s(\d+)$/)?.[1] ?? 0);
+        const empty = round === 1 && (mode === "no-output" || mode === "select-partial" && index === 0);
+        if (!empty) await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"),
+          `CANDIDATE-${index}\nOPENAI_API_KEY=synthetic-feedback-secret\n`);
+        const filesWritten = empty ? [] : ["src/impl.ts"];
+        const usage = { promptTokens: 7, completionTokens: 11 };
+        if (round === 1 && ["partial-worker", "select-partial", "no-output"].includes(mode))
+          return { ok: false, filesWritten, error: "later block refused", ...usage };
+        return { ok: true, filesWritten, ...usage };
+      } },
+    };
+    return { task, deps, wt, prompts, calls };
+  }
+  for (const mode of ["partial-worker", "gate-failed", "gate-throw", "drift-throw", "select-partial"]) {
+    it(`carries one candidate through ${mode} without replaying untouched source`, async () => {
+      const f = await fixture(mode);
+      const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+      expect(r.status).toBe("green"); expect(r.attempts).toBe(2);
+      expect(f.prompts).toHaveLength(4);
+      expect(r.promptTokens).toBe(28); expect(r.completionTokens).toBe(44);
+      const retry = f.prompts[2];
+      expect(retry).toContain("UNTOUCHED BASELINE");
+      const prior = retry.split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+      expect(prior).toContain(mode === "select-partial" ? "CANDIDATE-1" : "CANDIDATE-0");
+      expect(prior).not.toContain("UNTOUCHED BASELINE");
+      expect(prior).not.toContain("BASELINE IMPLEMENTATION");
+      expect(prior).not.toContain("synthetic-feedback-secret"); expect(prior).toContain("[REDACTED");
+      expect(prior).not.toContain("FAILED the gate");
+      expect(await fsReadFile(path.join(f.wt, "test.txt"), "utf8")).toBe("IMMUTABLE TEST\n");
+      expect(await fsReadFile(path.join(f.wt, "src/untouched.ts"), "utf8")).toBe("UNTOUCHED BASELINE\n");
+    });
+  }
+  it("filters the single-worker retry against the same reported write set", async () => {
+    const f = await fixture("partial-worker", 1);
+    const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+    expect(r.status).toBe("green"); expect(f.prompts).toHaveLength(2);
+    const prior = f.prompts[1].split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+    expect(prior).toContain("CANDIDATE-0"); expect(prior).not.toContain("UNTOUCHED BASELINE");
+    expect(r.promptTokens).toBe(14);
+  });
+  it.each(["gate-throw", "drift-throw"])("retains the last written-file list on terminal %s", async mode => {
+    const f = await fixture(mode, 2, 0);
+    const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+    expect(r.status).toBe("escalate"); expect(f.prompts).toHaveLength(2);
+    expect(r.filesWritten).toEqual(["src/impl.ts"]);
+    expect(r.promptTokens).toBe(14); expect(r.completionTokens).toBe(22);
+  });
+  it("does not invent previous work from an empty failure", async () => {
+    const f = await fixture("no-output");
+    const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+    expect(r.status).toBe("green"); expect(f.prompts).toHaveLength(4);
+    expect(f.prompts[2]).not.toContain("Your PREVIOUS attempt");
+  });
+  it.each([[], ["src/untouched.ts"], ["src/impl.ts", "test.txt", "../outside", "secret.key"]].map(written => [written]))(
+    "capture accepts only reported in-scope implementation files: %j", async written => {
+      const f = await fixture("partial-worker");
+      await f.deps.prepareWorktree("fixture", f.wt, "fixture");
+      const captured = await captureInScope(f.wt, f.task, written);
+      expect(captured.map(file => file.path)).toEqual(written.filter(file => f.task.filesInScope.includes(file)));
+    });
+  it("keeps the legacy explicit snapshot helper when no write filter is supplied", async () => {
+    const f = await fixture("partial-worker");
+    await f.deps.prepareWorktree("fixture", f.wt, "fixture");
+    expect((await captureInScope(f.wt, f.task)).map(file => file.path)).toEqual(f.task.filesInScope);
+  });
+});

@@ -1257,9 +1257,11 @@ async function buildEnrichment(wt, t, priorInScope = []) {
   }
   return capInjected(injected, ENV.enrichMaxBytes);
 }
-async function captureInScope(wt, t) {
+async function captureInScope(wt, t, filesWritten = t.filesInScope) {
+  const written = new Set(filesWritten);
   const out = [];
   for (const f of t.filesInScope) {
+    if (!written.has(f)) continue;
     if (f === t.test.path) continue;
     if (isSecretBearingFilename(f)) continue;
     const src = await readWorktreeFile(wt, f);
@@ -1280,7 +1282,7 @@ function buildPrompt(t, injected, priorFailure, forbiddenExtra) {
   ] : [];
   const priorBlock = priorFiles.length ? [
     ``,
-    `Your PREVIOUS attempt FAILED the gate. Here is what you wrote last time \u2014 do NOT just repeat it; change it to fix the cause shown at the end:`,
+    `Your PREVIOUS attempt was not accepted. Its retained in-scope output follows; use the current baseline and failure below to decide what to keep or repair:`,
     ``,
     ...priorFiles.map(renderInjectedFile),
     ``
@@ -1922,9 +1924,10 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
       const ct = w.completionTokens ?? 0;
       base.promptTokens = pt;
       base.completionTokens = ct;
+      base.filesWritten = [...w.filesWritten];
       if (!w.ok) return {
         ...base,
-        filesWritten: w.filesWritten,
+        inScope: await captureInScope(wt, t, w.filesWritten),
         retryable: w.retryable,
         note: redactSecrets(`worker error: ${w.error}`),
         promptTokens: pt,
@@ -1935,14 +1938,15 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
       const testHashAfter = await deps.fileHash(path3.resolve(wt, t.test.path));
       if (testHashBefore !== null && testHashAfter !== testHashBefore)
         return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
+      base.inScope = await captureInScope(wt, t, w.filesWritten);
       const drift = await deps.checkDrift(wt, allowed);
       if (drift.length > 0)
-        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
+        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
       const gate = await deps.runGate(wt, t.gate.commands);
       if (!gate.ok)
-        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}
+        return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: redactSecrets(`failed: ${gate.failed}
 ${gate.tail}`), promptTokens: pt, completionTokens: ct };
-      const inScope = await captureInScope(wt, t);
+      const inScope = await captureInScope(wt, t, w.filesWritten);
       return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
     } catch (e) {
       return { ...base, note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
@@ -2087,7 +2091,7 @@ ${gate.tail}`) };
   };
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1 && !rebasedForRetry) {
-      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
+      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t, lastFilesWritten) : [];
       try {
         await deps.resetWorktree(wt);
       } catch (e) {
@@ -2330,7 +2334,7 @@ ${gate.tail}`) };
       });
       if (merged !== null) {
         if (merged.kind !== "retry") return integrationFailure(merged.note);
-        const previous = await captureInScope(wt, t);
+        const previous = await captureInScope(wt, t, worker.filesWritten);
         const reset = await deps.git(["reset", "--hard", merged.base], wt);
         if (reset.code !== 0) return integrationFailure(`merge recovery failed: task reset refused: ${reset.out}`);
         const clean = await deps.git(["clean", "-fd"], wt);

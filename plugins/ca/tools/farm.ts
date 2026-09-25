@@ -862,13 +862,18 @@ async function buildEnrichment(
 // restart blind. Reads only filesInScope (never the read-only test, never a
 // secret-bearing filename), through the shared reader; a not-yet-written file is
 // skipped. Out-of-scope drift is never in filesInScope, so it is never captured
-// (AC-F2.2).
+// (AC-F2.2). Runtime callers supply the reported write set: untouched baseline
+// files belong in current-source enrichment, not in previous-attempt evidence.
+// The default preserves the existing explicit snapshot helper.
 export async function captureInScope(
   wt: string,
   t: Task,
+  filesWritten: readonly string[] = t.filesInScope,
 ): Promise<Array<{ path: string; contents: string }>> {
+  const written = new Set(filesWritten);
   const out: Array<{ path: string; contents: string }> = [];
   for (const f of t.filesInScope) {
+    if (!written.has(f)) continue;
     if (f === t.test.path) continue;
     if (isSecretBearingFilename(f)) continue;
     const src = await readWorktreeFile(wt, f);
@@ -904,7 +909,7 @@ export function buildPrompt(
   const priorBlock = priorFiles.length
     ? [
         ``,
-        `Your PREVIOUS attempt FAILED the gate. Here is what you wrote last time — do NOT just repeat it; change it to fix the cause shown at the end:`,
+        `Your PREVIOUS attempt was not accepted. Its retained in-scope output follows; use the current baseline and failure below to decide what to keep or repair:`,
         ``,
         ...priorFiles.map(renderInjectedFile),
         ``,
@@ -2251,20 +2256,24 @@ async function bestOfN(
         // A later filesystem/gate exception must not erase known billed usage.
         base.promptTokens = pt;
         base.completionTokens = ct;
-        if (!w.ok) return { ...base, filesWritten: w.filesWritten, retryable: w.retryable,
+        base.filesWritten = [...w.filesWritten];
+        if (!w.ok) return { ...base, inScope: await captureInScope(wt, t, w.filesWritten), retryable: w.retryable,
           note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
         const sweep = postApplySweep(wt, w.filesWritten, forbidden);
         if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
         const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
         if (testHashBefore !== null && testHashAfter !== testHashBefore)
           return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
+        // Retain this candidate before a later qualification exception or teardown.
+        // This snapshot is retry context only; it cannot make the sample green.
+        base.inScope = await captureInScope(wt, t, w.filesWritten);
         const drift = await deps.checkDrift(wt, allowed);
         if (drift.length > 0)
-          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
         const gate = await deps.runGate(wt, t.gate.commands);
         if (!gate.ok)
-          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
-        const inScope = await captureInScope(wt, t);
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
+        const inScope = await captureInScope(wt, t, w.filesWritten);
         return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
       } catch (e) {
         // A sample that THROWS (fs/git error mid-flight) must still resolve to a
@@ -2487,7 +2496,7 @@ export async function runTask(
       // And only re-show output the worker ACTUALLY wrote: if the prior attempt
       // failed at the API level (no files written), captureInScope would return the
       // inherited baseline, which must not be mislabeled "your previous attempt".
-      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
+      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t, lastFilesWritten) : [];
       try {
         await deps.resetWorktree(wt); // never accumulate stale files
       } catch (e) {
@@ -2673,7 +2682,7 @@ export async function runTask(
         if (merged.kind !== "retry") return integrationFailure(merged.note);
         // Capture the actual qualified candidate BEFORE replacing its baseline.
         // This also preserves the selected best-of-N output after sample cleanup.
-        const previous = await captureInScope(wt, t);
+        const previous = await captureInScope(wt, t, worker.filesWritten);
         const reset = await deps.git(["reset", "--hard", merged.base], wt);
         if (reset.code !== 0) return integrationFailure(`merge recovery failed: task reset refused: ${reset.out}`);
         const clean = await deps.git(["clean", "-fd"], wt);
