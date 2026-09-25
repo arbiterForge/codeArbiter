@@ -9,7 +9,7 @@
 
 The outcome is a trustworthy first useful contribution in an unfamiliar fork, followed by lower repeated exploration without stale policy, lost human edits, weaker authority or excessive context. More files, passing text checks and an initialized marker are not success.
 
-This campaign has one requirements owner: `.codearbiter/specs/exercise-ready-brownfield.html`, to be added through the installed structured-artifact engine in this WIP. This guide owns campaign purpose, priorities, integration and evidence interpretation, not a second acceptance ledger. No implementation plan or product implementation is authorized by the request to record this campaign and draft/review its specification.
+This campaign has one requirements owner, `.codearbiter/specs/exercise-ready-brownfield.html`, and one implementation-plan owner, `.codearbiter/plans/exercise-ready-brownfield.html`. Both are engine-authored drafts prepared at the maintainer request. This guide owns campaign purpose, priorities, integration and evidence interpretation, not a second requirements or task ledger. Planning does not approve product implementation.
 
 ## Durable assessment and its limits
 
@@ -26,8 +26,8 @@ Historical observations: 125 provenance tests, 202 injection tests, eight wiring
 |---|---|---|
 | Main | `4187f1e22dc7da3cf755a2654bbf7ec268236126`, tree `ffbbae240f113d0936c0f52a2151597d935ab14c`; the delta from the assessment baseline is the Claude catalog change. | Source findings remain bound to the historical snapshot; verify relevant paths again before implementation. |
 | PR #870 | Merged into main as `4187f1e22dc7da3cf755a2654bbf7ec268236126`. | Channel correction is implemented, not remaining new feature work. Exact installed exercise qualification is still required. |
-| PR #854 | Open draft at `578065076e2e11a4e63f33256cb386a5cba1d7d2`; its newer D10 slice consolidates context-check under the skill and routes status drift directly. | Do not recreate the procedural wrapper. Revalidate/integrate the accepted owner before overlapping changes. Do not import unrelated farm or ADR work. |
-| PR #871 | Debug planning is recorded separately at `f76c457bd8ce56ba765aea16ec7c1b84eefe9d03`. | Coordinate the fix/debug context-handoff seam only. This campaign does not replace debug's case/evidence or regression-handoff contract. |
+| PR #854 | Open draft at `680cb03d39f91fd3e4a8ad968f0536a84dde9f0d`; its newer D10 slice consolidates context-check under the skill and routes status drift directly. | Do not recreate the procedural wrapper. Revalidate/integrate the accepted owner before overlapping changes. Do not import unrelated farm or ADR work. |
+| PR #871 | Debug planning is recorded separately at `2b6e5a5bcfdb5d4713ba6d8f655d9cc99bfd4827`. | Coordinate the fix/debug context-handoff seam only. This campaign does not replace debug's case/evidence or regression-handoff contract. |
 | Project Sources | September 1 portfolio and claims are historical bootstrap snapshots. | No current version, support or completed-work claim is derived from them. No organization-global canon is changed here. |
 
 References: [#870](https://github.com/arbiterForge/codeArbiter/pull/870), [#854](https://github.com/arbiterForge/codeArbiter/pull/854), [#871](https://github.com/arbiterForge/codeArbiter/pull/871). PR descriptions are attributed work reports; they do not independently qualify this campaign.
@@ -45,7 +45,7 @@ References: [#870](https://github.com/arbiterForge/codeArbiter/pull/870), [#854]
 | Slice | Unlocks | Dependency / completion | Rollback boundary |
 |---|---|---|---|
 | E0: exact installed capability | Trust in the intended exercise host | Cold installed artifact, observed hooks/isolation, real authorized contribution, explicit unsupported cells | Change only the selected channel/profile when approved; never bypass capability gates. |
-| E1: lifecycle and evidence | Safe initialization, partial recovery and refresh | File-specific validation; completion-last; six isolated logical coverage reports; preserved state and honest readiness | Revert only coupled lifecycle changes; do not clear valid initialized state. |
+| E1: lifecycle and evidence | Safe initialization, partial recovery and refresh | File-specific validation; completion-last; six isolated logical coverage reports for initial/full onboarding and affected assignments for incremental refresh; preserved state and honest readiness | Revert only coupled lifecycle changes; do not clear valid initialized state. |
 | E2: map-only reuse | Useful later-session context without new instruction files | Correct per-document and new-input handling, bounded retrieval, observed consumer delivery, relevant task outcomes | Revert the advisory selector without removing canonical project records. |
 | P1: governed pilot | Evidence for or against scoped native guidance | E0-E2 baseline; per-kind approval; exact host/load/lifecycle and maintenance-adjusted evaluation | Keep disabled or remove only unchanged owned views. Rejection is not failure to finish E0-E2. |
 | G1: greenfield reuse | Existing machinery serves real new boundaries | No invented structure; first-real-input acquisition and shared placement policy | Stop generation without undoing actual decisions or implementation. |
@@ -62,10 +62,18 @@ The single draft specification will choose reversible implementation bounds and 
 
 Finish E0-E2 on demonstrated correctness and first-contribution usefulness. Proceed with P1 only on better maintenance-adjusted task outcomes than map-only, with no authority, preservation or correctness regression. Publish scoped support claims, not universal parity or invented token/dollar savings.
 
-## 9. First specification and failure-review handoff
+## Historical first specification and failure-review handoff
 
-Draft WIP PR: [#872](https://github.com/arbiterForge/codeArbiter/pull/872). The single engine-authored specification is `SPEC-EXERCISE-BROWNFIELD`, revision 4, with 41 criteria, 84 scenarios and eight covered scope records. The first 32-criterion draft is preserved at the same path in commit `96f4a052ca057c2085c5241f6fcf7f5f616d5ce2`; it is not a second live specification.
+Draft WIP PR: [#872](https://github.com/arbiterForge/codeArbiter/pull/872). At the first handoff, the single engine-authored specification was `SPEC-EXERCISE-BROWNFIELD`, revision 4, with 41 criteria, 84 scenarios and eight covered scope records. The first 32-criterion draft is preserved at the same path in commit `96f4a052ca057c2085c5241f6fcf7f5f616d5ce2`; it is not a second live specification.
 
 [PREMORTEM.md](PREMORTEM.md) records 13 failure stories, ten tightened original criteria and nine added criteria. [authoring-evidence.json](authoring-evidence.json) binds native authoring/validation to the exact package and document identities. Structural and ready validation passed; approval validation remains false by design. All product verification obligations remain planned. This is author self-review, not independent review or execution approval.
 
-The new draft also makes legacy context writes explicitly bounded under existing helper owners, prevents a native eager-load freshness promise that the host cannot deliver, and provides criterion-level map-only/no-go acceptance. Independent semantic review and genuine maintainer approval precede implementation planning.
+The first draft attempted to bound legacy context writing and native loading claims. The subsequent correctness review below identifies the missing writer ownership and distinguishes a profile readiness milestone from the all-live-task commit gate. The maintainer then explicitly requested further review, amendments and an implementation plan; no execution approval was inferred.
+
+## Current correctness review and implementation plan
+
+[CORRECTNESS-REVIEW.md](CORRECTNESS-REVIEW.md) records thirteen findings and the corrections, including the reproduced installed HTML intent-consumer error. [plan-authoring-evidence.json](plan-authoring-evidence.json) binds the current validation. The [single draft plan](../../../.codearbiter/plans/exercise-ready-brownfield.html) contains 60 pending tasks in 11 checkpoints, with exact owner/generated paths, dependencies, verification and rollback. The current spec is revision 7, retains 41 criteria and now has 101 scenarios. Both artifacts are draft and unapproved.
+
+Core context work now explicitly includes the missing repository-context kind with bounded codecs for five canonical Markdown documents. It is a proposed per-kind enrollment, not an automatic migration or a new evidence database. The native-guidance pilot remains a later explicit decision. A no-go requires an approved amendment of the same plan to retire unstarted pilot implementation tasks; it cannot turn them into accepted implementation or bypass the normal commit gate.
+
+Next: review the exact draft pair, obtain its actual required approval, and begin CP-00. Do not infer execution permission from schema readiness, the planning request or this WIP PR.
