@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Plan: Claude Code verification and review authority adapter · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-CLAUDE-ARTIFACT-AUTHORITY</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/claude-artifact-authority.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">DRAFT · authority must be verified at use</span><h1>Plan: Claude Code verification and review authority adapter</h1><p class="deck">Engine profile and verification seam in parallel, then review seam, wiring with a real-engine end-to-end and a live long-running recording, then independent security review and docs.</p><div class="meta"><span>PLAN-CLAUDE-ARTIFACT-AUTHORITY</span><span>Revision 2 · schema 0.3.1</span><span>26 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-CLAUDE-ARTIFACT-AUTHORITY</div><div class="field"><span class="label">Binding mode</span>approved_source</div><div class="field"><span class="label">Normative sha256</span>176d5ae168e38a1736b01aa8475c22e2fd1038afaf0902429bcc78262ef7f2a2</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-001 -->
+<article class="record" id="T-001" data-ca-symbol="T-001" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-001">T-001</a><h3>Engine claude-review/0.1.0 profile</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-008">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-008</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>TestClaudeReviewProfile passes; cross-profile cases fail capture; Codex goldens unchanged.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract_test.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the profile and its tests.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add claude-review/0.1.0 to the producer profile enum with its own closed launch schema (DEC-06).</li><li>Accept spec_review/quality_review with either review profile, each only with its own launch shape; reject cross-profile shapes.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;-buildvcs=false&#34;,&#34;./...&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success. Existing Codex golden tests pass unchanged.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-001 -->
+
+<!-- CA:BEGIN:T-002 -->
+<article class="record" id="T-002" data-ca-symbol="T-002" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-002">T-002</a><h3>Engine version/compatibility for the new profile</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-008">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-008</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-001">T-001</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The version decision is recorded in the task evidence and enforced by a test.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>core/artifacts/schemas/common.schema.json</code></td></tr><tr><td>inspect</td><td><code>core/pysrc/_artifactlib.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract_test.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert any version bump.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Determine whether adding a profile requires a schema_version or protocol bump under the engine&#39;s compatibility rules; apply the bump across engine, schemas and _artifactlib only if required, with a test pinning the decision.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;-buildvcs=false&#34;,&#34;./...&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success. Existing Codex golden tests pass unchanged.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Adapter/engine version agreement holds.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-002 -->
+
+<!-- CA:BEGIN:T-003 -->
+<article class="record" id="T-003" data-ca-symbol="T-003" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-003">T-003</a><h3>Sanitized Claude hook payload fixtures</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-001">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-001</a></li><li><a href="../specs/claude-artifact-authority.html#AC-002">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-002</a></li><li><a href="../specs/claude-artifact-authority.html#AC-004">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004</a></li><li><a href="../specs/claude-artifact-authority.html#AC-006">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Fixtures load and their key sets match the recording.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>.github/scripts/fixtures/claude-hooks</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Delete the fixture directory and test.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Copy the recorded Claude Code 2.1.281 payloads into fixtures with session, prompt, tool_use and agent ids and all paths replaced by stable placeholders; keep every key and value shape.</li><li>Add a fixture-shape test asserting the recorded key sets per event.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_fixture_shapes</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-003 -->
+
+<!-- CA:BEGIN:T-004 -->
+<article class="record" id="T-004" data-ca-symbol="T-004" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-004">T-004</a><h3>Claude verifier authorization</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-001">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-001</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-003">T-003</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All four AC-001 scenarios pass on fixtures.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the Claude verifier branch.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add a Claude verifier PreToolUse path keyed by session_id + prompt_id + tool_use_id; deny compound wrappers, run_in_background and dangerouslyDisableSandbox; authorize silently.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_verifier_authorize</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-004 -->
+
+<!-- CA:BEGIN:T-005 -->
+<article class="record" id="T-005" data-ca-symbol="T-005" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-005">T-005</a><h3>Claude verifier corroboration</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-002">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-002</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-004">T-004</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Success publishes; failure and mismatched stdout never publish.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert corroboration.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Corroborate only on PostToolUse whose trimmed stdout is exactly one {request_id, state: COMPLETED} object with interrupted false; mark failed on PostToolUseFailure.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_verifier_corroborate</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-005 -->
+
+<!-- CA:BEGIN:T-006 -->
+<article class="record" id="T-006" data-ca-symbol="T-006" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-006">T-006</a><h3>Read-only reviewer agent, shadow check and exact launch</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-003">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-003</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-003">T-003</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All AC-003 scenarios pass; the agent file declares only Read, Grep, Glob.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>core/surface/agents/authority-reviewer.md</code></td></tr><tr><td>modify</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert agent file and launch branch.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Ship ca:authority-reviewer (tools Read, Grep, Glob; strict JSON output contract).</li><li>Claude arm_request returns {description, prompt, subagent_type, model}; refuse arming when .claude/agents, ~/.claude/agents or a CLI agent definition could shadow the reviewer name.</li><li>PreToolUse Agent authorizes only an exact envelope; deny and REJECT otherwise (fork, general-purpose, extra keys, changed model/prompt).</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_review_launch_exact</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-006 -->
+
+<!-- CA:BEGIN:T-007 -->
+<article class="record" id="T-007" data-ca-symbol="T-007" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-007">T-007</a><h3>Order-independent launch-to-child binding</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-004">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-006">T-006</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both arrival orders bind; missing agentId rejects.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert binding.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Record Agent PostToolUse agentId and resolvedModel against tool_use_id; record SubagentStart by agent_id; bind when both present with agent_type ca:authority-reviewer.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_review_child_binding</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-007 -->
+
+<!-- CA:BEGIN:T-008 -->
+<article class="record" id="T-008" data-ca-symbol="T-008" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-008">T-008</a><h3>Reviewer isolation from SendMessage</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-005">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-005</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-007">T-007</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both AC-005 scenarios pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert isolation check.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Reject the request on PreToolUse SendMessage targeting the bound reviewer before its first Stop; leave ordinary launches alone.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_reviewer_isolation</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-008 -->
+
+<!-- CA:BEGIN:T-009 -->
+<article class="record" id="T-009" data-ca-symbol="T-009" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-009">T-009</a><h3>First-Stop binding and strict decision</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-006">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006</a></li><li><a href="../specs/claude-artifact-authority.html#AC-007">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-007</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-007">T-007</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The recorded double-Stop sequence yields the first result; fenced output rejects.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert Stop handling.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Take the first SubagentStop by agent_id with stop_hook_active false and empty background_tasks; ignore later Stops; reject a failing first Stop.</li><li>Validate last_assistant_message as exactly one passing review-decision/0.1.0 object; no fence stripping.</li><li>Publish with producer profile claude-review/0.1.0 and the DEC-06 launch record.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_first_stop_binding</li><li>ClaudeAuthorityAdapterTest::test_strict_decision</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-009 -->
+
+<!-- CA:BEGIN:T-010 -->
+<article class="record" id="T-010" data-ca-symbol="T-010" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-010">T-010</a><h3>Claude hook routing, registration and output discipline</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-04</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-009">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-009</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-005">T-005</a></li><li><a href="#T-008">T-008</a></li><li><a href="#T-009">T-009</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Subprocess tests assert exact stdout per event; Codex tests unchanged.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-04</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/artifact-authority-hook.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca/hooks/hooks.json</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert hook routing and registration.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Route host claude to the Claude seams; empty-registry fast path; only PreToolUse may print a hookSpecificOutput deny.</li><li>Register PreToolUse (Agent, Bash, SendMessage), PostToolUse (Agent, Bash), PostToolUseFailure (Bash), SubagentStart, SubagentStop in plugins/ca/hooks/hooks.json.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeHookRegistrationTest</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-010 -->
+
+<!-- CA:BEGIN:T-011 -->
+<article class="record" id="T-011" data-ca-symbol="T-011" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-011">T-011</a><h3>End-to-end acceptance with an engine built from this tree</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-04</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-010">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-010</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-002">T-002</a></li><li><a href="#T-010">T-010</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Scope reaches ACCEPTED; each tamper variant prevents acceptance.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-04</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_artifact_authority_adapter.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the end-to-end test.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Build ca-artifact from core/artifacts into a temp installation; run arm -&gt; verifier hooks -&gt; publish -&gt; spec review hooks -&gt; publish -&gt; task-review, then quality review -&gt; accept-scope, on a temp repo; add the tamper variants.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_end_to_end_claude</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-011 -->
+
+<!-- CA:BEGIN:T-012 -->
+<article class="record" id="T-012" data-ca-symbol="T-012" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-012">T-012</a><h3>Live recording of a long-running tool-using reviewer (maintainer-approved)</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-04</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-004">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004</a></li><li><a href="../specs/claude-artifact-authority.html#AC-006">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-010">T-010</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The long-running fixture exists and passes; settings restored.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-04</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/fixtures/claude-hooks</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Delete the extra fixture.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>With explicit maintainer approval, reinstall the recording hook, run one reviewer that makes a tool call and outlives the parent turn, remove the recorder, and add the sanitized sequence as a fixture.</li><li>Confirm arrival order and subagent-originated tool-hook agent_id; adjust nothing in the spec unless the recording contradicts it (then raise a conflict).</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The new long-running fixture passes the binding and first-Stop tests.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>ClaudeAuthorityAdapterTest::test_review_child_binding</li><li>ClaudeAuthorityAdapterTest::test_first_stop_binding</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-012 -->
+
+<!-- CA:BEGIN:T-013 -->
+<article class="record" id="T-013" data-ca-symbol="T-013" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-013">T-013</a><h3>Independent security review of the Claude authority path</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-05</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-001">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-001</a></li><li><a href="../specs/claude-artifact-authority.html#AC-002">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-002</a></li><li><a href="../specs/claude-artifact-authority.html#AC-003">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-003</a></li><li><a href="../specs/claude-artifact-authority.html#AC-004">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004</a></li><li><a href="../specs/claude-artifact-authority.html#AC-005">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-005</a></li><li><a href="../specs/claude-artifact-authority.html#AC-006">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006</a></li><li><a href="../specs/claude-artifact-authority.html#AC-007">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-007</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-011">T-011</a></li><li><a href="#T-012">T-012</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>GO verdict or every blocking finding closed with a test.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-05</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>inspect</td><td><code>core/pysrc/artifact-authority-hook.py</code></td></tr><tr><td>inspect</td><td><code>core/artifacts/internal/observation/contract.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Review fixes revert with their tests.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Dispatch security-reviewer and a fresh adversarial reviewer over the diff; fix every blocking finding red-first.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_authority_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Full adapter suite green after fixes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;-buildvcs=false&#34;,&#34;./...&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success. Existing Codex golden tests pass unchanged.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-013 -->
+
+<!-- CA:BEGIN:T-014 -->
+<article class="record" id="T-014" data-ca-symbol="T-014" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-014">T-014</a><h3>Docs, projections and version surfaces</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-05</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/claude-artifact-authority.html#AC-011">SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-011</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-013">T-013</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All checks pass; no projection says Claude is fail-closed for verification or review.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-05</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/includes/artifacts.md</code></td></tr><tr><td>modify</td><td><code>docs/artifacts/ABSORPTION-REVIEW.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca/.claude-plugin/plugin.json</code></td></tr><tr><td>modify</td><td><code>CHANGELOG.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert docs and version edits.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>State Claude supports verification and review authority and Pi still stops; update AC-011/T-013 rows; regenerate projections; advance versions on all four surfaces.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-surface.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No projection drift.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/sync-core.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No vendored drift.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_badge_consistency.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Version surfaces agree.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-014 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-01 -->
+<article class="record" id="CP-01" data-ca-symbol="CP-01" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-01">CP-01</a><h3>Engine profile</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>claude-review/0.1.0 accepted with its own launch schema; Codex unchanged; version decision enforced.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-001">T-001</a></li><li><a href="#T-002">T-002</a></li></ul></div></article>
+<!-- CA:END:CP-01 -->
+
+<!-- CA:BEGIN:CP-02 -->
+<article class="record" id="CP-02" data-ca-symbol="CP-02" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-02">CP-02</a><h3>Verification seam</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>Claude verifier authorize/corroborate green on recorded-shape fixtures.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-003">T-003</a></li><li><a href="#T-004">T-004</a></li><li><a href="#T-005">T-005</a></li></ul></div></article>
+<!-- CA:END:CP-02 -->
+
+<!-- CA:BEGIN:CP-03 -->
+<article class="record" id="CP-03" data-ca-symbol="CP-03" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-03">CP-03</a><h3>Review seam</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-02">CP-02</a></li></ul></div><div class="field"><span class="label">Exit</span>Exact launch, binding, isolation, first-Stop and strict decision green.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-006">T-006</a></li><li><a href="#T-007">T-007</a></li><li><a href="#T-008">T-008</a></li><li><a href="#T-009">T-009</a></li></ul></div></article>
+<!-- CA:END:CP-03 -->
+
+<!-- CA:BEGIN:CP-04 -->
+<article class="record" id="CP-04" data-ca-symbol="CP-04" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-04">CP-04</a><h3>Wiring and end-to-end</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-01">CP-01</a></li><li><a href="#CP-03">CP-03</a></li></ul></div><div class="field"><span class="label">Exit</span>Hooks registered with exact output; real-engine end-to-end accepts; live long-running fixture recorded.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-010">T-010</a></li><li><a href="#T-011">T-011</a></li><li><a href="#T-012">T-012</a></li></ul></div></article>
+<!-- CA:END:CP-04 -->
+
+<!-- CA:BEGIN:CP-05 -->
+<article class="record" id="CP-05" data-ca-symbol="CP-05" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-05">CP-05</a><h3>Review, docs and release surfaces</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-04">CP-04</a></li></ul></div><div class="field"><span class="label">Exit</span>Independent security review GO; docs and versions in sync.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-013">T-013</a></li><li><a href="#T-014">T-014</a></li></ul></div></article>
+<!-- CA:END:CP-05 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-01 -->
+<article class="record" id="SEC-01" data-ca-symbol="SEC-01" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-01">SEC-01</a><h3>Shape</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>CP-01 (engine) and CP-02 (verification) are independent. CP-03 builds the review seam on CP-02&#39;s fixtures. CP-04 wires hooks and proves the path end to end against an engine built from this tree. CP-05 gates on an independent security review.</p><div class="refs">References: <a href="#SRC-01">SRC-01</a> </div></div></div></article>
+<!-- CA:END:SEC-01 -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-01 -->
+<article class="record" id="SRC-01" data-ca-symbol="SRC-01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-01">SRC-01</a><h3>_artifactauthoritylib.py</h3></div><div class="field"><span class="label">Locator</span>core/pysrc/_artifactauthoritylib.py</div><div class="field"><span class="label">Note</span>Codex adapter being extended.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/pysrc/_artifactauthoritylib.py</div></article>
+<!-- CA:END:SRC-01 -->
+
+<!-- CA:BEGIN:SRC-02 -->
+<article class="record" id="SRC-02" data-ca-symbol="SRC-02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-02">SRC-02</a><h3>Engine observation contract</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/observation/contract.go</div><div class="field"><span class="label">Note</span>Review profile pinning.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/artifacts/internal/observation/contract.go</div></article>
+<!-- CA:END:SRC-02 -->
+
+<!-- CA:BEGIN:SRC-03 -->
+<article class="record" id="SRC-03" data-ca-symbol="SRC-03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-03">SRC-03</a><h3>artifacts.md</h3></div><div class="field"><span class="label">Locator</span>core/surface/includes/artifacts.md:176-179</div><div class="field"><span class="label">Note</span>Codex-only statement.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/surface/includes/artifacts.md</div></article>
+<!-- CA:END:SRC-03 -->
+
+<!-- CA:BEGIN:SRC-04 -->
+<article class="record" id="SRC-04" data-ca-symbol="SRC-04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-04">SRC-04</a><h3>Recorded Claude Code 2.1.281 hook payloads</h3></div><div class="field"><span class="label">Locator</span>%TEMP%/ca-hook-probe/payloads</div><div class="field"><span class="label">Note</span>Real host payload shapes.</div><div class="field"><span class="label">Type</span>primary_research</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-04 -->
+
+<!-- CA:BEGIN:SRC-06 -->
+<article class="record" id="SRC-06" data-ca-symbol="SRC-06" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-06">SRC-06</a><h3>ABSORPTION-REVIEW</h3></div><div class="field"><span class="label">Locator</span>docs/artifacts/ABSORPTION-REVIEW.md</div><div class="field"><span class="label">Note</span>AC-011/T-013 rows.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/docs/artifacts/ABSORPTION-REVIEW.md</div></article>
+<!-- CA:END:SRC-06 -->
+
+<!-- CA:BEGIN:SRC-07 -->
+<article class="record" id="SRC-07" data-ca-symbol="SRC-07" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-07">SRC-07</a><h3>Claude hooks.json</h3></div><div class="field"><span class="label">Locator</span>plugins/ca/hooks/hooks.json</div><div class="field"><span class="label">Note</span>No authority registration today.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/plugins/ca/hooks/hooks.json</div></article>
+<!-- CA:END:SRC-07 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>6860daa3c974ae32cd9584d3e60e0a51c185a613</div><div class="field"><span class="label">Observed date</span>2026-09-24</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Execution must verify current receipt sources and binding.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 64ac37858eef0c2fd7109b22ad2e88d6ab026eb660bfdfa22c794bf4d5496575<br>Model SHA-256: 4fdfafc2ceb8ed54cdc194a5164ed2785fb3933a7511b95e6e2fcf4fa37734a1</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-CLAUDE-ARTIFACT-AUTHORITY",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {},
+    "tasks": {
+      "T-001": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-002": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-003": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-004": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-005": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-006": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-007": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-008": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-009": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-010": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-011": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-012": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-013": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-014": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "4fdfafc2ceb8ed54cdc194a5164ed2785fb3933a7511b95e6e2fcf4fa37734a1",
+    "normative_sha256": "64ac37858eef0c2fd7109b22ad2e88d6ab026eb660bfdfa22c794bf4d5496575",
+    "symbol_count": 26
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "6860daa3c974ae32cd9584d3e60e0a51c185a613",
+      "observed_date": "2026-09-24",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "claude-review/0.1.0 accepted with its own launch schema; Codex unchanged; version decision enforced.",
+        "id": "CP-01",
+        "tasks": [
+          "T-001",
+          "T-002"
+        ],
+        "title": "Engine profile"
+      },
+      {
+        "depends_on": [],
+        "exit": "Claude verifier authorize/corroborate green on recorded-shape fixtures.",
+        "id": "CP-02",
+        "tasks": [
+          "T-003",
+          "T-004",
+          "T-005"
+        ],
+        "title": "Verification seam"
+      },
+      {
+        "depends_on": [
+          "CP-02"
+        ],
+        "exit": "Exact launch, binding, isolation, first-Stop and strict decision green.",
+        "id": "CP-03",
+        "tasks": [
+          "T-006",
+          "T-007",
+          "T-008",
+          "T-009"
+        ],
+        "title": "Review seam"
+      },
+      {
+        "depends_on": [
+          "CP-01",
+          "CP-03"
+        ],
+        "exit": "Hooks registered with exact output; real-engine end-to-end accepts; live long-running fixture recorded.",
+        "id": "CP-04",
+        "tasks": [
+          "T-010",
+          "T-011",
+          "T-012"
+        ],
+        "title": "Wiring and end-to-end"
+      },
+      {
+        "depends_on": [
+          "CP-04"
+        ],
+        "exit": "Independent security review GO; docs and versions in sync.",
+        "id": "CP-05",
+        "tasks": [
+          "T-013",
+          "T-014"
+        ],
+        "title": "Review, docs and release surfaces"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-01"
+            ],
+            "text": "CP-01 (engine) and CP-02 (verification) are independent. CP-03 builds the review seam on CP-02's fixtures. CP-04 wires hooks and proves the path end to end against an engine built from this tree. CP-05 gates on an independent security review.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-01",
+        "title": "Shape"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-01",
+        "locator": "core/pysrc/_artifactauthoritylib.py",
+        "note": "Codex adapter being extended.",
+        "title": "_artifactauthoritylib.py",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/pysrc/_artifactauthoritylib.py"
+      },
+      {
+        "id": "SRC-02",
+        "locator": "core/artifacts/internal/observation/contract.go",
+        "note": "Review profile pinning.",
+        "title": "Engine observation contract",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/artifacts/internal/observation/contract.go"
+      },
+      {
+        "id": "SRC-03",
+        "locator": "core/surface/includes/artifacts.md:176-179",
+        "note": "Codex-only statement.",
+        "title": "artifacts.md",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/core/surface/includes/artifacts.md"
+      },
+      {
+        "id": "SRC-04",
+        "locator": "%TEMP%/ca-hook-probe/payloads",
+        "note": "Real host payload shapes.",
+        "title": "Recorded Claude Code 2.1.281 hook payloads",
+        "type": "primary_research",
+        "url": null
+      },
+      {
+        "id": "SRC-06",
+        "locator": "docs/artifacts/ABSORPTION-REVIEW.md",
+        "note": "AC-011/T-013 rows.",
+        "title": "ABSORPTION-REVIEW",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/docs/artifacts/ABSORPTION-REVIEW.md"
+      },
+      {
+        "id": "SRC-07",
+        "locator": "plugins/ca/hooks/hooks.json",
+        "note": "No authority registration today.",
+        "title": "Claude hooks.json",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/6860daa3c974ae32cd9584d3e60e0a51c185a613/plugins/ca/hooks/hooks.json"
+      }
+    ],
+    "spec_ref": {
+      "artifact_id": "SPEC-CLAUDE-ARTIFACT-AUTHORITY",
+      "binding_mode": "approved_source",
+      "normative_sha256": "176d5ae168e38a1736b01aa8475c22e2fd1038afaf0902429bcc78262ef7f2a2"
+    },
+    "summary": "Engine profile and verification seam in parallel, then review seam, wiring with a real-engine end-to-end and a live long-running recording, then independent security review and docs.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-008"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "TestClaudeReviewProfile passes; cross-profile cases fail capture; Codex goldens unchanged."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-001",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract_test.go"
+          }
+        ],
+        "rollback": "Revert the profile and its tests.",
+        "source_refs": [
+          "SRC-02"
+        ],
+        "steps": [
+          "Add claude-review/0.1.0 to the producer profile enum with its own closed launch schema (DEC-06).",
+          "Accept spec_review/quality_review with either review profile, each only with its own launch shape; reject cross-profile shapes."
+        ],
+        "title": "Engine claude-review/0.1.0 profile",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-buildvcs=false",
+              "./..."
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success. Existing Codex golden tests pass unchanged.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-008"
+        ],
+        "depends_on": [
+          "T-001"
+        ],
+        "done_when": [
+          "The version decision is recorded in the task evidence and enforced by a test."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-002",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "core/artifacts/schemas/common.schema.json"
+          },
+          {
+            "action": "inspect",
+            "path": "core/pysrc/_artifactlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract_test.go"
+          }
+        ],
+        "rollback": "Revert any version bump.",
+        "source_refs": [
+          "SRC-02"
+        ],
+        "steps": [
+          "Determine whether adding a profile requires a schema_version or protocol bump under the engine's compatibility rules; apply the bump across engine, schemas and _artifactlib only if required, with a test pinning the decision."
+        ],
+        "title": "Engine version/compatibility for the new profile",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-buildvcs=false",
+              "./..."
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success. Existing Codex golden tests pass unchanged.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_surface.py"
+            ],
+            "assertion": "Adapter/engine version agreement holds.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-001",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-002",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Fixtures load and their key sets match the recording."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-003",
+        "paths": [
+          {
+            "action": "create",
+            "path": ".github/scripts/fixtures/claude-hooks"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Delete the fixture directory and test.",
+        "source_refs": [
+          "SRC-04"
+        ],
+        "steps": [
+          "Copy the recorded Claude Code 2.1.281 payloads into fixtures with session, prompt, tool_use and agent ids and all paths replaced by stable placeholders; keep every key and value shape.",
+          "Add a fixture-shape test asserting the recorded key sets per event."
+        ],
+        "title": "Sanitized Claude hook payload fixtures",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_fixture_shapes"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-001"
+        ],
+        "depends_on": [
+          "T-003"
+        ],
+        "done_when": [
+          "All four AC-001 scenarios pass on fixtures."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-004",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert the Claude verifier branch.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-04"
+        ],
+        "steps": [
+          "Add a Claude verifier PreToolUse path keyed by session_id + prompt_id + tool_use_id; deny compound wrappers, run_in_background and dangerouslyDisableSandbox; authorize silently."
+        ],
+        "title": "Claude verifier authorization",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_verifier_authorize"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-002"
+        ],
+        "depends_on": [
+          "T-004"
+        ],
+        "done_when": [
+          "Success publishes; failure and mismatched stdout never publish."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-005",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert corroboration.",
+        "source_refs": [
+          "SRC-04"
+        ],
+        "steps": [
+          "Corroborate only on PostToolUse whose trimmed stdout is exactly one {request_id, state: COMPLETED} object with interrupted false; mark failed on PostToolUseFailure."
+        ],
+        "title": "Claude verifier corroboration",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_verifier_corroborate"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-003"
+        ],
+        "depends_on": [
+          "T-003"
+        ],
+        "done_when": [
+          "All AC-003 scenarios pass; the agent file declares only Read, Grep, Glob."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-006",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/surface/agents/authority-reviewer.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert agent file and launch branch.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-04"
+        ],
+        "steps": [
+          "Ship ca:authority-reviewer (tools Read, Grep, Glob; strict JSON output contract).",
+          "Claude arm_request returns {description, prompt, subagent_type, model}; refuse arming when .claude/agents, ~/.claude/agents or a CLI agent definition could shadow the reviewer name.",
+          "PreToolUse Agent authorizes only an exact envelope; deny and REJECT otherwise (fork, general-purpose, extra keys, changed model/prompt)."
+        ],
+        "title": "Read-only reviewer agent, shadow check and exact launch",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_review_launch_exact"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004"
+        ],
+        "depends_on": [
+          "T-006"
+        ],
+        "done_when": [
+          "Both arrival orders bind; missing agentId rejects."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-007",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert binding.",
+        "source_refs": [
+          "SRC-04"
+        ],
+        "steps": [
+          "Record Agent PostToolUse agentId and resolvedModel against tool_use_id; record SubagentStart by agent_id; bind when both present with agent_type ca:authority-reviewer."
+        ],
+        "title": "Order-independent launch-to-child binding",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_review_child_binding"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-005"
+        ],
+        "depends_on": [
+          "T-007"
+        ],
+        "done_when": [
+          "Both AC-005 scenarios pass."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-008",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert isolation check.",
+        "source_refs": [
+          "SRC-04"
+        ],
+        "steps": [
+          "Reject the request on PreToolUse SendMessage targeting the bound reviewer before its first Stop; leave ordinary launches alone."
+        ],
+        "title": "Reviewer isolation from SendMessage",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_reviewer_isolation"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-007"
+        ],
+        "depends_on": [
+          "T-007"
+        ],
+        "done_when": [
+          "The recorded double-Stop sequence yields the first result; fenced output rejects."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-009",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert Stop handling.",
+        "source_refs": [
+          "SRC-04"
+        ],
+        "steps": [
+          "Take the first SubagentStop by agent_id with stop_hook_active false and empty background_tasks; ignore later Stops; reject a failing first Stop.",
+          "Validate last_assistant_message as exactly one passing review-decision/0.1.0 object; no fence stripping.",
+          "Publish with producer profile claude-review/0.1.0 and the DEC-06 launch record."
+        ],
+        "title": "First-Stop binding and strict decision",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_first_stop_binding",
+              "ClaudeAuthorityAdapterTest::test_strict_decision"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-009"
+        ],
+        "depends_on": [
+          "T-005",
+          "T-008",
+          "T-009"
+        ],
+        "done_when": [
+          "Subprocess tests assert exact stdout per event; Codex tests unchanged."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-010",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/artifact-authority-hook.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/hooks/hooks.json"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert hook routing and registration.",
+        "source_refs": [
+          "SRC-07"
+        ],
+        "steps": [
+          "Route host claude to the Claude seams; empty-registry fast path; only PreToolUse may print a hookSpecificOutput deny.",
+          "Register PreToolUse (Agent, Bash, SendMessage), PostToolUse (Agent, Bash), PostToolUseFailure (Bash), SubagentStart, SubagentStop in plugins/ca/hooks/hooks.json."
+        ],
+        "title": "Claude hook routing, registration and output discipline",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeHookRegistrationTest"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-010"
+        ],
+        "depends_on": [
+          "T-002",
+          "T-010"
+        ],
+        "done_when": [
+          "Scope reaches ACCEPTED; each tamper variant prevents acceptance."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-011",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authority_adapter.py"
+          }
+        ],
+        "rollback": "Revert the end-to-end test.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-02"
+        ],
+        "steps": [
+          "Build ca-artifact from core/artifacts into a temp installation; run arm -\u003e verifier hooks -\u003e publish -\u003e spec review hooks -\u003e publish -\u003e task-review, then quality review -\u003e accept-scope, on a temp repo; add the tamper variants."
+        ],
+        "title": "End-to-end acceptance with an engine built from this tree",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_end_to_end_claude"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006"
+        ],
+        "depends_on": [
+          "T-010"
+        ],
+        "done_when": [
+          "The long-running fixture exists and passes; settings restored."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-012",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/fixtures/claude-hooks"
+          }
+        ],
+        "rollback": "Delete the extra fixture.",
+        "source_refs": [
+          "SRC-04"
+        ],
+        "steps": [
+          "With explicit maintainer approval, reinstall the recording hook, run one reviewer that makes a tool call and outlives the parent turn, remove the recorder, and add the sanitized sequence as a fixture.",
+          "Confirm arrival order and subagent-originated tool-hook agent_id; adjust nothing in the spec unless the recording contradicts it (then raise a conflict)."
+        ],
+        "title": "Live recording of a long-running tool-using reviewer (maintainer-approved)",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "The new long-running fixture passes the binding and first-Stop tests.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "ClaudeAuthorityAdapterTest::test_review_child_binding",
+              "ClaudeAuthorityAdapterTest::test_first_stop_binding"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-05",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-001",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-002",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-003",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-004",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-005",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-006",
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-007"
+        ],
+        "depends_on": [
+          "T-011",
+          "T-012"
+        ],
+        "done_when": [
+          "GO verdict or every blocking finding closed with a test."
+        ],
+        "execution_scope": "CP-05",
+        "id": "T-013",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "inspect",
+            "path": "core/pysrc/artifact-authority-hook.py"
+          },
+          {
+            "action": "inspect",
+            "path": "core/artifacts/internal/observation/contract.go"
+          }
+        ],
+        "rollback": "Review fixes revert with their tests.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Dispatch security-reviewer and a fresh adversarial reviewer over the diff; fix every blocking finding red-first."
+        ],
+        "title": "Independent security review of the Claude authority path",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authority_adapter.py"
+            ],
+            "assertion": "Full adapter suite green after fixes.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-buildvcs=false",
+              "./..."
+            ],
+            "assertion": "Named tests were observed failing for the stated reason before implementation; a skip-only or empty run is not success. Existing Codex golden tests pass unchanged.",
+            "availability": "existing",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-05",
+        "criterion_refs": [
+          "SPEC-CLAUDE-ARTIFACT-AUTHORITY#AC-011"
+        ],
+        "depends_on": [
+          "T-013"
+        ],
+        "done_when": [
+          "All checks pass; no projection says Claude is fail-closed for verification or review."
+        ],
+        "execution_scope": "CP-05",
+        "id": "T-014",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/includes/artifacts.md"
+          },
+          {
+            "action": "modify",
+            "path": "docs/artifacts/ABSORPTION-REVIEW.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/.claude-plugin/plugin.json"
+          },
+          {
+            "action": "modify",
+            "path": "CHANGELOG.md"
+          }
+        ],
+        "rollback": "Revert docs and version edits.",
+        "source_refs": [
+          "SRC-03",
+          "SRC-06"
+        ],
+        "steps": [
+          "State Claude supports verification and review authority and Pi still stops; update AC-011/T-013 rows; regenerate projections; advance versions on all four surfaces."
+        ],
+        "title": "Docs, projections and version surfaces",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "tools/build-surface.py",
+              "--check"
+            ],
+            "assertion": "No projection drift.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "tools/sync-core.py",
+              "--check"
+            ],
+            "assertion": "No vendored drift.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_badge_consistency.py"
+            ],
+            "assertion": "Version surfaces agree.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      }
+    ],
+    "title": "Plan: Claude Code verification and review authority adapter"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/claude-artifact-authority.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 2,
+  "schema_version": "0.3.1",
+  "slug": "claude-artifact-authority"
+}
+</script>
+</body></html>

@@ -1,0 +1,23 @@
+{
+ "agent_id": "agent-1",
+ "agent_transcript_path": "<transcript-path>",
+ "agent_type": "general-purpose",
+ "background_tasks": [
+  {
+   "agent_type": "general-purpose",
+   "description": "Hook probe subagent",
+   "id": "agent-1",
+   "status": "running",
+   "type": "subagent"
+  }
+ ],
+ "cwd": "<cwd>",
+ "hook_event_name": "SubagentStop",
+ "last_assistant_message": "{\"decision\":\"pass\",\"findings\":[]}",
+ "permission_mode": "auto",
+ "prompt_id": "prompt-1",
+ "session_crons": [],
+ "session_id": "session-1",
+ "stop_hook_active": false,
+ "transcript_path": "<transcript-path>"
+}

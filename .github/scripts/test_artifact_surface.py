@@ -154,10 +154,19 @@ def eager_markers(text: str, forbidden: list[str]) -> list[str]:
     return sorted(marker for marker in forbidden if marker.lower() in lowered)
 
 
+def reviewed_surface(baseline: dict) -> dict[str, list[str]]:
+    """The immutable historical baseline plus each explicitly reviewed addition."""
+    surface = {key: list(value) for key, value in baseline["registrations"].items()}
+    for addition in baseline.get("reviewed_additions", []):
+        surface[addition["category"]] = sorted(surface[addition["category"]] + [addition["name"]])
+    return surface
+
+
 class ArtifactSurfaceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.inventory = load_inventory()
         self.baseline = self.inventory["public_surface_baseline"]
+        self.reviewed = reviewed_surface(self.baseline)
 
     def test_no_added_discovery(self) -> None:
         self.assertEqual(self.inventory["baseline_revision"], POLICY_BASELINE_REVISION)
@@ -168,9 +177,21 @@ class ArtifactSurfaceTest(unittest.TestCase):
             self.baseline["registration_sha256"],
         )
         self.assertEqual(
-            surface_delta(historical, surface_at_revision()),
+            surface_delta(self.reviewed, surface_at_revision()),
             [],
         )
+
+    def test_reviewed_additions_are_named_and_justified(self) -> None:
+        additions = self.baseline.get("reviewed_additions", [])
+        self.assertEqual(
+            [(item["category"], item["name"]) for item in additions],
+            [("agents", "authority-reviewer")],
+        )
+        for item in additions:
+            self.assertEqual(
+                set(item), {"category", "name", "hosts", "invocation", "rationale", "approved_by"}
+            )
+            self.assertTrue(all(isinstance(item[key], (str, list)) and item[key] for key in item))
 
     def test_pi_prompt_approval_is_explicitly_unsupported(self) -> None:
         warning = (
@@ -185,7 +206,8 @@ class ArtifactSurfaceTest(unittest.TestCase):
     def test_authority_guidance_names_the_codex_only_production_seam(self) -> None:
         for relative in ARTIFACT_GUIDANCE_PATHS:
             text = (ROOT / relative).read_text(encoding="utf-8")
-            self.assertIn("Verification and review authority below is currently Codex-only", text, relative)
+            self.assertIn("Verification and review authority below is supported on Codex and Claude Code", text, relative)
+            self.assertNotIn("Codex-only", text, relative)
             self.assertNotIn("corroborated exit 0", text, relative)
         host_notes = (ROOT / "core/surface/includes/codex-host-notes.md").read_text(encoding="utf-8")
         self.assertIn("`verify` command shown in `artifacts.md`", host_notes)
@@ -214,7 +236,7 @@ class ArtifactSurfaceTest(unittest.TestCase):
         candidate = surface_at_revision()
         candidate["commands"] = sorted(candidate["commands"] + ["spec"])
         self.assertEqual(
-            surface_delta(self.baseline["registrations"], candidate),
+            surface_delta(self.reviewed, candidate),
             ["added commands: spec"],
         )
 
@@ -224,7 +246,7 @@ class ArtifactSurfaceTest(unittest.TestCase):
             candidate["persistent_tools"] + ["codearbiter_artifact"]
         )
         self.assertEqual(
-            surface_delta(self.baseline["registrations"], candidate),
+            surface_delta(self.reviewed, candidate),
             ["added persistent_tools: codearbiter_artifact"],
         )
 

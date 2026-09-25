@@ -106,6 +106,35 @@ func verificationResultSchema() map[string]any {
 		"commands":           map[string]any{"type": "array", "items": commandResultSchema(), "minItems": int64(1)},
 	}, "environment_sha256", "command_bindings", "workspace_before", "workspace_after", "commands")
 }
+
+// Review producer profiles. Each profile carries only its own host's launch
+// correlation shape, so one host's launch evidence can never be relabelled as
+// another's.
+const (
+	CodexReviewProfile  = "codex-review/0.1.0"
+	ClaudeReviewProfile = "claude-review/0.1.0"
+	// ClaudeReviewer is the plugin-shipped read-only reviewer agent a Claude
+	// review launch must pin.
+	ClaudeReviewer = "ca:authority-reviewer"
+)
+
+func reviewDecisionSchema() map[string]any {
+	finding := closed(map[string]any{"severity": map[string]any{"enum": model.List("BLOCK", "WARN", "INFO")}, "code": text(), "message": text()}, "severity", "code", "message")
+	return closed(map[string]any{
+		"format": map[string]any{"const": "codearbiter.review-decision/0.1.0"}, "request_id": hash(), "target_sha256": hash(), "contract_sha256": hash(),
+		"decision": map[string]any{"const": "pass"}, "coverage": map[string]any{"type": "array", "items": text(), "minItems": int64(1)},
+		"findings": map[string]any{"type": "array", "items": finding}, "assessment": text(),
+	}, "format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")
+}
+func claudeReviewResultSchema() map[string]any {
+	reviewer := map[string]any{"const": ClaudeReviewer}
+	launch := closed(map[string]any{
+		"parent_session_id": text(), "parent_prompt_id": text(), "tool_use_id": text(), "post_confirmed": map[string]any{"const": true},
+		"agent_id": text(), "agent_type": reviewer, "subagent_type": reviewer, "model": text(), "resolved_model": text(),
+		"first_stop": map[string]any{"const": true},
+	}, "parent_session_id", "parent_prompt_id", "tool_use_id", "post_confirmed", "agent_id", "agent_type", "subagent_type", "model", "resolved_model", "first_stop")
+	return closed(map[string]any{"launch": launch, "decision": reviewDecisionSchema()}, "launch", "decision")
+}
 func reviewResultSchema() map[string]any {
 	launch := closed(map[string]any{
 		"parent_session_id": text(), "parent_turn_id": text(), "tool_use_id": text(), "post_confirmed": map[string]any{"const": true},
@@ -128,12 +157,12 @@ func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
 		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", "codex-review/0.1.0", "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
 	if current {
-		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(), reviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
+		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(), reviewResultSchema(), claudeReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
 		required = append(required, "producer_result")
 	}
 	return closed(base, required...)
@@ -219,7 +248,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" || (kind == "spec_review" || kind == "quality_review") && profile != "codex-review/0.1.0" || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
+	if kind == "verification" && profile != "declared-command/0.1.0" || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -374,6 +403,22 @@ func reviewContractHash() string {
 func validateReview(observed, event, context map[string]any) bool {
 	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
 	launch, decision := model.M(result["launch"]), model.M(result["decision"])
+	// The closed oneOf admits either host's launch shape; bind it to the
+	// declared profile so evidence cannot be relabelled across hosts.
+	_, codexShape := launch["parent_turn_id"]
+	_, claudeShape := launch["parent_prompt_id"]
+	switch model.S(observed["producer_profile"]) {
+	case CodexReviewProfile:
+		if !codexShape || claudeShape {
+			return false
+		}
+	case ClaudeReviewProfile:
+		if !claudeShape || codexShape || model.S(launch["agent_type"]) != ClaudeReviewer || model.S(launch["subagent_type"]) != ClaudeReviewer || launch["first_stop"] != true || launch["post_confirmed"] != true {
+			return false
+		}
+	default:
+		return false
+	}
 	if model.S(observed["producer_run_id"]) != model.S(launch["agent_id"]) || model.S(decision["target_sha256"]) != model.S(context["input_sha256"]) || model.S(decision["contract_sha256"]) != reviewContractHash() || model.S(decision["assessment"]) != model.S(payload["assessment"]) {
 		return false
 	}

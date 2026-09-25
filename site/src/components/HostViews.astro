@@ -1,7 +1,7 @@
 ---
 import ExampleChoices from './ExampleChoices.astro';
 const hosts = [
-  { name:'Claude Code', command:'/ca:feature "export saved searches"', description:'Plugin commands and agents, trusted hooks, and an optional settings-wired statusline. Typed prompt approval exists; typed verification and review authority are not supported by the current production adapters.' },
+  { name:'Claude Code', command:'/ca:feature "export saved searches"', description:'Plugin commands and agents, trusted hooks, and an optional settings-wired statusline. Current source implements typed prompt, verification and review authority adapters here, with reviews run by the read-only ca:authority-reviewer agent; the exact installed release still needs qualified capability.' },
   { name:'Codex', command:'$ca-feature "export saved searches"', description:'Codex-native skills, trusted hook handlers, and packaged role resources. Current source implements typed prompt, verification and review authority adapters here; the exact installed release still needs qualified capability.' },
   { name:'Pi', command:'/ca-feature "export saved searches"', description:'Generated aliases, project trust, a rich footer, and child work mediated by the parent adapter. Typed prompt approval, verification and review authority are not supported; native HTML capability alone cannot clear those stops.' },
 ];

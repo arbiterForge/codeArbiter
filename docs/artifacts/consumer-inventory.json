@@ -9,6 +9,16 @@
     "typed_html_farm_enabled": false
   },
   "public_surface_baseline": {
+    "reviewed_additions": [
+      {
+        "category": "agents",
+        "name": "authority-reviewer",
+        "hosts": ["claude"],
+        "invocation": "internal; launched only through an armed authority request's exact envelope, never routed or user-invoked",
+        "rationale": "Claude Code verification and review authority needs a pinned read-only reviewer (Read, Grep, Glob) that project or user agents cannot silently replace; built-in agents carry every tool.",
+        "approved_by": "maintainer ruling 2026-09-24 (SPEC-CLAUDE-ARTIFACT-AUTHORITY)"
+      }
+    ],
     "registration_sha256": "82073207609c199b0a7c6341a53cce01bf35688f31e3f2107abd1bb9ed4ffec4",
     "registrations": {
       "commands": [
@@ -506,7 +516,7 @@
         "plugins/ca-pi/SKILLS.md",
         "plugins/ca-codex/includes/codex-host-notes.md"
       ],
-      "reason": "Current docs state the enabled full-lane HTML default, disabled farm boundary, and Codex-only authority-backed verification and review honestly; complete migration, recovery, and release runbooks remain separate work."
+      "reason": "Current docs state the enabled full-lane HTML default, disabled farm boundary, and Codex and Claude Code authority-backed verification and review (Pi excluded) honestly; complete migration, recovery, and release runbooks remain separate work."
     },
     {
       "id": "decomposition-plans",

@@ -24,6 +24,9 @@ An agent is a reviewer or author **dispatched** by a skill — never routed to, 
 | [tribunal-lens-reviewer](tribunal-lens-reviewer.md) | `tribunal` lane | Generic lens executor — one dispatch per active lens; the lens card under `skills/tribunal/references/lenses/` is the mandate. | — (report-only) |
 | [map-structure](map-structure.md) | `tribunal` lane (Phase 1, large repo) | Generic extractor, not a judge: file tree, language breakdown, entry points, core/shared locations, churn. | — (report-only) |
 | [map-deps](map-deps.md) | `tribunal` lane (Phase 1, large repo) | Generic extractor, not a judge: manifests, lockfiles, integration surface, env/secret-usage surface. | — (report-only) |
+{{IF:claude}}
+| [authority-reviewer](authority-reviewer.md) | structured-artifact `spec_review` / `quality_review` authority requests (INTERNAL, Claude Code only) | Read-only independent review of one frozen engine target; returns exactly one review-decision JSON object. | any unmet required criterion |
+{{END}}
 
 ## Cut in v2
 

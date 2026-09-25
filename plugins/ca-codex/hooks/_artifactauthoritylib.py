@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 # codeArbiter — durable closed authority producers for structured artifacts.
-"""Supervise verification and correlate independent Codex review evidence.
+"""Supervise verification and correlate independent Codex or Claude review evidence.
 
 arm_request(...) -> dict
 run_verification(...) -> dict
 observe_codex_hook(...) -> dict
+observe_claude_hook(...) -> dict
 publish_request(...) -> dict
 
 The artifact engine owns every target binding.  Callers select only an activity
 and record; they cannot supply an authority kind, verdict, evidence payload, or
 reviewer identity.  External work is journaled before launch, observations are
 immutable and content-addressed, and replay never silently reruns a completed
-attempt.  Codex review correlation uses stable hook fields and deliberately
-ignores transcript bytes whose format is not a public contract.
+attempt.  Codex and Claude review correlation use stable hook fields and
+deliberately ignore transcript bytes whose format is not a public contract.
+
+Claude Code correlation (recorded Claude Code 2.1.281 payloads): a Bash or
+Agent PreToolUse/PostToolUse pair shares session_id, prompt_id and tool_use_id;
+the Agent PostToolUse tool_response carries the child's agentId; SubagentStart
+and SubagentStop carry only agent_id and the parent's *current* prompt_id, so
+child lifecycle events are bound by agent_id alone.  One agent can emit more
+than one SubagentStop; only the first is a review result.
 """
 
 from __future__ import annotations
@@ -57,6 +65,23 @@ MAX_STATE = 1 << 20
 MAX_OUTPUT = 8 << 20
 MAX_DECISION = 65536
 REGISTRY_PARENT = Path(tempfile.gettempdir())
+HOSTS = frozenset({"codex", "claude"})
+CLAUDE_REVIEWER = "ca:authority-reviewer"
+CLAUDE_REVIEWER_MODELS = frozenset({"opus", "sonnet", "haiku"})
+CLAUDE_REVIEW_PROFILE = "claude-review/0.1.0"
+CODEX_REVIEW_PROFILE = "codex-review/0.1.0"
+# None means the real ~/.claude/agents (plus CLAUDE_CONFIG_DIR/agents); tests
+# point it at a fixture directory.
+CLAUDE_USER_AGENT_DIR: Path | None = None
+# Managed (organization policy) agent locations; their definitions outrank
+# every other source.
+CLAUDE_MANAGED_AGENT_DIRS: list[Path] = [
+    Path(os.environ.get("ProgramData", r"C:\ProgramData")) / "ClaudeCode" / "agents",
+    Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "ClaudeCode" / "agents",
+] if os.name == "nt" else [
+    Path("/Library/Application Support/ClaudeCode/agents"),
+    Path("/etc/claude-code/agents"),
+]
 
 
 class AuthorityError(RuntimeError):
@@ -230,9 +255,12 @@ def _spool_root(root: Path) -> Path:
 def _save(root: Path, value: dict[str, Any]) -> None:
     value = dict(value)
     value["integrity_sha256"] = _integrity(value)
-    _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
-    if value["state"] in TERMINAL_STATES:
-        (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
+    try:
+        _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
+        if value["state"] in TERMINAL_STATES:
+            (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
+    except OSError as exc:
+        raise AuthorityError("AUTHORITY_BUSY", "request state could not be written") from exc
 
 
 def _load(root: Path, request_id: str) -> dict[str, Any]:
@@ -253,7 +281,7 @@ def _load(root: Path, request_id: str) -> dict[str, Any]:
         "observation_sha256", "receipt", "integrity_sha256", "payload",
         "authority_source", "dispatch_prompt", "review_contract_sha256",
         "required_coverage", "wrapper", "command_bindings", "recovery",
-        "launch_envelope", "workspace_roots",
+        "launch_envelope", "workspace_roots", "host",
     }
     if (
         not isinstance(value, dict)
@@ -262,6 +290,7 @@ def _load(root: Path, request_id: str) -> dict[str, Any]:
         or value.get("request_id") != request_id
         or value.get("activity") not in ACTIVITIES
         or value.get("state") not in STATES
+        or value.get("host", "codex") not in HOSTS
         or not isinstance(value.get("context"), dict)
         or not isinstance(value.get("repository"), dict)
         or not isinstance(value.get("command_bindings", []), list)
@@ -431,7 +460,9 @@ def _register_request(root: Path, request: dict[str, Any]) -> None:
             raise AuthorityError("AUTHORITY_COLLISION", "request registry entry differs")
 
 
-def _registered_requests() -> list[tuple[Path, dict[str, Any]]]:
+def _registered_requests(strict: bool = False) -> list[tuple[Path, dict[str, Any]]]:
+    """Live registered requests. Strict callers refuse, rather than skip, a
+    request whose pointer or state exists but cannot be read."""
     results = []
     for path in _registry_root().glob("*.json"):
         try:
@@ -456,7 +487,17 @@ def _registered_requests() -> list[tuple[Path, dict[str, Any]]]:
                 path.unlink(missing_ok=True)
                 continue
             results.append((root, request))
-        except (AuthorityError, OSError, UnicodeError, ValueError):
+        except (AuthorityError, OSError, UnicodeError, ValueError) as exc:
+            unreadable = (
+                exc.code == "INVALID_AUTHORITY_STATE"
+                if isinstance(exc, AuthorityError) else REQUEST_RE.fullmatch(path.stem) is not None
+            )
+            cause = exc.__cause__ if isinstance(exc, AuthorityError) else exc
+            if strict and unreadable and not isinstance(cause, FileNotFoundError):
+                raise AuthorityError(
+                    "AUTHORITY_BUSY",
+                    f"authority request {path} is unreadable; remove it if no review is running",
+                ) from exc
             continue
     return results
 
@@ -466,6 +507,85 @@ def _registered_request(request_id: str) -> tuple[Path, dict[str, Any]]:
     if len(matches) != 1:
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "authority request routing is ambiguous")
     return matches[0]
+
+
+def _claude_start_marker(agent_id: str) -> Path:
+    key = _digest(_canonical({"host": "claude", "agent_id": agent_id}))
+    return _registry_root() / f"claude-start-{key}.json"
+
+
+def _claude_agent_dirs(root: Path, sessions: tuple[Path, ...] = ()) -> list[Path]:
+    """Every agent directory whose definitions outrank a plugin agent.
+
+    A session opened outside the artifact repository loads project agents
+    from its own directory, so the observing session roots are scanned too.
+    """
+    directories = [root / ".claude" / "agents"]
+    directories.extend(Path(session) / ".claude" / "agents" for session in sessions)
+    try:
+        common = Path(_git_text(root, "rev-parse", "--path-format=absolute", "--git-common-dir"))
+        directories.append(common.parent / ".claude" / "agents")
+    except AuthorityError:
+        pass
+    if CLAUDE_USER_AGENT_DIR is not None:
+        directories.append(CLAUDE_USER_AGENT_DIR)
+    else:
+        directories.append(Path.home() / ".claude" / "agents")
+        configured = os.environ.get("CLAUDE_CONFIG_DIR")
+        if configured:
+            directories.append(Path(configured) / "agents")
+    directories.extend(CLAUDE_MANAGED_AGENT_DIRS)
+    return directories
+
+
+def _raise_walk_error(exc: OSError) -> None:
+    raise exc
+
+
+def _refuse_shadowed_reviewer(root: Path, *sessions: Path) -> None:
+    """Project, user and managed agents outrank plugin agents; refuse any shadow.
+
+    Fail closed rather than parse YAML: a definition shadows the reviewer when
+    its file name, or anything in its front matter, names the reviewer in any
+    case. A description merely mentioning the name is a false positive the
+    error message explains; a missed shadow would let a parent-authored agent
+    grade its own work.
+    """
+    short = CLAUDE_REVIEWER.split(":", 1)[1].casefold()
+    for directory in _claude_agent_dirs(root, sessions):
+        candidates = []
+        try:
+            if directory.is_dir():
+                for base, dirs, files in os.walk(directory, onerror=_raise_walk_error, followlinks=False):
+                    for name in dirs:
+                        # A linked subdirectory is not walked, so it cannot be cleared.
+                        info = (Path(base) / name).lstat()
+                        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+                            raise AuthorityError(
+                                "SHADOWED_REVIEWER", f"{Path(base) / name} is a link that cannot be inspected",
+                            )
+                    candidates.extend(Path(base) / name for name in files if name.casefold().endswith(".md"))
+        except OSError as exc:
+            raise AuthorityError("SHADOWED_REVIEWER", f"agent definitions under {directory} cannot be inspected") from exc
+        for candidate in candidates:
+            if short in candidate.stem.casefold():
+                raise AuthorityError("SHADOWED_REVIEWER", f"{candidate} shadows {CLAUDE_REVIEWER}")
+            try:
+                # A linked definition is followed, but only to a regular file:
+                # a pipe or device would hang the hook.
+                if not stat.S_ISREG(os.stat(candidate).st_mode):
+                    raise AuthorityError("SHADOWED_REVIEWER", f"{candidate} is not a regular file")
+                with candidate.open("rb") as stream:
+                    raw = stream.read(1 << 20)
+            except OSError as exc:
+                raise AuthorityError("SHADOWED_REVIEWER", "agent definition is unreadable") from exc
+            text = raw.decode("utf-8", errors="replace")
+            front = text
+            match = re.match(r"\A﻿?\s*---[^\n]*\n(.*?)^---", text, re.S | re.M)
+            if match:
+                front = match.group(1)
+            if short in front.casefold():
+                raise AuthorityError("SHADOWED_REVIEWER", f"{candidate} shadows {CLAUDE_REVIEWER}")
 
 
 def _ordinary_spawn_marker(session_id: str, turn_id: str) -> Path:
@@ -718,7 +838,8 @@ def _dispatch_prompt(request: dict[str, Any]) -> str:
         + json.dumps(request["required_coverage"], ensure_ascii=True)
         + ". Fields: format, request_id, target_sha256, contract_sha256, decision "
           "(pass or changes_requested), coverage (unique strings), findings (objects with "
-          "severity, code, message), assessment (non-empty string)."
+          "severity, code, message), assessment (non-empty string). Reply with the JSON "
+          "object only: no code fence and no other text."
     )
 
 
@@ -731,6 +852,8 @@ def arm_request(
     *,
     request_nonce: str | None = None,
     workspace_roots: dict[str, str | Path] | None = None,
+    host: str = "codex",
+    reviewer_model: str = "opus",
     **unexpected: Any,
 ) -> dict[str, Any]:
     if unexpected:
@@ -740,7 +863,13 @@ def arm_request(
         )
     if activity not in ACTIVITIES:
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "activity is unsupported")
+    if host not in HOSTS:
+        raise AuthorityError("INVALID_AUTHORITY_REQUEST", "host is unsupported")
+    if host == "claude" and reviewer_model not in CLAUDE_REVIEWER_MODELS:
+        raise AuthorityError("INVALID_AUTHORITY_REQUEST", "reviewer model is unsupported")
     root = _real_root(root)
+    if host == "claude" and activity in REVIEW_ACTIVITIES:
+        _refuse_shadowed_reviewer(root)
     nonce = request_nonce or secrets.token_urlsafe(24)
     if not isinstance(nonce, str) or TOKEN_RE.fullmatch(nonce) is None:
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "request nonce is malformed")
@@ -756,11 +885,14 @@ def arm_request(
             raise AuthorityError("UNSUPPORTED_WORKSPACE", "workspace map must exactly cover declared cwd labels")
         frozen_workspaces = {label: str(_real_root(path)) for label, path in workspace_roots.items()}
     command_bindings = _bind_commands(root, context, frozen_workspaces) if activity == "verification" else []
-    seed = _canonical({
+    seed_value = {
         "repository": _repository_identity(root), "context": context, "nonce": nonce,
         "command_bindings": command_bindings,
         "workspace_roots": frozen_workspaces,
-    })
+    }
+    if host != "codex":
+        seed_value["host"] = host
+    seed = _canonical(seed_value)
     request_id = _digest(seed)
     request = {
         "format": STATE_FORMAT,
@@ -781,14 +913,24 @@ def arm_request(
         "command_bindings": command_bindings,
         "workspace_roots": frozen_workspaces,
     }
+    if host != "codex":
+        request["host"] = host
     if activity in REVIEW_ACTIVITIES:
         request["review_contract_sha256"], request["required_coverage"] = _review_binding(context)
         request["dispatch_prompt"] = _dispatch_prompt(request)
-        request["launch_envelope"] = {
-            "message": request["dispatch_prompt"],
-            "task_name": f"authority_{request_id[:12]}",
-            "fork_turns": "none",
-        }
+        if host == "claude":
+            request["launch_envelope"] = {
+                "description": f"codeArbiter {activity} {request_id[:12]}",
+                "prompt": request["dispatch_prompt"],
+                "subagent_type": CLAUDE_REVIEWER,
+                "model": reviewer_model,
+            }
+        else:
+            request["launch_envelope"] = {
+                "message": request["dispatch_prompt"],
+                "task_name": f"authority_{request_id[:12]}",
+                "fork_turns": "none",
+            }
     _save(root, request)
     _register_request(root, request)
     result = {
@@ -1162,9 +1304,11 @@ def run_verification(
     if request["activity"] != "verification":
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "request is not verification")
     if request["state"] == "COMPLETED":
+        # Marked so Claude corroboration, which binds evidence to the
+        # observed call, can tell a replay from the run it authorized.
         return {
             "request_id": request_id, "state": "COMPLETED",
-            "commands": request["payload"]["commands"],
+            "commands": request["payload"]["commands"], "replayed": True,
         }
     if request["state"] != "ARMED":
         raise AuthorityError("INTERRUPTED_ATTEMPT", "verification attempt cannot be rerun")
@@ -1265,7 +1409,7 @@ def _host_id(value: Any, field: str) -> str:
     return value
 
 
-def _verification_selector(event: dict[str, Any]) -> tuple[str, Path] | None:
+def _verification_selector(event: dict[str, Any]) -> tuple[str, Path, str] | None:
     """Recognize only the closed wrapper selector, never caller-authored child argv."""
     if event.get("tool_name") not in {
         "Bash", "shell_command", "exec_command", "unified_exec",
@@ -1277,10 +1421,13 @@ def _verification_selector(event: dict[str, Any]) -> tuple[str, Path] | None:
     command = tool_input.get("command", tool_input.get("cmd"))
     if not isinstance(command, str):
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "exec command is absent")
-    compound = any(marker in command for marker in ("\n", "\r", ";", "&&", "||", "|", ">", "<", "`"))
+    compound = any(marker in command for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$"))
     try:
         tokens = [token.strip('"') for token in shlex.split(command, posix=False)]
     except ValueError as exc:
+        # An ordinary command with unbalanced quoting is not ours to deny.
+        if "artifact-authority" not in command.casefold():
+            return None
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is malformed") from exc
     wrapper_start = (
         len(tokens) >= 3
@@ -1307,26 +1454,52 @@ def _verification_selector(event: dict[str, Any]) -> tuple[str, Path] | None:
         or REQUEST_RE.fullmatch(tokens[6]) is None
     ):
         return None
-    return tokens[6], _real_root(tokens[4])
+    return tokens[6], _real_root(tokens[4]), tokens[1]
 
 
 def observe_verifier_hook(
-    invocation_root: str | Path, event: dict[str, Any]
+    invocation_root: str | Path, event: dict[str, Any], host: str = "codex",
 ) -> dict[str, Any] | None:
     """Authorize/corroborate the wrapper; native exit/output remain result evidence."""
-    _real_root(invocation_root)
-    if not isinstance(event, dict) or event.get("hook_event_name") not in {"PreToolUse", "PostToolUse"}:
+    if host not in HOSTS:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier host is unsupported")
+    events = {"PreToolUse", "PostToolUse"} | ({"PostToolUseFailure"} if host == "claude" else set())
+    if not isinstance(event, dict) or event.get("hook_event_name") not in events:
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier hook event is unsupported")
     selected = _verification_selector(event)
     if selected is None:
         return None
-    request_id, selected_root = selected
+    # Only an authority call is ever refused for an unavailable invocation root.
+    _real_root(invocation_root)
+    request_id, selected_root, script = selected
     root, request = _registered_request(request_id)
-    if root != selected_root or request["activity"] != "verification":
+    if host == "claude":
+        shipped = (Path(__file__).resolve().parent / "artifact-authority.py").resolve()
+        try:
+            named = Path(script).resolve(strict=True)
+        except OSError:
+            named = None
+        if named != shipped:
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper is not the shipped artifact-authority.py")
+    if (
+        root != selected_root
+        or request["activity"] != "verification"
+        or request.get("host", "codex") != host
+    ):
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier target does not match its request")
     session_id = _host_id(event.get("session_id"), "session_id")
-    turn_id = _host_id(event.get("turn_id"), "turn_id")
+    # Codex names the parent turn turn_id; Claude Code names it prompt_id.
+    turn_field = "prompt_id" if host == "claude" else "turn_id"
+    turn_id = _host_id(event.get(turn_field), turn_field)
     tool_use_id = _host_id(event.get("tool_use_id"), "tool_use_id")
+    if host == "claude" and event["hook_event_name"] == "PreToolUse":
+        tool_input = event["tool_input"]
+        # A background run returns no stdout to corroborate; an unsandboxed
+        # run escapes the host boundary the evidence assumes.
+        if tool_input.get("run_in_background") or tool_input.get("dangerouslyDisableSandbox"):
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper must run in the foreground and sandbox")
+        if set(tool_input) - {"command", "description", "timeout"}:
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper input carries unexpected options")
     if event["hook_event_name"] == "PreToolUse":
         if request["state"] != "ARMED" or request.get("wrapper") is not None:
             raise AuthorityError("INTERRUPTED_ATTEMPT", "verifier wrapper is not armable")
@@ -1339,7 +1512,7 @@ def observe_verifier_hook(
         workspace_before = _workspace_snapshots(current_bindings)
         request["wrapper"] = {
             "state": "AUTHORIZED", "session_id": session_id,
-            "turn_id": turn_id, "tool_use_id": tool_use_id,
+            turn_field: turn_id, "tool_use_id": tool_use_id,
             "command_bindings": current_bindings,
             "workspace_before": workspace_before,
         }
@@ -1352,10 +1525,13 @@ def observe_verifier_hook(
     if (
         not isinstance(wrapper, dict)
         or wrapper.get("session_id") != session_id
-        or wrapper.get("turn_id") != turn_id
+        or wrapper.get(turn_field) != turn_id
         or wrapper.get("tool_use_id") != tool_use_id
-        or request["state"] != "COMPLETED"
     ):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier completion is not correlated")
+    if host == "claude":
+        return _claude_verifier_result(root, request, wrapper, event)
+    if request["state"] != "COMPLETED":
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier completion is not correlated")
     response = event.get("tool_response")
     if isinstance(response, dict):
@@ -1374,6 +1550,41 @@ def observe_verifier_hook(
             raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper output did not corroborate completion")
     else:
         raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper result is unavailable")
+    wrapper["state"] = "CORROBORATED"
+    _save(root, request)
+    return {"request_id": request_id, "state": "CORROBORATED"}
+
+
+def _claude_verifier_result(
+    root: Path, request: dict[str, Any], wrapper: dict[str, Any], event: dict[str, Any]
+) -> dict[str, Any]:
+    """Claude reports no exit code: success and failure are distinct events."""
+    request_id = request["request_id"]
+    if wrapper.get("state") != "AUTHORIZED":
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier completion was already observed")
+    if event["hook_event_name"] == "PostToolUseFailure":
+        wrapper["state"] = "FAILED"
+        _save(root, request)
+        return {"request_id": request_id, "state": "FAILED"}
+    response = event.get("tool_response")
+    if request["state"] != "COMPLETED":
+        raise AuthorityError("FAILED_VERIFICATION", "verifier request did not complete")
+    if not isinstance(response, dict) or response.get("interrupted") is not False:
+        raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper was interrupted or has no result")
+    stdout = response.get("stdout")
+    if not isinstance(stdout, str) or len(stdout.encode("utf-8")) > MAX_OUTPUT:
+        raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper output is unavailable")
+    try:
+        completed = json.loads(stdout.strip())
+    except ValueError:
+        completed = None
+    if (
+        not isinstance(completed, dict)
+        or set(completed) != {"request_id", "state", "commands"}
+        or completed.get("request_id") != request_id
+        or completed.get("state") != "COMPLETED"
+    ):
+        raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper output did not corroborate completion")
     wrapper["state"] = "CORROBORATED"
     _save(root, request)
     return {"request_id": request_id, "state": "CORROBORATED"}
@@ -1445,7 +1656,11 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             return None
         request_id = _request_id_from_prompt(message)
         root, request = _registered_request(request_id)
-        if request["activity"] not in REVIEW_ACTIVITIES or request["state"] != "ARMED":
+        if (
+            request.get("host", "codex") != "codex"
+            or request["activity"] not in REVIEW_ACTIVITIES
+            or request["state"] != "ARMED"
+        ):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review request is not launchable")
         if tool_input != request.get("launch_envelope"):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
@@ -1564,7 +1779,7 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             payload["task_hashes"] = request["context"]["task_hashes"]
         producer_result = {"launch": request["launch"], "decision": decision}
         observation = _closed_observation(
-            request, payload, "codex-review/0.1.0", agent_id,
+            request, payload, CODEX_REVIEW_PROFILE, agent_id,
             producer_result,
         )
         _observation(root, request, observation)
@@ -1576,19 +1791,253 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
     raise AuthorityError("UNSUPPORTED_HOST_SEAM", "hook event is not supported")
 
 
+def _claude_requests(state: set[str], strict: bool = False) -> list[tuple[Path, dict[str, Any]]]:
+    return [
+        (root, request) for root, request in _registered_requests(strict)
+        if request.get("host") == "claude" and request["activity"] in REVIEW_ACTIVITIES
+        and request["state"] in state
+    ]
+
+
+def _reject(root: Path, request: dict[str, Any], mode: str) -> None:
+    request["state"] = "REJECTED"
+    request["recovery"] = {"mode": mode, "rerun_permitted": False}
+    _save(root, request)
+
+
+def _claude_bind_child(root: Path, request: dict[str, Any]) -> dict[str, Any]:
+    """Complete the order-independent launch/child join when both sides exist."""
+    launch = request["launch"]
+    marker = _claude_start_marker(launch["agent_id"])
+    try:
+        started = json.loads(marker.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        _save(root, request)
+        return {"request_id": request["request_id"], "state": request["state"]}
+    except (OSError, UnicodeError, ValueError) as exc:
+        _reject(root, request, "unreadable-subagent-start")
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "subagent start record is unreadable") from exc
+    if not isinstance(started, dict) or started.get("agent_type") != CLAUDE_REVIEWER:
+        _reject(root, request, "unpinned-reviewer-agent")
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "subagent is not the pinned reviewer")
+    launch["agent_type"] = CLAUDE_REVIEWER
+    request["state"] = "RUNNING"
+    _save(root, request)
+    marker.unlink(missing_ok=True)
+    return {"request_id": request["request_id"], "state": "RUNNING"}
+
+
+def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any] | None:
+    """Correlate a Claude Code reviewer launch, child lifecycle, and first result.
+
+    The invocation repository is observed but never selects authority, and an
+    ordinary (non-authority) event is never refused.
+    """
+    if not isinstance(event, dict):
+        return None
+    name = event.get("hook_event_name")
+    tool = event.get("tool_name")
+
+    if name == "PreToolUse" and tool == "SendMessage":
+        # The message shape is not a recorded contract, so fail closed: any
+        # message from the reviewer's parent session while it runs could steer it.
+        session = event.get("session_id")
+        rejected = None
+        for candidate_root, candidate in _claude_requests({"LAUNCHING", "RUNNING"}, strict=True):
+            if session is not None and session == (candidate.get("launch") or {}).get("parent_session_id"):
+                _reject(candidate_root, candidate, "reviewer-steered-by-message")
+                rejected = {"request_id": candidate["request_id"], "state": "REJECTED"}
+        return rejected
+
+    if name == "PreToolUse" and tool == "Agent":
+        tool_input = event.get("tool_input")
+        prompt = tool_input.get("prompt") if isinstance(tool_input, dict) else None
+        if not isinstance(prompt, str) or not prompt.startswith("[CODEARBITER_AUTHORITY_REQUEST:"):
+            return None
+        session_root = _real_root(root)
+        session_id = _host_id(event.get("session_id"), "session_id")
+        prompt_id = _host_id(event.get("prompt_id"), "prompt_id")
+        tool_use_id = _host_id(event.get("tool_use_id"), "tool_use_id")
+        root, request = _registered_request(_request_id_from_prompt(prompt))
+        if (
+            request.get("host") != "claude"
+            or request["activity"] not in REVIEW_ACTIVITIES
+            or request["state"] != "ARMED"
+        ):
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review request is not launchable")
+        if tool_input != request.get("launch_envelope"):
+            _reject(root, request, "changed-launch-envelope")
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
+        try:
+            _refuse_shadowed_reviewer(root, session_root)
+        except AuthorityError:
+            _reject(root, request, "shadowed-reviewer")
+            raise
+        request["launch"] = {
+            "parent_session_id": session_id, "parent_prompt_id": prompt_id,
+            "tool_use_id": tool_use_id, "post_confirmed": False,
+            "agent_id": None, "agent_type": None,
+            "subagent_type": tool_input["subagent_type"], "model": tool_input["model"],
+            "resolved_model": None, "first_stop": False,
+        }
+        request["state"] = "LAUNCHING"
+        _save(root, request)
+        return {"request_id": request["request_id"], "state": "LAUNCHING"}
+
+    if name == "PostToolUse" and tool == "Agent":
+        session_id = event.get("session_id")
+        tool_use_id = event.get("tool_use_id")
+        matches = [
+            (candidate_root, candidate)
+            for candidate_root, candidate in _claude_requests({"LAUNCHING"})
+            if (candidate.get("launch") or {}).get("tool_use_id") == tool_use_id
+            and candidate["launch"].get("parent_session_id") == session_id
+        ]
+        if not matches:
+            return None
+        if len(matches) != 1:
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch correlation is ambiguous")
+        root, request = matches[0]
+        response = event.get("tool_response")
+        try:
+            prompt_id = _host_id(event.get("prompt_id"), "prompt_id")
+            if request["launch"].get("parent_prompt_id") != prompt_id or request["launch"]["post_confirmed"]:
+                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch result is out of order")
+            if not isinstance(response, dict):
+                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "agent result is malformed")
+            agent_id = _host_id(response.get("agentId"), "agentId")
+            resolved = _host_id(response.get("resolvedModel"), "resolvedModel")
+        except AuthorityError:
+            _reject(root, request, "uncorrelated-launch-result")
+            raise
+        request["launch"].update(post_confirmed=True, agent_id=agent_id, resolved_model=resolved)
+        return _claude_bind_child(root, request)
+
+    if name == "SubagentStart":
+        if not _claude_requests({"LAUNCHING"}):
+            return None
+        agent_id = _host_id(event.get("agent_id"), "agent_id")
+        agent_type = _host_id(event.get("agent_type"), "agent_type")
+        for candidate_root, candidate in _claude_requests({"LAUNCHING"}):
+            launch = candidate.get("launch") or {}
+            if launch.get("agent_id") == agent_id:
+                if agent_type != CLAUDE_REVIEWER:
+                    _reject(candidate_root, candidate, "unpinned-reviewer-agent")
+                    raise AuthorityError("UNSUPPORTED_HOST_SEAM", "subagent is not the pinned reviewer")
+                launch["agent_type"] = agent_type
+                candidate["state"] = "RUNNING"
+                _save(candidate_root, candidate)
+                return {"request_id": candidate["request_id"], "state": "RUNNING"}
+        if any(
+            (candidate.get("launch") or {}).get("post_confirmed") is False
+            for _root, candidate in _claude_requests({"LAUNCHING"})
+        ):
+            # The launch result may not have arrived yet; remember this start.
+            marker = _claude_start_marker(agent_id)
+            data = _canonical({"agent_id": agent_id, "agent_type": agent_type})
+            # Written aside and linked into place: a concurrent launch result
+            # joining this agent must never read an empty or partial marker.
+            temporary = marker.with_name(f".{marker.name}.{secrets.token_hex(8)}.tmp")
+            fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            try:
+                os.write(fd, data)
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+            try:
+                os.link(temporary, marker)
+            except FileExistsError:
+                return None
+            finally:
+                temporary.unlink(missing_ok=True)
+            # The launch result may have bound this agent while the marker was
+            # being written; finish the join now rather than strand it.
+            for candidate_root, candidate in _claude_requests({"LAUNCHING"}):
+                if (candidate.get("launch") or {}).get("agent_id") == agent_id:
+                    return _claude_bind_child(candidate_root, candidate)
+        return None
+
+    if name == "SubagentStop":
+        agent_id = event.get("agent_id")
+        matches = [
+            (candidate_root, candidate)
+            for candidate_root, candidate in _claude_requests({"LAUNCHING", "RUNNING"})
+            if (candidate.get("launch") or {}).get("agent_id") == agent_id
+        ]
+        if not matches:
+            # Includes every later Stop for an already-completed reviewer.
+            return None
+        if len(matches) != 1:
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "subagent correlation is ambiguous")
+        session_root = root
+        root, request = matches[0]
+        launch = request["launch"]
+        if request["state"] == "LAUNCHING" and launch.get("post_confirmed") is True:
+            # A start marker written late in the launch/start race.
+            _claude_bind_child(root, request)
+            request = _load(root, request["request_id"])
+            launch = request["launch"]
+        try:
+            # background_tasks is the parent session's list and includes this
+            # reviewer itself while it runs; it can only corroborate identity.
+            tasks = event.get("background_tasks")
+            own = [
+                task for task in tasks if isinstance(task, dict) and task.get("id") == agent_id
+            ] if isinstance(tasks, list) else None
+            if (
+                request["state"] != "RUNNING"
+                or launch.get("post_confirmed") is not True
+                or event.get("agent_type") != CLAUDE_REVIEWER
+                or event.get("stop_hook_active") is not False
+                or own is None
+                or len(own) != 1
+                or own[0].get("agent_type") != CLAUDE_REVIEWER
+            ):
+                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer stop is not a first clean stop")
+            _refuse_shadowed_reviewer(root, _real_root(session_root))
+            decision = _parse_decision(event.get("last_assistant_message"), request)
+        except AuthorityError:
+            _reject(root, request, "rejected-first-stop")
+            raise
+        launch["first_stop"] = True
+        payload = {
+            "input_sha256": request["context"]["input_sha256"],
+            "spec_sha256": request["context"]["spec_sha256"],
+            "assessment": decision["assessment"],
+        }
+        if request["activity"] == "spec_review":
+            payload["task_sha256"] = request["context"]["task_sha256"]
+        else:
+            payload["base_input_sha256"] = request["context"]["base_input_sha256"]
+            payload["task_hashes"] = request["context"]["task_hashes"]
+        observation = _closed_observation(
+            request, payload, CLAUDE_REVIEW_PROFILE, agent_id,
+            {"launch": launch, "decision": decision},
+        )
+        _observation(root, request, observation)
+        request["payload"] = payload
+        request["state"] = "COMPLETED"
+        _save(root, request)
+        return {"request_id": request["request_id"], "state": "COMPLETED"}
+
+    return None
+
+
 def _event(request: dict[str, Any]) -> dict[str, Any]:
     context = request["context"]
     activity = request["activity"]
+    host = request.get("host", "codex")
+    host_label = "Claude" if host == "claude" else "Codex"
     if activity == "verification":
         authority_kind = "verification_runner"
         actor = "codeArbiter supervised verifier"
-        origin = f"codex:verification-run:{request['request_id']}"
+        origin = f"{host}:verification-run:{request['request_id']}"
         source_text = "Observed exact declared-command completion and qualified named-test results."
     else:
         authority_kind = "review_workflow"
-        actor = "independent codex reviewer"
-        origin = f"codex:subagent:{request['launch']['agent_id']}"
-        source_text = "Observed a correlated fresh Codex reviewer completion with a closed passing decision."
+        actor = f"independent {host} reviewer"
+        origin = f"{host}:subagent:{request['launch']['agent_id']}"
+        source_text = f"Observed a correlated fresh {host_label} reviewer completion with a closed passing decision."
     return {
         "format": EVENT_FORMAT,
         "kind": activity,
@@ -1672,7 +2121,7 @@ def recover_request(root: str | Path, request_id: str, disposition: str) -> dict
         request["state"] == "ARMED"
         and request["activity"] == "verification"
         and isinstance(request.get("wrapper"), dict)
-        and request["wrapper"].get("state") == "AUTHORIZED"
+        and request["wrapper"].get("state") in {"AUTHORIZED", "FAILED"}
     )
     if request["state"] not in {"RUNNING", "LAUNCHING"} and not recoverable_completed and not recoverable_authorized:
         raise AuthorityError("INVALID_RECOVERY", "only an interrupted active attempt can be recovered")

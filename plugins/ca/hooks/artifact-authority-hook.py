@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# codeArbiter — Codex hook bridge for independent artifact reviewers.
-"""Correlate closed production review requests with documented Codex hooks."""
+# codeArbiter — Codex and Claude Code hook bridge for artifact authority.
+"""Correlate closed production verification and review requests with host hooks."""
 
 import json
 import os
@@ -61,8 +61,63 @@ def main() -> int:
     return 0
 
 
+def claude_main() -> int:
+    """Claude Code seams. Success is silent: an explicit allow would bypass the
+    user's permission rules, and a SubagentStop block would make the reviewer
+    keep going. Only a PreToolUse refusal prints (a Claude deny decision)."""
+    _hooklib.utf8_stdio()
+    payload = _hooklib.read_input()
+    if not isinstance(payload, dict):
+        return 0
+    event = payload.get("hook_event_name")
+    tool = payload.get("tool_name")
+    root = _hooklib.project_root(payload)
+    try:
+        if event in {"PreToolUse", "PostToolUse", "PostToolUseFailure"} and tool == "Bash":
+            _artifactauthoritylib.observe_verifier_hook(root, payload, host="claude")
+        elif (
+            (event in {"PreToolUse", "PostToolUse"} and tool == "Agent")
+            or (event == "PreToolUse" and tool == "SendMessage")
+            or event in {"SubagentStart", "SubagentStop"}
+        ):
+            _artifactauthoritylib.observe_claude_hook(root, payload)
+    except Exception as exc:  # noqa: BLE001 - an authority seam must fail closed
+        reason = f"codeArbiter authority producer blocked: {exc}"
+        if event == "PreToolUse" and (
+            isinstance(exc, _artifactauthoritylib.AuthorityError) or _authority_call(payload)
+        ):
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": reason,
+            }}))
+        else:
+            sys.stderr.write(reason + "\n")
+    return 0
+
+
+def _authority_call(payload: dict) -> bool:
+    """Whether an unexpected failure must deny: an ordinary tool call is never
+    refused, but a SendMessage could steer a running review and an authority
+    launch or wrapper must not proceed unobserved."""
+    tool = payload.get("tool_name")
+    tool_input = payload.get("tool_input")
+    tool_input = tool_input if isinstance(tool_input, dict) else {}
+    if tool == "SendMessage":
+        return True
+    if tool == "Agent":
+        prompt = tool_input.get("prompt")
+        return isinstance(prompt, str) and prompt.startswith("[CODEARBITER_AUTHORITY_REQUEST:")
+    if tool == "Bash":
+        command = tool_input.get("command")
+        return isinstance(command, str) and "artifact-authority" in command.casefold()
+    return False
+
+
 def run(host) -> int:
     _hooklib.set_host(host)
+    if host.name == "claude":
+        return claude_main()
     if host.name != "codex":
         return 0
     return main()

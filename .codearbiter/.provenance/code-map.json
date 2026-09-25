@@ -137,37 +137,37 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.21.14)",
+          "claim": "Claude Code plugin manifest for ca (v2.21.15)",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "cb6cd37695c58a43a951ceccbba06642220d4b77",
+      "hash": "acfe33e04e12fcf60560d1f4c1e4c3428ce81349",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.15), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.16), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "5b019ca0d0854bd9a7787b13130cceeb1ca367a5",
+      "hash": "811f2a471fd5154afe6be089fd1adade785d3fed",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.14.14, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.14.15, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "6eefc114176b56ab8853bb45a1c697af579af3f8",
+      "hash": "59a23f934a3e647fe672bbb38a2ef2291336433f",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -359,7 +359,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "ecf51a4007856ef3eae15f715af41e3f31424425",
+      "hash": "0aead907e68d91cfa22619ddc63bd8eee2918e18",
       "path": ".codearbiter/security-controls.md"
     },
     {

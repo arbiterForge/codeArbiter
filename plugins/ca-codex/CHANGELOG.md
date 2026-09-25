@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.15] - 2026-09-24
+## [0.13.16] - 2026-09-24
 
 ### Fixed
 
@@ -27,6 +27,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Synchronize shared runtime identity with the current candidate cohort and
   document the isolated farm evaluation contract in the private resource. This
   does not add a packaged Codex farm backend or enable HTML farm execution.
+
+## [0.13.15] - 2026-09-24
+
+### Changed
+
+- Vendor the shared authority adapter with Claude Code verification and review
+  seams and the `claude-review/0.1.0` engine profile. This package's own
+  authority behavior is unchanged; the Claude-only reviewer charter is excluded.
 
 ## [0.13.14] - 2026-09-24
 

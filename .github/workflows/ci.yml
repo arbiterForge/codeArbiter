@@ -387,6 +387,8 @@ jobs:
               - '.github/scripts/test_artifact_bridge.py'
               - '.github/scripts/test_artifact_approval_adapter.py'
               - '.github/scripts/test_artifact_authority_adapter.py'
+              - '.github/scripts/fixtures/claude-hooks/**'
+              - 'plugins/ca/hooks/hooks.json'
               - '.github/scripts/test_artifact_prerequisite_adapter.py'
               - '.github/scripts/test_artifact_reconciliation_adapter.py'
               - '.github/scripts/test_artifact_authoring.py'
