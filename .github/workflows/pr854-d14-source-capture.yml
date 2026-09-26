@@ -50,7 +50,7 @@ jobs:
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-d14-merge';out.mkdir()
           class NoRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
-          rows=[('resolve_merge.py','c21dd82fd00b6398b344e58ea35046cf21b355ec','b112149a411621895a1117f7eb6e0f8ff55cdbdfe0c24b23926fc4a44215a2ec'),('validate_source.py','b9b569aa4e8ec1abaa21c3a845e67591794e7756','22dd850191c4f2dcb08c20cff5595a527b643093df27a2030b1c9ee553b02c2b')]
+          rows=[('resolve_merge.py','c21dd82fd00b6398b344e58ea35046cf21b355ec','b112149a411621895a1117f7eb6e0f8ff55cdbdfe0c24b23926fc4a44215a2ec'),('validate_source.py','b9b569aa4e8ec1abaa21c3a845e67591794e7756','22dd850191c4f2dcb08c20cff5595a527b643093df27a2030b1c9ee553b02c2b'),('fix_fixture.py','149d7f83f191ad6e24592b5a0b87ae7804fb434a','d5601598e572b242f00dbec0100c9bd94f3fb44db8b2e952c9f83a1d8b368d13')]
           for name,sha,digest in rows:
               req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
               with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response:row=json.load(response)
@@ -69,7 +69,8 @@ jobs:
           def git(*args):return subprocess.check_output(['git',*args])
           source='a469bf51d65ecbd88fae9d21994470f63f78630c';base='cf326b07078487b7f33ab89b40f5a15b3152b4b1';main='3bc62943be35b1593017016c3ecb4bbb2bc2fb88'
           assert git('rev-parse','HEAD').decode().strip()==base
-          assert git('rev-parse',os.environ['GITHUB_SHA']+'^').decode().strip()==base
+          subprocess.run(['git','merge-base','--is-ancestor',base,os.environ['GITHUB_SHA']],check=True)
+          assert git('diff','--name-only',base,os.environ['GITHUB_SHA']).decode().splitlines()==['.github/workflows/pr854-d14-source-capture.yml']
           assert not git('status','--porcelain=v1','--untracked-files=no').strip()
           # Replay verified tracked bytes only in this fresh hosted checkout.
           # This leaves product attributes and user/developer checkouts untouched.
@@ -93,7 +94,9 @@ jobs:
           merged=subprocess.run(['git','-c','user.name=Merge validation','-c','user.email=validation@example.invalid','merge','--no-commit','--no-ff',main],capture_output=True)
           (out/'merge.log').write_bytes(merged.stdout+merged.stderr);assert merged.returncode==1
           subprocess.run(['python',str(out/'resolve_merge.py'),str(root)],check=True)
-          tree=git('write-tree').decode().strip();assert tree=='9211b638814bc6fabd3c50a42e32d7a4f7cfc5f1'
+          subprocess.run(['python',str(out/'fix_fixture.py'),str(root)],check=True)
+          subprocess.run(['git','add','--','.github/scripts/test_codex_skill_resources.py'],check=True)
+          tree=git('write-tree').decode().strip();assert tree=='aa63cb79b7d16fd2d82fef138617d078a85716d1'
           env=dict(os.environ,GIT_AUTHOR_NAME='Merge validation',GIT_AUTHOR_EMAIL='validation@example.invalid',GIT_COMMITTER_NAME='Merge validation',GIT_COMMITTER_EMAIL='validation@example.invalid')
           fixture=subprocess.check_output(['git','commit-tree',tree,'-p',os.environ['GITHUB_SHA'],'-p',main],input=b'Validate D14 and upstream intent repair\n\nCHANGELOG: Preserve reconciliation and current source identities.\n',env=env).decode().strip()
           protected=['core/surface','plugins/ca/tools','core/artifacts','core/hosts.json','.github/workflows/ci.yml','.codearbiter/decisions']
@@ -126,7 +129,7 @@ jobs:
                   mode,kind,sha=row[:3];assert mode in {'100644','100755'} and kind=='blob'
                   data=git('show','HEAD:'+p);assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
                   z.writestr(p,data);files.append({'path':p,'sha':sha,'mode':mode,'type':'blob'})
-          assert len(files)==28
+          assert len(files)==29
           (out/'candidate.diff').write_bytes(git('diff','--binary','--full-index',r['base'],'HEAD'))
           r.update(files=files,all_commands_passed=True,command_count=len(tests))
           (out/'manifest.json').write_text(json.dumps(r,indent=2),encoding='utf-8')
@@ -140,7 +143,7 @@ jobs:
           python - <<'PY'
           import pathlib,os,json,urllib.request,subprocess,hashlib
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-d14-merge';r=json.loads((out/'manifest.json').read_text())
-          assert r['all_commands_passed'] and r['tree']=='9211b638814bc6fabd3c50a42e32d7a4f7cfc5f1'
+          assert r['all_commands_passed'] and r['tree']=='aa63cb79b7d16fd2d82fef138617d078a85716d1'
           class NoRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
           def api(method,path,payload=None):
