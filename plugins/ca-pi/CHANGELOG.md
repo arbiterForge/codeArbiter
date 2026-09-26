@@ -4,6 +4,21 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.2] - 2026-09-25
+
+### Fixed
+
+- Count measured partial token usage toward proven budget overruns while keeping
+  incomplete totals unknown; retain exact source identities without storing blobs.
+
+- Retain strict HTML intent-response identity checks and per-document source healing.
+- Bound oversized UTF-8 code-map diagnostics without rewriting human content.
+
+### Added
+
+- Internal closed scout-report decoding and test-owned observation accounting;
+  onboarding dispatch and context-writing integration are not enabled by these helpers.
+
 ## [0.15.1] - 2026-09-25
 
 ### Removed

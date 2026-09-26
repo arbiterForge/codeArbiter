@@ -107,6 +107,7 @@ on:
       # test_pi_promotion.py guards the promotion workflow itself. A workflow-
       # only edit must start the hooks job that executes that contract suite.
       - ".github/workflows/pi-promotion.yml"
+      - ".github/fixtures/context-onboarding/**"
       - ".github/fixtures/codex-skill-resources/**"
       - ".github/scripts/check_codex_skill_resources.py"
       - ".github/scripts/check_codex_static_package.py"
@@ -233,6 +234,7 @@ jobs:
               - '.github/scripts/test_host_descriptors.py'
               - '.github/workflows/ci.yml'
             hooks:
+              - '.github/fixtures/context-onboarding/**'
               - 'plugins/ca/hooks/**'
               - 'plugins/ca-codex/hooks/**'
               - 'plugins/ca-pi/hooks/**'
@@ -2257,6 +2259,15 @@ jobs:
         # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
         # with schema/doc/created/interview_derived/entries[] (_provenancelib).
         run: python .github/scripts/test_provenancelib.py
+      - name: Validate deterministic brownfield fixtures
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_fixtures.py
+      - name: Validate closed brownfield reports
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_contracts.py
+      - name: Validate brownfield observation accounting
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_evaluation.py
       - name: Run shipped-skill portability guard
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # A-6.1: a skill under core/surface/skills/** renders into every

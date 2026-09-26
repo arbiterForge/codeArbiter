@@ -1145,6 +1145,45 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.assertEqual(err.getvalue(), "")
         self.assertEqual(spec.read_bytes(), before)
 
+    def test_installed_intent_cli_accepts_native_empty_diagnostics(self) -> None:
+        self.harness.create_spec()
+        ready = self.harness.client.call(
+            "validate", {"artifact_id": "SPEC-FLOW", "gate": "ready"}, permit_invalid=True
+        )
+        self.assertTrue(ready["valid"], ready)
+        self.assertIn(ready.get("diagnostics"), (None, []))
+        spec = self.root / ".codearbiter/specs/flow.html"
+        before = spec.read_bytes()
+        helper = self.installation.parent.parent / "hooks/_intentlib.py"
+        result = subprocess.run(
+            [sys.executable, str(helper), "uncovered-intent", str(spec)],
+            cwd=self.root, capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual(spec.read_bytes(), before)
+        identity = self.harness.client.call("identity", {"artifact_id": "SPEC-FLOW"})
+        self.assertEqual(identity["authority"]["state"], "draft")
+        self.assertFalse(identity["authority"]["authority_verified"])
+
+    def test_installed_intent_cli_reports_incomplete_native_draft(self) -> None:
+        self.harness.client.call(
+            "create",
+            {"operation_id": "fixture-intent-incomplete", "artifact_id": "SPEC-INCOMPLETE",
+             "kind": "spec", "slug": "incomplete", "title": "Incomplete fixture",
+             "summary": "No criterion is fabricated for this negative control."},
+        )
+        spec = self.root / ".codearbiter/specs/incomplete.html"
+        before = spec.read_bytes()
+        helper = self.installation.parent.parent / "hooks/_intentlib.py"
+        result = subprocess.run(
+            [sys.executable, str(helper), "uncovered-intent", str(spec)],
+            cwd=self.root, capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("[INVALID-HTML-SPEC]", result.stdout)
+        self.assertEqual(spec.read_bytes(), before)
+
     def test_producers_create_and_read_canonical_html_pair(self) -> None:
         self.harness.create_pair()
         for artifact_id in ("SPEC-FLOW", "PLAN-FLOW"):
