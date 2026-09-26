@@ -1,0 +1,256 @@
+{
+  "format": "campaign-authoring-evidence/0.1.0",
+  "date": "2026-09-25",
+  "repository": "arbiterForge/codeArbiter",
+  "campaign": "exercise-ready-brownfield",
+  "scope": "Planning-artifact authoring and self-review only; not campaign implementation qualification.",
+  "baseline_commit": "4187f1e22dc7da3cf755a2654bbf7ec268236126",
+  "historical_assessment_commit": "d171126e71e48b78d242c3d95b218236fdd8f61d",
+  "initial_spec_commit": "96f4a052ca057c2085c5241f6fcf7f5f616d5ce2",
+  "authoring_environment": {
+    "os": "Windows",
+    "architecture": "AMD64",
+    "python": "3.14.6",
+    "exercise_target_assumed": false
+  },
+  "installed_resource_package": {
+    "tag": "v2.21.16",
+    "name": "codearbiter-ca-2.21.16.tar.gz",
+    "archive_sha256": "32588a10eb5070b408443e5a0ef23453128725d33574c49a93f5edf5edf22fb8",
+    "archive_digest_matches_release_metadata": true,
+    "capabilities": {
+      "binary": "ca-artifact",
+      "host_default_enabled": true,
+      "operations": [
+        "accept-scope",
+        "apply",
+        "approve",
+        "capabilities",
+        "capture",
+        "capture-observation",
+        "create",
+        "diff",
+        "eligible",
+        "evidence-context",
+        "export",
+        "farm-project",
+        "farm-seal",
+        "farm-verify",
+        "identity",
+        "index",
+        "migration-apply",
+        "migration-preview",
+        "migration-rollback",
+        "outline",
+        "plan-bind",
+        "prerequisite",
+        "read",
+        "rebrand",
+        "recover",
+        "repair-apply",
+        "repair-preview",
+        "schema",
+        "scope-reconcile",
+        "smarts-apply",
+        "snapshot",
+        "sprint-approval-context",
+        "sprint-approve",
+        "task-block",
+        "task-reconcile",
+        "task-review",
+        "task-start",
+        "validate"
+      ],
+      "platform": "windows/amd64",
+      "protocol": "codearbiter.artifact-api/0.1.0",
+      "public_registrations_added": 0,
+      "renderer": "codearbiter-html/0.1.0",
+      "repository_operations_available": true,
+      "runtime_downloads": false,
+      "schema_version": "0.3.1",
+      "storage_backend": "windows-osroot-lockfileex",
+      "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes",
+      "version": "0.1.0"
+    },
+    "workflow_preflight": {
+      "host": "claude",
+      "adapter_version": "2.21.16",
+      "resources_available": true,
+      "evidence_kind": "installed-resource-preflight",
+      "live_host_verified": false,
+      "missing": []
+    }
+  },
+  "initial_spec": {
+    "identity": {
+      "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "kind": "spec",
+      "model_sha256": "fcad02ca1e8c0b54478c8642ac40c172427fbdd6af6e2989e3e273a3e87c2f2f",
+      "normative_sha256": "9f4eb3bb84e4524b8c63f5b244bf71bf072581a0567417ccd9e12c2e3bc961f3",
+      "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+      "revision": 1,
+      "symbol_count": 186
+    },
+    "html_sha256": "2255a9b0fc9b369adc3a86044a8a38f833a96dc77d799aea56cbbc2b99f6173c",
+    "criteria": 32,
+    "ready_valid": true
+  },
+  "amended_spec": {
+    "identity": {
+      "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "kind": "spec",
+      "model_sha256": "4c9023356fddede46a5feced03fe29d337965adf4f4f38e4cbf519e1b275e355",
+      "normative_sha256": "04dd9c3df515681104b63477a2c0d9a0daa571501dac327ed32df4d6592b30ba",
+      "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+      "revision": 4,
+      "symbol_count": 225
+    },
+    "html_sha256": "2227d62cccc399dac36491ca065f7f34b744be281638ca6a39c993eea717ef3d",
+    "criteria": 41,
+    "scenarios": 84,
+    "scope_records": 8,
+    "sections": 12,
+    "symbols": 225
+  },
+  "validation": {
+    "structural": {
+      "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "structural",
+      "kind": "spec",
+      "model_sha256": "4c9023356fddede46a5feced03fe29d337965adf4f4f38e4cbf519e1b275e355",
+      "normative_sha256": "04dd9c3df515681104b63477a2c0d9a0daa571501dac327ed32df4d6592b30ba",
+      "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+      "revision": 4,
+      "symbol_count": 225,
+      "valid": true
+    },
+    "ready": {
+      "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "ready",
+      "kind": "spec",
+      "model_sha256": "4c9023356fddede46a5feced03fe29d337965adf4f4f38e4cbf519e1b275e355",
+      "normative_sha256": "04dd9c3df515681104b63477a2c0d9a0daa571501dac327ed32df4d6592b30ba",
+      "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+      "revision": 4,
+      "symbol_count": 225,
+      "valid": true
+    },
+    "approved": {
+      "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "authority_diagnostic": {
+        "code": "AUTHORITY_UNVERIFIED",
+        "message": "artifact has not been approved by its workflow"
+      },
+      "diagnostics": null,
+      "gate": "approved",
+      "kind": "spec",
+      "model_sha256": "4c9023356fddede46a5feced03fe29d337965adf4f4f38e4cbf519e1b275e355",
+      "normative_sha256": "04dd9c3df515681104b63477a2c0d9a0daa571501dac327ed32df4d6592b30ba",
+      "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+      "revision": 4,
+      "symbol_count": 225,
+      "valid": false
+    }
+  },
+  "checks": {
+    "operation_replay_preserved_bytes": true,
+    "native_outline_unique_ids": 225,
+    "criterion_ids_match_authored_records": true,
+    "all_criterion_evidence_states": "planned",
+    "scope_to_criterion_coverage": "8 of 8 present; semantic completeness remains review-owned",
+    "supplemental_intent_backstop": {
+      "initial_exit": 1,
+      "initial_cause": "Scratch projection used unbulleted criterion lines, which the legacy helper did not recognize; eight scope findings were retained until the projection was corrected.",
+      "corrected_exit": 0,
+      "parsed_scope_rows": 8,
+      "parsed_criteria_rows": 41,
+      "uncovered_sentinel_negative_control": "detected",
+      "not_a_completeness_proof": true
+    },
+    "final_whitespace_check": "passed",
+    "source_surface_check": {
+      "exit": 0,
+      "stdout": "build-surface --check: OK (claude, codex, pi in sync)"
+    },
+    "local_relative_links_checked": 4,
+    "gitleaks_directory_scan": {
+      "exit": 0,
+      "config": ".gitleaks.toml",
+      "version": "8.30.1"
+    },
+    "standalone_ready_without_authoring_journal": true
+  },
+  "self_review": {
+    "findings": 13,
+    "new_criteria": [
+      "AC-033",
+      "AC-034",
+      "AC-035",
+      "AC-036",
+      "AC-037",
+      "AC-038",
+      "AC-039",
+      "AC-040",
+      "AC-041"
+    ],
+    "tightened_original_criteria": [
+      "AC-005",
+      "AC-008",
+      "AC-009",
+      "AC-010",
+      "AC-016",
+      "AC-020",
+      "AC-023",
+      "AC-025",
+      "AC-028",
+      "AC-029"
+    ],
+    "independent_review": false,
+    "approval_captured": false
+  },
+  "preserved_original_files": {
+    "supporting-review.md": "ac22d8f704ce91ac9472e4477be4161b253b8403aef5adea6d8bb6d9589367e2",
+    "evidence-ledger.json": "90c95a45ed33f97e213397a1b5ad39e2d76c05469e388a4566425ae422013091"
+  },
+  "not_run": [
+    "Campaign implementation tests",
+    "New cold host installation or live model onboarding/contribution trials",
+    "P1 guidance renderer, filesystem or native host qualification",
+    "Monetary cost comparison",
+    "Independent policy-owned review or specification approval",
+    "Merge, release, migration or consumer instruction publication"
+  ],
+  "boundary": "No source, runtime, generated plugin, version, global configuration or cross-product canon changes. The only canonical specification is the HTML path in amended_spec.identity.path; scratch projections and local engine transaction files are not alternate canonical records."
+}
