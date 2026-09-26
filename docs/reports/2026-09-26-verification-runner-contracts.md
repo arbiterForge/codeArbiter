@@ -165,6 +165,30 @@ no dependency or lockfile was changed. All six conformance tests passed in
 152.091 seconds, including exact inventories for 135 adversarial sub-suite cases
 and all 41 original reference checks without skips.
 
+### Linked Node entrypoint review correction
+
+CodeRabbit's review of `52c4b243` identified a Python/Go path mismatch when a
+direct Node entrypoint sits beneath a linked dependency directory. Regression
+tests reproduced the physical-versus-declared path mismatch for relative,
+absolute and dot-segment spellings. A shipped-host fixture then reproduced
+`OBSERVATION_UNVERIFIED` at real-engine receipt capture. A separate negative
+regression showed that retargeting the parent directory after execution to a
+different file with identical bytes was not detected.
+
+The minimal correction records and rechecks the lexically normalized entrypoint
+path, matching Node's lookup and the Go observation contract, without rewriting
+argv. It retains final-component link rejection and byte/filesystem identity
+binding. Before-authorization retarget refusal and final-component link refusal
+remain passing controls; after-execution same-byte retargeting now fails closed.
+This completes the linked-parent cases of VR-03 and VR-07 without changing the
+approved scope or weakening any gate.
+
+Fresh native Windows authority results: 109 tests in 108.589 seconds, 108 passed
+and the existing POSIX process-group test skipped. The real-engine linked-path
+receipt fixture passed. Go observation tests, Python syntax, generated parity
+and whitespace checks passed. Independent coverage and security delta reviews
+passed with no findings; their focused tests ran without skips.
+
 ### Delivery and live-proof boundary
 
 The isolated branch is `codex/fix-verification-runner-contracts`; its base is

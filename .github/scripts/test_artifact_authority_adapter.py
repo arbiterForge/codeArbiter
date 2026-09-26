@@ -787,6 +787,94 @@ class AuthorityAdapterTest(unittest.TestCase):
                 self.adapter._vitest_verbose_collector(
                     (" ✓ a.test.ts > suite > exact test 4ms\x1b[33m" + suffix + "\x1b[39m\n").encode(), b"", required)
 
+    def _linked_node_runner(self):
+        (self.root / ".gitignore").write_text("node_modules/\n.runner-store/\n", encoding="utf-8")
+        target = self.root.resolve() / ".runner-store" / "playwright"
+        target.mkdir(parents=True)
+        (target / "cli.js").write_text("// fixture entrypoint, never executed\n", encoding="utf-8")
+        linked = self.root.resolve() / "node_modules" / "playwright"
+        linked.parent.mkdir()
+
+        def point_at(directory):
+            if os.name == "nt":
+                subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(directory)],
+                               check=True, capture_output=True)
+            else:
+                linked.symlink_to(directory, target_is_directory=True)
+
+        def remove_link():
+            if os.name == "nt":
+                linked.rmdir()
+            else:
+                linked.unlink()
+
+        point_at(target)
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["node", "node_modules/playwright/cli.js", "test", "--reporter=json"],
+                          required_tests=["reading inventory and baseline capture"])
+        return target, linked, point_at, remove_link
+
+    def test_linked_node_runner_records_the_declared_path_and_runs(self):
+        _target, linked, _point_at, _remove_link = self._linked_node_runner()
+        definition = self.client.context["commands"][0]["definition"]
+        for entrypoint in ("node_modules/playwright/cli.js", str(linked / "cli.js"),
+                           "./node_modules/playwright/../../node_modules/playwright/cli.js"):
+            with self.subTest(entrypoint=entrypoint):
+                definition["argv"][1] = entrypoint
+                armed = self.adapter.arm_request(
+                    self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
+                self.assertEqual(binding["argv"][1], entrypoint)
+                entry = next(item for item in binding["launch_files"] if item["role"] == "runner-entrypoint")
+                self.assertEqual(entry["path"], str(linked / "cli.js"))
+                self.assertEqual(entry["filesystem_id"], self.adapter._path_identity(linked / "cli.js"))
+                raw = json.dumps(self._playwright_report()).encode()
+                result, base = self._run(
+                    armed, lambda argv, **_kwargs: subprocess.CompletedProcess(argv, 0, raw, b""))
+                self.assertEqual(result["state"], "COMPLETED")
+                self._corroborate(base)
+                self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
+    def test_linked_node_runner_retarget_with_identical_bytes_cannot_publish(self):
+        target, _linked, point_at, remove_link = self._linked_node_runner()
+        replacement = target.parent / "replacement"
+        replacement.mkdir()
+        (replacement / "cli.js").write_bytes((target / "cli.js").read_bytes())
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+
+        def retarget_entrypoint(argv, **_kwargs):
+            remove_link()
+            point_at(replacement)
+            return subprocess.CompletedProcess(argv, 0, json.dumps(self._playwright_report()).encode(), b"")
+
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._run(armed, retarget_entrypoint)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def test_linked_node_runner_retarget_before_authorization_is_rejected(self):
+        target, _linked, point_at, remove_link = self._linked_node_runner()
+        replacement = target.parent / "replacement"
+        replacement.mkdir()
+        (replacement / "cli.js").write_bytes((target / "cli.js").read_bytes())
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        remove_link()
+        point_at(replacement)
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._authorize(armed)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def test_linked_node_runner_final_component_symlink_is_rejected(self):
+        target, linked, _point_at, _remove_link = self._linked_node_runner()
+        original = target / "original.js"
+        (target / "cli.js").rename(original)
+        try:
+            (linked / "cli.js").symlink_to(original)
+        except OSError as exc:
+            self.skipTest(f"host cannot create a file symlink: {exc}")
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        self.assertEqual(self.adapter._registered_requests(), [])
+
     def test_direct_node_runner_entrypoint_drift_cannot_publish(self):
         (self.root / ".gitignore").write_text("node_modules/\n", encoding="utf-8")
         script = self.root / "node_modules" / "playwright" / "cli.js"
@@ -2126,6 +2214,52 @@ class ClaudeEndToEndTest(unittest.TestCase):
         workflow.mutate("accept-scope", "PLAN-FLOW", scope="CP-01", receipt=quality)
         eligible = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertTrue(eligible["all_accepted_and_current"], eligible)
+
+    @unittest.skipUnless(shutil.which("node"), "direct Node integration requires Node")
+    def test_linked_node_entrypoint_is_accepted_by_real_engine(self):
+        target = self.root / ".codearbiter" / "runner-store"
+        target.mkdir()
+        (target / "cli.js").write_text("console.log('linked runner fixture');\n", encoding="utf-8")
+        linked = self.root / "node_modules" / "playwright"
+        linked.parent.mkdir()
+        if os.name == "nt":
+            subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(target)],
+                           check=True, capture_output=True)
+        else:
+            linked.symlink_to(target, target_is_directory=True)
+        (self.root / ".gitignore").write_text(".codearbiter/\n__pycache__/\nnode_modules/\n", encoding="utf-8")
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation, "linked-node", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {"operation_id": "linked-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+                               "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
+        workflow.approve("SPEC-FLOW")
+        spec_hash = client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"]
+        plan = self.host.plan_normative(spec_hash)
+        plan["tasks"][0]["verification"][0].update(
+            argv=["node", "node_modules/playwright/cli.js"], required_tests=[],
+            assertion="The pinned linked Node entrypoint exits successfully.")
+        client.call("create", {"operation_id": "linked-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+                               "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+                               "spec_id": "SPEC-FLOW", "normative": plan})
+        workflow.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {
+            "verification_inputs": {"roots": ["."], "exclude_directories": ["node_modules"]}}}])
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        pre = self._event("bash-pretooluse.json", tool_use_id="linked-verify",
+                          tool_input={"command": armed["verify_command"], "description": "verify linked runner"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        post = self._event("bash-posttooluse.json", tool_use_id="linked-verify", tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
+        self.assertTrue((self.root / published["receipt"]).is_file())
 
 
 class ClaudeHookRegistrationTest(unittest.TestCase):

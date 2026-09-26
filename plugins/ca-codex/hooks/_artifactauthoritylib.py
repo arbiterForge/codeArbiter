@@ -713,10 +713,11 @@ def _bind_commands(
         if (_command_name(definition["argv"][0]) in {"node", "node.exe"}
                 and len(definition["argv"]) > 1
                 and Path(definition["argv"][1]).suffix.casefold() in {".js", ".mjs", ".cjs"}):
-            script = cwd / definition["argv"][1]
+            # Match Node's lexical entrypoint normalization and the Go contract;
+            # retain this lookup path so linked-parent retargeting stays visible.
+            script = Path(os.path.normpath(cwd / definition["argv"][1]))
             try:
                 _path_identity(script)
-                script = script.resolve(strict=True)
                 if not script.is_file():
                     raise OSError("runner entrypoint is not a file")
             except OSError as exc:
