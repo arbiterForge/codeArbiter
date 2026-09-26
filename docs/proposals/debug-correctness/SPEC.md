@@ -2,14 +2,14 @@
 
 Document: CA-DEBUG-CORRECTNESS-01, D1 review revision 3  
 Date: 2026-09-25  
-Status: Proposed specification input, not an approved or engine-authored artifact  
+Status: Historical specification input adopted into an unapproved native review draft; current state in [D1.md](D1.md)
 Repository: arbiterForge/codeArbiter  
 Inspected main: 4187f1e22dc7da3cf755a2654bbf7ec268236126  
 Integration candidate rechecked for D1: PR #854 at 578065076e2e11a4e63f33256cb386a5cba1d7d2 (open and draft; debug owner/declaration byte-identical to the earlier inspected candidate)
 
 ## D1 preparation status
 
-T01-T04 source preparation is complete; T05 native adoption and T06 actual approval are blocked, not waived. [D1.md](D1.md) records exact evidence and the remaining gate. D1-PROFILE.md resolves the finite profile choices and D1-CASES.json freezes evaluator-side controls. All product scenarios remain unrun. The D1 request authorizes this preparation on the same PR, not D2/D3, package updates, an approval receipt, merge or release.
+T01-T04 source preparation is complete; T05 produced the [native review draft](../../../.codearbiter/specs/debug-correctness.html) and its bound plan. Both pass engine ready validation and remain unapproved drafts. T06 review, prerequisite-scope resolution and actual approval remain blocked, not waived. [D1.md](D1.md) records exact evidence and limitations. The body below is the pinned adoption input, not a second active specification or current-status ledger. D1-PROFILE.md resolves finite profile choices and D1-CASES.json freezes evaluator-side controls. All product scenarios remain unrun. This preparation does not authorize D2/D3, approval events, merge or release.
 
 ## Authority and use
 

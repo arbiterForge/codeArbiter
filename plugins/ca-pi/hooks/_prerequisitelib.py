@@ -40,6 +40,7 @@ from typing import Any
 import _artifactlib
 import _artifactauthoritylib
 import _artifactpromptlib
+import _replylib
 from _hooklib import acquire_lock, release_lock
 
 
@@ -619,6 +620,9 @@ def arm_user_prerequisite(
         "requirement": record["requirement"],
         "review_packet_sha256": packet_sha256,
         "reply": reply,
+        **_replylib.offer_code(root, "prerequisite", artifact_id, reply,
+                               names=[artifact_id, prerequisite_id],
+                               short_prefix=["satisfy-prerequisite"]),
         "pending": relative.as_posix(),
     }
 
@@ -914,14 +918,19 @@ def consume_from_hook(
     host: str,
     session_id: str,
 ) -> str:
-    attempted = isinstance(prompt, str) and prompt.startswith("satisfy-prerequisite")
+    raw = prompt
+    prepared = _replylib.prepare(raw, "prerequisite")
+    prompt = prepared["text"]
+    attempted = prepared["attempted"]
+    if prepared["notice"]:
+        _replylib.record_near_miss(root, raw, "code")
+        return prepared["notice"]
     match = _match_prompt(prompt)
     if match is None:
-        return (
-            "codeArbiter: prerequisite capture failed: exact confirmation syntax required"
-            if attempted
-            else ""
-        )
+        if attempted:
+            _replylib.record_near_miss(root, raw, "syntax")
+            return _replylib.miss_notice("satisfy-prerequisite K7MQ")
+        return ""
     try:
         routed = _artifactpromptlib.resolve("prerequisite", prompt)
         root = routed or Path(root)

@@ -1,6 +1,6 @@
 # Debug correctness: implementation plan input
 
-Status: Source-only plan; T01-T04 SOURCE_COMPLETE, T05-T06 BLOCKED, T07-T40 PENDING. D1 remains incomplete until native adoption and actual approval. See [D1.md](D1.md). No runtime implementation, product verification or release qualification is asserted.  
+Status: Historical plan input; T01-T04 SOURCE_COMPLETE, T05 DRAFT_READY, T06 BLOCKED, T07-T40 PENDING. The [native plan](../../../.codearbiter/plans/debug-correctness.html) is now the canonical review draft; it remains unapproved and blocked from execution. D1 remains incomplete until T06 review, prerequisite-scope resolution and actual approval. See [D1.md](D1.md). No runtime implementation, product verification or release qualification is asserted.
 Specification: [SPEC.md](SPEC.md), CA-DEBUG-CORRECTNESS-01 D1 review revision 3  
 Contract: [CONTRACT.md](CONTRACT.md)  
 Scenario oracles: [SCENARIOS.md](SCENARIOS.md)  
@@ -8,9 +8,9 @@ Completeness review: [REVIEW.md](REVIEW.md)
 
 ## 1. Execution and integration boundary
 
-This is the requested WIP preparation, not a shadow authoritative `.codearbiter` plan. D1 source preparation has settled exact adoption inputs in D1-PROFILE.md and D1-CASES.json. Native adoption/approval is still blocked as recorded in D1.md. A qualified installed session must create the engine-owned native specification and bound plan, validate readiness and obtain actual required approval before implementation. Map these external AC/task identities to engine-issued records; do not fabricate IDs, receipts, or approved status. Sequential planning retains approved-source binding; initial sprint planning uses only its explicit draft-pair preparation and real combined approval. No farm is requested.
+This document is the pinned source input and historical descriptive ledger for the engine-authored native draft pair. D1-PROFILE.md and D1-CASES.json remain source design evidence. Native draft adoption now passes installed preflight and ready validation; actual approval and the T06 limitations in D1.md remain pending. External AC/task identities have explicit native correspondence. No fabricated receipt, task transition or approved status is permitted. The initial full-lane sprint draft-pair route retains draft_preview binding until real combined approval. No farm is requested.
 
-After adoption, record actual native pair pointers and label these proposal inputs historical, not a second active execution ledger. PENDING here is descriptive, not a native resume state. The user's WIP request authorizes publication of this proposal, not implementation, merge, release or provider expenditure.
+The native specification and plan pointers are recorded in D1.md and D1-ENVIRONMENT.json. These proposal inputs are historical, not a second active execution ledger. PENDING here is descriptive; all native task states also remain PENDING because this authoring unit creates no execution/authority events. Draft preparation does not authorize implementation, merge, release or provider expenditure.
 
 Base: `arbiterForge/codeArbiter@4187f1e22dc7da3cf755a2654bbf7ec268236126`. PR #854 was rechecked open/draft at `578065076e2e11a4e63f33256cb386a5cba1d7d2`; the debug owner and declaration match the prior candidate byte-for-byte. Re-read both refs before execution; recorded identities are evidence, not permission to overwrite later changes.
 
@@ -64,6 +64,8 @@ Canonical sources generate host copies. The descriptor owns all output paths, in
 
 Each row's AC cell is its external `maps-to` reference to the actual TDD obligation(s) derived after native adoption. It is not a second obligation ID scheme. A verification advances its criterion but does not replace red, review, coverage, lint, commit or merge requirements.
 
+Native collector adaptation: the historical source commands below remain pinned input. Current native declarations use supported standard-unittest invocations and actual observed names for existing suites, with concrete planned names for future suites. T24 additionally owns proposed standard-unittest exposure in `.github/scripts/test_board_sync.py`, preserving all 11 existing checks, assertions, direct CLI/failure behavior and selector semantics; T33 consumes that future exposure through its existing dependency chain. No test is downgraded to exit-only. Only the actual non-test C1/C5 CLI checks use that profile. D1-COLLECTORS.json records all 150 admissions, actual existing-source output matching and the unexecuted future boundary. This adaptation is subject to T06 review and actual native approval; no runtime/test adapter is implemented here.
+
 Existing source commands: C1 `python tools/build-surface.py --check`; C2 `python .github/scripts/test_build_surface.py`; C3 `python .github/scripts/test_host_descriptors.py`; C4 `python .github/scripts/test_command_route_compatibility.py`; C5 `python .github/scripts/check_routing_index_parity.py`; C6 `python .github/scripts/test_board_sync.py`; C7 `python .github/scripts/test_codex_skill_resources.py`; C8 `python .github/scripts/test_ci_impact.py`; C9 `python .github/scripts/test_artifact_surface.py`. Contributor Python syntax checks use `python -m py_compile` on exact changed paths; they are not the validator's no-write journey.
 
 D/J/K/Q/X are introduced by T07/T14/T25/T34/T36, respectively. Once implemented, their ordinary command is `python <exact script path>` with standard unittest. Document and test supported selectors; zero selected assertions must fail. Until introduced these are planned commands, not existing or executed checks. G's checked mode is tested before use. Read current actual core-sync/package commands; do not invent flags.
@@ -78,7 +80,7 @@ Follow explicit dependencies. T36 can prepare evidence records after D1. T34 int
 
 ### D1
 
-SOURCE_COMPLETE means the source-only preparation deliverable exists, not native acceptance. T01 records the integration policy; P-854 is NOT satisfied while its accepted consolidation is unintegrated. T02/T04 retain actual independent review as an outstanding T06/T36 requirement. T05 is blocked by the inspected installed-workflow mismatch; T06 additionally lacks a current native pair and host-observed approval. These labels are not engine task states.
+SOURCE_COMPLETE means the source-only preparation deliverable exists, not native acceptance. DRAFT_READY means the native pair passes structural readiness for review. T01 records the integration policy; P-854 remains unsatisfied. T02/T04 retain actual independent review as an outstanding T06/T36 requirement. T05's installed-workflow mismatch is resolved; T06 still requires independent review, resolution of the plan-wide prerequisite limitation, exact qualification-cell preparation and host-observed approval. These labels are not engine task states.
 
 | ID | Exact path keys and work | Verification / completion evidence | AC / maps-to | Depends on | Status |
 |---|---|---|---|---|---|
@@ -86,7 +88,7 @@ SOURCE_COMPLETE means the source-only preparation deliverable exists, not native
 | T02 | P: Cross-check scope, original review, all criteria and scenario oracles; resolve missing intent before task execution. | All G1-G8/R01-R15 and original V01-V35 retained; answer what remains broken if static checks pass. | AC-01,AC-10,AC-16,AC-27 | T01 | SOURCE_COMPLETE |
 | T03 | P/CONTRACT.md: Finalize the finite date-time, numeric, Unicode, fingerprint and validator-result profiles before native readiness. | V39/V40: explicit valid/invalid format cases and schema/runtime agreement; 0.0 control is not a defect. | AC-07,AC-14,AC-15 | T02 | SOURCE_COMPLETE |
 | T04 | P/SCENARIOS.md: Freeze closed-field/SEM negative cases and hidden ground truth; retain original example identities. | Every SEM-01 through SEM-19 has negative coverage; solvable versus blocked outcomes fixed before trials. | AC-10,AC-15,AC-27,AC-28 | T03 | SOURCE_COMPLETE |
-| T05 | P; engine-selected native spec/plan paths: Adopt this proposal through the qualified installed native authoring workflow and record the actual pair pointers. | Engine-issued IDs, ready validation, exact source binding, external-ID correspondence; no fake receipt or Markdown shadow. | AC-26,AC-27 | T04 | BLOCKED |
+| T05 | P; engine-selected native spec/plan paths: Adopt this proposal through the qualified installed native authoring workflow and record the actual pair pointers. | Engine-issued IDs, ready validation, exact source binding, external-ID correspondence; no fake receipt or Markdown shadow. | AC-26,AC-27 | T04 | DRAFT_READY |
 | T06 | Native pair; P/REVIEW.md: Complete adversarial/completeness review, native task expansion and actual required approval. | Current approved pair and real host-observed authority; complete AC coverage and acyclic task graph. P-AUTH satisfied. | AC-26,AC-27 | T05 | BLOCKED |
 
 ### D2

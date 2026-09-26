@@ -9,6 +9,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -131,6 +132,43 @@ class PrerequisiteAdapterTest(unittest.TestCase):
 
     def tearDown(self):
         self.temp.cleanup()
+
+    def hook_fixture(self):
+        routes = importlib.import_module("_artifactpromptlib")
+        replies = importlib.import_module("_replylib")
+        for module in (routes, replies):
+            self.addCleanup(setattr, module, "REGISTRY_PARENT", module.REGISTRY_PARENT)
+            module.REGISTRY_PARENT = self.root
+        self.adapter._artifactpromptlib = routes
+        self.adapter._replylib = replies
+        return replies
+
+    def hook(self, prompt):
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=self.client):
+            return self.adapter.consume_from_hook(
+                root=self.root, plugin_root=self.root, prompt=prompt,
+                host="claude", session_id="session-lenient",
+            )
+
+    def test_short_code_and_padding_from_hook_satisfy_the_prerequisite(self):
+        replies = self.hook_fixture()
+        armed = self.arm(now=int(time.time()))
+        self.assertEqual(armed["short_reply"], f"satisfy-prerequisite {armed['code']}")
+        self.assertIn("workflow prerequisite recorded", self.hook(f"\u00a0Satisfy-Prerequisite {armed['code'].lower()}.\n"))
+        source = next((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+        self.assertEqual(json.loads(source.read_text(encoding="utf-8"))["source_text"], armed["reply"])
+        self.assertIn("matches no armed request", replies.expand(armed["short_reply"])["notice"])
+
+    def test_hook_misses_are_visible_and_confer_nothing(self):
+        self.hook_fixture()
+        armed = self.arm(now=int(time.time()))
+        before = list(self.client.calls)
+        self.assertIn("matches no armed request", self.hook("satisfy-prerequisite ZZZZ"))
+        self.assertIn("belongs to PLAN-EXAMPLE GATE-APPROVAL",
+                      self.hook(f"satisfy-prerequisite PLAN-OTHER GATE-APPROVAL {armed['code']}"))
+        self.assertIn("Send only the reply line", self.hook(armed["reply"] + " please"))
+        self.assertEqual(self.hook("yes"), "")
+        self.assertEqual(self.client.calls, before)
 
     def arm(self, *, confirmation_nonce="fixed-prerequisite-nonce", now=1000):
         return self.adapter.arm_user_prerequisite(

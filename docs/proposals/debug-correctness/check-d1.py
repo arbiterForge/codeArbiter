@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Source-only D1 design checks. NOT the production handoff validator or host proof.
 
-Run with Python -B. Reads only adjacent proposal data; never imports product code,
-executes case operations, changes a repository, or confers authority.
+The native collector runs python -m unittest -v check-d1 from this directory.
+Direct source-only use may run Python -B. Assertions read adjacent proposal data;
+unittest imports may create ignored bytecode caches. This checker never imports
+product code, executes case operations, or confers authority.
 """
 from pathlib import Path
 import datetime
@@ -84,7 +86,7 @@ class D1DesignTest(unittest.TestCase):
         covered=set()
         for task,row in tasks.items():
             ids=set(re.findall(r'AC-\d\d',row[3])); self.assertTrue(ids); covered.update(ids)
-            num=int(task[1:]); self.assertEqual(row[-1].strip(),'SOURCE_COMPLETE' if num<5 else 'BLOCKED' if num<7 else 'PENDING')
+            num=int(task[1:]); self.assertEqual(row[-1].strip(),'SOURCE_COMPLETE' if num<5 else 'DRAFT_READY' if num==5 else 'BLOCKED' if num==6 else 'PENDING')
         self.assertEqual(covered,{'AC-%02d'%i for i in range(1,29)})
         graph={t:re.findall(r'T\d\d',r[4]) for t,r in tasks.items()}
         visiting=set(); visited=set()
@@ -119,9 +121,73 @@ class D1DesignTest(unittest.TestCase):
 
     def test_native_adoption_not_fabricated(self):
         env=json.loads((ROOT/'D1-ENVIRONMENT.json').read_text(encoding='utf-8'))
-        self.assertFalse(env['workflow_preflight_present'])
-        for key in ['native_spec','native_plan','approval_receipt']:self.assertIsNone(env[key])
-        self.assertEqual(env['adoption_status'],'BLOCKED_INSTALLED_WORKFLOW_MISMATCH')
+        self.assertTrue(env['workflow_preflight_present'])
+        self.assertTrue(env['workflow_preflight']['resources_available'])
+        self.assertFalse(env['workflow_preflight']['live_host_verified'])
+        self.assertEqual(env['workflow_preflight']['missing'],[])
+        self.assertIsNone(env['approval_receipt'])
+        self.assertEqual(env['adoption_status'],'DRAFT_PAIR_READY_FOR_REVIEW')
+        for key in ['native_spec','native_plan']:
+            record=env[key]
+            self.assertTrue(record['valid']); self.assertEqual(record['gate'],'ready')
+            self.assertEqual(record['authority']['state'],'draft')
+            self.assertFalse(record['authority']['authority_verified'])
+            for field in ['model_sha256','normative_sha256']:
+                self.assertRegex(record[field],r'^[0-9a-f]{64}$')
+        binding=env['plan_spec_binding']
+        self.assertEqual(binding['binding_mode'],'draft_preview')
+        self.assertEqual(binding['artifact_id'],env['native_spec']['artifact_id'])
+        self.assertEqual(binding['normative_sha256'],env['native_spec']['normative_sha256'])
+        mapping=env['external_id_correspondence']
+        self.assertEqual(mapping['criteria'],{'AC-%02d'%i:'AC-%03d'%i for i in range(1,29)})
+        self.assertEqual(mapping['scenarios'],{'V%02d'%i:'SCN-%03d'%i for i in range(1,42)})
+        self.assertEqual(mapping['parent_tasks'],{'T%02d'%i:'T-%03d'%i for i in range(1,41)})
+        self.assertEqual(env['native_task_count'],40+env['qualification_child_count'])
+        self.assertEqual(env['qualification_child_count'],83)
+        self.assertEqual(env['t06_status'],'BLOCKED')
+        self.assertEqual(env['prerequisite_scope_limit']['status'],'UNRESOLVED_BEFORE_APPROVAL')
+        self.assertFalse(env['historical_probe']['workflow_preflight_present'])
+        collectors=json.loads((ROOT/'D1-COLLECTORS.json').read_text(encoding='utf-8'))
+        self.assertEqual(collectors['native_plan']['model_sha256'],env['native_plan']['model_sha256'])
+        self.assertEqual(collectors['reproduced_before']['rejected'],150)
+        self.assertEqual(collectors['verification_rows'],150)
+        self.assertEqual(collectors['admitted'],150); self.assertEqual(collectors['rejected'],0)
+        self.assertEqual(collectors['availability'],{'existing':31,'proposed':119})
+        declarations=collectors['declarations']
+        self.assertEqual(len(declarations),150)
+        self.assertEqual(len({(r['task'],r['row']) for r in declarations}),150)
+        for row in declarations:
+            if row['profile']=='exit-only/0.1.0':
+                self.assertFalse(row['required_tests'])
+                self.assertEqual(row['availability'],'existing')
+                self.assertIn(row['argv'],[
+                    ['python','tools/build-surface.py','--check'],
+                    ['python','.github/scripts/check_routing_index_parity.py'],
+                ])
+            else:
+                self.assertEqual(row['profile'],'python-unittest-text/0.1.0')
+                self.assertEqual(row['argv'][1:3],['-m','unittest'])
+                self.assertTrue(row['required_tests'])
+                self.assertTrue(all(re.fullmatch(r'test_[a-z0-9_]+',name) for name in row['required_tests']))
+            if row['availability']=='proposed':
+                self.assertEqual(row['evidence_kind'],'PLANNED_NOT_EXECUTED')
+        d1=collectors['existing_source_observations']['D1']
+        self.assertEqual(d1['argv'],['python','-m','unittest','-v','check-d1'])
+        self.assertEqual(d1['cwd'],'docs/proposals/debug-correctness')
+        self.assertEqual(d1['exit'],0); self.assertTrue(d1['collector_success'])
+        self.assertEqual(set(d1['required_tests']),set(unittest.defaultTestLoader.getTestCaseNames(D1DesignTest)))
+        self.assertEqual({r['name'] for r in d1['collector_results']},set(d1['required_tests']))
+        controls={r['control']:r['result'] for r in collectors['negative_controls']}
+        self.assertEqual(controls['missing_actual_named_result'],'MISSING_TEST_RESULT')
+        self.assertEqual(controls['duplicate_actual_named_result'],'DUPLICATE_TEST_RESULT')
+        self.assertEqual(controls['empty_output_for_each_proposed_declaration'],'MISSING_TEST_RESULT')
+        board=collectors['legacy_board_sync_observation']
+        self.assertFalse(board['implementation_performed'])
+        self.assertEqual(len(board['emitted_registered_names']),11)
+        for task in ['T-024','T-033']:
+            row=next(r for r in declarations if r['task']==task and 'test_board_sync.py' in r['argv'])
+            self.assertEqual(row['availability'],'proposed')
+            self.assertEqual(row['required_tests'],board['emitted_registered_names'])
         proof=json.loads((ROOT/'D1-OWNERSHIP.json').read_text(encoding='utf-8'))
         self.assertFalse(proof['pr854']['merged'])
         self.assertTrue(all(row['byte_identical'] for row in proof['debug_comparison']))

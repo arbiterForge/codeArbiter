@@ -239,8 +239,13 @@ def main(argv):
             from _artifactlib import resolve_spec_file, helper_installation
             client, entry = resolve_spec_file(positional[0], helper_installation(__file__))
             result = client.call("validate", {"artifact_id": entry["artifact_id"], "gate": "ready"}, permit_invalid=True)
+            diagnostics = result.get("diagnostics")
+            if diagnostics is None:
+                diagnostics = []  # The native engine serializes no findings as null.
+            if not isinstance(diagnostics, list):
+                raise ValueError("HTML validation diagnostics must be a list or null")
             findings = ["[INVALID-HTML-SPEC] " + item["code"] + ": " + item["message"]
-                        for item in result.get("diagnostics", [])]
+                        for item in diagnostics]
             # Explicit source->criterion mappings replace fuzzy scope matching.
             # The legacy issue-checkbox heuristic is retained ONLY for external
             # issue text until issue-source records receive their own schema.

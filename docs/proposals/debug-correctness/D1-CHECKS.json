@@ -1,17 +1,173 @@
 {
   "format": "codearbiter.debug-d1-checks/1",
-  "boundary": "source-only design/reference checks; not a product validator, native approval or installed debug journey",
+  "boundary": "Source-only design/reference checks, actual installed collector matching, and installed-engine draft readiness. No native verification/approval event, independent review, product validation or installed debug journey.",
   "python": "3.14.6",
   "checks": [
+    {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "test_adjacent_links (check-d1.D1DesignTest.test_adjacent_links) ... ok\r\ntest_native_adoption_not_fabricated (check-d1.D1DesignTest.test_native_adoption_not_fabricated) ... ok\r\ntest_original_examples_retained (check-d1.D1DesignTest.test_original_examples_retained) ... ok\r\ntest_plan_coverage_and_graph (check-d1.D1DesignTest.test_plan_coverage_and_graph) ... ok\r\ntest_profile_vectors (check-d1.D1DesignTest.test_profile_vectors) ... ok\r\ntest_scenario_inventory_and_oracles (check-d1.D1DesignTest.test_scenario_inventory_and_oracles) ... ok\r\ntest_semantic_matrix (check-d1.D1DesignTest.test_semantic_matrix) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.008s\r\n\r\nOK\r\n",
+      "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+      "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+      "environment_variable_names": [
+        "APPDATA",
+        "COMSPEC",
+        "LANG",
+        "LC_ALL",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "environment_settings": {
+        "PYTHONDONTWRITEBYTECODE": null,
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+      },
+      "observed_at_utc": "2026-09-26T03:57:27.423362+00:00",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "eb864c4891aceda5f3a8c722604492aeceb83d0b33972719d9d7af226fe5dd3f",
+      "interpreter_resolution_observation": {
+        "argv": [
+          "python",
+          "-c",
+          "import json,sys; print(json.dumps({\"executable\":sys.executable,\"version\":sys.version}))"
+        ],
+        "cwd": "docs/proposals/debug-correctness",
+        "exit": 0,
+        "stdout": "{\"executable\": \"C:\\\\Python314\\\\python.exe\", \"version\": \"3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]\"}\r\n",
+        "stderr": "",
+        "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+        "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+        "environment_variable_names": [
+          "APPDATA",
+          "COMSPEC",
+          "LANG",
+          "LC_ALL",
+          "LOCALAPPDATA",
+          "PATH",
+          "PATHEXT",
+          "SystemRoot",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "environment_settings": {
+          "PYTHONDONTWRITEBYTECODE": null,
+          "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+          "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+        },
+        "observed_at_utc": "2026-09-26T03:57:27.449012+00:00",
+        "stdout_sha256": "695c900f5949b0a9945ea983797a52618c4f49b722b3e10fe6ec850acbecab31",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ],
+      "collector_results": [
+        {
+          "name": "test_adjacent_links",
+          "status": "pass"
+        },
+        {
+          "name": "test_native_adoption_not_fabricated",
+          "status": "pass"
+        },
+        {
+          "name": "test_original_examples_retained",
+          "status": "pass"
+        },
+        {
+          "name": "test_plan_coverage_and_graph",
+          "status": "pass"
+        },
+        {
+          "name": "test_profile_vectors",
+          "status": "pass"
+        },
+        {
+          "name": "test_scenario_inventory_and_oracles",
+          "status": "pass"
+        },
+        {
+          "name": "test_semantic_matrix",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "native_plan": {
+        "artifact_id": "PLAN-DEBUG-CORRECTNESS-001",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "kind": "plan",
+        "model_sha256": "388d4b341f1f2ace5fbe8447c8bf05d9d8298f0caee981dceea7864b7002d97a",
+        "normative_sha256": "f9c925c835517268a7a23e4a7c40e57191137d4bdcc2a8327de07d40a92d50af",
+        "path": ".codearbiter/plans/debug-correctness.html",
+        "revision": 3,
+        "symbol_count": 142
+      },
+      "task": "T-005",
+      "verification_row": 0,
+      "boundary": "Exact engine-read source-preparation command and qualified collector only. No native verification event, product journey, approval, or acceptance."
+    },
     {
       "argv": [
         "python",
         "-B",
         "docs/proposals/debug-correctness/check-d1.py"
       ],
+      "cwd": ".",
       "exit": 0,
-      "stdout": "{\"boundary\": \"source-only design checks; no product validation\", \"tests\": 7, \"primitive_vectors\": 59, \"semantic_rows\": 19, \"scenarios\": 41, \"success\": true}\n",
-      "stderr": "test_adjacent_links (__main__.D1DesignTest.test_adjacent_links) ... ok\ntest_native_adoption_not_fabricated (__main__.D1DesignTest.test_native_adoption_not_fabricated) ... ok\ntest_original_examples_retained (__main__.D1DesignTest.test_original_examples_retained) ... ok\ntest_plan_coverage_and_graph (__main__.D1DesignTest.test_plan_coverage_and_graph) ... ok\ntest_profile_vectors (__main__.D1DesignTest.test_profile_vectors) ... ok\ntest_scenario_inventory_and_oracles (__main__.D1DesignTest.test_scenario_inventory_and_oracles) ... ok\ntest_semantic_matrix (__main__.D1DesignTest.test_semantic_matrix) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.010s\n\nOK\n"
+      "stdout": "{\"boundary\": \"source-only design checks; no product validation\", \"tests\": 7, \"primitive_vectors\": 59, \"semantic_rows\": 19, \"scenarios\": 41, \"success\": true}\r\n",
+      "stderr": "test_adjacent_links (__main__.D1DesignTest.test_adjacent_links) ... ok\r\ntest_native_adoption_not_fabricated (__main__.D1DesignTest.test_native_adoption_not_fabricated) ... ok\r\ntest_original_examples_retained (__main__.D1DesignTest.test_original_examples_retained) ... ok\r\ntest_plan_coverage_and_graph (__main__.D1DesignTest.test_plan_coverage_and_graph) ... ok\r\ntest_profile_vectors (__main__.D1DesignTest.test_profile_vectors) ... ok\r\ntest_scenario_inventory_and_oracles (__main__.D1DesignTest.test_scenario_inventory_and_oracles) ... ok\r\ntest_semantic_matrix (__main__.D1DesignTest.test_semantic_matrix) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.003s\r\n\r\nOK\r\n",
+      "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+      "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+      "environment_variable_names": [
+        "APPDATA",
+        "COMSPEC",
+        "LANG",
+        "LC_ALL",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "environment_settings": {
+        "PYTHONDONTWRITEBYTECODE": null,
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+      },
+      "observed_at_utc": "2026-09-26T03:57:27.507578+00:00",
+      "stdout_sha256": "bd9ac3a6c357b0e684d39fad9595d2fd75a8d1b2974d8285c334b95ba15c54fb",
+      "stderr_sha256": "451c178835ca35756dd2b3efa7baf88ec1d57c20d1a2da2068d5263e108efd1d"
     },
     {
       "argv": [
@@ -20,25 +176,340 @@
         "docs/proposals/debug-correctness/check-d1.py",
         "--unknown-selector"
       ],
+      "cwd": ".",
       "exit": 2,
       "stdout": "",
-      "stderr": "This preparation checker accepts no selectors; run the complete finite suite.\n"
+      "stderr": "This preparation checker accepts no selectors; run the complete finite suite.\r\n",
+      "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+      "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+      "environment_variable_names": [
+        "APPDATA",
+        "COMSPEC",
+        "LANG",
+        "LC_ALL",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "environment_settings": {
+        "PYTHONDONTWRITEBYTECODE": null,
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+      },
+      "observed_at_utc": "2026-09-26T03:57:27.563045+00:00",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b82c3658c8b0c82c2c3d524c4c0de4c8870152ced4e84f696c529282bafc632f"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.13.18\\hooks\\_intentlib.py",
+        "uncovered-intent",
+        ".codearbiter/specs/debug-correctness.html"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+      "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+      "environment_variable_names": [
+        "APPDATA",
+        "COMSPEC",
+        "LANG",
+        "LC_ALL",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "environment_settings": {
+        "PYTHONDONTWRITEBYTECODE": null,
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+      },
+      "observed_at_utc": "2026-09-26T03:57:28.105332+00:00",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+      "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+      "environment_variable_names": [
+        "APPDATA",
+        "COMSPEC",
+        "LANG",
+        "LC_ALL",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "environment_settings": {
+        "PYTHONDONTWRITEBYTECODE": null,
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+      },
+      "observed_at_utc": "2026-09-26T03:57:28.137127+00:00",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
+  "engine_ready_validation": {
+    "spec": {
+      "artifact_id": "SPEC-DEBUG-CORRECTNESS-001",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "ready",
+      "kind": "spec",
+      "model_sha256": "d003dd1dda2dd16d831a28afc049819d3f7be7b7047020d28d28afe3f32a3f88",
+      "normative_sha256": "f77cb9e52c3ee118fa69871a4dd6f15a124a47732e3e28b820870dcaabdd65cd",
+      "path": ".codearbiter/specs/debug-correctness.html",
+      "revision": 2,
+      "symbol_count": 177,
+      "valid": true
+    },
+    "plan": {
+      "artifact_id": "PLAN-DEBUG-CORRECTNESS-001",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "ready",
+      "kind": "plan",
+      "model_sha256": "388d4b341f1f2ace5fbe8447c8bf05d9d8298f0caee981dceea7864b7002d97a",
+      "normative_sha256": "f9c925c835517268a7a23e4a7c40e57191137d4bdcc2a8327de07d40a92d50af",
+      "path": ".codearbiter/plans/debug-correctness.html",
+      "revision": 3,
+      "symbol_count": 142,
+      "valid": true
+    }
+  },
+  "engine_readback": {
+    "criteria": 28,
+    "scenarios": 41,
+    "parent_tasks": 40,
+    "all_parent_criterion_mappings_match": true,
+    "original_dependency_edges_preserved": true,
+    "all_criteria_covered": true,
+    "context_pages_completed": 3,
+    "context_complete": true,
+    "original_draft_identity_unchanged": true,
+    "qualification_children": 83,
+    "verification_rows": 150,
+    "installed_collector_admissions": 150,
+    "collector_declarations_match_engine": true,
+    "behavioral_assertions_and_qualification_steps_preserved": true
+  },
   "checked_files_sha256": {
-    "check-d1.py": "001e0da00a7571b7d98c1c21e65bd53207e270562a81e25381d2d24a19e84890",
+    "check-d1.py": "bf7d620325ba39e05bb24fa47b21a038823b1bf4d7197e90577caff179071a82",
     "CONTRACT.md": "fab0d4c68de179fc0d5ab0357adc1d599d1030afefa1242633163a0f55b3f9fc",
     "D1-CASES.json": "ed0e723b7ad51679a6787055a6c034efae62af88f2a3a9d623d9b0135e4202d3",
-    "D1-ENVIRONMENT.json": "f85d769e9ba29a64a2987d424cffba9f1c6903cce0680371a0d89f7f62f8add5",
+    "D1-ENVIRONMENT.json": "211c5a828ee497aafc006e236158ffadfdf58b59a1eb006b4242e223d8440443",
     "D1-OWNERSHIP.json": "80b9c318b8da57dc843139d89c226fffa89abaa97a90ff2f8565089bed1e39ef",
     "D1-PROFILE.md": "ee4a807b2de02ce18888d12b30b9d0f903855f6e2a2b6185b7a0c6dcc0a751ad",
-    "D1.md": "5c9ac2b5dee8ad9c99d0efdb7b3bb48378d825ab8b84f7704617427df2933d9c",
-    "PLAN.md": "f377d3500f860367f2b201149495b6c5ee3e61aeccc8611b8968aefa5732d52e",
-    "REVIEW.md": "3a765b2987cd027b53a4718ab56b714fc5eda46b58666ca92f2f365488b75ea9",
+    "D1.md": "9585b536956c4c6cfb682bbae4863359f2ef1d89f8ac0e14980fb2a9d98dff58",
+    "PLAN.md": "da39247535332e9b34d6ddae4c693b0b83d86eb2df71e0ea553b9bbf6db93af9",
+    "REVIEW.md": "69c9f17f53b66ff4ebbd4a079041747b90afa5a158f0e1ba38eb81e7f17d3026",
     "SCENARIOS.md": "59eeb351059bb969d61b0a727f209dfce6cdf7a6bd8406e04c49e58ec2bd1158",
-    "SPEC.md": "e1f27e0b870eba1c19780c48cb6a04b2551f2aa37049ff1adce6b9bf6f8b5aa6"
+    "SPEC.md": "796c53926f04d736f47ef5780ac156735f3c16e3a57e658cafc4edb434457c06",
+    "D1-COLLECTORS.json": "f58efbf8fcee0721bcb361f3f46995b056ce47eac72ab2702208d8ba683bddbd"
   },
-  "proposal_bytecode_directory_present": false,
+  "proposal_bytecode_directory_present": true,
   "product_scenarios_run": 0,
-  "native_artifacts_created": 0
+  "native_artifacts_created": 2,
+  "native_approval_events_created": 0,
+  "historical_source_checks": {
+    "format": "codearbiter.debug-d1-checks/1",
+    "boundary": "source-only design/reference checks; not a product validator, native approval or installed debug journey",
+    "python": "3.14.6",
+    "checks": [
+      {
+        "argv": [
+          "python",
+          "-B",
+          "docs/proposals/debug-correctness/check-d1.py"
+        ],
+        "exit": 0,
+        "stdout": "{\"boundary\": \"source-only design checks; no product validation\", \"tests\": 7, \"primitive_vectors\": 59, \"semantic_rows\": 19, \"scenarios\": 41, \"success\": true}\n",
+        "stderr": "test_adjacent_links (__main__.D1DesignTest.test_adjacent_links) ... ok\ntest_native_adoption_not_fabricated (__main__.D1DesignTest.test_native_adoption_not_fabricated) ... ok\ntest_original_examples_retained (__main__.D1DesignTest.test_original_examples_retained) ... ok\ntest_plan_coverage_and_graph (__main__.D1DesignTest.test_plan_coverage_and_graph) ... ok\ntest_profile_vectors (__main__.D1DesignTest.test_profile_vectors) ... ok\ntest_scenario_inventory_and_oracles (__main__.D1DesignTest.test_scenario_inventory_and_oracles) ... ok\ntest_semantic_matrix (__main__.D1DesignTest.test_semantic_matrix) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.010s\n\nOK\n"
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "docs/proposals/debug-correctness/check-d1.py",
+          "--unknown-selector"
+        ],
+        "exit": 2,
+        "stdout": "",
+        "stderr": "This preparation checker accepts no selectors; run the complete finite suite.\n"
+      }
+    ],
+    "checked_files_sha256": {
+      "check-d1.py": "001e0da00a7571b7d98c1c21e65bd53207e270562a81e25381d2d24a19e84890",
+      "CONTRACT.md": "fab0d4c68de179fc0d5ab0357adc1d599d1030afefa1242633163a0f55b3f9fc",
+      "D1-CASES.json": "ed0e723b7ad51679a6787055a6c034efae62af88f2a3a9d623d9b0135e4202d3",
+      "D1-ENVIRONMENT.json": "f85d769e9ba29a64a2987d424cffba9f1c6903cce0680371a0d89f7f62f8add5",
+      "D1-OWNERSHIP.json": "80b9c318b8da57dc843139d89c226fffa89abaa97a90ff2f8565089bed1e39ef",
+      "D1-PROFILE.md": "ee4a807b2de02ce18888d12b30b9d0f903855f6e2a2b6185b7a0c6dcc0a751ad",
+      "D1.md": "5c9ac2b5dee8ad9c99d0efdb7b3bb48378d825ab8b84f7704617427df2933d9c",
+      "PLAN.md": "f377d3500f860367f2b201149495b6c5ee3e61aeccc8611b8968aefa5732d52e",
+      "REVIEW.md": "3a765b2987cd027b53a4718ab56b714fc5eda46b58666ca92f2f365488b75ea9",
+      "SCENARIOS.md": "59eeb351059bb969d61b0a727f209dfce6cdf7a6bd8406e04c49e58ec2bd1158",
+      "SPEC.md": "e1f27e0b870eba1c19780c48cb6a04b2551f2aa37049ff1adce6b9bf6f8b5aa6"
+    },
+    "proposal_bytecode_directory_present": false,
+    "product_scenarios_run": 0,
+    "native_artifacts_created": 0
+  },
+  "historical_native_draft_checks": {
+    "format": "codearbiter.debug-d1-checks/1",
+    "boundary": "source-only design/reference checks and installed-engine draft readiness; not product validation, independent review, native approval or an installed debug journey",
+    "python": "3.14.6",
+    "checks": [
+      {
+        "argv": [
+          "python",
+          "-B",
+          "docs/proposals/debug-correctness/check-d1.py"
+        ],
+        "exit": 0,
+        "stdout": "{\"boundary\": \"source-only design checks; no product validation\", \"tests\": 7, \"primitive_vectors\": 59, \"semantic_rows\": 19, \"scenarios\": 41, \"success\": true}\n",
+        "stderr": "test_adjacent_links (__main__.D1DesignTest.test_adjacent_links) ... ok\ntest_native_adoption_not_fabricated (__main__.D1DesignTest.test_native_adoption_not_fabricated) ... ok\ntest_original_examples_retained (__main__.D1DesignTest.test_original_examples_retained) ... ok\ntest_plan_coverage_and_graph (__main__.D1DesignTest.test_plan_coverage_and_graph) ... ok\ntest_profile_vectors (__main__.D1DesignTest.test_profile_vectors) ... ok\ntest_scenario_inventory_and_oracles (__main__.D1DesignTest.test_scenario_inventory_and_oracles) ... ok\ntest_semantic_matrix (__main__.D1DesignTest.test_semantic_matrix) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.002s\n\nOK\n"
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "docs/proposals/debug-correctness/check-d1.py",
+          "--unknown-selector"
+        ],
+        "exit": 2,
+        "stdout": "",
+        "stderr": "This preparation checker accepts no selectors; run the complete finite suite.\n"
+      },
+      {
+        "argv": [
+          "python",
+          "-B",
+          "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.13.18\\hooks\\_intentlib.py",
+          "uncovered-intent",
+          ".codearbiter/specs/debug-correctness.html"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "engine_ready_validation": {
+      "spec": {
+        "artifact_id": "SPEC-DEBUG-CORRECTNESS-001",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "spec",
+        "model_sha256": "d003dd1dda2dd16d831a28afc049819d3f7be7b7047020d28d28afe3f32a3f88",
+        "normative_sha256": "f77cb9e52c3ee118fa69871a4dd6f15a124a47732e3e28b820870dcaabdd65cd",
+        "path": ".codearbiter/specs/debug-correctness.html",
+        "revision": 2,
+        "symbol_count": 177,
+        "valid": true
+      },
+      "plan": {
+        "artifact_id": "PLAN-DEBUG-CORRECTNESS-001",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "plan",
+        "model_sha256": "fe580887069b862c2511b29123971728b0643bd76e95e3db1ca29925b7890bcc",
+        "normative_sha256": "7d7f26d29a1a2e11712ee6c5c3dcfc4bc4deba038b8e4cfdfe704775d7eef10c",
+        "path": ".codearbiter/plans/debug-correctness.html",
+        "revision": 2,
+        "symbol_count": 142,
+        "valid": true
+      }
+    },
+    "engine_readback": {
+      "criteria": 28,
+      "scenarios": 41,
+      "parent_tasks": 40,
+      "all_parent_criterion_mappings_match": true,
+      "original_dependency_edges_preserved": true,
+      "all_criteria_covered": true,
+      "context_pages_completed": 3,
+      "context_complete": true,
+      "original_draft_identity_unchanged": true
+    },
+    "checked_files_sha256": {
+      "check-d1.py": "da8408cd4710a1631d7c50205e983d78ffb5d89ea23763c88439019b805e55b5",
+      "CONTRACT.md": "fab0d4c68de179fc0d5ab0357adc1d599d1030afefa1242633163a0f55b3f9fc",
+      "D1-CASES.json": "ed0e723b7ad51679a6787055a6c034efae62af88f2a3a9d623d9b0135e4202d3",
+      "D1-ENVIRONMENT.json": "dc3b64d0088c955dc63a9491d47b29bd6ba0bce86f68078741f4c41816a42a53",
+      "D1-OWNERSHIP.json": "80b9c318b8da57dc843139d89c226fffa89abaa97a90ff2f8565089bed1e39ef",
+      "D1-PROFILE.md": "ee4a807b2de02ce18888d12b30b9d0f903855f6e2a2b6185b7a0c6dcc0a751ad",
+      "D1.md": "e6e6b75795f221f46376957cbdb7e33da9beb02927ed6c4a122b069b38ac1c5a",
+      "PLAN.md": "c8412347e2e46901881fd16dc7b2477db0493e7e1eae1246474997f0adf94360",
+      "REVIEW.md": "be41f5f1a99bdfbd704cceccc4d4b0d71d1a88699a1d0897b9d12d2c8d4cc3cc",
+      "SCENARIOS.md": "59eeb351059bb969d61b0a727f209dfce6cdf7a6bd8406e04c49e58ec2bd1158",
+      "SPEC.md": "796c53926f04d736f47ef5780ac156735f3c16e3a57e658cafc4edb434457c06"
+    },
+    "proposal_bytecode_directory_present": false,
+    "product_scenarios_run": 0,
+    "native_artifacts_created": 2,
+    "native_approval_events_created": 0
+  },
+  "collector_report": "D1-COLLECTORS.json",
+  "bytecode_boundary": "The exact declared unittest import can create ignored __pycache__ files. No hidden -B or PYTHONDONTWRITEBYTECODE was added."
 }

@@ -82,7 +82,7 @@ describe("human-operable product window", () => {
   it("separates initial sprint pair approval from single-artifact and scope acceptance", () => {
     const adapter = read("../core/pysrc/_approvallib.py");
     expect(adapter).toContain("PENDING_APPROVAL");
-    expect(adapter).toContain('"reply": f"approve {artifact_id} {token}"');
+    expect(adapter).toContain('reply = f"approve {artifact_id} {token}"');
     const guide = read("src/content/docs/guides/autonomous-sprints.mdx");
     expect(read("../core/surface/SPRINT.md")).toContain("commits approval plus plan binding in one recoverable native transaction.");
     expect(guide).toContain("arm-sprint");
