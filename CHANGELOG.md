@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.22.2] - 2026-09-26
+
+### Fixed
+
+- Native artifact reviews use a bounded prompt pointing to the full frozen
+  evidence context. The adapter checks its canonical bytes and digest before
+  launch and publication, so large source manifests no longer fill the prompt.
+- Never-launched ARMED reviews can be abandoned without producing authority or
+  losing their history, including bounded oversized requests from older adapters.
+
 ## [2.22.1] - 2026-09-26
 
 ### Fixed
