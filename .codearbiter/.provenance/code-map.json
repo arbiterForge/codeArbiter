@@ -137,37 +137,37 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.21.18)",
+          "claim": "Claude Code plugin manifest for ca (v2.22.1)",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "a04b59a6ee854ae62fda3ac79f1b9e7b0e749e9f",
+      "hash": "20eb2eae8fe46bfa366ff35ce88677592e7cc420",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.19), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.14.1), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "552252aed88b614ab366d322a70b7a9a8da21f61",
+      "hash": "d88748c6dc28966e62d070e73052e518377b2361",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.14.18, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.15.1, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "735603428a4a3a14a85909fba493386669e4b43a",
+      "hash": "f4fb2fd15994dc18ae3e9af27fc8e90bd0f8c264",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -191,7 +191,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "7a193adad5f9412a59fc96f36d6b837b18b2ae37",
+      "hash": "0e12e4df7e623e917695c7404770717e9e40ced9",
       "path": "plugins/ca/generated/command-catalog.json"
     },
     {
@@ -203,7 +203,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "d0e297b7a62a5ee613aa2b0c07f4898a6074d2f4",
+      "hash": "39f90729427223fcde9358075ecce642dd78f161",
       "path": "plugins/ca-codex/generated/command-catalog.json"
     },
     {
@@ -215,7 +215,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "46b6539a349106a2e4842c0da1ee4ce9460c02d8",
+      "hash": "c9ecbbb57ebd8a22b6f9ab7c2293b8cb5e8ce241",
       "path": "plugins/ca-pi/generated/command-catalog.json"
     },
     {
@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "6ad10e23d388c6baf65372488ca740c658c6845a",
+      "hash": "a6b8c27a0b90610d8e75185d9eae25a556445674",
       "path": ".github/workflows/ci.yml"
     },
     {

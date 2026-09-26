@@ -68,11 +68,16 @@ EXPECTED_FIRST_CONTAINING_RELEASES = {
 
 
 # PR #854: reviewed single-owner composition, not route retirement. Historical
-# wrapper fingerprints above remain the original baseline; these two workflows
+# wrapper fingerprints above remain the original baseline; composed workflows
 # preserve the entire owner preflight-through-hard-rules body instead.
 COMPOSED_OWNERS = {"cleanup": "post-merge-cleanup", "context-check": "context-check",
-                   "pr": "finishing-a-development-branch"}
+                   "pr": "finishing-a-development-branch", "create-context": "context-creation",
+                   "decompose": "decompose", "release": "release"}
 OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d', 'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198'}
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': '88d6a1f49810cccff530e3c9eaf811e3a3da8548ce989931d83a624c02e75cad',
+    'decompose': 'b1d86ecdd5721188ef52d9f86e6a9c2b56aa35f02dae30d10d173b1db958e5f9',
+})
 
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
@@ -191,7 +196,8 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 if slug in OWNER_OPERATIONAL_SHA256:
                     self.assertEqual(digest(body.split("## Pre-flight\n", 1)[1]),
                                      OWNER_OPERATIONAL_SHA256[slug])
-                    self.assertIn("neither stages nor commits", " ".join(body.split()))
+                    if slug in ('cleanup', 'context-check'):
+                        self.assertIn("neither stages nor commits", " ".join(body.split()))
                 else:
                     self.assertEqual(digest(NOTICE_RE.sub("", body)), expected)
 

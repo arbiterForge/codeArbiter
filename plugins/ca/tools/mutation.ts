@@ -496,8 +496,9 @@ export async function mutationCheck(wt: string, task: Task): Promise<MutationChe
       if (r.code !== 0) {
         rejected++;
         // Preserve a bounded witness, not a language verdict. Redact before
-        // truncation, including credentials that extend beyond the limit.
-        firstRejection ??= redactSecrets(`${c.tag}: exit ${r.code}${r.out ? `: ${r.out}` : ""}`).slice(0, 300);
+        // labels or truncation, which could hide a span's opening delimiter.
+        const safeOutput = r.out ? `: ${redactSecrets(r.out)}` : "";
+        firstRejection ??= `${redactSecrets(`${c.tag}: exit ${r.code}`)}${safeOutput}`.slice(0, 300);
       } else survivors.push(c.tag);
     }
   } finally {

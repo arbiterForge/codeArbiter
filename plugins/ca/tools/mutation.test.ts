@@ -886,6 +886,22 @@ describe("built-in rejection evidence is not a measured kill score", () => {
     "};",
   ].join("\n");
 
+  it("redacts a complete synthetic PEM before labeling a rejected mutation", async () => {
+    await write("src/impl.ts", SOURCE);
+    MUT.sample = 3;
+    const syntheticBody = "QUFB".repeat(24);
+    const output = ["-----BEGIN " + "PRIVATE KEY-----", syntheticBody,
+      "-----END " + "PRIVATE KEY-----", "ordinary failure"].join("\n");
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 1, out: output, stdout: output, stderr: "" });
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin" });
+    const detail = result && "detail" in result ? result.detail : "";
+    expect(detail).not.toContain(syntheticBody);
+    expect(detail).toContain("[REDACTED");
+    expect(detail).toContain("exit 1");
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+  });
+
   for (const [code, output] of [
     [1, "SyntaxError: invalid mutant"],
     [2, "error TS2322: invalid type"],

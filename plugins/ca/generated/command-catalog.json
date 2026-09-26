@@ -152,7 +152,7 @@
     },
     "create-context": {
       "name": "create-context",
-      "description": "Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized.",
+      "description": "Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates.",
       "commandPath": "commands/create-context.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -170,7 +170,7 @@
     },
     "decompose": {
       "name": "decompose",
-      "description": "Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized.",
+      "description": "Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates.",
       "commandPath": "commands/decompose.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -284,7 +284,7 @@
     },
     "release": {
       "name": "release",
-      "description": "Cut a release the only sanctioned way — derive the target's declared version policy from the commit log, roll its changelog, compose an annotated tag, and optionally publish its exact declared assets. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag.",
+      "description": "Prepare a declared release target, or preview it with --dry-run. Derive its version and require authorization before publication.",
       "commandPath": "commands/release.md",
       "visibility": "core",
       "workflow": "ship",

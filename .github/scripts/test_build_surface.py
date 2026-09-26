@@ -2079,10 +2079,9 @@ class AdrModeOwnershipTest(unittest.TestCase):
         current = text.split('## Current progress:', 1)[1].split('Active canonical command records', 1)[0]
         rows = re.findall(r'^\| (D\d{2}) \| [^|]+ \| (.+) \|$', current, re.M)
         self.assertEqual(len(rows), 15)
-        self.assertEqual({key for key, value in rows if value.startswith('Pending')},
-                         {'D03', 'D04', 'D07'})
-        self.assertEqual(sum(value.startswith('Complete') for _, value in rows), 11)
-        self.assertIn('eleven relationships, not eleven distinct composed owners', current)
+        self.assertEqual({key for key, value in rows if value.startswith('Pending')}, set())
+        self.assertEqual(sum(value.startswith('Complete') for _, value in rows), 14)
+        self.assertIn('fourteen relationships, not fourteen distinct composed owners', current)
 
     def test_status_adapter_never_becomes_a_second_composed_owner(self):
         """Retain the compiler guard that rejects duplicate discovery ownership."""
@@ -2369,6 +2368,51 @@ class ReconcileOwnershipTest(unittest.TestCase):
                      'cleanup failure', 'not crash-safe'):
             self.assertIn(term, text)
         self.assertIn('rm -f "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"', text)
+
+
+class RemainingWorkflowOwnerTest(unittest.TestCase):
+    """Initialization aliases and release deliver their full canonical procedure."""
+
+    owners = {'create-context': 'context-creation', 'decompose': 'decompose', 'release': 'release'}
+
+    def test_entries_have_one_canonical_source(self):
+        for command, owner in self.owners.items():
+            with self.subTest(command=command):
+                source = REPO_ROOT / f'core/surface/commands/{command}.md'
+                self.assertEqual(source.read_text(encoding='utf-8').strip(),
+                                 '{{SKILL_ENTRY:' + owner + '}}')
+
+    def test_public_invocations_receive_required_procedure_and_discovery(self):
+        obligations = {
+            'create-context': ('## Phase 2', 'Scout A', 'Scout F', '<!--INITIALIZED-->'),
+            'decompose': ('## Phase 1', 'Layer 1', 'Layer 6', '<!--INITIALIZED-->'),
+            'release': ('## Targets', 'release_require_clean_tree', 'Receipt-only closeout', '--dry-run'),
+        }
+        for host in ('claude', 'codex', 'pi'):
+            surface = B.render_all(REPO_ROOT, host)
+            for command, terms in obligations.items():
+                with self.subTest(host=host, command=command):
+                    path = f'commands/{command}.md' if host == 'claude' else f'skills/ca-{command}/SKILL.md'
+                    public = surface[path].decode()
+                    for term in terms:
+                        self.assertIn(term, public)
+                    self.assertEqual('disable-model-invocation: true' in _frontmatter(public), host == 'claude')
+                    if command != 'release':
+                        self.assertIn('Compatibility route', public)
+                    else:
+                        self.assertIn('argument-hint: "[target] | --dry-run"', _frontmatter(public))
+
+    def test_owner_metadata_is_bounded_without_dropping_public_names(self):
+        for command, owner in self.owners.items():
+            with self.subTest(command=command):
+                source = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
+                description = next(line.partition(': ')[2] for line in _frontmatter(source).splitlines()
+                                   if line.startswith('description: '))
+                self.assertLessEqual(len(description), 150)
+                for host in ('claude', 'codex', 'pi'):
+                    catalog = json.loads(B.render_all(REPO_ROOT, host)['generated/command-catalog.json'])
+                    self.assertIn(command, catalog['commands'])
+                    self.assertEqual(catalog['commands'][command]['description'], description)
 
 
 if __name__ == "__main__":

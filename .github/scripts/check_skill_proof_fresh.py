@@ -46,12 +46,14 @@ full prose, rendered from the one shared source template
   - plugins/ca-codex/routines/release/SKILL.md       (codex)
   - plugins/ca-pi/routines/release/SKILL.md          (pi)
 
-TWO are thin per-host router stubs rendered from `commands/release.md`
-(`plugins/ca-codex/skills/ca-release/SKILL.md`,
-`plugins/ca-pi/skills/ca-release/SKILL.md`); they carry no prose of their
-own — proven directly by
-`test_consumer_smoke.py::test_stub_release_skills_contribute_no_unresolved_refs`
-— so a prose-freshness hash has nothing of substance to say about them.
+TWO public command projections render the same owner through the whole-file
+SKILL_ENTRY declaration in `commands/release.md`:
+`plugins/ca-codex/skills/ca-release/SKILL.md` and
+`plugins/ca-pi/skills/ca-release/SKILL.md`. They now carry the full procedure.
+Generated parity and the five-payload consumer-reference scan cover their
+composition and resource closure. The recorded agent exercise still certifies
+only its explicitly named direct owner rendering; composition does not invent
+an independent exercise of another host or invocation path.
 
 The T-78 agent-judgment exercise (`.codearbiter/reports/agent-lane-
 proof.json`) was run EXACTLY ONCE, by handing an agent the INSTALLED
@@ -152,10 +154,11 @@ def full_prose_release_skill_payloads(repo=REPO_ROOT, build_surface=None):
     descriptor resolution of `skills/release/SKILL.md` — never hardcoded
     (see the module docstring's "WHICH PAYLOAD" section).
 
-    Deliberately excludes the two per-host router STUBS
+    Retains the established direct-owner eligibility set. It excludes public
+    command projections
     (`skills/ca-release/SKILL.md`, rendered from a DIFFERENT source
-    template, `commands/release.md`): they carry no prose of their own and
-    are out of scope for a prose-freshness hash.
+    template, `commands/release.md`): they compose the same owner but do not
+    acquire independent agent-exercise coverage through generator parity.
 
     `build_surface` is injectable for testing against a synthetic
     descriptor set with no dependency on core/hosts.json; defaults to the

@@ -60,7 +60,7 @@ skill is invoked — never bulk-read this directory.
 |---|---|
 | `/ca-commit` | Create a verified local Git commit when committing changes is requested. Not for explaining commit history, drafting a message only, or postponing a commit. Applies every commit gate and never implies a push or PR. |
 | `/ca-pr` | Open a PR or finish branch disposition; route CI watching and post-merge cleanup to their owners. Merge and discard need explicit authority. |
-| `/ca-release` | Cut a release the only sanctioned way — derive the target's declared version policy from the commit log, roll its changelog, compose an annotated tag, and optionally publish its exact declared assets. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag. |
+| `/ca-release` | Prepare a declared release target, or preview it with --dry-run. Derive its version and require authorization before publication. |
 
 ### Operate
 
@@ -115,8 +115,8 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-create-context` | Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized. | `/ca-init --brownfield` |
-| `/ca-decompose` | Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized. | `/ca-init --greenfield` |
+| `/ca-create-context` | Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates. | `/ca-init --brownfield` |
+| `/ca-decompose` | Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates. | `/ca-init --greenfield` |
 
 ### Ship
 

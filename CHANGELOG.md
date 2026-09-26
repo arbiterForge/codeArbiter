@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.18] - 2026-09-25
+## [2.22.1] - 2026-09-25
 
 ### Removed
 
@@ -21,6 +21,11 @@ predate the plugin rewrite and are grouped by date.
   has no replacement alias; resource edits use the existing change workflows.
 
 ### Fixed
+
+- Complete context-creation, decomposition and release entry ownership while
+  preserving initialization aliases, operational procedures and dry-run limits.
+- Redact complete multiline secret spans before formatting mutation diagnostics
+  or truncating gate output for worker feedback.
 
 - Consolidate `reconcile` under `decision-variance` with shorter discovery metadata
   and a private analysis card. Report-only and scoped requests avoid an unnecessary
@@ -70,6 +75,22 @@ predate the plugin rewrite and are grouped by date.
   worktrees, without changing integration or existing task branches. Report the
   effective candidate model and incomplete cleanup instead of hiding it.
 - Keep worker/test/verification gates and the separate HTML farm restriction intact.
+
+## [2.22.0] - 2026-09-26
+
+### Added
+
+- Approve a structured artifact by typing a four-character code, for example
+  `approve K7MQ`, instead of pasting a long token. The hook expands it to the
+  exact armed reply, so the engine and recorded evidence are unchanged.
+- On Claude Code, approve by clicking an Approve option in the host's own
+  question dialog; the recorded origin names that seam.
+
+### Fixed
+
+- Replies with extra spacing, invisible characters, backticks, quotes or a
+  closing period are no longer ignored; a reply that still cannot match now
+  says why instead of failing silently.
 
 ## [2.21.17] - 2026-09-25
 

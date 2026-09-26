@@ -11,6 +11,8 @@ from pathlib import Path
 import stat
 import tempfile
 
+import _replylib
+
 
 REGISTRY_PARENT = Path(tempfile.gettempdir())
 FORMAT = "codearbiter.artifact-prompt-route/0.1.0"
@@ -147,6 +149,8 @@ def unregister(root: str | Path, route: str, artifact_id: str) -> None:
         path.unlink()
     except FileNotFoundError:
         pass
+    # A request's short reply code dies with its route.
+    _replylib.retire_code(root, route, artifact_id)
 
 
 def binding(root: str | Path, route: str, artifact_id: str) -> str | None:

@@ -8,11 +8,11 @@ Source baseline: `arbiterForge/codeArbiter@5c876dd885598c248fa777e951dac4e628688
 
 This document carries the sprint/farm and structured-artifact reassessment into a review branch. It is not a new runtime registry, skill, command, agent, or always-loaded instruction. The implementation must be verified against the actual checkout rather than treating the preceding audits as authority.
 
-## Current progress: reconciliation owner consolidation (2026-09-25)
+## Current progress: retained owner consolidation complete (2026-09-25)
 
-This rollup includes D14 in the current change, based on inspected PR head
-`arbiterForge/codeArbiter@21ba930102c9fa3a1068c45f88cb83b02c2147e2` and incorporated
-main `4187f1e22dc7da3cf755a2654bbf7ec268236126`. Earlier dated implementation sections
+This rollup includes D03, D04 and D07 in the current change, based on inspected PR head
+`arbiterForge/codeArbiter@30279f9df7650af5b2680d493aba7d34caeea004` and incorporated
+main `a5a3d79cb5633cae3982552d6a7cf724de83aa49`. Earlier dated implementation sections
 remain historical records, not competing current status or proof of this head.
 
 ### Surface reduction, counted by kind
@@ -24,12 +24,12 @@ remain historical records, not competing current status or proof of this head.
 | D08/D09/D10/D11/D15 tribunal, threat-model, context-check, cleanup and PR | Five additional retained single-source relationships, completed at `34b459c02bca520a31a9b25ba227f756e0633541`. |
 | D12/D13 ADR authoring and status | Two retained relationships share one procedure owner: composed ADR entry plus read-only status adapter. Authoring is an on-demand reference. |
 | D14 reconcile / decision-variance | One retained single-source relationship; report-only isolation, scoped analysis and append-only choice capture. |
-| D03/D04/D07 | Three pending candidates: context-creation, decompose and release. No further deletion is approved. |
+| D03/D04/D07 | Three retained single-source relationships: context-creation, decompose and release. Existing init aliases, operational bodies and release modes are preserved. |
 
 The original 17 September `REVIEW.html` names **fifteen** candidate relationships,
 D01-D15, against archive baseline `5e7b2dac4e0f82560c1301144f3a20c35b7e0878`.
-**Eleven retained relationships are addressed, one workflow is retired, and three
-candidates remain.** These are eleven relationships, not eleven distinct composed owners: D12 and D13 share
+**Fourteen retained relationships are addressed and one workflow is retired.**
+These are fourteen relationships, not fourteen distinct composed owners: D12 and D13 share
 `decision-lifecycle`, with only D12 composed. Existing catalog aliases and the
 broader RA-11 umbrella-verb proposal remain distinct from owner consolidation.
 Counts describe source ownership, not live-model routing or token savings.
@@ -38,11 +38,11 @@ Counts describe source ownership, not live-model routing or token savings.
 |---|---|---|
 | D01 | commit / commit-gate | Complete: single-source owner retained |
 | D02 | new-skill / skill-author | Removed by maintainer instruction |
-| D03 | create-context / context-creation | Pending; existing init alias retained |
-| D04 | decompose / decompose | Pending; reserved for the other agent, existing init alias retained |
+| D03 | create-context / context-creation | Complete: single-source owner and existing init alias retained; deeper brownfield work remains in #872/#873 |
+| D04 | decompose / decompose | Complete: single-source owner and existing init alias retained; operational interview preserved |
 | D05 | debug / debug | Complete: single-source owner retained; current separate deep dive excluded here |
 | D06 | refactor / refactor | Complete: single-source owner retained |
-| D07 | release / release | Pending; preserve current target and dry-run semantics |
+| D07 | release / release | Complete: single-source owner retained with current target, dry-run and publication gates |
 | D08 | tribunal / tribunal | Complete: cost, applicable lenses, filing and telemetry boundaries retained |
 | D09 | threat-model / security-architecture | Complete: read-only owner with three-way verdict and prerequisite distinction |
 | D10 | context-check / context-check | Complete: selected per-document actions, no staging/commit; status alias retained |

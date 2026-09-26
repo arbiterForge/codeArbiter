@@ -707,7 +707,7 @@ export async function runGate(cwd: string, commands: string[]) {
       // redaction as injected file bodies before it leaves runGate, so a
       // secret-shaped string a test/gate happens to print is never transmitted.
       // (redactSecrets is a hoisted function declaration — callable here.)
-      return { ok: false as const, failed: cmd, tail: redactSecrets(r.out.slice(-3500)) };
+      return { ok: false as const, failed: cmd, tail: redactSecrets(r.out).slice(-3500) };
   }
   return { ok: true as const };
 }

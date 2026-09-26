@@ -710,7 +710,8 @@ async function mutationCheck(wt, task) {
       evaluated++;
       if (r.code !== 0) {
         rejected++;
-        firstRejection ??= redactSecrets(`${c.tag}: exit ${r.code}${r.out ? `: ${r.out}` : ""}`).slice(0, 300);
+        const safeOutput = r.out ? `: ${redactSecrets(r.out)}` : "";
+        firstRejection ??= `${redactSecrets(`${c.tag}: exit ${r.code}`)}${safeOutput}`.slice(0, 300);
       } else survivors.push(c.tag);
     }
   } finally {
@@ -1196,7 +1197,7 @@ async function runGate(cwd, commands) {
   for (const cmd of commands) {
     const r = await run(SHELL_BIN, [SHELL_FLAG, cmd], cwd, SHELL_OPTS, GATE_TIMEOUT_MS);
     if (r.code !== 0)
-      return { ok: false, failed: cmd, tail: redactSecrets(r.out.slice(-3500)) };
+      return { ok: false, failed: cmd, tail: redactSecrets(r.out).slice(-3500) };
   }
   return { ok: true };
 }

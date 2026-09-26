@@ -17,8 +17,10 @@ python "${PLUGIN_ROOT}/hooks/_approvallib.py" arm-sprint --root "<project-root>"
 ```
 
 Omit `--delegate-methods` for approval without delegated plan-method changes. Show the returned
-`reply` verbatim. It explicitly names both IDs, `delegate-methods` or `approve-only`, and the nonce.
-An ordinary yes, wrong nonce/mode or changed member does not approve either. `sprint-approve`
+`short_reply`, which restates the mode: `approve-sprint delegate <code>` or
+`approve-sprint approve-only <code>`. The full `reply` naming both IDs, `delegate-methods` or
+`approve-only`, and the nonce is also accepted, with the same tolerance as single approval.
+An ordinary yes, wrong code/nonce/mode or changed member does not approve either. `sprint-approve`
 recomputes both model/revision identities and the projected binding, verifies both observations
 from the same actual reply, and commits the two approvals through the existing native journal.
 It produces separate bound receipts and an optional `grant_receipt`. No partial approval is visible

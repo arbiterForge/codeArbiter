@@ -810,11 +810,14 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "release": {
           "path": "core/surface/commands/release.md",
+          "currentPath": "core/surface/skills/release/SKILL.md",
           "quote": "## Dry run"
         },
         "releaseAssets": {
           "path": "core/surface/commands/release.md",
-          "quote": "declared assets are qualified in the protected publisher before any tag push"
+          "currentPath": "core/surface/skills/release/SKILL.md",
+          "quote": "declared assets are qualified in the protected publisher before any tag push",
+          "currentQuote": "The qualifying hosted publisher MUST declare and enforce one reviewed asset path before the release PR merges"
         },
         "releaseAuth": {
           "path": "core/surface/skills/release/SKILL.md",
@@ -838,7 +841,9 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "releaseVersion": {
           "path": "core/surface/commands/release.md",
-          "quote": "The base accounts for both the last compatible tag and every declared manifest."
+          "currentPath": "core/surface/skills/release/SKILL.md",
+          "quote": "The base accounts for both the last compatible tag and every declared manifest.",
+          "currentQuote": "**`$BASE_VERSION`"
         }
       },
       "chapters": [

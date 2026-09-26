@@ -43,6 +43,26 @@ describe("Windows artifact executable pin guard", () => {
 // SECRET_RE: catch known high-entropy key prefixes, not just trigger words.
 // ---------------------------------------------------------------------------
 describe("redactSecrets — high-entropy key prefixes (checkpoint 2026-06-22)", () => {
+  it("redacts a complete synthetic PEM before truncating actual gate output", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "ca-gate-redaction-"));
+    try {
+      const syntheticBody = "QUFB".repeat(1400);
+      const output = ["-----BEGIN " + "PRIVATE KEY-----", syntheticBody,
+        "-----END " + "PRIVATE KEY-----", "ordinary failure"].join("\n");
+      await fsWriteFile(path.join(root, "gate-output.cjs"),
+        `process.stdout.write(${JSON.stringify(output)}); process.exitCode = 1;`);
+      const result = await runGate(root, ["node gate-output.cjs"]);
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected a rejected gate");
+      expect(result.tail).not.toContain("QUFB".repeat(24));
+      expect(result.tail).toContain("[REDACTED");
+      expect(result.tail).toContain("ordinary failure");
+      expect(result.tail.length).toBeLessThanOrEqual(3500);
+    } finally {
+      await fsRm(root, { recursive: true, force: true });
+    }
+  });
+
   it("redacts an AWS access key id with no trigger word on the line", () => {
     const out = redactSecrets("const id = AKIAIOSFODNN7EXAMPLE;");
     expect(out).not.toContain("AKIAIOSFODNN7EXAMPLE");

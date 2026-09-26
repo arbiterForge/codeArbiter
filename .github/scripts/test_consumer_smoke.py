@@ -1065,17 +1065,14 @@ class ReferenceResolutionTest(unittest.TestCase):
             "anything' from 'the skill genuinely has fewer references "
             "now'; raise it toward the live count")
 
-    def test_stub_release_skills_contribute_no_unresolved_refs(self):
-        # MEDIUM-3 (adversarial review 2026-07-31): the review found these
-        # two payloads are "short stubs with none" and said "verify and
-        # leave alone" — proven here directly, on every run, rather than
-        # left as a one-time manual claim in a review comment.
+    def test_public_release_entries_contribute_no_unresolved_refs(self):
+        # These formerly thin entries now compose the full owner. Their own
+        # resource references must still resolve in the actual consumer fixture.
         for label in _STUB_PAYLOAD_LABELS:
             self.assertEqual(
                 self.per_payload[label]["unresolved"], set(),
-                f"stub payload {label!r} now carries an unresolved "
-                "reference of its own — it is no longer a pure router to "
-                "the full release skill and must be scanned as one")
+                f"public payload {label!r} carries an unresolved "
+                "reference in its composed release procedure")
 
     def test_reference_resolution_is_empty(self):
         # T-79's strict zero-form: no committed list to compare against —

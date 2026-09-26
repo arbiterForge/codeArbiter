@@ -38,7 +38,7 @@
         ]
       },
       {
-        "matcher": "Bash|Agent|SendMessage",
+        "matcher": "Bash|Agent|SendMessage|AskUserQuestion",
         "hooks": [
           { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" },
           { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" }
@@ -54,7 +54,7 @@
         ]
       },
       {
-        "matcher": "Bash|Agent",
+        "matcher": "Bash|Agent|AskUserQuestion",
         "hooks": [
           { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" },
           { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" }
