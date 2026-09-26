@@ -17,6 +17,7 @@ from typing import Any
 import _artifactlib
 import _artifactauthoritylib
 import _artifactpromptlib
+import _replylib
 
 
 PENDING = Path(".codearbiter/.markers/pending-user-approval.json")
@@ -159,9 +160,21 @@ def arm_user_approval(
     except _artifactpromptlib.PromptRouteError:
         (root / PENDING).unlink()
         raise
+    reply = f"approve {artifact_id} {token}"
+    code = _replylib.offer_code(root, "approval", artifact_id, reply,
+                                names=[artifact_id], short_prefix=["approve"])
+    envelope = _replylib.ask_envelope(
+        root, "approval", artifact_id, code_fields=code,
+        question=(f"Approve {identity['kind']} {artifact_id} revision {identity['revision']} "
+                  f"as you reviewed it? (normative {identity['normative_sha256'][:12]})"),
+        header=f"Approve {code.get('code', '')}",
+        description=f"Records your approval of this exact revision. Same as typing {code.get('short_reply')}.",
+    )
     return {
         "artifact_id": artifact_id,
-        "reply": f"approve {artifact_id} {token}",
+        "reply": reply,
+        **code,
+        **({"ask_envelope": envelope} if envelope else {}),
         "model_sha256": identity["model_sha256"],
         "normative_sha256": identity["normative_sha256"],
     }
@@ -243,14 +256,17 @@ def consume_user_approval(
     *,
     host: str,
     session_id: str,
+    seam: str = "UserPromptSubmit",
 ) -> dict[str, Any]:
     root = Path(root).resolve(strict=True)
+    if seam not in {"UserPromptSubmit", "AskUserQuestion"}:
+        raise ApprovalError("INVALID_HOST_CONTEXT", "approval seam is unsupported")
     pending = _load_pending(root)
     if pending is None or not isinstance(prompt, str):
         return {"matched": False, "approved": False}
     if pending["format"] == "codearbiter.pending-user-approval/0.2.0":
         import _sprintapprovallib
-        return _sprintapprovallib.consume(root, client, pending, prompt, host=host, session_id=session_id)
+        return _sprintapprovallib.consume(root, client, pending, prompt, host=host, session_id=session_id, seam=seam)
     parts = prompt.split(" ")
     if len(parts) != 3 or parts[0] != "approve" or parts[1] != pending["artifact_id"]:
         return {"matched": False, "approved": False}
@@ -277,7 +293,7 @@ def consume_user_approval(
             "record_id": current["artifact_id"],
         },
         "actor": "interactive repository user",
-        "origin": f"{host}:UserPromptSubmit:{session_id}",
+        "origin": f"{host}:{seam}:{session_id}",
         "verdict": "approved",
         "payload": {},
         "source_text": prompt,
@@ -316,25 +332,37 @@ def consume_user_approval(
 
 
 def consume_from_hook(*, root: str | Path, plugin_root: str | Path, prompt: str,
-                      host: str, session_id: str) -> str:
+                      host: str, session_id: str, seam: str = "UserPromptSubmit") -> str:
+    raw = prompt
+    prepared = _replylib.prepare(raw, "approval")
+    prompt = prepared["text"]
+    attempted = prepared["attempted"]
+
+    def missed(reason: str) -> str:
+        _replylib.record_near_miss(root, raw, reason)
+        return prepared["notice"] or _replylib.miss_notice("approve K7MQ")
+
+    if prepared["notice"]:
+        return missed("code")
     try:
         routed = _artifactpromptlib.resolve("approval", prompt)
         root = routed or Path(root)
         if not (Path(root) / PENDING).exists():
-            return ""
+            return missed("no-pending") if attempted else ""
         client = _artifactlib.ArtifactClient(
             root, Path(plugin_root) / "helpers" / "artifacts"
         )
         result = consume_user_approval(
-            root, client, prompt, host=host, session_id=session_id
+            root, client, prompt, host=host, session_id=session_id, seam=seam
         )
     except (ApprovalError, _artifactlib.ArtifactError,
             _artifactpromptlib.PromptRouteError, OSError) as exc:
-        if isinstance(prompt, str) and prompt.startswith(("approve ", "approve-sprint ")):
+        if attempted:
+            _replylib.record_near_miss(root, raw, "capture-failed")
             return f"codeArbiter: approval capture failed: {exc}"
         return ""
     if not result.get("approved"):
-        return ""
+        return missed("mismatch") if attempted else ""
     return (
         "codeArbiter: workflow approval recorded for "
         f"{result['artifact_id']} (receipt {result['receipt']})."

@@ -85,11 +85,19 @@ before asking the approval question:
 python "${CLAUDE_PLUGIN_ROOT}/hooks/_approvallib.py" arm --root "${CLAUDE_PROJECT_DIR}" --artifact-id <artifact-id>
 ```
 
-Present the returned `reply` value verbatim and require that exact reply. The
-`UserPromptSubmit` hook rechecks the armed identity, records the host-observed
-prompt as the policy-owned source, captures its receipt, and applies approval.
-An ordinary `yes`, a changed artifact, a wrong token, or a model-authored event
-does not confer authority. On the next turn, verify `validate` at the `approved`
+On Claude Code, when the result carries `ask_envelope`, pass it unchanged as the
+entire AskUserQuestion input (no `answers`, `annotations` or other field): the
+user approves by clicking its Approve option, and the host-observed selection is
+applied with origin `claude:AskUserQuestion:<session>`. Otherwise, or if the
+user prefers typing, present the returned `short_reply` (a four-character code
+such as `approve K7MQ`); the full `reply` is also accepted, and you
+require that exact reply: the hook tolerates surrounding whitespace, invisible characters, a code
+fence or quotes and a closing period, but nothing else in the message, and it
+reports a mismatch instead of staying silent. The `UserPromptSubmit` hook
+rechecks the armed identity, records the full armed reply as the host-observed
+policy-owned source, captures its receipt, and applies approval. An ordinary
+`yes`, a changed artifact, a wrong or expired code, a reply inside other text, or
+a model-authored event does not confer authority. On the next turn, verify `validate` at the `approved`
 gate before continuing. If the user declines or the artifact changes, cancel the
 exact pending request before arming another one:
 
@@ -149,7 +157,8 @@ python "${CLAUDE_PLUGIN_ROOT}/hooks/_prerequisitelib.py" arm --root "${CLAUDE_PR
 ```
 
 Show the returned title, requirement, and review-packet digest, then require the
-returned `satisfy-prerequisite ...` reply verbatim. The `UserPromptSubmit` hook
+returned `short_reply` (`satisfy-prerequisite <code>`) or the full `reply`, with
+the same tolerance and mismatch reporting as approval. The `UserPromptSubmit` hook
 durably records that observed decision before publishing its authority source,
 captures a prerequisite receipt, and applies the existing prerequisite CAS
 operation. Its final nonce is non-secret freshness/correlation data, not a
@@ -243,7 +252,8 @@ individually.
 
 An interrupted or `BLOCKED` HTML task never resumes by editing its status. Arm
 the installed reconciliation adapter for the exact task or scope, present its
-returned reply verbatim, and let `UserPromptSubmit` capture and apply the observed
+returned `short_reply` (`reconcile <STATE> <code>` for a task, `reconcile <code>`
+for a scope; the full `reply` also works), and let `UserPromptSubmit` capture and apply the observed
 user decision across repositories:
 
 ```sh

@@ -8,8 +8,10 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402
+import _approvallib  # noqa: E402
 import _artifactauthoritylib  # noqa: E402
 import _hooklib  # noqa: E402
+import _replylib  # noqa: E402
 
 
 def main() -> int:
@@ -71,6 +73,8 @@ def claude_main() -> int:
         return 0
     event = payload.get("hook_event_name")
     tool = payload.get("tool_name")
+    if tool == _replylib.ASK_TOOL and event in {"PreToolUse", "PostToolUse"}:
+        return _claude_ask(event, payload)
     root = _hooklib.project_root(payload)
     try:
         if event in {"PreToolUse", "PostToolUse", "PostToolUseFailure"} and tool == "Bash":
@@ -93,6 +97,41 @@ def claude_main() -> int:
             }}))
         else:
             sys.stderr.write(reason + "\n")
+    return 0
+
+
+def _claude_ask(event: str, payload: dict) -> int:
+    """Click-to-approve through Claude Code's own question dialog.
+
+    An ordinary question is never touched. An armed approval question with a
+    pre-filled answer is denied; the user's Approve selection on a clean call
+    is applied through the normal approval adapter."""
+    if event == "PreToolUse":
+        try:
+            _replylib.observe_ask_pre(payload)
+        except (_replylib.ReplyCodeError, OSError) as exc:
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": f"codeArbiter approval question refused: {exc}",
+            }}))
+        return 0
+    try:
+        chosen = _replylib.observe_ask_post(payload)
+    except (_replylib.ReplyCodeError, OSError) as exc:
+        sys.stderr.write(f"codeArbiter approval question not recorded: {exc}\n")
+        return 0
+    if chosen is None or chosen["route"] != "approval":
+        return 0
+    session = payload.get("session_id") if isinstance(payload.get("session_id"), str) else ""
+    text = _approvallib.consume_from_hook(
+        root=chosen["root"], plugin_root=_hooklib.get_host().plugin_root(),
+        prompt=chosen["prompt"], host="claude", session_id=session, seam="AskUserQuestion",
+    )
+    if text:
+        print(json.dumps({"hookSpecificOutput": {
+            "hookEventName": "PostToolUse", "additionalContext": text,
+        }}))
     return 0
 
 

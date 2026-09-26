@@ -4,6 +4,22 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-09-26
+
+### Added
+
+- Approve a structured artifact by typing a four-character code, for example
+  `approve K7MQ`, instead of pasting a long token. The hook expands it to the
+  exact armed reply, so the engine and recorded evidence are unchanged.
+- On Claude Code, approve by clicking an Approve option in the host's own
+  question dialog; the recorded origin names that seam.
+
+### Fixed
+
+- Replies with extra spacing, invisible characters, backticks, quotes or a
+  closing period are no longer ignored; a reply that still cannot match now
+  says why instead of failing silently.
+
 ## [0.14.17] - 2026-09-25
 
 ### Fixed
