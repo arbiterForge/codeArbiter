@@ -542,8 +542,8 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
         self.assertIn(
             "<!-- codearbiter-codex-agent-route-contract: "
-            "literal_route_lines=21 literal_route_occurrences=22 "
-            "generic_route_lines=8 generic_route_occurrences=8 -->",
+            "literal_route_lines=23 literal_route_occurrences=25 "
+            "generic_route_lines=2 generic_route_occurrences=2 -->",
             index,
         )
         self.assertNotIn("\nmodel:", index)
@@ -933,7 +933,7 @@ class CommandCatalogTest(_RepoCase):
             },
             "advanced": {
                 "adr-status", "audit", "checkpoint", "commands", "debug", "metrics",
-                "new-skill", "prune", "reconcile", "standup", "statusline",
+                "prune", "reconcile", "standup", "statusline",
                 "threat-model", "tribunal",
             },
             "alias": {"cleanup", "context-check", "create-context", "decompose", "watch"},
@@ -980,15 +980,13 @@ class PiMappingTest(_RepoCase):
         self.assertFalse(old_catalog.exists())
         self.assertEqual(list((plugin / "skills").glob("*.md")), [])
 
-    def test_pi_skill_author_keeps_the_routine_catalog_for_authoring(self):
-        template = (
-            REPO_ROOT / "core/surface/skills/skill-author/SKILL.md"
-        ).read_text(encoding="utf-8")
-        _write(self.repo, "core/surface/skills/skill-author/SKILL.md", template)
+    def test_pi_routine_reference_keeps_the_internal_catalog(self):
+        # Synthetic fixture: catalog relocation applies to any internal resource.
+        template = "---\nname: catalog-reader\ndescription: Inspect routines.\n---\n\nRead `{{PLUGIN_ROOT}}/skills/INDEX.md`.\n"
+        _write(self.repo, "core/surface/skills/catalog-reader/SKILL.md", template)
         _write(self.repo, "core/surface/skills/INDEX.md", "# routine catalog\n")
-
-        pi_text = self.render("pi")["routines/skill-author/SKILL.md"].decode()
-        codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()
+        pi_text = self.render("pi")["routines/catalog-reader/SKILL.md"].decode()
+        codex_text = self.render("codex")["routines/catalog-reader/SKILL.md"].decode()
         self.assertIn("<plugin-root>/routines/INDEX.md", pi_text)
         self.assertNotIn("<plugin-root>/SKILLS.md", pi_text)
         self.assertIn("[routines/INDEX.md](../INDEX.md)", codex_text)
@@ -1548,11 +1546,11 @@ class SkillEntryCompositionTest(_RepoCase):
 
 
 class ActualConsolidatedOwnersTest(unittest.TestCase):
-    """Pin the two adopted owners, host boundaries and gate-preserving composition."""
+    """Pin adopted owners, host boundaries and gate-preserving composition."""
 
     def test_selected_wrappers_have_no_separately_authored_policy(self):
         """Only the skill owns its description, arguments and execution procedure."""
-        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+        for command, owner in (('commit', 'commit-gate'), ('debug', 'debug'), ('refactor', 'refactor')):
             with self.subTest(command=command):
                 declaration = (REPO_ROOT / f'core/surface/commands/{command}.md').read_text()
                 self.assertEqual(declaration, '{{SKILL_ENTRY:' + owner + '}}\n')
@@ -1563,7 +1561,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
     def test_claude_explicit_entries_preserve_complete_owner_bodies(self):
         """ADR-0028 owners stay discoverable; explicit spellings remain available."""
         out = B.render_all(REPO_ROOT, 'claude')
-        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+        for command, owner in (('commit', 'commit-gate'), ('debug', 'debug'), ('refactor', 'refactor')):
             with self.subTest(command=command):
                 entry = out[f'commands/{command}.md'].decode()
                 skill = out[f'skills/{owner}/SKILL.md'].decode()
@@ -1579,7 +1577,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
         """Routine owners are private resources, so synthesized entries stay visible."""
         for host in ('codex', 'pi'):
             out = B.render_all(REPO_ROOT, host)
-            for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+            for command, owner in (('commit', 'commit-gate'), ('debug', 'debug'), ('refactor', 'refactor')):
                 with self.subTest(host=host, command=command):
                     entry = out[f'skills/ca-{command}/SKILL.md'].decode()
                     self.assertIn(f'name: ca-{command}', _frontmatter(entry))
@@ -1617,6 +1615,886 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
                 for key in ('visibility', 'workflow', 'canonical', 'replacement', 'legacyRoutes'):
                     self.assertEqual(record.get(key), registry['commands'][name].get(key))
             self.assertNotIn('SKILL_ENTRY', out['arbiter.md'].decode())
+
+
+    def test_debug_entry_preserves_investigation_and_board_writer(self):
+        """The complete entry diagnoses without editing code or inventing evidence."""
+        for host, target in (('claude', 'commands/debug.md'), ('codex', 'skills/ca-debug/SKILL.md'), ('pi', 'skills/ca-debug/SKILL.md')):
+            with self.subTest(host=host):
+                entry = B.render_all(REPO_ROOT, host)[target].decode()
+                for obligation in ('## Phase 5', 'regression test obligation', 'through the board helper, never by appending', 'taskwrite.py', '[NEEDS-TRIAGE]', 'user attribution', 'three distinct hypotheses', 'MUST NOT modify, refactor'):
+                    self.assertIn(obligation, entry)
+                self.assertNotIn('symptom and rationale appended to', entry)
+
+    def test_refactor_entry_preserves_scope_and_parity_gates(self):
+        """Single ownership does not weaken approval, parity or verification."""
+        for host, target in (('claude', 'commands/refactor.md'), ('codex', 'skills/ca-refactor/SKILL.md'), ('pi', 'skills/ca-refactor/SKILL.md')):
+            with self.subTest(host=host):
+                entry = B.render_all(REPO_ROOT, host)[target].decode()
+                for obligation in ('## Phase 6', 'user-signed-off surface table', 'unmodified pre-existing tests', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
+                    self.assertIn(obligation, entry)
+
+    def test_new_owner_metadata_routes_intent_not_required_syntax(self):
+        """Descriptions identify the task rather than demanding a command wrapper."""
+        for owner in ('debug', 'refactor'):
+            with self.subTest(owner=owner):
+                skill = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text()
+                self.assertIn('argument-hint:', _frontmatter(skill))
+                self.assertIn('## Entry boundaries', skill)
+                self.assertIn('explanation-only', skill)
+                self.assertNotIn('Routed to by /refactor', _frontmatter(skill))
+                self.assertNotIn('only permitted entry', skill)
+
+    def test_entry_boundary_distinctions_survive_direct_owner_routing(self):
+        """Cycle prevention and non-mutating intents live with their procedure."""
+        debug = (REPO_ROOT / 'core/surface/skills/debug/SKILL.md').read_text()
+        refactor = (REPO_ROOT / 'core/surface/skills/refactor/SKILL.md').read_text()
+        routing = (REPO_ROOT / 'core/surface/includes/routing-table.md').read_text()
+        for owner in ('debug', 'refactor', 'commit-gate'):
+            self.assertIn('{{PLUGIN_ROOT}}/skills/' + owner + '/SKILL.md', routing)
+        self.assertIn('Do not re-enter from an active', debug)
+        self.assertIn('known bug with a named regression test', debug)
+        self.assertIn('already-completed refactor', refactor)
+        self.assertIn('{{PLUGIN_ROOT}}/skills/commit-gate/SKILL.md', refactor)
+        self.assertIn('No commit, push, or PR is implied', refactor)
+
+
+
+
+class RemovedSkillAuthorTest(unittest.TestCase):
+    """The explicitly retired workflow must not survive as an alias or hidden skill."""
+
+    def test_canonical_command_owner_and_template_are_absent(self):
+        self.assertFalse((REPO_ROOT / 'core/surface/commands/new-skill.md').exists())
+        self.assertFalse((REPO_ROOT / 'core/surface/skills/skill-author').exists())
+
+    def test_every_host_omits_the_retired_entry_and_owner(self):
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                out = B.render_all(REPO_ROOT, host)
+                self.assertNotIn('commands/new-skill.md', out)
+                self.assertNotIn('skills/ca-new-skill/SKILL.md', out)
+                self.assertFalse(any('/skill-author/' in p for p in out))
+                catalog = json.loads(out['generated/command-catalog.json'])['commands']
+                self.assertNotIn('new-skill', catalog)
+                self.assertIn('commit', catalog)
+                self.assertIn('debug', catalog)
+                self.assertIn('refactor', catalog)
+
+    def test_no_active_route_or_replacement_extension_entry(self):
+        registry = json.loads((REPO_ROOT / 'core/surface/command-routes.json').read_text())
+        self.assertNotIn('new-skill', registry['commands'])
+        self.assertNotIn('extend', registry['commands'])
+        for name in ('COMMANDS.md', 'skills/INDEX.md', 'includes/routing-table.md'):
+            text = (REPO_ROOT / 'core/surface' / name).read_text(encoding='utf-8')
+            self.assertNotIn('new-skill', text, name)
+            self.assertNotIn('skill-author', text, name)
+        for category, name in (('commands', 'new-skill'), ('skills', 'skill-author')):
+            self.assertFalse((REPO_ROOT / f'site/src/curated/{category}/{name}.md').exists())
+
+    def test_reusable_format_guidance_is_not_a_registered_workflow(self):
+        text = (REPO_ROOT / 'core/surface/README.md').read_text(encoding='utf-8')
+        self.assertIn('## Authoring governed resources', text)
+        self.assertIn('JSON-quoted', text)
+        self.assertIn('directly referenced information card', text)
+        self.assertIn('check_routing_index_parity.py', text)
+        self.assertNotIn('commands/new-skill.md', text)
+        self.assertNotIn('Return with evidence', text)
+
+
+class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
+    """D08-D11 and D15 reduce metadata without dropping mode-specific contracts."""
+
+    OWNERS = {'tribunal': 'tribunal', 'threat-model': 'security-architecture', 'context-check': 'context-check', 'cleanup': 'post-merge-cleanup', 'pr': 'finishing-a-development-branch'}
+
+    @classmethod
+    def setUpClass(cls):
+        cls.outputs = {host: B.render_all(REPO_ROOT, host)
+                       for host in ('claude', 'codex', 'pi')}
+
+    def entry(self, host, command):
+        path = f'commands/{command}.md' if host == 'claude' else f'skills/ca-{command}/SKILL.md'
+        return self.outputs[host][path].decode()
+
+    def test_five_commands_use_one_owner_each_and_concise_intent(self):
+        for command, owner in self.OWNERS.items():
+            with self.subTest(command=command):
+                path = REPO_ROOT / f'core/surface/commands/{command}.md'
+                self.assertEqual(path.read_text(encoding='utf-8'), '{{SKILL_ENTRY:' + owner + '}}\n')
+                skill = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
+                description = B._frontmatter_value(skill, 'description', str(path))
+                self.assertLessEqual(len(description), 160)
+                self.assertNotRegex(description, r'(?i)routed to when|phase [0-9]|only via|_provenancelib')
+                self.assertIn('argument-hint:', _frontmatter(skill))
+                self.assertIn('explanation-only', skill.lower())
+
+    def test_host_metadata_and_explicit_names_are_preserved(self):
+        for command, owner in self.OWNERS.items():
+            for host, output in self.outputs.items():
+                with self.subTest(host=host, command=command):
+                    entry = self.entry(host, command)
+                    prefix = 'skills' if host == 'claude' else 'routines'
+                    skill = output[f'{prefix}/{owner}/SKILL.md'].decode()
+                    self.assertNotIn('disable-model-invocation:', _frontmatter(skill))
+                    self.assertNotIn('allowed-tools:', _frontmatter(entry))
+                    self.assertNotIn('user-invocable:', _frontmatter(entry))
+                    if host == 'claude':
+                        self.assertIn('disable-model-invocation: true', _frontmatter(entry))
+                        self.assertEqual(entry.split('\n---\n', 1)[1], skill.split('\n---\n', 1)[1])
+                    else:
+                        self.assertIn(f'name: ca-{command}', _frontmatter(entry))
+                        self.assertNotIn('disable-model-invocation:', _frontmatter(entry))
+                        self.assertNotIn(f'skills/{owner}/SKILL.md', output)
+
+    def test_description_budget_falls_on_entry_skill_hosts(self):
+        # Description characters, not runtime listing count or model prompt tokens.
+        for host in ('codex', 'pi'):
+            values = [B._frontmatter_value(self.entry(host, c), 'description', c) for c in self.OWNERS]
+            self.assertLess(sum(map(len, values)), 927)
+            self.assertTrue(all(0 < len(value) <= 160 for value in values))
+
+    def test_tribunal_keeps_applicability_consent_and_rooted_support(self):
+        for host in self.outputs:
+            text = self.entry(host, 'tribunal')
+            for obligation in ('applicability across the full roster', 'launched/skipped',
+                               'acknowledging the estimated token cost', 'explicit per-run authorization',
+                               'never `open-tasks.md`', 'run-aborted', 'counter_argument',
+                               'Usage recovery is best-effort' if host == 'claude' else '## Phase 6'):
+                self.assertIn(obligation, text)
+            self.assertNotIn('`references/', text)
+            self.assertNotIn('The full lens roster still runs', text)
+            self.assertIn('MUST NOT edit, refactor, format, or commit project code', text)
+            self.assertIn('MUST NOT act as a required gate', text)
+
+    def test_threat_model_retains_readonly_and_nonbinary_verdict(self):
+        for host in self.outputs:
+            text = self.entry(host, 'threat-model')
+            for value in ('PROCEED-WITH-CONSTRAINTS', 'critical unmitigated threat',
+                          'Read-only: modify no project file', 'reviewers inherit this read-only',
+                          'relevant security ADRs', 'prerequisite failure, separate',
+                          'MUST NOT author an ADR', 'MUST NOT force this pass'):
+                self.assertIn(value, text)
+            self.assertNotIn('CLEAR TO IMPLEMENT', text)
+            self.assertNotIn('BLOCKED — resolve findings first', text)
+            self.assertNotIn('Routed to only when the user deliberately invokes', text)
+
+    def test_drift_and_cleanup_operational_bodies_are_preserved(self):
+        import hashlib
+        expected = {'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
+        for command, digest in expected.items():
+            owner = self.OWNERS[command]
+            text = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
+            body = text.split('## Pre-flight\n', 1)[1]
+            self.assertEqual(hashlib.sha256(body.encode()).hexdigest(), digest)
+            self.assertIn('neither stages nor commits', ' '.join(text.split()))
+        drift = (REPO_ROOT / 'core/surface/commands/status.md').read_text(encoding='utf-8')
+        self.assertIn('{{PLUGIN_ROOT}}/skills/context-check/SKILL.md', drift)
+        self.assertNotIn('{{PLUGIN_ROOT}}/commands/context-check.md', drift)
+
+    def test_pr_dispatches_noncreation_modes_before_preflight(self):
+        for host in self.outputs:
+            text = self.entry(host, 'pr')
+            self.assertIn('## Pre-flight', text, 'Composed PR entry must carry creation preflight')
+            before, after = text.split('## Pre-flight', 1)
+            self.assertIn('command-mode:--watch legacy-route:watch', before)
+            self.assertIn('command-mode:--cleanup legacy-route:cleanup', before)
+            self.assertIn('then returns', before)
+            self.assertIn('before reaching that requirement', before)
+            self.assertIn('flags are mutually exclusive', before)
+            self.assertIn('extra cleanup argument', before)
+            self.assertIn('is a title, not a mode', before)
+            self.assertNotIn('command-mode:', after)
+            self.assertIn('post-merge-cleanup/SKILL.md', before)
+            self.assertNotIn('commands/cleanup.md', text)
+            self.assertNotIn('skills/ca-cleanup/SKILL.md', text)
+
+    def test_pr_procedure_has_no_wrapper_cycle_and_preserves_review_and_watch(self):
+        for host in self.outputs:
+            text = self.entry(host, 'pr')
+            self.assertEqual(text.count('### Open-PR procedure'), 1)
+            self.assertNotIn('commands/pr.md', text)
+            self.assertNotIn('skills/ca-pr/SKILL.md', text)
+            for obligation in ('auth-crypto-reviewer', 'security-reviewer', 'migration-reviewer',
+                               'dependency-reviewer', 'coverage-auditor', 'CRITICAL or HIGH',
+                               'anti-slop-design', 'babysit.py', 'CODEARBITER_BABYSIT',
+                               'Never enable the flag', '_preflight_current_acceptance',
+                               '--match-head-commit', 'all_accepted_and_current: true'):
+                self.assertIn(obligation, text)
+
+    def test_pr_respects_direct_choice_and_caller_authority(self):
+        for host in self.outputs:
+            text = self.entry(host, 'pr')
+            self.assertIn('Do not repeat a branch-fate menu', text)
+            self.assertIn('feature-terminal handoff keeps its existing terminal', text)
+            self.assertIn('sprint-terminal handoff selects open PR only', text)
+            self.assertIn('MUST NOT auto-merge under', text)
+            self.assertIn('MUST NOT discard a branch without explicit user confirmation', text)
+            self.assertIn('MUST NOT delete un-pushed commits silently', text)
+            self.assertIn('current exact head', text)
+
+    def test_pr_current_acceptance_and_ancestry_preflight_is_identical(self):
+        import hashlib
+        text = (REPO_ROOT / 'core/surface/skills/finishing-a-development-branch/SKILL.md').read_text(encoding='utf-8')
+        section = text[text.index('## Pre-flight\n'):text.index('## Phase 2')]
+        self.assertEqual(hashlib.sha256(section.encode()).hexdigest(), '0df4e08d97542d6273ae5c7d7cf149daec423d7c7587f5123f4bafadb8dc146a')
+        inventory = json.loads((REPO_ROOT / 'docs/artifacts/consumer-inventory.json').read_text(encoding='utf-8'))
+        consumer = next(row for row in inventory['consumers']
+                        if row['id'] == 'finalization-and-worktree-plan-readers')
+        for path in ('plugins/ca/commands/pr.md', 'plugins/ca-codex/skills/ca-pr/SKILL.md',
+                     'plugins/ca-pi/skills/ca-pr/SKILL.md', 'site/src/content/docs/reference/commands/pr.md'):
+            self.assertIn(path, consumer['generated_paths'])
+        self.assertFalse(inventory['rollout']['typed_html_farm_enabled'])
+
+
+    def test_direct_routing_points_to_all_five_owners(self):
+        table = (REPO_ROOT / 'core/surface/includes/routing-table.md').read_text(encoding='utf-8')
+        for owner in self.OWNERS.values():
+            self.assertIn('{{PLUGIN_ROOT}}/skills/' + owner + '/SKILL.md', table)
+
+
+
+class ComposedModeClosureTest(_RepoCase):
+    """Mode closure must validate the resolved owner, not the empty declaration."""
+
+    def setUp(self):
+        super().setUp()
+        registry = json.loads((Path(self.repo) / 'core/surface/command-routes.json').read_text())
+        registry['commands']['init'].update(modes=['--inspect'], legacyRoutes=['status'])
+        registry['commands']['status'].update(visibility='alias', canonical='init', replacement='init --inspect')
+        registry['commands']['status'].pop('legacyRoutes')
+        _write_registry(self.repo, registry['commands'])
+        self.owner = ('---\nname: mode-owner\ndescription: Inspect or initialize.\n'
+                      'argument-hint: "(none) | --inspect"\n---\n\n'
+                      '# mode owner\n\n<!-- command-mode:--inspect legacy-route:status -->\n'
+                      'Inspect is read-only. Initialization requires separate intent.\n')
+        _write(self.repo, 'core/surface/skills/mode-owner/SKILL.md', self.owner)
+        _write(self.repo, 'core/surface/commands/init.md', '{{SKILL_ENTRY:mode-owner}}\n')
+
+    def test_valid_composed_mode_is_rendered_and_catalogued_on_all_hosts(self):
+        for host, path in [('claude', 'commands/init.md'), ('codex', 'skills/ca-init/SKILL.md'),
+                           ('pi', 'skills/ca-init/SKILL.md')]:
+            with self.subTest(host=host):
+                try:
+                    out = B.render_all(self.repo, host)
+                except B.SurfaceError as error:
+                    self.fail(f'Valid composed mode was rejected: {error}')
+                self.assertIn('command-mode:--inspect legacy-route:status', out[path].decode())
+                metadata = json.loads(out['generated/command-catalog.json'])['commands']['init']
+                alias = json.loads(out['generated/command-catalog.json'])['commands']['status']
+                self.assertEqual(alias['replacement'], 'init --inspect')
+                self.assertEqual(metadata['legacyRoutes'], ['status'])
+
+    def test_composed_modes_still_reject_missing_duplicate_and_wrong_markers(self):
+        marker = '<!-- command-mode:--inspect legacy-route:status -->'
+        variants = [self.owner.replace(marker, ''), self.owner + marker + '\n',
+                    self.owner.replace('--inspect legacy-route:status', '--delete legacy-route:status')]
+        for owner in variants:
+            _write(self.repo, 'core/surface/skills/mode-owner/SKILL.md', owner)
+            for host in ('claude', 'codex', 'pi'):
+                with self.subTest(host=host, owner=owner):
+                    with self.assertRaisesRegex(B.SurfaceError, 'command-mode marker closure'):
+                        B.render_all(self.repo, host)
+
+    def test_mode_composition_does_not_allow_two_entries_for_one_owner(self):
+        _write(self.repo, 'core/surface/commands/status.md', '{{SKILL_ENTRY:mode-owner}}\n')
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
+                    B.render_all(self.repo, host)
+
+
+
+
+class AdrModeOwnershipTest(unittest.TestCase):
+    """D12/D13 reduce discovery without mixing read-only and authoring authority."""
+
+    owner_path = 'core/surface/skills/decision-lifecycle/SKILL.md'
+    author_path = 'core/surface/skills/decision-lifecycle/references/authoring.md'
+
+    def text(self, path):
+        """Missing resources are assertion failures, not collection/runtime errors."""
+        file = REPO_ROOT / path
+        self.assertTrue(file.is_file(), f'missing owner resource: {path}')
+        return file.read_text(encoding='utf-8')
+
+    def test_adr_has_one_owner_and_status_has_only_a_mode_adapter(self):
+        """The duplicate-owner guard stays intact; status does not duplicate phases."""
+        self.assertEqual(self.text('core/surface/commands/adr.md'),
+                         '{{SKILL_ENTRY:decision-lifecycle}}\n')
+        adapter = self.text('core/surface/commands/adr-status.md')
+        self.assertIn('**status only**', adapter)
+        self.assertIn('{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md', adapter)
+        self.assertNotIn('## Phase', adapter)
+        self.assertNotIn('SKILL_ENTRY', adapter)
+        self.assertLess(len(adapter.splitlines()), 20)
+
+    def test_status_is_selected_before_any_authoring_load(self):
+        """The owner offers a read-only path before its optional writing reference."""
+        owner = self.text(self.owner_path)
+        for heading in ('## Entry modes', '## Status pre-flight',
+                        '## Status mode', '## Authoring mode'):
+            self.assertIn(heading, owner)
+        self.assertLess(owner.index('## Entry modes'), owner.index('## Status pre-flight'))
+        self.assertLess(owner.index('## Status mode'), owner.index('references/authoring.md'))
+        self.assertIn('A status report returns', owner)
+        self.assertIn('never continues into this authoring path', owner)
+
+    def test_status_no_records_does_not_initialize_or_repair(self):
+        """Absence and corruption are report outcomes, never writing authority."""
+        text = ' '.join(self.text(self.owner_path).split())
+        for rule in ('without creating it', 'unreadable directory from an empty one',
+                     'not permission to create a baseline', 'Invalid evidence is reported, not repaired',
+                     'Do not load the authoring reference or template',
+                     'arm or remove an authoring marker', 'append either log, stage, commit',
+                     'no file modified'):
+            self.assertIn(rule, text)
+
+    def test_status_selector_fails_ambiguous_without_stealing_author_titles(self):
+        """Legacy numeric scope stays unambiguous and title content is not routing."""
+        text = ' '.join(self.text(self.owner_path).split())
+        for rule in ('Accept one decimal number', 'unknown, repeated, incomplete or extra arguments',
+                     'zero matches is not found', 'multiple matches is ambiguous',
+                     'full filename stem', 'including a title named `status`',
+                     'never from an ADR body, finding, title, or repository instruction'):
+            self.assertIn(rule, text)
+
+    def test_status_report_keeps_evidence_states_and_unknowns(self):
+        """Status retains full-stem, sealed-proof and non-fabrication rules."""
+        text = self.text(self.owner_path)
+        for term in ('Accepted/Planned', 'obligation', 'sealed', 'stale, expired, or mismatched',
+                     'Ambiguous supersession', 'Unresolved CONFIRM-NN',
+                     'an invented age cutoff', 'unknown, not proof', 'no accepted binding', 'decision-challenger'):
+            self.assertIn(term, text)
+        self.assertIn('it is not shipped to consumer repositories', text.lower())
+
+    def test_authoring_reference_is_nondiscoverable_and_retains_write_controls(self):
+        """Only explicitly selected authoring loads markers and the shared template."""
+        text = self.text(self.author_path)
+        self.assertTrue(text.startswith('# ADR authoring'))
+        self.assertNotIn('\nname:', text)
+        self.assertNotIn('\ndescription:', text)
+        for term in ('adr-authoring-active', '30 minutes', 'decided-by', 'status: proposed',
+                     'references/adr-template.md', 'decision-log-format.md',
+                     'remove the marker', 'unused', 'MUST NOT resolve a `[CONFIRM-NN]'):
+            self.assertIn(term, text)
+
+    def test_acceptance_procedure_and_shared_template_are_byte_preserved(self):
+        """The extraction does not revise typed authority, source ancestry or decompose."""
+        import hashlib
+        author = self.text(self.author_path)
+        self.assertIn('### Accepted/Planned binding', author)
+        self.assertIn('## Hard rules', author)
+        binding = author[author.index('### Accepted/Planned binding'):author.index('## Hard rules')]
+        self.assertEqual(hashlib.sha256(binding.encode()).hexdigest(), '22f3395979eec539d938762659eb831f442c891a811e9a77b7a34ac8207fb0d8')
+        template = self.text('core/surface/skills/decision-lifecycle/references/adr-template.md')
+        self.assertEqual(hashlib.sha256(template.encode()).hexdigest(), '73135c60393f2c15b92370efeabaf2c376c36ea60bd2fba024dd1141f5d5cdf2')
+
+    def test_all_hosts_retain_both_explicit_entries_and_one_owner(self):
+        """Claude hides duplicate descriptions; entry-skill hosts retain both names."""
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                out = B.render_all(REPO_ROOT, host)
+                public = 'commands/{}.md' if host == 'claude' else 'skills/ca-{}/SKILL.md'
+                for slug in ('adr', 'adr-status'):
+                    header = _frontmatter(out[public.format(slug)].decode())
+                    self.assertEqual('disable-model-invocation: true' in header, host == 'claude')
+                    if host != 'claude': self.assertIn('name: ca-' + slug, header)
+                owner = ('skills' if host == 'claude' else 'routines') + '/decision-lifecycle/SKILL.md'
+                self.assertNotIn('disable-model-invocation', _frontmatter(out[owner].decode()))
+                self.assertIn('argument-hint: "<decision title>"', out[public.format('adr')].decode())
+                self.assertIn('argument-hint: "(none) | --adr N"', out[public.format('adr-status')].decode())
+
+    def test_public_entries_never_inline_writing_procedure(self):
+        """Read-only selection must not need to load authoring markers or acceptance."""
+        for host in ('claude', 'codex', 'pi'):
+            out = B.render_all(REPO_ROOT, host)
+            prefix = 'skills' if host == 'claude' else 'routines'
+            self.assertIn(prefix + '/decision-lifecycle/references/authoring.md', out)
+            for slug in ('adr', 'adr-status'):
+                path = f'commands/{slug}.md' if host == 'claude' else f'skills/ca-{slug}/SKILL.md'
+                text = out[path].decode()
+                self.assertNotIn('touch "', text)
+                self.assertNotIn('### Accepted/Planned binding', text)
+                self.assertNotIn('obligations_sealed: true', text)
+                self.assertIn('decision-lifecycle', text)
+
+    def test_metadata_is_shorter_and_public_inventory_is_unchanged(self):
+        """Compare descriptions rather than asserting unmeasured token savings."""
+        import re
+        total = 0
+        out = B.render_all(REPO_ROOT, 'codex')
+        for slug in ('adr', 'adr-status'):
+            text = _frontmatter(out[f'skills/ca-{slug}/SKILL.md'].decode())
+            match = re.search(r'^description: (.+)$', text, re.M)
+            self.assertIsNotNone(match)
+            value = json.loads(match.group(1)) if match.group(1).startswith('"') else match.group(1)
+            self.assertLessEqual(len(value), 160)
+            total += len(value)
+        self.assertLess(total, 232)
+        registry = json.loads(self.text('core/surface/command-routes.json'))['commands']
+        for host in ('claude', 'codex', 'pi'):
+            catalog = json.loads(B.render_all(REPO_ROOT, host)['generated/command-catalog.json'])['commands']
+            for slug in ('adr', 'adr-status'):
+                self.assertEqual(catalog[slug]['canonical'], registry[slug]['canonical'])
+                self.assertEqual(catalog[slug]['visibility'], registry[slug]['visibility'])
+
+    def test_natural_language_routes_directly_without_new_ceremony(self):
+        """A request selects the owner; attribution is still required to write."""
+        table = self.text('core/surface/includes/routing-table.md')
+        self.assertIn('{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md', table)
+        text = self.text(self.owner_path)
+        self.assertIn('Natural-language intent', text)
+        self.assertIn('explicit instruction and attribution', text)
+        self.assertIn('general trust', text)
+        self.assertNotIn('only via `/adr`', text)
+        resident = self.text('core/surface/includes/safety-core.md')
+        self.assertIn('authorized `/adr` workflow (`decision-lifecycle`)', resident)
+        self.assertIn('outside that authoring workflow is prohibited, marker or not', resident)
+
+    def test_authoring_distinguishes_absent_from_unreadable_storage(self):
+        """Only a new explicitly authorized ADR may initialize absent storage."""
+        text = ' '.join(self.text(self.author_path).split())
+        self.assertIn('Unreadable existing storage is a STOP, not an empty index', text)
+        self.assertIn('Only an explicitly authorized new-record request may create an absent directory', text)
+        self.assertIn('changes to an existing record never create a missing directory', text)
+        self.assertNotIn('Read these, or STOP and surface the gap', text)
+
+    def test_adr_marker_uses_guard_project_root_and_captured_cleanup_path(self):
+        """ADR guards differ from security/migration marker-root escalation."""
+        import re
+        text = self.text(self.author_path)
+        resolver = re.search(r"-c '([^']+)'", text)
+        self.assertIsNotNone(resolver)
+        self.assertIn('from _hooklib import project_root', resolver.group(1))
+        self.assertNotIn('marker_root', resolver.group(1))
+        self.assertNotIn('git rev-parse --show-toplevel', text)
+        self.assertIn('rm -f "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"', text)
+        self.assertIn('Do not resolve a different root during cleanup', text)
+        self.assertIn('a resolver failure or empty result stops', text.lower())
+
+    def test_current_progress_rollup_matches_adopted_owner_relationships(self):
+        """An agent reading only the current table must not requeue completed work."""
+        import re
+        text = self.text('docs/reviews/2026-09-21-autonomy-routing-integration.md')
+        current = text.split('## Current progress:', 1)[1].split('Active canonical command records', 1)[0]
+        rows = re.findall(r'^\| (D\d{2}) \| [^|]+ \| (.+) \|$', current, re.M)
+        self.assertEqual(len(rows), 15)
+        self.assertEqual({key for key, value in rows if value.startswith('Pending')}, set())
+        self.assertEqual(sum(value.startswith('Complete') for _, value in rows), 14)
+        self.assertIn('fourteen relationships, not fourteen distinct composed owners', current)
+
+    def test_status_adapter_never_becomes_a_second_composed_owner(self):
+        """Retain the compiler guard that rejects duplicate discovery ownership."""
+        import shutil
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            shutil.copytree(REPO_ROOT / 'core', root / 'core')
+            _write(root, 'core/surface/commands/adr-status.md', '{{SKILL_ENTRY:decision-lifecycle}}\n')
+            with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
+                B.render_all(root, 'claude')
+
+
+
+
+class AdrMarkerRootJourneyTest(unittest.TestCase):
+    """Fresh-process resolver/guard agreement with real primary and linked roots."""
+
+    def exercise(self, host, root_signal):
+        import importlib.util
+        import re
+        import subprocess
+        author = (REPO_ROOT / 'core/surface/skills/decision-lifecycle/references/authoring.md').read_text(encoding='utf-8')
+        found = re.search(r"-c '([^']+)'", author)
+        self.assertIsNotNone(found, 'authoring must carry a guard-aligned root resolver')
+        resolver = found.group(1)
+        hooks = REPO_ROOT / f'plugins/{host}/hooks'
+        with tempfile.TemporaryDirectory(prefix='adr-root-contract-') as td:
+            outer = Path(td).resolve()
+            primary, linked = outer / 'primary', outer / 'linked'
+            primary.mkdir()
+            env = {k: v for k, v in os.environ.items()
+                   if not k.startswith(('GIT_', 'CLAUDE_', 'CODEX_', 'PI_'))
+                   and k not in ('PLUGIN_ROOT', 'PROJECT_DIR')}
+            env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull,
+                       GIT_AUTHOR_NAME='Fixture', GIT_COMMITTER_NAME='Fixture',
+                       GIT_AUTHOR_EMAIL='fixture@example.invalid', GIT_COMMITTER_EMAIL='fixture@example.invalid')
+            def git(*args):
+                return subprocess.run(['git', *args], cwd=primary, env=env,
+                                      capture_output=True, text=True, check=True, timeout=15)
+            git('init', '--initial-branch=main')
+            context = primary / '.codearbiter/CONTEXT.md'
+            context.parent.mkdir()
+            context.write_text('---\narbiter: enabled\n---\n', encoding='utf-8')
+            git('add', '--', '.codearbiter/CONTEXT.md')
+            git('commit', '-m', 'Isolated root fixture')
+            git('worktree', 'add', str(linked), '-b', 'fixture-linked')
+            cwd = linked / 'nested'
+            cwd.mkdir()
+            if root_signal:
+                env['CLAUDE_PROJECT_DIR'] = str(primary if root_signal == 'primary' else linked)
+            expected = primary if host == 'ca' and root_signal == 'primary' else linked
+            selected = subprocess.run([sys.executable, '-c', resolver, str(hooks)],
+                                      cwd=cwd, env=env, capture_output=True, text=True,
+                                      encoding='utf-8', check=True, timeout=15)
+            root = Path(selected.stdout.strip())
+            self.assertTrue(root.samefile(expected), (host, root_signal, selected.stdout))
+            marker = root / '.codearbiter/.markers/adr-authoring-active'
+            other_root = linked if root.samefile(primary) else primary
+            if host == 'ca' and root_signal == 'primary':
+                legacy = subprocess.run(['git', 'rev-parse', '--show-toplevel'],
+                                        cwd=cwd, env=env, capture_output=True, text=True,
+                                        check=True, timeout=15)
+                self.assertTrue(Path(legacy.stdout.strip()).samefile(other_root))
+            else:
+                # The general security/migration resolver intentionally escalates.
+                # That is not the root used by this ADR guard in these cases.
+                general = resolver.replace('project_root', 'marker_root')
+                other = subprocess.run([sys.executable, '-c', general, str(hooks)],
+                                       cwd=cwd, env=env, capture_output=True, text=True,
+                                       check=True, timeout=15)
+                self.assertTrue(Path(other.stdout.strip()).samefile(other_root))
+            wrong_marker = other_root / '.codearbiter/.markers/adr-authoring-active'
+            wrong_marker.parent.mkdir(parents=True, exist_ok=True)
+            wrong_marker.touch()
+            unrelated = wrong_marker.parent / 'unrelated-sentinel'
+            unrelated.write_bytes(b'preserve')
+            guard_code = ("import sys, importlib.util; sys.path.insert(0, sys.argv[1]); "
+                          "from _hooklib import project_root, utf8_stdio; utf8_stdio(); "
+                          "s=importlib.util.spec_from_file_location('adr_guard', sys.argv[1]+'/pre-write.py'); "
+                          "m=importlib.util.module_from_spec(s); s.loader.exec_module(m); "
+                          "m._guard_op(project_root(), {'kind':'write','file_path':sys.argv[2],'content':'# fixture'})")
+            target = expected / '.codearbiter/decisions/0001-fixture.md'
+            # Start this test-owned child with a deliberately non-UTF-8 pipe
+            # encoding. Its production stdio initialization must establish the
+            # strict UTF-8 contract, independently of the developer's environment.
+            def guard():
+                return subprocess.run([sys.executable, '-c', guard_code, str(hooks), str(target)],
+                                      cwd=cwd, env=dict(env, PYTHONIOENCODING='cp1252'),
+                                      capture_output=True, text=True,
+                                      encoding='utf-8', timeout=15)
+            denied = guard()
+            self.assertEqual(denied.returncode, 2, denied.stdout + denied.stderr)
+            self.assertIn('H-11', denied.stderr + denied.stdout)
+            self.assertIn('ORCHESTRATOR \u00a73', denied.stderr + denied.stdout)
+            marker.parent.mkdir(parents=True, exist_ok=True)
+            marker.touch()
+            admitted = guard()
+            self.assertEqual(admitted.returncode, 0, admitted.stdout + admitted.stderr)
+            marker.unlink()  # same captured path, not a new root resolved from cwd
+            denied_again = guard()
+            self.assertEqual(denied_again.returncode, 2, denied_again.stdout + denied_again.stderr)
+            self.assertTrue(wrong_marker.exists())
+            self.assertEqual(unrelated.read_bytes(), b'preserve')
+            self.assertFalse(target.exists(), 'guard checks must not actually author an ADR')
+
+    def test_claude_main_signal_and_linked_cwd_use_the_guard_root(self):
+        """The old Git-toplevel guess arms a marker the env-rooted guard misses."""
+        self.exercise('ca', 'primary')
+
+    def test_claude_linked_signal_does_not_unconditionally_escalate_to_main(self):
+        """General marker_root escalation would be wrong for this ADR guard."""
+        self.exercise('ca', 'linked')
+
+    def test_codex_and_pi_ignore_a_foreign_claude_root_signal(self):
+        """Host-local resolver semantics, not a Claude-only path, own the marker."""
+        for host in ('ca-codex', 'ca-pi'):
+            with self.subTest(host=host):
+                self.exercise(host, 'primary')
+
+
+
+
+
+class ReconcileOwnershipTest(unittest.TestCase):
+    """D14 ownership, mode isolation and evidence preservation; not model behavior."""
+
+    owner = 'core/surface/skills/decision-variance/SKILL.md'
+    analysis = 'core/surface/skills/decision-variance/references/analysis.md'
+
+    def text(self, path):
+        """Read a canonical contract without importing a generated copy."""
+        self.assertTrue((REPO_ROOT / path).is_file(), path)
+        return (REPO_ROOT / path).read_text(encoding='utf-8')
+
+    def test_one_composed_entry_and_concise_intent_metadata(self):
+        """Keep the public name while removing its independently authored wrapper."""
+        import re
+        self.assertEqual(self.text('core/surface/commands/reconcile.md'), '{{SKILL_ENTRY:decision-variance}}\n')
+        header = _frontmatter(self.text(self.owner))
+        self.assertIn('name: decision-variance', header)
+        self.assertIn('argument-hint: "(none) | \\"<ADR-id | artifact | scope>\\""'.replace('\\\\', '\\'), header)
+        description = re.search(r'^description: (.+)$', header, re.M).group(1)
+        value = json.loads(description) if description.startswith('"') else description
+        self.assertLess(len(value), 160)
+        self.assertNotIn('disable-model-invocation', header)
+
+    def test_public_host_entries_and_private_card_are_closed(self):
+        """All adapters expose the existing entry and include the inert analysis card."""
+        for host in ('claude', 'codex', 'pi'):
+            with self.subTest(host=host):
+                out = B.render_all(REPO_ROOT, host)
+                public = 'commands/reconcile.md' if host == 'claude' else 'skills/ca-reconcile/SKILL.md'
+                prefix = 'skills' if host == 'claude' else 'routines'
+                body = out[public].decode()
+                self.assertEqual('disable-model-invocation: true' in _frontmatter(body), host == 'claude')
+                self.assertIn('## Entry and scope', body)
+                self.assertIn('## Phase 4', body)
+                self.assertNotIn('## Phase 3', body)
+                card = out[f'{prefix}/decision-variance/references/analysis.md'].decode()
+                self.assertTrue(card.startswith('# Reconciliation analysis'))
+                self.assertNotIn('\nname:', card)
+                self.assertNotIn('\ndescription:', card)
+                registry = json.loads(self.text('core/surface/command-routes.json'))['commands']['reconcile']
+                metadata = json.loads(out['generated/command-catalog.json'])['commands']['reconcile']
+                for key in ('canonical', 'visibility'):
+                    self.assertEqual(metadata[key], registry[key])
+
+    def test_direct_routing_does_not_return_through_wrapper(self):
+        """Natural requests reach the existing owner, not another advertised resource."""
+        self.assertIn('{{PLUGIN_ROOT}}/skills/decision-variance/SKILL.md', self.text('core/surface/includes/routing-table.md'))
+        text = self.text(self.owner)
+        self.assertIn('Natural-language requests', text)
+        self.assertIn('Do not re-invoke the command wrapper', text)
+        self.assertIn('Return to the caller', text)
+        self.assertNotIn('Never volunteer this fast-path', text)
+
+    def test_report_only_returns_before_decision_capture(self):
+        """A variance report is a result, not consent to enter a writing interview."""
+        text = self.text(self.owner)
+        entry = text.split('## Phase 4', 1)[0]
+        for term in ('report-only', 'no file changes', 'Do not load the analysis card', 'returns before Phase 4'):
+            self.assertIn(term, entry)
+        self.assertIn('No marker, directory, log, question, ADR, staging or commit', entry)
+        self.assertIn('returned report', self.text(self.analysis))
+        self.assertIn('no evidence-index file', self.text(self.analysis))
+
+    def test_scoped_inputs_do_not_require_unrelated_decomposition(self):
+        """Full passes retain exact-name inputs; bounded targets disclose their coverage."""
+        text = self.text(self.analysis)
+        for term in ('01-architecture-breakdown.md', '02-phased-build-plan.md', '03-task-backlog.md',
+                     'full pass', 'scoped pass', 'not a full-project clearance',
+                     'Unreadable', 'exact filename', 'full filename stem'):
+            self.assertIn(term, text)
+        self.assertIn('do not require unrelated decomposition files', text)
+        self.assertIn('not interchangeable with HTML feature specs/plans', ' '.join(text.split()))
+
+    def test_stale_ratification_appends_instead_of_rewriting_hash(self):
+        """A refreshed source binding is a new attributed record, never an old-row edit."""
+        text = self.text(self.owner) + self.text(self.analysis)
+        for term in ('append a new entry', 'Supersedes:', 'current section hash',
+                     'not in-place', 'missing or ambiguous section', 'before generating new variances'):
+            self.assertIn(term, text)
+        self.assertNotIn('keep (update the', text)
+        self.assertNotIn('recorded hash to current', text)
+
+    def test_unresolved_report_does_not_stop_all_analysis(self):
+        """Staleness and unknown categories remain visible without a new report gate."""
+        text = self.text(self.analysis)
+        self.assertIn('continue independent analysis', text)
+        self.assertIn('category: UNKNOWN', text)
+        self.assertIn('not a reason to pause a report', text)
+        self.assertIn('same-level-conflict', self.text(self.owner))
+        self.assertNotIn('treat both as silent', self.text(self.owner))
+
+    def test_recorded_choice_and_sprint_authority_stay_distinct(self):
+        """Do not impose the arbitration interview on delegated sprint methods."""
+        text = self.text(self.owner)
+        for term in ('already selected', 'do not ask again', 'sprint', 'scoring only',
+                     'No mid-sprint reconciliation', 'explicit user choice', 'general trust'):
+            self.assertIn(term, text)
+        self.assertIn('confirm it back in one sentence, then append the decision', text)
+        self.assertIn('(1) an explicit user decision this session, (2) a', text)
+        self.assertIn('(6) inferred intent', text)
+
+    def test_outcomes_have_one_authorized_continuation(self):
+        """Recording, ADR authoring and implementation are different authorities."""
+        text = self.text(self.owner)
+        for term in ('**Ratify**', '**Supersede**', '**Defer**', '[CONFIRM-NN]',
+                     '{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md',
+                     'separately authorized', 'not authorization to commit', 'Never edit the artifacts'):
+            self.assertIn(term, text)
+        self.assertIn('re-read the log', text)
+        self.assertIn('never duplicate', text)
+
+    def test_scoring_procedure_and_shared_reference_ownership_are_preserved(self):
+        """Keep D14 scoring intact without freezing other workflows' source bytes."""
+        import hashlib
+        card = self.text(self.analysis)
+        scoring = card[card.index('## Phase 3'):card.index('## Return boundary')]
+        # The verified report-filter correction is the only Phase 3 delta;
+        # reconstructing those two clauses keeps the rest of its exact contract.
+        old_filter, new_filter = 'label. `concur` and `both-silent` cases produce no entry — they live in the evidence index only.', 'label. `concur` and `both-silent` cases without an unresolved authority flag stay\nin the evidence index. Every `same-level-conflict` still produces an unresolved\nreport item, including when the artifact/scaffold comparison is `concur`. Cite\nboth governing sources and their disagreement; do not invent an artifact/scaffold\nvariance, resolution or scoring inputs where that comparison actually agrees.'
+        old_gate, new_gate = 'recommendation. No `concur`/`both-silent` noise in the report.', 'recommendation. Every `same-level-conflict` remains visible with both source\ncitations, independently of comparison status. Only unflagged `concur`/`both-silent`\nitems are omitted from the report; unresolved authority conflicts are not noise.'
+        self.assertEqual(scoring.count(new_filter), 1)
+        self.assertEqual(scoring.count(new_gate), 1)
+        legacy = scoring.replace(new_filter, old_filter).replace(new_gate, old_gate)
+        self.assertEqual(hashlib.sha256(legacy.encode()).hexdigest(),
+                         'd2129e34ce0bd412801d93c6372b5ca09617c90499940028fd9bcb75251d4c37')
+        self.assertIn('{{PLUGIN_ROOT}}/includes/smarts/core.md', card)
+        self.assertIn('{{PLUGIN_ROOT}}/includes/smarts/decision-log-format.md', card)
+        self.assertIn('{{PLUGIN_ROOT}}/includes/smarts/decision-log-format.md',
+                      self.text(self.owner))
+        # Untouched neighboring files are checked against this slice's parent at
+        # publication, not locked to that historical digest in every future CI run.
+
+    def test_report_filter_retains_conflicts_despite_artifact_scaffold_agreement(self):
+        """An agreeing comparison cannot hide independent conflicting governance."""
+        card = self.text(self.analysis)
+        phase = card[card.index('## Phase 3'):card.index('## Return boundary')]
+        flowed = ' '.join(phase.split())
+        for phrase in ('Every `same-level-conflict` still produces an unresolved report item',
+                       'including when the artifact/scaffold comparison is `concur`',
+                       'Cite both governing sources',
+                       'do not invent an artifact/scaffold variance',
+                       'Only unflagged `concur`/`both-silent` items are omitted'):
+            self.assertIn(phrase, flowed)
+        self.assertNotIn('No `concur`/`both-silent` noise', phase)
+
+    def test_duplicate_composed_owner_remains_rejected(self):
+        """The consolidation cannot add a second model-facing procedure owner."""
+        import shutil
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            shutil.copytree(REPO_ROOT / 'core', root / 'core')
+            _write(root, 'core/surface/commands/adr-status.md', '{{SKILL_ENTRY:decision-variance}}\n')
+            with self.assertRaisesRegex(B.SurfaceError, 'already exposed'):
+                B.render_all(root, 'claude')
+
+    def test_adr_cleanup_covers_controlled_failures_at_captured_path(self):
+        """The remaining D12 review finding must not leave a fresh marker on a stop."""
+        text = self.text('core/surface/skills/decision-lifecycle/references/authoring.md')
+        for term in ('every exit after arming', 'ADR-write', 'decision-log-append', 'status-edit',
+                     'before returning or stopping', 'Do not resolve a different root during cleanup',
+                     'cleanup failure', 'not crash-safe'):
+            self.assertIn(term, text)
+        self.assertIn('rm -f "$ADR_MARKER_ROOT/.codearbiter/.markers/adr-authoring-active"', text)
+
+
+class RemainingWorkflowOwnerTest(unittest.TestCase):
+    """Initialization aliases and release deliver their full canonical procedure."""
+
+    owners = {'create-context': 'context-creation', 'decompose': 'decompose', 'release': 'release'}
+
+    def test_entries_have_one_canonical_source(self):
+        for command, owner in self.owners.items():
+            with self.subTest(command=command):
+                source = REPO_ROOT / f'core/surface/commands/{command}.md'
+                self.assertEqual(source.read_text(encoding='utf-8').strip(),
+                                 '{{SKILL_ENTRY:' + owner + '}}')
+
+    def test_public_invocations_receive_required_procedure_and_discovery(self):
+        obligations = {
+            'create-context': ('## Phase 2', 'Scout A', 'Scout F', '<!--INITIALIZED-->'),
+            'decompose': ('## Phase 1', 'Layer 1', 'Layer 6', '<!--INITIALIZED-->'),
+            'release': ('## Targets', 'release_require_clean_tree', 'Receipt-only closeout', '--dry-run'),
+        }
+        for host in ('claude', 'codex', 'pi'):
+            surface = B.render_all(REPO_ROOT, host)
+            for command, terms in obligations.items():
+                with self.subTest(host=host, command=command):
+                    path = f'commands/{command}.md' if host == 'claude' else f'skills/ca-{command}/SKILL.md'
+                    public = surface[path].decode()
+                    for term in terms:
+                        self.assertIn(term, public)
+                    self.assertEqual('disable-model-invocation: true' in _frontmatter(public), host == 'claude')
+                    if command != 'release':
+                        self.assertIn('Compatibility route', public)
+                    else:
+                        self.assertIn('argument-hint: "[target] | --dry-run"', _frontmatter(public))
+
+    def test_owner_metadata_is_bounded_without_dropping_public_names(self):
+        for command, owner in self.owners.items():
+            with self.subTest(command=command):
+                source = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
+                description = next(line.partition(': ')[2] for line in _frontmatter(source).splitlines()
+                                   if line.startswith('description: '))
+                self.assertLessEqual(len(description), 150)
+                for host in ('claude', 'codex', 'pi'):
+                    catalog = json.loads(B.render_all(REPO_ROOT, host)['generated/command-catalog.json'])
+                    self.assertIn(command, catalog['commands'])
+                    self.assertEqual(catalog['commands'][command]['description'], description)
+
+
+class LanguageCoveragePolicyTest(unittest.TestCase):
+    """The policy delivered to every host binds the metric to the language."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.surfaces = {host: B.render_all(REPO_ROOT, host)
+                        for host in ('claude', 'codex', 'pi')}
+
+    def test_profile_table_keeps_distinct_metrics_and_maturity_floors(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = surface['includes/maturity-coverage.md'].decode()
+                rows = [tuple(cell.strip().strip('`') for cell in line.strip('|').split('|'))
+                        for line in policy.splitlines() if line.startswith('|')]
+                profiles = {row[0]: row[2] for row in rows if len(row) == 3}
+                self.assertEqual(profiles.get('go-native'), 'statements',
+                                 'native Go has no binding statement profile')
+                self.assertEqual(profiles.get('lines-branches'), 'lines, branches')
+                floors = {row[0]: row[1] for row in rows
+                          if len(row) == 2 and row[0].isdigit()}
+                self.assertEqual(floors, {'1': '≥ 60%', '2': '≥ 70%',
+                                          '3': '≥ 85%', '4': '≥ 90%'})
+
+    def test_profile_selection_cannot_launder_missing_measurements(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = ' '.join(surface['includes/maturity-coverage.md'].decode().split())
+                for control in (
+                    'MUST NOT switch profiles', 'explicit user approval',
+                    'Missing, malformed, stale, partial or mismatched reports block',
+                    'unmeasured', 'unknown profile blocks',
+                    'Go native coverage is not the no-tooling exemption',
+                ):
+                    self.assertIn(control, policy)
+
+    def test_existing_line_branch_contract_does_not_need_reapproval(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = ' '.join(surface['includes/maturity-coverage.md'].decode().split())
+                self.assertIn('Existing documented line-and-branch requirements already declare', policy)
+                self.assertIn('without another approval or a metadata migration', policy)
+
+    def test_all_workflow_consumers_use_the_declared_profile(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            public_refactor = ('commands/refactor.md' if host == 'claude'
+                               else 'skills/ca-refactor/SKILL.md')
+            for path in (f'{routine}/tdd/SKILL.md', f'{routine}/refactor/SKILL.md',
+                         public_refactor, 'agents/coverage-auditor.md'):
+                with self.subTest(host=host, path=path):
+                    text = ' '.join(surface[path].decode().split())
+                    self.assertIn('declared coverage profile', text)
+                    self.assertIn('maturity-coverage.md', text)
+                    for obsolete in ('Lines and branches must both clear',
+                                     'on BOTH lines and branches',
+                                     'on both lines and branches',
+                                     'on either metric'):
+                        self.assertNotIn(obsolete, text)
+
+    def test_critical_outcomes_remain_blocking_beyond_the_percentage(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = ' '.join(surface['includes/maturity-coverage.md'].decode().split())
+                for control in ('approval and rejection', 'filesystem containment',
+                                'recovery', 'assert the expected outcome',
+                                'focused mutation', 'Missing critical-path evidence blocks'):
+                    self.assertIn(control, policy)
+                auditor = ' '.join(surface['agents/coverage-auditor.md'].decode().split())
+                self.assertIn('missing critical-path evidence as **HIGH**', auditor)
+                self.assertIn('Unmeasured:', auditor)
+
+    def test_repository_binds_existing_surfaces_to_the_approved_profiles(self):
+        stack = (REPO_ROOT / '.codearbiter/tech-stack.md').read_text(encoding='utf-8')
+        coverage = stack.split('## Coverage\n', 1)[1].split('\n## ', 1)[0]
+        for path in ('plugins/ca/tools', 'plugins/ca-pi/tools',
+                     'plugins/ca-sandbox/tools', 'site/'):
+            self.assertIn(f'| `{path}` | `lines-branches` |', coverage)
+        self.assertIn('| `core/artifacts/` | `go-native` |', coverage)
+        self.assertNotIn('this additional gate does not waive either', coverage)
+        self.assertIn('critical-path', coverage)
 
 
 if __name__ == "__main__":

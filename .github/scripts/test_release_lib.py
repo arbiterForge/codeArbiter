@@ -11144,7 +11144,7 @@ class ReleaseSurfaceTest(unittest.TestCase):
                 return fh.read()
 
         cls.skill = read("core", "surface", "skills", "release", "SKILL.md")
-        cls.command = read("core", "surface", "commands", "release.md")
+        cls.command = build_surface.render_all(REPO_ROOT, "claude")["commands/release.md"].decode()
         cls.releaselib_source = read("core", "pysrc", "_releaselib.py")
         cls.index = read("core", "surface", "skills", "INDEX.md")
         cls.security = read(".codearbiter", "security-controls.md")
@@ -11526,8 +11526,9 @@ test -z "$TAG_SHA"
         self.assertIn("If no POSIX-compatible shell is available, STOP", normalized)
 
     def test_command_index_and_security_boundary_describe_the_capability(self):
-        self.assertIn("declared version policy", self.command)
-        self.assertIn("exact release-asset inventory", self.command)
+        self.assertIn("version-policy", self.command)
+        self.assertIn("release-assets", self.command)
+        self.assertIn("verify-release-assets", self.command)
         self.assertIn("version-policy", self.index)
         self.assertIn("release-build", self.index)
         self.assertIn("`release-build`", self.security)

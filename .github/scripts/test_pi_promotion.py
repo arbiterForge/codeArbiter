@@ -772,7 +772,7 @@ class DocumentationContractTests(unittest.TestCase):
         promotion = load_module()
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
-            document = root / "plugins" / "ca-codex" / "routines" / "skill-author" / "SKILL.md"
+            document = root / "plugins" / "ca-codex" / "routines" / "catalog-reader" / "SKILL.md"
             document.parent.mkdir(parents=True)
             document.write_text(
                 "[reviewer](../../agents/<name>.md)\n"
@@ -784,7 +784,7 @@ class DocumentationContractTests(unittest.TestCase):
                 root,
                 docs.load_contract(self.broad_current_contract(root)),
                 promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
-                paths=(Path("plugins/ca-codex/routines/skill-author/SKILL.md"),),
+                paths=(Path("plugins/ca-codex/routines/catalog-reader/SKILL.md"),),
             )
         self.assertEqual(findings, [])
 
@@ -803,7 +803,7 @@ class DocumentationContractTests(unittest.TestCase):
                 root = Path(raw)
                 document = (
                     root / "plugins" / "ca-codex" / "routines" /
-                    "skill-author" / "SKILL.md"
+                    "catalog-reader" / "SKILL.md"
                 )
                 document.parent.mkdir(parents=True)
                 document.write_text(f"[resource]({target})\n", encoding="utf-8")
@@ -812,7 +812,7 @@ class DocumentationContractTests(unittest.TestCase):
                     docs.load_contract(self.broad_current_contract(root)),
                     promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
                     paths=(
-                        Path("plugins/ca-codex/routines/skill-author/SKILL.md"),
+                        Path("plugins/ca-codex/routines/catalog-reader/SKILL.md"),
                     ),
                 )
             self.assertEqual(

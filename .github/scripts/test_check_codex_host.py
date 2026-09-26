@@ -23,7 +23,7 @@ SPEC.loader.exec_module(CHECKER)
 
 class HookScriptContainmentTest(unittest.TestCase):
     def _results_for(self, command: str, hook_setup=None, *, require_artifact=False,
-                     qualified_members=False, receipt_mutator=None):
+                     qualified_members=False, receipt_mutator=None, plugin_listing=None):
         with tempfile.TemporaryDirectory() as raw:
             home = Path(raw) / "home"
             version = CHECKER.expected_version()
@@ -57,7 +57,8 @@ class HookScriptContainmentTest(unittest.TestCase):
 
             def fake_run(args, _home):
                 if args[-1] == "list":
-                    text = f"ca-codex@codearbiter installed enabled {version}\n"
+                    text = (plugin_listing if plugin_listing is not None else
+                            f"ca-codex@codearbiter installed enabled {version}\n")
                 else:
                     text = ""
                 return subprocess.CompletedProcess(args, 0, stdout=text, stderr="")
@@ -238,6 +239,81 @@ class HookScriptContainmentTest(unittest.TestCase):
             'python3 "${PLUGIN_ROOT}/hooks/linked.py"', link_outside
         ))
         self.assertEqual(result["status"], "fail")
+
+
+class PluginListingIdentityTest(unittest.TestCase):
+    """Read-back must bind the installed marketplace, status, and version."""
+
+    _results_for = HookScriptContainmentTest._results_for
+
+    def _readback(self, listing):
+        results = self._results_for(
+            'python3 "${PLUGIN_ROOT}/hooks/example.py"', plugin_listing=listing,
+        )
+        return {item["code"]: item["status"] for item in results
+                if item["code"] in {"CODEX-HOST-ENABLED", "CODEX-HOST-VERSION"}}
+
+    def test_uninstalled_personal_marketplace_does_not_hide_installed_target(self):
+        version = CHECKER.expected_version()
+        # Preserve the real Windows table's ordering, spacing, status, and path
+        # columns without depending on a live host or its installed files.
+        listing = (
+            "Marketplace `personal`\n"
+            "PLUGIN             STATUS         VERSION  PATH\n"
+            "ca-codex@personal  not installed           C:\\fixtures\\personal\\ca-codex\n\n"
+            "Marketplace `codearbiter`\n"
+            "PLUGIN                STATUS              VERSION  PATH\n"
+            f"ca-codex@codearbiter  installed, enabled  {version}   C:\\fixtures\\qualified\\ca-codex\n"
+        )
+        self.assertEqual(self._readback(listing), {
+            "CODEX-HOST-ENABLED": "pass", "CODEX-HOST-VERSION": "pass",
+        })
+
+    def test_absent_target_cannot_borrow_another_marketplace_or_prefix(self):
+        version = CHECKER.expected_version()
+        for identity in ("ca-codex@personal", "ca-codex@codearbiter-preview"):
+            with self.subTest(identity=identity):
+                self.assertEqual(self._readback(f"{identity} installed, enabled {version}\n"), {
+                    "CODEX-HOST-ENABLED": "fail", "CODEX-HOST-VERSION": "fail",
+                })
+
+    def test_duplicate_exact_target_rows_fail_closed(self):
+        version = CHECKER.expected_version()
+        target = f"ca-codex@codearbiter installed, enabled {version}\n"
+        for second in (target, "ca-codex@codearbiter not installed\n"):
+            with self.subTest(second=second):
+                self.assertEqual(self._readback(target + second), {
+                    "CODEX-HOST-ENABLED": "fail", "CODEX-HOST-VERSION": "fail",
+                })
+
+    def test_enabled_other_marketplace_cannot_mask_disabled_target(self):
+        version = CHECKER.expected_version()
+        other = f"ca-codex@personal installed, enabled {version}\n"
+        target = f"ca-codex@codearbiter installed, disabled {version}\n"
+        for listing in (other + target, target + other):
+            with self.subTest(listing=listing):
+                self.assertEqual(self._readback(listing), {
+                    "CODEX-HOST-ENABLED": "fail", "CODEX-HOST-VERSION": "pass",
+                })
+
+    def test_negated_status_cannot_satisfy_enabled_readback(self):
+        version = CHECKER.expected_version()
+        for status in ("not installed, enabled", "installed, not enabled"):
+            with self.subTest(status=status):
+                result = self._readback(f"ca-codex@codearbiter {status} {version}\n")
+                self.assertEqual(result["CODEX-HOST-ENABLED"], "fail")
+
+    def test_wrong_version_cannot_match_a_superstring_or_source_path(self):
+        version = CHECKER.expected_version()
+        for installed in (version + "0", version + "-rc.1", "9.9.9"):
+            with self.subTest(installed=installed):
+                listing = (
+                    f"ca-codex@codearbiter installed, enabled {installed} "
+                    f"C:\\fixtures\\{version}\\ca-codex\n"
+                )
+                self.assertEqual(self._readback(listing), {
+                    "CODEX-HOST-ENABLED": "pass", "CODEX-HOST-VERSION": "fail",
+                })
 
 
 if __name__ == "__main__":

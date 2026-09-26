@@ -738,17 +738,16 @@ _GLOB_DIR_REF_RE = re.compile(
 # BOTH assertions in `test_extraction_is_not_vacuous` must be re-satisfied
 # when lowering this value, not just "total >= floor": the ratio check
 # (`floor >= total // 2`) constrains it from the other side. The three full
-# skill copies (`ca`, `ca-codex`/`ca-pi` routines) shrink together toward
-# T-41's portable form while the two stub payloads hold at 1 reference
-# each and never shrink, so pick a floor inside BOTH bounds against the
-# post-migration total, not just the pre-migration one.
+# skill copies (`ca`, `ca-codex`/`ca-pi` routines) and two composed public
+# commands now contain the full procedure. Pick a floor inside BOTH bounds
+# against the current five-payload total, not the former wrapper total.
 #
 # The declarative version-policy and release-asset extension added portable
 # path references to each full payload. Keep the floor above half the current
 # post-pathspec-exclusion total so a future extractor regression cannot hide
 # behind the old post-T-41 value while still leaving room for legitimate
 # reference removal.
-_EXTRACTION_FLOOR = 19
+_EXTRACTION_FLOOR = 29
 _STABLE_ANCHOR_REF = "${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md"
 
 # Exact pre-sprint tree used by AncestryOldVsNewBehaviorTest as its durable
@@ -781,21 +780,20 @@ _ANCESTRY_PRE_FIX_COMMIT = "5c876dd885598c248fa777e951dac4e628688d73"
 _RELEASE_SKILL_PAYLOADS = (
     ("ca", "claude", "skills/release/SKILL.md",
      "includes/anti-slop-design/core.md"),
-    ("ca-codex (stub)", "codex", "skills/ca-release/SKILL.md",
-     "routines/release/SKILL.md"),
+    ("ca-codex (command)", "codex", "skills/ca-release/SKILL.md",
+     "hooks/_releaselib.py"),
     ("ca-codex (routines)", "codex", "routines/release/SKILL.md",
      "includes/anti-slop-design/core.md"),
-    ("ca-pi (stub)", "pi", "skills/ca-release/SKILL.md",
-     "routines/release/SKILL.md"),
+    ("ca-pi (command)", "pi", "skills/ca-release/SKILL.md",
+     "hooks/_releaselib.py"),
     ("ca-pi (routines)", "pi", "routines/release/SKILL.md",
      "includes/anti-slop-design/core.md"),
 )
 
-# The two stub payloads are pure routers to the full skill and are expected
-# to contribute NO unresolved reference of their own — verified by
-# `test_stub_release_skills_contribute_no_unresolved_refs` rather than left
-# as a one-time manual claim ("verify and leave alone") in a review comment.
-_STUB_PAYLOAD_LABELS = frozenset({"ca-codex (stub)", "ca-pi (stub)"})
+# These public commands compose the owner and must resolve every reference.
+# Direct-owner behavioral exercises below remain distinct from these duplicate
+# projections; composition alone does not supply independent host proof.
+_PUBLIC_COMMAND_PAYLOAD_LABELS = frozenset({"ca-codex (command)", "ca-pi (command)"})
 
 
 def _load_host_tokens():
@@ -1065,17 +1063,14 @@ class ReferenceResolutionTest(unittest.TestCase):
             "anything' from 'the skill genuinely has fewer references "
             "now'; raise it toward the live count")
 
-    def test_stub_release_skills_contribute_no_unresolved_refs(self):
-        # MEDIUM-3 (adversarial review 2026-07-31): the review found these
-        # two payloads are "short stubs with none" and said "verify and
-        # leave alone" — proven here directly, on every run, rather than
-        # left as a one-time manual claim in a review comment.
-        for label in _STUB_PAYLOAD_LABELS:
+    def test_public_release_entries_contribute_no_unresolved_refs(self):
+        # These formerly thin entries now compose the full owner. Their own
+        # resource references must still resolve in the actual consumer fixture.
+        for label in _PUBLIC_COMMAND_PAYLOAD_LABELS:
             self.assertEqual(
                 self.per_payload[label]["unresolved"], set(),
-                f"stub payload {label!r} now carries an unresolved "
-                "reference of its own — it is no longer a pure router to "
-                "the full release skill and must be scanned as one")
+                f"public payload {label!r} carries an unresolved "
+                "reference in its composed release procedure")
 
     def test_reference_resolution_is_empty(self):
         # T-79's strict zero-form: no committed list to compare against —
@@ -1156,7 +1151,7 @@ def _missing_phase2_gap_phrases_for(text, phrases):
 class Phase2GovernanceCarryTest(unittest.TestCase):
     """T-18: the nine T-17-deferred invariant-map gaps this task closes,
     reproved against the archived (`git archive HEAD`), distribution-
-    faithful copy of every full (non-stub) release-skill payload."""
+    faithful copy of every direct-owner release-skill payload."""
 
     @classmethod
     def setUpClass(cls):
@@ -1167,7 +1162,7 @@ class Phase2GovernanceCarryTest(unittest.TestCase):
         }
         cls.payloads = {}
         for label, host, relpath, _anchor in _RELEASE_SKILL_PAYLOADS:
-            if label in _STUB_PAYLOAD_LABELS:
+            if label in _PUBLIC_COMMAND_PAYLOAD_LABELS:
                 continue
             skill_path = os.path.join(root_by_host[host], *relpath.split("/"))
             with open(skill_path, encoding="utf-8") as fh:
@@ -2310,7 +2305,7 @@ class LaneDriverTest(unittest.TestCase):
         host_tokens = _load_host_tokens()
         full_payloads = [
             (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
-            if label not in _STUB_PAYLOAD_LABELS
+            if label not in _PUBLIC_COMMAND_PAYLOAD_LABELS
         ]
         self.assertEqual(len(full_payloads), 3)
         per_payload_invocations = {}
@@ -3378,7 +3373,7 @@ class BackfillTwoArmProofTest(unittest.TestCase):
         }
         full_payloads = [
             (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
-            if label not in _STUB_PAYLOAD_LABELS
+            if label not in _PUBLIC_COMMAND_PAYLOAD_LABELS
         ]
         self.assertEqual(len(full_payloads), 3)
         for label, host, relpath in full_payloads:
@@ -3400,8 +3395,8 @@ class BackfillTwoArmProofTest(unittest.TestCase):
         # MEDIUM-3's exact defect class (mirrors LaneDriverTest's own
         # cross-payload check): a driver reading only the `ca` copy is
         # blind to a drift introduced into a sibling. Scope to the THREE
-        # full payloads (the two `ca-release` stubs never carry this
-        # section at all), normalize each host's own plugin-root token
+        # direct-owner payloads; public commands duplicate the same procedure.
+        # Normalize each host's own plugin-root token
         # spelling, and assert the extracted invocation is identical
         # across all three -- and that the anchor is unambiguous (occurs
         # exactly once) in each.
@@ -3413,7 +3408,7 @@ class BackfillTwoArmProofTest(unittest.TestCase):
         host_tokens = _load_host_tokens()
         full_payloads = [
             (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
-            if label not in _STUB_PAYLOAD_LABELS
+            if label not in _PUBLIC_COMMAND_PAYLOAD_LABELS
         ]
         self.assertEqual(len(full_payloads), 3)
         per_payload_invocation = {}
@@ -3645,7 +3640,7 @@ class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
         }
         full_payloads = [
             (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
-            if label not in _STUB_PAYLOAD_LABELS
+            if label not in _PUBLIC_COMMAND_PAYLOAD_LABELS
         ]
         self.assertEqual(len(full_payloads), 3)
         for label, host, relpath in full_payloads:

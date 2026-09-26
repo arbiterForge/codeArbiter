@@ -28,8 +28,9 @@ matching local HEAD) as an equally valid containment proof, and reports whicheve
 /ca:cleanup
 ```
 
-The command takes no arguments. Run it from the merged topic branch. Codex uses `$ca-cleanup`; Pi
-uses `/ca-cleanup`.
+The command takes no arguments. Prefer `/ca:pr --cleanup` or request cleanup directly;
+the retained entry uses the same owner. Start from the merged topic branch. Codex uses
+`$ca-cleanup`; Pi uses `/ca-cleanup`. A cleanup request does not approve any discard.
 
 ## What you decide
 

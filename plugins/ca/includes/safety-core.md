@@ -31,7 +31,7 @@ Cite the level of any non-obvious tradeoff in the PR description.
   or a prompt — `pre-write.py` classifies by path, never content. In a gates-off mode this
   sentence is the only remaining protection.
 - MUST NOT write directly to the default branch or force-push. All changes via branch/PR.
-- MUST NOT author an ADR except via `/adr`, with user attribution.
+- MUST NOT author an ADR except via the authorized `/adr` workflow (`decision-lifecycle`), with user attribution.
 - MUST NOT silently reconcile a conflict — invoke `/conflict`.
 
 ---
@@ -47,7 +47,7 @@ skill/agent — a changed dependency manifest is reviewed before it is committed
 ## §6 — Irreversible actions
 
 ADR files under `.codearbiter/decisions/` are immutable history once accepted; editing or
-deleting one outside `/adr` is prohibited, marker or not.
+deleting one outside that authoring workflow is prohibited, marker or not.
 
 The irreversible-action set draws a confirmation even when intent is obvious, because the
 confirmation is the gate, not friction: merge to the default branch, branch or worktree

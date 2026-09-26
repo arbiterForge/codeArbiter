@@ -13,12 +13,12 @@ loads only when that route is invoked. Never bulk-read the directory.
 | Visibility | Count |
 |---|---:|
 | Core | 18 |
-| Advanced | 12 |
-| Canonical total | 30 |
+| Advanced | 11 |
+| Canonical total | 29 |
 | Compatibility aliases | 5 |
 | Internal | 1 |
 | Deprecated | 1 |
-| **Total** | **37** |
+| **Total** | **36** |
 
 ## Core lanes
 
@@ -107,12 +107,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 | `/ca-audit` | `[range]` | Assemble a dated governance packet from source records. Read-only. |
 | `/ca-metrics` | `[--window N]` | Report override, small-lane, and low-confidence trends against the prior window. |
 | `/ca-prune` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Select shared prune policy and use Pi native compaction without rewriting the active session. |
-
-### Extend
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `/ca-new-skill` | `"gap"` | Prove a capability gap, approve a spec, then author a new skill. |
 
 ### Help
 

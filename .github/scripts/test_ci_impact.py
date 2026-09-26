@@ -346,7 +346,8 @@ def gitleaks_allowlist_regexes(config: str) -> list[str]:
 
 # The characters that would let an anchored waiver match more than the single
 # fixed value it spells out.  `\` is in the set because an escape sequence is a
-# pattern, and this contract admits no patterns at all.
+# pattern. The only exception, below, is one complete literal quote; active
+# patterns and early quote exits remain forbidden.
 _REGEX_METACHARACTERS = frozenset(".*+?()[]{}|^$\\")
 # `\A<body>\z` - Go RE2's spelling of "the WHOLE target is exactly <body>".
 _ANCHORED_WAIVER = re.compile(r"(?s)\A\\A(?P<body>.*)\\z\Z")
@@ -463,7 +464,12 @@ def gitleaks_waiver_violations(config: str) -> list[str]:
                     "regexes as substrings, so it waives anything merely containing it"
                 )
                 continue
-            stray = sorted(set(anchored.group("body")) & _REGEX_METACHARACTERS)
+            body = anchored.group("body")
+            # A whole RE2 quote is still ONE exact value, including punctuation.
+            # Refuse any earlier quote terminator: no regex may follow it.
+            if body.startswith(r"\Q") and body.endswith(r"\E") and r"\E" not in body[2:-2]:
+                continue
+            stray = sorted(set(body) & _REGEX_METACHARACTERS)
             if stray:
                 problems.append(
                     f"{literal!r} carries regex metacharacter(s) {''.join(stray)!r}; "
@@ -1946,6 +1952,45 @@ class WorkflowContractTest(unittest.TestCase):
             "something broader",
         )
 
+    def test_exact_quoted_secret_waivers_remain_single_values(self):
+        for value in ["fixture.with(punctuation)", "line one\nline two", ".*[]{}|^$", r"literal\Qtext"]:
+            with self.subTest(value=value):
+                pattern = r"\A\Q" + value + r"\E\z"
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''" + pattern + "''']\n"
+                self.assertEqual(gitleaks_waiver_violations(config), [])
+
+    def test_quoted_secret_waivers_cannot_leave_the_literal_scope(self):
+        patterns = [r"\Qfixture\E", r"\A\Qfixture\E", r"\Qfixture\E\z",
+                    r"\A\Qfixture\E.*\z", r"\A\Qfixture\E.*\Qother\E\z",
+                    r"\A\Qfixture\E|other\Qx\E\z", r"\A\Qfixture\E(?i)\Qx\E\z",
+                    r"\A\Qfixture\E\z.*", r"(?i)\A\Qfixture\E\z",
+                    r"\A\Qfixture\E[\s\S]*\Q\E\z", r"\Afixture.*\z", r"\A\Qfixture\z"]
+        for pattern in patterns:
+            with self.subTest(pattern=pattern):
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''" + pattern + "''']\n"
+                self.assertTrue(gitleaks_waiver_violations(config))
+
+    def test_quoted_literal_does_not_allow_path_or_target_waivers(self):
+        for field in ["paths = ['fixtures/']", "commits = ['abc']", "stopwords = ['fixture']",
+                      "regexTarget = 'match'", "regexTarget = 'line'", "condition = 'OR'"]:
+            with self.subTest(field=field):
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''\\A\\Qfixture(x)\\E\\z''']\n" + field
+                self.assertTrue(gitleaks_waiver_violations(config))
+
+    def test_historical_redaction_fixture_waiver_is_exact_source_text(self):
+        import hashlib
+        config = GITLEAKS_CONFIG.read_text(encoding="utf-8")
+        patterns = [p for p in gitleaks_allowlist_regexes(config) if p.startswith(r"\A\Q")]
+        self.assertEqual(len(patterns), 1)
+        pattern = patterns[0]
+        self.assertTrue(pattern.endswith(r"\E\z"))
+        value = pattern[4:-4]
+        self.assertNotIn(r"\E", value)
+        self.assertEqual(len(value.encode("utf-8")), 103)
+        self.assertEqual(hashlib.sha256(value.encode("utf-8")).hexdigest(),
+                         "0636fae38f63fc5e488ed81d916994bd086c5aea4f323ed1b912fa0f0697c1df")
+        self.assertIn("c4280147cffa1a7a8ba73ebe1b8b1bbf5f2a1e44", config)
+
     def test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract(self):
         # A contract only means something if it FAILS on the diffs it exists to
         # stop.  Every adversarial config below was measured against the pinned
@@ -3145,6 +3190,52 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 class ArtifactEngineCIContractTest(unittest.TestCase):
     """The structured-artifact engine is a required six-platform package gate."""
 
+    def test_native_statement_collector_alone_starts_push_ci(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("tools/artifact-coverage.py", push_trigger_paths(ci))
+
+    def test_native_statement_coverage_is_complete_and_merge_required(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        engine = jobs["artifact-engine"]
+        for command in (
+            "python .github/scripts/test_artifact_cli.py --coverage-output",
+            "python tools/artifact-coverage.py collect",
+            "--expect-platform \"${{ matrix.expected_platform }}\"",
+            "--extra-profile",
+            "name: artifact-statements-${{ matrix.os }}",
+        ):
+            self.assertIn(command, engine)
+        self.assertIn("artifact-coverage", jobs)
+        coverage = jobs["artifact-coverage"]
+        for control in (
+            "needs: [changes, artifact-engine]", "!cancelled()",
+            "needs.changes.outputs.artifacts == 'true'",
+            "runs-on: ubuntu-24.04", "pattern: artifact-statements-*",
+            "merge-multiple: false", "artifact-coverage.py", "summarize",
+            "--minimum-statements", '"70"', "--require-integration",
+            "python .github/scripts/test_artifact_coverage.py",
+            "needs.artifact-engine.result", '!= success',
+        ):
+            self.assertIn(control, coverage)
+        self.assertNotIn("self-hosted", coverage)
+        self.assertNotIn("continue-on-error:", coverage)
+        aggregate = jobs["ci-passed"]
+        self.assertRegex(aggregate, r"(?m)^      - artifact-coverage$")
+        self.assertIn("${{ needs['artifact-coverage'].result }}", aggregate)
+        self.assertIn('artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"', aggregate)
+        self.assertIn('artifact_coverage_result="${{ needs[\'artifact-coverage\'].result }}"', aggregate)
+        self.assertIn('[ "$artifact_coverage_required" = true ] && [ "$artifact_coverage_result" != success ]', aggregate)
+        changes = jobs["changes"]
+        impact = module.load_map(REPO_ROOT / ".github" / "ci-impact-map.json")
+        for path in (
+            "tools/artifact-coverage.py", ".github/scripts/test_artifact_cli.py",
+            ".github/scripts/test_artifact_coverage.py",
+        ):
+            self.assertIn(f"- '{path}'", changes)
+            selected = module.evaluate(impact, [path], hosts())
+            self.assertFalse(selected.fallback, path)
+            self.assertIn("artifact-engine", {check.id for check in selected.selected})
+
     def test_native_qualification_has_a_bounded_thirty_minute_job_budget(self):
         # PR859's Intel macOS cell exhausted 15 minutes during conformance after
         # passing the preceding suites. Preserve the complete qualification path.
@@ -3616,6 +3707,28 @@ class SiteBrowserBehaviorContractTest(unittest.TestCase):
             self.assertIn(obligation, responsive)
         self.assertGreaterEqual(responsive.count("await expectNoHorizontalOverflow()"), 2,
                                 "check geometry both before and during visible search results")
+
+
+class NativeQualificationTimeBudgetTest(unittest.TestCase):
+    def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
+        source = CI_WORKFLOW.read_text(encoding="utf-8")
+        block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
+        # The inspected macOS cell passed product suites but was cancelled at
+        # the old 15-minute job deadline during final conformance. Retain every
+        # qualification layer and the bounded job rather than skipping a proof.
+        self.assertRegex(block, r"(?m)^    timeout-minutes: 30$")
+        for script in ("test_artifact_native.py", "test_artifact_bridge.py",
+                       "test_artifact_approval_adapter.py", "test_artifact_authority_adapter.py",
+                       "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",
+                       "test_artifact_authoring.py", "test_artifact_workflow.py",
+                       "test_artifact_farm.py", "test_artifact_package.py",
+                       "test_artifact_conformance.py"):
+            self.assertIn(script, block)
+        self.assertNotIn("continue-on-error:", block)
+        self.assertIn("fail-fast: false", block)
+        for platform in ("linux/amd64", "linux/arm64", "windows/amd64",
+                         "windows/arm64", "darwin/amd64", "darwin/arm64"):
+            self.assertIn("expected_platform: " + platform, block)
 
 
 if __name__ == "__main__":

@@ -155,10 +155,12 @@ def eager_markers(text: str, forbidden: list[str]) -> list[str]:
 
 
 def reviewed_surface(baseline: dict) -> dict[str, list[str]]:
-    """The immutable historical baseline plus each explicitly reviewed addition."""
+    """Apply explicit reviewed deltas without rewriting the historical baseline."""
     surface = {key: list(value) for key, value in baseline["registrations"].items()}
     for addition in baseline.get("reviewed_additions", []):
         surface[addition["category"]] = sorted(surface[addition["category"]] + [addition["name"]])
+    for removal in baseline.get("reviewed_removals", []):
+        surface[removal["category"]].remove(removal["name"])
     return surface
 
 
@@ -192,6 +194,32 @@ class ArtifactSurfaceTest(unittest.TestCase):
                 set(item), {"category", "name", "hosts", "invocation", "rationale", "approved_by"}
             )
             self.assertTrue(all(isinstance(item[key], (str, list)) and item[key] for key in item))
+
+    def test_reviewed_removals_are_exact_and_attributed(self) -> None:
+        removals = self.baseline.get("reviewed_removals", [])
+        self.assertEqual([(r["category"], r["name"]) for r in removals],
+                         [("commands", "new-skill"), ("top_level_skills", "skill-author")])
+        for row in removals:
+            self.assertEqual(set(row), {"category", "name", "rationale", "approved_by"})
+            self.assertTrue(all(isinstance(v, str) and v for v in row.values()))
+            self.assertIn("2026-09-25", row["approved_by"])
+            self.assertIn("PR #854", row["approved_by"])
+
+    def test_retired_registration_cannot_silently_return(self) -> None:
+        for category, name in (("commands", "new-skill"), ("top_level_skills", "skill-author")):
+            with self.subTest(category=category):
+                candidate = surface_at_revision()
+                candidate[category].append(name)
+                self.assertEqual(surface_delta(self.reviewed, candidate),
+                                 [f"added {category}: {name}"])
+
+    def test_other_registration_removal_still_fails(self) -> None:
+        for category, name in (("commands", "commit"), ("top_level_skills", "tdd")):
+            with self.subTest(category=category):
+                candidate = surface_at_revision()
+                candidate[category].remove(name)
+                self.assertEqual(surface_delta(self.reviewed, candidate),
+                                 [f"removed {category}: {name}"])
 
     def test_pi_prompt_approval_is_explicitly_unsupported(self) -> None:
         warning = (

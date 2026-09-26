@@ -324,6 +324,22 @@ scripts disabled. CI owns the Windows/macOS/Linux matrix.
 
 ## Coverage
 
+Coverage profiles are declared per source tree under the shared
+`core/surface/includes/maturity-coverage.md` policy:
+
+| source tree | profile |
+|---|---|
+| `plugins/ca/tools` | `lines-branches` |
+| `plugins/ca-pi/tools` | `lines-branches` |
+| `plugins/ca-sandbox/tools` | `lines-branches` |
+| `site/` | `lines-branches` |
+| `core/artifacts/` | `go-native` |
+
+The maintainer approved language-specific metrics on 2026-09-26; the maturity
+thresholds are unchanged. All profiles retain the shared critical-path outcome
+tests and focused mutation checks. Python's documented no-tooling surface below
+remains separately governed by the existing exemption.
+
 One command per TypeScript tree, only when that tree changed:
 
 ```sh
@@ -383,7 +399,7 @@ other's contribution is missing. The rule and its conditions live in
 `plugins/ca/includes/maturity-coverage.md`; this table is the per-tree half it
 refers to.
 
-**The threshold is not encoded in the tooling.** `tdd` Phase 5 and `refactor`
+**The TypeScript threshold is not encoded in the tooling.** `tdd` Phase 5 and `refactor`
 Phase 2/6 apply it, reading `stage:` from `.codearbiter/CONTEXT.md` against
 `plugins/ca/includes/maturity-coverage.md`. **Lines and branches must both
 clear it**; a report satisfying one and not the other does not pass. Putting the
@@ -414,7 +430,7 @@ Two caveats when reading a local report:
 - **ca-sandbox self-skips its docker-gated suites** on a host without Docker, so
   a local number reads lower than required CI's. Compare against a run with
   `CA_SANDBOX_REQUIRE_DOCKER=1` before concluding that tree regressed.
-- **No CI job enforces coverage.** It is an orchestrator gate the skills run, not
+- **No CI job enforces the TypeScript coverage floor.** It is an orchestrator gate the skills run, not
   a required check — deliberately, since wiring a red `ca/tools` into required CI
   would block every merge on an unrelated backfill.
 
@@ -442,8 +458,38 @@ dev-inclusive CVE gate, whose sweep lives in `docs.yml`. Adding a coverage
 provider does not change that posture — the provider is a dev dependency, and
 the audit scope is unchanged.
 
-There is **no coverage tooling for the Python hooks** (`plugins/*/hooks/*.py`,
-`.github/scripts/*.py`). No numeric floor exists for those surfaces, so `tdd`
+**Native Go statements** (`core/artifacts/`, profile `go-native`) are collected with the
+pinned Go toolchain and Python standard library. For a local Windows/amd64 run,
+choose new output paths outside the module:
+
+```sh
+python .github/scripts/test_artifact_cli.py --coverage-output <new-cli-profile>
+python tools/artifact-coverage.py collect --module-root core/artifacts --output <new-native-directory> --expect-platform windows/amd64 --extra-profile <new-cli-profile>
+python tools/artifact-coverage.py summarize --module-root core/artifacts --input <new-native-directory> --expect-platform windows/amd64 --require-integration
+```
+
+The actual CLI tests build a disposable instrumented executable. The unit run
+uses `-coverpkg=./...` to measure production packages exercised by other packages'
+tests. Collection binds source, tests, embedded inputs, Go version, native
+platform and profile bytes. The union counts each source block once, preserving
+platform-specific files; it never averages host percentages.
+
+The required `artifact-coverage` CI job collects all six GitHub-hosted native
+platforms (Linux, Windows and macOS, each amd64 and arm64), requires executable
+coverage on each, and enforces the current stage-2 **70% statement floor**. Missing,
+duplicate, stale or mismatched inputs fail. With no `--expect-platform` flags,
+`summarize` requires that complete six-platform set. An explicitly selected
+local host is only a local figure. These reports label **statements** and leave
+line and branch coverage unmeasured, as the declared profile requires. A passing
+percentage does not replace the shared critical-path evidence requirements.
+Reconcile the CI floor with the shared maturity table whenever the project stage
+changes; a fixed stage-2 floor cannot qualify a later stage.
+
+There is **no coverage tooling for the Python hooks or build tools**
+(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).
+These Python surfaces use direct unittest and behavioral contract checks; the
+TypeScript coverage configurations above do not instrument them. No numeric
+floor exists for those surfaces, so `tdd`
 Phase 5 and `refactor` Phase 2 and Phase 6 all take the **no-tooling exemption**
 — whose conditions live in `plugins/ca/includes/maturity-coverage.md` and are
 NOT restated here. In short: it requires a citation, not an assertion, and the

@@ -47,7 +47,12 @@ test('the complete comparison and distinct caller handoffs are visible without s
   await expect(page.locator('[data-smarts-option]')).toHaveCount(12);
   await expect(page.locator('[data-decision-route] ol > li')).toHaveCount(8);
   await expect(page.locator('.ca-smarts-comparison button')).toHaveCount(0);
-  await expect(page.locator('[data-decision-route="reconcile"]')).toContainText('user resolves each variance');
+  const reconciliation = page.locator('[data-decision-route="reconcile"]');
+  await expect(reconciliation).toContainText('user resolves remaining variances');
+  await expect(reconciliation).toContainText('Report-only returns before this step');
+  await expect(reconciliation).toContainText('already-selected concrete choice is not requested again');
+  await expect(reconciliation).toContainText('without rewriting history');
+  await expect(reconciliation).toContainText('separately directed');
   await expect(page.locator('[data-decision-route="sprint"]')).toContainText('not an autonomous merge');
 });
 

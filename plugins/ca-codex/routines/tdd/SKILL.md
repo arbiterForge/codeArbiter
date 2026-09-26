@@ -117,9 +117,12 @@ Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — a rigor k
 gate. The threshold table is the shared [includes/maturity-coverage.md](../../includes/maturity-coverage.md) (the
 single source of truth, also used by `refactor` Phase 2).
 
-Run the coverage command from `tech-stack.md`. **Lines and branches must both clear the threshold**
-— a report satisfying one and not the other does not pass (issue #507). Below it on either → add
-tests until both are met.
+Resolve the surface's **declared coverage profile** from `tech-stack.md` against
+[includes/maturity-coverage.md](../../includes/maturity-coverage.md), then run its coverage command.
+Every required metric must clear the maturity threshold. Apply the shared
+profile-selection, report-validity and critical-path evidence requirements;
+do not substitute metrics or treat an unmeasured metric as passed. Below the
+floor on any required metric → add meaningful tests until it is met.
 
 **Name the host you measured on**, and for a tree `tech-stack.md` marks as platform-forked, the
 figure is the UNION across its supported hosts — a single-host report scores the other platform's
@@ -139,8 +142,9 @@ still reads as satisfied, which is worse than an absent one.
 regression could rot unnoticed — not just "below threshold." The number is the rule; the untested paths
 are why it matters.
 
-Gate: threshold met on BOTH lines and branches for the current maturity value, or the no-tooling
-exemption taken WITH its citation. A test added only to move the percentage fails this gate in
+Gate: threshold met on every required metric in the declared coverage profile
+for the current maturity value, with the shared critical-path evidence, or the no-tooling
+exemption taken WITH its citation and Phase 4 proof. A test added only to move the percentage fails this gate in
 spirit — it converts an honest red into a green that asserts nothing.
 
 ## Phase 6 — Lint · gate: BLOCK

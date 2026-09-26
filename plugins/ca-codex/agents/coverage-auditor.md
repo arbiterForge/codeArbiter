@@ -24,7 +24,14 @@ one place for that reason.
 
 ### 1. Coverage threshold
 
-Run the coverage command from `tech-stack.md` (or use the last run output). Compare against the threshold for the `stage:` maturity value in `CONTEXT.md`, applying **every metric `maturity-coverage.md` names as binding** — a report clearing one and failing another is below threshold. Flag that as **HIGH** (blocks PR at the commit gate).
+Resolve the surface's **declared coverage profile** from `tech-stack.md` against
+`maturity-coverage.md`. Run its coverage command or use a current report bound to
+the tested source, tools, scope and hosts. Compare every metric required by that
+profile against the threshold for `stage:` in `CONTEXT.md`. Flag a failing required
+metric, an undeclared profile change, or invalid/missing overall evidence as
+**HIGH** (blocks the overall coverage gate). Apply `verification-boundary.md` to
+distinguish a scoped local PARTIAL result from the complete hosted merge verdict.
+Report unmeasured metrics explicitly; never infer them from another metric.
 
 Where the surface has no coverage tooling, say so and flag nothing on this check; do not invent a command or infer a number. Report it as the no-tooling exemption from `maturity-coverage.md`, quoting the `tech-stack.md` Coverage section that omits a command for this surface — an audit that cannot show what it read is the same unverifiable claim the exemption exists to prevent.
 
@@ -46,6 +53,10 @@ For every feature or bug fix in scope:
 
 Flag logical gaps as **MEDIUM**. Flag complete absence of negative-path tests as **HIGH**.
 
+Apply the shared critical-path requirements in `maturity-coverage.md`, including
+actual outcome assertions and focused mutation checks for changed safeguards.
+Flag missing critical-path evidence as **HIGH** even when percentages pass.
+
 ### 4. Test quality
 
 - "Does not throw" with no behavior assertion → **LOW**.
@@ -64,5 +75,8 @@ computes (an audit that hides its number is an unverifiable claim):
 
 ```
 ### Coverage
-Current: <N>% | Threshold: <N>% | Status: PASS | BELOW THRESHOLD
+Profile: <declared profile> | Scope: <source tree> | Hosts: <measured / required>
+Required metrics: <metric: N%, ...> | Threshold: <N>%
+Unmeasured: <metrics, or none> | Critical-path evidence: <covered / missing>
+Status: PASS | BELOW THRESHOLD | PARTIAL | INVALID EVIDENCE
 ```

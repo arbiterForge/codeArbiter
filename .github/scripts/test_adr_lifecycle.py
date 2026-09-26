@@ -550,7 +550,7 @@ class LifecycleContractTest(unittest.TestCase):
         for relative in (
                 "core/surface/includes/safety-core.md",
                 "core/surface/skills/finishing-a-development-branch/SKILL.md",
-                "core/surface/skills/decision-lifecycle/SKILL.md"):
+                "core/surface/skills/decision-lifecycle/references/authoring.md"):
             with self.subTest(path=relative):
                 with open(os.path.join(root, *relative.split("/")), encoding="utf-8") as handle:
                     text = handle.read()
@@ -2131,7 +2131,8 @@ class LifecycleContractTest(unittest.TestCase):
     def test_canonical_adr_skill_distinguishes_acceptance_from_delivery(self):
         root = os.path.dirname(os.path.dirname(HERE))
         skill_path = os.path.join(
-            root, "core", "surface", "skills", "decision-lifecycle", "SKILL.md")
+            root, "core", "surface", "skills", "decision-lifecycle", "references",
+            "authoring.md")
         template_path = os.path.join(
             root, "core", "surface", "skills", "decision-lifecycle", "references",
             "adr-template.md")

@@ -183,8 +183,15 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
 
     # The read-back is the point: an install that reports success but leaves the
     # plugin DISABLED is exactly the drift a static adapter test cannot see.
-    row = next((line for line in out.splitlines() if line.startswith("ca-codex@")), "")
-    record("CODEX-HOST-ENABLED", "installed" in row and "enabled" in row, row.strip())
+    # A host can list the same plugin in several marketplaces. Only one exact
+    # installed identity may supply status/version evidence; ambiguity fails.
+    rows = [line for line in out.splitlines()
+            if line.split(maxsplit=1)[:1] == ["ca-codex@codearbiter"]]
+    row = rows[0] if len(rows) == 1 else ""
+    fields = row.split()
+    record("CODEX-HOST-ENABLED",
+           fields[1:3] in (["installed,", "enabled"], ["installed", "enabled"]),
+           row.strip() or f"expected one ca-codex@codearbiter row, found {len(rows)}")
 
     # What this version check can and cannot do, stated because a mutation test
     # showed the obvious reading is wrong: bumping the manifest to 9.9.9 does NOT
@@ -197,8 +204,8 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
     # marketplace snapshot can genuinely cause, since `plugin marketplace
     # upgrade` exists precisely because a snapshot can lag its source.
     want = expected_version()
-    record("CODEX-HOST-VERSION", bool(want) and want in row,
-           f"expected {want!r} in {row.strip()!r}")
+    record("CODEX-HOST-VERSION", bool(want) and fields[3:4] == [want],
+           f"expected version {want!r} in {row.strip()!r}")
 
     # The installed CACHE path carries the resolved version independently of the
     # listing text, so a host that reported one version and installed another

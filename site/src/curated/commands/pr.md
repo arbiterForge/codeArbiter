@@ -15,8 +15,8 @@ gates:
 
 ## What it does
 
-This is the only path to opening a pull request — there's no direct push or force-push to the
-default branch anywhere in the system. Before anything gets drafted, it confirms the commit gate
+Explicit PR entry and a direct request to open a PR use the same branch-finishing owner.
+Neither permits a direct push or force-push to the default branch. Before anything gets drafted, it confirms the commit gate
 already ran clean this session, then looks at what actually changed to decide which reviewers need
 to weigh in: touching authentication or crypto code pulls in a security-focused pass, a migration
 file pulls in a migration reviewer, a changed dependency manifest pulls in a supply-chain check, and
@@ -35,11 +35,20 @@ differences](/getting-started/claude-code-and-codex/#intentional-host-difference
 ## Usage
 
 ```
-/ca:pr
+/ca:pr ["title"]
+/ca:pr --watch [PR]
+/ca:pr --cleanup
 ```
 
-Takes no arguments — it reads the current branch, its diff against the default branch, and the
-commit history to determine what changed.
+An optional title selects the open-PR path, as does asking to open a PR directly; you
+are not asked to choose the branch's fate again. With no title, the owner derives it
+from the current branch, diff and commit history.
+
+The mutually exclusive flags select existing lifecycle operations before creation
+preflight: `--watch` follows the watcher, and `--cleanup` follows post-merge cleanup.
+Neither creates a PR or requires a fresh creation gate just to enter its own flow.
+Bare or quoted titles named `watch` or `cleanup` stay titles, not flags. Merge and
+discard still require explicit authority and their applicable proof.
 
 ## Example
 

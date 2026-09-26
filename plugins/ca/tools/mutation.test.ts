@@ -17,11 +17,14 @@
  * covered first, and it is why every case below asserts the returned risk/score
  * exactly rather than that a call succeeded.
  */
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtemp, mkdir, rm, writeFile, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { MUT, antiGamingCheck, mutationCheck } from "./mutation.ts";
+import { performance } from "node:perf_hooks";
+import * as execution from "./exec.ts";
+import * as worktreeFiles from "./worktree-fs.ts";
+import { MUT, antiGamingCheck, mutationCheck, parseMutationHookOutput, interpretMutationHookResult } from "./mutation.ts";
 import type { Task } from "./farm.ts";
 
 const SHELL_TRUE = process.platform === "win32" ? "cmd /c exit 0" : "true";
@@ -63,6 +66,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   Object.assign(MUT, saved);
   await rm(wt, { recursive: true, force: true });
 });
@@ -194,9 +198,9 @@ describe("antiGamingCheck", () => {
       [
         "// a comment",
         "",
-        "# another",
-        "* and another",
-        "/* and one more",
+        "// another",
+        "/* and another */",
+        "/* and one more */",
         'export const answer = () => "the-magic-value";',
       ].join("\n"),
     );
@@ -216,11 +220,58 @@ describe("antiGamingCheck", () => {
 
     const result = await antiGamingCheck(wt, task({ filesInScope: ["src/impl.ts", "src/tiny.ts"] }));
     expect(result.risk).toBe("high");
-    // The note names the FIRST hit, not the tiny one — the reviewer gets the
-    // file that matched first plus the fact that something trivial was involved.
-    expect(result.note).toContain("src/impl.ts");
+    // The rejection must name its actual tiny-file witness, not a preceding
+    // substantial match. Warn-only results still keep their first-match order.
+    expect(result.note).toContain("src/tiny.ts");
+    expect(result.note).not.toContain("src/impl.ts");
     expect(result.note).toContain("(impl is trivial)");
   });
+});
+
+describe("literal evidence boundaries", () => {
+  const cases: Array<[string, string, string, string?]> = [
+    ["longer number", "expect(answer()).toBe(42);", "export const answer = 420;"],
+    ["numeric suffix", "expect(answer()).toBe(42);", "export const answer = 142;"],
+    ["decimal part", "expect(answer()).toBe(42);", "export const answer = 42.5;"],
+    ["exponent part", "expect(answer()).toBe(42);", "export const answer = 1e42;"],
+    ["hex digit substring", "expect(answer()).toBe(42);", "export const answer = 0x42;"],
+    ["identifier suffix", "expect(answer()).toBe(42);", "export const answer = item42;"],
+    ["supplementary unicode identifier", "expect(answer()).toBe(42);", "export const answer = 𐐀42;"],
+    ["unicode identifier", "expect(answer()).toBe(42);", "export const answer = 值42;"],
+    ["longer string", 'expect(answer()).toBe("magic-value");', 'export const answer = "prefix-magic-value-suffix";'],
+    ["number versus string", "expect(answer()).toBe(42);", 'export const answer = "42";'],
+    ["string versus number", 'expect(answer()).toBe("42");', "export const answer = 42;"],
+    ["line comment in implementation", "expect(answer()).toBe(42);", "// expected 42\nexport const answer = compute();"],
+    ["block comment in implementation", 'expect(answer()).toBe("magic-value");', '/* "magic-value" */\nexport const answer = compute();'],
+    ["unclosed block comment", "expect(answer()).toBe(42);", "/* 42 is not code"],
+    ["comment-only test evidence", '// expect(answer()).toBe("magic-value");', 'export const answer = "magic-value";'],
+    ["inline Python comment", "assert answer() == 42", "def answer():\n    return compute() # 42", ".py"],
+    ["Python floor division is not a comment", "assert answer() == 42", "def answer():\n    return 420 // 10", ".py"],
+    ["regexp contents", "expect(answer()).toBe(42);", "export const answer = /42/.test(input);"],
+    ["interpolated template is not a constant", 'expect(answer()).toBe("magic-value");', 'export const answer = `magic-value${suffix}`;'],
+  ];
+  it.each(cases)("does not hard-reject a %s substring as a complete typed literal", async (_name, test, impl, extension = ".ts") => {
+    const implPath = "src/value" + extension, testPath = "src/value.test" + extension;
+    await write(testPath, test); await write(implPath, impl);
+    expect(await antiGamingCheck(wt, task({ filesInScope: [implPath], test: { path: testPath } })))
+      .toEqual({ risk: "none" });
+  });
+
+  it.each([
+    ["quoted comment markers", 'expect(answer()).toBe("https://example.test/#value");', 'export const answer = "https://example.test/#value";', ".ts"],
+    ["Python floor division followed by exact value", "assert answer() == 42", "def answer(n):\n    return n // 2 + 42", ".py"],
+    ["closed block comment followed by exact value", "expect(answer()).toBe(42);", '/* no evidence */ export const answer = 42;', ".ts"],
+    ["Python whole triple string", 'assert answer() == "magic-value"', 'def answer():\n    return """magic-value"""', ".py"],
+    ["escaped quote", 'expect(answer()).toBe("a\\\"b");', 'export const answer = "a\\\"b";', ".ts"],
+    ["static template", 'expect(answer()).toBe("magic-value");', 'export const answer = `magic-value`;', ".ts"],
+  ])("preserves high risk for %s", async (_name, test, impl, extension) => {
+    const implPath = "src/value" + extension, testPath = "src/value.test" + extension;
+    await write(testPath, test); await write(implPath, impl);
+    const risk = await antiGamingCheck(wt, task({ filesInScope: [implPath], test: { path: testPath } }));
+    expect(risk.risk).toBe("high");
+    expect(risk.note).toContain(implPath);
+  });
+
 });
 
 describe("mutationCheck — configuration gates", () => {
@@ -455,23 +506,23 @@ describe("mutationCheck — built-in text mutation", () => {
     MUT.sample = 3;
     const result = await mutationCheck(wt, task({ gate: { commands: [SHELL_FALSE] } }));
     expect(result).not.toBeNull();
-    expect((result as { evaluated: number }).evaluated).toBe(3);
+    expect(result).toMatchObject({ failed: true, source: "builtin", unverified: { evaluated: 3 } });
   });
 
   it("returns null when the in-scope file does not exist", async () => {
     expect(await mutationCheck(wt, task({ filesInScope: ["src/absent.ts"] }))).toBeNull();
   });
 
-  it("scores 1 and reports no survivors when the gate catches every mutant", async () => {
+  it("keeps all completed rejections unverified rather than claiming every mutant was killed", async () => {
     await write("src/impl.ts", IMPL);
     MUT.sample = 6;
 
     const result = await mutationCheck(wt, task({ gate: { commands: [SHELL_FALSE] } }));
     expect(result).not.toBeNull();
-    const { score, evaluated, survivors } = result as { score: number; evaluated: number; survivors: string[] };
-    expect(score).toBe(1);
-    expect(evaluated).toBe(6);
-    expect(survivors).toEqual([]);
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 6, survivors: [] } });
+    expect(result).not.toHaveProperty("score");
+    expect(result && "detail" in result && result.detail).toContain("6 unclassified nonzero rerun(s)");
   });
 
   it("scores 0 and names every survivor when the gate catches none", async () => {
@@ -491,8 +542,8 @@ describe("mutationCheck — built-in text mutation", () => {
 
   it("actually MUTATES the file, re-runs the gate, and classifies by the result", async () => {
     // The engine's whole contract, and the only test here that can observe it.
-    // The gate passes iff `>= 10` is still present, so the mutant that rewrites
-    // that operator MUST be killed while mutants on other lines survive.
+    // The gate passes iff `>= 10` is still present. Observe that rejection,
+    // without pretending an arbitrary exit code identifies an assertion kill.
     //
     // Measured against this test: writing the original instead of the mutant,
     // dropping the mutant write entirely, and having generateMutants emit
@@ -503,17 +554,20 @@ describe("mutationCheck — built-in text mutation", () => {
 
     const result = await mutationCheck(wt, task({ gate: { commands: [gate] } }));
     expect(result).not.toBeNull();
-    const { score, evaluated, survivors } = result as { score: number; evaluated: number; survivors: string[] };
+    expect(result).toMatchObject({ failed: true, source: "builtin" });
+    expect(result).not.toHaveProperty("score");
+    const { score, evaluated, survivors } = (result as { unverified:
+      { score: number; evaluated: number; survivors: string[] } }).unverified;
 
-    // Some mutants died and some lived — a 0 or a 1 here would mean the gate
-    // ignored the file, which is exactly the failure this test exists to catch.
+    // Some reruns were rejected and others passed. Only the upper bound is
+    // known; 0 or 1 would mean this content-sensitive gate was not observed.
     expect(score).toBeGreaterThan(0);
     expect(score).toBeLessThan(1);
     expect(survivors.length).toBeGreaterThan(0);
     expect(survivors.length).toBeLessThan(evaluated);
 
-    // The `>=` mutant on line 2 rewrites the needle, so the gate fails and it is
-    // KILLED — it must not appear among the survivors.
+    // The `>=` mutant on line 2 rewrites the needle and is rejected. It must
+    // not appear among the successful-command survivors.
     expect(survivors).not.toContain("src/impl.ts:2 >=>");
     // ...while line 8's `>` mutant leaves the needle intact and survives. The
     // EXACT tag is asserted, not a shape: it pins the file, the 1-indexed line,
@@ -565,34 +619,25 @@ describe("mutationCheck — built-in text mutation", () => {
     expect(await mutationCheck(wt, task({ gate: { commands: [SHELL_TRUE] } }))).toBeNull();
   });
 
-  it("stops mid-run at the wall-clock budget and scores only what it evaluated", async () => {
-    // Two properties in one run, because both need a budget that expires PART
-    // WAY through rather than before the first iteration:
-    //
-    //  - the denominator is `evaluated`, not `candidates.length`. With every
-    //    mutant evaluated the two are equal and the difference is invisible;
-    //    measured, swapping them survives the whole tools suite.
-    //  - the break is real. A 400ms gate against a 1500ms budget stops after
-    //    three or four iterations — the assertion is a RANGE with wide margins
-    //    on both sides, not a tuned count, so process-spawn jitter cannot flake
-    //    it. (A 200ms gate was too tight: spawn overhead alone is ~200ms here,
-    //    so only two iterations fit and the fairness floor returned null.)
+  it("retains completed rejection evidence when the budget expires between launches", async () => {
+    // Deterministic elapsed-time unit test. Real timeout/cleanup behavior is
+    // exercised separately, not inferred from this injected terminal result.
     await write("src/impl.ts", IMPL);
-    await write("slow-fail.cjs", "setTimeout(() => process.exit(1), 400);");
+    let elapsed = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => elapsed);
+    const runner = vi.spyOn(execution, "run").mockImplementation(async () => {
+      elapsed += 200;
+      return { code: 1, out: "rejected", stdout: "", stderr: "rejected" };
+    });
     MUT.sample = 8;
-    MUT.budgetMs = 1500;
-
-    const result = await mutationCheck(wt, task({ gate: { commands: ["node slow-fail.cjs"] } }));
-    expect(result).not.toBeNull();
-    const { score, evaluated } = result as { score: number; evaluated: number };
-
-    // Stopped short of the sample, but past the fairness floor.
-    expect(evaluated).toBeGreaterThanOrEqual(3);
-    expect(evaluated).toBeLessThan(8);
-    // Every evaluated mutant was killed, so the score is 1 — and ONLY if the
-    // denominator is what was evaluated. Over candidates.length it would be
-    // evaluated/8, well under 1.
-    expect(score).toBe(1);
+    MUT.budgetMs = 600;
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 3, survivors: [] } });
+    expect(result).not.toHaveProperty("score");
+    expect(runner).toHaveBeenCalledTimes(3);
+    expect(runner.mock.calls.map(args => args[4])).toEqual([600, 400, 200]);
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(IMPL);
   });
 
   // EQUIVALENT MUTANTS — deleting either of these guards changes no observable
@@ -611,15 +656,8 @@ describe("mutationCheck — built-in text mutation", () => {
 
   // DELIBERATELY NOT PINNED, each measured as surviving and each for a reason:
   //
-  //  - `Date.now() - start > MUT.budgetMs` relaxed to `>=`. The two differ ONLY
-  //    when elapsed equals the budget exactly, which for a zero budget means
-  //    racing the millisecond tick between `start` and the first check. Windows
-  //    has ~15ms timer granularity so elapsed is almost always 0 there; Linux
-  //    has 1ms resolution and it is a coin flip. A test that counted gate
-  //    invocations at budget 0 was added here on review feedback, passed CI once
-  //    by luck, and failed on a clean Linux run with ENOENT because ZERO gates
-  //    ran. It has been removed: it was a flake, not a guard, which is what the
-  //    original note said before it was over-corrected.
+  // Elapsed-budget boundaries now use a monotonic clock and are exercised
+  // deterministically above. No millisecond-race observation is claimed.
   //  - `shuffle()` replaced by identity or by reverse. Nothing here asserts
   //    sampling ORDER, and pinning it would mean either freezing Math.random or
   //    asserting a statistical property — the first tests the stub, the second
@@ -643,4 +681,343 @@ describe("mutationCheck — built-in text mutation", () => {
     expect(await mutationCheck(wt, task({ gate: { commands: [SHELL_TRUE] } }))).toBeNull();
     expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(IMPL);
   });
+});
+
+
+// F10: only completed, successful stdout is an external mutation measurement.
+// A failed process printing JSON must not become either perfect test coverage
+// or erase a formerly blocking adverse report by discarding its diagnostics.
+describe("mutation measurement validity", () => {
+  for (const score of ["1e309", "-0.01", "1.01"]) {
+    it(`rejects a non-normalized hook score ${score}`, () => {
+      expect(parseMutationHookOutput(`{"score":${score},"total":9}`)).toBeNull();
+    });
+  }
+
+  for (const score of [0, 1]) {
+    it(`rejects a failed hook even after stdout reports score ${score}`, async () => {
+      await write("hook.cjs", `console.log(JSON.stringify({score:${score},total:9})); process.exit(7);`);
+      MUT.cmd = "node hook.cjs";
+      const result = await mutationCheck(wt, task());
+      expect(result).toMatchObject({ failed: true });
+      expect(result).not.toHaveProperty("score");
+      expect((result as { detail: string }).detail).toContain("exit 7");
+    });
+  }
+
+  it("does not treat stderr score text as a measurement", async () => {
+    await write("hook.cjs", 'console.error(JSON.stringify({score:1,total:9}));');
+    MUT.cmd = "node hook.cjs";
+    expect(await mutationCheck(wt, task())).toMatchObject({ failed: true });
+  });
+
+  it("keeps valid stdout distinct from a misleading later stderr score", async () => {
+    await write("hook.cjs", [
+      'process.stdout.write(JSON.stringify({score:1,total:9}) + "\\n", () => {',
+      '  process.stderr.write(JSON.stringify({score:0,total:9}) + "\\n");',
+      '});',
+    ].join("\n"));
+    MUT.cmd = "node hook.cjs";
+    expect(await mutationCheck(wt, task())).toMatchObject({ score: 1, evaluated: 9 });
+  });
+});
+
+
+// Pure interpretation exercises reported outcomes, not an unkillable process.
+// Existing exec/tree-kill tests and real CLI timeout fixtures cover execution.
+describe("mutation hook terminal evidence", () => {
+  for (const outcome of [
+    {code: 7}, {code: 124, timedOut: true as const},
+    {code: 125, timedOut: true as const, cleanupFailed: true as const},
+    {code: 0, timedOut: true as const}, {code: 0, cleanupFailed: true as const},
+  ]) {
+    it(`never credits a positive score after ${JSON.stringify(outcome)}`, () => {
+      const result = interpretMutationHookResult({...outcome, out: "diagnostic", stdout: '{"score":1,"total":9}'});
+      expect(result).toMatchObject({failed:true, unverified:{score:1,evaluated:9}});
+      expect(result).not.toHaveProperty("score");
+      expect("cleanupFailed" in result && result.cleanupFailed).toBe("cleanupFailed" in outcome && outcome.cleanupFailed);
+    });
+  }
+
+  it("redacts complete diagnostics before taking a bounded tail", () => {
+    const key = "sk-ant-" + "x".repeat(700);
+    const result = interpretMutationHookResult({code:7,out:`api_key=${key}`,stdout:""});
+    expect(result).toMatchObject({failed:true});
+    const detail = (result as {detail:string}).detail;
+    expect(detail).toContain("REDACTED");
+    expect(detail).not.toContain("x".repeat(30));
+    expect(detail.length).toBeLessThan(520);
+  });
+
+  it("keeps genuine completed low score/count and absent count as reported", () => {
+    expect(interpretMutationHookResult({code:0,out:"",stdout:'{"score":0,"total":9}'}))
+      .toMatchObject({score:0,evaluated:9});
+    expect(interpretMutationHookResult({code:0,out:"",stdout:'{"score":0}'}))
+      .toEqual({score:0,evaluated:undefined,survivors:undefined});
+  });
+});
+
+// Bounded built-in screening: incomplete execution is not a mutant kill.
+// Injected cleanup results test their consumer; no unkillable process is created.
+describe("built-in mutation deadline and terminal evidence", () => {
+  const SOURCE = [
+    "export function classify(value) {", "  const enabled = true;",
+    "  const disabled = false;", "  const next = value + 1;",
+    "  const selected = next > 0 && enabled;", "  return selected || disabled;", "}",
+  ].join("\n");
+
+  for (const terminal of [
+    { code: 124, timedOut: true as const },
+    { code: 125, timedOut: true as const, cleanupFailed: true as const },
+    { code: 0, timedOut: true as const },
+    { code: 0, cleanupFailed: true as const },
+  ]) {
+    it(`rejects incomplete trial ${JSON.stringify(terminal)} without scoring or another launch`, async () => {
+      await write("src/impl.ts", SOURCE);
+      MUT.sample = 6;
+      const runner = vi.spyOn(execution, "run").mockResolvedValue({
+        ...terminal, out: "injected terminal state", stdout: "", stderr: "injected terminal state",
+      });
+      const result = await mutationCheck(wt, task());
+      expect(result).toMatchObject({ failed: true, source: "builtin" });
+      expect(result).not.toHaveProperty("score");
+      expect(result).not.toHaveProperty("unverified");
+      expect(result && "cleanupFailed" in result && result.cleanupFailed)
+        .toBe("cleanupFailed" in terminal && terminal.cleanupFailed);
+      expect(runner).toHaveBeenCalledTimes(1);
+      expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+    });
+  }
+
+  it("preserves completed adverse observations without counting the interrupted trial", async () => {
+    await write("src/impl.ts", SOURCE);
+    MUT.sample = 6;
+    let calls = 0;
+    vi.spyOn(execution, "run").mockImplementation(async () => ++calls <= 5
+      ? { code: 0, out: "", stdout: "", stderr: "" }
+      : { code: 124, timedOut: true, out: "interrupted", stdout: "", stderr: "interrupted" });
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin", unverified: { score: 0, evaluated: 5 } });
+    expect(result).not.toHaveProperty("score");
+    expect(result && "unverified" in result && result.unverified?.survivors).toHaveLength(5);
+    expect(calls).toBe(6);
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+  });
+
+  it("redacts terminal diagnostics before bounding the preserved tail", async () => {
+    await write("src/impl.ts", SOURCE);
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 124, timedOut: true,
+      out: "api_key=sk-ant-" + "x".repeat(700), stdout: "", stderr: "" });
+    const result = await mutationCheck(wt, task());
+    expect(result && "detail" in result && result.detail).toContain("[REDACTED");
+    expect(result && "detail" in result && result.detail).not.toContain("x".repeat(50));
+  });
+
+  it("a zero budget launches no mutant and leaves worker output intact", async () => {
+    await write("src/impl.ts", SOURCE);
+    MUT.budgetMs = 0;
+    const runner = vi.spyOn(execution, "run");
+    vi.spyOn(performance, "now").mockReturnValue(0);
+    expect(await mutationCheck(wt, task())).toBeNull();
+    expect(runner).not.toHaveBeenCalled();
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+  });
+
+  it("accounts for writing a mutant before calculating the remaining launch allowance", async () => {
+    await write("src/impl.ts", SOURCE);
+    let elapsed = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => elapsed);
+    const originalWrite = worktreeFiles.writeWorktreeFile;
+    vi.spyOn(worktreeFiles, "writeWorktreeFile").mockImplementation(async (...args) => {
+      await originalWrite(...args);
+      if (args[2] !== SOURCE) elapsed += 40;
+    });
+    MUT.budgetMs = 100;
+    const runner = vi.spyOn(execution, "run").mockImplementation(async () => {
+      elapsed += 60;
+      return { code: 0, out: "", stdout: "", stderr: "" };
+    });
+    expect(await mutationCheck(wt, task())).toBeNull();
+    expect(runner).toHaveBeenCalledTimes(1);
+    expect(runner.mock.calls[0][4]).toBe(60);
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+  });
+
+  it("restores without running the test when a mutant write consumes the whole budget", async () => {
+    await write("src/impl.ts", SOURCE);
+    let elapsed = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => elapsed);
+    const originalWrite = worktreeFiles.writeWorktreeFile;
+    vi.spyOn(worktreeFiles, "writeWorktreeFile").mockImplementation(async (...args) => {
+      await originalWrite(...args);
+      if (args[2] !== SOURCE) elapsed = 200;
+    });
+    MUT.budgetMs = 100;
+    const runner = vi.spyOn(execution, "run");
+    expect(await mutationCheck(wt, task())).toBeNull();
+    expect(runner).not.toHaveBeenCalled();
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+  });
+
+  it("does not reinterpret an ordinary exit code as the runner's timeout flag", async () => {
+    await write("src/impl.ts", SOURCE);
+    MUT.sample = 3;
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 124, out: "ordinary nonzero", stdout: "", stderr: "" });
+    // Only the shared runner owns timeout/cleanup flags. A completed 124 is
+    // unclassified rejection evidence, not an inferred timeout or a proved kill.
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 3 } });
+    expect(result).not.toHaveProperty("score");
+    expect(result).not.toHaveProperty("cleanupFailed");
+    expect(result && "detail" in result && result.detail).not.toContain("timed out");
+  });
+});
+
+
+// F10: a shell exit cannot establish which phase failed or whether the mutant
+// was valid. These are observed outcomes, not guessed language classifications.
+describe("built-in rejection evidence is not a measured kill score", () => {
+  const SOURCE = [
+    "module.exports = {",
+    "  first: value => value + 1,",
+    "  second: value => value + 1,",
+    "  third: value => value + 1,",
+    "};",
+  ].join("\n");
+
+  it("redacts a complete synthetic PEM before labeling a rejected mutation", async () => {
+    await write("src/impl.ts", SOURCE);
+    MUT.sample = 3;
+    const syntheticBody = "QUFB".repeat(24);
+    const output = ["-----BEGIN " + "PRIVATE KEY-----", syntheticBody,
+      "-----END " + "PRIVATE KEY-----", "ordinary failure"].join("\n");
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 1, out: output, stdout: output, stderr: "" });
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin" });
+    const detail = result && "detail" in result ? result.detail : "";
+    expect(detail).not.toContain(syntheticBody);
+    expect(detail).toContain("[REDACTED");
+    expect(detail).toContain("exit 1");
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+  });
+
+  for (const [code, output] of [
+    [1, "SyntaxError: invalid mutant"],
+    [2, "error TS2322: invalid type"],
+    [127, "test runner not found"],
+    [1, "AssertionError: expected value"],
+    [137, 'killed\n{"score":1,"total":99}'],
+  ] as const) {
+    it(`does not infer a killed mutant from exit ${code} and diagnostic ${output}`, async () => {
+      await write("src/impl.ts", SOURCE);
+      MUT.sample = 3;
+      const runner = vi.spyOn(execution, "run").mockResolvedValue({ code, out: output, stdout: output, stderr: "" });
+      const result = await mutationCheck(wt, task());
+      expect(result).toMatchObject({ failed: true, source: "builtin",
+        unverified: { score: 1, evaluated: 3, survivors: [] } });
+      expect(result).not.toHaveProperty("score");
+      expect(result).not.toHaveProperty("cleanupFailed");
+      expect(result && "detail" in result && result.detail).toContain("3 unclassified nonzero rerun(s)");
+      expect(result && "detail" in result && result.detail).toContain("upper bound 1.000 is not a measured score");
+      expect(runner).toHaveBeenCalledTimes(3);
+      expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(SOURCE);
+    });
+  }
+
+  it("records too-few completed rejections without inventing a usable count/score", async () => {
+    await write("src/impl.ts", SOURCE);
+    MUT.sample = 2;
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 1, out: "failed", stdout: "", stderr: "failed" });
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin" });
+    expect(result).not.toHaveProperty("score");
+    expect(result).not.toHaveProperty("unverified");
+    expect(result && "detail" in result && result.detail).toContain("2 completed");
+  });
+
+  it("preserves a low completed upper bound and exact successful survivor identities", async () => {
+    const src = "module.exports = {\n" + Array.from({length: 10}, (_, i) => `  fn${i}: n => n + 1,`).join("\n") + "\n};";
+    await write("src/impl.ts", src);
+    MUT.sample = 10;
+    let calls = 0;
+    vi.spyOn(execution, "run").mockImplementation(async () => ({
+      code: ++calls === 1 ? 1 : 0, out: "", stdout: "", stderr: "",
+    }));
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 0.1, evaluated: 10 } });
+    expect(result).not.toHaveProperty("score");
+    const evidence = result && "unverified" in result && result.unverified;
+    expect(evidence && evidence.survivors).toHaveLength(9);
+    expect(new Set(evidence ? evidence.survivors : undefined).size).toBe(9);
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(src);
+  });
+
+  it("keeps a timeout's earlier unclassified rejections out of the measured channel", async () => {
+    const src = SOURCE.replace("};", "  fourth: value => value + 1,\n};");
+    await write("src/impl.ts", src);
+    MUT.sample = 4;
+    let calls = 0;
+    vi.spyOn(execution, "run").mockImplementation(async () => ++calls <= 3
+      ? { code: 1, out: "SyntaxError", stdout: "", stderr: "SyntaxError" }
+      : { code: 124, timedOut: true, out: "interrupted", stdout: "", stderr: "interrupted" });
+    const result = await mutationCheck(wt, task());
+    expect(result).toMatchObject({ failed: true, source: "builtin",
+      unverified: { score: 1, evaluated: 3, survivors: [] } });
+    expect(result).not.toHaveProperty("score");
+    expect(result && "detail" in result && result.detail).toContain("trial timed out");
+    expect(calls).toBe(4);
+    expect(await readFile(path.join(wt, "src/impl.ts"), "utf8")).toBe(src);
+  });
+
+  it("redacts the rejected-trial witness before truncation", async () => {
+    await write("src/impl.ts", SOURCE);
+    vi.spyOn(execution, "run").mockResolvedValue({ code: 1,
+      out: "api_key=sk-ant-" + "x".repeat(700), stdout: "", stderr: "" });
+    const result = await mutationCheck(wt, task());
+    const detail = result && "detail" in result && result.detail;
+    expect(detail).toContain("[REDACTED");
+    expect(detail).not.toContain("x".repeat(40));
+    expect(detail && detail.length).toBeLessThan(600);
+  });
+
+  for (const mode of ["syntax", "assertion"] as const) {
+    it(`does not turn actual Node ${mode} failures into a positive built-in score`, async () => {
+      const src = mode === "syntax" ? [
+        'module.exports.first = function () {', '  return "alpha;beta";', '};',
+        'module.exports.second = function () {', '  return "gamma;delta";', '};',
+        'module.exports.third = function () {', '  return "epsilon;zeta";', '};',
+      ].join("\n") : SOURCE;
+      await write("src/value.cjs", src);
+      await write("src/value.test.cjs", [
+        'const assert = require("node:assert/strict");',
+        'const values = require("./value.cjs");',
+        mode === "syntax"
+          ? 'for (const fn of Object.values(values)) assert.equal(fn().split(String.fromCharCode(59)).length, 2);'
+          : 'for (const fn of Object.values(values)) assert.equal(fn(7), 8);',
+      ].join("\n"));
+      const t = task({filesInScope:["src/value.cjs"], test:{path:"src/value.test.cjs"}, gate:{commands:["node src/value.test.cjs"]}});
+      const baseline = await execution.run(execution.SHELL_BIN, [execution.SHELL_FLAG, t.gate.commands[0]], wt, execution.SHELL_OPTS, 5000);
+      expect(baseline.code, baseline.out).toBe(0);
+      MUT.sample = 15;
+      const actualRun = execution.run;
+      const outputs: string[] = [];
+      vi.spyOn(execution, "run").mockImplementation(async (...args) => {
+        const result = await actualRun(...args);
+        outputs.push(result.out);
+        return result;
+      });
+      const result = await mutationCheck(wt, t);
+      expect(result).toMatchObject({failed:true, source:"builtin", unverified:{score:1,evaluated:3,survivors:[]}});
+      expect(result).not.toHaveProperty("score");
+      // The shared redactor may redact diagnostic prose as well as secrets.
+      // Verify the actual child outcome separately, without weakening redaction.
+      expect(outputs).toHaveLength(3);
+      for (const output of outputs) expect(output).toContain(mode === "syntax" ? "SyntaxError" : "AssertionError");
+      expect(await readFile(path.join(wt,"src/value.cjs"),"utf8")).toBe(src);
+      const restored = await execution.run(execution.SHELL_BIN,[execution.SHELL_FLAG,t.gate.commands[0]],wt,execution.SHELL_OPTS,5000);
+      expect(restored.code,restored.out).toBe(0);
+    });
+  }
 });

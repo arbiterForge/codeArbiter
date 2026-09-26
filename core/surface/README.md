@@ -41,7 +41,7 @@ including orphans). Workflow: edit the template here, run
 
 A command template that only routes to a skill may contain just the whole-file
 SKILL_ENTRY declaration (double braces, colon, then the skill directory name).
-The current examples are `commands/commit.md` and `commands/new-skill.md`.
+Examples include `commands/commit.md`, `commands/refactor.md`, and `commands/pr.md`.
 The generator reads the named `skills/<name>/SKILL.md` at build time and emits the
 complete procedure under the existing host-native command or entry-skill name.
 There is no new runtime include service, route registry, or model-facing capability.
@@ -53,10 +53,15 @@ another description. No `user-invocable` flag or user-level setting is added. On
 Codex/Pi the generated `ca-<command>` entry remains discoverable because its owning
 routine lives outside their discovery directory. Natural-language discovery and
 actual mutation permission remain different: every gate stays in the full body.
-Existing direct resource paths and explicit names remain intact.
+Existing direct resource paths and explicit names remain intact. Keep descriptions
+focused on intent and the key side-effect boundary, not phase inventories.
+For a multi-mode owner such as branch finishing, dispatch watch/cleanup before
+creation prerequisites. Its PR-opening procedure belongs to the owner, not a
+wrapper it must load again. Supporting cards remain without discovery frontmatter.
 
-The declaration must occupy the entire command template. One owner has one public
-entry. Composition is non-recursive, rejects missing/symlinked owners and unsupported
+The declaration must occupy the entire command template. One owner has one composed public
+entry. An existing mode-only adapter may select that owner without duplicating its
+procedure, as `adr-status` selects read-only `decision-lifecycle` before authoring. Composition is non-recursive, rejects missing/symlinked owners and unsupported
 frontmatter, and requires rooted resource links so rendering uses the actual output
 location. It never adds `allowed-tools`, changes a mode, or drops a gate. Separate
 wrappers with distinct modes, arguments or continuations must first reconcile those
@@ -68,6 +73,32 @@ compatibility file does not imply its description is model-visible. Compare actu
 host discovery, invoked payload and retained context separately; file/byte counts
 alone are not measured token savings. A generated full public body avoids a second
 load merely to reach the same owner, but supporting references still load on demand.
+
+## Authoring governed resources
+
+Resource authoring is ordinary scoped repository work, not a separate installed
+workflow. Prefer improving the applicable owner to adding another public entry.
+A directly referenced information card can live beneath that owner's `references/`
+directory without skill frontmatter or a discovery/index entry. The existing
+change, verification, review and commit requirements still apply.
+
+For a genuine reusable skill, use its existing neighbors as format examples:
+`name` and an intent-focused `description`, prerequisites, executable instructions,
+observable completion evidence and material boundaries. A command-backed owner
+also supplies `argument-hint`. Keep explanatory questions non-mutating; do not
+require users to name or repeat a command to select the relevant procedure.
+
+Use JSON-quoted frontmatter scalars when they start with `[` or `{`, contain
+colon-space or ` | `, and preserve explicit string quoting. Chain-internal skills
+are path-routed and registry-hidden under ADR-0028. Do not hide a discoverable
+owning skill merely because an explicit alias also exists. Use the rooted
+resource syntax above and the selected host's descriptor, not guessed host paths.
+
+Update the applicable index and caller when adding a resource. Generate all host
+copies, then run `check_routing_index_parity.py`, the surface/host-descriptor tests
+and the three plugin-resource checks. New host metadata needs explicit compiler
+support and tests. These are repository conventions, not a replacement authoring
+command, skill, fixed-number interview, or additional approval ceremony.
 
 ## House rules for shared prose
 

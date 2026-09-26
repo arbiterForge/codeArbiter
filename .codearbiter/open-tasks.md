@@ -5,6 +5,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] Re-scout the pre-existing release-target and code-map provenance drift, including farm.js and the absent tests/test_p05_fixture.py reference; verify each backing claim and retire obsolete references before rebaselining. Preserve historical evidence and distinguish this cleanup from native campaign acceptance.  (from review:pr854-integration-20260926)
 - [ ] artifacts.docs.0001 - Make the documented verify command and agent-directory limits match the wrapper selector  (from security-review:claude-artifact-authority fix pass F-3/F-4)
   - Desc: The includes show verify commands built from the unexpanded plugin-root variables, which the wrapper selector refuses as compound; have arm return the exact verify command line (or require literal absolute paths), consider a safe-character allowlist, confirm whether the Codex exec shell sets PLUGIN_ROOT, and document that linked agent subdirectories block Claude reviews.
 - [ ] artifacts.harden.0004 - Scope strict registry refusals to Claude review pointers and write pointers atomically  (from security-review:claude-artifact-authority fix pass F-2)

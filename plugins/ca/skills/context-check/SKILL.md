@@ -1,6 +1,7 @@
 ---
 name: context-check
-description: Optional manual drift audit — report stale provenance-tracked docs (via _provenancelib drift detection across .codearbiter/.provenance/), then per stale doc offer re-scout / re-baseline / defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.
+description: "Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs."
+argument-hint: "(none)"
 ---
 
 # context-check
@@ -14,6 +15,21 @@ This skill is NOT in the daily loop. Commit-gate auto-heal (Phase 5.5,
 `heal_worklist`) owns the routine maintenance path. Invoke this only when drift
 was introduced outside a commit (e.g. a direct push, a merge you did not
 author, a manual file edit).
+
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `/ca:status drift` for new explicit usage. The retained entry
+> and natural-language intent use this owner under
+> ${CLAUDE_PLUGIN_ROOT}/includes/command-compatibility.md.
+<!-- catalog-compatibility-notice:end -->
+
+## Entry boundaries
+
+Use this owner for a requested provenance drift audit, `/ca:status drift`, or
+the explicit `/ca:context-check` compatibility entry. Explanation-only questions
+and ordinary status snapshots remain read-only answers, not repair requests.
+Report first. Write only after the user selects re-scout or re-baseline for that
+document; never change an unselected derived document. This owner neither stages
+nor commits. Routine commit-gate auto-heal is unchanged.
 
 ## Pre-flight
 
