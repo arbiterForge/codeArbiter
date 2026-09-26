@@ -2,6 +2,7 @@
 """Regression tests for production structured-artifact authority producers."""
 
 import contextlib
+import copy
 import hashlib
 import importlib
 import importlib.util
@@ -45,7 +46,7 @@ class FakeClient:
             "commands": [{
                 "definition_sha256": "6" * 64,
                 "definition": {
-                    "argv": ["python", "-m", "unittest", "tests.test_config"],
+                    "argv": ["python", "-m", "unittest", "tests.test_config", "-v"],
                     "cwd": "candidate worktree",
                     "expected_exit": 0,
                     "required_tests": ["test_environment_overrides"],
@@ -180,7 +181,7 @@ class AuthorityAdapterTest(unittest.TestCase):
 
         result, base = self._run(armed, runner)
 
-        self.assertEqual(launches[0][0][1:], ["-m", "unittest", "tests.test_config"])
+        self.assertEqual(launches[0][0][1:], ["-m", "unittest", "tests.test_config", "-v"])
         self.assertTrue(Path(launches[0][0][0]).is_absolute())
         self.assertEqual(launches[0][1]["cwd"], str(self.root.resolve()))
         self.assertEqual(result["state"], "COMPLETED")
@@ -206,7 +207,7 @@ class AuthorityAdapterTest(unittest.TestCase):
             "payload_sha256", "producer_profile", "producer_run_id",
             "producer_result", "producer_result_sha256",
         })
-        self.assertEqual(observation["producer_profile"], "declared-command/0.1.0")
+        self.assertEqual(observation["producer_profile"], "declared-command/0.2.0")
         canonical_result = json.dumps(
             observation["producer_result"], ensure_ascii=True, allow_nan=False,
             sort_keys=True, separators=(",", ":"),
@@ -634,13 +635,454 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     def test_verifier_failure_and_unsupported_collector_never_publish_success(self):
         self.client.context["commands"][0]["definition"]["argv"] = [sys.executable, "custom"]
-        armed = self.adapter.arm_request(
-            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
-            request_nonce="request-nonce-0002",
-        )
         with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR"):
-            self._authorize(armed)
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="request-nonce-0002",
+            )
         self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+    # O1: native Playwright JSON is the only supported named-result format.
+    def _playwright_report(self, title="reading inventory and baseline capture"):
+        return {
+            "suites": [{"title": "reading-first.spec.ts", "specs": [{
+                "title": title, "ok": True, "tests": [{
+                    "expectedStatus": "passed", "status": "expected",
+                    "results": [{"status": "passed", "retry": 0, "errors": []}],
+                }],
+            }], "suites": []}],
+            "errors": [],
+        }
+
+    def _collect_playwright(self, report, required=None):
+        required = required or ["reading inventory and baseline capture"]
+        profile = self.adapter._collector_profile(
+            ["playwright", "test", "--reporter=json"], required,
+        )
+        raw = report if isinstance(report, bytes) else json.dumps(report).encode()
+        return self.adapter.COLLECTORS[profile](raw, b"", required)
+
+    def test_playwright_json_exact_named_pass_is_supported(self):
+        self.assertEqual(self._collect_playwright(self._playwright_report()), [
+            {"name": "reading inventory and baseline capture", "status": "pass"},
+        ])
+
+    def test_playwright_json_prefix_summary_retry_and_malformed_fail_closed(self):
+        cases = []
+        cases.append(self._playwright_report("reading inventory and baseline capture across widths"))
+        report = self._playwright_report()
+        report["suites"][0]["specs"] = []
+        report["stats"] = {"expected": 1}
+        cases.append(report)
+        for field, value in (("expectedStatus", "failed"), ("status", "flaky")):
+            report = self._playwright_report()
+            report["suites"][0]["specs"][0]["tests"][0][field] = value
+            cases.append(report)
+        for value in (
+            [{"status": "skipped", "retry": 0, "errors": []}],
+            [{"status": "passed", "retry": 1, "errors": []}],
+            [{"status": "failed", "retry": 0, "errors": []},
+             {"status": "passed", "retry": 1, "errors": []}],
+            [{"status": "passed", "retry": 0, "errors": [{"message": "error"}]}],
+            [{"status": "passed", "errors": []}],
+            "malformed",
+        ):
+            report = self._playwright_report()
+            report["suites"][0]["specs"][0]["tests"][0]["results"] = value
+            cases.append(report)
+        report = self._playwright_report()
+        report["errors"] = [{"message": "global error"}]
+        cases.append(report)
+        for duplicate in ("project", "title"):
+            report = self._playwright_report()
+            spec = report["suites"][0]["specs"][0]
+            if duplicate == "project":
+                spec["tests"].append(copy.deepcopy(spec["tests"][0]))
+            else:
+                report["suites"][0]["specs"].append(copy.deepcopy(spec))
+            cases.append(report)
+        cases.extend([b"1 passed", b'{"suites": [], "errors": [], "errors": []}',
+                      b'{"suites": [], "errors": []} trailing'])
+        # First prove the profile exists; unsupported-collector is not negative proof.
+        self.assertEqual(self._collect_playwright(self._playwright_report())[0]["status"], "pass")
+        for report in cases:
+            with self.subTest(report=report), self.assertRaisesRegex(
+                RuntimeError, "(?:MISSING|DUPLICATE|INVALID|FAILED)_TEST_RESULT"
+            ):
+                self._collect_playwright(report)
+
+    def test_playwright_inconsistent_spec_verdict_is_not_a_pass(self):
+        for ok in (False, None, "true"):
+            report = self._playwright_report()
+            report["suites"][0]["specs"][0]["ok"] = ok
+            with self.subTest(ok=ok), self.assertRaisesRegex(RuntimeError, "INVALID_TEST_RESULT"):
+                self._collect_playwright(report)
+
+    def test_named_line_punctuation_is_part_of_the_exact_name(self):
+        with self.assertRaisesRegex(RuntimeError, "MISSING_TEST_RESULT"):
+            self.adapter._named_line_collector(b"PASS: exact case...\n", b"", ["exact case"])
+
+    def test_failed_duplicate_named_line_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._named_line_collector(b"PASS: exact case\nFAIL: exact case\n", b"", ["exact case"])
+
+    # O2: classification follows the actual command, with early actionable refusal.
+    def test_runner_position_and_verbose_are_required(self):
+        for argv in (
+            ["python", "-m", "unittest", "tests.test_config"],
+            ["python", "-c", "pass", "vitest", "--reporter=verbose"],
+            ["python", "-c", "pass", "tsx"],
+            ["node", "custom.js", "vitest", "--reporter=verbose"],
+            ["npm", "run", "check"],
+            ["npm", "run", "test:client"],
+        ):
+            with self.subTest(argv=argv), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR"):
+                self.adapter._collector_profile(argv, ["exact test"])
+
+    def test_skipped_duplicate_unittest_name_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._unittest_collector(
+                b"test_exact (suite.First.test_exact) ... ok\n"
+                b"test_exact (suite.Second.test_exact) ... skipped 'unavailable'\n",
+                b"", ["test_exact"],
+            )
+
+    def test_unittest_crlf_named_pass_is_supported(self):
+        self.assertEqual(self.adapter._unittest_collector(
+            b"", b"test_exact (suite.First.test_exact) ... ok\r\n", ["test_exact"]),
+            [{"name": "test_exact", "status": "pass"}])
+
+    def test_unittest_crlf_skipped_duplicate_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._unittest_collector(
+                b"", b"test_exact (suite.First.test_exact) ... ok\r\n"
+                b"test_exact (suite.Second.test_exact) ... skipped 'unavailable'\r\n",
+                ["test_exact"],
+            )
+
+    def test_skipped_duplicate_vitest_name_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._vitest_verbose_collector(
+                " ✓ a.test.ts > suite > exact test 4ms\n ↓ b.test.ts > suite > exact test\n".encode(),
+                b"", ["suite > exact test"],
+            )
+
+    def test_vitest_suffix_alias_is_not_the_exact_test_identity(self):
+        with self.assertRaisesRegex(RuntimeError, "MISSING_TEST_RESULT"):
+            self.adapter._vitest_verbose_collector(
+                " ✓ a.test.ts > suite > longer title > exact test 4ms\n".encode(), b"", ["exact test"])
+
+    def test_vitest_full_identity_is_supported(self):
+        self.assertEqual(self.adapter._vitest_verbose_collector(
+            " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b"", ["suite > exact test"]),
+            [{"name": "suite > exact test", "status": "pass"}])
+
+    def test_vitest_ansi_pass_and_retry_repeat_negatives(self):
+        required = ["suite > exact test"]
+        self.assertEqual(self.adapter._vitest_verbose_collector(
+            " \x1b[32m✓\x1b[39m a.test.ts > suite > exact test \x1b[32m4ms\x1b[39m\n".encode(), b"", required),
+            [{"name": required[0], "status": "pass"}])
+        for suffix in (" (retry x1)", " (repeat x2)", " (retry x1) (repeat x2)"):
+            with self.subTest(suffix=suffix), self.assertRaisesRegex(RuntimeError, "MISSING_TEST_RESULT"):
+                self.adapter._vitest_verbose_collector(
+                    (" ✓ a.test.ts > suite > exact test 4ms\x1b[33m" + suffix + "\x1b[39m\n").encode(), b"", required)
+
+    def _linked_node_runner(self):
+        (self.root / ".gitignore").write_text("node_modules/\n.runner-store/\n", encoding="utf-8")
+        target = self.root.resolve() / ".runner-store" / "playwright"
+        target.mkdir(parents=True)
+        (target / "cli.js").write_text("// fixture entrypoint, never executed\n", encoding="utf-8")
+        linked = self.root.resolve() / "node_modules" / "playwright"
+        linked.parent.mkdir()
+
+        def point_at(directory):
+            if os.name == "nt":
+                subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(directory)],
+                               check=True, capture_output=True)
+            else:
+                linked.symlink_to(directory, target_is_directory=True)
+
+        def remove_link():
+            if os.name == "nt":
+                linked.rmdir()
+            else:
+                linked.unlink()
+
+        point_at(target)
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["node", "node_modules/playwright/cli.js", "test", "--reporter=json"],
+                          required_tests=["reading inventory and baseline capture"])
+        return target, linked, point_at, remove_link
+
+    def test_linked_node_runner_records_the_declared_path_and_runs(self):
+        _target, linked, _point_at, _remove_link = self._linked_node_runner()
+        definition = self.client.context["commands"][0]["definition"]
+        for entrypoint in ("node_modules/playwright/cli.js", str(linked / "cli.js"),
+                           "./node_modules/playwright/../../node_modules/playwright/cli.js"):
+            with self.subTest(entrypoint=entrypoint):
+                definition["argv"][1] = entrypoint
+                armed = self.adapter.arm_request(
+                    self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
+                self.assertEqual(binding["argv"][1], entrypoint)
+                entry = next(item for item in binding["launch_files"] if item["role"] == "runner-entrypoint")
+                self.assertEqual(entry["path"], str(linked / "cli.js"))
+                self.assertEqual(entry["filesystem_id"], self.adapter._path_identity(linked / "cli.js"))
+                raw = json.dumps(self._playwright_report()).encode()
+                result, base = self._run(
+                    armed, lambda argv, **_kwargs: subprocess.CompletedProcess(argv, 0, raw, b""))
+                self.assertEqual(result["state"], "COMPLETED")
+                self._corroborate(base)
+                self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
+    def test_linked_node_runner_retarget_with_identical_bytes_cannot_publish(self):
+        target, _linked, point_at, remove_link = self._linked_node_runner()
+        replacement = target.parent / "replacement"
+        replacement.mkdir()
+        (replacement / "cli.js").write_bytes((target / "cli.js").read_bytes())
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+
+        def retarget_entrypoint(argv, **_kwargs):
+            remove_link()
+            point_at(replacement)
+            return subprocess.CompletedProcess(argv, 0, json.dumps(self._playwright_report()).encode(), b"")
+
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._run(armed, retarget_entrypoint)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def test_linked_node_runner_retarget_before_authorization_is_rejected(self):
+        target, _linked, point_at, remove_link = self._linked_node_runner()
+        replacement = target.parent / "replacement"
+        replacement.mkdir()
+        (replacement / "cli.js").write_bytes((target / "cli.js").read_bytes())
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        remove_link()
+        point_at(replacement)
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._authorize(armed)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def test_linked_node_runner_final_component_symlink_is_rejected(self):
+        target, linked, _point_at, _remove_link = self._linked_node_runner()
+        original = target / "original.js"
+        (target / "cli.js").rename(original)
+        try:
+            (linked / "cli.js").symlink_to(original)
+        except OSError as exc:
+            self.skipTest(f"host cannot create a file symlink: {exc}")
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        self.assertEqual(self.adapter._registered_requests(), [])
+
+    def test_direct_node_runner_entrypoint_drift_cannot_publish(self):
+        (self.root / ".gitignore").write_text("node_modules/\n", encoding="utf-8")
+        script = self.root / "node_modules" / "playwright" / "cli.js"
+        script.parent.mkdir(parents=True)
+        script.write_text("// fixture entrypoint, never executed\n", encoding="utf-8")
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["node", "node_modules/playwright/cli.js", "test", "--reporter=json"],
+                          required_tests=["reading inventory and baseline capture"])
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        def changed_entrypoint(argv, **_kwargs):
+            script.write_text("// substituted entrypoint\n", encoding="utf-8")
+            return subprocess.CompletedProcess(argv, 0, json.dumps(self._playwright_report()).encode(), b"")
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._run(armed, changed_entrypoint)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def _npm_definition(self, script="playwright test", forwarded=None):
+        package = self.root / "site" / "package.json"
+        package.parent.mkdir(exist_ok=True)
+        package.write_text(json.dumps({"scripts": {"test:browser": script}}), encoding="utf-8")
+        definition = self.client.context["commands"][0]["definition"]
+        definition["argv"] = ["npm", "--prefix", "site", "run", "test:browser", "--", *(
+            forwarded if forwarded is not None else ["--reporter=json"]
+        )]
+        definition["required_tests"] = ["reading inventory and baseline capture"]
+        return definition
+
+    def test_npm_prefixed_script_runs_with_its_actual_playwright_collector(self):
+        self._npm_definition(forwarded=["reading-first.spec.ts", "--grep",
+            "reading inventory and baseline capture", "--reporter=json"])
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        raw = json.dumps(self._playwright_report()).encode()
+        result, _base = self._run(armed, lambda argv, **_kwargs: subprocess.CompletedProcess(argv, 0, raw, b""))
+        self.assertEqual(result["commands"][0]["tests"][0]["status"], "pass")
+
+    def test_npm_prefixed_script_runs_with_its_actual_vitest_collector(self):
+        definition = self._npm_definition("vitest run", ["--reporter=verbose"])
+        definition["required_tests"] = ["suite > exact test"]
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        result, _base = self._run(armed, lambda argv, **_kwargs: subprocess.CompletedProcess(
+            argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b""))
+        self.assertEqual(result["commands"][0]["tests"], [{"name": "suite > exact test", "status": "pass"}])
+
+    def test_npm_compound_or_missing_reporter_is_rejected_before_arm(self):
+        for script, forwarded in (("playwright test", []), ("vitest run", []),
+                                  ("echo pre && vitest run && echo after", ["--reporter=verbose"]),
+                                  ("node custom.js vitest", ["--reporter=verbose"])):
+            with self.subTest(script=script, forwarded=forwarded):
+                self._npm_definition(script, forwarded)
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR.*(?:reporter|direct|runner)"):
+                    self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                self.assertEqual(self.adapter._registered_requests(), [])
+
+    @unittest.skipUnless(os.name == "nt", "Windows rooted and drive-relative prefix grammar")
+    def test_npm_prefix_rejects_rooted_and_drive_relative_spellings(self):
+        definition = self._npm_definition()
+        with tempfile.TemporaryDirectory() as external_temp:
+            external = Path(external_temp)
+            (external / "package.json").write_text(json.dumps({"scripts": {"test:browser": "playwright test"}}), encoding="utf-8")
+            for prefix in (str(external)[2:], self.root.drive + "site"):
+                with self.subTest(prefix=prefix), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR.*prefix"):
+                    candidate = copy.deepcopy(definition)
+                    candidate["argv"][2] = prefix
+                    self.adapter.validate_command_definition(candidate, cwd=self.root)
+
+    def test_npm_manifest_read_is_bounded_even_when_stat_reports_old_size(self):
+        definition = self._npm_definition()
+        manifest = self.root / "site" / "package.json"
+        manifest.write_bytes(manifest.read_bytes() + b" " * (self.adapter.MAX_STATE + 1))
+        actual_stat = Path.stat
+        def stale_size(path, *args, **kwargs):
+            result = actual_stat(path, *args, **kwargs)
+            if path == manifest:
+                fields = list(result)
+                fields[6] = 1
+                return os.stat_result(fields)
+            return result
+        with mock.patch.object(Path, "stat", stale_size), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_malformed_manifest_has_an_actionable_diagnostic(self):
+        definition = self._npm_definition()
+        manifest = self.root / "site" / "package.json"
+        for raw in (
+            b'{"scripts": {"test:browser":"playwright test"}, "unused":NaN}',
+            b"[" * 2000 + b"0" + b"]" * 2000,
+            b'{"scripts":{},"scripts":{"test:browser":"playwright test"}}',
+            b'{"scripts":null}', b'{"scripts":{"test:browser":true}}',
+            b'{"scripts":[]}', b'[]', b'{"scripts":',
+        ):
+            manifest.write_bytes(raw)
+            with self.subTest(raw=raw[:80]), self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_prefix_rejects_linked_directory(self):
+        definition = self._npm_definition()
+        with tempfile.TemporaryDirectory() as external_temp:
+            external = Path(external_temp)
+            (external / "package.json").write_text(json.dumps({"scripts": {"test:browser": "playwright test"}}), encoding="utf-8")
+            linked = self.root / "linked-site"
+            try:
+                linked.symlink_to(external, target_is_directory=True)
+            except OSError as exc:
+                self.skipTest(f"directory symlink unavailable: {exc}")
+            definition["argv"][2] = linked.name
+            with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_windows_browser_discovery_environment_is_allowlisted(self):
+        discovery = {"ProgramFiles": r"C:\Program Files", "ProgramFiles(x86)": r"C:\Program Files (x86)",
+                     "ProgramW6432": r"C:\Program Files", "SystemDrive": "C:"}
+        with mock.patch.dict(os.environ, {**discovery, "UNAPPROVED_DISCOVERY_SETTING": "fixture"}):
+            environment, _digest = self.adapter._minimal_environment()
+        for key, value in discovery.items():
+            self.assertEqual(environment.get(key), value)
+        self.assertNotIn("UNAPPROVED_DISCOVERY_SETTING", environment)
+
+    # O3: Windows batch command lines must never reach CreateProcess unchanged.
+    @unittest.skipUnless(os.name == "nt", "Windows npm batch invocation")
+    def test_windows_npm_launch_binds_native_node_and_preserves_metacharacters(self):
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["npm", "--version", "&", "echo", "BATCH_METACHAR_PROBE"], required_tests=[])
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
+        env, _digest = self.adapter._minimal_environment()
+        completed = self.adapter._run_contained(binding["argv"], cwd=str(self.root), env=env)
+        self.assertNotIn(b"BATCH_METACHAR_PROBE", completed.stdout)
+        self.assertEqual(Path(binding["argv"][0]).name.lower(), "node.exe")
+        self.assertEqual(Path(binding["argv"][1]).name, "npm-cli.js")
+        self.assertEqual(binding["argv"][2:], definition["argv"][1:])
+        bound_paths = {Path(item["path"]).name.lower() for item in binding["launch_files"]}
+        self.assertEqual(bound_paths, {"node.exe", "npm.cmd", "npm-cli.js"})
+
+    def test_unknown_batch_executable_is_rejected_before_arm(self):
+        script = self.root / "runner.cmd"
+        script.write_text("@echo BATCH_METACHAR_PROBE\n", encoding="utf-8")
+        self.client.context["commands"][0]["definition"].update(argv=[str(script)], required_tests=[])
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_EXECUTABLE.*batch"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        self.assertEqual(self.adapter._registered_requests(), [])
+
+    @unittest.skipUnless(os.name == "nt", "Windows npm batch adapter")
+    def test_unknown_npm_named_wrapper_is_not_silently_reinterpreted(self):
+        script = self.root / "npm.cmd"
+        script.write_text("@echo CUSTOM_WRAPPER\n", encoding="utf-8")
+        (self.root / "node.exe").write_bytes(b"fixture native executable identity")
+        cli = self.root / "node_modules" / "npm" / "bin" / "npm-cli.js"
+        cli.parent.mkdir(parents=True)
+        cli.write_text("process.stdout.write('fixture')", encoding="utf-8")
+        self.client.context["commands"][0]["definition"].update(argv=[str(script), "--version"], required_tests=[])
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_EXECUTABLE.*(?:standard|wrapper)"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        self.assertEqual(self.adapter._registered_requests(), [])
+
+    @unittest.skipUnless(os.name == "nt", "Windows npm bound file identities")
+    def test_npm_bound_files_reject_drift_before_authorization_and_after_execution(self):
+        # Runtime files live outside Git and the manifest is ignored by Git:
+        # only the binding's retained file identities can detect these changes.
+        with tempfile.TemporaryDirectory() as runtime_temp:
+            runtime = Path(runtime_temp)
+            wrapper = runtime / "npm.cmd"
+            shutil.copyfile(shutil.which("npm.cmd"), wrapper)
+            node = runtime / "node.exe"
+            node.write_bytes(b"fixture native identity, never executed")
+            cli = runtime / "node_modules" / "npm" / "bin" / "npm-cli.js"
+            cli.parent.mkdir(parents=True)
+            cli.write_text("// fixture CLI identity, never executed\n", encoding="utf-8")
+            (self.root / ".gitignore").write_text("site/\n", encoding="utf-8")
+            definition = self._npm_definition()
+            definition["argv"][0] = str(wrapper)
+            manifest = self.root / "site" / "package.json"
+            for phase in ("before", "after"):
+                for target in (wrapper, node, cli, manifest):
+                    original = target.read_bytes()
+                    with self.subTest(phase=phase, target=target.name):
+                        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                        if phase == "before":
+                            target.write_bytes(original + b"\n")
+                            with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                                self._authorize(armed)
+                        else:
+                            def changed_runtime(argv, **_kwargs):
+                                target.write_bytes(original + b"\n")
+                                return subprocess.CompletedProcess(argv, 0, json.dumps(self._playwright_report()).encode(), b"")
+                            with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                                self._run(armed, changed_runtime)
+                        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+                        target.write_bytes(original)
+
+    # O4: quoted supported wrappers authorize, malformed authority calls reject.
+    def test_single_quoted_wrapper_preserves_selector_and_host_correlation(self):
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        command = (f"python '{CORE_PYSRC / 'artifact-authority.py'}' verify "
+                   f"--root '{self.root}' --request-id '{armed['request_id']}'")
+        base = {"tool_name": "exec_command", "tool_input": {"cmd": command},
+                "session_id": "session-quoted", "turn_id": "turn-quoted", "tool_use_id": "tool-quoted"}
+        result = self.adapter.observe_verifier_hook(self.root, {**base, "hook_event_name": "PreToolUse"})
+        self.assertIsNotNone(result)
+        self.assertEqual(result["state"], "AUTHORIZED")
+        with self.assertRaisesRegex(RuntimeError, "not correlated"):
+            self.adapter.observe_verifier_hook(self.root, {**base, "hook_event_name": "PostToolUse",
+                "tool_use_id": "other-tool", "tool_response": {"exit_code": 0}})
+
+    def test_malformed_authority_wrapper_does_not_silently_fall_through(self):
+        for tail in ("--root", "--root . --request-id invalid", "--root . --request-id " + "a" * 64 + " extra"):
+            with self.subTest(tail=tail), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                self.adapter._verification_selector({"tool_name": "exec_command", "tool_input": {
+                    "cmd": f'python "{CORE_PYSRC / "artifact-authority.py"}" verify {tail}'}})
 
     def test_closed_singedterra_collectors_require_explicit_named_output(self):
         self.assertEqual(
@@ -662,9 +1104,9 @@ class AuthorityAdapterTest(unittest.TestCase):
         self.assertEqual(
             self.adapter._vitest_verbose_collector(
                 "✓ src/ui/example.test.ts > scoreboard > rendered empty state 4ms\n".encode(),
-                b"", ["rendered empty state"],
+                b"", ["scoreboard > rendered empty state"],
             ),
-            [{"name": "rendered empty state", "status": "pass"}],
+            [{"name": "scoreboard > rendered empty state", "status": "pass"}],
         )
         with self.assertRaisesRegex(RuntimeError, "exit-only profile"):
             self.adapter._exit_only_collector(b"", b"", ["invented success"])
@@ -1683,6 +2125,46 @@ class ClaudeEndToEndTest(unittest.TestCase):
         self._hook(claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER))
         return json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
 
+    @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")
+    def test_native_npm_verification_is_accepted_by_real_engine(self):
+        """The native argv and pinned launch files survive actual receipt capture."""
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation, "npm-e2e", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {"operation_id": "npm-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+                               "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
+        workflow.approve("SPEC-FLOW")
+        spec_hash = client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"]
+        plan = self.host.plan_normative(spec_hash)
+        command = plan["tasks"][0]["verification"][0]
+        command.update(argv=["npm", "--version"], required_tests=[], assertion="The pinned npm CLI reports its version.")
+        client.call("create", {"operation_id": "npm-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+                               "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+                               "spec_id": "SPEC-FLOW", "normative": plan})
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        pre = self._event("bash-pretooluse.json", tool_use_id="npm-verify",
+                          tool_input={"command": armed["verify_command"], "description": "verify npm"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        state = self._state(armed["request_id"])
+        binding = state["command_bindings"][0]
+        self.assertIn("collector_profile", binding)
+        self.assertEqual(binding["collector_profile"], "exit-only/0.1.0")
+        roles = {item["role"] for item in binding["launch_files"]}
+        self.assertEqual(roles, {"declared-executable", "node-runtime", "npm-cli"}
+                         if sys.platform == "win32" else {"declared-executable"})
+        post = self._event("bash-posttooluse.json", tool_use_id="npm-verify", tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
+        self.assertTrue((self.root / published["receipt"]).is_file())
+
     def test_end_to_end_claude(self):
         """Arm, verify and publish through the shipped CLI; observe through the shipped hook."""
         bridge = self.host.load_bridge(self.plugin)
@@ -1732,6 +2214,52 @@ class ClaudeEndToEndTest(unittest.TestCase):
         workflow.mutate("accept-scope", "PLAN-FLOW", scope="CP-01", receipt=quality)
         eligible = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertTrue(eligible["all_accepted_and_current"], eligible)
+
+    @unittest.skipUnless(shutil.which("node"), "direct Node integration requires Node")
+    def test_linked_node_entrypoint_is_accepted_by_real_engine(self):
+        target = self.root / ".codearbiter" / "runner-store"
+        target.mkdir()
+        (target / "cli.js").write_text("console.log('linked runner fixture');\n", encoding="utf-8")
+        linked = self.root / "node_modules" / "playwright"
+        linked.parent.mkdir()
+        if os.name == "nt":
+            subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(target)],
+                           check=True, capture_output=True)
+        else:
+            linked.symlink_to(target, target_is_directory=True)
+        (self.root / ".gitignore").write_text(".codearbiter/\n__pycache__/\nnode_modules/\n", encoding="utf-8")
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation, "linked-node", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {"operation_id": "linked-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+                               "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
+        workflow.approve("SPEC-FLOW")
+        spec_hash = client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"]
+        plan = self.host.plan_normative(spec_hash)
+        plan["tasks"][0]["verification"][0].update(
+            argv=["node", "node_modules/playwright/cli.js"], required_tests=[],
+            assertion="The pinned linked Node entrypoint exits successfully.")
+        client.call("create", {"operation_id": "linked-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+                               "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+                               "spec_id": "SPEC-FLOW", "normative": plan})
+        workflow.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {
+            "verification_inputs": {"roots": ["."], "exclude_directories": ["node_modules"]}}}])
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        pre = self._event("bash-pretooluse.json", tool_use_id="linked-verify",
+                          tool_input={"command": armed["verify_command"], "description": "verify linked runner"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        post = self._event("bash-posttooluse.json", tool_use_id="linked-verify", tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
+        self.assertTrue((self.root / published["receipt"]).is_file())
 
 
 class ClaudeHookRegistrationTest(unittest.TestCase):

@@ -470,6 +470,7 @@ func Ready(d, spec *model.Document) []fault.Error {
 		}
 	} else {
 		need(n, "tasks", "checkpoints")
+		es = append(es, InputPolicyErrors(n)...)
 		for _, v := range model.A(n["tasks"]) {
 			r := model.M(v)
 			need(r, "paths", "criterion_refs", "steps", "verification", "done_when", "rollback")

@@ -72,6 +72,30 @@ ADR compatibility review, open-question handling, harvest and user/SMARTS gates.
 One criterion may need multiple tests. Never invent a condition, oracle, source,
 command, result, approval or reviewer to satisfy a required field.
 
+Before requesting review or approval of a plan, use the private
+`_approvallib._preflight_plan_verification(client, identity)` with its current engine identity.
+It checks all task verification definitions through complete bounded engine reads
+and collects the current source-input snapshot, reporting every unsupported
+command and any input-policy failure together. Both ordinary and initial paired
+approval arming enforce this check. No declared command, test discovery, or test
+module is executed or imported. Proposed test files and names may be absent;
+the installed collector still has to support the proposed runner's output format.
+Missing package-script definitions cannot establish a runner contract: declare a
+supported direct runner or supply the reviewed script definition first. Runtime
+executable/workspace binding and fresh named-result evidence remain required.
+
+`verification_inputs.roots` and `exclude_directories` use exact slash-separated
+repository-relative paths. Exclusions are directory paths, not globs or basename
+matches and not relative to an individual root. For root `site`, a generated
+dependency exclusion is `site/node_modules`, not `node_modules`. Review each
+excluded output directory explicitly; `.gitignore` does not define this policy.
+An exclusion outside all selected roots is rejected as ineffective. Overlapping
+roots cannot reinclude an excluded directory. Roots must exist before execution;
+use an existing containing directory for a planned new file so its creation
+changes the snapshot. An oversized included file is reported with its path and
+the 32 MiB per-file limit; revise the explicit policy rather than increasing the
+limit or excluding source/test/governance inputs needed for the task.
+
 The existing user, SMARTS, reviewer, or verification boundary must first persist
 its actual policy-owned workflow event as canonical JSON in the reserved
 content-addressed authority-source store. Interactive prompt approval currently
@@ -229,6 +253,28 @@ whole process tree, bounds output, requires exact named outcomes, and rejects
 workspace or executable drift. If an attempt is interrupted, use the adapter's
 `recover` operation to retain it as failed or abandoned; never rerun an uncertain
 attempt under the same request.
+
+Named Playwright commands require `test --reporter=json`; each required name must
+equal a unique native `spec.title`. Named Vitest commands require
+`run --reporter=verbose`; use the complete rendered `suite > case` identity after
+the filename, not a leaf-name alias. Named unittest commands require `-v` or
+`--verbose`. A passing row cannot conceal a duplicate, skip, failure or retry.
+Plain exit checks cannot attest named tests.
+
+Named npm commands support inspectable single-runner scripts, a contained
+repository-relative `--prefix`, and arguments forwarded after `--`. Compound
+scripts and pre/post lifecycle scripts require separately declared direct-runner
+commands; retain every check from the original suite when splitting commands.
+On Windows, only the qualified standard `npm.cmd` layout is adapted: the runner
+pins the wrapper, sibling `node.exe`, sibling `node_modules/npm/bin/npm-cli.js`,
+and script manifest. It deliberately selects that sibling CLI rather than the
+shim's optional global-prefix redirection. Unknown batch wrappers fail closed.
+Direct Node script entrypoints are also pinned. These launch-file bindings do
+not establish transitive dependency closure for deliberately excluded inputs.
+
+New observations use the closed `declared-command/0.2.0` producer profile to
+retain collector and launch-file identities. Historical `0.1.0` bindings remain
+separate and cannot be relabelled as qualified launch evidence.
 
 For `spec_review` or `quality_review`, arm the corresponding activity without
 workspace mappings and dispatch the returned `launch_envelope` unchanged to one

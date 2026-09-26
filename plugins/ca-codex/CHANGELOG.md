@@ -6,6 +6,19 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.14.1] - 2026-09-26
+
+### Fixed
+
+- Reject unsupported plan verification commands and invalid input snapshots before
+  ordinary or paired approval, with diagnostics for every affected task.
+- Support exact Playwright JSON results and qualified simple npm scripts while
+  rejecting duplicate, skipped, retried and ambiguous named results.
+- Preserve literal Windows npm arguments through a pinned native Node/npm launch;
+  bind collector and launch-file identities into engine-validated evidence.
+- Handle single-quoted verifier paths explicitly and retain actionable input-size
+  and exclusion errors.
+
 ## [0.14.0] - 2026-09-26
 
 ### Added

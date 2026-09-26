@@ -71,7 +71,102 @@ def _ready(client: Any, identity: dict[str, Any]) -> None:
         or result.get("model_sha256") != identity["model_sha256"]
         or result.get("normative_sha256") != identity["normative_sha256"]
     ):
-        raise ApprovalError("NOT_READY", "only the exact current ready artifact can be armed")
+        details = "; ".join(
+            f"{item.get('code', 'NOT_READY')} {item.get('symbol', '')} {item.get('field', '')}: {item.get('message', '')}"
+            for item in result.get("diagnostics", []) if isinstance(item, dict)
+        )
+        raise ApprovalError("NOT_READY", "only the exact current ready artifact can be armed" + (": " + details if details else ""))
+
+
+def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[str, Any]:
+    """Inspect the whole engine-owned plan before requesting approval.
+
+    This private admission check runs no declared command or test discovery.
+    Proposed tests may be absent. Existing input roots must already be readable;
+    a containing directory records future file creation in the input snapshot.
+    Runtime binding, host authorization and fresh evidence remain separate.
+    """
+    if identity.get("kind") != "plan":
+        raise _artifactlib.ArtifactError("WRONG_KIND", "verification preflight requires a plan")
+    keys = ("artifact_id", "revision", "model_sha256", "normative_sha256")
+    artifact_id = identity["artifact_id"]
+
+    def same_identity(value: dict[str, Any]) -> None:
+        if not isinstance(value, dict) or any(value.get(key) != identity.get(key) for key in keys):
+            raise _artifactlib.ArtifactError("STALE_PLAN_PREFLIGHT", "plan identity changed during verification preflight; reread the complete current plan")
+
+    same_identity(client.call("identity", {"artifact_id": artifact_id}))
+    root = _artifactlib._trusted_directory(client.root, "UNSAFE_ROOT")
+    diagnostics: list[str] = []
+    seen: set[str] = set()
+    command_count = 0
+    offset, total = 0, None
+    for _ in range(8193):
+        request = {"artifact_id": artifact_id, "offset": offset, "budget": 16384}
+        if offset:
+            request["model_sha256"] = identity["model_sha256"]
+        page = client.call("outline", request)
+        same_identity(page)
+        _artifactlib.ArtifactClient._check_page(page, offset, "records")
+        if (page.get("offset") != offset or type(page.get("total")) is not int
+                or page["total"] < offset + len(page["records"])
+                or total is not None and page["total"] != total):
+            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline count or offset changed")
+        total = page["total"]
+        for row in page["records"]:
+            if (not isinstance(row, dict) or not isinstance(row.get("id"), str)
+                    or row["id"] in seen or type(row.get("retired")) is not bool):
+                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline contains an invalid or duplicate record")
+            seen.add(row["id"])
+            if row.get("kind") != "tasks" or row["retired"]:
+                continue
+            exact = client.call("read", {"artifact_id": artifact_id, "symbol": row["id"], "mode": "exact", "budget": 16384})
+            same_identity(exact)
+            task = exact.get("record")
+            if (not isinstance(task, dict) or task.get("id") != row["id"]
+                    or not isinstance(task.get("verification"), list) or not task["verification"]):
+                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task lacks complete verification definitions")
+            for number, definition in enumerate(task["verification"], 1):
+                command_count += 1
+                try:
+                    if not isinstance(definition, dict):
+                        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "verification definition is not an object")
+                    label = definition.get("cwd")
+                    cwd = None
+                    if label in {".", "current worktree", "candidate worktree"}:
+                        cwd = root
+                    elif isinstance(label, str):
+                        relative = Path(label)
+                        if relative.is_absolute() or ".." in relative.parts:
+                            raise _artifactlib.ArtifactError("UNSUPPORTED_WORKSPACE", "declared cwd must be a contained repository path or mapped worktree label")
+                        candidate = root / relative
+                        if candidate.exists():
+                            cwd = _artifactlib._trusted_directory(candidate, "UNSUPPORTED_WORKSPACE")
+                    _artifactauthoritylib.validate_command_definition(definition, cwd=cwd)
+                except (_artifactlib.ArtifactError, _artifactauthoritylib.AuthorityError) as exc:
+                    argv = definition.get("argv") if isinstance(definition, dict) else None
+                    diagnostics.append(f"{row['id']} verification[{number}] {json.dumps(argv, ensure_ascii=True)}: {exc}")
+        next_offset = page["next_offset"]
+        expected = offset + len(page["records"])
+        if next_offset is None:
+            if expected != total:
+                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline ended before every record was inspected")
+            break
+        if next_offset != expected:
+            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline skipped records")
+        offset = next_offset
+    else:
+        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline did not terminate")
+    try:
+        snapshot = client.call("snapshot", {"artifact_id": artifact_id})
+    except _artifactlib.ArtifactError as exc:
+        diagnostics.append(f"verification_inputs: {exc}")
+        snapshot = None
+    same_identity(client.call("identity", {"artifact_id": artifact_id}))
+    if diagnostics:
+        raise _artifactlib.ArtifactError("PLAN_VERIFICATION_UNAVAILABLE", "; ".join(diagnostics))
+    return {"artifact_id": artifact_id, "model_sha256": identity["model_sha256"],
+            "command_count": command_count, "snapshot": snapshot}
 
 
 def _safe_directory(root: Path, relative: Path, *, create: bool) -> Path:
@@ -135,6 +230,8 @@ def arm_user_approval(
     root = Path(root).resolve(strict=True)
     identity = _identity(client, artifact_id)
     _ready(client, identity)
+    if identity["kind"] == "plan":
+        _preflight_plan_verification(client, identity)
     token = token or secrets.token_urlsafe(24)
     if not TOKEN_RE.fullmatch(token):
         raise ApprovalError("INVALID_TOKEN", "approval token has an invalid shape")

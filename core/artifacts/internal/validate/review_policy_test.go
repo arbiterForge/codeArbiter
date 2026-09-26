@@ -4,8 +4,30 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
+	"strings"
 	"testing"
 )
+
+func TestReadyRejectsRepositoryRelativeExcludesOutsideRoots(t *testing.T) {
+	s := testutil.Seal(t, testutil.Spec())
+	p := testutil.Plan(s)
+	n := model.M(p["normative"])
+	n["verification_inputs"] = map[string]any{"roots": model.List("src"), "exclude_directories": model.List("node_modules", "dist")}
+	d := testutil.Seal(t, p)
+	seen := map[string]bool{}
+	for _, diagnostic := range validate.Ready(d, s) {
+		if diagnostic.Code == "INVALID_INPUT_POLICY" && diagnostic.Field == "verification_inputs.exclude_directories" {
+			for _, name := range []string{"node_modules", "dist"} {
+				if strings.Contains(diagnostic.Message, name) && strings.Contains(diagnostic.Message, "repository-relative") {
+					seen[name] = true
+				}
+			}
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("ready plan accepted provably inert exclusions: %v", seen)
+	}
+}
 
 func TestReviewRunnerRecognition(t *testing.T) {
 	for _, argv := range [][]string{

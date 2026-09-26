@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-09-26
+
+### Fixed
+
+- Ship the shared whole-plan verification preflight, exact named-result collectors,
+  and pinned native Windows npm runner contract.
+- Reject ineffective snapshot exclusions, prevent explicit roots from bypassing
+  exclusions, and retain actionable oversized-input diagnostics.
+
 ## [0.15.0] - 2026-09-26
 
 ### Added

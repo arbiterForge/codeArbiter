@@ -89,6 +89,17 @@ class PackageTests(unittest.TestCase):
             )
             self.npm_executable.chmod(0o755)
 
+    def test_installed_host_plan_commands_are_preflight_qualified(self):
+        from _artifactauthoritylib import validate_command_definition
+        plan = INSTALLED_HOST.plan_normative("a" * 64)
+        for task in plan["tasks"]:
+            for definition in task["verification"]:
+                with self.subTest(task=task["id"], argv=definition["argv"]):
+                    self.assertEqual(
+                        "python-unittest-text/0.1.0",
+                        validate_command_definition(definition, cwd=self.base),
+                    )
+
     def test_installed_bridge_offline_guard_has_negative_controls(self):
         bridge = (REPO / "core/pysrc/_artifactlib.py").read_bytes()
         INSTALLED_HOST.assert_offline_bridge(bridge)
