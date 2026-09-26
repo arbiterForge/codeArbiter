@@ -189,6 +189,16 @@ class ConsumerSafetyGateTest(unittest.TestCase):
         upload = action_step("Upload and read back the package asset")
         self.assertIn("sha256sum --check --strict", upload)
 
+    def test_every_host_attaches_its_package_including_pi(self):
+        # ca-pi's Release must carry the npm tarball its receipt names.
+        upload = action_step("Upload and read back the package asset")
+        condition = re.search(r"(?m)^      if: (.+)$", upload).group(1)
+        for host in ("claude", "codex", "pi"):
+            self.assertIn(f"inputs.host == '{host}'", condition, host)
+        plan = action_step("Observe remote state and plan")
+        self.assertIn("ASSET: ${{ steps.package.outputs.file }}", plan)
+        self.assertNotIn("host != 'pi'", plan)
+
     def test_npm_readback_requires_the_ci_built_integrity(self):
         readback = action_step("Read back the npm publication")
         self.assertIn('state.startswith("present")', readback)
