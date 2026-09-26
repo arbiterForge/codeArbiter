@@ -8,6 +8,8 @@ existing authority boundary but do not approve this package or any real plan.
 from __future__ import annotations
 
 import hashlib
+import contextlib
+import io
 import json
 import os
 from pathlib import Path
@@ -24,6 +26,7 @@ sys.path.insert(0, str(REPO / "core" / "pysrc"))
 
 import _artifactlib  # noqa: E402
 import _artifactauthoritylib  # noqa: E402
+import _intentlib  # noqa: E402
 from _artifactlib import ArtifactClient, ArtifactError  # noqa: E402
 
 
@@ -1120,6 +1123,27 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.root = physical_test_directory(self.temporary.name) / "repo"
         self.root.mkdir()
         self.harness = WorkflowHarness(self.root, self.installation)
+
+    def test_intent_cli_accepts_ready_spec_from_native_engine(self) -> None:
+        self.harness.create_spec()
+        result = self.harness.client.call(
+            "validate", {"artifact_id": "SPEC-FLOW", "gate": "ready"}, permit_invalid=True
+        )
+        self.assertTrue(result["valid"], result)
+        spec = self.root / ".codearbiter/specs/flow.html"
+        before = spec.read_bytes()
+        out, err = io.StringIO(), io.StringIO()
+        # Only fixture installation discovery is redirected; validation and
+        # identity reads cross the real bridge into the native engine.
+        with (
+            mock.patch.object(_artifactlib, "helper_installation", return_value=self.installation),
+            contextlib.redirect_stdout(out), contextlib.redirect_stderr(err),
+        ):
+            code = _intentlib.main(["uncovered-intent", str(spec)])
+        self.assertEqual(code, 0, err.getvalue())
+        self.assertEqual(out.getvalue(), "")
+        self.assertEqual(err.getvalue(), "")
+        self.assertEqual(spec.read_bytes(), before)
 
     def test_installed_intent_cli_accepts_native_empty_diagnostics(self) -> None:
         self.harness.create_spec()

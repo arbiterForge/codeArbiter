@@ -1069,10 +1069,11 @@ class AdapterVersionIdentityTest(unittest.TestCase):
             ("core/pysrc/hostapi.py", "Host", "plugins/ca/.claude-plugin/plugin.json"),
             ("plugins/ca/hooks/_host.py", "ClaudeHost", "plugins/ca/.claude-plugin/plugin.json"),
             ("plugins/ca-codex/hooks/_host.py", "CodexHost", "plugins/ca-codex/.codex-plugin/plugin.json"),
+            ("plugins/ca-codex/hooks/_host.py", "CodexHost", "plugins/ca-codex/package.json"),
             ("plugins/ca-pi/hooks/_host.py", "PiHost", "plugins/ca-pi/package.json"),
         )
         for source_path, class_name, manifest_path in pairs:
-            with self.subTest(source=source_path):
+            with self.subTest(source=source_path, manifest=manifest_path):
                 module = ast.parse((REPO / source_path).read_text(encoding="utf-8"))
                 classes = [node for node in module.body
                            if isinstance(node, ast.ClassDef) and node.name == class_name]

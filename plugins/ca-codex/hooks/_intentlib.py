@@ -250,7 +250,7 @@ def main(argv):
             if diagnostics is None:
                 diagnostics = []
             if not isinstance(diagnostics, list):
-                raise RuntimeError("malformed HTML validation diagnostics")
+                raise RuntimeError("HTML validation diagnostics must be a list or null")
             findings = []
             for item in diagnostics:
                 if (not isinstance(item, dict)

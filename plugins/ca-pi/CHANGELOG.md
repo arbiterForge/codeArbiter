@@ -4,16 +4,24 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.18] - 2026-09-25
+
+### Fixed
+
+- Retain strict HTML intent-response identity checks and per-document source healing.
+- Bound oversized UTF-8 code-map diagnostics without rewriting human content.
+
+### Added
+
+- Internal closed scout-report decoding and test-owned observation accounting;
+  onboarding dispatch and context-writing integration are not enabled by these helpers.
+
 ## [0.14.17] - 2026-09-25
 
 ### Fixed
 
-- Accept the native artifact validator's empty diagnostics in the HTML intent
-  checker while rejecting malformed results and retaining freshness checks.
-- Schedule provenance healing when any dependent document has stale evidence
-  for a shared source, regardless of record ordering.
-- Warn when a code map exceeds 20 KiB of UTF-8 content, including a single
-  oversized role. Existing maps are diagnosed, not truncated or rewritten.
+- Accept null diagnostics from successful HTML intent validation without bypassing
+  invalid-spec, stale-read or issue-coverage checks; reject malformed collections.
 
 ## [0.14.16] - 2026-09-25
 

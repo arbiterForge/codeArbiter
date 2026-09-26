@@ -2259,6 +2259,12 @@ jobs:
       - name: Validate deterministic brownfield fixtures
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_context_fixtures.py
+      - name: Validate closed brownfield reports
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_contracts.py
+      - name: Validate brownfield observation accounting
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_evaluation.py
       - name: Run shipped-skill portability guard
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # A-6.1: a skill under core/surface/skills/** renders into every
