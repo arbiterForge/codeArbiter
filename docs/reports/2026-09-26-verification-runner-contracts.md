@@ -144,6 +144,16 @@ corrected. Exact command validation is unchanged. Fresh native Windows results:
 54 approval tests passed in 26.712 seconds; all 7 farm tests passed in 20.237
 seconds. The amended PR still requires fresh exact-head hosted platform proof.
 
+The next hosted run reached the later cold-install workflow and exposed a
+separate positive fixture with the same missing `-v`. The package cold-execution
+test reproduced locally, and a direct qualification regression then failed with
+`UNSUPPORTED_COLLECTOR` before that fixture was corrected. A complete declaration
+sweep retained intentional nonverbose rejection/recognition tests and found no
+other stale positive fixture. Runtime audit guards and offline restrictions are
+unchanged. The full native Windows package suite then completed 36 tests in
+90.884 seconds: 35 passed and the existing Unix-descriptor test was skipped.
+Independent coverage and security delta reviews passed without findings.
+
 ### Delivery and live-proof boundary
 
 The isolated branch is `codex/fix-verification-runner-contracts`; its base is
