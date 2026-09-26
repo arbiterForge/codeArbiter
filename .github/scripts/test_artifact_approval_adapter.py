@@ -85,8 +85,9 @@ class _FakeClient:
 
 class ApprovalAdapterTest(unittest.TestCase):
     def setUp(self):
+        from test_artifact_authoring import physical_test_directory
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
+        self.root = physical_test_directory(self.temp.name)
         (self.root / ".codearbiter").mkdir()
         self.client = _FakeClient(self.root)
         self.adapter = importlib.import_module("_approvallib")
@@ -660,6 +661,33 @@ class PlanApprovalPreflightTest(unittest.TestCase):
             result = self.arm()
         self.assertEqual(result["artifact_id"], "PLAN-EXAMPLE")
         self.assertIn("snapshot", [operation for operation, _ in self.client.calls])
+
+
+class ApprovalFixturePathTest(unittest.TestCase):
+    def test_plan_fixture_uses_a_physical_temporary_root(self):
+        from test_artifact_authoring import physical_test_directory
+        with tempfile.TemporaryDirectory(prefix="ca-approval-fixture-path-") as temporary:
+            base = physical_test_directory(temporary)
+            physical, linked = base / "physical", base / "linked"
+            physical.mkdir()
+            if os.name == "nt":
+                made = subprocess.run(
+                    ["cmd", "/d", "/c", "mklink", "/J", str(linked), str(physical)],
+                    capture_output=True, text=True,
+                )
+                self.assertEqual(made.returncode, 0, made.stderr)
+            else:
+                linked.symlink_to(physical, target_is_directory=True)
+            with mock.patch.object(tempfile, "tempdir", str(linked)):
+                fixture = PlanApprovalPreflightTest(
+                    "test_proposed_test_does_not_need_to_exist_or_execute"
+                )
+                fixture.setUp()
+                try:
+                    self.assertEqual(fixture.root, physical_test_directory(fixture.root))
+                    fixture.test_proposed_test_does_not_need_to_exist_or_execute()
+                finally:
+                    fixture.tearDown()
 
 
 class SprintPairIntegrationTest(unittest.TestCase):

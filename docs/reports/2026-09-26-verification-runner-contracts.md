@@ -128,6 +128,22 @@ The final CRLF-only collector change also passed a separate security delta
 review, including mixed-newline duplicate cases; version changes were confirmed
 to be literal metadata updates.
 
+### Hosted fixture corrections
+
+The first exact-head run for PR #880 (`7106f406`) exposed two fixture defects.
+macOS approval tests supplied the operating system's symlinked temporary-path
+spelling to a fake client, unlike the physical root used by production clients.
+A new linked-parent regression reproduced that mismatch on native Windows before
+the fixture was changed to use the existing `physical_test_directory` helper.
+The production no-link path check is unchanged.
+
+The farm suite also retained two nonverbose unittest command strings after the
+shared canonical fixture gained `-v`. All five projection errors reproduced
+locally before both the projected gate and synthetic red-evidence command were
+corrected. Exact command validation is unchanged. Fresh native Windows results:
+54 approval tests passed in 26.712 seconds; all 7 farm tests passed in 20.237
+seconds. The amended PR still requires fresh exact-head hosted platform proof.
+
 ### Delivery and live-proof boundary
 
 The isolated branch is `codex/fix-verification-runner-contracts`; its base is
