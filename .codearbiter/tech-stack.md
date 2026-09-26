@@ -383,7 +383,7 @@ other's contribution is missing. The rule and its conditions live in
 `plugins/ca/includes/maturity-coverage.md`; this table is the per-tree half it
 refers to.
 
-**The threshold is not encoded in the tooling.** `tdd` Phase 5 and `refactor`
+**The TypeScript threshold is not encoded in the tooling.** `tdd` Phase 5 and `refactor`
 Phase 2/6 apply it, reading `stage:` from `.codearbiter/CONTEXT.md` against
 `plugins/ca/includes/maturity-coverage.md`. **Lines and branches must both
 clear it**; a report satisfying one and not the other does not pass. Putting the
@@ -414,7 +414,7 @@ Two caveats when reading a local report:
 - **ca-sandbox self-skips its docker-gated suites** on a host without Docker, so
   a local number reads lower than required CI's. Compare against a run with
   `CA_SANDBOX_REQUIRE_DOCKER=1` before concluding that tree regressed.
-- **No CI job enforces coverage.** It is an orchestrator gate the skills run, not
+- **No CI job enforces the TypeScript coverage floor.** It is an orchestrator gate the skills run, not
   a required check — deliberately, since wiring a red `ca/tools` into required CI
   would block every merge on an unrelated backfill.
 
@@ -441,6 +441,31 @@ dependencies (astro, starlight, markdown-remark) and is deliberately off the
 dev-inclusive CVE gate, whose sweep lives in `docs.yml`. Adding a coverage
 provider does not change that posture — the provider is a dev dependency, and
 the audit scope is unchanged.
+
+**Native Go statements** (`core/artifacts/`) are collected separately with the
+pinned Go toolchain and Python standard library. For a local Windows/amd64 run,
+choose new output paths outside the module:
+
+```sh
+python .github/scripts/test_artifact_cli.py --coverage-output <new-cli-profile>
+python tools/artifact-coverage.py collect --module-root core/artifacts --output <new-native-directory> --expect-platform windows/amd64 --extra-profile <new-cli-profile>
+python tools/artifact-coverage.py summarize --module-root core/artifacts --input <new-native-directory> --expect-platform windows/amd64 --require-integration
+```
+
+The actual CLI tests build a disposable instrumented executable. The unit run
+uses `-coverpkg=./...` to measure production packages exercised by other packages'
+tests. Collection binds source, tests, embedded inputs, Go version, native
+platform and profile bytes. The union counts each source block once, preserving
+platform-specific files; it never averages host percentages.
+
+The required `artifact-coverage` CI job collects all six GitHub-hosted native
+platforms (Linux, Windows and macOS, each amd64 and arm64), requires executable
+coverage on each, and enforces an additional **70% statement floor**. Missing,
+duplicate, stale or mismatched inputs fail. With no `--expect-platform` flags,
+`summarize` requires that complete six-platform set. An explicitly selected
+local host is only a local figure. These reports label **statements** and leave
+line and branch coverage unmeasured; this additional gate does not waive either
+of the maturity policy's required metrics.
 
 There is **no coverage tooling for the Python hooks or build tools**
 (`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).
