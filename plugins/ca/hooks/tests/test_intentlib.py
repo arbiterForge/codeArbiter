@@ -4,10 +4,12 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _intentlib as I  # noqa: E402
+import _artifactlib as A  # noqa: E402
 
 
 FULLY_COVERED_SPEC = """## Problem
@@ -242,6 +244,64 @@ class CLITest(unittest.TestCase):
             with contextlib.redirect_stderr(err):
                 code = I.main(["uncovered-intent", spec, "--issue-body", "/no/such/issue.txt"])
             self.assertEqual(code, 2)
+
+
+class HTMLCLITest(unittest.TestCase):
+    def _run(self, *, valid=True, diagnostics=None, stale=False, issue=None):
+        client = mock.Mock()
+        client.call.side_effect = lambda operation, *args, **kwargs: (
+            {"valid": valid, "diagnostics": diagnostics, "model_sha256": "current"}
+            if operation == "validate" else
+            {"model_sha256": "changed" if stale else "current"}
+        )
+        client.outline.return_value = []
+        with tempfile.TemporaryDirectory() as tmp:
+            spec = CLITest._write(tmp, "spec.html", "<html></html>")
+            argv = ["uncovered-intent", spec]
+            if issue is not None:
+                argv += ["--issue-body", CLITest._write(tmp, "issue.md", issue)]
+            out, err = io.StringIO(), io.StringIO()
+            with (
+                mock.patch.object(A, "resolve_spec_file", return_value=(client, {"artifact_id": "SPEC-TEST"})),
+                contextlib.redirect_stdout(out), contextlib.redirect_stderr(err),
+            ):
+                code = I.main(argv)
+            return code, out.getvalue(), err.getvalue()
+
+    def test_html_null_diagnostics_passes_valid_spec_only(self):
+        for diagnostics in (None, []):
+            with self.subTest(diagnostics=diagnostics):
+                self.assertEqual(self._run(diagnostics=diagnostics), (0, "", ""))
+
+    def test_html_null_diagnostics_does_not_override_invalid_verdict(self):
+        self.assertEqual(self._run(valid=False), (1, "", ""))
+        finding = {"code": "UNCOVERED_SCOPE", "message": "A scope item has no criterion."}
+        for valid in (True, False):
+            with self.subTest(valid=valid):
+                code, out, err = self._run(valid=valid, diagnostics=[finding])
+                self.assertEqual(code, 1)
+                self.assertIn("[INVALID-HTML-SPEC] UNCOVERED_SCOPE", out)
+                self.assertEqual(err, "")
+
+    def test_html_malformed_diagnostics_fail_closed(self):
+        for diagnostics in ({}, "", False, 0, "bad", {"code": "bad"}):
+            with self.subTest(diagnostics=diagnostics):
+                code, out, err = self._run(diagnostics=diagnostics)
+                self.assertEqual(code, 2)
+                self.assertEqual(out, "")
+                self.assertIn("diagnostics must be a list or null", err)
+
+    def test_html_null_diagnostics_preserves_stale_read_block(self):
+        code, out, err = self._run(stale=True)
+        self.assertEqual(code, 2)
+        self.assertEqual(out, "")
+        self.assertIn("HTML spec changed during intent verification", err)
+
+    def test_html_null_diagnostics_still_checks_issue_requirements(self):
+        code, out, err = self._run(issue="- [ ] Preserve export ordering.\n")
+        self.assertEqual(code, 1)
+        self.assertIn("[UNCOVERED-CHECKBOX]", out)
+        self.assertEqual(err, "")
 
 
 if __name__ == "__main__":

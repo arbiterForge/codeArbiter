@@ -21,6 +21,7 @@ import _approvallib as approval
 import _artifactlib
 import _artifactauthoritylib
 import _artifactpromptlib
+import _replylib
 
 FORMAT = "codearbiter.pending-user-approval/0.2.0"
 SUBMISSION_FORMAT = "codearbiter.sprint-submission/0.1.0"
@@ -132,7 +133,9 @@ def arm(root: str | Path, client: Any, spec_id: str, plan_id: str, *, delegate_m
     except _artifactpromptlib.PromptRouteError:
         (root / approval.PENDING).unlink()
         raise
-    return {"spec_artifact_id": spec_id, "artifact_id": plan_id, "pair": pending["pair"], "reply": reply, "delegation": context.get("scope"), "approved": False}
+    code = _replylib.offer_code(root, "approval", plan_id, reply, names=[spec_id, plan_id],
+                                short_prefix=["approve-sprint", "delegate" if delegate_methods else "approve-only"])
+    return {"spec_artifact_id": spec_id, "artifact_id": plan_id, "pair": pending["pair"], "reply": reply, **code, "delegation": context.get("scope"), "approved": False}
 
 
 def _submission_path(pending: dict[str, Any]) -> Path:
@@ -164,7 +167,7 @@ def _submission(root: Path, pending: dict[str, Any]) -> dict[str, Any] | None:
     return request
 
 
-def _source(root: Path, pending: dict[str, Any], name: str, prompt: str, host: str, session_id: str) -> dict[str, str]:
+def _source(root: Path, pending: dict[str, Any], name: str, prompt: str, host: str, session_id: str, seam: str = "UserPromptSubmit") -> dict[str, str]:
     locator = pending[name + "_context"]
     context = _read(root, Path(locator["context_ref"]))
     if (_hash(context) != locator["context_sha256"] or context.get("subject") != locator["subject"]
@@ -177,7 +180,7 @@ def _source(root: Path, pending: dict[str, Any], name: str, prompt: str, host: s
     oh = _hash(observed)
     observation_ref = Path(".codearbiter/.artifacts/observations") / f"{oh}.json"
     _artifactauthoritylib._publish_immutable(root, observation_ref, approval._canonical(observed))
-    event = {"format": "codearbiter.workflow-event/0.2.0", "kind": "approval", "authority_kind": "user_workflow", "subject": context["subject"], "actor": "interactive repository user", "origin": f"{host}:UserPromptSubmit:{session_id}", "verdict": "approved", "payload": payload, "source_text": prompt, "observation_ref": observation_ref.as_posix(), "observation_sha256": oh}
+    event = {"format": "codearbiter.workflow-event/0.2.0", "kind": "approval", "authority_kind": "user_workflow", "subject": context["subject"], "actor": "interactive repository user", "origin": f"{host}:{seam}:{session_id}", "verdict": "approved", "payload": payload, "source_text": prompt, "observation_ref": observation_ref.as_posix(), "observation_sha256": oh}
     eh = _hash(event)
     source_ref = Path(".codearbiter/.artifacts/authority-sources") / f"{eh}.json"
     _artifactauthoritylib._publish_immutable(root, source_ref, approval._canonical(event))
@@ -210,7 +213,9 @@ def _execute(root: Path, client: Any, pending: dict[str, Any], request: dict[str
 
 
 @_serialized
-def consume(root: Path, client: Any, pending: dict[str, Any], prompt: str, *, host: str, session_id: str) -> dict[str, Any]:
+def consume(root: Path, client: Any, pending: dict[str, Any], prompt: str, *, host: str, session_id: str, seam: str = "UserPromptSubmit") -> dict[str, Any]:
+    if seam not in {"UserPromptSubmit", "AskUserQuestion"}:
+        raise approval.ApprovalError("INVALID_HOST_CONTEXT", "approval seam is unsupported")
     validate_pending(pending)
     if approval._load_pending(root) != pending:
         return {"matched": False, "approved": False}
@@ -232,8 +237,8 @@ def consume(root: Path, client: Any, pending: dict[str, Any], prompt: str, *, ho
             if any(current.get(k) != v for k, v in pair[name].items()):
                 raise approval.ApprovalError("STALE_APPROVAL", "a paired artifact changed after review was requested")
         request = _base_request(pending)
-        request["spec_source"] = _source(root, pending, "spec", prompt, host, session_id)
-        request["plan_source"] = _source(root, pending, "plan", prompt, host, session_id)
+        request["spec_source"] = _source(root, pending, "spec", prompt, host, session_id, seam)
+        request["plan_source"] = _source(root, pending, "plan", prompt, host, session_id, seam)
         record = {"format": SUBMISSION_FORMAT, "request_key": pending["request_key"], "request": request}
         try:
             approval._write_new(root, _submission_path(pending), approval._canonical(record))

@@ -198,7 +198,7 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
         TAG: ${{ steps.v.outputs.tag }}
         SOURCE_COMMIT: ${{ inputs.source-commit }}
-        ASSET: ${{ inputs.host != 'pi' && steps.package.outputs.file || '' }}
+        ASSET: ${{ steps.package.outputs.file }}
       run: |
         set -euo pipefail
         gh auth setup-git
@@ -283,8 +283,10 @@ runs:
         echo "release-id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
     # GATE: the attached package reads back byte-identical to the verified cohort.
+    # Every host's CI-built package is attached, including ca-pi's npm tarball,
+    # so each Release carries the exact bytes its receipt names.
     - name: Upload and read back the package asset
-      if: ${{ inputs.host == 'claude' || inputs.host == 'codex' }}
+      if: ${{ inputs.host == 'claude' || inputs.host == 'codex' || inputs.host == 'pi' }}
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github-token }}

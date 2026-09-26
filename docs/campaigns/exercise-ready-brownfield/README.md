@@ -1,11 +1,32 @@
 # Exercise-ready brownfield onboarding and reusable repository context
 
 **Campaign:** `exercise-ready-brownfield`
-**State:** campaign guidance recorded at the maintainer's request; specification and implementation remain unapproved.
-**Working baseline:** `arbiterForge/codeArbiter@4187f1e22dc7da3cf755a2654bbf7ec268236126:/`
+**State:** the maintainer authorized continued work; #873 contains partial source implementation. The native spec/plan remain draft and record no accepted tasks.
+**Working baseline:** current-main integration at `arbiterForge/codeArbiter@a5a3d79cb5633cae3982552d6a7cf724de83aa49`.
 **Recorded:** 2026-09-25
 
 ## Start here
+
+The current continuation is recorded in [#873](https://github.com/arbiterForge/codeArbiter/pull/873)
+and the [maintainer progress record](https://github.com/arbiterForge/codeArbiter/pull/872#issuecomment-5841514671).
+It includes T-002 fixture preparation, the T-003 observation contract, T-004 intent validation,
+the T-005 report decoder, and portions of the shared-source healing and map-budget work.
+These are tested source units, not completion of CP-00/CP-01 or the full 60-task plan.
+The next source units are T-006/T-007/T-008: inert hashing, membership coverage and
+source/output identity. Context writing, lifecycle integration, actor delivery and installed
+contribution qualification remain outstanding.
+
+A fresh installed-engine inspection confirms specification revision 7 (41 criteria, 101 scenarios)
+and plan revision 2 (60 tasks, 11 checkpoints) pass structural and ready validation. Approval
+validation still reports `AUTHORITY_UNVERIFIED` for the spec and `DRAFT_BINDING` for the plan.
+Those native states are preserved. They do not retract the maintainer's authorization or
+turn source-test results into accepted tasks. The owning workflow must reconcile genuine
+authority and task evidence before claiming campaign acceptance.
+
+The dated assessment, first reviews and original authoring evidence below remain historical.
+Their earlier no-implementation or no-approval statements describe those earlier sessions.
+This planning PR can be reviewed independently; implementation integrates #854's retained
+owners before #873's overlapping work. Debug correctness remains in #871.
 
 The outcome is a trustworthy first useful contribution in an unfamiliar fork, followed by lower repeated exploration without stale policy, lost human edits, weaker authority or excessive context. More files, passing text checks and an initialized marker are not success.
 
@@ -20,9 +41,9 @@ The historical files are retained byte-for-byte. Their statements that no PR or 
 
 Historical observations: 125 provenance tests, 202 injection tests, eight wiring checks and generated-host parity passed; a trusted installed ca 2.21.12 native capability query succeeded. A conflicting per-document provenance fixture produced stale drift but no healing work. Architecture deletion, empty greenfield provenance and a 100,000-character code-map role also demonstrated the stated coverage/size limitations. Do not relabel these as tests of a later implementation.
 
-## Current reconciliation, not silent historical rewriting
+## Historical reconciliation at the planning handoff
 
-| Source | Current observation | Campaign consequence |
+| Source | Observation at that handoff | Campaign consequence |
 |---|---|---|
 | Main | `4187f1e22dc7da3cf755a2654bbf7ec268236126`, tree `ffbbae240f113d0936c0f52a2151597d935ab14c`; the delta from the assessment baseline is the Claude catalog change. | Source findings remain bound to the historical snapshot; verify relevant paths again before implementation. |
 | PR #870 | Merged into main as `4187f1e22dc7da3cf755a2654bbf7ec268236126`. | Channel correction is implemented, not remaining new feature work. Exact installed exercise qualification is still required. |
@@ -58,7 +79,7 @@ Preserve report-only synthesis, isolated scouts and required logical coverage; h
 
 ## Decisions and evidence still needed
 
-The single draft specification will choose reversible implementation bounds and make them visible for approval. The actual exercise environment remains to be profiled at qualification time; that is not permission to assume an OS/provider/network policy. The future guidance kind and publication/rollout need their own explicit gate under the same specification, not another competing spec. Independent semantic review and real approval are still required before implementation.
+The single draft specification records reversible implementation bounds. The actual exercise environment remains to be profiled at qualification time; that is not permission to assume an OS/provider/network policy. The future guidance kind and publication/rollout need their own explicit gate under the same specification, not another competing spec. The existing authorization and source work must be reconciled through the native owner before claiming approved or accepted campaign work.
 
 Finish E0-E2 on demonstrated correctness and first-contribution usefulness. Proceed with P1 only on better maintenance-adjusted task outcomes than map-only, with no authority, preservation or correctness regression. Publish scoped support claims, not universal parity or invented token/dollar savings.
 
@@ -76,4 +97,6 @@ The first draft attempted to bound legacy context writing and native loading cla
 
 Core context work now explicitly includes the missing repository-context kind with bounded codecs for five canonical Markdown documents. It is a proposed per-kind enrollment, not an automatic migration or a new evidence database. The native-guidance pilot remains a later explicit decision. A no-go requires an approved amendment of the same plan to retire unstarted pilot implementation tasks; it cannot turn them into accepted implementation or bypass the normal commit gate.
 
-Next: review the exact draft pair, obtain its actual required approval, and begin CP-00. Do not infer execution permission from schema readiness, the planning request or this WIP PR.
+Current continuation: reconcile the existing authorization and source-unit evidence through
+the native owner, then resume the remaining CP-00/CP-01 work. Schema readiness and merging
+this planning PR do not create native approval, accepted tasks, or campaign completion.

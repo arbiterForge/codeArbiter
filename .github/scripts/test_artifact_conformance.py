@@ -71,6 +71,7 @@ EXPECTED_SUITES = {
         "test_admission_requires_claude_failure_event_and_reviewer_charter",
         "test_admission_requires_every_authority_event",
         "test_producers_create_and_read_canonical_html_pair",
+        "test_intent_cli_accepts_ready_spec_from_native_engine",
         "test_incomplete_draft_is_named_without_inventing_contract_fields",
         "test_missing_payload_fails_closed_without_markdown_fallback",
         "test_resolves_a_test_owned_linked_ancestor",
