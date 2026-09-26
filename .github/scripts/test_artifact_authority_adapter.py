@@ -2937,6 +2937,52 @@ class ClaudeEndToEndTest(unittest.TestCase):
         eligible = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertTrue(eligible["all_accepted_and_current"], eligible)
 
+    def _native_codex_review(self, record_id, activity, _agent_id, tool_use_id, *_model):
+        """Synthetic native hook events joined to the real local engine, never live proof."""
+        bridge = self.host.load_bridge(self.plugin)
+        client = bridge.ArtifactClient(self.root, self.installation)
+        armed = self.adapter.arm_request(
+            self.root, client, "PLAN-FLOW", record_id, activity, host="codex",
+            codex_review_profile="native-v1",
+        )
+        sequence = 1 if activity == "spec_review" else 2
+        agent_id = f"01900000-0000-7000-8000-{sequence:012x}"
+        parent = {
+            "cwd": str(self.root), "session_id": "native-engine-session-" + record_id,
+            "turn_id": "01900000-0000-7000-8000-000000000010",
+            "tool_name": "spawn_agent", "tool_use_id": tool_use_id, "tool_input": armed["launch_envelope"],
+        }
+        child = {"cwd": str(self.root), "session_id": parent["session_id"], "agent_id": agent_id,
+                 "agent_type": "default", "turn_id": "01900000-0000-7000-8000-000000000020"}
+        request = self.adapter._load(self.root, armed["request_id"])
+        decision = {
+            "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+            "target_sha256": request["context"]["input_sha256"], "contract_sha256": armed["review_contract_sha256"],
+            "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
+            "assessment": "Synthetic native review over the real engine's frozen fixture context.",
+        }
+        for event in (
+            {**parent, "hook_event_name": "PreToolUse"},
+            {**child, "hook_event_name": "SubagentStart"},
+            {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"agent_id": agent_id, "nickname": None})},
+            {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+             "last_assistant_message": json.dumps(decision), "transcript_path": None, "agent_transcript_path": None},
+        ):
+            result = subprocess.run(
+                [sys.executable, str(REPO / "plugins/ca-codex/hooks/artifact-authority-hook.py")],
+                input=json.dumps(event).encode(), capture_output=True, env=self._environment(), timeout=30,
+            )
+            self.assertEqual((result.returncode, result.stdout, result.stderr), (0, b"", b""))
+        published = self.adapter.publish_request(self.root, client, armed["request_id"])
+        self.assertTrue((self.root / published["receipt"]).is_file())
+        return published["receipt"]
+
+    def test_native_codex_v1_task_and_scope_receipts_are_accepted_by_real_engine(self):
+        # Reuse the unchanged real approval, verification, task-review and
+        # accept-scope assertions; only the review producer is the native V1 path.
+        with mock.patch.object(self, "_review", side_effect=self._native_codex_review):
+            self.test_end_to_end_claude()
+
     @unittest.skipUnless(shutil.which("node"), "direct Node integration requires Node")
     def test_linked_node_entrypoint_is_accepted_by_real_engine(self):
         target = self.root / ".codearbiter" / "runner-store"
@@ -2982,6 +3028,738 @@ class ClaudeEndToEndTest(unittest.TestCase):
         self._hook(post)
         published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
         self.assertTrue((self.root / published["receipt"]).is_file())
+
+
+class CodexV2NativeHookTest(unittest.TestCase):
+    """Source-derived Codex 0.145.0 shapes, not captured live-host evidence.
+
+    Upstream commit 25af12f7e61572b0bc18ddb1008be543b91519b0:
+    core/src/tools/registry.rs (function_hook_tool_name), hooks/src/schema.rs,
+    and hooks/src/events/common.rs (literal matcher alternatives).
+    """
+
+    setUp = AuthorityAdapterTest.setUp
+    tearDown = AuthorityAdapterTest.tearDown
+    _arm_review = AuthorityAdapterTest._arm_review
+
+    def _hook(self, event):
+        environment = dict(os.environ)
+        environment["TMP"] = environment["TEMP"] = environment["TMPDIR"] = str(self.root)
+        return subprocess.run(
+            [sys.executable, str(REPO / "plugins/ca-codex/hooks/artifact-authority-hook.py")],
+            input=json.dumps({"cwd": str(self.root), **event}).encode(),
+            cwd=self.root, env=environment, capture_output=True, timeout=30,
+        )
+
+    def test_codex_v2_hook_registry_matches_only_the_two_native_spawn_names(self):
+        registry = json.loads((REPO / "plugins/ca-codex/hooks/hooks.json").read_text("utf-8"))
+        for event in ("PreToolUse", "PostToolUse"):
+            with self.subTest(event=event):
+                matchers = [group.get("matcher", "") for group in registry["hooks"][event]
+                            if any("artifact-authority-hook.py" in hook.get("command", "")
+                                   for hook in group["hooks"])]
+                # Codex treats this finite literal grammar as exact alternatives.
+                self.assertTrue(all(set(matcher) <= set(
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_|"
+                ) for matcher in matchers))
+                names = {name for matcher in matchers for name in matcher.split("|")}
+                self.assertIn("spawn_agent", names)
+                self.assertIn("collaborationspawn_agent", names)
+                for unknown in ("collaboration.spawn_agent", "other_spawn_agent",
+                                "mcp__collaboration__spawn_agent", "collaborationspawn_agent_extra"):
+                    self.assertNotIn(unknown, names)
+
+    def test_codex_v2_pretool_entrypoint_refuses_unjoinable_native_profile(self):
+        # Supersedes the initial v2-positive expectation after the authority
+        # assessment: v2 supplies no direct task-path/child-UUID association.
+        armed = self._arm_review("codex-v2-native-pre")
+        event = {
+            "hook_event_name": "PreToolUse", "session_id": "codex-v2-parent-session",
+            "turn_id": "codex-v2-parent-turn", "tool_use_id": "codex-v2-spawn-call",
+            "tool_name": "collaborationspawn_agent", "tool_input": armed["launch_envelope"],
+            "transcript_path": None, "model": "fixture-model", "permission_mode": "default",
+        }
+        before = (self.root / armed["request_path"]).read_bytes()
+        changed = copy.deepcopy(event)
+        changed["tool_input"]["fork_turns"] = "all"
+        refused = self._hook(changed)
+        self.assertEqual(refused.returncode, 0, refused.stderr)
+        self.assertEqual((self.root / armed["request_path"]).read_bytes(), before)
+        result = self._hook(event)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.strip(), "unsupported v2 authority launch was silently admitted")
+        output = json.loads(result.stdout)
+        self.assertEqual(output["decision"], "block")
+        self.assertIn("native-v1", output["reason"])
+        self.assertEqual((self.root / armed["request_path"]).read_bytes(), before)
+
+    def test_codex_stop_entrypoint_uses_the_native_closed_output_schema(self):
+        # Existing unnamespaced fixture correlation isolates output compatibility;
+        # this does not claim live v1 or v2 child-correlation qualification.
+        armed = self._arm_review("codex-stop-native-output")
+        parent = {
+            "session_id": "codex-stop-session", "turn_id": "codex-stop-turn",
+            "tool_name": "spawn_agent", "tool_use_id": "codex-stop-call",
+        }
+        self.adapter.observe_codex_hook(self.root, {
+            **parent, "hook_event_name": "PreToolUse", "tool_input": armed["launch_envelope"],
+        })
+        self.adapter.observe_codex_hook(self.root, {
+            **parent, "hook_event_name": "PostToolUse",
+            "tool_response": {"task_name": armed["launch_envelope"]["task_name"]},
+        })
+        child = {
+            "session_id": parent["session_id"], "turn_id": parent["turn_id"],
+            "agent_id": "codex-stop-child", "agent_type": "default",
+        }
+        self.adapter.observe_codex_hook(self.root, {**child, "hook_event_name": "SubagentStart"})
+        decision = {
+            "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+            "target_sha256": "3" * 64, "contract_sha256": armed["review_contract_sha256"],
+            "decision": "pass", "coverage": ["AC-001", "AC-002"], "findings": [],
+            "assessment": "Source fixture only: frozen criteria were reviewed.",
+        }
+        result = self._hook({
+            **child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+            "last_assistant_message": json.dumps(decision), "transcript_path": None,
+            "agent_transcript_path": None, "model": "fixture-model", "permission_mode": "default",
+        })
+        self.assertEqual(result.returncode, 0, result.stderr)
+        retained = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(retained["state"], "COMPLETED")
+        self.assertIsNotNone(retained["observation_ref"])
+        self.assertIsNone(retained["receipt"])
+        if result.stdout.strip():
+            output = json.loads(result.stdout)
+            self.assertIsInstance(output, dict)
+            self.assertLessEqual(set(output), {
+                "continue", "stopReason", "suppressOutput", "systemMessage", "decision", "reason",
+            })
+            self.assertIsNot(output.get("continue"), False)
+            self.assertNotIn("decision", output)
+
+    def test_codex_verifier_authorization_uses_the_native_output_schema(self):
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="codex-wrapper-native-output",
+        )
+        script = REPO / "plugins/ca-codex/hooks/artifact-authority.py"
+        event = {
+            "hook_event_name": "PreToolUse", "session_id": "codex-wrapper-session",
+            "turn_id": "codex-wrapper-turn", "tool_use_id": "codex-wrapper-call",
+            "tool_name": "exec_command", "tool_input": {
+                "cmd": f'python "{script}" verify --root "{self.root}" --request-id {armed["request_id"]}',
+            },
+        }
+        result = self._hook(event)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        retained = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(retained["wrapper"]["state"], "AUTHORIZED")
+        self.assertIsNone(retained["attempt"])
+        self.assertIsNone(retained["receipt"])
+        if result.stdout.strip():
+            output = json.loads(result.stdout)
+            self.assertLessEqual(set(output), {
+                "continue", "stopReason", "suppressOutput", "systemMessage", "decision", "reason",
+                "hookSpecificOutput",
+            })
+            self.assertIn(output.get("decision"), (None, "approve", "block"))
+            self.assertIsNot(output.get("continue"), False)
+            self.assertNotEqual(output.get("decision"), "block")
+
+
+class CodexNativeV1HookTest(unittest.TestCase):
+    """Codex 0.145.0 native V1 UUID joins; all events and repositories are fixtures."""
+
+    setUp = AuthorityAdapterTest.setUp
+    tearDown = AuthorityAdapterTest.tearDown
+    _hook = CodexV2NativeHookTest._hook
+
+    def _arm_native(self, suffix="main", activity="spec_review"):
+        self.client = FakeClient(self.root)
+        self.client.context["activity"] = activity
+        self.client.context.pop("commands", None)
+        if activity == "quality_review":
+            self.client.context["subject"]["record_id"] = "SCOPE-001"
+            self.client.context["base_input_sha256"] = "7" * 64
+            self.client.context["task_hashes"] = {"T-001": "5" * 64}
+            self.client.context["tasks"] = [self.client.context["task"]]
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", self.client.context["subject"]["record_id"],
+            activity, request_nonce="native-v1-request-" + suffix, codex_review_profile="native-v1",
+        )
+        self.sequence = getattr(self, "sequence", 0) + 1
+        parent = {
+            "session_id": "native-session-" + suffix,
+            "turn_id": "01900000-0000-7000-8000-000000000001",
+            "tool_name": "spawn_agent", "tool_use_id": "native-call-" + suffix,
+            "tool_input": armed["launch_envelope"],
+        }
+        child = {
+            "session_id": parent["session_id"],
+            "turn_id": "01900000-0000-7000-8000-000000000002",
+            "agent_id": f"01900000-0000-7000-8000-{self.sequence:012x}", "agent_type": "default",
+        }
+        post = {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({
+            "agent_id": child["agent_id"], "nickname": None,
+        })}
+        decision = {
+            "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+            "target_sha256": "3" * 64, "contract_sha256": armed["review_contract_sha256"],
+            "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
+            "assessment": "Isolated source fixture: the frozen target satisfies the contract.",
+        }
+        events = {
+            "pre": {**parent, "hook_event_name": "PreToolUse"}, "post": post,
+            "start": {**child, "hook_event_name": "SubagentStart"},
+            "stop": {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+                     "last_assistant_message": json.dumps(decision), "transcript_path": None,
+                     "agent_transcript_path": None},
+        }
+        return armed, events
+
+    def _observe(self, event):
+        return self.adapter.observe_codex_hook(self.root, event)
+
+    def _no_authority(self, armed):
+        with self.assertRaises(RuntimeError):
+            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertIsNone(request["receipt"])
+        self.assertNotIn("authority_source", request)
+        self.assertFalse((self.root / ".codearbiter/.artifacts/authority-sources").exists())
+
+    def test_native_v1_profile_pins_fresh_exact_envelope_and_distinct_identity(self):
+        armed, _ = self._arm_native()
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(request["codex_review_profile"], "codex-native-v1/0.145.0")
+        self.assertEqual(armed["codex_review_profile"], request["codex_review_profile"])
+        self.assertIn(request["codex_review_profile"], armed["dispatch_prompt"])
+        self.assertEqual(armed["launch_envelope"], {
+            # The genuinely exposed 0.145.0 V1 tool omits the conditional role field.
+            "message": armed["dispatch_prompt"], "fork_context": False,
+        })
+        legacy = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+            request_nonce="native-v1-request-main",
+        )
+        self.assertNotEqual(armed["request_id"], legacy["request_id"])
+        self.assertNotIn("codex_review_profile", self.adapter._load(self.root, legacy["request_id"]))
+
+    def test_native_v1_real_entrypoint_completes_both_start_post_orders(self):
+        for activity in ("spec_review", "quality_review"):
+            for order in (("pre", "start", "post", "stop"), ("pre", "post", "start", "stop")):
+                with self.subTest(activity=activity, order=order):
+                    armed, events = self._arm_native(activity + "-" + order[1], activity)
+                    for name in order:
+                        result = self._hook(events[name])
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(result.stdout, b"")
+                        self.assertEqual(result.stderr, b"")
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["state"], "COMPLETED")
+                    self.assertEqual(request["launch"]["agent_id"], events["start"]["agent_id"])
+                    self.assertEqual(request["launch"]["child_turn_id"], events["start"]["turn_id"])
+                    self.assertEqual(request["launch"]["parent_turn_id"], events["pre"]["turn_id"])
+                    self.assertEqual(request["launch"]["codex_review_profile"], "codex-native-v1/0.145.0")
+                    self.assertIs(request["launch"]["first_stop"], True)
+                    self.assertNotIn("requested_agent_type", request["launch"])
+                    observed = json.loads((self.root / request["observation_ref"]).read_text("utf-8"))
+                    self.assertEqual(observed["producer_profile"], "codex-native-v1/0.145.0")
+                    published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                    source = json.loads((self.root / published["authority_source"]).read_text("utf-8"))
+                    self.assertEqual(source["origin"], "codex:subagent:" + events["start"]["agent_id"])
+
+    def test_native_v1_post_rejects_noncanonical_responses_and_changed_input(self):
+        cases = {
+            "object": lambda e: e.update(tool_response=json.loads(e["tool_response"])),
+            "v2-task": lambda e: e.update(tool_response='{"task_name":"/root/authority_example"}'),
+            "duplicate": lambda e: e.update(tool_response='{"agent_id":"wrong",' + e["tool_response"][1:]),
+            "extra": lambda e: e.update(tool_response=e["tool_response"][:-1] + ',"decision":"pass"}'),
+            "oversized": lambda e: e.update(tool_response=" " * 65537),
+            "array": lambda e: e.update(tool_response="[]"),
+            "nested-string": lambda e: e.update(tool_response=json.dumps(e["tool_response"])),
+            "uuid": lambda e: e.update(tool_response='{"agent_id":"not-a-uuid","nickname":null}'),
+            "nickname": lambda e: e.update(tool_response=e["tool_response"].replace("null", "false")),
+            "fork": lambda e: e["tool_input"].update(fork_context=True),
+            "role": lambda e: e["tool_input"].update(agent_type="explorer"),
+            "model": lambda e: e["tool_input"].update(model="caller-model"),
+            "prompt": lambda e: e["tool_input"].update(message=e["tool_input"]["message"] + " extra"),
+        }
+        for suffix, mutate in cases.items():
+            with self.subTest(case=suffix):
+                armed, events = self._arm_native("post-" + suffix)
+                self._observe(events["pre"])
+                before = (self.root / armed["request_path"]).read_bytes()
+                altered = copy.deepcopy(events["post"])
+                mutate(altered)
+                with self.assertRaises(RuntimeError):
+                    self._observe(altered)
+                rejected = self.adapter._load(self.root, armed["request_id"])
+                self.assertEqual(rejected["state"], "REJECTED")
+                original = json.loads(before)
+                for field in ("request_id", "context", "context_ref", "context_sha256", "launch_envelope", "launch"):
+                    self.assertEqual(rejected[field], original[field])
+                self._no_authority(armed)
+
+    def test_native_v1_correlated_post_failure_cannot_be_replaced_by_later_success(self):
+        armed, events = self._arm_native("post-no-replacement")
+        self._observe(events["pre"])
+        with self.assertRaises(RuntimeError):
+            self._observe({**events["post"], "tool_response": "not JSON"})
+        for name in ("post", "start", "stop"):
+            try:
+                self._observe(events[name])
+            except RuntimeError:
+                pass
+        self._no_authority(armed)
+
+    def test_native_v1_missing_or_wrong_correlation_never_publishes(self):
+        cases = ["missing-" + name for name in ("pre", "post", "start", "stop")]
+        cases += ["post-" + name for name in ("session_id", "turn_id", "tool_use_id")]
+        cases += ["stop-" + name for name in ("session_id", "turn_id", "agent_id", "agent_type")]
+        for suffix in cases:
+            with self.subTest(case=suffix):
+                armed, events = self._arm_native(suffix)
+                for name in ("pre", "post", "start", "stop"):
+                    if suffix == "missing-" + name:
+                        continue
+                    event = copy.deepcopy(events[name])
+                    if suffix.startswith(name + "-"):
+                        field = suffix[len(name) + 1:]
+                        event[field] = ("01900000-0000-7000-8000-ffffffffffff"
+                                        if field in {"turn_id", "agent_id"} else "unrelated")
+                    try:
+                        self._observe(event)
+                    except RuntimeError:
+                        pass
+                self._no_authority(armed)
+
+    def test_native_v1_unrelated_start_and_cross_request_uuid_reuse_are_refused(self):
+        first, events = self._arm_native("direct-child")
+        self._observe(events["pre"])
+        unrelated = {**events["start"], "agent_id": "01900000-0000-7000-8000-ffffffffffff"}
+        self._observe(unrelated)
+        self._observe(events["post"])
+        self.assertEqual(self.adapter._load(self.root, first["request_id"])["state"], "LAUNCHING")
+        self._observe(events["start"])
+        self._observe(events["stop"])
+        self.assertEqual(self.adapter._load(self.root, first["request_id"])["state"], "COMPLETED")
+        second, second_events = self._arm_native("reused-child")
+        self._observe(second_events["pre"])
+        second_events["post"]["tool_response"] = events["post"]["tool_response"]
+        with self.assertRaises(RuntimeError):
+            self._observe(second_events["post"])
+        self._no_authority(second)
+
+    def test_native_v1_first_stop_and_duplicate_start_are_terminal_evidence(self):
+        for suffix in ("stop-before-post", "invalid-first-stop", "duplicate-start", "changed-child-turn",
+                       "missing-stop-turn", "missing-stop-session", "missing-stop-role"):
+            with self.subTest(case=suffix):
+                armed, events = self._arm_native(suffix)
+                self._observe(events["pre"])
+                self._observe(events["start"])
+                if suffix == "stop-before-post":
+                    self._observe(events["stop"])
+                    with self.assertRaises(RuntimeError):
+                        self._observe(events["post"])
+                else:
+                    self._observe(events["post"])
+                    altered = copy.deepcopy(events["stop"])
+                    if suffix == "invalid-first-stop":
+                        altered["last_assistant_message"] = "not JSON"
+                    elif suffix == "duplicate-start":
+                        altered = events["start"]
+                    elif suffix.startswith("missing-stop-"):
+                        altered.pop({"turn": "turn_id", "session": "session_id", "role": "agent_type"}[
+                            suffix[len("missing-stop-"):]])
+                    else:
+                        altered["turn_id"] = events["pre"]["turn_id"]
+                    with self.assertRaises(RuntimeError):
+                        self._observe(altered)
+                try:
+                    self._observe(events["stop"])
+                except RuntimeError:
+                    pass
+                self._no_authority(armed)
+
+    def test_native_v1_start_cannot_reuse_the_parent_turn(self):
+        armed, events = self._arm_native("parent-turn-start")
+        self._observe(events["pre"])
+        self._observe({**events["start"], "turn_id": events["pre"]["turn_id"]})
+        with self.assertRaises(RuntimeError):
+            self._observe(events["post"])
+        self._no_authority(armed)
+
+    def test_native_v1_ambiguous_or_malformed_first_decision_cannot_publish(self):
+        for suffix in ("duplicate-member", "malformed-coverage"):
+            with self.subTest(case=suffix):
+                armed, events = self._arm_native("decision-" + suffix)
+                for name in ("pre", "post", "start"):
+                    self._observe(events[name])
+                bad = copy.deepcopy(events["stop"])
+                if suffix == "duplicate-member":
+                    bad["last_assistant_message"] = '{"decision":"changes_requested",' + bad["last_assistant_message"][1:]
+                else:
+                    decision = json.loads(bad["last_assistant_message"])
+                    decision["coverage"] = [{}]
+                    bad["last_assistant_message"] = json.dumps(decision)
+                with self.assertRaises(RuntimeError):
+                    self._observe(bad)
+                rejected = self.adapter._load(self.root, armed["request_id"])
+                self.assertEqual(rejected["state"], "REJECTED")
+                self.assertNotIn("first_stop", rejected["launch"])
+                with self.assertRaises(RuntimeError):
+                    self._observe(events["stop"])
+                self._no_authority(armed)
+
+    def test_native_v1_unknown_profiles_and_legacy_relabel_fail_closed(self):
+        self.client.context["activity"] = "spec_review"
+        self.client.context.pop("commands", None)
+        for profile in ("v1", "native-v2", "", "native-v1-extra"):
+            with self.subTest(profile=profile), self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_REQUEST"):
+                self.adapter.arm_request(
+                    self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                    request_nonce="native-unknown-profile", codex_review_profile=profile,
+                )
+        armed = AuthorityAdapterTest._arm_review(self, "native-legacy-no-relabel")
+        self._observe({
+            "hook_event_name": "PreToolUse", "session_id": "legacy-session", "turn_id": "legacy-turn",
+            "tool_name": "spawn_agent", "tool_use_id": "legacy-call", "tool_input": armed["launch_envelope"],
+        })
+        before = (self.root / armed["request_path"]).read_bytes()
+        with self.assertRaises(RuntimeError):
+            self._observe({
+                "hook_event_name": "PostToolUse", "session_id": "legacy-session", "turn_id": "legacy-turn",
+                "tool_name": "spawn_agent", "tool_use_id": "legacy-call", "tool_input": armed["launch_envelope"],
+                "tool_response": '{"agent_id":"01900000-0000-7000-8000-000000000001","nickname":null}',
+            })
+        self.assertEqual((self.root / armed["request_path"]).read_bytes(), before)
+        self._no_authority(armed)
+
+    def test_native_v1_duplicate_post_and_stop_cannot_replace_the_first_evidence(self):
+        armed, events = self._arm_native("duplicate-post")
+        for name in ("pre", "post", "start"):
+            self._observe(events[name])
+        with self.assertRaises(RuntimeError):
+            self._observe(events["post"])
+        try:
+            self._observe(events["stop"])
+        except RuntimeError:
+            pass
+        self._no_authority(armed)
+
+        armed, events = self._arm_native("duplicate-stop")
+        for name in ("pre", "post", "start", "stop"):
+            self._observe(events[name])
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        path = Path(armed["request_path"])
+        retained = path.read_bytes()
+        with self.assertRaises(RuntimeError):
+            self._observe(events["stop"])
+        self.assertEqual(path.read_bytes(), retained)
+
+    def test_native_v1_context_tamper_is_checked_at_post_and_publication(self):
+        for boundary in ("post", "publish"):
+            with self.subTest(boundary=boundary):
+                armed, events = self._arm_native("context-" + boundary)
+                for name in (("pre",) if boundary == "post" else ("pre", "post", "start", "stop")):
+                    self._observe(events[name])
+                request = self.adapter._load(self.root, armed["request_id"])
+                (self.root / request["context_ref"]).write_bytes(b"{}")
+                with self.assertRaises(RuntimeError):
+                    if boundary == "post":
+                        self._observe(events["post"])
+                    else:
+                        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                self._no_authority(armed)
+
+    def test_native_v1_partial_and_unsafe_markers_fail_closed(self):
+        for suffix in ("partial", "oversized", "directory", "unsafe-lock"):
+            with self.subTest(case=suffix):
+                armed, events = self._arm_native("marker-" + suffix)
+                self._observe(events["pre"])
+                marker = self.adapter._codex_native_marker(events["start"]["agent_id"])
+                if suffix == "directory":
+                    marker.mkdir()
+                elif suffix == "unsafe-lock":
+                    marker.with_name(marker.name + ".lock").mkdir()
+                else:
+                    marker.write_bytes(b"{" if suffix == "partial" else b" " * 65537)
+                before = Path(armed["request_path"]).read_bytes()
+                with self.assertRaises(RuntimeError):
+                    self._observe(events["post"])
+                rejected = self.adapter._load(self.root, armed["request_id"])
+                self.assertEqual(rejected["state"], "REJECTED")
+                self.assertEqual(rejected["launch"], json.loads(before)["launch"])
+                self._no_authority(armed)
+
+    def test_native_v1_stale_hook_writes_cannot_revive_abandonment(self):
+        save = self.adapter._save
+        for boundary in ("pre", "post", "start", "stop"):
+            with self.subTest(boundary=boundary):
+                armed, events = self._arm_native("race-" + boundary)
+                for name in ("pre", "post", "start", "stop"):
+                    if name == boundary:
+                        break
+                    self._observe(events[name])
+                retained = []
+
+                def abandon(root, request):
+                    if not retained:
+                        self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                        retained.append(Path(armed["request_path"]).read_bytes())
+                    return save(root, request)
+
+                def transition(root, request):
+                    # Recovery uses the real saver; only the stale hook is delayed.
+                    with mock.patch.object(self.adapter, "_save", save):
+                        return abandon(root, request)
+
+                with mock.patch.object(self.adapter, "_save", side_effect=transition):
+                    with self.assertRaisesRegex(RuntimeError, "STALE_AUTHORITY_REQUEST"):
+                        self._observe(events[boundary])
+                self.assertEqual(Path(armed["request_path"]).read_bytes(), retained[0])
+                self._no_authority(armed)
+
+    def _event_worker(self, event, *, pause=False, wait=False):
+        worker = self.root / "native-event-worker.py"
+        worker.write_text(
+            "import json, sys\nfrom pathlib import Path\n"
+            "sys.path.insert(0, sys.argv[1])\nimport _artifactauthoritylib as adapter\n"
+            "root = Path(sys.argv[2])\nadapter.REGISTRY_PARENT = root\n"
+            "adapter.REQUEST_LOCK_WAIT_SECONDS = 5 if sys.argv[3] == 'wait' else 0.2\n"
+            "event = json.loads(sys.stdin.readline())\n"
+            "if sys.argv[3] == 'wait':\n"
+            "    from contextlib import contextmanager\n"
+            "    lock = adapter._request_lock\n"
+            "    @contextmanager\n"
+            "    def announced_lock(root, relative):\n"
+            "        if relative.suffix == '.marker':\n"
+            "            print('READY', flush=True)\n"
+            "        with lock(root, relative):\n"
+            "            yield\n"
+            "    adapter._request_lock = announced_lock\n"
+            "if sys.argv[3] == 'pause':\n"
+            "    replace = adapter._atomic_replace\n"
+            "    def paused_replace(root, relative, data):\n"
+            "        if relative.suffix == '.marker':\n"
+            "            print('READY', flush=True)\n"
+            "            if sys.stdin.readline().strip() != 'continue':\n"
+            "                raise RuntimeError('missing fixture release')\n"
+            "        replace(root, relative, data)\n"
+            "    adapter._atomic_replace = paused_replace\n"
+            "try:\n    result = adapter.observe_codex_hook(root, event)\n"
+            "except adapter.AuthorityError as exc:\n"
+            "    print(json.dumps({'error': exc.code}), flush=True)\n"
+            "else:\n    print(json.dumps({'result': result}), flush=True)\n", encoding="utf-8",
+        )
+        process = subprocess.Popen(
+            [sys.executable, str(worker), str(CORE_PYSRC), str(self.root), "pause" if pause else "wait" if wait else "run"],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, encoding="utf-8", env=root_bound_git_env(), cwd=self.root,
+        )
+        self.addCleanup(AuthorityStateRaceTest._close_worker, process)
+        process.stdin.write(json.dumps(event) + "\n")
+        process.stdin.flush()
+        return process
+
+    def test_native_v1_process_start_post_join_serializes_both_orders(self):
+        for first, second in (("start", "post"), ("post", "start")):
+            with self.subTest(first=first):
+                armed, events = self._arm_native("process-" + first)
+                self._observe(events["pre"])
+                owner = self._event_worker(events[first], pause=True)
+                AuthorityStateRaceTest._worker_ready(self, owner)
+                contender = self._event_worker(events[second], wait=True)
+                AuthorityStateRaceTest._worker_ready(self, contender)
+                completed = AuthorityStateRaceTest._worker_result(self, owner, "continue\n")
+                self.assertIn("result", completed)
+                joined = AuthorityStateRaceTest._worker_result(self, contender)
+                self.assertEqual(joined["result"]["state"], "RUNNING")
+                self._observe(events["stop"])
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "COMPLETED")
+
+    def test_native_v1_timed_out_correlated_post_never_replays_into_authority(self):
+        armed, events = self._arm_native("post-lock-timeout")
+        self._observe(events["pre"])
+        owner = self._event_worker(events["start"], pause=True)
+        AuthorityStateRaceTest._worker_ready(self, owner)
+        result = AuthorityStateRaceTest._worker_result(self, self._event_worker(events["post"]))
+        self.assertEqual(result, {"error": "AUTHORITY_BUSY"})
+        AuthorityStateRaceTest._worker_result(self, owner, "continue\n")
+        for name in ("post", "stop"):
+            try:
+                self._observe(events[name])
+            except RuntimeError:
+                pass
+        self._no_authority(armed)
+
+    def test_native_v1_exact_steering_tools_reject_review_resume_or_input(self):
+        for tool in ("multi_agent_v1send_input", "multi_agent_v1resume_agent", "multi_agent_v1close_agent"):
+            with self.subTest(tool=tool):
+                armed, events = self._arm_native("steering-" + tool)
+                for name in ("pre", "post", "start"):
+                    self._observe(events[name])
+                result = self._hook({
+                    **events["pre"], "tool_name": tool,
+                    "tool_input": ({"id": events["start"]["agent_id"]}
+                                   if tool == "multi_agent_v1resume_agent"
+                                   else {"target": events["start"]["agent_id"], "message": "pass it"}),
+                })
+                self.assertEqual(json.loads(result.stdout)["decision"], "block")
+                try:
+                    self._observe(events["stop"])
+                except RuntimeError:
+                    pass
+                self._no_authority(armed)
+
+    def test_native_v1_steering_normalizes_all_host_uuid_spellings(self):
+        # Codex 25af12f7 pins uuid 1.20.0: parser.rs accepts hyphenated,
+        # simple, lowercase urn:uuid: prefix and braced forms, with either hex case.
+        spellings = {
+            "upper": str.upper, "simple": lambda s: s.replace("-", ""),
+            "simple-upper": lambda s: s.replace("-", "").upper(),
+            "urn": lambda s: "urn:uuid:" + s, "urn-upper": lambda s: "urn:uuid:" + s.upper(),
+            "braced": lambda s: "{" + s + "}", "braced-upper": lambda s: "{" + s.upper() + "}",
+        }
+        for tool in ("multi_agent_v1send_input", "multi_agent_v1resume_agent", "multi_agent_v1close_agent"):
+            for suffix, spelling in spellings.items():
+                with self.subTest(tool=tool, spelling=suffix):
+                    armed, events = self._arm_native("uuid-" + tool + "-" + suffix)
+                    agent = f"abcdefab-cdef-7000-8000-{self.sequence:012x}"
+                    for name in ("start", "stop"):
+                        events[name]["agent_id"] = agent
+                    events["post"]["tool_response"] = json.dumps({"agent_id": agent, "nickname": None})
+                    for name in ("pre", "post", "start"):
+                        self._observe(events[name])
+                    key = "id" if tool == "multi_agent_v1resume_agent" else "target"
+                    with self.assertRaises(RuntimeError):
+                        self._observe({**events["pre"], "tool_name": tool, "tool_input": {key: spelling(agent)}})
+                    self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+                    self._no_authority(armed)
+
+    def test_native_v1_steering_normalization_does_not_change_lifecycle_or_other_children(self):
+        armed, events = self._arm_native("uuid-other-child")
+        for name in ("pre", "post", "start"):
+            self._observe(events[name])
+        before = Path(armed["request_path"]).read_bytes()
+        for target in ("urn:uuid:ABCDEFAB-CDEF-7000-8000-FFFFFFFFFFFF",
+                       "URN:UUID:" + events["start"]["agent_id"], "{" + events["start"]["agent_id"].replace("-", "") + "}"):
+            self._observe({**events["pre"], "tool_name": "multi_agent_v1send_input", "tool_input": {"target": target}})
+        self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+        self.assertIsNone(self._observe({**events["stop"], "agent_id": events["start"]["agent_id"].replace("-", "")}))
+        self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+        self._observe(events["stop"])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "COMPLETED")
+
+    def _hold_native_marker(self, agent_id):
+        worker = self.root / "native-marker-lock-owner.py"
+        worker.write_text(
+            "import json, sys\nfrom pathlib import Path\n"
+            "sys.path.insert(0, sys.argv[1])\nimport _artifactauthoritylib as adapter\n"
+            "adapter.REGISTRY_PARENT = Path(sys.argv[2])\n"
+            "path = adapter._codex_native_marker(sys.argv[3])\n"
+            "with adapter._request_lock(path.parent, Path(path.name)):\n"
+            "    print('READY', flush=True)\n"
+            "    if sys.stdin.readline().strip() != 'continue':\n"
+            "        raise RuntimeError('missing fixture release')\n"
+            "print(json.dumps({'result': None}), flush=True)\n", encoding="utf-8",
+        )
+        process = subprocess.Popen(
+            [sys.executable, str(worker), str(CORE_PYSRC), str(self.root), agent_id],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, encoding="utf-8", env=root_bound_git_env(), cwd=self.root,
+        )
+        self.addCleanup(AuthorityStateRaceTest._close_worker, process)
+        AuthorityStateRaceTest._worker_ready(self, process)
+        return process
+
+    def test_native_v1_failed_first_lifecycle_lock_cannot_accept_replacement_evidence(self):
+        for boundary in ("start", "stop", "stop-before-post"):
+            with self.subTest(boundary=boundary):
+                armed, events = self._arm_native("first-lock-failure-" + boundary)
+                setup = {"start": ("pre", "post"), "stop": ("pre", "post", "start"),
+                         "stop-before-post": ("pre", "start")}[boundary]
+                for name in setup:
+                    self._observe(events[name])
+                owner = self._hold_native_marker(events["start"]["agent_id"])
+                first = "start" if boundary == "start" else "stop"
+                failed = AuthorityStateRaceTest._worker_result(self, self._event_worker(events[first]))
+                self.assertEqual(failed, {"error": "AUTHORITY_BUSY"})
+                AuthorityStateRaceTest._worker_result(self, owner, "continue\n")
+                changed = json.loads(events["stop"]["last_assistant_message"])
+                changed["assessment"] = "A later replacement decision must never become authority."
+                events["stop"]["last_assistant_message"] = json.dumps(changed)
+                retry = {"start": ("start", "stop"), "stop": ("stop",),
+                         "stop-before-post": ("post", "stop")}[boundary]
+                for name in retry:
+                    try:
+                        self._observe(events[name])
+                    except RuntimeError:
+                        pass
+                self._no_authority(armed)
+
+    def test_native_v1_failed_steering_lock_cannot_lose_invalidation(self):
+        for tool in ("multi_agent_v1send_input", "multi_agent_v1resume_agent", "multi_agent_v1close_agent"):
+            with self.subTest(tool=tool):
+                armed, events = self._arm_native("steering-lock-failure-" + tool)
+                for name in ("pre", "post", "start"):
+                    self._observe(events[name])
+                owner = self._hold_native_marker(events["start"]["agent_id"])
+                key = "id" if tool == "multi_agent_v1resume_agent" else "target"
+                event = {**events["pre"], "tool_name": tool, "tool_input": {key: events["start"]["agent_id"]}}
+                failed = AuthorityStateRaceTest._worker_result(self, self._event_worker(event))
+                self.assertEqual(failed, {"error": "AUTHORITY_BUSY"})
+                AuthorityStateRaceTest._worker_result(self, owner, "continue\n")
+                try:
+                    self._observe(events["stop"])
+                except RuntimeError:
+                    pass
+                self._no_authority(armed)
+
+    def test_native_v1_steering_before_lifecycle_or_post_cannot_be_forgotten(self):
+        armed, events = self._arm_native("early-steering")
+        self._observe(events["pre"])
+        self._observe({
+            **events["pre"], "tool_name": "multi_agent_v1send_input",
+            "tool_input": {"target": events["start"]["agent_id"], "message": "prewritten result"},
+        })
+        self._observe(events["start"])
+        with self.assertRaises(RuntimeError):
+            self._observe(events["post"])
+        self._no_authority(armed)
+
+    def test_native_v1_cli_requires_explicit_profile_selection(self):
+        # The CLI prepends its source directory and imports hostapi. Keep those
+        # bindings local so later installed-package fixtures use their own host.
+        with mock.patch.dict(sys.modules), mock.patch.object(sys, "path", sys.path[:]):
+            spec = importlib.util.spec_from_file_location("native_authority_cli", CORE_PYSRC / "artifact-authority.py")
+            cli = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(cli)
+            self.client.context["activity"] = "spec_review"
+            self.client.context.pop("commands", None)
+            argv = ["arm", "--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE",
+                    "--record-id", "T-001", "--activity", "spec_review", "--host", "codex"]
+            with mock.patch.object(cli._artifactlib, "ArtifactClient", return_value=self.client), \
+                    mock.patch.object(cli._artifactlib, "helper_installation", return_value=None):
+                with self.assertRaisesRegex(RuntimeError, "native-v1"):
+                    cli.main(argv)
+                self.assertEqual(self.client.calls, [])
+                output = io.StringIO()
+                with contextlib.redirect_stdout(output):
+                    self.assertEqual(cli.main(argv + ["--codex-review-profile", "native-v1"]), 0)
+            self.assertEqual(json.loads(output.getvalue())["codex_review_profile"], "codex-native-v1/0.145.0")
+
+    def test_native_v1_unknown_namespaces_never_launch(self):
+        for tool in ("collaboration.spawn_agent", "multi_agent_v1spawn_agent", "evilspawn_agent", "mcp__x__spawn_agent"):
+            with self.subTest(tool=tool):
+                armed, events = self._arm_native("unknown-" + tool.replace(".", "-"))
+                before = Path(armed["request_path"]).read_bytes()
+                with self.assertRaises(RuntimeError):
+                    self._observe({**events["pre"], "tool_name": tool})
+                self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+                self._no_authority(armed)
 
 
 class ClaudeHookRegistrationTest(unittest.TestCase):

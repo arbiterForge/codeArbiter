@@ -3190,6 +3190,52 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 class ArtifactEngineCIContractTest(unittest.TestCase):
     """The structured-artifact engine is a required six-platform package gate."""
 
+    def test_native_statement_collector_alone_starts_push_ci(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("tools/artifact-coverage.py", push_trigger_paths(ci))
+
+    def test_native_statement_coverage_is_complete_and_merge_required(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        engine = jobs["artifact-engine"]
+        for command in (
+            "python .github/scripts/test_artifact_cli.py --coverage-output",
+            "python tools/artifact-coverage.py collect",
+            "--expect-platform \"${{ matrix.expected_platform }}\"",
+            "--extra-profile",
+            "name: artifact-statements-${{ matrix.os }}",
+        ):
+            self.assertIn(command, engine)
+        self.assertIn("artifact-coverage", jobs)
+        coverage = jobs["artifact-coverage"]
+        for control in (
+            "needs: [changes, artifact-engine]", "!cancelled()",
+            "needs.changes.outputs.artifacts == 'true'",
+            "runs-on: ubuntu-24.04", "pattern: artifact-statements-*",
+            "merge-multiple: false", "artifact-coverage.py", "summarize",
+            "--minimum-statements", '"70"', "--require-integration",
+            "python .github/scripts/test_artifact_coverage.py",
+            "needs.artifact-engine.result", '!= success',
+        ):
+            self.assertIn(control, coverage)
+        self.assertNotIn("self-hosted", coverage)
+        self.assertNotIn("continue-on-error:", coverage)
+        aggregate = jobs["ci-passed"]
+        self.assertRegex(aggregate, r"(?m)^      - artifact-coverage$")
+        self.assertIn("${{ needs['artifact-coverage'].result }}", aggregate)
+        self.assertIn('artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"', aggregate)
+        self.assertIn('artifact_coverage_result="${{ needs[\'artifact-coverage\'].result }}"', aggregate)
+        self.assertIn('[ "$artifact_coverage_required" = true ] && [ "$artifact_coverage_result" != success ]', aggregate)
+        changes = jobs["changes"]
+        impact = module.load_map(REPO_ROOT / ".github" / "ci-impact-map.json")
+        for path in (
+            "tools/artifact-coverage.py", ".github/scripts/test_artifact_cli.py",
+            ".github/scripts/test_artifact_coverage.py",
+        ):
+            self.assertIn(f"- '{path}'", changes)
+            selected = module.evaluate(impact, [path], hosts())
+            self.assertFalse(selected.fallback, path)
+            self.assertIn("artifact-engine", {check.id for check in selected.selected})
+
     def test_native_qualification_has_a_bounded_thirty_minute_job_budget(self):
         # PR859's Intel macOS cell exhausted 15 minutes during conformance after
         # passing the preceding suites. Preserve the complete qualification path.

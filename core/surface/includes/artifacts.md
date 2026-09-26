@@ -287,6 +287,29 @@ rewrite the returned envelope yourself.
 The host hooks bind the exact launch call, child start and
 the child's first stop; a pasted or coordinator-authored decision is not review
 authority.
+{{IF:codex}}
+Codex review requires an explicitly qualified native V1 interface. Before arming,
+inspect the actual registered `multi_agent_v1.spawn_agent` tool: it must expose
+`message` and `fork_context`, and its native result must carry the child UUID.
+Model names, cached metadata and disabling `multi_agent_v2` alone do not prove
+this interface is registered. Add `--codex-review-profile native-v1` to the review
+`arm` command. The exact envelope contains only `message` and `fork_context:false`;
+do not add a role, model, reasoning, service tier, inherited context or other input.
+The observed child role must be `default`. This is a cooperative read-only review,
+not an OS sandbox. The profile is `codex-native-v1/0.145.0`; historical profileless
+requests cannot be relabelled as native V1 evidence.
+
+The adapter joins the launch session, parent turn and call ID to the returned
+UUID, then joins the same session and UUID to the child's own turn and default
+role. Both Start-before-Post and Post-before-Start are supported. A first Stop
+before association rejects the request once associated; no later result replaces
+it. Do not send input, resume or close the reviewer. These operations invalidate
+an active review even if their host hook fails to prevent the operation.
+Default V2 `collaboration.spawn_agent` returns only a task path and is unsupported
+for review authority. Its exact native hook name is registered for refusal only.
+Use a fresh request in the qualified V1 interface; never substitute a coordinator
+message, wait result, transcript, or synthesized event.
+{{END}}
 {{IF:claude}}
 On Claude Code, pass the envelope's four fields as the Agent tool's entire
 input: no `run_in_background`, `isolation` or other option. It launches the

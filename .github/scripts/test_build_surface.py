@@ -1631,7 +1631,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
         for host, target in (('claude', 'commands/refactor.md'), ('codex', 'skills/ca-refactor/SKILL.md'), ('pi', 'skills/ca-refactor/SKILL.md')):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[target].decode()
-                for obligation in ('## Phase 6', 'user-signed-off surface table', 'unmodified pre-existing tests', 'BOTH lines and branches', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
+                for obligation in ('## Phase 6', 'user-signed-off surface table', 'unmodified pre-existing tests', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
                     self.assertIn(obligation, entry)
 
     def test_new_owner_metadata_routes_intent_not_required_syntax(self):
@@ -2413,6 +2413,88 @@ class RemainingWorkflowOwnerTest(unittest.TestCase):
                     catalog = json.loads(B.render_all(REPO_ROOT, host)['generated/command-catalog.json'])
                     self.assertIn(command, catalog['commands'])
                     self.assertEqual(catalog['commands'][command]['description'], description)
+
+
+class LanguageCoveragePolicyTest(unittest.TestCase):
+    """The policy delivered to every host binds the metric to the language."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.surfaces = {host: B.render_all(REPO_ROOT, host)
+                        for host in ('claude', 'codex', 'pi')}
+
+    def test_profile_table_keeps_distinct_metrics_and_maturity_floors(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = surface['includes/maturity-coverage.md'].decode()
+                rows = [tuple(cell.strip().strip('`') for cell in line.strip('|').split('|'))
+                        for line in policy.splitlines() if line.startswith('|')]
+                profiles = {row[0]: row[2] for row in rows if len(row) == 3}
+                self.assertEqual(profiles.get('go-native'), 'statements',
+                                 'native Go has no binding statement profile')
+                self.assertEqual(profiles.get('lines-branches'), 'lines, branches')
+                floors = {row[0]: row[1] for row in rows
+                          if len(row) == 2 and row[0].isdigit()}
+                self.assertEqual(floors, {'1': '≥ 60%', '2': '≥ 70%',
+                                          '3': '≥ 85%', '4': '≥ 90%'})
+
+    def test_profile_selection_cannot_launder_missing_measurements(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = ' '.join(surface['includes/maturity-coverage.md'].decode().split())
+                for control in (
+                    'MUST NOT switch profiles', 'explicit user approval',
+                    'Missing, malformed, stale, partial or mismatched reports block',
+                    'unmeasured', 'unknown profile blocks',
+                    'Go native coverage is not the no-tooling exemption',
+                ):
+                    self.assertIn(control, policy)
+
+    def test_existing_line_branch_contract_does_not_need_reapproval(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = ' '.join(surface['includes/maturity-coverage.md'].decode().split())
+                self.assertIn('Existing documented line-and-branch requirements already declare', policy)
+                self.assertIn('without another approval or a metadata migration', policy)
+
+    def test_all_workflow_consumers_use_the_declared_profile(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            public_refactor = ('commands/refactor.md' if host == 'claude'
+                               else 'skills/ca-refactor/SKILL.md')
+            for path in (f'{routine}/tdd/SKILL.md', f'{routine}/refactor/SKILL.md',
+                         public_refactor, 'agents/coverage-auditor.md'):
+                with self.subTest(host=host, path=path):
+                    text = ' '.join(surface[path].decode().split())
+                    self.assertIn('declared coverage profile', text)
+                    self.assertIn('maturity-coverage.md', text)
+                    for obsolete in ('Lines and branches must both clear',
+                                     'on BOTH lines and branches',
+                                     'on both lines and branches',
+                                     'on either metric'):
+                        self.assertNotIn(obsolete, text)
+
+    def test_critical_outcomes_remain_blocking_beyond_the_percentage(self):
+        for host, surface in self.surfaces.items():
+            with self.subTest(host=host):
+                policy = ' '.join(surface['includes/maturity-coverage.md'].decode().split())
+                for control in ('approval and rejection', 'filesystem containment',
+                                'recovery', 'assert the expected outcome',
+                                'focused mutation', 'Missing critical-path evidence blocks'):
+                    self.assertIn(control, policy)
+                auditor = ' '.join(surface['agents/coverage-auditor.md'].decode().split())
+                self.assertIn('missing critical-path evidence as **HIGH**', auditor)
+                self.assertIn('Unmeasured:', auditor)
+
+    def test_repository_binds_existing_surfaces_to_the_approved_profiles(self):
+        stack = (REPO_ROOT / '.codearbiter/tech-stack.md').read_text(encoding='utf-8')
+        coverage = stack.split('## Coverage\n', 1)[1].split('\n## ', 1)[0]
+        for path in ('plugins/ca/tools', 'plugins/ca-pi/tools',
+                     'plugins/ca-sandbox/tools', 'site/'):
+            self.assertIn(f'| `{path}` | `lines-branches` |', coverage)
+        self.assertIn('| `core/artifacts/` | `go-native` |', coverage)
+        self.assertNotIn('this additional gate does not waive either', coverage)
+        self.assertIn('critical-path', coverage)
 
 
 if __name__ == "__main__":
