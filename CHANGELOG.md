@@ -21,6 +21,9 @@ predate the plugin rewrite and are grouped by date.
   launch and publication, so large source manifests no longer fill the prompt.
 - Never-launched ARMED reviews can be abandoned without producing authority or
   losing their history, including bounded oversized requests from older adapters.
+- Concurrent authority operations reject stale request writes, so a stale
+  abandonment cannot erase a newer launch or receipt, and a stale launch cannot
+  revive an abandoned request.
 
 ## [2.22.1] - 2026-09-26
 

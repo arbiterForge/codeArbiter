@@ -11,6 +11,7 @@ All notable changes to `ca-pi` are documented in this file.
 - Update the shared artifact adapter and guidance for bounded review prompts
   and safe abandonment of never-launched review requests on supported hosts.
   Pi's native verification and review authority remain unavailable.
+- Shared authority request writes reject stale state during concurrent operations.
 
 ## [0.15.1] - 2026-09-26
 

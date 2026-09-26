@@ -323,6 +323,12 @@ two MiB; normal request operations retain their one-MiB limit. Active and
 captured requests retain their existing recovery protections. These operations
 add no network access or new hook registration.
 
+Request writes serialize under a bounded per-request OS lock and compare the
+persisted integrity digest with the state the operation loaded. A stale operation
+is refused instead of replacing a newer launch, observation, receipt or recovery.
+New requests require an absent destination. The lock file is retained so waiting
+processes continue to use the same lock.
+
 ### Retained task-board lock and local exclusion
 
 `taskwrite` retains `.codearbiter/open-tasks.md.lock` as a one-byte OS-lock sidecar.

@@ -15,6 +15,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   launch and publication, so large source manifests no longer fill the prompt.
 - Never-launched ARMED reviews can be abandoned without producing authority or
   losing their history, including bounded oversized requests from older adapters.
+- Concurrent authority operations reject stale request writes, so a stale
+  abandonment cannot erase a newer launch or receipt, and a stale launch cannot
+  revive an abandoned request.
 
 ## [0.14.1] - 2026-09-26
 

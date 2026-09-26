@@ -26,6 +26,8 @@ than one SubagentStop; only the first is a review result.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
+import errno
 import hashlib
 import json
 import os
@@ -65,6 +67,7 @@ HOST_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}")
 MAX_STATE = 1 << 20
 # Only terminal abandonment can read a legacy inline-context review this large.
 MAX_RECOVERY_STATE = 2 << 20
+REQUEST_LOCK_WAIT_SECONDS = 5.0
 MAX_OUTPUT = 8 << 20
 MAX_DECISION = 65536
 REGISTRY_PARENT = Path(tempfile.gettempdir())
@@ -255,13 +258,108 @@ def _spool_root(root: Path) -> Path:
         raise AuthorityError("AUTHORITY_BUSY", "resolved git-common authority spool is unavailable") from exc
 
 
-def _save(root: Path, value: dict[str, Any]) -> None:
-    value = dict(value)
-    value["integrity_sha256"] = _integrity(value)
+@contextmanager
+def _request_lock(spool: Path, relative: Path):
+    """Keep one OS-owned lock inode for all writers of this request."""
+    path = spool / f"{relative.name}.lock"
+    fd = None
+
+    def check_path() -> None:
+        info = path.lstat()
+        if (
+            stat.S_ISLNK(info.st_mode)
+            or getattr(info, "st_file_attributes", 0) & 0x400
+            or not stat.S_ISREG(info.st_mode)
+        ):
+            raise OSError("request lock path is unsafe")
+        if fd is not None:
+            opened = os.fstat(fd)
+            if (info.st_dev, info.st_ino) != (opened.st_dev, opened.st_ino):
+                raise OSError("request lock path changed")
+
     try:
-        _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
-        if value["state"] in TERMINAL_STATES:
-            (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
+        check_path()
+    except FileNotFoundError:
+        pass
+    flags = (
+        os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    )
+    fd = os.open(path, flags, 0o600)
+    locked = False
+    try:
+        check_path()
+        deadline = time.monotonic() + REQUEST_LOCK_WAIT_SECONDS
+        if os.name == "nt":
+            import msvcrt
+        else:
+            import fcntl
+        while True:
+            try:
+                if os.name == "nt":
+                    # Windows permits a byte-range lock beyond EOF. Never seed
+                    # or truncate the lock file, including on an unsafe path.
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                locked = True
+                break
+            except OSError as exc:
+                if (
+                    exc.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK, 36}
+                    and getattr(exc, "winerror", None) not in {32, 33}
+                ):
+                    raise
+                if time.monotonic() >= deadline:
+                    raise AuthorityError("AUTHORITY_BUSY", "request transition lock timed out") from exc
+                time.sleep(0.01)
+        check_path()
+        yield
+    finally:
+        try:
+            if locked:
+                if os.name == "nt":
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
+        # Do not unlink: a peer may already be waiting on this same inode.
+
+
+def _save(root: Path, value: dict[str, Any]) -> None:
+    expected = value.get("integrity_sha256")
+    updated = dict(value)
+    updated["integrity_sha256"] = _integrity(updated)
+    try:
+        spool = _spool_root(root)
+        relative = _request_path(value["request_id"])
+        with _request_lock(spool, relative):
+            try:
+                (spool / relative).lstat()
+            except FileNotFoundError:
+                if expected is not None:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "loaded request state disappeared")
+            else:
+                if expected is None:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state already exists")
+                legacy_abandonment = (
+                    value["state"] == "ABANDONED"
+                    and value["activity"] in REVIEW_ACTIVITIES
+                    and value.get("recovery") == {
+                        "disposition": "abandoned", "previous_attempt": None, "rerun_permitted": False,
+                    }
+                )
+                current = _load(root, value["request_id"], recover_armed_review=legacy_abandonment)
+                if current["integrity_sha256"] != expected:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state changed since it was loaded")
+            _atomic_replace(spool, relative, _canonical(updated))
+            # A live operation can save several times without loading again.
+            value["integrity_sha256"] = updated["integrity_sha256"]
+            if value["state"] in TERMINAL_STATES:
+                (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
     except OSError as exc:
         raise AuthorityError("AUTHORITY_BUSY", "request state could not be written") from exc
 

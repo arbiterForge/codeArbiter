@@ -13,6 +13,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 from pathlib import Path
@@ -2308,8 +2309,11 @@ class NativeReviewTransportTest(unittest.TestCase):
                     f"transport-legacy-{host}-{activity}-{label}", host, activity,
                 )
                 mutate(malformed)
-                self.adapter._save(self.root, malformed)
                 other_path = Path(other["request_path"])
+                # Seed deliberately invalid retained history without asking the
+                # guarded writer to accept an oversized non-recovery update.
+                malformed["integrity_sha256"] = self.adapter._integrity(malformed)
+                other_path.write_bytes(self.adapter._canonical(malformed))
                 if label == "integrity":
                     value = json.loads(other_path.read_bytes())
                     value["integrity_sha256"] = "0" * 64
@@ -2348,8 +2352,9 @@ class NativeReviewTransportTest(unittest.TestCase):
                             f"transport-legacy-binding-{host}-{activity}-{label}", host, activity,
                         )
                         mutate(request)
-                        self.adapter._save(self.root, request)
                         path = Path(armed["request_path"])
+                        request["integrity_sha256"] = self.adapter._integrity(request)
+                        path.write_bytes(self.adapter._canonical(request))
                         before = path.read_bytes()
                         calls_before = list(self.client.calls)
                         with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
@@ -2360,6 +2365,265 @@ class NativeReviewTransportTest(unittest.TestCase):
                         self.assertEqual(self.client.calls, calls_before)
                         self.assertFalse((self.root / self.client.receipt).exists())
                         self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+
+
+class AuthorityStateRaceTest(unittest.TestCase):
+    """AUTH-M01: a stale writer must never erase a winning transition."""
+
+    setUp = AuthorityAdapterTest.setUp
+    tearDown = AuthorityAdapterTest.tearDown
+    _setup_claude = ClaudeAuthorityAdapterTest._setup_claude
+    _arm_review = NativeReviewTransportTest._arm_review
+    _launch = NativeReviewTransportTest._launch
+    _complete = NativeReviewTransportTest._complete
+
+    def test_recovery_cannot_erase_a_concurrent_launch_or_capture(self):
+        self._setup_claude()
+        save = self.adapter._save
+        for host in ("codex", "claude"):
+            for winner in ("LAUNCHING", "CAPTURED"):
+                with self.subTest(host=host, winner=winner):
+                    armed = self._arm_review(host, "spec_review", f"race-recovery-{host}-{winner}")
+                    path = Path(armed["request_path"])
+                    retained = []
+
+                    def advance_before_recovery(root, request):
+                        if request["state"] == "ABANDONED" and not retained:
+                            if winner == "CAPTURED":
+                                self.assertEqual(self._complete(host, armed)["state"], "COMPLETED")
+                                self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                            else:
+                                self.assertEqual(self._launch(host, armed)["state"], winner)
+                            retained.append(path.read_bytes())
+                        save(root, request)
+
+                    error = None
+                    with mock.patch.object(self.adapter, "_save", side_effect=advance_before_recovery):
+                        try:
+                            self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                        except self.adapter.AuthorityError as exc:
+                            error = exc.code
+                    self.assertEqual(len(retained), 1)
+                    self.assertEqual(path.read_bytes(), retained[0], "recovery erased the winning transition")
+                    self.assertEqual(error, "STALE_AUTHORITY_REQUEST")
+                    current = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(current["state"], winner)
+                    self.assertIsNotNone(current["launch"])
+                    self.assertIsNone(current["recovery"])
+                    if winner == "CAPTURED":
+                        self.assertEqual(current["receipt"], self.client.receipt)
+                        self.assertTrue((self.root / current["authority_source"]).is_file())
+                        self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+                    else:
+                        self.assertIsNone(current["receipt"])
+                        # Retire the unrelated active fixture before the next host event.
+                        self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+
+    def test_stale_launch_and_stop_cannot_revive_an_abandoned_review(self):
+        self._setup_claude()
+        save = self.adapter._save
+        for host in ("codex", "claude"):
+            for loser in ("LAUNCHING", "COMPLETED"):
+                with self.subTest(host=host, loser=loser):
+                    armed = self._arm_review(host, "spec_review", f"race-abandon-{host}-{loser}")
+                    path = Path(armed["request_path"])
+                    retained = []
+
+                    def abandon_before_transition(root, request):
+                        if request["state"] == loser and not retained:
+                            self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                            retained.append(path.read_bytes())
+                        save(root, request)
+
+                    error = None
+                    with mock.patch.object(self.adapter, "_save", side_effect=abandon_before_transition):
+                        try:
+                            if loser == "COMPLETED":
+                                self._complete(host, armed)
+                            else:
+                                self._launch(host, armed)
+                        except self.adapter.AuthorityError as exc:
+                            error = exc.code
+                    self.assertEqual(len(retained), 1)
+                    self.assertEqual(path.read_bytes(), retained[0], "stale hook revived an abandoned review")
+                    self.assertEqual(error, "STALE_AUTHORITY_REQUEST")
+                    current = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(current["state"], "ABANDONED")
+                    self.assertEqual(current["recovery"]["previous_attempt"], current["attempt"])
+                    self.assertFalse(current["recovery"]["rerun_permitted"])
+                    self.assertIsNone(current["receipt"])
+                    self.assertIsNone(current["observation_ref"])
+                    self.assertFalse((self.adapter._registry_root() / f"{armed['request_id']}.json").exists())
+                    with self.assertRaisesRegex(RuntimeError, "AUTHORITY_NOT_COMPLETE"):
+                        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                    self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+                    self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+
+    def test_creation_collision_cannot_rearm_a_retained_terminal_request(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            with self.subTest(host=host):
+                nonce = f"race-create-collision-{host}"
+                armed = self._arm_review(host, "spec_review", nonce)
+                self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                path = Path(armed["request_path"])
+                retained = path.read_bytes()
+                with self.assertRaisesRegex(RuntimeError, "STALE_AUTHORITY_REQUEST"):
+                    self._arm_review(host, "spec_review", nonce)
+                self.assertEqual(path.read_bytes(), retained)
+                self.assertFalse((self.adapter._registry_root() / f"{armed['request_id']}.json").exists())
+
+    def test_write_validates_retained_integrity_and_does_not_recreate_missing_state(self):
+        for damage in ("integrity", "json", "missing"):
+            with self.subTest(damage=damage):
+                armed = self._arm_review("codex", "spec_review", f"race-retained-{damage}")
+                request = self.adapter._load(self.root, armed["request_id"])
+                path = Path(armed["request_path"])
+                if damage == "integrity":
+                    corrupted = dict(request, state="CAPTURED", receipt="retained-receipt")
+                    path.write_bytes(self.adapter._canonical(corrupted))
+                elif damage == "json":
+                    path.write_bytes(b"{broken-json")
+                else:
+                    path.unlink()
+                retained = path.read_bytes() if path.exists() else None
+                request["state"] = "LAUNCHING"
+                with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE|STALE_AUTHORITY_REQUEST"):
+                    self.adapter._save(self.root, request)
+                self.assertEqual(path.read_bytes() if path.exists() else None, retained)
+
+    def test_fresh_multiple_saves_refresh_the_callers_expected_state(self):
+        armed = self._arm_review("codex", "spec_review", "race-fresh-multiple-saves")
+        request = self.adapter._load(self.root, armed["request_id"])
+        request["state"] = "LAUNCHING"
+        self.adapter._save(self.root, request)
+        request["state"] = "RUNNING"
+        self.adapter._save(self.root, request)
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        self.assertEqual(request["integrity_sha256"], self.adapter._integrity(request))
+
+    def _worker(self, request, *, pause=False):
+        """Run a real writer with only fixture-owned repository and registry paths."""
+        worker = self.root / "authority-write-worker.py"
+        worker.write_text(
+            "import json, sys\n"
+            "from pathlib import Path\n"
+            "sys.path.insert(0, sys.argv[1])\n"
+            "import _artifactauthoritylib as adapter\n"
+            "root = Path(sys.argv[2])\n"
+            "adapter.REGISTRY_PARENT = root\n"
+            "adapter.REQUEST_LOCK_WAIT_SECONDS = 0.2\n"
+            "request = json.loads(sys.stdin.readline())\n"
+            "if sys.argv[3] == 'pause':\n"
+            "    replace = adapter._atomic_replace\n"
+            "    def paused_replace(*args):\n"
+            "        print('READY', flush=True)\n"
+            "        if sys.stdin.readline().strip() != 'continue':\n"
+            "            raise RuntimeError('fixture release was not received')\n"
+            "        replace(*args)\n"
+            "    adapter._atomic_replace = paused_replace\n"
+            "try:\n"
+            "    adapter._save(root, request)\n"
+            "except adapter.AuthorityError as exc:\n"
+            "    print(json.dumps({'error': exc.code}), flush=True)\n"
+            "else:\n"
+            "    print(json.dumps({'state': request['state']}), flush=True)\n",
+            encoding="utf-8",
+        )
+        process = subprocess.Popen(
+            [sys.executable, str(worker), str(CORE_PYSRC), str(self.root), "pause" if pause else "write"],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, encoding="utf-8", env=root_bound_git_env(), cwd=self.root,
+        )
+        self.addCleanup(self._close_worker, process)
+        process.stdin.write(json.dumps(request) + "\n")
+        process.stdin.flush()
+        return process
+
+    @staticmethod
+    def _close_worker(process):
+        if process.poll() is None:
+            process.kill()
+        process.communicate(timeout=10)
+
+    def _worker_result(self, process, release=None):
+        output, error = process.communicate(release, timeout=10)
+        self.assertEqual(process.returncode, 0, error)
+        return json.loads(output)
+
+    def _worker_ready(self, process):
+        lines = []
+        reader = threading.Thread(target=lambda: lines.append(process.stdout.readline()), daemon=True)
+        reader.start()
+        reader.join(timeout=10)
+        if reader.is_alive():
+            process.kill()
+            reader.join(timeout=10)
+            self.fail("writer did not reach the controlled transition boundary")
+        self.assertEqual(lines, ["READY\n"])
+
+    def test_process_writers_serialize_and_recheck_the_loaded_state(self):
+        armed = self._arm_review("codex", "spec_review", "race-process-serialization")
+        request = self.adapter._load(self.root, armed["request_id"])
+        path = Path(armed["request_path"])
+        before = path.read_bytes()
+        owner = self._worker(dict(request, state="LAUNCHING"), pause=True)
+        self._worker_ready(owner)
+        contender = self._worker(dict(request, state="ABANDONED"))
+        contention = self._worker_result(contender)
+        during = path.read_bytes()
+        winner = self._worker_result(owner, "continue\n")
+        retained = path.read_bytes()
+        stale = self._worker_result(self._worker(dict(request, state="ABANDONED")))
+        self.assertEqual(contention, {"error": "AUTHORITY_BUSY"})
+        self.assertEqual(during, before, "a peer wrote while the first writer owned the transition")
+        self.assertEqual(winner, {"state": "LAUNCHING"})
+        self.assertEqual(stale, {"error": "STALE_AUTHORITY_REQUEST"})
+        self.assertEqual(path.read_bytes(), retained)
+
+    def test_process_death_releases_the_transition_lock(self):
+        armed = self._arm_review("codex", "spec_review", "race-process-death-release")
+        request = self.adapter._load(self.root, armed["request_id"])
+        before = Path(armed["request_path"]).read_bytes()
+        owner = self._worker(dict(request, state="LAUNCHING"), pause=True)
+        self._worker_ready(owner)
+        owner.kill()
+        owner.communicate(timeout=10)
+        self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+        result = self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+        self.assertEqual(result["state"], "ABANDONED")
+
+    def test_unsafe_lock_path_cannot_change_retained_state(self):
+        armed = self._arm_review("codex", "spec_review", "race-unsafe-lock-directory")
+        request = self.adapter._load(self.root, armed["request_id"])
+        path = Path(armed["request_path"])
+        retained = path.read_bytes()
+        lock = path.with_suffix(path.suffix + ".lock")
+        lock.unlink(missing_ok=True)
+        lock.mkdir()
+        request["state"] = "LAUNCHING"
+        with self.assertRaisesRegex(RuntimeError, "AUTHORITY_BUSY"):
+            self.adapter._save(self.root, request)
+        self.assertEqual(path.read_bytes(), retained)
+
+    def test_linked_lock_cannot_write_to_an_external_target(self):
+        armed = self._arm_review("codex", "spec_review", "race-unsafe-lock-symlink")
+        request = self.adapter._load(self.root, armed["request_id"])
+        path = Path(armed["request_path"])
+        retained = path.read_bytes()
+        lock = path.with_suffix(path.suffix + ".lock")
+        lock.unlink(missing_ok=True)
+        outside = self.root / "untouched-lock-target"
+        outside.write_bytes(b"")
+        try:
+            lock.symlink_to(outside)
+        except OSError:
+            self.skipTest("symlink creation is unavailable on this platform")
+        request["state"] = "LAUNCHING"
+        with self.assertRaisesRegex(RuntimeError, "AUTHORITY_BUSY"):
+            self.adapter._save(self.root, request)
+        self.assertEqual(path.read_bytes(), retained)
+        self.assertEqual(outside.read_bytes(), b"")
 
 
 class ClaudeEndToEndTest(unittest.TestCase):
