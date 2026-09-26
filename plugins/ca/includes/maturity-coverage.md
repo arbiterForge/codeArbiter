@@ -11,28 +11,68 @@ The single source of truth for the coverage threshold. Coverage scales with the 
 | 3 | ≥ 85% |
 | 4 | ≥ 90% |
 
-## Which metric (issue #507)
+## Which metric: declared coverage profile
 
-**Lines and branches. Both must clear the threshold.** A report satisfying one and not the other
-does not pass.
+**Every required metric in the surface's declared coverage profile must clear the
+maturity threshold.** `tech-stack.md` binds each source tree to one supported
+profile and names its tool, command, production scope, exclusions and supported
+hosts. This declaration selects a language-appropriate measurement; it does not
+change the threshold table.
 
-This was previously unstated, and the omission was load-bearing rather than cosmetic: a coverage
-report gives four numbers that disagree, so "≥ 70%" without a column named is not a threshold anyone
-can be held to. Measured on codeArbiter itself at the time of writing, one tree sat at 85.37% lines
-and 78.73% branches — compliant at maturity 3, or not, depending purely on which column the reader
-picked.
+| profile | applicable surface | required metrics |
+|---|---|---|
+| `lines-branches` | JavaScript/TypeScript and existing surfaces with qualified line and branch tooling | lines, branches |
+| `go-native` | Go measured with the native Go coverage toolchain | statements |
 
-- **Lines** catches code no test reaches at all — a `catch` block with zero executions inside a
-  passing suite, which no assertion is ever going to surface.
-- **Branches** catches the untaken half of a condition a test does reach: the error arm of an `if`,
-  the fallback of a `??`. Line coverage alone reports those as covered.
-- **Statements** duplicates lines closely enough to add nothing. **Functions** is the noisiest
-  column at small counts, where one uncovered helper moves it several points.
+Existing documented line-and-branch requirements already declare
+`lines-branches`, even without that label. Preserve them without another approval
+or a metadata migration; adding the label during normal maintenance changes no
+measurement requirement.
+
+The `lines-branches` profile retains issue #507's rule: both metrics must pass.
+For example, 85.37% lines and 78.73% branches fails maturity 3. A high line figure
+does not establish that error and fallback outcomes have been exercised.
+
+The `go-native` profile uses `go test -cover` and, for executable surfaces,
+instrumented `go build -cover` integration runs. Include all production packages
+in scope, including those reached through other packages' tests. Native Go
+reports statements, not lines or branches; label those other metrics
+**unmeasured**, never zero, inferred, or passed. A partial branch analyzer may
+provide diagnostic findings but does not turn statement counts into branch
+proof. Go native coverage is not the no-tooling exemption.
+
+Existing stronger measurement contracts remain binding until explicit user
+approval changes them. An agent MUST NOT switch profiles, remove required
+metrics, narrow production scope or exclude source to obtain a pass. Adding a
+profile or changing a surface's binding requires an explicit user approval of
+the concrete change, recorded with its rationale. A missing declaration or an
+unknown profile blocks; another language cannot silently borrow `go-native`.
+
+Missing, malformed, stale, partial or mismatched reports block the overall
+coverage verdict. Bind the reports to the tested source and declared tools,
+scope and hosts. A scoped local result may be reported as PARTIAL under
+`${CLAUDE_PLUGIN_ROOT}/includes/verification-boundary.md`; the complete exact-head
+hosted result must pass before merge. Never average host percentages, discard
+an uncovered host-specific file, or relabel a metric to fill a missing column.
 
 **The number is the floor, not the goal.** A test written only to move a percentage is worse than
 the gap it closed, because it converts an honest red into a green that asserts nothing. When
 backfilling to clear this bar, work the uncovered *report* — error and refusal paths first — and let
 the number follow.
+
+## Behavioral evidence beyond percentages
+
+Every profile also requires tests for the changed behavior. For changed critical
+paths, cover approval and rejection, malformed or stale inputs, filesystem
+containment, and recovery where applicable. Each test must exercise the actual
+boundary and assert the expected outcome; merely reaching a line or avoiding an
+exception is insufficient. Use focused mutation checks for critical safeguards:
+removing or inverting the safeguard must make the relevant test fail.
+
+Missing critical-path evidence blocks even when the numeric floor passes. Scope
+this proof to the affected obligations and their callers; do not demand unrelated
+test expansion merely because a different language uses different metrics. These
+tests establish the named outcomes, not an unmeasured global branch percentage.
 
 ## Which host (issue #521)
 

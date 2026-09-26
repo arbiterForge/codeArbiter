@@ -169,12 +169,6 @@
       "canonical": "metrics",
       "legacyRoutes": []
     },
-    "new-skill": {
-      "visibility": "advanced",
-      "workflow": "extend",
-      "canonical": "new-skill",
-      "legacyRoutes": []
-    },
     "override": {
       "visibility": "core",
       "workflow": "operate",

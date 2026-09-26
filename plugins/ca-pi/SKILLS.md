@@ -9,12 +9,12 @@ skill is invoked — never bulk-read this directory.
 | Visibility | Count |
 |---|---:|
 | Core | 18 |
-| Advanced | 12 |
-| Canonical total | 30 |
+| Advanced | 11 |
+| Canonical total | 29 |
 | Compatibility aliases | 5 |
 | Internal | 1 |
 | Deprecated | 1 |
-| **Total** | **37** |
+| **Total** | **36** |
 
 ## Core
 
@@ -38,7 +38,7 @@ skill is invoked — never bulk-read this directory.
 | `/ca-chore` | Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose. |
 | `/ca-feature` | Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation. |
 | `/ca-fix` | Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates. |
-| `/ca-refactor` | Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change. |
+| `/ca-refactor` | Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work. |
 | `/ca-spike` | Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or /ca-feature. |
 | `/ca-sprint` | Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops. |
 
@@ -52,15 +52,15 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `/ca-adr` | Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/. |
+| `/ca-adr` | Record user-decided ADRs or inspect their health read-only. Preserve attribution and acceptance evidence. |
 
 ### Ship
 
 | Skill | Purpose |
 |---|---|
 | `/ca-commit` | Create a verified local Git commit when committing changes is requested. Not for explaining commit history, drafting a message only, or postponing a commit. Applies every commit gate and never implies a push or PR. |
-| `/ca-pr` | Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch. |
-| `/ca-release` | Cut a release the only sanctioned way — derive the target's declared version policy from the commit log, roll its changelog, compose an annotated tag, and optionally publish its exact declared assets. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag. |
+| `/ca-pr` | Open a PR or finish branch disposition; route CI watching and post-merge cleanup to their owners. Merge and discard need explicit authority. |
+| `/ca-release` | Prepare a declared release target, or preview it with --dry-run. Derive its version and require authorization before publication. |
 
 ### Operate
 
@@ -77,22 +77,22 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `/ca-debug` | Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca-fix, /ca-adr, or a no-action close. |
+| `/ca-debug` | Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff. A no-action close records a board note. Not for implementing a known fix, new features, or explanation-only questions. |
 
 ### Review
 
 | Skill | Purpose |
 |---|---|
 | `/ca-checkpoint` | Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report. |
-| `/ca-threat-model` | Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought. |
-| `/ca-tribunal` | Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate. |
+| `/ca-threat-model` | Threat-model a sensitive design with STRIDE on request. Read-only analysis of threats, controls, and implementation constraints. |
+| `/ca-tribunal` | Run an opt-in deep codebase audit with persisted findings. Confirm cost before dispatch; filing and telemetry need separate approval. |
 
 ### Decide
 
 | Skill | Purpose |
 |---|---|
-| `/ca-adr-status` | Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only. |
-| `/ca-reconcile` | SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice. |
+| `/ca-adr-status` | Inspect ADR health read-only; optionally select one ADR with --adr N. |
+| `/ca-reconcile` | Inspect architectural variances with SMARTS; record only explicit user choices. Report-only requests make no changes. |
 
 ### Operate
 
@@ -102,12 +102,6 @@ skill is invoked — never bulk-read this directory.
 | `/ca-metrics` | Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window. |
 | `/ca-prune` | Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn. |
 | `/ca-standup` | Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes. |
-
-### Extend
-
-| Skill | Purpose |
-|---|---|
-| `/ca-new-skill` | Assess a request for a new reusable codeArbiter skill, prove the uncovered gap, agree scope, author and integrate it. Questions and one-off tasks do not authorize adding a skill. |
 
 ### Help
 
@@ -121,21 +115,21 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-create-context` | Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized. | `/ca-init --brownfield` |
-| `/ca-decompose` | Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized. | `/ca-init --greenfield` |
+| `/ca-create-context` | Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates. | `/ca-init --brownfield` |
+| `/ca-decompose` | Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates. | `/ca-init --greenfield` |
 
 ### Ship
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-cleanup` | Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed. | `/ca-pr --cleanup` |
+| `/ca-cleanup` | Clean up an already-merged local branch after proving containment. Confirm each discard and preserve unique work. | `/ca-pr --cleanup` |
 | `/ca-watch` | Watch a PR's CI to completion — diagnose on red, notify and offer the merge on green. Never auto-merges. | `/ca-pr --watch` |
 
 ### Operate
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-context-check` | Optional manual drift audit — report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop; commit-gate auto-heal owns routine maintenance. | `/ca-status drift` |
+| `/ca-context-check` | Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs. | `/ca-status drift` |
 
 ## Internal
 

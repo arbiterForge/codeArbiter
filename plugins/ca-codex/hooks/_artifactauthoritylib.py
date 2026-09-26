@@ -76,6 +76,14 @@ CLAUDE_REVIEWER = "ca:authority-reviewer"
 CLAUDE_REVIEWER_MODELS = frozenset({"opus", "sonnet", "haiku"})
 CLAUDE_REVIEW_PROFILE = "claude-review/0.1.0"
 CODEX_REVIEW_PROFILE = "codex-review/0.1.0"
+CODEX_NATIVE_V1 = "codex-native-v1/0.145.0"
+CODEX_UUID_RE = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+CODEX_STEERING_TOOLS = frozenset({
+    "multi_agent_v1send_input", "multi_agent_v1resume_agent", "multi_agent_v1close_agent",
+})
+CODEX_REVIEW_TOOLS = frozenset({"spawn_agent", "collaborationspawn_agent"}) | CODEX_STEERING_TOOLS
+CODEX_CHILD_FORMAT = "codearbiter.codex-native-child/0.1.0"
+MAX_CHILD_MARKER = 4096
 # None means the real ~/.claude/agents (plus CLAUDE_CONFIG_DIR/agents); tests
 # point it at a fixture directory.
 CLAUDE_USER_AGENT_DIR: Path | None = None
@@ -389,7 +397,7 @@ def _load(
         "observation_sha256", "receipt", "integrity_sha256", "payload",
         "authority_source", "dispatch_prompt", "review_contract_sha256",
         "required_coverage", "wrapper", "command_bindings", "recovery",
-        "launch_envelope", "workspace_roots", "host",
+        "launch_envelope", "workspace_roots", "host", "codex_review_profile",
     }
     if (
         not isinstance(value, dict)
@@ -410,6 +418,12 @@ def _load(
         or SHA256_RE.fullmatch(value.get("context_sha256", "")) is None
     ):
         raise AuthorityError("INVALID_AUTHORITY_STATE", "request state failed validation")
+    if "codex_review_profile" in value and (
+        value["codex_review_profile"] != CODEX_NATIVE_V1
+        or value.get("host", "codex") != "codex"
+        or value["activity"] not in REVIEW_ACTIVITIES
+    ):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "Codex review profile is unsupported")
     if len(raw) > MAX_STATE:
         try:
             _validate_legacy_review_recovery(root, value)
@@ -571,6 +585,15 @@ def _validate_legacy_review_recovery(root: Path, request: dict[str, Any]) -> Non
     # Recovery validates the retained snapshot; it neither recreates absent
     # evidence files nor upgrades the legacy prompt into launchable authority.
     prompt = _dispatch_prompt(request, legacy_inline=True)
+    # Qualified Codex 0.13.11 predates both the host field and JSON-only suffix.
+    # Admit that one exact earlier form, without normalizing retained text.
+    original_prompt = request.get("dispatch_prompt")
+    if (
+        "host" not in request
+        and isinstance(original_prompt, str)
+        and original_prompt + " Reply with the JSON object only: no code fence and no other text." == prompt
+    ):
+        prompt = original_prompt
     if not isinstance(request.get("launch_envelope"), dict):
         raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy launch envelope is malformed")
     if request.get("host", "codex") == "claude":
@@ -1097,11 +1120,17 @@ def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) ->
             "Do not pass if the evidence is missing, unreadable or inconsistent. The locator "
             "is a reference to the complete immutable evidence, not replacement authority.\n"
         )
+    profile = (
+        f"Native review profile: {CODEX_NATIVE_V1}. This review was dispatched through "
+        "multi_agent_v1.spawn_agent with default role and fork_context=false. Read-only conduct is cooperative; "
+        "these settings do not provide an OS sandbox.\n"
+        if request.get("codex_review_profile") == CODEX_NATIVE_V1 else ""
+    )
     return (
         f"[CODEARBITER_AUTHORITY_REQUEST:{request['request_id']}]\n"
         f"Target repository: {request['repository']['path']}\n"
         f"Frozen context: {request['context_ref']} sha256={request['context_sha256']}\n"
-        + target
+        + target + profile
         + "Act as a fresh read-only independent codeArbiter reviewer. Do not edit files or "
         "delegate. Review only the frozen target and return exactly one JSON object using "
         f"format {DECISION_FORMAT}. Bind request_id={request['request_id']}, "
@@ -1126,6 +1155,7 @@ def arm_request(
     workspace_roots: dict[str, str | Path] | None = None,
     host: str = "codex",
     reviewer_model: str = "opus",
+    codex_review_profile: str | None = None,
     **unexpected: Any,
 ) -> dict[str, Any]:
     if unexpected:
@@ -1139,6 +1169,10 @@ def arm_request(
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "host is unsupported")
     if host == "claude" and reviewer_model not in CLAUDE_REVIEWER_MODELS:
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "reviewer model is unsupported")
+    if codex_review_profile is not None and (
+        codex_review_profile != "native-v1" or host != "codex" or activity not in REVIEW_ACTIVITIES
+    ):
+        raise AuthorityError("INVALID_AUTHORITY_REQUEST", "Codex review profile is unsupported")
     root = _real_root(root)
     if host == "claude" and activity in REVIEW_ACTIVITIES:
         _refuse_shadowed_reviewer(root)
@@ -1164,6 +1198,8 @@ def arm_request(
     }
     if host != "codex":
         seed_value["host"] = host
+    if codex_review_profile is not None:
+        seed_value["codex_review_profile"] = CODEX_NATIVE_V1
     seed = _canonical(seed_value)
     request_id = _digest(seed)
     request = {
@@ -1187,6 +1223,8 @@ def arm_request(
     }
     if host != "codex":
         request["host"] = host
+    if codex_review_profile is not None:
+        request["codex_review_profile"] = CODEX_NATIVE_V1
     if activity in REVIEW_ACTIVITIES:
         request["review_contract_sha256"], request["required_coverage"] = _review_binding(context)
         request["dispatch_prompt"] = _dispatch_prompt(request)
@@ -1196,6 +1234,10 @@ def arm_request(
                 "prompt": request["dispatch_prompt"],
                 "subagent_type": CLAUDE_REVIEWER,
                 "model": reviewer_model,
+            }
+        elif codex_review_profile is not None:
+            request["launch_envelope"] = {
+                "message": request["dispatch_prompt"], "fork_context": False,
             }
         else:
             request["launch_envelope"] = {
@@ -1215,6 +1257,8 @@ def arm_request(
         result["review_contract_sha256"] = request["review_contract_sha256"]
         result["required_coverage"] = request["required_coverage"]
         result["launch_envelope"] = request["launch_envelope"]
+        if codex_review_profile is not None:
+            result["codex_review_profile"] = CODEX_NATIVE_V1
     return result
 
 
@@ -2041,8 +2085,8 @@ def _parse_decision(raw: Any, request: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(raw, str) or len(raw.encode("utf-8")) > MAX_DECISION:
         raise AuthorityError("INVALID_REVIEW_DECISION", "review decision is absent or oversized")
     try:
-        value = json.loads(raw)
-    except ValueError as exc:
+        value = json.loads(raw, object_pairs_hook=_unique_json_pairs, parse_constant=_invalid_json_constant)
+    except (ValueError, RecursionError) as exc:
         raise AuthorityError("INVALID_REVIEW_DECISION", "review decision is not JSON") from exc
     expected = {
         "format", "request_id", "target_sha256", "contract_sha256", "decision",
@@ -2060,6 +2104,7 @@ def _parse_decision(raw: Any, request: dict[str, Any]) -> dict[str, Any]:
         or not isinstance(value.get("assessment"), str)
         or not value["assessment"].strip()
         or not isinstance(value.get("coverage"), list)
+        or any(not isinstance(item, str) or not item for item in value["coverage"])
         or len(set(value["coverage"])) != len(value["coverage"])
         or not isinstance(value.get("findings"), list)
     ):
@@ -2081,12 +2126,328 @@ def _parse_decision(raw: Any, request: dict[str, Any]) -> dict[str, Any]:
     return value
 
 
+def _codex_uuid(value: Any) -> str:
+    if not isinstance(value, str) or CODEX_UUID_RE.fullmatch(value) is None:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native Codex child identity is not a UUID")
+    return value
+
+
+def _codex_native_marker(agent_id: str) -> Path:
+    # UUID, not arrival order or session, is the direct host-observed join key.
+    # Retaining this marker also prevents reuse across requests and sessions.
+    key = _digest(_canonical({"profile": CODEX_NATIVE_V1, "agent_id": _codex_uuid(agent_id)}))
+    return _registry_root() / f"codex-native-{key}.marker"
+
+
+def _codex_claimed(agent_id: str, kind: str) -> bool:
+    path = _codex_native_marker(agent_id).with_suffix("." + kind)
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return False
+    if (stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400
+            or not stat.S_ISREG(info.st_mode) or info.st_size != 0):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native child event claim is unsafe")
+    return True
+
+
+def _claim_codex_event(agent_id: str, kind: str) -> bool:
+    """Atomic, single-use refusal evidence independent of the child mutex.
+
+    Zero-byte claims grant no authority. They retain the first lifecycle attempt
+    even when its marker lock times out or its process dies before joining.
+    """
+    path = _codex_native_marker(agent_id).with_suffix("." + kind)
+    try:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    except FileExistsError:
+        _codex_claimed(agent_id, kind)
+        return False
+    except OSError as exc:
+        raise AuthorityError("AUTHORITY_BUSY", "native child first event could not be retained") from exc
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    return True
+
+
+def _read_codex_child(path: Path, agent_id: str, session_id: str) -> dict[str, Any]:
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return {
+            "format": CODEX_CHILD_FORMAT, "agent_id": agent_id, "session_id": session_id,
+            "request_id": None, "start": None, "stop_seen": False, "rejected": False,
+        }
+    if (stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400
+            or not stat.S_ISREG(info.st_mode) or info.st_size > MAX_CHILD_MARKER):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native Codex child marker is unsafe")
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    with os.fdopen(os.open(path, flags), "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        if (opened.st_dev, opened.st_ino) != (info.st_dev, info.st_ino):
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native Codex child marker changed")
+        raw = stream.read(MAX_CHILD_MARKER + 1)
+    try:
+        value = json.loads(raw, object_pairs_hook=_unique_json_pairs, parse_constant=_invalid_json_constant)
+    except (ValueError, UnicodeError) as exc:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native Codex child marker is unreadable") from exc
+    start = value.get("start") if isinstance(value, dict) else None
+    if (
+        len(raw) > MAX_CHILD_MARKER or not isinstance(value, dict)
+        or set(value) != {"format", "agent_id", "session_id", "request_id", "start", "stop_seen",
+                          "rejected", "integrity_sha256"}
+        or value.get("format") != CODEX_CHILD_FORMAT or value.get("agent_id") != agent_id
+        or not isinstance(value.get("session_id"), str) or not HOST_ID_RE.fullmatch(value["session_id"])
+        or (value.get("request_id") is not None and (
+            not isinstance(value["request_id"], str) or not REQUEST_RE.fullmatch(value["request_id"])))
+        or type(value.get("stop_seen")) is not bool or type(value.get("rejected")) is not bool
+        or value.get("integrity_sha256") != _integrity(value)
+        or (start is not None and (
+            not isinstance(start, dict) or set(start) != {"turn_id", "agent_type"}
+            or start.get("agent_type") != "default" or not isinstance(start.get("turn_id"), str)
+            or not CODEX_UUID_RE.fullmatch(start["turn_id"])))
+    ):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native Codex child marker failed validation")
+    return value
+
+
+def _write_codex_child(path: Path, child: dict[str, Any]) -> None:
+    child["integrity_sha256"] = _integrity(child)
+    raw = _canonical(child)
+    if len(raw) > MAX_CHILD_MARKER:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native Codex child marker is oversized")
+    _atomic_replace(path.parent, Path(path.name), raw)
+
+
+@contextmanager
+def _codex_child_lock(agent_id: str, session_id: str):
+    path = _codex_native_marker(agent_id)
+    try:
+        with _request_lock(path.parent, Path(path.name)):
+            yield path, _read_codex_child(path, agent_id, session_id)
+    except OSError as exc:
+        raise AuthorityError("AUTHORITY_BUSY", "native Codex child transition is unavailable") from exc
+
+
+def _codex_native_refuse(root: Path, request: dict[str, Any], reason: str) -> None:
+    if request["state"] in {"LAUNCHING", "RUNNING"}:
+        _reject(root, request, reason)
+    raise AuthorityError("UNSUPPORTED_HOST_SEAM", reason)
+
+
+def _codex_native_post(event: dict[str, Any], root: Path, request: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return _codex_native_post_join(event, root, request)
+    except (AuthorityError, ValueError, TypeError, RecursionError) as exc:
+        # S/P/C has already identified this exact call. Its first failed Post
+        # cannot be discarded in favor of a later successful replacement.
+        current = _load(root, request["request_id"])
+        if current["state"] in {"LAUNCHING", "RUNNING"}:
+            _reject(root, current, "invalid-first-native-review-post")
+        if isinstance(exc, AuthorityError):
+            raise
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native-v1 spawn result is malformed") from exc
+
+
+def _codex_native_post_join(event: dict[str, Any], root: Path, request: dict[str, Any]) -> dict[str, Any]:
+    if _canonical(event.get("tool_input")) != _canonical(request["launch_envelope"]):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native review PostToolUse envelope was changed")
+    _require_frozen_context(root, request)
+    raw = event.get("tool_response")
+    if not isinstance(raw, str) or len(raw.encode("utf-8")) > MAX_DECISION:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native-v1 spawn result must be a bounded JSON string")
+    try:
+        response = json.loads(raw, object_pairs_hook=_unique_json_pairs, parse_constant=_invalid_json_constant)
+    except ValueError as exc:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native-v1 spawn result is not strict JSON") from exc
+    if (not isinstance(response, dict) or set(response) != {"agent_id", "nickname"}
+            or (response["nickname"] is not None and (
+                not isinstance(response["nickname"], str) or len(response["nickname"]) > 256))):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native-v1 spawn result fields are unsupported")
+    agent_id = _codex_uuid(response.get("agent_id"))
+    session_id = request["launch"]["parent_session_id"]
+    with _codex_child_lock(agent_id, session_id) as (path, child):
+        request = _load(root, request["request_id"])
+        if request["state"] != "LAUNCHING" or request["launch"].get("post_confirmed"):
+            _codex_native_refuse(root, request, "native reviewer launch was already associated")
+        if child["request_id"] is not None or child["session_id"] != session_id:
+            _codex_native_refuse(root, request, "native reviewer UUID was already used")
+        child["request_id"] = request["request_id"]
+        _write_codex_child(path, child)
+        if (child["rejected"] or child["stop_seen"] or _codex_claimed(agent_id, "failed")
+                or _codex_claimed(agent_id, "stop") or (child["start"] is not None
+                and child["start"]["turn_id"] == request["launch"]["parent_turn_id"])):
+            _codex_native_refuse(root, request, "native reviewer stopped or conflicted before association")
+        launch = request["launch"]
+        launch.update(agent_id=agent_id, post_confirmed=True)
+        if child["start"] is not None:
+            launch.update(child_turn_id=child["start"]["turn_id"], agent_type="default")
+            request["state"] = "RUNNING"
+        _save(root, request)
+        return {"request_id": request["request_id"], "state": request["state"]}
+
+
+def _codex_review_complete(root: Path, request: dict[str, Any], agent_id: str, decision: dict[str, Any]) -> dict[str, Any]:
+    payload = {
+        "input_sha256": request["context"]["input_sha256"],
+        "spec_sha256": request["context"]["spec_sha256"], "assessment": decision["assessment"],
+    }
+    if request["activity"] == "spec_review":
+        payload["task_sha256"] = request["context"]["task_sha256"]
+    else:
+        payload["base_input_sha256"] = request["context"]["base_input_sha256"]
+        payload["task_hashes"] = request["context"]["task_hashes"]
+    observation = _closed_observation(
+        request, payload, request.get("codex_review_profile", CODEX_REVIEW_PROFILE), agent_id,
+        {"launch": request["launch"], "decision": decision},
+    )
+    _observation(root, request, observation)
+    request["payload"] = payload
+    request["state"] = "COMPLETED"
+    _save(root, request)
+    return {"request_id": request["request_id"], "state": "COMPLETED"}
+
+
+def _codex_native_lifecycle(event: dict[str, Any]) -> dict[str, Any] | None:
+    agent_id = _codex_uuid(event.get("agent_id"))
+    try:
+        kind = "start" if event["hook_event_name"] == "SubagentStart" else "stop"
+        if not _claim_codex_event(agent_id, kind):
+            _claim_codex_event(agent_id, "failed")
+        return _codex_native_lifecycle_join(event)
+    except (AuthorityError, OSError) as exc:
+        _claim_codex_event(agent_id, "failed")
+        for root, request in _registered_requests():
+            if (request.get("codex_review_profile") == CODEX_NATIVE_V1
+                    and request["state"] in {"LAUNCHING", "RUNNING"}
+                    and (request.get("launch") or {}).get("agent_id") == agent_id):
+                _reject(root, request, "failed-native-review-lifecycle")
+        if isinstance(exc, AuthorityError):
+            raise
+        raise AuthorityError("AUTHORITY_BUSY", "native child lifecycle could not be retained") from exc
+
+
+def _codex_native_lifecycle_join(event: dict[str, Any]) -> dict[str, Any] | None:
+    agent_id = _codex_uuid(event.get("agent_id"))
+    observed_session = event.get("session_id")
+    session_valid = isinstance(observed_session, str) and HOST_ID_RE.fullmatch(observed_session) is not None
+    # A malformed first event with a known child UUID still consumes that
+    # child's evidence. Do not discard it and accept a later replacement Stop.
+    session_id = observed_session if session_valid else "invalid-session"
+    name = event["hook_event_name"]
+    with _codex_child_lock(agent_id, session_id) as (path, child):
+        start = child["start"]
+        valid = (
+            session_valid and child["session_id"] == session_id and not child["rejected"] and not child["stop_seen"]
+            and not _codex_claimed(agent_id, "failed")
+            and event.get("agent_type") == "default" and isinstance(event.get("turn_id"), str)
+            and CODEX_UUID_RE.fullmatch(event["turn_id"]) is not None
+        )
+        if name == "SubagentStart":
+            valid = valid and start is None
+            if valid:
+                child["start"] = {"turn_id": event["turn_id"], "agent_type": "default"}
+        else:
+            valid = (valid and start is not None and start["turn_id"] == event.get("turn_id")
+                     and event.get("stop_hook_active") is False and child["request_id"] is not None)
+            # First stop is durable even before Post associates the UUID. A later
+            # follow-up turn/result can never replace evidence we could not join.
+            child["stop_seen"] = True
+        child["rejected"] = child["rejected"] or not valid
+        _write_codex_child(path, child)
+        if child["request_id"] is None:
+            return None
+        root, request = _registered_request(child["request_id"])
+        launch = request.get("launch") or {}
+        if (not valid or request.get("codex_review_profile") != CODEX_NATIVE_V1
+                or launch.get("parent_session_id") != child["session_id"]
+                or launch.get("agent_id") != agent_id or launch.get("post_confirmed") is not True
+                or event.get("turn_id") == launch.get("parent_turn_id")):
+            _codex_native_refuse(root, request, "native reviewer lifecycle is conflicting or out of order")
+        if name == "SubagentStart":
+            if request["state"] != "LAUNCHING":
+                _codex_native_refuse(root, request, "native reviewer start was repeated")
+            launch.update(child_turn_id=event["turn_id"], agent_type="default")
+            request["state"] = "RUNNING"
+            _save(root, request)
+            return {"request_id": request["request_id"], "state": "RUNNING"}
+        if (request["state"] != "RUNNING" or launch.get("child_turn_id") != event["turn_id"]
+                or launch.get("agent_type") != "default"):
+            _codex_native_refuse(root, request, "native reviewer stop is out of order")
+        try:
+            _require_frozen_context(root, request)
+            decision = _parse_decision(event.get("last_assistant_message"), request)
+        except (AuthorityError, TypeError, ValueError, RecursionError) as exc:
+            _reject(root, request, "invalid-first-native-review-stop")
+            if isinstance(exc, AuthorityError):
+                raise
+            raise AuthorityError("INVALID_REVIEW_DECISION", "native first review decision is malformed") from exc
+        launch["first_stop"] = True
+        return _codex_review_complete(root, request, agent_id, decision)
+
+
+def _codex_steering_uuid(value: Any) -> str | None:
+    # Pinned Codex uses uuid 1.20.0 parse_str: simple, hyphenated, braced,
+    # and lowercase urn:uuid: prefix; hex digits may use either case.
+    # This normalization is solely for denying steering, never lifecycle proof.
+    if not isinstance(value, str):
+        return None
+    if len(value) == 38 and value.startswith("{") and value.endswith("}"):
+        value = value[1:-1]
+    elif len(value) == 45 and value.startswith("urn:uuid:"):
+        value = value[9:]
+    if len(value) == 32 and re.fullmatch(r"[0-9a-fA-F]{32}", value):
+        value = "-".join((value[:8], value[8:12], value[12:16], value[16:20], value[20:]))
+    return value.lower() if CODEX_UUID_RE.fullmatch(value.lower()) else None
+
+
+def _codex_native_steering(event: dict[str, Any]) -> None:
+    tool_input = event.get("tool_input")
+    field = "id" if event["tool_name"] == "multi_agent_v1resume_agent" else "target"
+    if not isinstance(tool_input, dict):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native reviewer steering input is malformed")
+    agent_id = _codex_steering_uuid(tool_input.get(field))
+    if agent_id is None:
+        return None
+    _claim_codex_event(agent_id, "failed")
+    with _codex_child_lock(agent_id, _host_id(event.get("session_id"), "session_id")) as (path, child):
+        child["rejected"] = True
+        _write_codex_child(path, child)
+        if child["request_id"] is not None:
+            root, request = _registered_request(child["request_id"])
+            _codex_native_refuse(root, request, "native reviewer cannot be resumed, steered or closed")
+
+
 def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any]:
     _real_root(root)  # Invocation repository is observed but cannot select authority.
     if not isinstance(event, dict):
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "hook event is malformed")
     name = event.get("hook_event_name")
+    if (name in {"SubagentStart", "SubagentStop"} and isinstance(event.get("agent_id"), str)
+            and CODEX_UUID_RE.fullmatch(event["agent_id"])):
+        native = _codex_native_lifecycle(event)
+        if native is not None:
+            return native
     session_id = _host_id(event.get("session_id"), "session_id")
+
+    if name in {"PreToolUse", "PostToolUse"} and event.get("tool_name") == "collaborationspawn_agent":
+        tool_input = event.get("tool_input")
+        message = tool_input.get("message") if isinstance(tool_input, dict) else None
+        if isinstance(message, str) and message.startswith("[CODEARBITER_AUTHORITY_REQUEST:"):
+            raise AuthorityError(
+                "UNSUPPORTED_HOST_SEAM",
+                "default Codex v2 has no direct child UUID binding; qualify the native-v1 interface and arm a fresh request",
+            )
+        if name == "PreToolUse":
+            turn_id = _host_id(event.get("turn_id"), "turn_id")
+            _record_ordinary_spawn(session_id, turn_id)
+            _reject_overlapping_authority(session_id, turn_id)
+        return None
+
+    if name in {"PreToolUse", "PostToolUse"} and event.get("tool_name") in CODEX_STEERING_TOOLS:
+        return _codex_native_steering(event)
 
     if name == "PreToolUse":
         if event.get("tool_name") != "spawn_agent":
@@ -2109,7 +2470,7 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             or request["state"] != "ARMED"
         ):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review request is not launchable")
-        if tool_input != request.get("launch_envelope"):
+        if _canonical(tool_input) != _canonical(request.get("launch_envelope")):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
         _require_frozen_context(root, request)
         if _ordinary_spawn_marker(session_id, turn_id).exists():
@@ -2127,9 +2488,14 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             "parent_session_id": session_id, "parent_turn_id": turn_id,
             "tool_use_id": tool_use_id, "post_confirmed": False,
             "agent_id": None, "agent_type": None,
-            "task_name": tool_input["task_name"],
-            "fork_turns": tool_input["fork_turns"],
         }
+        if request.get("codex_review_profile") == CODEX_NATIVE_V1:
+            request["launch"].update(
+                codex_review_profile=CODEX_NATIVE_V1, child_turn_id=None,
+                fork_context=False,
+            )
+        else:
+            request["launch"].update(task_name=tool_input["task_name"], fork_turns=tool_input["fork_turns"])
         request["state"] = "LAUNCHING"
         _save(root, request)
         return {"request_id": request_id, "state": "LAUNCHING"}
@@ -2139,12 +2505,8 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "post-tool event is not reviewer launch")
         tool_use_id = _host_id(event.get("tool_use_id"), "tool_use_id")
         turn_id = _host_id(event.get("turn_id"), "turn_id")
-        response = event.get("tool_response")
-        if not isinstance(response, dict):
-            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "spawn result is malformed")
-        task_name = _host_id(response.get("task_name"), "task_name")
         matches = []
-        for candidate_root, candidate in _registered_requests():
+        for candidate_root, candidate in _registered_requests(strict=True):
             launch = candidate.get("launch") or {}
             if (
                 candidate["state"] in {"LAUNCHING", "RUNNING"}
@@ -2158,6 +2520,12 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
         if len(matches) != 1:
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch correlation is ambiguous")
         root, request = matches[0]
+        if request.get("codex_review_profile") == CODEX_NATIVE_V1:
+            return _codex_native_post(event, root, request)
+        response = event.get("tool_response")
+        if not isinstance(response, dict):
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "spawn result is malformed")
+        task_name = _host_id(response.get("task_name"), "task_name")
         if task_name != request["launch"].get("task_name"):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "spawn result task_name differs")
         request["launch"]["post_confirmed"] = True
@@ -2170,6 +2538,8 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
         matches = []
         same_turn = []
         for candidate_root, candidate in _registered_requests():
+            if candidate.get("codex_review_profile") == CODEX_NATIVE_V1:
+                continue
             launch = candidate.get("launch") or {}
             if (
                 launch.get("parent_session_id") == session_id
@@ -2215,26 +2585,7 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             request["state"] = "REJECTED"
             _save(root, request)
             raise
-        payload = {
-            "input_sha256": request["context"]["input_sha256"],
-            "spec_sha256": request["context"]["spec_sha256"],
-            "assessment": decision["assessment"],
-        }
-        if request["activity"] == "spec_review":
-            payload["task_sha256"] = request["context"]["task_sha256"]
-        else:
-            payload["base_input_sha256"] = request["context"]["base_input_sha256"]
-            payload["task_hashes"] = request["context"]["task_hashes"]
-        producer_result = {"launch": request["launch"], "decision": decision}
-        observation = _closed_observation(
-            request, payload, CODEX_REVIEW_PROFILE, agent_id,
-            producer_result,
-        )
-        _observation(root, request, observation)
-        request["payload"] = payload
-        request["state"] = "COMPLETED"
-        _save(root, request)
-        return {"request_id": request["request_id"], "state": "COMPLETED"}
+        return _codex_review_complete(root, request, agent_id, decision)
 
     raise AuthorityError("UNSUPPORTED_HOST_SEAM", "hook event is not supported")
 

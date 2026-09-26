@@ -8,7 +8,7 @@ documentation drifts from the bodies it describes. Because these indexes
 ARE the routing surface -- "skill bodies load on routing only" means a stale
 row can send the orchestrator to a skill that no longer exists, or leave a
 real skill unreachable -- that drift used to be an authoring discipline
-(skill-author Phase 5 prose asked the author to keep them in sync by hand).
+(the former authoring workflow asked authors to keep them in sync by hand).
 This script makes the discipline a mechanical, CI-checked invariant instead.
 
 CHECK LEVEL CHOSEN: Level 1, "Inventory parity" (issue #592's own ascending

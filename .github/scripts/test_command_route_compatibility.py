@@ -14,7 +14,7 @@ REPO = Path(__file__).resolve().parents[2]
 COMMANDS = REPO / "core" / "surface" / "commands"
 REGISTRY = REPO / "core" / "surface" / "command-routes.json"
 
-EXPECTED_SOURCE_ROUTES = frozenset({
+HISTORICAL_SOURCE_ROUTES = frozenset({
     "add-dep", "adr", "adr-status", "audit", "btw", "checkpoint", "chore",
     "cleanup", "commands", "commit", "conflict", "context-check", "create-context",
     "debug", "decompose", "doctor", "feature", "fix", "init", "metrics",
@@ -22,6 +22,9 @@ EXPECTED_SOURCE_ROUTES = frozenset({
     "release", "review", "spike", "sprint", "standup", "status", "statusline",
     "task", "threat-model", "tribunal", "watch",
 })
+
+# Maintainer-approved removal on 2026-09-25; every other route remains frozen.
+EXPECTED_SOURCE_ROUTES = HISTORICAL_SOURCE_ROUTES - {"new-skill"}
 
 EXPECTED_REPLACEMENTS = {
     "cleanup": ("pr", "pr --cleanup"),
@@ -64,13 +67,34 @@ EXPECTED_FIRST_CONTAINING_RELEASES = {
 }
 
 
-def command_body(slug: str) -> str:
+# PR #854: reviewed single-owner composition, not route retirement. Historical
+# wrapper fingerprints above remain the original baseline; composed workflows
+# preserve the entire owner preflight-through-hard-rules body instead.
+COMPOSED_OWNERS = {"cleanup": "post-merge-cleanup", "context-check": "context-check",
+                   "pr": "finishing-a-development-branch", "create-context": "context-creation",
+                   "decompose": "decompose", "release": "release"}
+OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d', 'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198'}
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': '88d6a1f49810cccff530e3c9eaf811e3a3da8548ce989931d83a624c02e75cad',
+    'decompose': 'b1d86ecdd5721188ef52d9f86e6a9c2b56aa35f02dae30d10d173b1db958e5f9',
+})
+
+def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
+    if slug in COMPOSED_OWNERS:
+        owner = COMPOSED_OWNERS[slug]
+        if text != "{{SKILL_ENTRY:" + owner + "}}\n":
+            raise AssertionError(f"{slug}: expected the reviewed single owner")
+        return (REPO / "core/surface/skills" / owner / "SKILL.md").read_text(encoding="utf-8")
+    return text
+
+def command_body(slug: str) -> str:
+    text = command_source(slug)
     return text.split("\n---\n", 1)[1]
 
 
 def argument_hint(slug: str) -> str:
-    text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
+    text = command_source(slug)
     frontmatter = text.split("\n---\n", 1)[0]
     match = re.search(r"^argument-hint:\s*(.+)$", frontmatter, re.MULTILINE)
     if match is None:
@@ -94,7 +118,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
     def registry(self) -> dict:
         return json.loads(REGISTRY.read_text(encoding="utf-8"))
 
-    def test_source_route_set_is_frozen_during_the_compatibility_window(self):
+    def test_source_route_set_is_frozen_except_explicit_retirement(self):
         actual = frozenset(path.stem for path in COMMANDS.glob("*.md"))
         self.assertEqual(actual, EXPECTED_SOURCE_ROUTES)
 
@@ -115,7 +139,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
         }
         self.assertEqual(
             counts,
-            {"core": 18, "advanced": 13, "alias": 5, "internal": 1, "deprecated": 1},
+            {"core": 18, "advanced": 12, "alias": 5, "internal": 1, "deprecated": 1},
         )
         actual = {
             slug: (entry["canonical"], entry["replacement"])
@@ -169,14 +193,26 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
             with self.subTest(slug=slug):
                 body = command_body(slug)
                 self.assertEqual(len(NOTICE_RE.findall(body)), 1)
-                self.assertEqual(digest(NOTICE_RE.sub("", body)), expected)
+                if slug in OWNER_OPERATIONAL_SHA256:
+                    self.assertEqual(digest(body.split("## Pre-flight\n", 1)[1]),
+                                     OWNER_OPERATIONAL_SHA256[slug])
+                    if slug in ('cleanup', 'context-check'):
+                        self.assertIn("neither stages nor commits", " ".join(body.split()))
+                else:
+                    self.assertEqual(digest(NOTICE_RE.sub("", body)), expected)
 
     def test_default_canonical_bodies_are_byte_frozen_except_for_additive_modes(self):
         for slug, expected in EXPECTED_DEFAULT_BODY_SHA256.items():
             with self.subTest(slug=slug):
                 body = command_body(slug)
                 self.assertEqual(len(MODES_RE.findall(body)), 1)
-                self.assertEqual(digest(MODES_RE.sub("", body)), expected)
+                if slug == "pr":
+                    procedure = body.split("### Open-PR procedure\n", 1)[1]
+                    procedure = procedure[procedure.index("1. **Confirm"):].split("\n## Phase 4", 1)[0].strip()
+                    self.assertEqual(digest(procedure), "7c7dc99c1202125e59851396a9c077dcf6b992dddcce28bae1b5b58df52b3b00")
+                    self.assertNotIn("{{PLUGIN_ROOT}}/commands/pr.md", body)
+                else:
+                    self.assertEqual(digest(MODES_RE.sub("", body)), expected)
 
     def test_mode_markers_and_notices_close_over_each_safe_replacement(self):
         commands = self.registry()["commands"]

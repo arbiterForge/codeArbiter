@@ -39,7 +39,7 @@
         ]
       },
       {
-        "matcher": "spawn_agent",
+        "matcher": "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent",
         "hooks": [
           {
             "type": "command",
@@ -77,7 +77,7 @@
         ]
       },
       {
-        "matcher": "spawn_agent",
+        "matcher": "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent",
         "hooks": [
           {
             "type": "command",
@@ -122,8 +122,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "timeout": 30,
-            "statusMessage": "codeArbiter: observe independent review completion",
-            "additionalContextLimit": 1000
+            "statusMessage": "codeArbiter: observe independent review completion"
           }
         ]
       }

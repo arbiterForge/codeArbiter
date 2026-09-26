@@ -61,8 +61,8 @@
 #   4. Every `[[allowlists]]` block carries a `description` naming the file the
 #      literal legitimately lives in and why it is benign.
 #   5. Every block waives by `regexes`, every regex is anchored `\A...\z`, and
-#      the anchored body carries no regex metacharacter - no `.*`, no character
-#      class, no escape, nothing that could match an unseen value.
+#      the body is either punctuation-free text or one whole `\Q...\E` literal
+#      quote. No early quote exit, active pattern or unseen value is permitted.
 #
 # REFORMATTING WILL NOT HELP. The contract PARSES this file as TOML and folds
 # keys to lower case, because gitleaks reads its config through viper, whose key
@@ -208,3 +208,17 @@ regexes = ['\Ac6d86b81be1ed7ef2046183b23643d7e1e018e6c41b75ae9205b4077be9b02be\z
 [[allowlists]]
 description = 'PR850 historical preparation: exact verified hostapi Git blob identity, not a credential'
 regexes = [ '''\Aa3a2ea319e044db4d53f5e3cc32f97429ba47dba\z''' ]
+
+[[allowlists]]
+description = """
+The exact 103-byte synthetic TypeScript expression from
+plugins/ca/tools/farm.unit.test.ts at c4280147cffa1a7a8ba73ebe1b8b1bbf5f2a1e44.
+It contains NOT_REAL_PRIVATE_MATERIAL and source-level repeat syntax, not key
+material. The current fixture constructs the same test delimiters at runtime;
+this value-only exception preserves append-only PR history. No file, commit,
+credential pattern or runtime-expanded PEM value is waived.
+"""
+regexes = [
+  '''\A\Q-----BEGIN PRIVATE KEY-----", "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
+      "-----END PRIVATE KEY-----\E\z'''
+]
