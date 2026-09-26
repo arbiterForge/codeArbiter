@@ -118,7 +118,18 @@ returned same-slug `.codearbiter/plans/<slug>.html` target may be created. Creat
 that plan through the installed structured-artifact engine as `draft_preview`,
 using the source spec's exact artifact ID and normative digest. For ordinary sequential planning,
 this must be the approved spec's exact artifact ID and normative digest. Populate it only with typed operations
-and validate it at the ready gate. For initial combined review, retain `draft_preview` and return
+and validate it at the ready gate. Before presenting either ordinary or combined review, call
+the private `_approvallib._preflight_plan_verification(client, identity)` with the current engine identity.
+It reads every task through bounded engine pages, checks each declared runner's supported
+named-outcome format, snapshots current inputs, and rejects identity drift. Resolve the complete
+reported set of command/input diagnostics before asking for approval. It does not run commands,
+discover or import tests, or require proposed test files and test names to exist. Input roots must
+already exist: choose an existing containing directory for files the plan will create. Roots and
+excluded directories are exact repository-relative paths, not basenames, globs, or paths relative
+to each root; for root `site`, use `site/node_modules`, `site/dist`, and other reviewed output paths.
+The ordinary and paired approval adapters repeat this preflight before arming their user reply.
+This admission check is not verification evidence; execution still binds actual commands and
+requires current named outcomes. For initial combined review, retain `draft_preview` and return
 both ready identities to the caller: `sprint-approve` owns the binding and both approvals after one
 actual host-observed reply. Do not separately `plan-bind` or approve that pair. On ordinary approved-spec
 planning, use `plan-bind` to bind it to the approved spec before plan approval. This path must not create `.codearbiter/plans/<slug>.md`;

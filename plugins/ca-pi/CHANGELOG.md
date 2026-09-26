@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.15.2] - 2026-09-25
+## [0.15.4] - 2026-09-26
 
 ### Fixed
 
@@ -19,7 +19,7 @@ All notable changes to `ca-pi` are documented in this file.
 - Internal closed scout-report decoding and test-owned observation accounting;
   onboarding dispatch and context-writing integration are not enabled by these helpers.
 
-## [0.15.1] - 2026-09-25
+## [0.15.3] - 2026-09-26
 
 ### Removed
 
@@ -80,6 +80,24 @@ All notable changes to `ca-pi` are documented in this file.
   document dependency-ready scheduling and detached canary evaluation in the
   shared farm resource. Existing preview dispatch authority and HTML farm
   restrictions remain unchanged.
+
+## [0.15.2] - 2026-09-26
+
+### Fixed
+
+- Update the shared artifact adapter and guidance for bounded review prompts
+  and safe abandonment of never-launched review requests on supported hosts.
+  Pi's native verification and review authority remain unavailable.
+- Shared authority request writes reject stale state during concurrent operations.
+
+## [0.15.1] - 2026-09-26
+
+### Fixed
+
+- Ship the shared whole-plan verification preflight, exact named-result collectors,
+  and pinned native Windows npm runner contract.
+- Reject ineffective snapshot exclusions, prevent explicit roots from bypassing
+  exclusions, and retain actionable oversized-input diagnostics.
 
 ## [0.15.0] - 2026-09-26
 

@@ -279,7 +279,7 @@ def spec_normative() -> dict:
 
 
 def plan_normative(spec_hash: str) -> dict:
-    verification = {"availability": "proposed", "cwd": ".", "argv": ["python", "-m", "unittest", "tests.test_config"], "expected_exit": 0, "assertion": "The named test runs and passes.", "required_tests": ["test_environment_overrides"]}
+    verification = {"availability": "proposed", "cwd": ".", "argv": ["python", "-m", "unittest", "-v", "tests.test_config"], "expected_exit": 0, "assertion": "The named test runs and passes.", "required_tests": ["test_environment_overrides"]}
     task = {"id": "T-001", "title": "Implement configuration precedence", "checkpoint": "CP-01", "execution_scope": "CP-01", "depends_on": [], "paths": [{"path": "src/config.py", "action": "modify"}], "criterion_refs": ["SPEC-FLOW#AC-001"], "steps": ["Write the negative test.", "Implement the contract."], "verification": [verification], "done_when": ["The named test passes."], "rollback": "Revert the implementation change.", "source_refs": []}
     return {
         "title": "Configuration precedence implementation", "summary": "Implement and verify the approved precedence contract.",

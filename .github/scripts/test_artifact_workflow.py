@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import platform
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -22,6 +24,7 @@ from test_artifact_authoring import (
 )
 import _artifactlib
 import _artifactauthoritylib
+from _gitexec import root_bound_git_env
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -369,6 +372,112 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
         ):
             source = path.read_text(encoding="utf-8")
             self.assertIn("`_preflight_current_acceptance`", source, path.as_posix())
+
+
+class ArtifactGitBytesTest(unittest.TestCase):
+    """Git checkout and staging must preserve native artifact byte identities."""
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-git-bytes-")
+        self.addCleanup(self.temporary.cleanup)
+        self.base = physical_test_directory(self.temporary.name)
+        self.source = self.base / "source"
+        self.empty_hooks = self.base / "empty-hooks"
+        self.empty_hooks.mkdir()
+        self.git_env = root_bound_git_env()
+        self.git_env.update({
+            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_ATTR_NOSYSTEM": "1",
+        })
+        self._git(self.base, "init", "--quiet", str(self.source))
+        self._git(self.source, "config", "core.autocrlf", "false")
+        self.native = {
+            f".codearbiter/{kind}s/fixture.html":
+                (REPO / "core/artifacts/testdata/reference" / f"{kind}.html").read_bytes()
+            for kind in ("spec", "plan")
+        }
+        self.native.update({
+            ".codearbiter/.artifacts/transactions/fixture.json": b'{"fixture":"journal"}\n',
+            ".codearbiter/.artifacts/traces/fixture.jsonl": b'{"fixture":1}\n{"fixture":2}\n',
+            ".codearbiter/.artifacts/history/fixture-0.before": b"retained legacy bytes\nsecond line\n",
+        })
+        # These controls remain ordinary text. The fix must not normalize or
+        # change the attribute policy for unrelated operator state and HTML.
+        self.ordinary = {path: b"first line\nsecond line\n" for path in (
+            ".codearbiter/specs/legacy-fixture.md", ".codearbiter/gate-events.log",
+            ".codearbiter/.artifacts-neighbor/fixture.jsonl", "site/fixture.html",
+        )}
+        files = {
+            ".gitattributes": (REPO / ".gitattributes").read_bytes(),
+            **self.native, **self.ordinary,
+        }
+        for relative, raw in files.items():
+            path = self.source / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(raw)
+        self._git(self.source, "add", ".")
+        self._commit(self.source)
+
+    def _git(self, root: Path, *args: str) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            ["git", "-c", f"core.hooksPath={self.empty_hooks}", "-C", str(root), *args],
+            env=self.git_env, capture_output=True, check=True, timeout=30,
+        )
+
+    def _commit(self, root: Path) -> None:
+        # Commits exist only in this test's temporary repository, so a real
+        # fresh clone exercises checkout conversion and a subsequent roundtrip.
+        self._git(root, "-c", "user.name=Artifact Git fixture", "-c",
+                  "user.email=fixture@example.invalid", "commit", "--quiet", "-m", "fixture")
+
+    def _clone(self, source: Path, name: str, autocrlf: str) -> Path:
+        checkout = self.base / name
+        self._git(self.base, "-c", f"core.autocrlf={autocrlf}", "clone", "--quiet",
+                  "--no-hardlinks", str(source), str(checkout))
+        self._git(checkout, "config", "core.autocrlf", autocrlf)
+        return checkout
+
+    def test_native_artifact_fresh_checkout_preserves_exact_bytes(self) -> None:
+        for autocrlf in ("true", "false"):
+            checkout = self._clone(self.source, "checkout-" + autocrlf, autocrlf)
+            for relative, raw in self.native.items():
+                with self.subTest(autocrlf=autocrlf, path=relative):
+                    self.assertEqual((checkout / relative).read_bytes(), raw,
+                                     "Git checkout changed native artifact bytes")
+            for relative, raw in self.ordinary.items():
+                with self.subTest(autocrlf=autocrlf, ordinary=relative):
+                    expected = raw.replace(b"\n", b"\r\n") if autocrlf == "true" else raw
+                    self.assertEqual((checkout / relative).read_bytes(), expected)
+
+    def test_native_artifact_roundtrip_does_not_normalize_retained_evidence(self) -> None:
+        checkout = self._clone(self.source, "writer", "true")
+        expected = dict(self.native)
+        # Retained evidence and before-images are exact bytes, including old
+        # CRLF content. Pinning eol=lf would silently alter them during add.
+        expected.update({
+            ".codearbiter/.artifacts/transactions/fixture.json": b'{\r\n  "fixture": "retained"\r\n}\r\n',
+            ".codearbiter/.artifacts/traces/fixture.jsonl": b'{"fixture":3}\r\n{"fixture":4}\r\n',
+            ".codearbiter/.artifacts/history/fixture-0.before": b"retained legacy bytes\r\nsecond line\r\n",
+        })
+        for relative, raw in expected.items():
+            (checkout / relative).write_bytes(raw)
+        self._git(checkout, "add", ".")
+        for relative, raw in expected.items():
+            with self.subTest(stage="index", path=relative):
+                self.assertEqual(self._git(checkout, "show", ":" + relative).stdout, raw,
+                                 "Git add normalized native artifact bytes")
+        for relative, raw in self.ordinary.items():
+            with self.subTest(stage="index", ordinary=relative):
+                self.assertEqual(self._git(checkout, "show", ":" + relative).stdout, raw)
+        self._commit(checkout)
+        roundtrip = self._clone(checkout, "reader", "true")
+        for relative, raw in expected.items():
+            with self.subTest(stage="roundtrip", path=relative):
+                self.assertEqual((roundtrip / relative).read_bytes(), raw,
+                                 "Git roundtrip changed native artifact bytes")
+        for relative, raw in self.ordinary.items():
+            with self.subTest(stage="roundtrip", ordinary=relative):
+                self.assertEqual((roundtrip / relative).read_bytes(), raw.replace(b"\n", b"\r\n"))
 
 
 class ArtifactProductionPilotTest(unittest.TestCase):

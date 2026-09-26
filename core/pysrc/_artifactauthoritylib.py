@@ -3,6 +3,7 @@
 """Supervise verification and correlate independent Codex or Claude review evidence.
 
 arm_request(...) -> dict
+validate_command_definition(definition, cwd=None) -> str
 run_verification(...) -> dict
 observe_codex_hook(...) -> dict
 observe_claude_hook(...) -> dict
@@ -25,10 +26,12 @@ than one SubagentStop; only the first is a review result.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
+import errno
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import secrets
 import shlex
@@ -62,6 +65,9 @@ REQUEST_RE = re.compile(r"[0-9a-f]{64}")
 TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 HOST_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}")
 MAX_STATE = 1 << 20
+# Only terminal abandonment can read a legacy inline-context review this large.
+MAX_RECOVERY_STATE = 2 << 20
+REQUEST_LOCK_WAIT_SECONDS = 5.0
 MAX_OUTPUT = 8 << 20
 MAX_DECISION = 65536
 REGISTRY_PARENT = Path(tempfile.gettempdir())
@@ -252,27 +258,129 @@ def _spool_root(root: Path) -> Path:
         raise AuthorityError("AUTHORITY_BUSY", "resolved git-common authority spool is unavailable") from exc
 
 
-def _save(root: Path, value: dict[str, Any]) -> None:
-    value = dict(value)
-    value["integrity_sha256"] = _integrity(value)
+@contextmanager
+def _request_lock(spool: Path, relative: Path):
+    """Keep one OS-owned lock inode for all writers of this request."""
+    path = spool / f"{relative.name}.lock"
+    fd = None
+
+    def check_path() -> None:
+        info = path.lstat()
+        if (
+            stat.S_ISLNK(info.st_mode)
+            or getattr(info, "st_file_attributes", 0) & 0x400
+            or not stat.S_ISREG(info.st_mode)
+        ):
+            raise OSError("request lock path is unsafe")
+        if fd is not None:
+            opened = os.fstat(fd)
+            if (info.st_dev, info.st_ino) != (opened.st_dev, opened.st_ino):
+                raise OSError("request lock path changed")
+
     try:
-        _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
-        if value["state"] in TERMINAL_STATES:
-            (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
+        check_path()
+    except FileNotFoundError:
+        pass
+    flags = (
+        os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    )
+    fd = os.open(path, flags, 0o600)
+    locked = False
+    try:
+        check_path()
+        deadline = time.monotonic() + REQUEST_LOCK_WAIT_SECONDS
+        if os.name == "nt":
+            import msvcrt
+        else:
+            import fcntl
+        while True:
+            try:
+                if os.name == "nt":
+                    # Windows permits a byte-range lock beyond EOF. Never seed
+                    # or truncate the lock file, including on an unsafe path.
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                locked = True
+                break
+            except OSError as exc:
+                if (
+                    exc.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK, 36}
+                    and getattr(exc, "winerror", None) not in {32, 33}
+                ):
+                    raise
+                if time.monotonic() >= deadline:
+                    raise AuthorityError("AUTHORITY_BUSY", "request transition lock timed out") from exc
+                time.sleep(0.01)
+        check_path()
+        yield
+    finally:
+        try:
+            if locked:
+                if os.name == "nt":
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
+        # Do not unlink: a peer may already be waiting on this same inode.
+
+
+def _save(root: Path, value: dict[str, Any]) -> None:
+    expected = value.get("integrity_sha256")
+    updated = dict(value)
+    updated["integrity_sha256"] = _integrity(updated)
+    try:
+        spool = _spool_root(root)
+        relative = _request_path(value["request_id"])
+        with _request_lock(spool, relative):
+            try:
+                (spool / relative).lstat()
+            except FileNotFoundError:
+                if expected is not None:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "loaded request state disappeared")
+            else:
+                if expected is None:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state already exists")
+                legacy_abandonment = (
+                    value["state"] == "ABANDONED"
+                    and value["activity"] in REVIEW_ACTIVITIES
+                    and value.get("recovery") == {
+                        "disposition": "abandoned", "previous_attempt": None, "rerun_permitted": False,
+                    }
+                )
+                current = _load(root, value["request_id"], recover_armed_review=legacy_abandonment)
+                if current["integrity_sha256"] != expected:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state changed since it was loaded")
+            _atomic_replace(spool, relative, _canonical(updated))
+            # A live operation can save several times without loading again.
+            value["integrity_sha256"] = updated["integrity_sha256"]
+            if value["state"] in TERMINAL_STATES:
+                (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
     except OSError as exc:
         raise AuthorityError("AUTHORITY_BUSY", "request state could not be written") from exc
 
 
-def _load(root: Path, request_id: str) -> dict[str, Any]:
+def _load(
+    root: Path, request_id: str, *, recover_armed_review: bool = False
+) -> dict[str, Any]:
     path = _spool_root(root) / _request_path(request_id)
+    limit = MAX_RECOVERY_STATE if recover_armed_review else MAX_STATE
     try:
         info = path.lstat()
         reparse = getattr(info, "st_file_attributes", 0) & 0x400
         if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISREG(info.st_mode):
             raise OSError("not regular")
-        if info.st_size > MAX_STATE:
+        if info.st_size > limit:
             raise OSError("oversized")
-        value = json.loads(path.read_text(encoding="utf-8"))
+        with path.open("rb") as stream:
+            raw = stream.read(limit + 1)
+        if len(raw) > limit:
+            raise OSError("oversized")
+        value = json.loads(raw.decode("utf-8"))
     except (OSError, UnicodeError, ValueError) as exc:
         raise AuthorityError("INVALID_AUTHORITY_STATE", "request state is unreadable") from exc
     allowed = {
@@ -302,6 +410,11 @@ def _load(root: Path, request_id: str) -> dict[str, Any]:
         or SHA256_RE.fullmatch(value.get("context_sha256", "")) is None
     ):
         raise AuthorityError("INVALID_AUTHORITY_STATE", "request state failed validation")
+    if len(raw) > MAX_STATE:
+        try:
+            _validate_legacy_review_recovery(root, value)
+        except (AuthorityError, KeyError, TypeError, ValueError) as exc:
+            raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy review recovery binding failed") from exc
     return value
 
 
@@ -309,6 +422,27 @@ def _validate_hash(value: Any, field: str) -> str:
     if not isinstance(value, str) or SHA256_RE.fullmatch(value) is None:
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", f"{field} is malformed")
     return value
+
+
+def _read_context(root: Path, context_ref: str, context_hash: str) -> dict[str, Any]:
+    _validate_hash(context_hash, "context_sha256")
+    expected_ref = f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
+    if context_ref != expected_ref:
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context locator is not content addressed")
+    try:
+        raw = (root / expected_ref).read_bytes()
+        context = json.loads(raw.decode("utf-8"))
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes are unavailable") from exc
+    if not isinstance(context, dict) or _digest(raw) != context_hash or raw != _canonical(context):
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes changed or are not canonical")
+    return context
+
+
+def _require_frozen_context(root: Path, request: dict[str, Any]) -> None:
+    context = _read_context(root, request["context_ref"], request["context_sha256"])
+    if context != request["context"]:
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "frozen context differs from the request")
 
 
 def _context(
@@ -321,16 +455,14 @@ def _context(
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "engine context result is malformed")
     context_hash = _validate_hash(result.get("context_sha256"), "context_sha256")
     context_ref = result.get("context_ref")
-    expected_ref = f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
-    if context_ref != expected_ref:
-        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context locator is not content addressed")
-    try:
-        raw = (root / expected_ref).read_bytes()
-        context = json.loads(raw.decode("utf-8"))
-    except (OSError, UnicodeError, ValueError) as exc:
-        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes are unavailable") from exc
-    if _digest(raw) != context_hash or raw != _canonical(context):
-        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes changed or are not canonical")
+    context = _read_context(root, context_ref, context_hash)
+    _validate_context(context, artifact_id, record_id, activity)
+    return context, context_ref, context_hash
+
+
+def _validate_context(
+    context: dict[str, Any], artifact_id: str, record_id: str, activity: str
+) -> None:
     subject = context.get("subject") if isinstance(context, dict) else None
     if (
         not isinstance(context, dict)
@@ -338,7 +470,9 @@ def _context(
         or not isinstance(subject, dict)
         or subject.get("artifact_id") != artifact_id
         or subject.get("record_id") != record_id
-        or context["activity"] != activity
+        or context.get("activity") != activity
+        or not isinstance(artifact_id, str)
+        or not isinstance(record_id, str)
         or not ID_RE.fullmatch(artifact_id)
         or not ID_RE.fullmatch(record_id)
     ):
@@ -379,7 +513,6 @@ def _context(
         _validate_hash(context.get("base_input_sha256"), "base_input_sha256")
         if not isinstance(context.get("task_hashes"), dict) or not isinstance(context.get("tasks"), list):
             raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "quality-review scope is incomplete")
-    return context, context_ref, context_hash
 
 
 def _review_binding(context: dict[str, Any]) -> tuple[str, list[str]]:
@@ -400,6 +533,69 @@ def _review_binding(context: dict[str, Any]) -> tuple[str, list[str]]:
     if not coverage:
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "review target has no criterion coverage")
     return _digest(_canonical(contract)), coverage
+
+
+def _never_launched_review(request: dict[str, Any]) -> bool:
+    return (
+        request["state"] == "ARMED"
+        and request["activity"] in REVIEW_ACTIVITIES
+        and all(field in request and request[field] is None for field in (
+            "attempt", "launch", "observation_ref", "observation_sha256", "receipt", "wrapper", "recovery",
+        ))
+        and "payload" not in request
+        and "authority_source" not in request
+    )
+
+
+def _validate_legacy_review_recovery(root: Path, request: dict[str, Any]) -> None:
+    """Admit only the old duplicate-context shape, solely to retain and abandon it."""
+    if not _never_launched_review(request) or request["repository"] != _repository_identity(root):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy request is not an unlaunched review")
+    context = request["context"]
+    subject = context["subject"]
+    _validate_context(context, subject["artifact_id"], subject["record_id"], request["activity"])
+    context_hash = _digest(_canonical(context))
+    records = [context["task"]] if request["activity"] == "spec_review" else context["tasks"]
+    if any(not isinstance(record, dict) for record in records):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy review records are malformed")
+    contract_hash, coverage = _review_binding(context)
+    if (
+        request["context_sha256"] != context_hash
+        or request["context_ref"] != f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
+        or request.get("review_contract_sha256") != contract_hash
+        or request.get("required_coverage") != coverage
+        or request.get("command_bindings") != []
+        or request.get("workspace_roots") != {}
+    ):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy review context binding differs")
+    # Recovery validates the retained snapshot; it neither recreates absent
+    # evidence files nor upgrades the legacy prompt into launchable authority.
+    prompt = _dispatch_prompt(request, legacy_inline=True)
+    # Qualified Codex 0.13.11 predates both the host field and JSON-only suffix.
+    # Admit that one exact earlier form, without normalizing retained text.
+    original_prompt = request.get("dispatch_prompt")
+    if (
+        "host" not in request
+        and isinstance(original_prompt, str)
+        and original_prompt + " Reply with the JSON object only: no code fence and no other text." == prompt
+    ):
+        prompt = original_prompt
+    if not isinstance(request.get("launch_envelope"), dict):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy launch envelope is malformed")
+    if request.get("host", "codex") == "claude":
+        model = request["launch_envelope"].get("model")
+        if model not in CLAUDE_REVIEWER_MODELS:
+            raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy reviewer model is unsupported")
+        envelope = {
+            "description": f"codeArbiter {request['activity']} {request['request_id'][:12]}",
+            "prompt": prompt, "subagent_type": CLAUDE_REVIEWER, "model": model,
+        }
+    else:
+        envelope = {
+            "message": prompt, "task_name": f"authority_{request['request_id'][:12]}", "fork_turns": "none",
+        }
+    if request.get("dispatch_prompt") != prompt or request.get("launch_envelope") != envelope:
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy launch envelope differs")
 
 
 def _repository_identity(root: Path) -> dict[str, str]:
@@ -706,19 +902,87 @@ def _bind_commands(
     for command in context["commands"]:
         definition = command["definition"]
         cwd, worktree, common = _workspace_for(root, definition["cwd"], workspace_roots)
+        collector = validate_command_definition(definition, cwd=cwd)
         executable = _resolve_executable(definition["argv"][0], cwd)
+        argv, launch_files = _native_launch(executable, definition["argv"][1:])
+        if (_command_name(definition["argv"][0]) in {"node", "node.exe"}
+                and len(definition["argv"]) > 1
+                and Path(definition["argv"][1]).suffix.casefold() in {".js", ".mjs", ".cjs"}):
+            # Match Node's lexical entrypoint normalization and the Go contract;
+            # retain this lookup path so linked-parent retargeting stays visible.
+            script = Path(os.path.normpath(cwd / definition["argv"][1]))
+            try:
+                _path_identity(script)
+                if not script.is_file():
+                    raise OSError("runner entrypoint is not a file")
+            except OSError as exc:
+                raise AuthorityError("UNSUPPORTED_EXECUTABLE", "declared Node runner entrypoint is unavailable") from exc
+            launch_files.append(_launch_file(script, "runner-entrypoint"))
+        if definition["required_tests"] and _command_name(definition["argv"][0]) in {"npm", "npm.cmd"}:
+            _runner, manifest = _npm_runner(definition["argv"], cwd)
+            launch_files.append(_launch_file(manifest, "npm-manifest"))
         bindings.append({
             "definition_sha256": command["definition_sha256"],
-            "argv": [str(executable), *definition["argv"][1:]],
+            "argv": argv,
+            "collector_profile": collector,
+            "launch_files": launch_files,
             "cwd": str(cwd),
             "cwd_filesystem_id": _path_identity(cwd),
             "workspace_root": str(worktree),
             "workspace_filesystem_id": _path_identity(worktree),
             "git_common_dir": str(common),
             "git_common_filesystem_id": _path_identity(common),
-            "executable_sha256": _file_sha256(executable),
+            "executable_sha256": _file_sha256(Path(argv[0])),
         })
     return bindings
+
+
+def _launch_file(path: Path, role: str) -> dict[str, str]:
+    return {"path": str(path), "sha256": _file_sha256(path),
+            "filesystem_id": _path_identity(path), "role": role}
+
+
+def _native_launch(executable: Path, arguments: list[str]) -> tuple[list[str], list[dict[str, str]]]:
+    files = [_launch_file(executable, "declared-executable")]
+    if executable.suffix.casefold() not in {".cmd", ".bat"}:
+        return [str(executable), *arguments], files
+    if os.name != "nt" or executable.name.casefold() != "npm.cmd":
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "batch executables are unsupported; declare a native executable")
+    # CreateProcess may send a .cmd file through cmd.exe despite shell=False.
+    # Support only npm's standard colocated installation; never execute the shim.
+    # This adapter deliberately selects the sibling CLI, not npm.cmd's optional
+    # global-prefix redirect. The wrapper, native runtime, and CLI are all pinned.
+    standard_wrapper = r''':: Created by npm, please don't edit manually.
+@ECHO OFF
+SETLOCAL
+SET "NODE_EXE=%~dp0\node.exe"
+IF NOT EXIST "%NODE_EXE%" (
+  SET "NODE_EXE=node"
+)
+SET "NPM_PREFIX_JS=%~dp0\node_modules\npm\bin\npm-prefix.js"
+SET "NPM_CLI_JS=%~dp0\node_modules\npm\bin\npm-cli.js"
+FOR /F "delims=" %%F IN ('CALL "%NODE_EXE%" "%NPM_PREFIX_JS%"') DO (
+  SET "NPM_PREFIX_NPM_CLI_JS=%%F\node_modules\npm\bin\npm-cli.js"
+)
+IF EXIST "%NPM_PREFIX_NPM_CLI_JS%" (
+  SET "NPM_CLI_JS=%NPM_PREFIX_NPM_CLI_JS%"
+)
+"%NODE_EXE%" "%NPM_CLI_JS%" %*'''
+    try:
+        actual = executable.read_text("utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "npm wrapper is unreadable") from exc
+    if [line for line in actual.splitlines() if line] != standard_wrapper.splitlines():
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "npm wrapper is not a qualified standard npm.cmd; declare node.exe and npm-cli.js explicitly")
+    node = executable.parent / "node.exe"
+    cli = executable.parent / "node_modules" / "npm" / "bin" / "npm-cli.js"
+    if not node.is_file() or not cli.is_file():
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "npm batch adapter requires sibling node.exe and node_modules/npm/bin/npm-cli.js")
+    for path, role in ((node, "node-runtime"), (cli, "npm-cli")):
+        files.append(_launch_file(path, role))
+    for directory in (cli.parent, cli.parent.parent, cli.parent.parent.parent):
+        _path_identity(directory)
+    return [str(node), str(cli), *arguments], files
 
 
 def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]:
@@ -734,6 +998,10 @@ def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]
             or _file_sha256(Path(binding["argv"][0])) != binding["executable_sha256"]
         ):
             raise AuthorityError("WORKSPACE_DRIFT", "workspace or executable identity changed")
+        for item in binding.get("launch_files", []):
+            path = Path(item["path"])
+            if _launch_file(path, item["role"]) != item:
+                raise AuthorityError("WORKSPACE_DRIFT", "runner, npm wrapper, or script manifest identity changed")
         status = _git_text(root, "status", "--porcelain=v2", "-z", "--untracked-files=all")
         index = _git_text(root, "ls-files", "--stage", "-z")
         untracked = _git_text(root, "ls-files", "--others", "--exclude-standard", "-z")
@@ -822,15 +1090,28 @@ def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]
     return [unique[key] for key in sorted(unique)]
 
 
-def _dispatch_prompt(request: dict[str, Any]) -> str:
+def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) -> str:
     context = request["context"]
+    if legacy_inline:
+        # Used only to validate an oversized historical request for abandonment.
+        target = "Frozen target data follows as canonical JSON:\n" + _canonical(context).decode("ascii") + "\n"
+    else:
+        target = (
+            f"Review activity: {request['activity']}; subject: "
+            f"{context['subject']['artifact_id']}/{context['subject']['record_id']}\n"
+            "Read the frozen context from that repository-relative path before reviewing. "
+            "The adapter verifies its exact digest before launch and publication. Inspect its "
+            "activity, subject, input_sha256, task definitions and criterion coverage against "
+            "these bindings, then inspect the input manifest and referenced target files. "
+            "Do not pass if the evidence is missing, unreadable or inconsistent. The locator "
+            "is a reference to the complete immutable evidence, not replacement authority.\n"
+        )
     return (
         f"[CODEARBITER_AUTHORITY_REQUEST:{request['request_id']}]\n"
         f"Target repository: {request['repository']['path']}\n"
         f"Frozen context: {request['context_ref']} sha256={request['context_sha256']}\n"
-        "Frozen target data follows as canonical JSON:\n"
-        + _canonical(context).decode("ascii") + "\n"
-        "Act as a fresh read-only independent codeArbiter reviewer. Do not edit files or "
+        + target
+        + "Act as a fresh read-only independent codeArbiter reviewer. Do not edit files or "
         "delegate. Review only the frozen target and return exactly one JSON object using "
         f"format {DECISION_FORMAT}. Bind request_id={request['request_id']}, "
         f"target_sha256={context['input_sha256']}, "
@@ -958,12 +1239,14 @@ def _unittest_collector(stdout: bytes, stderr: bytes, required: list[str]) -> li
     text = (stdout + b"\n" + stderr).decode("utf-8", "replace")
     results = []
     for name in required:
-        pattern = re.compile(r"(?m)^" + re.escape(name) + r"(?:\s+\([^\r\n]*\))?\s+\.\.\.\s+ok\s*$")
+        pattern = re.compile(r"(?m)^" + re.escape(name) + r"(?:[ \t]+\([^\r\n]*\))?[ \t]+\.\.\.[ \t]+([^\r\n]+)\r?$")
         matches = pattern.findall(text)
         if not matches:
             raise AuthorityError("MISSING_TEST_RESULT", f"required test did not pass: {name}")
         if len(matches) != 1:
             raise AuthorityError("DUPLICATE_TEST_RESULT", f"required test appeared more than once: {name}")
+        if matches[0].strip() != "ok":
+            raise AuthorityError("MISSING_TEST_RESULT", f"required test did not pass: {name}")
         results.append({"name": name, "status": "pass"})
     return results
 
@@ -973,16 +1256,16 @@ def _named_line_collector(stdout: bytes, stderr: bytes, required: list[str]) -> 
     # fall-damage harnesses emit umbrella summaries for some plan aggregates.
     # Those summaries are not semantic evidence; only exact PASS names qualify.
     text = (stdout + b"\n" + stderr).decode("utf-8", "replace")
-    passed: dict[str, int] = {}
+    observed: dict[str, list[bool]] = {}
     for line in text.splitlines():
         stripped = line.strip()
-        if stripped.startswith("PASS: "):
-            name = stripped[6:].rstrip(".")
-            passed[name] = passed.get(name, 0) + 1
-    duplicates = [name for name in required if passed.get(name, 0) > 1]
+        if stripped.startswith(("PASS: ", "FAIL: ", "SKIP: ")):
+            name = stripped[6:]
+            observed.setdefault(name, []).append(stripped.startswith("PASS: "))
+    duplicates = [name for name in required if len(observed.get(name, [])) > 1]
     if duplicates:
         raise AuthorityError("DUPLICATE_TEST_RESULT", "required PASS lines are duplicated: " + ", ".join(duplicates))
-    missing = [name for name in required if passed.get(name, 0) != 1]
+    missing = [name for name in required if observed.get(name) != [True]]
     if missing:
         raise AuthorityError(
             "MISSING_TEST_RESULT", "required explicit PASS lines are absent: " + ", ".join(missing)
@@ -992,21 +1275,89 @@ def _named_line_collector(stdout: bytes, stderr: bytes, required: list[str]) -> 
 
 def _vitest_verbose_collector(stdout: bytes, stderr: bytes, required: list[str]) -> list[dict[str, str]]:
     text = (stdout + b"\n" + stderr).decode("utf-8", "replace")
-    passed: dict[str, int] = {}
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text)
+    observed: dict[str, list[bool]] = {}
     for line in text.splitlines():
         stripped = line.strip()
-        if stripped.startswith(("✓ ", "√ ")):
-            name = stripped[2:].rsplit(" > ", 1)[-1]
+        if stripped.startswith(("✓ ", "√ ", "↓ ", "× ", "✗ ", "- ")) and " > " in stripped:
+            # The full rendered identity after the filename retains every suite
+            # and title segment. A short suffix cannot prove the exact test.
+            name = stripped[2:].split(" > ", 1)[1]
+            annotated = re.search(r" \((?:retry|repeat) x\d+\)| \d+ MB heap used| \[[^\r\n]*\]$", name)
+            if annotated:
+                name = name[:annotated.start()]
             name = re.sub(r"\s+\d+(?:\.\d+)?m?s$", "", name)
-            passed[name] = passed.get(name, 0) + 1
-    duplicates = [name for name in required if passed.get(name, 0) > 1]
+            observed.setdefault(name, []).append(stripped[0] in {"✓", "√"} and not annotated)
+    duplicates = [name for name in required if len(observed.get(name, [])) > 1]
     if duplicates:
         raise AuthorityError("DUPLICATE_TEST_RESULT", "required Vitest cases are duplicated: " + ", ".join(duplicates))
-    missing = [name for name in required if passed.get(name, 0) != 1]
+    missing = [name for name in required if observed.get(name) != [True]]
     if missing:
         raise AuthorityError(
             "MISSING_TEST_RESULT", "required exact Vitest case names are absent: " + ", ".join(missing)
         )
+    return [{"name": name, "status": "pass"} for name in required]
+
+
+def _unique_json_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate JSON key")
+        value[key] = item
+    return value
+
+
+def _invalid_json_constant(_value: str) -> Any:
+    raise ValueError("nonfinite JSON")
+
+
+def _playwright_json_collector(stdout: bytes, _stderr: bytes, required: list[str]) -> list[dict[str, str]]:
+    # Native JSONReporter reports spec.title separately from suites/projects and
+    # preserves every retry. Never infer a case from a summary or title prefix.
+    try:
+        text = stdout.decode("utf-8")
+        # npm run's two-line command banner precedes the native JSON report.
+        text = re.sub(r"\A\s*>[^\r\n]*\r?\n>[^\r\n]*\r?\n\s*(?=\{)", "", text)
+        report = json.loads(text, object_pairs_hook=_unique_json_pairs,
+                            parse_constant=_invalid_json_constant)
+    except (ValueError, UnicodeError, RecursionError) as exc:
+        raise AuthorityError("INVALID_TEST_RESULT", "Playwright requires one complete JSON reporter document") from exc
+    if not isinstance(report, dict) or not isinstance(report.get("suites"), list) or report.get("errors") != []:
+        raise AuthorityError("INVALID_TEST_RESULT", "Playwright report is malformed or contains global errors")
+    observed: dict[str, list[dict[str, Any]]] = {}
+    pending = list(report["suites"])
+    while pending:
+        suite = pending.pop()
+        if not isinstance(suite, dict) or not isinstance(suite.get("specs"), list) or not isinstance(suite.get("suites", []), list):
+            raise AuthorityError("INVALID_TEST_RESULT", "Playwright suite is malformed")
+        pending.extend(suite.get("suites", []))
+        for spec in suite["specs"]:
+            if (not isinstance(spec, dict) or not isinstance(spec.get("title"), str)
+                    or not isinstance(spec.get("tests"), list) or not spec["tests"]):
+                raise AuthorityError("INVALID_TEST_RESULT", "Playwright spec is malformed")
+            if spec["title"] in required and spec.get("ok") is not True:
+                raise AuthorityError("INVALID_TEST_RESULT", "required Playwright spec verdict is inconsistent")
+            for test in spec["tests"]:
+                if not isinstance(test, dict):
+                    raise AuthorityError("INVALID_TEST_RESULT", "Playwright test is malformed")
+                observed.setdefault(spec["title"], []).append(test)
+    for name in required:
+        tests = observed.get(name, [])
+        if not tests:
+            raise AuthorityError("MISSING_TEST_RESULT", f"required exact Playwright title is absent: {name}")
+        if len(tests) != 1:
+            raise AuthorityError("DUPLICATE_TEST_RESULT", f"required Playwright title is ambiguous: {name}")
+        test = tests[0]
+        results = test.get("results")
+        if (test.get("expectedStatus") != "passed" or test.get("status") != "expected"
+                or not isinstance(results, list) or len(results) != 1):
+            raise AuthorityError("FAILED_TEST_RESULT", f"required Playwright test has no single clean pass: {name}")
+        result = results[0]
+        if (not isinstance(result, dict) or result.get("status") != "passed"
+                or type(result.get("retry")) is not int or result["retry"] != 0
+                or result.get("errors") != [] or result.get("error") is not None):
+            raise AuthorityError("FAILED_TEST_RESULT", f"required Playwright test did not pass without retry or error: {name}")
     return [{"name": name, "status": "pass"} for name in required]
 
 
@@ -1020,26 +1371,135 @@ COLLECTORS: dict[str, Callable[[bytes, bytes, list[str]], list[dict[str, str]]]]
     "python-unittest-text/0.1.0": _unittest_collector,
     "codearbiter-named-lines/0.1.0": _named_line_collector,
     "vitest-verbose/0.1.0": _vitest_verbose_collector,
+    "playwright-json/0.1.0": _playwright_json_collector,
     "exit-only/0.1.0": _exit_only_collector,
 }
+
+
+def _command_name(value: str) -> str:
+    return value.replace("\\", "/").rsplit("/", 1)[-1].casefold()
+
+
+def _command_tokens(command: str) -> list[str]:
+    lexer = shlex.shlex(command, posix=True)
+    lexer.whitespace_split = True
+    lexer.commenters = ""
+    lexer.escape = ""  # Native Windows paths retain backslashes inside both quotes.
+    return list(lexer)
+
+
+def _npm_runner(argv: list[str], cwd: Path | None) -> tuple[list[str], Path]:
+    message = "declare a direct test runner with an explicit supported reporter; npm scripts must be a single runner command"
+    if cwd is None:
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm runner requires an inspectable package.json; " + message)
+    rest = list(argv[1:])
+    prefix = "."
+    while rest and rest[0].startswith("-"):
+        option = rest.pop(0)
+        if option == "--prefix" and rest:
+            prefix = rest.pop(0)
+        elif option.startswith("--prefix="):
+            prefix = option.split("=", 1)[1]
+        elif option not in {"--silent", "-s"}:
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "unsupported npm runner option; " + message)
+    if len(rest) >= 2 and rest[0] in {"run", "run-script"}:
+        script_name, forwarded = rest[1], rest[2:]
+    elif rest and rest[0] in {"test", "t", "tst"}:
+        script_name, forwarded = "test", rest[1:]
+    else:
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "unsupported npm runner shape; " + message)
+    if forwarded:
+        if forwarded[0] != "--":
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm runner arguments must follow --; " + message)
+        forwarded = forwarded[1:]
+    relative = Path(prefix)
+    if (not prefix or relative.anchor or PureWindowsPath(prefix).anchor
+            or ".." in relative.parts or ".." in PureWindowsPath(prefix).parts):
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm --prefix must stay within the declared cwd; " + message)
+    manifest = cwd / relative / "package.json"
+    try:
+        directory = cwd
+        for part in relative.parts:
+            directory /= part
+            _path_identity(directory)
+        manifest.parent.resolve(strict=True).relative_to(cwd.resolve(strict=True))
+        _path_identity(manifest)
+        with manifest.open("rb") as stream:
+            raw = stream.read(MAX_STATE + 1)
+        if len(raw) > MAX_STATE:
+            raise ValueError("oversized manifest")
+        package = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_json_pairs,
+                             parse_constant=_invalid_json_constant)
+        scripts = package["scripts"]
+        script = scripts[script_name]
+        if not isinstance(script, str) or any(marker in script for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$")):
+            raise ValueError("compound script")
+        if scripts.get("pre" + script_name) or scripts.get("post" + script_name):
+            raise ValueError("lifecycle scripts")
+        tokens = _command_tokens(script)
+        if not tokens or _command_name(tokens[0]) in {"npm", "npm.cmd"}:
+            raise ValueError("nested npm script")
+    except (OSError, ValueError, KeyError, TypeError, RecursionError, AuthorityError) as exc:
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm package script is unavailable or compound; " + message) from exc
+    return [*tokens, *forwarded], manifest
+
+
+def validate_command_definition(definition: dict[str, Any], *, cwd: Path | None = None) -> str:
+    """Inspect declared runner grammar without executing or discovering tools."""
+    argv, required = definition.get("argv"), definition.get("required_tests")
+    if (not isinstance(argv, list) or not argv or any(not isinstance(item, str) or not item or "\0" in item for item in argv)
+            or not isinstance(required, list) or any(not isinstance(item, str) or not item for item in required)
+            or len(set(required)) != len(required)):
+        raise AuthorityError("UNSUPPORTED_COLLECTOR", "runner argv and required_tests must be nonempty strings without duplicate tests")
+    name = _command_name(argv[0])
+    if name.endswith((".cmd", ".bat")) and name != "npm.cmd":
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "batch executables are unsupported; declare a native executable")
+    if required and name in {"npm", "npm.cmd"}:
+        argv, _manifest = _npm_runner(argv, cwd)
+    return _collector_profile(argv, required)
 
 
 def _collector_profile(argv: list[str], required: list[str]) -> str:
     if not required:
         return "exit-only/0.1.0"
-    lowered = [part.casefold() for part in argv]
-    if len(lowered) >= 3 and lowered[1:3] == ["-m", "unittest"]:
+    name = _command_name(argv[0])
+    arguments = argv[1:]
+    if re.fullmatch(r"(?:python(?:\d+(?:\.\d+)*)?|py)(?:\.exe)?", name) and arguments[:2] == ["-m", "unittest"]:
+        if not any(item in {"-v", "--verbose"} for item in arguments[2:]):
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "unittest named results require -v or --verbose")
         return "python-unittest-text/0.1.0"
-    if "vitest" in lowered and "--reporter=verbose" in lowered:
-        return "vitest-verbose/0.1.0"
-    if "tsx" in lowered or lowered[:3] == ["npm", "run", "test:client"] or lowered[:3] == ["npm", "run", "check"]:
+    if name in {"node", "node.exe"} and arguments:
+        script = arguments[0].replace("\\", "/")
+        for suffix, runner in (("node_modules/playwright/cli.js", "playwright"),
+                               ("node_modules/@playwright/test/cli.js", "playwright"),
+                               ("node_modules/vitest/vitest.mjs", "vitest"),
+                               ("node_modules/tsx/dist/cli.mjs", "tsx")):
+            if script == suffix or script.endswith("/" + suffix):
+                name, arguments = runner, arguments[1:]
+                break
+    if name in {"playwright", "vitest"}:
+        expected = "json" if name == "playwright" else "verbose"
+        reporters = []
+        for index, value in enumerate(arguments):
+            if value.startswith("--reporter="):
+                reporters.append(value.split("=", 1)[1])
+            elif value == "--reporter":
+                reporters.append(arguments[index + 1] if index + 1 < len(arguments) else "")
+        mode = "test" if name == "playwright" else "run"
+        if (not arguments or arguments[0] != mode or reporters != [expected]
+                or "--" in arguments or "--list" in arguments
+                or any(item.startswith("--outputFile") for item in arguments)):
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", f"declare {name} {mode} with exactly --reporter={expected} and stdout output")
+        return "playwright-json/0.1.0" if name == "playwright" else "vitest-verbose/0.1.0"
+    if name == "tsx" and arguments:
         return "codearbiter-named-lines/0.1.0"
-    raise AuthorityError("UNSUPPORTED_COLLECTOR", "declared runner has no qualified collector")
+    raise AuthorityError("UNSUPPORTED_COLLECTOR", "declared runner has no qualified collector; declare a direct supported runner")
 
 
 def _minimal_environment() -> tuple[dict[str, str], str]:
     names = (
         "PATH", "PATHEXT", "SystemRoot", "WINDIR", "COMSPEC", "TEMP", "TMP",
+        "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432", "SystemDrive",
         "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "LANG", "LC_ALL",
     )
     environment = {name: os.environ[name] for name in names if name in os.environ}
@@ -1064,6 +1524,8 @@ def _run_contained(
     argv: list[str], *, cwd: str, env: dict[str, str], timeout_seconds: float = 1800.0
 ) -> subprocess.CompletedProcess:
     """Bound output and descendants with POSIX sessions or a Windows Job Object."""
+    if argv and _command_name(argv[0]).endswith((".cmd", ".bat")):
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "batch execution requires a bound native adapter")
     if not isinstance(timeout_seconds, (int, float)) or timeout_seconds <= 0:
         raise AuthorityError("INVALID_PROCESS_TIMEOUT", "process timeout must be positive")
     job = None
@@ -1339,7 +1801,7 @@ def run_verification(
     commands = []
     for command, binding in zip(request["context"]["commands"], request["command_bindings"]):
         definition = command["definition"]
-        collector = COLLECTORS[_collector_profile(definition["argv"], definition["required_tests"])]
+        collector = COLLECTORS[binding["collector_profile"]]
         cwd = _resolved_directory(binding["cwd"])
         try:
             completed = _run_contained(list(binding["argv"]), cwd=str(cwd), env=environment)
@@ -1384,7 +1846,7 @@ def run_verification(
         "commands": commands,
     }
     observation = _closed_observation(
-        request, payload, "declared-command/0.1.0", request["attempt"],
+        request, payload, "declared-command/0.2.0", request["attempt"],
         producer_result,
     )
     _observation(root, request, observation)
@@ -1423,37 +1885,34 @@ def _verification_selector(event: dict[str, Any]) -> tuple[str, Path, str] | Non
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "exec command is absent")
     compound = any(marker in command for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$"))
     try:
-        tokens = [token.strip('"') for token in shlex.split(command, posix=False)]
+        tokens = _command_tokens(command)
     except ValueError as exc:
         # An ordinary command with unbalanced quoting is not ours to deny.
         if "artifact-authority" not in command.casefold():
             return None
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is malformed") from exc
     wrapper_start = (
-        len(tokens) >= 3
-        and Path(tokens[0]).name.lower() in {
+        len(tokens) >= 2
+        and _command_name(tokens[0]) in {
             "python", "python.exe", "python3", "python3.exe", "py", "py.exe",
         }
-        and Path(tokens[1]).name.lower() == "artifact-authority.py"
-        and tokens[2] == "verify"
+        and _command_name(tokens[1]) == "artifact-authority.py"
+        and (len(tokens) == 2 or tokens[2] == "verify")
     )
     if compound:
         if wrapper_start:
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is compound")
         return None
-    if len(tokens) != 7:
+    if not wrapper_start:
         return None
     if (
-        Path(tokens[0]).name.lower() not in {
-            "python", "python.exe", "python3", "python3.exe", "py", "py.exe",
-        }
-        or Path(tokens[1]).name.lower() != "artifact-authority.py"
+        len(tokens) != 7
         or tokens[2] != "verify"
         or tokens[3] != "--root"
         or tokens[5] != "--request-id"
         or REQUEST_RE.fullmatch(tokens[6]) is None
     ):
-        return None
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper selector is malformed")
     return tokens[6], _real_root(tokens[4]), tokens[1]
 
 
@@ -1506,9 +1965,6 @@ def observe_verifier_hook(
         current_bindings = _bind_commands(root, request["context"], request["workspace_roots"])
         if current_bindings != request["command_bindings"]:
             raise AuthorityError("WORKSPACE_DRIFT", "effective child argv or cwd changed")
-        for command in request["context"]["commands"]:
-            definition = command["definition"]
-            _collector_profile(definition["argv"], definition["required_tests"])
         workspace_before = _workspace_snapshots(current_bindings)
         request["wrapper"] = {
             "state": "AUTHORIZED", "session_id": session_id,
@@ -1664,6 +2120,7 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review request is not launchable")
         if tool_input != request.get("launch_envelope"):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
+        _require_frozen_context(root, request)
         if _ordinary_spawn_marker(session_id, turn_id).exists():
             request["state"] = "REJECTED"
             request["recovery"] = {
@@ -1868,6 +2325,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         if tool_input != request.get("launch_envelope"):
             _reject(root, request, "changed-launch-envelope")
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
+        _require_frozen_context(root, request)
         try:
             _refuse_shadowed_reviewer(root, session_root)
         except AuthorityError:
@@ -2069,6 +2527,10 @@ def publish_request(
         wrapper = request.get("wrapper")
         if not isinstance(wrapper, dict) or wrapper.get("state") != "CORROBORATED":
             raise AuthorityError("AUTHORITY_NOT_COMPLETE", "verifier wrapper completion is uncorroborated")
+    else:
+        # Check the original reference before the engine can recreate missing
+        # derived bytes while computing the current context.
+        _require_frozen_context(root, request)
     current, current_ref, current_hash = _context(
         root, client, request["context"]["subject"]["artifact_id"],
         request["context"]["subject"]["record_id"],
@@ -2106,11 +2568,11 @@ def publish_request(
 
 
 def recover_request(root: str | Path, request_id: str, disposition: str) -> dict[str, Any]:
-    """Retain an uncertain attempt and close it without ever rerunning commands."""
+    """Retain an uncertain attempt or abandon a review that never launched."""
     root = _real_root(root)
     if disposition not in {"failed", "abandoned"}:
         raise AuthorityError("INVALID_RECOVERY", "recovery disposition must be failed or abandoned")
-    request = _load(root, request_id)
+    request = _load(root, request_id, recover_armed_review=disposition == "abandoned")
     recoverable_completed = (
         request["state"] == "COMPLETED"
         and request["activity"] == "verification"
@@ -2123,7 +2585,11 @@ def recover_request(root: str | Path, request_id: str, disposition: str) -> dict
         and isinstance(request.get("wrapper"), dict)
         and request["wrapper"].get("state") in {"AUTHORIZED", "FAILED"}
     )
-    if request["state"] not in {"RUNNING", "LAUNCHING"} and not recoverable_completed and not recoverable_authorized:
+    abandonable_review = disposition == "abandoned" and _never_launched_review(request)
+    if (
+        request["state"] not in {"RUNNING", "LAUNCHING"}
+        and not recoverable_completed and not recoverable_authorized and not abandonable_review
+    ):
         raise AuthorityError("INVALID_RECOVERY", "only an interrupted active attempt can be recovered")
     request["state"] = disposition.upper()
     request["recovery"] = {

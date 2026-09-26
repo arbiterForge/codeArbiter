@@ -84,12 +84,19 @@ func commandResultSchema() map[string]any {
 		"tests": map[string]any{"type": "array", "items": testResultSchema()}, "stdout_sha256": hash(), "stderr_sha256": hash(),
 	}, "definition_sha256", "exit", "tests", "stdout_sha256", "stderr_sha256")
 }
-func commandBindingSchema() map[string]any {
-	return closed(map[string]any{
+func commandBindingSchema(qualified bool) map[string]any {
+	contract := closed(map[string]any{
 		"definition_sha256": hash(), "argv": map[string]any{"type": "array", "items": text(), "minItems": int64(1)},
 		"cwd": text(), "cwd_filesystem_id": text(), "workspace_root": text(), "workspace_filesystem_id": text(),
 		"git_common_dir": text(), "git_common_filesystem_id": text(), "executable_sha256": hash(),
 	}, "definition_sha256", "argv", "cwd", "cwd_filesystem_id", "workspace_root", "workspace_filesystem_id", "git_common_dir", "git_common_filesystem_id", "executable_sha256")
+	if qualified {
+		properties := model.M(contract["properties"])
+		properties["collector_profile"] = map[string]any{"enum": model.List("python-unittest-text/0.1.0", "codearbiter-named-lines/0.1.0", "vitest-verbose/0.1.0", "playwright-json/0.1.0", "exit-only/0.1.0")}
+		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(4), "items": launchFileSchema()}
+		contract["required"] = append(model.A(contract["required"]), "collector_profile", "launch_files")
+	}
+	return contract
 }
 func workspaceSchema() map[string]any {
 	return closed(map[string]any{
@@ -97,10 +104,10 @@ func workspaceSchema() map[string]any {
 		"head": text(), "status_sha256": hash(), "content_sha256": hash(),
 	}, "root", "filesystem_id", "git_common_dir", "git_common_filesystem_id", "head", "status_sha256", "content_sha256")
 }
-func verificationResultSchema() map[string]any {
+func verificationResultSchema(qualified bool) map[string]any {
 	return closed(map[string]any{
 		"environment_sha256": hash(),
-		"command_bindings":   map[string]any{"type": "array", "items": commandBindingSchema(), "minItems": int64(1)},
+		"command_bindings":   map[string]any{"type": "array", "items": commandBindingSchema(qualified), "minItems": int64(1)},
 		"workspace_before":   map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
 		"workspace_after":    map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
 		"commands":           map[string]any{"type": "array", "items": commandResultSchema(), "minItems": int64(1)},
@@ -157,12 +164,12 @@ func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
 		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
 	if current {
-		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(), reviewResultSchema(), claudeReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
+		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), reviewResultSchema(), claudeReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
 		required = append(required, "producer_result")
 	}
 	return closed(base, required...)
@@ -248,7 +255,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
+	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -359,12 +366,20 @@ func validateVerification(observed, event, context map[string]any) bool {
 				return false
 			}
 		}
-		argv, declared := model.Strings(binding["argv"]), model.Strings(definition["argv"])
-		if len(argv) != len(declared) || len(argv) == 0 || !filepath.IsAbs(argv[0]) {
-			return false
-		}
-		for n := 1; n < len(argv); n++ {
-			if argv[n] != declared[n] {
+		if model.S(observed["producer_profile"]) == QualifiedCommandProfile {
+			if !validateQualifiedBinding(binding, definition) {
+				return false
+			}
+		} else {
+			// Retained legacy evidence cannot be relabelled with the new producer's fields.
+			if _, ok := binding["collector_profile"]; ok {
+				return false
+			}
+			if _, ok := binding["launch_files"]; ok {
+				return false
+			}
+			argv, declared := model.Strings(binding["argv"]), model.Strings(definition["argv"])
+			if len(argv) != len(declared) || len(argv) == 0 || !filepath.IsAbs(argv[0]) || !same(argv[1:], declared[1:]) {
 				return false
 			}
 		}

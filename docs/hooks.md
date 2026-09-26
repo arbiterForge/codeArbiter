@@ -306,6 +306,29 @@ Shared, dependency-free library modules (`_hooklib.py`, `_standuplib.py`,
 have no side effects of their own. Everything under `plugins/ca/hooks/tests/` is the
 unit-test suite for these scripts. Run it with `pytest` from `plugins/ca/hooks/`.
 
+### Native artifact review transport
+
+The production artifact authority adapter retains the full engine evidence
+context and places its content-addressed reference in a bounded reviewer prompt.
+Before a host launches the exact review envelope, and again before publication,
+the adapter checks that the retained context is canonical and matches its
+recorded digest. The reviewer reads that context and inspects its source inputs;
+the smaller message does not replace source, identity or reviewer checks.
+
+`artifact-authority.py recover --disposition abandoned` can terminate an ARMED
+review that has no attempt, launch, observation, receipt or prior recovery. It
+preserves history, creates no authority and never makes the request dispatchable
+again. A recovery-only compatibility path admits valid legacy requests up to
+two MiB; normal request operations retain their one-MiB limit. Active and
+captured requests retain their existing recovery protections. These operations
+add no network access or new hook registration.
+
+Request writes serialize under a bounded per-request OS lock and compare the
+persisted integrity digest with the state the operation loaded. A stale operation
+is refused instead of replacing a newer launch, observation, receipt or recovery.
+New requests require an absent destination. The lock file is retained so waiting
+processes continue to use the same lock.
+
 ### Retained task-board lock and local exclusion
 
 `taskwrite` retains `.codearbiter/open-tasks.md.lock` as a one-byte OS-lock sidecar.
