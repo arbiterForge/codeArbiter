@@ -154,6 +154,17 @@ unchanged. The full native Windows package suite then completed 36 tests in
 90.884 seconds: 35 passed and the existing Unix-descriptor test was skipped.
 Independent coverage and security delta reviews passed without findings.
 
+The strict conformance inventory then rejected the newly added package test as
+unregistered. Its exact name was added to `EXPECTED_SUITES`; exact membership,
+count, duplicate, status, and candidate-identity checks remain unchanged. The
+first local conformance run passed the affected inventory but lacked the
+reference validator's dependencies in the default Python environment. An
+existing Python 3.14 environment was verified against every pinned package
+version in `.github/requirements/artifact-conformance-py314.lock` for the rerun;
+no dependency or lockfile was changed. All six conformance tests passed in
+152.091 seconds, including exact inventories for 135 adversarial sub-suite cases
+and all 41 original reference checks without skips.
+
 ### Delivery and live-proof boundary
 
 The isolated branch is `codex/fix-verification-runner-contracts`; its base is

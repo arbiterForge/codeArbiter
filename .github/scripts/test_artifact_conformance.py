@@ -143,6 +143,7 @@ EXPECTED_SUITES = {
     },
     "test_artifact_package.py": {
         "test_package_notices_require_complete_canonical_bytes",
+        "test_installed_host_plan_commands_are_preflight_qualified",
         "test_installed_bridge_offline_guard_has_negative_controls",
         "test_installed_host_runtime_guard_and_failure_redaction",
         "test_installed_host_runtime_guard_accepts_only_exact_darwin_stage",
