@@ -86,11 +86,45 @@ class ReconciliationTest(unittest.TestCase):
         self.routes = importlib.import_module("_artifactpromptlib")
         self.old_registry = self.routes.REGISTRY_PARENT
         self.routes.REGISTRY_PARENT = self.root
+        self.replies = importlib.import_module("_replylib")
+        self.old_codes = self.replies.REGISTRY_PARENT
+        self.replies.REGISTRY_PARENT = self.root
         self.client = FakeClient(self.root)
 
     def tearDown(self):
         self.routes.REGISTRY_PARENT = self.old_registry
+        self.replies.REGISTRY_PARENT = self.old_codes
         self.temp.cleanup()
+
+    def hook(self, prompt):
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=self.client):
+            return self.adapter.consume_from_hook(
+                root=self.root, plugin_root=self.root, prompt=prompt,
+                host="claude", session_id="session-lenient",
+            )
+
+    def arm_task(self, token="fixed-reconcile-token"):
+        return self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted verifier.",
+            assessment="The prior attempt has no established completion.", token=token,
+        )
+
+    def test_short_code_with_restated_state_reconciles_from_hook(self):
+        armed = self.arm_task()
+        self.assertEqual(armed["short_reply"], f"reconcile PENDING {armed['code']}")
+        self.assertIn("reconciliation recorded", self.hook(f"  reconcile pending {armed['code'].lower()}."))
+        source = next((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+        self.assertEqual(json.loads(source.read_text(encoding="utf-8"))["source_text"], armed["reply"])
+
+    def test_wrong_restated_state_or_extra_text_is_refused_visibly(self):
+        armed = self.arm_task()
+        before = list(self.client.calls)
+        self.assertIn("PENDING", self.hook(f"reconcile BLOCKED {armed['code']}"))
+        self.assertIn("send only the reply line", self.hook(armed["reply"] + " now"))
+        self.assertEqual(self.hook("please continue"), "")
+        self.assertEqual([n for n, _ in self.client.calls if n == "task-reconcile"],
+                         [n for n, _ in before if n == "task-reconcile"])
 
     def test_documented_recovery_commands_are_directly_runnable(self):
         source = (HERE.parent.parent / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
