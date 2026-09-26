@@ -126,6 +126,8 @@ EXPECTED_SUITES = {
         "test_forged_caller_metadata_cannot_manufacture_acceptance",
         "test_interrupted_task_reconciles_and_redispatches_after_process_recreation",
         "test_lone_markdown_and_html_specs_select_same_extension_future_plan",
+        "test_native_artifact_fresh_checkout_preserves_exact_bytes",
+        "test_native_artifact_roundtrip_does_not_normalize_retained_evidence",
         "test_plan_without_spec_and_mixed_pair_stop_without_writes",
         "test_production_pair_cutover_survives_recreation_and_rolls_back_exactly",
         "test_resume_reads_state_only_through_the_selected_formats_authority",
@@ -149,6 +151,7 @@ EXPECTED_SUITES = {
     },
     "test_artifact_package.py": {
         "test_package_notices_require_complete_canonical_bytes",
+        "test_installed_host_plan_commands_are_preflight_qualified",
         "test_installed_bridge_offline_guard_has_negative_controls",
         "test_installed_host_runtime_guard_and_failure_redaction",
         "test_installed_host_runtime_guard_accepts_only_exact_darwin_stage",

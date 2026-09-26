@@ -2,6 +2,7 @@
 """Regression tests for production structured-artifact authority producers."""
 
 import contextlib
+import copy
 import hashlib
 import importlib
 import importlib.util
@@ -12,6 +13,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 from pathlib import Path
@@ -25,6 +27,31 @@ from _gitexec import root_bound_git_env  # noqa: E402
 
 def git_run(argv, **kwargs):
     return subprocess.run(argv, env=root_bound_git_env(), **kwargs)
+
+
+def codex_01311_review_prompt(request):
+    """Frozen from qualified ca-codex 0.13.11; do not derive from today's formatter."""
+    # _artifactauthoritylib.py SHA256:
+    # 83a82b71d73bff8052536a3c5b5499904b9632fc3dc822f554111a099f69f2f4
+    context = request["context"]
+    return (
+        f"[CODEARBITER_AUTHORITY_REQUEST:{request['request_id']}]\n"
+        f"Target repository: {request['repository']['path']}\n"
+        f"Frozen context: {request['context_ref']} sha256={request['context_sha256']}\n"
+        "Frozen target data follows as canonical JSON:\n"
+        + json.dumps(context, ensure_ascii=True, allow_nan=False, sort_keys=True,
+                     separators=(",", ":")) + "\n"
+        "Act as a fresh read-only independent codeArbiter reviewer. Do not edit files or "
+        "delegate. Review only the frozen target and return exactly one JSON object using "
+        "format codearbiter.review-decision/0.1.0. "
+        f"Bind request_id={request['request_id']}, "
+        f"target_sha256={context['input_sha256']}, "
+        f"contract_sha256={request['review_contract_sha256']}. Required coverage: "
+        + json.dumps(request["required_coverage"], ensure_ascii=True)
+        + ". Fields: format, request_id, target_sha256, contract_sha256, decision "
+          "(pass or changes_requested), coverage (unique strings), findings (objects with "
+          "severity, code, message), assessment (non-empty string)."
+    )
 
 
 class FakeClient:
@@ -45,7 +72,7 @@ class FakeClient:
             "commands": [{
                 "definition_sha256": "6" * 64,
                 "definition": {
-                    "argv": ["python", "-m", "unittest", "tests.test_config"],
+                    "argv": ["python", "-m", "unittest", "tests.test_config", "-v"],
                     "cwd": "candidate worktree",
                     "expected_exit": 0,
                     "required_tests": ["test_environment_overrides"],
@@ -180,7 +207,7 @@ class AuthorityAdapterTest(unittest.TestCase):
 
         result, base = self._run(armed, runner)
 
-        self.assertEqual(launches[0][0][1:], ["-m", "unittest", "tests.test_config"])
+        self.assertEqual(launches[0][0][1:], ["-m", "unittest", "tests.test_config", "-v"])
         self.assertTrue(Path(launches[0][0][0]).is_absolute())
         self.assertEqual(launches[0][1]["cwd"], str(self.root.resolve()))
         self.assertEqual(result["state"], "COMPLETED")
@@ -206,7 +233,7 @@ class AuthorityAdapterTest(unittest.TestCase):
             "payload_sha256", "producer_profile", "producer_run_id",
             "producer_result", "producer_result_sha256",
         })
-        self.assertEqual(observation["producer_profile"], "declared-command/0.1.0")
+        self.assertEqual(observation["producer_profile"], "declared-command/0.2.0")
         canonical_result = json.dumps(
             observation["producer_result"], ensure_ascii=True, allow_nan=False,
             sort_keys=True, separators=(",", ":"),
@@ -634,13 +661,454 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     def test_verifier_failure_and_unsupported_collector_never_publish_success(self):
         self.client.context["commands"][0]["definition"]["argv"] = [sys.executable, "custom"]
-        armed = self.adapter.arm_request(
-            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
-            request_nonce="request-nonce-0002",
-        )
         with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR"):
-            self._authorize(armed)
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="request-nonce-0002",
+            )
         self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+    # O1: native Playwright JSON is the only supported named-result format.
+    def _playwright_report(self, title="reading inventory and baseline capture"):
+        return {
+            "suites": [{"title": "reading-first.spec.ts", "specs": [{
+                "title": title, "ok": True, "tests": [{
+                    "expectedStatus": "passed", "status": "expected",
+                    "results": [{"status": "passed", "retry": 0, "errors": []}],
+                }],
+            }], "suites": []}],
+            "errors": [],
+        }
+
+    def _collect_playwright(self, report, required=None):
+        required = required or ["reading inventory and baseline capture"]
+        profile = self.adapter._collector_profile(
+            ["playwright", "test", "--reporter=json"], required,
+        )
+        raw = report if isinstance(report, bytes) else json.dumps(report).encode()
+        return self.adapter.COLLECTORS[profile](raw, b"", required)
+
+    def test_playwright_json_exact_named_pass_is_supported(self):
+        self.assertEqual(self._collect_playwright(self._playwright_report()), [
+            {"name": "reading inventory and baseline capture", "status": "pass"},
+        ])
+
+    def test_playwright_json_prefix_summary_retry_and_malformed_fail_closed(self):
+        cases = []
+        cases.append(self._playwright_report("reading inventory and baseline capture across widths"))
+        report = self._playwright_report()
+        report["suites"][0]["specs"] = []
+        report["stats"] = {"expected": 1}
+        cases.append(report)
+        for field, value in (("expectedStatus", "failed"), ("status", "flaky")):
+            report = self._playwright_report()
+            report["suites"][0]["specs"][0]["tests"][0][field] = value
+            cases.append(report)
+        for value in (
+            [{"status": "skipped", "retry": 0, "errors": []}],
+            [{"status": "passed", "retry": 1, "errors": []}],
+            [{"status": "failed", "retry": 0, "errors": []},
+             {"status": "passed", "retry": 1, "errors": []}],
+            [{"status": "passed", "retry": 0, "errors": [{"message": "error"}]}],
+            [{"status": "passed", "errors": []}],
+            "malformed",
+        ):
+            report = self._playwright_report()
+            report["suites"][0]["specs"][0]["tests"][0]["results"] = value
+            cases.append(report)
+        report = self._playwright_report()
+        report["errors"] = [{"message": "global error"}]
+        cases.append(report)
+        for duplicate in ("project", "title"):
+            report = self._playwright_report()
+            spec = report["suites"][0]["specs"][0]
+            if duplicate == "project":
+                spec["tests"].append(copy.deepcopy(spec["tests"][0]))
+            else:
+                report["suites"][0]["specs"].append(copy.deepcopy(spec))
+            cases.append(report)
+        cases.extend([b"1 passed", b'{"suites": [], "errors": [], "errors": []}',
+                      b'{"suites": [], "errors": []} trailing'])
+        # First prove the profile exists; unsupported-collector is not negative proof.
+        self.assertEqual(self._collect_playwright(self._playwright_report())[0]["status"], "pass")
+        for report in cases:
+            with self.subTest(report=report), self.assertRaisesRegex(
+                RuntimeError, "(?:MISSING|DUPLICATE|INVALID|FAILED)_TEST_RESULT"
+            ):
+                self._collect_playwright(report)
+
+    def test_playwright_inconsistent_spec_verdict_is_not_a_pass(self):
+        for ok in (False, None, "true"):
+            report = self._playwright_report()
+            report["suites"][0]["specs"][0]["ok"] = ok
+            with self.subTest(ok=ok), self.assertRaisesRegex(RuntimeError, "INVALID_TEST_RESULT"):
+                self._collect_playwright(report)
+
+    def test_named_line_punctuation_is_part_of_the_exact_name(self):
+        with self.assertRaisesRegex(RuntimeError, "MISSING_TEST_RESULT"):
+            self.adapter._named_line_collector(b"PASS: exact case...\n", b"", ["exact case"])
+
+    def test_failed_duplicate_named_line_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._named_line_collector(b"PASS: exact case\nFAIL: exact case\n", b"", ["exact case"])
+
+    # O2: classification follows the actual command, with early actionable refusal.
+    def test_runner_position_and_verbose_are_required(self):
+        for argv in (
+            ["python", "-m", "unittest", "tests.test_config"],
+            ["python", "-c", "pass", "vitest", "--reporter=verbose"],
+            ["python", "-c", "pass", "tsx"],
+            ["node", "custom.js", "vitest", "--reporter=verbose"],
+            ["npm", "run", "check"],
+            ["npm", "run", "test:client"],
+        ):
+            with self.subTest(argv=argv), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR"):
+                self.adapter._collector_profile(argv, ["exact test"])
+
+    def test_skipped_duplicate_unittest_name_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._unittest_collector(
+                b"test_exact (suite.First.test_exact) ... ok\n"
+                b"test_exact (suite.Second.test_exact) ... skipped 'unavailable'\n",
+                b"", ["test_exact"],
+            )
+
+    def test_unittest_crlf_named_pass_is_supported(self):
+        self.assertEqual(self.adapter._unittest_collector(
+            b"", b"test_exact (suite.First.test_exact) ... ok\r\n", ["test_exact"]),
+            [{"name": "test_exact", "status": "pass"}])
+
+    def test_unittest_crlf_skipped_duplicate_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._unittest_collector(
+                b"", b"test_exact (suite.First.test_exact) ... ok\r\n"
+                b"test_exact (suite.Second.test_exact) ... skipped 'unavailable'\r\n",
+                ["test_exact"],
+            )
+
+    def test_skipped_duplicate_vitest_name_is_not_a_pass(self):
+        with self.assertRaisesRegex(RuntimeError, "DUPLICATE_TEST_RESULT"):
+            self.adapter._vitest_verbose_collector(
+                " ✓ a.test.ts > suite > exact test 4ms\n ↓ b.test.ts > suite > exact test\n".encode(),
+                b"", ["suite > exact test"],
+            )
+
+    def test_vitest_suffix_alias_is_not_the_exact_test_identity(self):
+        with self.assertRaisesRegex(RuntimeError, "MISSING_TEST_RESULT"):
+            self.adapter._vitest_verbose_collector(
+                " ✓ a.test.ts > suite > longer title > exact test 4ms\n".encode(), b"", ["exact test"])
+
+    def test_vitest_full_identity_is_supported(self):
+        self.assertEqual(self.adapter._vitest_verbose_collector(
+            " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b"", ["suite > exact test"]),
+            [{"name": "suite > exact test", "status": "pass"}])
+
+    def test_vitest_ansi_pass_and_retry_repeat_negatives(self):
+        required = ["suite > exact test"]
+        self.assertEqual(self.adapter._vitest_verbose_collector(
+            " \x1b[32m✓\x1b[39m a.test.ts > suite > exact test \x1b[32m4ms\x1b[39m\n".encode(), b"", required),
+            [{"name": required[0], "status": "pass"}])
+        for suffix in (" (retry x1)", " (repeat x2)", " (retry x1) (repeat x2)"):
+            with self.subTest(suffix=suffix), self.assertRaisesRegex(RuntimeError, "MISSING_TEST_RESULT"):
+                self.adapter._vitest_verbose_collector(
+                    (" ✓ a.test.ts > suite > exact test 4ms\x1b[33m" + suffix + "\x1b[39m\n").encode(), b"", required)
+
+    def _linked_node_runner(self):
+        (self.root / ".gitignore").write_text("node_modules/\n.runner-store/\n", encoding="utf-8")
+        target = self.root.resolve() / ".runner-store" / "playwright"
+        target.mkdir(parents=True)
+        (target / "cli.js").write_text("// fixture entrypoint, never executed\n", encoding="utf-8")
+        linked = self.root.resolve() / "node_modules" / "playwright"
+        linked.parent.mkdir()
+
+        def point_at(directory):
+            if os.name == "nt":
+                subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(directory)],
+                               check=True, capture_output=True)
+            else:
+                linked.symlink_to(directory, target_is_directory=True)
+
+        def remove_link():
+            if os.name == "nt":
+                linked.rmdir()
+            else:
+                linked.unlink()
+
+        point_at(target)
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["node", "node_modules/playwright/cli.js", "test", "--reporter=json"],
+                          required_tests=["reading inventory and baseline capture"])
+        return target, linked, point_at, remove_link
+
+    def test_linked_node_runner_records_the_declared_path_and_runs(self):
+        _target, linked, _point_at, _remove_link = self._linked_node_runner()
+        definition = self.client.context["commands"][0]["definition"]
+        for entrypoint in ("node_modules/playwright/cli.js", str(linked / "cli.js"),
+                           "./node_modules/playwright/../../node_modules/playwright/cli.js"):
+            with self.subTest(entrypoint=entrypoint):
+                definition["argv"][1] = entrypoint
+                armed = self.adapter.arm_request(
+                    self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
+                self.assertEqual(binding["argv"][1], entrypoint)
+                entry = next(item for item in binding["launch_files"] if item["role"] == "runner-entrypoint")
+                self.assertEqual(entry["path"], str(linked / "cli.js"))
+                self.assertEqual(entry["filesystem_id"], self.adapter._path_identity(linked / "cli.js"))
+                raw = json.dumps(self._playwright_report()).encode()
+                result, base = self._run(
+                    armed, lambda argv, **_kwargs: subprocess.CompletedProcess(argv, 0, raw, b""))
+                self.assertEqual(result["state"], "COMPLETED")
+                self._corroborate(base)
+                self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
+    def test_linked_node_runner_retarget_with_identical_bytes_cannot_publish(self):
+        target, _linked, point_at, remove_link = self._linked_node_runner()
+        replacement = target.parent / "replacement"
+        replacement.mkdir()
+        (replacement / "cli.js").write_bytes((target / "cli.js").read_bytes())
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+
+        def retarget_entrypoint(argv, **_kwargs):
+            remove_link()
+            point_at(replacement)
+            return subprocess.CompletedProcess(argv, 0, json.dumps(self._playwright_report()).encode(), b"")
+
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._run(armed, retarget_entrypoint)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def test_linked_node_runner_retarget_before_authorization_is_rejected(self):
+        target, _linked, point_at, remove_link = self._linked_node_runner()
+        replacement = target.parent / "replacement"
+        replacement.mkdir()
+        (replacement / "cli.js").write_bytes((target / "cli.js").read_bytes())
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        remove_link()
+        point_at(replacement)
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._authorize(armed)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def test_linked_node_runner_final_component_symlink_is_rejected(self):
+        target, linked, _point_at, _remove_link = self._linked_node_runner()
+        original = target / "original.js"
+        (target / "cli.js").rename(original)
+        try:
+            (linked / "cli.js").symlink_to(original)
+        except OSError as exc:
+            self.skipTest(f"host cannot create a file symlink: {exc}")
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_WORKSPACE"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        self.assertEqual(self.adapter._registered_requests(), [])
+
+    def test_direct_node_runner_entrypoint_drift_cannot_publish(self):
+        (self.root / ".gitignore").write_text("node_modules/\n", encoding="utf-8")
+        script = self.root / "node_modules" / "playwright" / "cli.js"
+        script.parent.mkdir(parents=True)
+        script.write_text("// fixture entrypoint, never executed\n", encoding="utf-8")
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["node", "node_modules/playwright/cli.js", "test", "--reporter=json"],
+                          required_tests=["reading inventory and baseline capture"])
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        def changed_entrypoint(argv, **_kwargs):
+            script.write_text("// substituted entrypoint\n", encoding="utf-8")
+            return subprocess.CompletedProcess(argv, 0, json.dumps(self._playwright_report()).encode(), b"")
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._run(armed, changed_entrypoint)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+
+    def _npm_definition(self, script="playwright test", forwarded=None):
+        package = self.root / "site" / "package.json"
+        package.parent.mkdir(exist_ok=True)
+        package.write_text(json.dumps({"scripts": {"test:browser": script}}), encoding="utf-8")
+        definition = self.client.context["commands"][0]["definition"]
+        definition["argv"] = ["npm", "--prefix", "site", "run", "test:browser", "--", *(
+            forwarded if forwarded is not None else ["--reporter=json"]
+        )]
+        definition["required_tests"] = ["reading inventory and baseline capture"]
+        return definition
+
+    def test_npm_prefixed_script_runs_with_its_actual_playwright_collector(self):
+        self._npm_definition(forwarded=["reading-first.spec.ts", "--grep",
+            "reading inventory and baseline capture", "--reporter=json"])
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        raw = json.dumps(self._playwright_report()).encode()
+        result, _base = self._run(armed, lambda argv, **_kwargs: subprocess.CompletedProcess(argv, 0, raw, b""))
+        self.assertEqual(result["commands"][0]["tests"][0]["status"], "pass")
+
+    def test_npm_prefixed_script_runs_with_its_actual_vitest_collector(self):
+        definition = self._npm_definition("vitest run", ["--reporter=verbose"])
+        definition["required_tests"] = ["suite > exact test"]
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        result, _base = self._run(armed, lambda argv, **_kwargs: subprocess.CompletedProcess(
+            argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b""))
+        self.assertEqual(result["commands"][0]["tests"], [{"name": "suite > exact test", "status": "pass"}])
+
+    def test_npm_compound_or_missing_reporter_is_rejected_before_arm(self):
+        for script, forwarded in (("playwright test", []), ("vitest run", []),
+                                  ("echo pre && vitest run && echo after", ["--reporter=verbose"]),
+                                  ("node custom.js vitest", ["--reporter=verbose"])):
+            with self.subTest(script=script, forwarded=forwarded):
+                self._npm_definition(script, forwarded)
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR.*(?:reporter|direct|runner)"):
+                    self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                self.assertEqual(self.adapter._registered_requests(), [])
+
+    @unittest.skipUnless(os.name == "nt", "Windows rooted and drive-relative prefix grammar")
+    def test_npm_prefix_rejects_rooted_and_drive_relative_spellings(self):
+        definition = self._npm_definition()
+        with tempfile.TemporaryDirectory() as external_temp:
+            external = Path(external_temp)
+            (external / "package.json").write_text(json.dumps({"scripts": {"test:browser": "playwright test"}}), encoding="utf-8")
+            for prefix in (str(external)[2:], self.root.drive + "site"):
+                with self.subTest(prefix=prefix), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR.*prefix"):
+                    candidate = copy.deepcopy(definition)
+                    candidate["argv"][2] = prefix
+                    self.adapter.validate_command_definition(candidate, cwd=self.root)
+
+    def test_npm_manifest_read_is_bounded_even_when_stat_reports_old_size(self):
+        definition = self._npm_definition()
+        manifest = self.root / "site" / "package.json"
+        manifest.write_bytes(manifest.read_bytes() + b" " * (self.adapter.MAX_STATE + 1))
+        actual_stat = Path.stat
+        def stale_size(path, *args, **kwargs):
+            result = actual_stat(path, *args, **kwargs)
+            if path == manifest:
+                fields = list(result)
+                fields[6] = 1
+                return os.stat_result(fields)
+            return result
+        with mock.patch.object(Path, "stat", stale_size), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_malformed_manifest_has_an_actionable_diagnostic(self):
+        definition = self._npm_definition()
+        manifest = self.root / "site" / "package.json"
+        for raw in (
+            b'{"scripts": {"test:browser":"playwright test"}, "unused":NaN}',
+            b"[" * 2000 + b"0" + b"]" * 2000,
+            b'{"scripts":{},"scripts":{"test:browser":"playwright test"}}',
+            b'{"scripts":null}', b'{"scripts":{"test:browser":true}}',
+            b'{"scripts":[]}', b'[]', b'{"scripts":',
+        ):
+            manifest.write_bytes(raw)
+            with self.subTest(raw=raw[:80]), self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_prefix_rejects_linked_directory(self):
+        definition = self._npm_definition()
+        with tempfile.TemporaryDirectory() as external_temp:
+            external = Path(external_temp)
+            (external / "package.json").write_text(json.dumps({"scripts": {"test:browser": "playwright test"}}), encoding="utf-8")
+            linked = self.root / "linked-site"
+            try:
+                linked.symlink_to(external, target_is_directory=True)
+            except OSError as exc:
+                self.skipTest(f"directory symlink unavailable: {exc}")
+            definition["argv"][2] = linked.name
+            with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_windows_browser_discovery_environment_is_allowlisted(self):
+        discovery = {"ProgramFiles": r"C:\Program Files", "ProgramFiles(x86)": r"C:\Program Files (x86)",
+                     "ProgramW6432": r"C:\Program Files", "SystemDrive": "C:"}
+        with mock.patch.dict(os.environ, {**discovery, "UNAPPROVED_DISCOVERY_SETTING": "fixture"}):
+            environment, _digest = self.adapter._minimal_environment()
+        for key, value in discovery.items():
+            self.assertEqual(environment.get(key), value)
+        self.assertNotIn("UNAPPROVED_DISCOVERY_SETTING", environment)
+
+    # O3: Windows batch command lines must never reach CreateProcess unchanged.
+    @unittest.skipUnless(os.name == "nt", "Windows npm batch invocation")
+    def test_windows_npm_launch_binds_native_node_and_preserves_metacharacters(self):
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["npm", "--version", "&", "echo", "BATCH_METACHAR_PROBE"], required_tests=[])
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
+        env, _digest = self.adapter._minimal_environment()
+        completed = self.adapter._run_contained(binding["argv"], cwd=str(self.root), env=env)
+        self.assertNotIn(b"BATCH_METACHAR_PROBE", completed.stdout)
+        self.assertEqual(Path(binding["argv"][0]).name.lower(), "node.exe")
+        self.assertEqual(Path(binding["argv"][1]).name, "npm-cli.js")
+        self.assertEqual(binding["argv"][2:], definition["argv"][1:])
+        bound_paths = {Path(item["path"]).name.lower() for item in binding["launch_files"]}
+        self.assertEqual(bound_paths, {"node.exe", "npm.cmd", "npm-cli.js"})
+
+    def test_unknown_batch_executable_is_rejected_before_arm(self):
+        script = self.root / "runner.cmd"
+        script.write_text("@echo BATCH_METACHAR_PROBE\n", encoding="utf-8")
+        self.client.context["commands"][0]["definition"].update(argv=[str(script)], required_tests=[])
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_EXECUTABLE.*batch"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        self.assertEqual(self.adapter._registered_requests(), [])
+
+    @unittest.skipUnless(os.name == "nt", "Windows npm batch adapter")
+    def test_unknown_npm_named_wrapper_is_not_silently_reinterpreted(self):
+        script = self.root / "npm.cmd"
+        script.write_text("@echo CUSTOM_WRAPPER\n", encoding="utf-8")
+        (self.root / "node.exe").write_bytes(b"fixture native executable identity")
+        cli = self.root / "node_modules" / "npm" / "bin" / "npm-cli.js"
+        cli.parent.mkdir(parents=True)
+        cli.write_text("process.stdout.write('fixture')", encoding="utf-8")
+        self.client.context["commands"][0]["definition"].update(argv=[str(script), "--version"], required_tests=[])
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_EXECUTABLE.*(?:standard|wrapper)"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        self.assertEqual(self.adapter._registered_requests(), [])
+
+    @unittest.skipUnless(os.name == "nt", "Windows npm bound file identities")
+    def test_npm_bound_files_reject_drift_before_authorization_and_after_execution(self):
+        # Runtime files live outside Git and the manifest is ignored by Git:
+        # only the binding's retained file identities can detect these changes.
+        with tempfile.TemporaryDirectory() as runtime_temp:
+            runtime = Path(runtime_temp)
+            wrapper = runtime / "npm.cmd"
+            shutil.copyfile(shutil.which("npm.cmd"), wrapper)
+            node = runtime / "node.exe"
+            node.write_bytes(b"fixture native identity, never executed")
+            cli = runtime / "node_modules" / "npm" / "bin" / "npm-cli.js"
+            cli.parent.mkdir(parents=True)
+            cli.write_text("// fixture CLI identity, never executed\n", encoding="utf-8")
+            (self.root / ".gitignore").write_text("site/\n", encoding="utf-8")
+            definition = self._npm_definition()
+            definition["argv"][0] = str(wrapper)
+            manifest = self.root / "site" / "package.json"
+            for phase in ("before", "after"):
+                for target in (wrapper, node, cli, manifest):
+                    original = target.read_bytes()
+                    with self.subTest(phase=phase, target=target.name):
+                        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                        if phase == "before":
+                            target.write_bytes(original + b"\n")
+                            with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                                self._authorize(armed)
+                        else:
+                            def changed_runtime(argv, **_kwargs):
+                                target.write_bytes(original + b"\n")
+                                return subprocess.CompletedProcess(argv, 0, json.dumps(self._playwright_report()).encode(), b"")
+                            with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                                self._run(armed, changed_runtime)
+                        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+                        target.write_bytes(original)
+
+    # O4: quoted supported wrappers authorize, malformed authority calls reject.
+    def test_single_quoted_wrapper_preserves_selector_and_host_correlation(self):
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        command = (f"python '{CORE_PYSRC / 'artifact-authority.py'}' verify "
+                   f"--root '{self.root}' --request-id '{armed['request_id']}'")
+        base = {"tool_name": "exec_command", "tool_input": {"cmd": command},
+                "session_id": "session-quoted", "turn_id": "turn-quoted", "tool_use_id": "tool-quoted"}
+        result = self.adapter.observe_verifier_hook(self.root, {**base, "hook_event_name": "PreToolUse"})
+        self.assertIsNotNone(result)
+        self.assertEqual(result["state"], "AUTHORIZED")
+        with self.assertRaisesRegex(RuntimeError, "not correlated"):
+            self.adapter.observe_verifier_hook(self.root, {**base, "hook_event_name": "PostToolUse",
+                "tool_use_id": "other-tool", "tool_response": {"exit_code": 0}})
+
+    def test_malformed_authority_wrapper_does_not_silently_fall_through(self):
+        for tail in ("--root", "--root . --request-id invalid", "--root . --request-id " + "a" * 64 + " extra"):
+            with self.subTest(tail=tail), self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                self.adapter._verification_selector({"tool_name": "exec_command", "tool_input": {
+                    "cmd": f'python "{CORE_PYSRC / "artifact-authority.py"}" verify {tail}'}})
 
     def test_closed_singedterra_collectors_require_explicit_named_output(self):
         self.assertEqual(
@@ -662,9 +1130,9 @@ class AuthorityAdapterTest(unittest.TestCase):
         self.assertEqual(
             self.adapter._vitest_verbose_collector(
                 "✓ src/ui/example.test.ts > scoreboard > rendered empty state 4ms\n".encode(),
-                b"", ["rendered empty state"],
+                b"", ["scoreboard > rendered empty state"],
             ),
-            [{"name": "rendered empty state", "status": "pass"}],
+            [{"name": "scoreboard > rendered empty state", "status": "pass"}],
         )
         with self.assertRaisesRegex(RuntimeError, "exit-only profile"):
             self.adapter._exit_only_collector(b"", b"", ["invented success"])
@@ -1561,6 +2029,702 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         self.assertEqual(set(armed["launch_envelope"]), {"message", "task_name", "fork_turns"})
 
 
+class NativeReviewTransportTest(unittest.TestCase):
+    """NR-01..03: transport immutable evidence without expanding the launch."""
+
+    setUp = AuthorityAdapterTest.setUp
+    tearDown = AuthorityAdapterTest.tearDown
+    _setup_claude = ClaudeAuthorityAdapterTest._setup_claude
+
+    def _arm_review(self, host, activity, nonce, entries=0):
+        self.client = FakeClient(self.root)
+        context = self.client.context
+        context["activity"] = activity
+        context["commands"] = []
+        context["task"]["description"] = "Frozen task review material. " * 140
+        if activity == "quality_review":
+            context["tasks"] = [context.pop("task")]
+            context["task_hashes"] = {"T-001": context.pop("task_sha256")}
+            context["base_input_sha256"] = "7" * 64
+            context["scope_baseline"] = {}
+            context["subject"]["record_id"] = "CP-001"
+            context.pop("commands")
+        context["input_manifest"] = {
+            "format": "codearbiter.verification-inputs/0.1.0",
+            "engine": "fixture", "platform": "fixture/fixture", "engine_toolchain": "fixture",
+            "roots": ["."], "exclude_directories": [],
+            "entries": {
+                f"src/repository_scale/fixture_manifest_member_{number:05d}.py": {
+                    "kind": "bytes", "sha256": hashlib.sha256(str(number).encode()).hexdigest(),
+                    "executable": False,
+                } for number in range(entries)
+            },
+        }
+        context["input_sha256"] = hashlib.sha256(
+            self.adapter._canonical(context["input_manifest"])
+        ).hexdigest()
+        return self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", context["subject"]["record_id"], activity,
+            request_nonce=nonce, host=host,
+        )
+
+    def _launch(self, host, armed):
+        if host == "claude":
+            return self.adapter.observe_claude_hook(self.root, claude_fixture(
+                "agent-pretooluse.json", tool_input=armed["launch_envelope"],
+            ))
+        return self.adapter.observe_codex_hook(self.root, {
+            "hook_event_name": "PreToolUse", "session_id": "transport-parent",
+            "turn_id": "turn-" + armed["request_id"][:12], "tool_use_id": "transport-tool",
+            "tool_name": "spawn_agent", "tool_input": armed["launch_envelope"],
+        })
+
+    def _complete(self, host, armed):
+        self._launch(host, armed)
+        decision = json.dumps({
+            "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+            "target_sha256": self.client.context["input_sha256"],
+            "contract_sha256": armed["review_contract_sha256"], "decision": "pass",
+            "coverage": armed["required_coverage"], "findings": [], "assessment": "Fixture review.",
+        })
+        if host == "claude":
+            self.adapter.observe_claude_hook(self.root, claude_fixture(
+                "agent-posttooluse.json", tool_input=armed["launch_envelope"],
+                tool_response={"agentId": "transport-child", "resolvedModel": "opus"},
+            ))
+            self.adapter.observe_claude_hook(self.root, claude_fixture(
+                "subagentstart.json", agent_id="transport-child", agent_type=REVIEWER,
+            ))
+            return self.adapter.observe_claude_hook(self.root, claude_fixture(
+                "subagentstop-first.json", agent_id="transport-child", agent_type=REVIEWER,
+                last_assistant_message=decision,
+                background_tasks=[{"id": "transport-child", "agent_type": REVIEWER}],
+            ))
+        base = {"session_id": "transport-parent", "turn_id": "turn-" + armed["request_id"][:12]}
+        self.adapter.observe_codex_hook(self.root, {
+            **base, "hook_event_name": "PostToolUse", "tool_use_id": "transport-tool",
+            "tool_name": "spawn_agent", "tool_response": {"task_name": armed["launch_envelope"]["task_name"]},
+        })
+        child = {**base, "agent_id": "transport-child", "agent_type": "default"}
+        self.adapter.observe_codex_hook(self.root, {**child, "hook_event_name": "SubagentStart"})
+        return self.adapter.observe_codex_hook(self.root, {
+            **child, "hook_event_name": "SubagentStop", "last_assistant_message": decision,
+        })
+
+    def test_repository_scale_review_prompt_preserves_full_context_by_reference(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            for activity in ("spec_review", "quality_review"):
+                with self.subTest(host=host, activity=activity):
+                    nonce = f"transport-size-{host}-{activity}"
+                    small = self._arm_review(host, activity, nonce + "-small")
+                    armed = self._arm_review(host, activity, nonce + "-large", entries=2835)
+                    prompt = armed["dispatch_prompt"]
+                    self.assertLess(len(prompt.encode("utf-8")), 8192)
+                    self.assertEqual(len(prompt), len(small["dispatch_prompt"]))
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["context"], self.client.context)
+                    context_raw = (self.root / request["context_ref"]).read_bytes()
+                    self.assertGreater(len(context_raw), 400000)
+                    self.assertEqual(hashlib.sha256(context_raw).hexdigest(), request["context_sha256"])
+                    self.assertEqual(json.loads(context_raw), self.client.context)
+                    for binding in (
+                        armed["request_id"], str(self.root.resolve()), request["context_ref"],
+                        request["context_sha256"], self.client.context["input_sha256"],
+                        armed["review_contract_sha256"], *armed["required_coverage"],
+                    ):
+                        self.assertIn(binding, prompt)
+                    self.assertIn("read-only", prompt)
+                    self.assertIn("Read the frozen context", prompt)
+                    self.assertNotIn("fixture_manifest_member_02834", prompt)
+                    self.assertNotIn(self.client.context.get("task", self.client.context.get("tasks", [{}])[0])["description"], prompt)
+                    key = "prompt" if host == "claude" else "message"
+                    self.assertEqual(armed["launch_envelope"][key], prompt)
+                    self.assertEqual(self._launch(host, armed)["state"], "LAUNCHING")
+
+    def test_missing_or_changed_context_blocks_review_launch(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            for damage in ("missing", "changed", "noncanonical"):
+                with self.subTest(host=host, damage=damage):
+                    armed = self._arm_review(host, "spec_review", f"transport-launch-{host}-{damage}")
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    context_path = self.root / request["context_ref"]
+                    if damage == "missing":
+                        context_path.unlink()
+                    elif damage == "changed":
+                        context_path.write_text("{}", encoding="utf-8")
+                    else:
+                        context_path.write_bytes(context_path.read_bytes() + b"\n")
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
+                        self._launch(host, armed)
+                    after = self.adapter._load(self.root, armed["request_id"])
+                    self.assertIsNone(after["launch"])
+                    self.assertIsNone(after["receipt"])
+                    self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+    def test_missing_or_changed_frozen_context_cannot_be_recreated_by_publication(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            for activity in ("spec_review", "quality_review"):
+                for damage in ("missing", "changed"):
+                    with self.subTest(host=host, activity=activity, damage=damage):
+                        nonce = f"transport-publish-{host}-{activity}-{damage}"
+                        armed = self._arm_review(host, activity, nonce)
+                        self.assertEqual(self._complete(host, armed)["state"], "COMPLETED")
+                        request = self.adapter._load(self.root, armed["request_id"])
+                        context_path = self.root / request["context_ref"]
+                        if damage == "missing":
+                            context_path.unlink()
+                        else:
+                            context_path.write_text("{}", encoding="utf-8")
+                        calls_before = list(self.client.calls)
+                        with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
+                            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                        self.assertEqual(self.client.calls, calls_before)
+                        self.assertEqual(self.adapter._load(self.root, armed["request_id"]), request)
+                        self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+
+    def test_only_pristine_armed_reviews_can_be_abandoned_without_a_receipt(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            for activity in ("spec_review", "quality_review"):
+                with self.subTest(host=host, activity=activity):
+                    armed = self._arm_review(host, activity, f"transport-abandon-{host}-{activity}")
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    if host == "codex":
+                        self.assertNotIn("host", request)  # Qualified 0.13.11 legacy shape.
+                    context_path = self.root / request["context_ref"]
+                    before_context = context_path.read_bytes()
+                    result = self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                    self.assertEqual(result["state"], "ABANDONED")
+                    self.assertFalse(result["rerun_permitted"])
+                    retained = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(retained["recovery"], {
+                        "disposition": "abandoned", "previous_attempt": None, "rerun_permitted": False,
+                    })
+                    for field in request:
+                        if field not in {"state", "recovery", "integrity_sha256"}:
+                            self.assertEqual(retained[field], request[field], field)
+                    self.assertEqual(context_path.read_bytes(), before_context)
+                    self.assertFalse((self.adapter._registry_root() / f"{armed['request_id']}.json").exists())
+                    self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+                    with self.assertRaisesRegex(RuntimeError, "AUTHORITY_NOT_COMPLETE"):
+                        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                    with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                        self._launch(host, armed)
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_RECOVERY"):
+                        self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+
+                    for field in (
+                        "attempt", "launch", "observation_ref", "observation_sha256", "receipt", "wrapper", "recovery",
+                    ):
+                        for mutation in ("missing", "non-null"):
+                            with self.subTest(field=field, mutation=mutation):
+                                other = self._arm_review(host, activity, f"transport-invalid-{host}-{activity}-{field}-{mutation}")
+                                malformed = self.adapter._load(self.root, other["request_id"])
+                                if mutation == "missing":
+                                    malformed.pop(field)
+                                else:
+                                    malformed[field] = {}  # Even falsey presence is not a never-launched request.
+                                self.adapter._save(self.root, malformed)
+                                before = Path(other["request_path"]).read_bytes()
+                                with self.assertRaisesRegex(RuntimeError, "INVALID_RECOVERY"):
+                                    self.adapter.recover_request(self.root, other["request_id"], "abandoned")
+                                self.assertEqual(Path(other["request_path"]).read_bytes(), before)
+                    for disposition in ("failed", "retry"):
+                        other = self._arm_review(host, activity, f"transport-disposition-{host}-{activity}-{disposition}")
+                        before = Path(other["request_path"]).read_bytes()
+                        with self.assertRaisesRegex(RuntimeError, "INVALID_RECOVERY"):
+                            self.adapter.recover_request(self.root, other["request_id"], disposition)
+                        self.assertEqual(Path(other["request_path"]).read_bytes(), before)
+
+    def _legacy_review(self, nonce, host="codex", activity="spec_review", *, codex_01311=False):
+        armed = self._arm_review(host, activity, nonce, entries=2835)
+        request = self.adapter._load(self.root, armed["request_id"])
+        context = request["context"]
+        # Later inline prompts included the JSON-only suffix. Qualified Codex
+        # 0.13.11 predates that suffix and the Claude launch envelope entirely.
+        prompt = (
+            f"[CODEARBITER_AUTHORITY_REQUEST:{request['request_id']}]\n"
+            f"Target repository: {request['repository']['path']}\n"
+            f"Frozen context: {request['context_ref']} sha256={request['context_sha256']}\n"
+            "Frozen target data follows as canonical JSON:\n"
+            + self.adapter._canonical(context).decode("ascii") + "\n"
+            "Act as a fresh read-only independent codeArbiter reviewer. Do not edit files or "
+            "delegate. Review only the frozen target and return exactly one JSON object using "
+            "format codearbiter.review-decision/0.1.0. "
+            f"Bind request_id={request['request_id']}, "
+            f"target_sha256={context['input_sha256']}, "
+            f"contract_sha256={request['review_contract_sha256']}. Required coverage: "
+            + json.dumps(request["required_coverage"], ensure_ascii=True)
+            + ". Fields: format, request_id, target_sha256, contract_sha256, decision "
+              "(pass or changes_requested), coverage (unique strings), findings (objects with "
+              "severity, code, message), assessment (non-empty string). Reply with the JSON "
+              "object only: no code fence and no other text."
+        )
+        if codex_01311:
+            prompt = codex_01311_review_prompt(request)
+        request["dispatch_prompt"] = prompt
+        key = "prompt" if host == "claude" else "message"
+        request["launch_envelope"][key] = prompt
+        self.adapter._save(self.root, request)
+        return armed, request
+
+    def test_oversized_legacy_review_can_only_be_abandoned_after_full_validation(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            for activity in ("spec_review", "quality_review"):
+                with self.subTest(host=host, activity=activity):
+                    self._assert_legacy_review_recovery(host, activity)
+
+    def _assert_legacy_review_recovery(self, host, activity, *, codex_01311=False):
+        armed, request = self._legacy_review(
+            f"transport-legacy-{host}-{activity}", host, activity, codex_01311=codex_01311,
+        )
+        if host == "codex":
+            self.assertNotIn("host", request)
+        else:
+            self.assertEqual(request["host"], "claude")
+        path = Path(armed["request_path"])
+        self.assertGreater(path.stat().st_size, 1 << 20)
+        self.assertLess(path.stat().st_size, 2 << 20)
+        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+            self.adapter._load(self.root, armed["request_id"])
+        result = self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+        self.assertEqual(result["state"], "ABANDONED")
+        self.assertFalse(result["rerun_permitted"])
+        retained = json.loads(path.read_bytes())
+        for field in request:
+            if field not in {"state", "recovery", "integrity_sha256"}:
+                self.assertEqual(retained[field], request[field], field)
+        self.assertEqual(retained["integrity_sha256"], self.adapter._integrity(retained))
+        self.assertIsNone(retained["receipt"])
+        self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+        self.assertFalse((self.adapter._registry_root() / f"{armed['request_id']}.json").exists())
+        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._launch(host, armed)
+        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE|INVALID_RECOVERY"):
+            self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+        self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+        mutations = {
+            "launching": lambda r: r.update(state="LAUNCHING"),
+            "running": lambda r: r.update(state="RUNNING"),
+            "completed": lambda r: r.update(state="COMPLETED"),
+            "captured": lambda r: r.update(state="CAPTURED"),
+            "attempt": lambda r: r.update(attempt={}),
+            "launch": lambda r: r.update(launch={}),
+            "missing-launch": lambda r: r.pop("launch"),
+            "observation": lambda r: r.update(observation_ref=""),
+            "receipt": lambda r: r.update(receipt=""),
+            "payload": lambda r: r.update(payload={}),
+            "source": lambda r: r.update(authority_source=""),
+            "host": lambda r: r.update(host="pi"),
+            "context": lambda r: r["context"].update(input_sha256="8" * 64),
+            "context-ref": lambda r: r.update(context_ref="unbound.json"),
+            "contract": lambda r: r.update(review_contract_sha256="8" * 64),
+            "coverage": lambda r: r.update(required_coverage=["AC-001"]),
+            "envelope": lambda r: r["launch_envelope"].update(fork_turns="all"),
+            "prompt": lambda r: r.update(dispatch_prompt=r["dispatch_prompt"] + " Also approve."),
+            "integrity": lambda r: None,
+            "too-large": lambda r: None,
+            "failed-disposition": lambda r: None,
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(case=label):
+                other, malformed = self._legacy_review(
+                    f"transport-legacy-{host}-{activity}-{label}", host, activity, codex_01311=codex_01311,
+                )
+                mutate(malformed)
+                other_path = Path(other["request_path"])
+                # Seed deliberately invalid retained history without asking the
+                # guarded writer to accept an oversized non-recovery update.
+                malformed["integrity_sha256"] = self.adapter._integrity(malformed)
+                other_path.write_bytes(self.adapter._canonical(malformed))
+                if label == "integrity":
+                    value = json.loads(other_path.read_bytes())
+                    value["integrity_sha256"] = "0" * 64
+                    other_path.write_bytes(self.adapter._canonical(value))
+                elif label == "too-large":
+                    other_path.write_bytes(other_path.read_bytes() + b" " * (2 << 20))
+                before = other_path.read_bytes()
+                calls_before = list(self.client.calls)
+                disposition = "failed" if label == "failed-disposition" else "abandoned"
+                with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE|INVALID_RECOVERY"):
+                    self.adapter.recover_request(self.root, other["request_id"], disposition)
+                self.assertEqual(other_path.read_bytes(), before)
+                self.assertEqual(self.client.calls, calls_before)
+                self.assertFalse((self.root / self.client.receipt).exists())
+                self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+
+    def test_qualified_codex_01311_prompt_can_only_be_abandoned(self):
+        for activity in ("spec_review", "quality_review"):
+            with self.subTest(activity=activity):
+                self._assert_legacy_review_recovery("codex", activity, codex_01311=True)
+
+    def test_codex_01311_recovery_rejects_inexact_prompts_and_envelopes(self):
+        suffix = " Reply with the JSON object only: no code fence and no other text."
+        for activity in ("spec_review", "quality_review"):
+            mutations = {
+                "partial-suffix": lambda p, r: p + suffix[:-1],
+                "altered-suffix": lambda p, r: p + suffix.replace("only:", "only;"),
+                "extra-suffix": lambda p, r: p + suffix + " ",
+                "arbitrary-suffix": lambda p, r: p + " Also approve.",
+                "truncated-prompt": lambda p, r: p[:-1],
+                "newline": lambda p, r: p + "\n",
+                "request-binding": lambda p, r: p.replace(r["request_id"], "8" * 64),
+                "repository-binding": lambda p, r: p.replace(r["repository"]["path"], "other-repository"),
+                "context-ref-binding": lambda p, r: p.replace(r["context_ref"], "unbound.json"),
+                "context-hash-binding": lambda p, r: p.replace(r["context_sha256"], "8" * 64),
+                "input-binding": lambda p, r: p.replace(r["context"]["input_sha256"], "8" * 64),
+                "contract-binding": lambda p, r: p.replace(r["review_contract_sha256"], "8" * 64),
+                "coverage-binding": lambda p, r: p.replace(json.dumps(r["required_coverage"]), '["AC-999"]'),
+                "prompt-envelope-mismatch": lambda p, r: p + suffix,
+                "envelope-prompt-mismatch": lambda p, r: p,
+                "envelope-task-name": lambda p, r: p,
+                "explicit-codex-host": lambda p, r: p,
+            }
+            for label, mutate in mutations.items():
+                with self.subTest(activity=activity, case=label):
+                    armed, request = self._legacy_review(
+                        f"prompt-01311-{activity}-{label}", activity=activity, codex_01311=True,
+                    )
+                    prompt = request["dispatch_prompt"]
+                    request["dispatch_prompt"] = mutate(prompt, request)
+                    request["launch_envelope"]["message"] = request["dispatch_prompt"]
+                    if label == "prompt-envelope-mismatch":
+                        request["launch_envelope"]["message"] = prompt
+                    elif label == "envelope-prompt-mismatch":
+                        request["launch_envelope"]["message"] = prompt + suffix
+                    elif label == "envelope-task-name":
+                        request["launch_envelope"]["task_name"] = "authority_other"
+                    elif label == "explicit-codex-host":
+                        request["host"] = "codex"
+                    self._assert_legacy_refusal_preserves_request(armed, request)
+
+    def test_codex_01311_prompt_is_not_a_historical_claude_form(self):
+        self._setup_claude()
+        for activity in ("spec_review", "quality_review"):
+            with self.subTest(activity=activity):
+                armed, request = self._legacy_review(
+                    f"prompt-01311-claude-{activity}", "claude", activity, codex_01311=True,
+                )
+                self._assert_legacy_refusal_preserves_request(armed, request)
+
+    def _assert_legacy_refusal_preserves_request(self, armed, request):
+        path = Path(armed["request_path"])
+        request["integrity_sha256"] = self.adapter._integrity(request)
+        path.write_bytes(self.adapter._canonical(request))
+        before = path.read_bytes()
+        calls_before = list(self.client.calls)
+        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+            self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+        self.assertEqual(path.read_bytes(), before)
+        self.assertEqual(self.client.calls, calls_before)
+        self.assertIsNone(json.loads(before)["receipt"])
+        self.assertNotIn("authority_source", json.loads(before))
+        self.assertFalse((self.root / self.client.receipt).exists())
+        self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+
+    def test_legacy_recovery_rejects_context_and_host_binding_substitutions(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            for activity in ("spec_review", "quality_review"):
+                mutations = {
+                    "repository": lambda r: r["repository"].update(filesystem_id="different-volume:inode"),
+                    "command-bindings": lambda r: r.update(command_bindings=[{}]),
+                    "workspace-roots": lambda r: r.update(workspace_roots={"candidate": str(self.candidate)}),
+                }
+                if host == "claude":
+                    mutations.update({
+                        "unsupported-model": lambda r: r["launch_envelope"].update(model="unqualified-model"),
+                        "substituted-reviewer": lambda r: r["launch_envelope"].update(subagent_type="general-purpose"),
+                    })
+                if activity == "quality_review":
+                    mutations["malformed-record"] = lambda r: r["context"].update(tasks=[None])
+                for label, mutate in mutations.items():
+                    with self.subTest(host=host, activity=activity, case=label):
+                        armed, request = self._legacy_review(
+                            f"transport-legacy-binding-{host}-{activity}-{label}", host, activity,
+                        )
+                        mutate(request)
+                        path = Path(armed["request_path"])
+                        request["integrity_sha256"] = self.adapter._integrity(request)
+                        path.write_bytes(self.adapter._canonical(request))
+                        before = path.read_bytes()
+                        calls_before = list(self.client.calls)
+                        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+                            self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                        self.assertEqual(path.read_bytes(), before)
+                        self.assertIsNone(json.loads(before)["receipt"])
+                        self.assertNotIn("authority_source", json.loads(before))
+                        self.assertEqual(self.client.calls, calls_before)
+                        self.assertFalse((self.root / self.client.receipt).exists())
+                        self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+
+
+class AuthorityStateRaceTest(unittest.TestCase):
+    """AUTH-M01: a stale writer must never erase a winning transition."""
+
+    setUp = AuthorityAdapterTest.setUp
+    tearDown = AuthorityAdapterTest.tearDown
+    _setup_claude = ClaudeAuthorityAdapterTest._setup_claude
+    _arm_review = NativeReviewTransportTest._arm_review
+    _launch = NativeReviewTransportTest._launch
+    _complete = NativeReviewTransportTest._complete
+
+    def test_recovery_cannot_erase_a_concurrent_launch_or_capture(self):
+        self._setup_claude()
+        save = self.adapter._save
+        for host in ("codex", "claude"):
+            for winner in ("LAUNCHING", "CAPTURED"):
+                with self.subTest(host=host, winner=winner):
+                    armed = self._arm_review(host, "spec_review", f"race-recovery-{host}-{winner}")
+                    path = Path(armed["request_path"])
+                    retained = []
+
+                    def advance_before_recovery(root, request):
+                        if request["state"] == "ABANDONED" and not retained:
+                            if winner == "CAPTURED":
+                                self.assertEqual(self._complete(host, armed)["state"], "COMPLETED")
+                                self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                            else:
+                                self.assertEqual(self._launch(host, armed)["state"], winner)
+                            retained.append(path.read_bytes())
+                        save(root, request)
+
+                    error = None
+                    with mock.patch.object(self.adapter, "_save", side_effect=advance_before_recovery):
+                        try:
+                            self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                        except self.adapter.AuthorityError as exc:
+                            error = exc.code
+                    self.assertEqual(len(retained), 1)
+                    self.assertEqual(path.read_bytes(), retained[0], "recovery erased the winning transition")
+                    self.assertEqual(error, "STALE_AUTHORITY_REQUEST")
+                    current = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(current["state"], winner)
+                    self.assertIsNotNone(current["launch"])
+                    self.assertIsNone(current["recovery"])
+                    if winner == "CAPTURED":
+                        self.assertEqual(current["receipt"], self.client.receipt)
+                        self.assertTrue((self.root / current["authority_source"]).is_file())
+                        self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+                    else:
+                        self.assertIsNone(current["receipt"])
+                        # Retire the unrelated active fixture before the next host event.
+                        self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+
+    def test_stale_launch_and_stop_cannot_revive_an_abandoned_review(self):
+        self._setup_claude()
+        save = self.adapter._save
+        for host in ("codex", "claude"):
+            for loser in ("LAUNCHING", "COMPLETED"):
+                with self.subTest(host=host, loser=loser):
+                    armed = self._arm_review(host, "spec_review", f"race-abandon-{host}-{loser}")
+                    path = Path(armed["request_path"])
+                    retained = []
+
+                    def abandon_before_transition(root, request):
+                        if request["state"] == loser and not retained:
+                            self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                            retained.append(path.read_bytes())
+                        save(root, request)
+
+                    error = None
+                    with mock.patch.object(self.adapter, "_save", side_effect=abandon_before_transition):
+                        try:
+                            if loser == "COMPLETED":
+                                self._complete(host, armed)
+                            else:
+                                self._launch(host, armed)
+                        except self.adapter.AuthorityError as exc:
+                            error = exc.code
+                    self.assertEqual(len(retained), 1)
+                    self.assertEqual(path.read_bytes(), retained[0], "stale hook revived an abandoned review")
+                    self.assertEqual(error, "STALE_AUTHORITY_REQUEST")
+                    current = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(current["state"], "ABANDONED")
+                    self.assertEqual(current["recovery"]["previous_attempt"], current["attempt"])
+                    self.assertFalse(current["recovery"]["rerun_permitted"])
+                    self.assertIsNone(current["receipt"])
+                    self.assertIsNone(current["observation_ref"])
+                    self.assertFalse((self.adapter._registry_root() / f"{armed['request_id']}.json").exists())
+                    with self.assertRaisesRegex(RuntimeError, "AUTHORITY_NOT_COMPLETE"):
+                        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                    self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+                    self.assertFalse((self.root / self.adapter.SOURCE_DIR).exists())
+
+    def test_creation_collision_cannot_rearm_a_retained_terminal_request(self):
+        self._setup_claude()
+        for host in ("codex", "claude"):
+            with self.subTest(host=host):
+                nonce = f"race-create-collision-{host}"
+                armed = self._arm_review(host, "spec_review", nonce)
+                self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+                path = Path(armed["request_path"])
+                retained = path.read_bytes()
+                with self.assertRaisesRegex(RuntimeError, "STALE_AUTHORITY_REQUEST"):
+                    self._arm_review(host, "spec_review", nonce)
+                self.assertEqual(path.read_bytes(), retained)
+                self.assertFalse((self.adapter._registry_root() / f"{armed['request_id']}.json").exists())
+
+    def test_write_validates_retained_integrity_and_does_not_recreate_missing_state(self):
+        for damage in ("integrity", "json", "missing"):
+            with self.subTest(damage=damage):
+                armed = self._arm_review("codex", "spec_review", f"race-retained-{damage}")
+                request = self.adapter._load(self.root, armed["request_id"])
+                path = Path(armed["request_path"])
+                if damage == "integrity":
+                    corrupted = dict(request, state="CAPTURED", receipt="retained-receipt")
+                    path.write_bytes(self.adapter._canonical(corrupted))
+                elif damage == "json":
+                    path.write_bytes(b"{broken-json")
+                else:
+                    path.unlink()
+                retained = path.read_bytes() if path.exists() else None
+                request["state"] = "LAUNCHING"
+                with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE|STALE_AUTHORITY_REQUEST"):
+                    self.adapter._save(self.root, request)
+                self.assertEqual(path.read_bytes() if path.exists() else None, retained)
+
+    def test_fresh_multiple_saves_refresh_the_callers_expected_state(self):
+        armed = self._arm_review("codex", "spec_review", "race-fresh-multiple-saves")
+        request = self.adapter._load(self.root, armed["request_id"])
+        request["state"] = "LAUNCHING"
+        self.adapter._save(self.root, request)
+        request["state"] = "RUNNING"
+        self.adapter._save(self.root, request)
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        self.assertEqual(request["integrity_sha256"], self.adapter._integrity(request))
+
+    def _worker(self, request, *, pause=False):
+        """Run a real writer with only fixture-owned repository and registry paths."""
+        worker = self.root / "authority-write-worker.py"
+        worker.write_text(
+            "import json, sys\n"
+            "from pathlib import Path\n"
+            "sys.path.insert(0, sys.argv[1])\n"
+            "import _artifactauthoritylib as adapter\n"
+            "root = Path(sys.argv[2])\n"
+            "adapter.REGISTRY_PARENT = root\n"
+            "adapter.REQUEST_LOCK_WAIT_SECONDS = 0.2\n"
+            "request = json.loads(sys.stdin.readline())\n"
+            "if sys.argv[3] == 'pause':\n"
+            "    replace = adapter._atomic_replace\n"
+            "    def paused_replace(*args):\n"
+            "        print('READY', flush=True)\n"
+            "        if sys.stdin.readline().strip() != 'continue':\n"
+            "            raise RuntimeError('fixture release was not received')\n"
+            "        replace(*args)\n"
+            "    adapter._atomic_replace = paused_replace\n"
+            "try:\n"
+            "    adapter._save(root, request)\n"
+            "except adapter.AuthorityError as exc:\n"
+            "    print(json.dumps({'error': exc.code}), flush=True)\n"
+            "else:\n"
+            "    print(json.dumps({'state': request['state']}), flush=True)\n",
+            encoding="utf-8",
+        )
+        process = subprocess.Popen(
+            [sys.executable, str(worker), str(CORE_PYSRC), str(self.root), "pause" if pause else "write"],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, encoding="utf-8", env=root_bound_git_env(), cwd=self.root,
+        )
+        self.addCleanup(self._close_worker, process)
+        process.stdin.write(json.dumps(request) + "\n")
+        process.stdin.flush()
+        return process
+
+    @staticmethod
+    def _close_worker(process):
+        if process.poll() is None:
+            process.kill()
+        process.communicate(timeout=10)
+
+    def _worker_result(self, process, release=None):
+        output, error = process.communicate(release, timeout=10)
+        self.assertEqual(process.returncode, 0, error)
+        return json.loads(output)
+
+    def _worker_ready(self, process):
+        lines = []
+        reader = threading.Thread(target=lambda: lines.append(process.stdout.readline()), daemon=True)
+        reader.start()
+        reader.join(timeout=10)
+        if reader.is_alive():
+            process.kill()
+            reader.join(timeout=10)
+            self.fail("writer did not reach the controlled transition boundary")
+        self.assertEqual(lines, ["READY\n"])
+
+    def test_process_writers_serialize_and_recheck_the_loaded_state(self):
+        armed = self._arm_review("codex", "spec_review", "race-process-serialization")
+        request = self.adapter._load(self.root, armed["request_id"])
+        path = Path(armed["request_path"])
+        before = path.read_bytes()
+        owner = self._worker(dict(request, state="LAUNCHING"), pause=True)
+        self._worker_ready(owner)
+        contender = self._worker(dict(request, state="ABANDONED"))
+        contention = self._worker_result(contender)
+        during = path.read_bytes()
+        winner = self._worker_result(owner, "continue\n")
+        retained = path.read_bytes()
+        stale = self._worker_result(self._worker(dict(request, state="ABANDONED")))
+        self.assertEqual(contention, {"error": "AUTHORITY_BUSY"})
+        self.assertEqual(during, before, "a peer wrote while the first writer owned the transition")
+        self.assertEqual(winner, {"state": "LAUNCHING"})
+        self.assertEqual(stale, {"error": "STALE_AUTHORITY_REQUEST"})
+        self.assertEqual(path.read_bytes(), retained)
+
+    def test_process_death_releases_the_transition_lock(self):
+        armed = self._arm_review("codex", "spec_review", "race-process-death-release")
+        request = self.adapter._load(self.root, armed["request_id"])
+        before = Path(armed["request_path"]).read_bytes()
+        owner = self._worker(dict(request, state="LAUNCHING"), pause=True)
+        self._worker_ready(owner)
+        owner.kill()
+        owner.communicate(timeout=10)
+        self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+        result = self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+        self.assertEqual(result["state"], "ABANDONED")
+
+    def test_unsafe_lock_path_cannot_change_retained_state(self):
+        armed = self._arm_review("codex", "spec_review", "race-unsafe-lock-directory")
+        request = self.adapter._load(self.root, armed["request_id"])
+        path = Path(armed["request_path"])
+        retained = path.read_bytes()
+        lock = path.with_suffix(path.suffix + ".lock")
+        lock.unlink(missing_ok=True)
+        lock.mkdir()
+        request["state"] = "LAUNCHING"
+        with self.assertRaisesRegex(RuntimeError, "AUTHORITY_BUSY"):
+            self.adapter._save(self.root, request)
+        self.assertEqual(path.read_bytes(), retained)
+
+    def test_linked_lock_cannot_write_to_an_external_target(self):
+        armed = self._arm_review("codex", "spec_review", "race-unsafe-lock-symlink")
+        request = self.adapter._load(self.root, armed["request_id"])
+        path = Path(armed["request_path"])
+        retained = path.read_bytes()
+        lock = path.with_suffix(path.suffix + ".lock")
+        lock.unlink(missing_ok=True)
+        outside = self.root / "untouched-lock-target"
+        outside.write_bytes(b"")
+        try:
+            lock.symlink_to(outside)
+        except OSError:
+            self.skipTest("symlink creation is unavailable on this platform")
+        request["state"] = "LAUNCHING"
+        with self.assertRaisesRegex(RuntimeError, "AUTHORITY_BUSY"):
+            self.adapter._save(self.root, request)
+        self.assertEqual(path.read_bytes(), retained)
+        self.assertEqual(outside.read_bytes(), b"")
+
+
 class ClaudeEndToEndTest(unittest.TestCase):
     """A real engine built from this tree accepts a task and scope on Claude seams."""
 
@@ -1683,6 +2847,46 @@ class ClaudeEndToEndTest(unittest.TestCase):
         self._hook(claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER))
         return json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
 
+    @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")
+    def test_native_npm_verification_is_accepted_by_real_engine(self):
+        """The native argv and pinned launch files survive actual receipt capture."""
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation, "npm-e2e", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {"operation_id": "npm-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+                               "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
+        workflow.approve("SPEC-FLOW")
+        spec_hash = client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"]
+        plan = self.host.plan_normative(spec_hash)
+        command = plan["tasks"][0]["verification"][0]
+        command.update(argv=["npm", "--version"], required_tests=[], assertion="The pinned npm CLI reports its version.")
+        client.call("create", {"operation_id": "npm-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+                               "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+                               "spec_id": "SPEC-FLOW", "normative": plan})
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        pre = self._event("bash-pretooluse.json", tool_use_id="npm-verify",
+                          tool_input={"command": armed["verify_command"], "description": "verify npm"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        state = self._state(armed["request_id"])
+        binding = state["command_bindings"][0]
+        self.assertIn("collector_profile", binding)
+        self.assertEqual(binding["collector_profile"], "exit-only/0.1.0")
+        roles = {item["role"] for item in binding["launch_files"]}
+        self.assertEqual(roles, {"declared-executable", "node-runtime", "npm-cli"}
+                         if sys.platform == "win32" else {"declared-executable"})
+        post = self._event("bash-posttooluse.json", tool_use_id="npm-verify", tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
+        self.assertTrue((self.root / published["receipt"]).is_file())
+
     def test_end_to_end_claude(self):
         """Arm, verify and publish through the shipped CLI; observe through the shipped hook."""
         bridge = self.host.load_bridge(self.plugin)
@@ -1732,6 +2936,52 @@ class ClaudeEndToEndTest(unittest.TestCase):
         workflow.mutate("accept-scope", "PLAN-FLOW", scope="CP-01", receipt=quality)
         eligible = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertTrue(eligible["all_accepted_and_current"], eligible)
+
+    @unittest.skipUnless(shutil.which("node"), "direct Node integration requires Node")
+    def test_linked_node_entrypoint_is_accepted_by_real_engine(self):
+        target = self.root / ".codearbiter" / "runner-store"
+        target.mkdir()
+        (target / "cli.js").write_text("console.log('linked runner fixture');\n", encoding="utf-8")
+        linked = self.root / "node_modules" / "playwright"
+        linked.parent.mkdir()
+        if os.name == "nt":
+            subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(target)],
+                           check=True, capture_output=True)
+        else:
+            linked.symlink_to(target, target_is_directory=True)
+        (self.root / ".gitignore").write_text(".codearbiter/\n__pycache__/\nnode_modules/\n", encoding="utf-8")
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation, "linked-node", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {"operation_id": "linked-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+                               "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
+        workflow.approve("SPEC-FLOW")
+        spec_hash = client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"]
+        plan = self.host.plan_normative(spec_hash)
+        plan["tasks"][0]["verification"][0].update(
+            argv=["node", "node_modules/playwright/cli.js"], required_tests=[],
+            assertion="The pinned linked Node entrypoint exits successfully.")
+        client.call("create", {"operation_id": "linked-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+                               "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+                               "spec_id": "SPEC-FLOW", "normative": plan})
+        workflow.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {
+            "verification_inputs": {"roots": ["."], "exclude_directories": ["node_modules"]}}}])
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        pre = self._event("bash-pretooluse.json", tool_use_id="linked-verify",
+                          tool_input={"command": armed["verify_command"], "description": "verify linked runner"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        post = self._event("bash-posttooluse.json", tool_use_id="linked-verify", tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
+        self.assertTrue((self.root / published["receipt"]).is_file())
 
 
 class ClaudeHookRegistrationTest(unittest.TestCase):

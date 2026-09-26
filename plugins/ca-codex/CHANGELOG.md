@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.14.1] - 2026-09-25
+## [0.14.3] - 2026-09-26
 
 ### Removed
 
@@ -16,6 +16,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Recover pristine, never-launched Codex 0.13.11 review requests using their
+  exact historical prompt, preserving all retained evidence and integrity checks.
+- Select the exact Codex marketplace entry during installation checks, rejecting
+  ambiguous, disabled or mismatched entries.
 - Complete context-creation, decomposition and release entry ownership while
   preserving initialization aliases, operational procedures and dry-run limits.
 - Redact complete multiline secret spans before formatting mutation diagnostics
@@ -66,6 +70,32 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Synchronize shared runtime identity with the current candidate cohort and
   document the isolated farm evaluation contract in the private resource. This
   does not add a packaged Codex farm backend or enable HTML farm execution.
+
+## [0.14.2] - 2026-09-26
+
+### Fixed
+
+- Native artifact reviews use a bounded prompt pointing to the full frozen
+  evidence context. The adapter checks its canonical bytes and digest before
+  launch and publication, so large source manifests no longer fill the prompt.
+- Never-launched ARMED reviews can be abandoned without producing authority or
+  losing their history, including bounded oversized requests from older adapters.
+- Concurrent authority operations reject stale request writes, so a stale
+  abandonment cannot erase a newer launch or receipt, and a stale launch cannot
+  revive an abandoned request.
+
+## [0.14.1] - 2026-09-26
+
+### Fixed
+
+- Reject unsupported plan verification commands and invalid input snapshots before
+  ordinary or paired approval, with diagnostics for every affected task.
+- Support exact Playwright JSON results and qualified simple npm scripts while
+  rejecting duplicate, skipped, retried and ambiguous named results.
+- Preserve literal Windows npm arguments through a pinned native Node/npm launch;
+  bind collector and launch-file identities into engine-validated evidence.
+- Handle single-quoted verifier paths explicitly and retain actionable input-size
+  and exclusion errors.
 
 ## [0.14.0] - 2026-09-26
 

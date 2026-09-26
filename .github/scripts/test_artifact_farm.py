@@ -171,7 +171,7 @@ class ArtifactFarmTest(unittest.TestCase):
                     "deps": [],
                     "filesInScope": ["src/config.py"],
                     "test": {"path": "src/config.py"},
-                    "gate": {"commands": ["python -m unittest tests.test_config"]},
+                    "gate": {"commands": ["python -m unittest -v tests.test_config"]},
                 }
             ],
         }
@@ -205,7 +205,7 @@ class ArtifactFarmTest(unittest.TestCase):
                         "farm_task": "t-001",
                         "test_path": "src/config.py",
                         "definition_sha256": canonical_hash(definition),
-                        "command": "python -m unittest tests.test_config",
+                        "command": "python -m unittest -v tests.test_config",
                         "exit": 1,
                         "stdout_sha256": hashlib.sha256(b"synthetic RED").hexdigest(),
                         "stderr_sha256": hashlib.sha256(b"").hexdigest(),

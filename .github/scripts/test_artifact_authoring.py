@@ -753,7 +753,7 @@ def plan_normative(spec_id: str, spec_hash: str) -> dict:
     verification = {
         "availability": "proposed",
         "cwd": ".",
-        "argv": ["python", "-m", "unittest", "tests.test_config"],
+        "argv": ["python", "-m", "unittest", "-v", "tests.test_config"],
         "expected_exit": 0,
         "assertion": "The named test runs and passes.",
         "required_tests": ["test_environment_overrides"],

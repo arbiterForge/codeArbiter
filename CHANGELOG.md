@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.22.1] - 2026-09-25
+## [2.22.3] - 2026-09-26
 
 ### Removed
 
@@ -22,6 +22,12 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Recover pristine, never-launched Codex 0.13.11 review requests using their
+  exact historical prompt, preserving all retained evidence and integrity checks.
+- Preserve native specification, plan and retained evidence bytes across Git
+  checkouts and staging on hosts with automatic line-ending conversion.
+- Select the exact Codex marketplace entry during installation checks, rejecting
+  ambiguous, disabled or mismatched entries.
 - Complete context-creation, decomposition and release entry ownership while
   preserving initialization aliases, operational procedures and dry-run limits.
 - Redact complete multiline secret spans before formatting mutation diagnostics
@@ -75,6 +81,34 @@ predate the plugin rewrite and are grouped by date.
   worktrees, without changing integration or existing task branches. Report the
   effective candidate model and incomplete cleanup instead of hiding it.
 - Keep worker/test/verification gates and the separate HTML farm restriction intact.
+
+## [2.22.2] - 2026-09-26
+
+### Fixed
+
+- Native artifact reviews use a bounded prompt pointing to the full frozen
+  evidence context. The adapter checks its canonical bytes and digest before
+  launch and publication, so large source manifests no longer fill the prompt.
+- Never-launched ARMED reviews can be abandoned without producing authority or
+  losing their history, including bounded oversized requests from older adapters.
+- Concurrent authority operations reject stale request writes, so a stale
+  abandonment cannot erase a newer launch or receipt, and a stale launch cannot
+  revive an abandoned request.
+
+## [2.22.1] - 2026-09-26
+
+### Fixed
+
+- Check all plan verification commands and input snapshots before requesting
+  approval, including paired approvals; report unsupported runners and ineffective
+  repository-relative exclusions together.
+- Collect exact Playwright JSON results and supported simple npm scripts; reject
+  ambiguous, skipped, duplicate and retried named results.
+- Launch Windows npm through pinned native Node and npm CLI files, preserving
+  literal arguments and rejecting runtime drift. Retain the qualified launch
+  contract in verification evidence.
+- Recognize both supported quote styles in verifier calls and preserve actionable
+  oversized-input diagnostics without allowing explicit roots to bypass exclusions.
 
 ## [2.22.0] - 2026-09-26
 
