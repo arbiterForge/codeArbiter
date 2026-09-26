@@ -2030,6 +2030,7 @@ class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase)
             frozenset((
                 "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
                 "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
+                "7343a38841e254ff07a35b0ba8f0a1115112f52490c8e33aee9f3a98a1678046",
             )),
         )
         self.assertTrue({"SubagentStart", "SubagentStop"}.issubset(self.checker.HOOK_EVENTS))
@@ -2048,6 +2049,43 @@ class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase)
         manifest["hooks"]["SubagentStop"][0]["hooks"][0]["statusMessage"] += " changed"
         path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
         self.assert_contract_rejects("hook inventory")
+
+    def test_accepts_exact_native_v1_hook_package_and_rejects_guard_removal(self):
+        path, manifest = self.install_authority_hooks()
+        matcher = (
+            "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|"
+            "multi_agent_v1resume_agent|multi_agent_v1close_agent"
+        )
+        for event in ("PreToolUse", "PostToolUse"):
+            groups = [group for group in manifest["hooks"][event]
+                      if group.get("matcher") == "spawn_agent"]
+            self.assertEqual(len(groups), 1)
+            groups[0]["matcher"] = matcher
+        del manifest["hooks"]["SubagentStop"][0]["hooks"][0]["additionalContextLimit"]
+        canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
+        self.assertEqual(
+            hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+            "7343a38841e254ff07a35b0ba8f0a1115112f52490c8e33aee9f3a98a1678046",
+        )
+        path.write_text(canonical, encoding="utf-8")
+        status, result = self.run_contract()
+        self.assertEqual(status, 0, result)
+        self.assertEqual(result["verdict"], "PASS", result)
+        for event in ("PreToolUse", "PostToolUse"):
+            for omitted in matcher.split("|"):
+                with self.subTest(event=event, omitted=omitted):
+                    mutated = json.loads(canonical)
+                    group = next(group for group in mutated["hooks"][event]
+                                 if group.get("matcher") == matcher)
+                    group["matcher"] = "|".join(tool for tool in matcher.split("|") if tool != omitted)
+                    path.write_text(json.dumps(mutated), encoding="utf-8")
+                    self.assert_contract_rejects("hook inventory")
+        for event in ("SubagentStart", "SubagentStop"):
+            with self.subTest(omitted_event=event):
+                mutated = json.loads(canonical)
+                del mutated["hooks"][event]
+                path.write_text(json.dumps(mutated), encoding="utf-8")
+                self.assert_contract_rejects("hook inventory")
 
     def assert_contract_rejects(self, expected_error):
         status, result = self.run_contract()
