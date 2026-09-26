@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -58,13 +59,33 @@ class TestCampaignSelection(unittest.TestCase):
         from test_hook_ci_partition import command, job_block, step_blocks, validate
         workflow = (ROOT / '.github/workflows/ci.yml').read_text(encoding='utf-8')
         changes = job_block(workflow, 'changes')
-        filters = changes.split('            hooks:\n', 1)[1].split('\n            ', 1)[0]
-        self.assertIn("- '.github/fixtures/context-onboarding/**'", filters)
+        filters = changes.split('            hooks:\n', 1)[1]
+        filters = re.split(r'^            [A-Za-z0-9_-]+:', filters, maxsplit=1, flags=re.M)[0]
+        self.assertIn("- '.github/fixtures/context-onboarding/**'", [line.strip() for line in filters.splitlines()])
         hook_steps = step_blocks(job_block(workflow, 'hooks'))
         matching = [step for step in hook_steps if command(step) == 'python .github/scripts/test_context_fixtures.py']
         self.assertEqual(len(matching), 1)
         self.assertIn("matrix.partition == 'all' || matrix.partition == 'contracts'", matching[0])
         validate(workflow)  # The existing guard owns the exact inventory and counts.
+
+    def test_fixture_filter_membership_survives_reordering_but_not_sibling_matches(self):
+        """Exercise the actual guard with additive order and wrong-scope mutations."""
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text(encoding='utf-8')
+        fixture = "              - '.github/fixtures/context-onboarding/**'\n"
+        added = "              - 'additional-hook-input/**'\n"
+        for replacement in (added + fixture, added + added.replace('additional', 'other') + fixture):
+            with self.subTest(replacement=replacement), mock.patch.object(
+                    Path, 'read_text', return_value=workflow.replace(fixture, replacement, 1)):
+                self.test_catalog_only_change_reaches_required_native_hook_cells()
+        for replacement in (
+                "              # - '.github/fixtures/context-onboarding/**'\n",
+                added + '            other_filter:\n' + fixture,
+                added + '            other_filter: # a sibling owns this list\n' + fixture,
+                fixture.replace('/**', '/**/different')):
+            with self.subTest(replacement=replacement), mock.patch.object(
+                    Path, 'read_text', return_value=workflow.replace(fixture, replacement, 1)):
+                with self.assertRaises(AssertionError):
+                    self.test_catalog_only_change_reaches_required_native_hook_cells()
 
     def test_removing_fixture_runner_breaks_the_strict_inventory(self):
         """The extended inventory still detects deletion rather than trusting a count."""

@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { appendFileSync, copyFileSync, cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import capture from '../../src/data/context-examples.json';
 import { GET } from '../../src/pages/examples/context-observations.json';
@@ -10,24 +12,58 @@ const source = (path: string) => read(`../${path}`);
 const page = (slug: string) => read(`src/content/docs/concepts/${slug}.mdx`);
 const old = (slug: string) => execFileSync('git', ['show', `${capture.source_revision}:site/src/content/docs/concepts/${slug}.md`], { encoding: 'utf8' });
 
+type SourceBindings = { source_sha256: Record<string, string>; source_blobs: Record<string, string> };
+
+function expectSourceBindings(root: string, observed: SourceBindings) {
+  for (const [path, hash] of Object.entries(observed.source_sha256)) {
+    const bytes = readFileSync(join(root, path));
+    expect(createHash('sha256').update(bytes).digest('hex')).toBe(hash);
+    const blob = observed.source_blobs[path];
+    expect(blob).toMatch(/^[0-9a-f]{40}$/);
+    // Capture computes exact-byte identities without writing the object database.
+    const actualBlob = execFileSync('git', ['hash-object', '--no-filters', '--stdin'], { cwd: root, input: bytes, encoding: 'utf8' }).trim();
+    expect(actualBlob).toBe(blob);
+  }
+}
+
 describe('C03 actual helper observations', () => {
   it('reproduces the complete capture with native helpers and real Git hashes', () => {
     expect(execFileSync('python3', ['scripts/capture-context-examples.py', '--check'], { encoding: 'utf8', timeout: 20000 }))
       .toContain('matches exact sources');
   });
   it('binds inspected helpers to the exact source and publishes the same data once', async () => {
-    for (const [path, hash] of Object.entries(capture.source_sha256)) {
-      expect(createHash('sha256').update(readFileSync(`../${path}`)).digest('hex')).toBe(hash);
-      const blob = capture.source_blobs[path as keyof typeof capture.source_blobs];
-      expect(blob).toMatch(/^[0-9a-f]{40}$/);
-      const baseline = execFileSync('git', ['cat-file', 'blob', blob]);
-      expect(createHash('sha256').update(baseline).digest('hex')).toBe(hash);
-    }
+    expectSourceBindings(resolve('..'), capture);
     const result = GET();
     expect(result.headers.get('Content-Type')).toContain('application/json');
     expect(await result.json()).toEqual(capture);
     expect(capture.evidence_kind).toBe('disposable-helper-observation');
     expect(capture.boundary).toContain('not an installed-host run');
+  });
+  it('verifies fresh uncommitted helper bytes without storing Git objects', () => {
+    const root = mkdtempSync(join(tmpdir(), 'ca-context-source-bindings-'));
+    try {
+      execFileSync('git', ['init', '--quiet', root]);
+      cpSync('../core/pysrc', join(root, 'core/pysrc'), { recursive: true });
+      mkdirSync(join(root, 'site/scripts'), { recursive: true });
+      copyFileSync('scripts/capture-context-examples.py', join(root, 'site/scripts/capture-context-examples.py'));
+      writeFileSync(join(root, '.gitattributes'), '*.py text eol=lf\n');
+      appendFileSync(join(root, 'core/pysrc/_readinjectlib.py'), '\r\n# Fresh uncommitted source-binding regression.\r\n');
+      const observed: SourceBindings = JSON.parse(execFileSync('python3', [join(root, 'site/scripts/capture-context-examples.py')], { encoding: 'utf8', timeout: 20000 }));
+      const expectUnstored = () => {
+        for (const blob of Object.values(observed.source_blobs)) {
+          expect(spawnSync('git', ['cat-file', '-e', blob], { cwd: root }).status).toBe(1);
+        }
+      };
+      expectUnstored();
+      expectSourceBindings(root, observed);
+      expectUnstored();
+      const path = 'core/pysrc/_readinjectlib.py';
+      expect(() => expectSourceBindings(root, { ...observed, source_blobs: { ...observed.source_blobs, [path]: '0'.repeat(40) } })).toThrow();
+      appendFileSync(join(root, path), '\n# Changed after capture.\n');
+      expect(() => expectSourceBindings(root, observed)).toThrow();
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
   it('composes all four tiers before bounding output rather than picking one winner', () => {
     const overlap = capture.cases.find(item => item.id === 'overlap')!;

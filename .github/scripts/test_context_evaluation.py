@@ -140,6 +140,7 @@ def summarize_observation(value):
     _require(set(ids)<=set(launch_ids),'Orphan observation')
     missing=sorted(set(launch_ids)-set(ids)); by_id={o['attempt_id']:o for o in observations}
     measured=[]; unknown=[]; effective=[]; costs=defaultdict(Decimal); money_missing=[]
+    token_lower_bound=0
     for ident in launch_ids:
         observation=by_id.get(ident)
         if observation is None:
@@ -149,9 +150,16 @@ def summarize_observation(value):
             _require(all(f is None for f in fields) and usage['reference'] is None
                      and usage['input_convention']=='unknown','Unavailable usage has measurements')
         else: _require(usage['reference'] is not None,'Measured usage needs a source reference')
+        known_cache=sum(v for v in fields[1:3] if v is not None)
         if usage['input_convention']=='includes_cache' and fields[0] is not None:
-            _require(sum(v for v in fields[1:3] if v is not None)<=fields[0],
+            _require(known_cache<=fields[0],
                      'Known cache already exceeds inclusive input')
+        # Partial counts prove only a lower bound, never a complete token total.
+        # Inclusive or unknown input may already contain the measured cache.
+        input_floor=fields[0] or 0
+        input_floor=(input_floor+known_cache if usage['input_convention']=='excludes_cache'
+                     else max(input_floor,known_cache))
+        token_lower_bound+=input_floor+(fields[3] or 0)
         if all(f is not None for f in fields) and usage['input_convention']!='unknown':
             input_tokens, read, write, output=fields
             if usage['input_convention']=='includes_cache':
@@ -205,7 +213,7 @@ def summarize_observation(value):
             'profile_complete':all(v is not None for v in value['profile'].values()) and value['snapshot_sha256'] is not None,
             'limits_complete':all(v is not None for v in bounds.values()),
             'budget':{'scout_attempts':limit(len(scout),bounds['max_scout_attempts'],value['launch_inventory_complete']),
-                      'tokens':limit(known_tokens,bounds['max_tokens'],usage_complete),
+                      'tokens':limit(token_lower_bound,bounds['max_tokens'],usage_complete),
                       'tool_calls':limit(tools,bounds['max_tool_calls'],tool_complete),
                       'elapsed':limit(value['elapsed_ms'],bounds['deadline_ms'],value['elapsed_ms'] is not None)},
             'structural_budget_findings':sorted(set(structural)),
@@ -293,6 +301,46 @@ class TestObservationAccounting(unittest.TestCase):
         v=example_observation();v['bounds']['max_tokens']=100;v['launch_inventory_complete']=False
         self.assertEqual(summarize_observation(v)['budget']['tokens'],'exceeded')
 
+    def test_partial_token_counts_prove_overruns_without_inventing_totals(self):
+        cases = [
+            ('includes_cache', 200, None, None, None, 'exceeded'),
+            ('includes_cache', 80, 20, 10, None, 'unknown'),
+            ('includes_cache', 100, 20, None, 1, 'exceeded'),
+            ('includes_cache', None, 60, 50, None, 'exceeded'),
+            ('excludes_cache', 60, 30, None, 20, 'exceeded'),
+            ('excludes_cache', 70, 20, None, 10, 'unknown'),
+            ('unknown', 80, 60, 50, None, 'exceeded'),
+            ('unknown', 80, 20, 10, 20, 'unknown'),
+            ('unknown', None, None, None, 101, 'exceeded'),
+            ('unknown', None, None, None, None, 'unknown'),
+        ]
+        for convention, input_tokens, read, write, output, status in cases:
+            with self.subTest(convention=convention, fields=(input_tokens,read,write,output)):
+                v=example_observation();v['bounds']['max_tokens']=100
+                v['observations'][0]['usage'].update(
+                    input_convention=convention,input_tokens=input_tokens,
+                    cache_read_tokens=read,cache_write_tokens=write,output_tokens=output)
+                out=summarize_observation(v)
+                self.assertEqual(out['budget']['tokens'],status)
+                self.assertIsNone(out['tokens']);self.assertFalse(out['usage_complete'])
+                self.assertEqual(out['known_complete_attempt_tokens'],0)
+                self.assertEqual(out['unknown_usage_attempts'],['A-1'])
+
+    def test_partial_and_complete_attempt_lower_bounds_accumulate(self):
+        v=example_observation();v['bounds']['max_tokens']=200
+        for ident,role,status in [('A-2','scout','failed'),('A-3','synthesis','cancelled')]:
+            v['launches'].append({**v['launches'][0],'attempt_id':ident,'role':role})
+            observation=copy.deepcopy(v['observations'][0])
+            observation.update(attempt_id=ident,status=status)
+            observation['usage'].update(input_tokens=70,output_tokens=None)
+            v['observations'].append(observation)
+        v['launches'].append({**v['launches'][0],'attempt_id':'A-4'})
+        out=summarize_observation(v)
+        self.assertEqual(out['budget']['tokens'],'exceeded')
+        self.assertIsNone(out['tokens']);self.assertFalse(out['usage_complete'])
+        self.assertEqual(out['known_complete_attempt_tokens'],105)
+        self.assertEqual(out['unknown_usage_attempts'],['A-2','A-3','A-4'])
+
     def test_money_is_decimal_separate_and_never_estimated_from_tokens(self):
         v=example_observation();v['observations'][0]['cost']={'amount':'0.10','currency':'USD','source_ref':'synthetic-bill'}
         v['launches'].append({**v['launches'][0],'attempt_id':'A-2'})
@@ -340,6 +388,12 @@ class TestObservationAccounting(unittest.TestCase):
         v=example_observation();usage=v['observations'][0]['usage']
         usage['cache_read_tokens']=101;usage['cache_write_tokens']=None;usage['output_tokens']=None
         with self.assertRaises(ValueError): summarize_observation(v)
+        for field in ('input_tokens','cache_read_tokens','cache_write_tokens','output_tokens'):
+            for invalid in (-1,True,'200',1.5):
+                with self.subTest(field=field,invalid=invalid):
+                    v=example_observation();v['observations'][0]['usage']['output_tokens']=None
+                    v['observations'][0]['usage'][field]=invalid
+                    with self.assertRaises(ValueError): summarize_observation(v)
 
     def test_observation_does_not_mutate_input(self):
         v=example_observation();before=copy.deepcopy(v);summarize_observation(v);self.assertEqual(v,before)
