@@ -3,6 +3,7 @@
 
 import hashlib
 import importlib
+import importlib.util
 import json
 import os
 import subprocess
@@ -92,10 +93,172 @@ class ApprovalAdapterTest(unittest.TestCase):
         self.routes = importlib.import_module("_artifactpromptlib")
         self.original_registry_parent = self.routes.REGISTRY_PARENT
         self.routes.REGISTRY_PARENT = self.root
+        self.replies = importlib.import_module("_replylib")
+        self.original_code_parent = self.replies.REGISTRY_PARENT
+        self.replies.REGISTRY_PARENT = self.root
 
     def tearDown(self):
         self.routes.REGISTRY_PARENT = self.original_registry_parent
+        self.replies.REGISTRY_PARENT = self.original_code_parent
         self.temp.cleanup()
+
+    def hook(self, prompt, root=None):
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=self.client):
+            return self.adapter.consume_from_hook(
+                root=root or self.root, plugin_root=self.root, prompt=prompt,
+                host="claude", session_id="session-lenient",
+            )
+
+    def test_short_code_from_hook_approves_and_records_the_full_reply(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-short")
+        self.assertRegex(armed["code"], r"^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{4}$")
+        self.assertEqual(armed["short_reply"], f"approve {armed['code']}")
+        other = self.root / "elsewhere"
+        other.mkdir()
+        text = self.hook(f"  Approve {armed['code'].lower()}.\n", root=other)
+        self.assertIn("workflow approval recorded", text)
+        source = next((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+        self.assertEqual(json.loads(source.read_text(encoding="utf-8"))["source_text"], armed["reply"])
+        self.assertIn("matches no armed request", self.replies.expand(armed["short_reply"])["notice"])
+
+    def test_padded_full_reply_from_hook_approves(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-pad")
+        text = self.hook("\u200b\u00a0`" + armed["reply"] + "`\r\n")
+        self.assertIn("workflow approval recorded", text)
+
+    def test_hook_reports_misses_instead_of_silence(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-miss")
+        before = list(self.client.calls)
+        cases = {
+            "  approve ZZZZ": "matches no armed request",
+            f"approve SPEC-OTHER {armed['code']}": "belongs to SPEC-EXAMPLE",
+            armed["reply"] + ", please": "Send only the reply line",
+            "approve SPEC-EXAMPLE wrong-token-value": "Send only the reply line",
+        }
+        for prompt, expected in cases.items():
+            with self.subTest(prompt=prompt):
+                self.assertIn(expected, self.hook(prompt))
+        self.assertEqual(self.hook("yes"), "")
+        self.assertEqual(self.hook("please approve it"), "")
+        self.assertEqual(self.client.calls, before)
+        self.assertTrue((self.root / self.adapter.PENDING).exists())
+
+    def ask_payload(self, event, tool_input, *, call="toolu_1", session="session-ask", response=None):
+        payload = {"hook_event_name": event, "tool_name": "AskUserQuestion", "session_id": session,
+                   "tool_use_id": call, "tool_input": tool_input}
+        if response is not None:
+            payload["tool_response"] = response
+        return payload
+
+    def choose(self, armed, label, **kw):
+        question = armed["ask_envelope"]["questions"][0]["question"]
+        return {"questions": armed["ask_envelope"]["questions"], "answers": {question: label}}
+
+    def test_click_approve_on_a_clean_call_records_the_ask_seam(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-ask")
+        envelope = armed["ask_envelope"]
+        options = [o["label"] for o in envelope["questions"][0]["options"]]
+        self.assertEqual(options, [f"Approve {armed['code']}", "Not yet"])
+        self.assertLessEqual(len(envelope["questions"][0]["header"]), 12)
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", envelope))
+        chosen = self.replies.observe_ask_post(self.ask_payload(
+            "PostToolUse", envelope, response=self.choose(armed, f"Approve {armed['code']}")))
+        self.assertEqual(chosen["prompt"], armed["short_reply"])
+        self.assertEqual(Path(chosen["root"]).resolve(), self.root.resolve())
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=self.client):
+            text = self.adapter.consume_from_hook(root=chosen["root"], plugin_root=self.root,
+                                                  prompt=chosen["prompt"], host="claude",
+                                                  session_id="session-ask", seam="AskUserQuestion")
+        self.assertIn("workflow approval recorded", text)
+        event = json.loads(next((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json")).read_text())
+        self.assertEqual(event["origin"], "claude:AskUserQuestion:session-ask")
+        self.assertEqual(event["source_text"], armed["reply"])
+
+    def test_prefilled_answers_are_denied_and_retire_click_approval(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-pre")
+        envelope = armed["ask_envelope"]
+        forged = dict(envelope, answers={envelope["questions"][0]["question"]: f"Approve {armed['code']}"})
+        with self.assertRaises(self.replies.ReplyCodeError):
+            self.replies.observe_ask_pre(self.ask_payload("PreToolUse", forged))
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", envelope, call="toolu_2"))
+        self.assertIsNone(self.replies.observe_ask_post(self.ask_payload(
+            "PostToolUse", envelope, call="toolu_2", response=self.choose(armed, f"Approve {armed['code']}"))))
+        # The typed code still works after a refused click.
+        self.assertIn("workflow approval recorded", self.hook(armed["short_reply"]))
+
+    def test_click_needs_a_clean_pretooluse_for_the_same_call_and_the_approve_option(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-seq")
+        envelope = armed["ask_envelope"]
+        approve = self.choose(armed, f"Approve {armed['code']}")
+        self.assertIsNone(self.replies.observe_ask_post(self.ask_payload("PostToolUse", envelope, response=approve)))
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", envelope, call="toolu_a"))
+        self.assertIsNone(self.replies.observe_ask_post(
+            self.ask_payload("PostToolUse", envelope, call="toolu_b", response=approve)))
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", envelope, call="toolu_c"))
+        self.assertIsNone(self.replies.observe_ask_post(
+            self.ask_payload("PostToolUse", envelope, call="toolu_c", response=self.choose(armed, "Not yet"))))
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", envelope, call="toolu_d"))
+        self.assertIsNone(self.replies.observe_ask_post(
+            self.ask_payload("PostToolUse", envelope, call="toolu_d", session="other-session", response=approve)))
+        self.assertTrue((self.root / self.adapter.PENDING).exists())
+
+    def test_a_clean_call_cannot_be_reused_for_another_envelope_or_answered_twice(self):
+        first = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-one")
+        other_root = self.root / "second-repo"
+        (other_root / ".codearbiter").mkdir(parents=True)
+        other_client = _FakeClient(other_root)
+        second = self.adapter.arm_user_approval(other_root, other_client, "SPEC-EXAMPLE", token="fixed-token-two")
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", first["ask_envelope"], call="toolu_x"))
+        swapped = self.ask_payload("PostToolUse", second["ask_envelope"], call="toolu_x",
+                                   response=self.choose(second, f"Approve {second['code']}"))
+        self.assertIsNone(self.replies.observe_ask_post(swapped))
+
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", first["ask_envelope"], call="toolu_y"))
+        self.assertIsNone(self.replies.observe_ask_post(self.ask_payload(
+            "PostToolUse", first["ask_envelope"], call="toolu_y", response=self.choose(first, "Not yet"))))
+        self.assertIsNone(self.replies.observe_ask_post(self.ask_payload(
+            "PostToolUse", first["ask_envelope"], call="toolu_y",
+            response=self.choose(first, f"Approve {first['code']}"))))
+
+    def test_altered_or_ordinary_questions_are_never_touched(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-alt")
+        altered = json.loads(json.dumps(armed["ask_envelope"]))
+        altered["questions"][0]["question"] += " (edited)"
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", altered))
+        answer = {"questions": altered["questions"],
+                  "answers": {altered["questions"][0]["question"]: f"Approve {armed['code']}"}}
+        self.assertIsNone(self.replies.observe_ask_post(self.ask_payload("PostToolUse", altered, response=answer)))
+        ordinary = {"questions": [{"question": "Pick one?", "header": "Pick", "multiSelect": False,
+                                   "options": [{"label": "A", "description": "a"}, {"label": "B", "description": "b"}]}],
+                    "answers": {"Pick one?": "A"}}
+        self.replies.observe_ask_pre(self.ask_payload("PreToolUse", ordinary))
+        self.assertIsNone(self.replies.observe_ask_post(self.ask_payload("PostToolUse", ordinary, response=ordinary)))
+
+    def test_hook_entry_denies_a_prefilled_armed_question(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-hook")
+        envelope = armed["ask_envelope"]
+        forged = dict(envelope, answers={envelope["questions"][0]["question"]: f"Approve {armed['code']}"})
+        spec = importlib.util.spec_from_file_location("artifact_authority_hook", CORE_PYSRC / "artifact-authority-hook.py")
+        hook = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(hook)
+        import io
+        out = io.StringIO()
+        with mock.patch("sys.stdout", out):
+            hook._claude_ask("PreToolUse", self.ask_payload("PreToolUse", forged))
+        decision = json.loads(out.getvalue())["hookSpecificOutput"]
+        self.assertEqual(decision["permissionDecision"], "deny")
+
+    def test_near_miss_log_is_bounded_escaped_and_only_when_active(self):
+        self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-log")
+        log = self.root / ".codearbiter/.markers/reply-diagnostics.log"
+        self.hook("approve ZZZZ\u200b")
+        self.assertFalse(log.exists())
+        (self.root / ".codearbiter" / "CONTEXT.md").write_text("---\nfixture: active\n---\n", encoding="utf-8")
+        self.hook("approve ZZZZ\u200b " + "pasted-text " * 60)
+        line = log.read_text(encoding="ascii")
+        self.assertIn("U+200B", line)
+        self.assertLess(len(line), 1400)
+        self.assertNotIn("pasted-text " * 20, line)
 
     def test_cross_repository_hook_routes_exact_prompt_and_ambiguity_fails_closed(self):
         other = self.root / "other"
@@ -404,6 +567,10 @@ class SprintPairIntegrationTest(unittest.TestCase):
         previous = self.routes.REGISTRY_PARENT
         self.routes.REGISTRY_PARENT = self.root.parent
         self.addCleanup(setattr, self.routes, "REGISTRY_PARENT", previous)
+        self.replies = importlib.import_module("_replylib")
+        previous_codes = self.replies.REGISTRY_PARENT
+        self.replies.REGISTRY_PARENT = self.root.parent
+        self.addCleanup(setattr, self.replies, "REGISTRY_PARENT", previous_codes)
 
     def arm(self, delegate=True):
         return self.pair.arm(self.root, self.h.client, "SPEC-FLOW", "PLAN-FLOW", delegate_methods=delegate, token="synthetic-pair-token")
@@ -559,6 +726,24 @@ class SprintPairIntegrationTest(unittest.TestCase):
             text = self.approval.consume_from_hook(root=other, plugin_root=self.root, prompt=armed["reply"], host="codex", session_id="fixture-route")
         self.assertIn("workflow approval recorded", text)
         self.assertTrue(all(v["authority"]["authority_verified"] for v in self.identities()))
+
+    def test_padded_short_sprint_reply_passes_the_real_engine(self):
+        armed = self.arm()
+        self.assertEqual(armed["short_reply"], f"approve-sprint delegate {armed['code']}")
+        other = self.root.parent / "other-short"
+        other.mkdir()
+        with mock.patch.object(self.approval._artifactlib, "ArtifactClient", return_value=self.h.client):
+            wrong = self.approval.consume_from_hook(
+                root=other, plugin_root=self.root, host="codex", session_id="fixture-short",
+                prompt=f"approve-sprint approve-only {armed['code']}")
+            text = self.approval.consume_from_hook(
+                root=other, plugin_root=self.root, host="codex", session_id="fixture-short",
+                prompt=f"  Approve-Sprint Delegate {armed['code'].lower()}.")
+        self.assertIn("delegate", wrong)
+        self.assertIn("workflow approval recorded", text)
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in self.identities()))
+        sources = list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+        self.assertTrue(sources and all(json.loads(p.read_text())["source_text"] == armed["reply"] for p in sources))
 
     def test_malformed_pair_marker_does_not_route_to_legacy_approval(self):
         self.arm()

@@ -18,6 +18,7 @@ import _approvallib
 import _artifactauthoritylib
 import _artifactlib
 import _artifactpromptlib
+import _replylib
 
 
 ID_RE = re.compile(r"[A-Z][A-Z0-9_-]{0,127}")
@@ -257,7 +258,11 @@ def _arm_reconciliation_unlocked(
             except OSError:
                 pass
         raise
-    return {"artifact_id": artifact_id, "target_id": target_id, "operation": operation, "reply": reply}
+    code = _replylib.offer_code(
+        root, "reconciliation", artifact_id, reply, names=[artifact_id, target_id],
+        short_prefix=["reconcile", target_state] if operation == "task-reconcile" else ["reconcile"],
+    )
+    return {"artifact_id": artifact_id, "target_id": target_id, "operation": operation, "reply": reply, **code}
 
 
 def _load(root: Path, artifact_id: str) -> dict[str, Any]:
@@ -458,13 +463,19 @@ def _consume_reconciliation_unlocked(
 
 
 def consume_from_hook(*, root: str | Path, plugin_root: str | Path, prompt: str, host: str, session_id: str) -> str:
-    attempted = isinstance(prompt, str) and prompt.startswith(("reconcile-task ", "reconcile-scope "))
-    if not attempted:
+    raw = prompt
+    prepared = _replylib.prepare(raw, "reconciliation")
+    prompt = prepared["text"]
+    if not prepared["attempted"]:
         return ""
+    if prepared["notice"]:
+        _replylib.record_near_miss(root, raw, "code")
+        return prepared["notice"]
     try:
         routed = _artifactpromptlib.resolve("reconciliation", prompt)
         if routed is None:
-            raise ReconciliationError("no matching armed reconciliation")
+            _replylib.record_near_miss(root, raw, "no-route")
+            raise ReconciliationError("no matching armed reconciliation; send only the reply line")
         client = _artifactlib.ArtifactClient(routed, Path(plugin_root) / "helpers" / "artifacts")
         result = consume_reconciliation(routed, client, prompt, host=host, session_id=session_id)
     except (ReconciliationError, _artifactlib.ArtifactError, _artifactpromptlib.PromptRouteError, OSError) as exc:

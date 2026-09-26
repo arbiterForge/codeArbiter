@@ -161,13 +161,13 @@
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.14.17, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.15.0, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "c8c8e0ac3af2c978a0c90aa4581bf2494aa35457",
+      "hash": "1ba2cd7ed2de3c96c3c6a63ab9f9d669c10a1bd1",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "d3225b71d81e93614942faa10a84e7467388f31a",
+      "hash": "504202bd241f39bf653dfde1ed59da0cf6a01b69",
       "path": ".github/workflows/ci.yml"
     },
     {
