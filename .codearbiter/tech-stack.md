@@ -324,6 +324,22 @@ scripts disabled. CI owns the Windows/macOS/Linux matrix.
 
 ## Coverage
 
+Coverage profiles are declared per source tree under the shared
+`core/surface/includes/maturity-coverage.md` policy:
+
+| source tree | profile |
+|---|---|
+| `plugins/ca/tools` | `lines-branches` |
+| `plugins/ca-pi/tools` | `lines-branches` |
+| `plugins/ca-sandbox/tools` | `lines-branches` |
+| `site/` | `lines-branches` |
+| `core/artifacts/` | `go-native` |
+
+The maintainer approved language-specific metrics on 2026-09-26; the maturity
+thresholds are unchanged. All profiles retain the shared critical-path outcome
+tests and focused mutation checks. Python's documented no-tooling surface below
+remains separately governed by the existing exemption.
+
 One command per TypeScript tree, only when that tree changed:
 
 ```sh
@@ -442,7 +458,7 @@ dev-inclusive CVE gate, whose sweep lives in `docs.yml`. Adding a coverage
 provider does not change that posture — the provider is a dev dependency, and
 the audit scope is unchanged.
 
-**Native Go statements** (`core/artifacts/`) are collected separately with the
+**Native Go statements** (`core/artifacts/`, profile `go-native`) are collected with the
 pinned Go toolchain and Python standard library. For a local Windows/amd64 run,
 choose new output paths outside the module:
 
@@ -460,12 +476,14 @@ platform-specific files; it never averages host percentages.
 
 The required `artifact-coverage` CI job collects all six GitHub-hosted native
 platforms (Linux, Windows and macOS, each amd64 and arm64), requires executable
-coverage on each, and enforces an additional **70% statement floor**. Missing,
+coverage on each, and enforces the current stage-2 **70% statement floor**. Missing,
 duplicate, stale or mismatched inputs fail. With no `--expect-platform` flags,
 `summarize` requires that complete six-platform set. An explicitly selected
 local host is only a local figure. These reports label **statements** and leave
-line and branch coverage unmeasured; this additional gate does not waive either
-of the maturity policy's required metrics.
+line and branch coverage unmeasured, as the declared profile requires. A passing
+percentage does not replace the shared critical-path evidence requirements.
+Reconcile the CI floor with the shared maturity table whenever the project stage
+changes; a fixed stage-2 floor cannot qualify a later stage.
 
 There is **no coverage tooling for the Python hooks or build tools**
 (`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).

@@ -49,22 +49,25 @@ Gate: a precise, complete surface table, user-signed-off. A vague or category-le
 
 ## Phase 2 — Behavioral parity coverage proof · gate: BLOCK
 
-Prove pre-existing tests already exercise the named surface well enough to detect a behavior change, before any production code is touched. Locate every test that exercises a symbol in the surface table. Run the coverage command from `tech-stack.md` scoped to the surface files; record line, branch, and per-symbol coverage.
+Prove pre-existing tests already exercise the named surface well enough to detect a behavior change, before any production code is touched. Locate every test that exercises a symbol in the surface table. Run the coverage command from `tech-stack.md` scoped to the surface files; record each metric required by the declared coverage profile and the per-symbol test evidence.
 
 Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — the same knob as `tdd` Phase 5,
 using the shared threshold table `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md`.
 
 Every public method in the surface table MUST have at least one direct test — transitive coverage through a higher-level integration test does not count. A public method with zero direct tests is uncovered for this gate.
 
-**Lines and branches must both clear the threshold** (issue #507); a surface satisfying one and not
-the other is not proven. Where the surface has no coverage tooling, take the no-tooling exemption in
+Resolve the **declared coverage profile** from `tech-stack.md` against the shared
+`maturity-coverage.md` rule. Every required metric must clear the threshold, and
+the shared report-validity and critical-path evidence requirements must hold.
+Keep the same profile, scope and required metrics before and after the refactor.
+Where the surface has no coverage tooling, take the no-tooling exemption in
 `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md` — it requires QUOTING the `tech-stack.md` Coverage
 section that omits a command for this surface — and the per-symbol direct-test proof stands alone.
 Without that citation the phase STOPs rather than passing on an unverifiable claim.
 
-If surface coverage is below the maturity threshold on either metric, OR any public method has zero direct tests, halt and route to the `tdd` skill (`${CLAUDE_PLUGIN_ROOT}/skills/tdd/SKILL.md`) Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
+If surface coverage is below the maturity threshold on any required metric, OR any public method has zero direct tests, halt and route to the `tdd` skill (`${CLAUDE_PLUGIN_ROOT}/skills/tdd/SKILL.md`) Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
 
-Gate: surface coverage at or above the maturity threshold on BOTH lines and branches AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
+Gate: surface coverage at or above the maturity threshold on every required metric in the declared coverage profile, the shared critical-path evidence present, AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
 
 ## Phase 3 — Red parity tests (conditional) · gate: BLOCK
 
@@ -90,7 +93,7 @@ Gate: scoped parity tests green with zero pre-existing tests modified. BLOCK if 
 
 ## Phase 6 — Lint and coverage · gate: BLOCK
 
-Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold on both lines and branches — a refactor MUST NOT reduce coverage of the surface it touched on either metric.
+Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold on every required metric in the same declared coverage profile. A refactor MUST NOT reduce coverage of the surface it touched on any required metric or drop its critical-path evidence.
 
 Where the surface has no coverage tooling, the same clause as Phase 2 applies — the no-tooling exemption in `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md`, citation included — and parity is verified through Phase 5's unmodified pre-existing tests alone. Phase 2 and Phase 6 MUST NOT give different answers about the same surface, which is why both defer to the one shared clause rather than restating its conditions.
 
