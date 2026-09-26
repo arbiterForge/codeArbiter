@@ -308,6 +308,22 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
             with self.subTest(event=event):
                 self.refused(client)
 
+    def test_admission_requires_native_codex_refusal_and_steering_seams(self):
+        client = self.client()
+        original = self.registry()
+        for event in ("PreToolUse", "PostToolUse"):
+            for tool in ("collaborationspawn_agent", "multi_agent_v1send_input",
+                         "multi_agent_v1resume_agent", "multi_agent_v1close_agent"):
+                with self.subTest(event=event, tool=tool):
+                    value = json.loads(json.dumps(original))
+                    for group in value["hooks"][event]:
+                        if any("artifact-authority-hook.py" in entry.get("command", "")
+                               for entry in group["hooks"]):
+                            group["matcher"] = "|".join(
+                                name for name in group.get("matcher", "").split("|") if name != tool)
+                    self.save_registry(value)
+                    self.refused(client)
+
     def test_admission_requires_claude_failure_event_and_reviewer_charter(self):
         client = self.client("ca")
         original = self.registry()

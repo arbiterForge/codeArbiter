@@ -16,6 +16,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Restore Codex CLI 0.145 review capture through an explicitly qualified native
+  V1 interface, binding the child UUID and first result while rejecting steering,
+  reused evidence and unsupported V2 launches.
 - Recover pristine, never-launched Codex 0.13.11 review requests using their
   exact historical prompt, preserving all retained evidence and integrity checks.
 - Select the exact Codex marketplace entry during installation checks, rejecting

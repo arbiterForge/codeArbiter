@@ -68,6 +68,11 @@ class StaticPackageContractTest(unittest.TestCase):
             return value
 
         events = manifest["hooks"]
+        # Reconstruct the independently pinned historical inventory from the
+        # current package; never turn its exact digest assertion into a superset.
+        for event in ("PreToolUse", "PostToolUse"):
+            events[event] = [group for group in events[event] if not any(
+                "artifact-authority-hook.py" in hook.get("command", "") for hook in group["hooks"])]
         events["PreToolUse"].extend((
             {
                 "matcher": "spawn_agent",
@@ -118,6 +123,7 @@ class StaticPackageContractTest(unittest.TestCase):
             frozenset((
                 "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
                 "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
+                "7343a38841e254ff07a35b0ba8f0a1115112f52490c8e33aee9f3a98a1678046",
             )),
         )
         self.assertTrue({"SubagentStart", "SubagentStop"}.issubset(self.checker.HOOK_EVENTS))

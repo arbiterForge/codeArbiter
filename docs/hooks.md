@@ -329,6 +329,45 @@ is refused instead of replacing a newer launch, observation, receipt or recovery
 New requests require an absent destination. The lock file is retained so waiting
 processes continue to use the same lock.
 
+Codex CLI 0.145.0 native review uses the distinct closed producer profile
+`codex-native-v1/0.145.0`. It requires live qualification of the actually registered
+`multi_agent_v1.spawn_agent` interface and explicit profile selection at arming.
+Its envelope is exactly `message` plus `fork_context:false`; the observed lifecycle
+role must be `default`. The role is implicit on the qualified interface. It does
+not add a model override or an OS sandbox. The prompt requires cooperative
+read-only conduct. Historical `codex-review/0.1.0` evidence remains separate.
+
+The exact native `spawn_agent` hook binds session, parent turn and tool call to
+the UUID in a bounded, duplicate-key-free JSON-string response. It rechecks the
+whole input envelope and frozen context. The child Start and first Stop must
+match that session, UUID, the child's own distinct turn and default role. A
+strict first decision produces `first_stop:true`; only then can its closed
+observation reach engine capture. Host wait results, task paths, transcripts and
+coordinator text confer no authority.
+
+Start may arrive before Post. Addressed child markers retain the exact session
+and UUID, are capped at four KiB, and serialize through a bounded OS lock before
+the request's integrity comparison. A Stop before association, duplicate or
+conflicting lifecycle event, or observed send-input/resume/close poisons an active
+review. Single-use markers remain retained for the registry's lifetime; they are
+never aged out or recycled into authority, and UUID reuse in another session or
+request is refused. A malformed first Stop with a known UUID also consumes its
+first evidence. A crashed or incomplete join must use a fresh request and child.
+Atomic zero-byte Start/Stop claims precede the marker lock, so a timed-out first
+event cannot disappear and be replaced later. A retained failure claim blocks
+the UUID even before Post can associate it with a request.
+
+The exact flattened `collaborationspawn_agent` name is registered for default V2
+refusal only because its task-path result cannot bind the lifecycle UUID. The
+finite `multi_agent_v1send_input`, `multi_agent_v1resume_agent` and
+`multi_agent_v1close_agent` names deny steering or termination of an active
+review; no arbitrary namespace or suffix is accepted. Successful authority
+hooks are silent, including verifier authorization and SubagentStop. The latter
+has no `additionalContext` output in the native closed schema.
+Steering targets alone normalize the exact UUID forms accepted by Codex's pinned
+UUID parser (hyphenated, simple, braced and `urn:uuid:` forms, either hex case);
+native Post and lifecycle UUID evidence must remain canonical lowercase.
+
 ### Retained task-board lock and local exclusion
 
 `taskwrite` retains `.codearbiter/open-tasks.md.lock` as a one-byte OS-lock sidecar.

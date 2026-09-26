@@ -70,6 +70,7 @@ EXPECTED_SUITES = {
         "test_admission_rejects_wrong_matchers_redirected_commands_and_async_hooks",
         "test_admission_requires_claude_failure_event_and_reviewer_charter",
         "test_admission_requires_every_authority_event",
+        "test_admission_requires_native_codex_refusal_and_steering_seams",
         "test_producers_create_and_read_canonical_html_pair",
         "test_intent_cli_accepts_ready_spec_from_native_engine",
         "test_incomplete_draft_is_named_without_inventing_contract_fields",

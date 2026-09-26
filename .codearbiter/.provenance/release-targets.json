@@ -4,7 +4,7 @@
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "5b5a1720ed5b7a30ece20d21cd381254fd40409b",
+      "hash": "60b0d2020edb529342fa24e4d64576fcd3d4a1e1",
       "path": "CHANGELOG.md"
     },
     {
@@ -19,7 +19,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "58d47eead47dc76b48c0819e1663f9f6e8bb5647",
+      "hash": "5067e9bf571c4a04a1ff61b71deed2a302b7e399",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
