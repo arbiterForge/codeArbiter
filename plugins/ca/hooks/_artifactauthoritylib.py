@@ -26,6 +26,8 @@ than one SubagentStop; only the first is a review result.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
+import errno
 import hashlib
 import json
 import os
@@ -63,6 +65,9 @@ REQUEST_RE = re.compile(r"[0-9a-f]{64}")
 TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 HOST_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}")
 MAX_STATE = 1 << 20
+# Only terminal abandonment can read a legacy inline-context review this large.
+MAX_RECOVERY_STATE = 2 << 20
+REQUEST_LOCK_WAIT_SECONDS = 5.0
 MAX_OUTPUT = 8 << 20
 MAX_DECISION = 65536
 REGISTRY_PARENT = Path(tempfile.gettempdir())
@@ -253,27 +258,129 @@ def _spool_root(root: Path) -> Path:
         raise AuthorityError("AUTHORITY_BUSY", "resolved git-common authority spool is unavailable") from exc
 
 
-def _save(root: Path, value: dict[str, Any]) -> None:
-    value = dict(value)
-    value["integrity_sha256"] = _integrity(value)
+@contextmanager
+def _request_lock(spool: Path, relative: Path):
+    """Keep one OS-owned lock inode for all writers of this request."""
+    path = spool / f"{relative.name}.lock"
+    fd = None
+
+    def check_path() -> None:
+        info = path.lstat()
+        if (
+            stat.S_ISLNK(info.st_mode)
+            or getattr(info, "st_file_attributes", 0) & 0x400
+            or not stat.S_ISREG(info.st_mode)
+        ):
+            raise OSError("request lock path is unsafe")
+        if fd is not None:
+            opened = os.fstat(fd)
+            if (info.st_dev, info.st_ino) != (opened.st_dev, opened.st_ino):
+                raise OSError("request lock path changed")
+
     try:
-        _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
-        if value["state"] in TERMINAL_STATES:
-            (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
+        check_path()
+    except FileNotFoundError:
+        pass
+    flags = (
+        os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    )
+    fd = os.open(path, flags, 0o600)
+    locked = False
+    try:
+        check_path()
+        deadline = time.monotonic() + REQUEST_LOCK_WAIT_SECONDS
+        if os.name == "nt":
+            import msvcrt
+        else:
+            import fcntl
+        while True:
+            try:
+                if os.name == "nt":
+                    # Windows permits a byte-range lock beyond EOF. Never seed
+                    # or truncate the lock file, including on an unsafe path.
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                locked = True
+                break
+            except OSError as exc:
+                if (
+                    exc.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK, 36}
+                    and getattr(exc, "winerror", None) not in {32, 33}
+                ):
+                    raise
+                if time.monotonic() >= deadline:
+                    raise AuthorityError("AUTHORITY_BUSY", "request transition lock timed out") from exc
+                time.sleep(0.01)
+        check_path()
+        yield
+    finally:
+        try:
+            if locked:
+                if os.name == "nt":
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
+        # Do not unlink: a peer may already be waiting on this same inode.
+
+
+def _save(root: Path, value: dict[str, Any]) -> None:
+    expected = value.get("integrity_sha256")
+    updated = dict(value)
+    updated["integrity_sha256"] = _integrity(updated)
+    try:
+        spool = _spool_root(root)
+        relative = _request_path(value["request_id"])
+        with _request_lock(spool, relative):
+            try:
+                (spool / relative).lstat()
+            except FileNotFoundError:
+                if expected is not None:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "loaded request state disappeared")
+            else:
+                if expected is None:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state already exists")
+                legacy_abandonment = (
+                    value["state"] == "ABANDONED"
+                    and value["activity"] in REVIEW_ACTIVITIES
+                    and value.get("recovery") == {
+                        "disposition": "abandoned", "previous_attempt": None, "rerun_permitted": False,
+                    }
+                )
+                current = _load(root, value["request_id"], recover_armed_review=legacy_abandonment)
+                if current["integrity_sha256"] != expected:
+                    raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state changed since it was loaded")
+            _atomic_replace(spool, relative, _canonical(updated))
+            # A live operation can save several times without loading again.
+            value["integrity_sha256"] = updated["integrity_sha256"]
+            if value["state"] in TERMINAL_STATES:
+                (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
     except OSError as exc:
         raise AuthorityError("AUTHORITY_BUSY", "request state could not be written") from exc
 
 
-def _load(root: Path, request_id: str) -> dict[str, Any]:
+def _load(
+    root: Path, request_id: str, *, recover_armed_review: bool = False
+) -> dict[str, Any]:
     path = _spool_root(root) / _request_path(request_id)
+    limit = MAX_RECOVERY_STATE if recover_armed_review else MAX_STATE
     try:
         info = path.lstat()
         reparse = getattr(info, "st_file_attributes", 0) & 0x400
         if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISREG(info.st_mode):
             raise OSError("not regular")
-        if info.st_size > MAX_STATE:
+        if info.st_size > limit:
             raise OSError("oversized")
-        value = json.loads(path.read_text(encoding="utf-8"))
+        with path.open("rb") as stream:
+            raw = stream.read(limit + 1)
+        if len(raw) > limit:
+            raise OSError("oversized")
+        value = json.loads(raw.decode("utf-8"))
     except (OSError, UnicodeError, ValueError) as exc:
         raise AuthorityError("INVALID_AUTHORITY_STATE", "request state is unreadable") from exc
     allowed = {
@@ -303,6 +410,11 @@ def _load(root: Path, request_id: str) -> dict[str, Any]:
         or SHA256_RE.fullmatch(value.get("context_sha256", "")) is None
     ):
         raise AuthorityError("INVALID_AUTHORITY_STATE", "request state failed validation")
+    if len(raw) > MAX_STATE:
+        try:
+            _validate_legacy_review_recovery(root, value)
+        except (AuthorityError, KeyError, TypeError, ValueError) as exc:
+            raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy review recovery binding failed") from exc
     return value
 
 
@@ -310,6 +422,27 @@ def _validate_hash(value: Any, field: str) -> str:
     if not isinstance(value, str) or SHA256_RE.fullmatch(value) is None:
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", f"{field} is malformed")
     return value
+
+
+def _read_context(root: Path, context_ref: str, context_hash: str) -> dict[str, Any]:
+    _validate_hash(context_hash, "context_sha256")
+    expected_ref = f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
+    if context_ref != expected_ref:
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context locator is not content addressed")
+    try:
+        raw = (root / expected_ref).read_bytes()
+        context = json.loads(raw.decode("utf-8"))
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes are unavailable") from exc
+    if not isinstance(context, dict) or _digest(raw) != context_hash or raw != _canonical(context):
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes changed or are not canonical")
+    return context
+
+
+def _require_frozen_context(root: Path, request: dict[str, Any]) -> None:
+    context = _read_context(root, request["context_ref"], request["context_sha256"])
+    if context != request["context"]:
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "frozen context differs from the request")
 
 
 def _context(
@@ -322,16 +455,14 @@ def _context(
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "engine context result is malformed")
     context_hash = _validate_hash(result.get("context_sha256"), "context_sha256")
     context_ref = result.get("context_ref")
-    expected_ref = f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
-    if context_ref != expected_ref:
-        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context locator is not content addressed")
-    try:
-        raw = (root / expected_ref).read_bytes()
-        context = json.loads(raw.decode("utf-8"))
-    except (OSError, UnicodeError, ValueError) as exc:
-        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes are unavailable") from exc
-    if _digest(raw) != context_hash or raw != _canonical(context):
-        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes changed or are not canonical")
+    context = _read_context(root, context_ref, context_hash)
+    _validate_context(context, artifact_id, record_id, activity)
+    return context, context_ref, context_hash
+
+
+def _validate_context(
+    context: dict[str, Any], artifact_id: str, record_id: str, activity: str
+) -> None:
     subject = context.get("subject") if isinstance(context, dict) else None
     if (
         not isinstance(context, dict)
@@ -339,7 +470,9 @@ def _context(
         or not isinstance(subject, dict)
         or subject.get("artifact_id") != artifact_id
         or subject.get("record_id") != record_id
-        or context["activity"] != activity
+        or context.get("activity") != activity
+        or not isinstance(artifact_id, str)
+        or not isinstance(record_id, str)
         or not ID_RE.fullmatch(artifact_id)
         or not ID_RE.fullmatch(record_id)
     ):
@@ -380,7 +513,6 @@ def _context(
         _validate_hash(context.get("base_input_sha256"), "base_input_sha256")
         if not isinstance(context.get("task_hashes"), dict) or not isinstance(context.get("tasks"), list):
             raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "quality-review scope is incomplete")
-    return context, context_ref, context_hash
 
 
 def _review_binding(context: dict[str, Any]) -> tuple[str, list[str]]:
@@ -401,6 +533,60 @@ def _review_binding(context: dict[str, Any]) -> tuple[str, list[str]]:
     if not coverage:
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "review target has no criterion coverage")
     return _digest(_canonical(contract)), coverage
+
+
+def _never_launched_review(request: dict[str, Any]) -> bool:
+    return (
+        request["state"] == "ARMED"
+        and request["activity"] in REVIEW_ACTIVITIES
+        and all(field in request and request[field] is None for field in (
+            "attempt", "launch", "observation_ref", "observation_sha256", "receipt", "wrapper", "recovery",
+        ))
+        and "payload" not in request
+        and "authority_source" not in request
+    )
+
+
+def _validate_legacy_review_recovery(root: Path, request: dict[str, Any]) -> None:
+    """Admit only the old duplicate-context shape, solely to retain and abandon it."""
+    if not _never_launched_review(request) or request["repository"] != _repository_identity(root):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy request is not an unlaunched review")
+    context = request["context"]
+    subject = context["subject"]
+    _validate_context(context, subject["artifact_id"], subject["record_id"], request["activity"])
+    context_hash = _digest(_canonical(context))
+    records = [context["task"]] if request["activity"] == "spec_review" else context["tasks"]
+    if any(not isinstance(record, dict) for record in records):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy review records are malformed")
+    contract_hash, coverage = _review_binding(context)
+    if (
+        request["context_sha256"] != context_hash
+        or request["context_ref"] != f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
+        or request.get("review_contract_sha256") != contract_hash
+        or request.get("required_coverage") != coverage
+        or request.get("command_bindings") != []
+        or request.get("workspace_roots") != {}
+    ):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy review context binding differs")
+    # Recovery validates the retained snapshot; it neither recreates absent
+    # evidence files nor upgrades the legacy prompt into launchable authority.
+    prompt = _dispatch_prompt(request, legacy_inline=True)
+    if not isinstance(request.get("launch_envelope"), dict):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy launch envelope is malformed")
+    if request.get("host", "codex") == "claude":
+        model = request["launch_envelope"].get("model")
+        if model not in CLAUDE_REVIEWER_MODELS:
+            raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy reviewer model is unsupported")
+        envelope = {
+            "description": f"codeArbiter {request['activity']} {request['request_id'][:12]}",
+            "prompt": prompt, "subagent_type": CLAUDE_REVIEWER, "model": model,
+        }
+    else:
+        envelope = {
+            "message": prompt, "task_name": f"authority_{request['request_id'][:12]}", "fork_turns": "none",
+        }
+    if request.get("dispatch_prompt") != prompt or request.get("launch_envelope") != envelope:
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy launch envelope differs")
 
 
 def _repository_identity(root: Path) -> dict[str, str]:
@@ -895,15 +1081,28 @@ def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]
     return [unique[key] for key in sorted(unique)]
 
 
-def _dispatch_prompt(request: dict[str, Any]) -> str:
+def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) -> str:
     context = request["context"]
+    if legacy_inline:
+        # Used only to validate an oversized historical request for abandonment.
+        target = "Frozen target data follows as canonical JSON:\n" + _canonical(context).decode("ascii") + "\n"
+    else:
+        target = (
+            f"Review activity: {request['activity']}; subject: "
+            f"{context['subject']['artifact_id']}/{context['subject']['record_id']}\n"
+            "Read the frozen context from that repository-relative path before reviewing. "
+            "The adapter verifies its exact digest before launch and publication. Inspect its "
+            "activity, subject, input_sha256, task definitions and criterion coverage against "
+            "these bindings, then inspect the input manifest and referenced target files. "
+            "Do not pass if the evidence is missing, unreadable or inconsistent. The locator "
+            "is a reference to the complete immutable evidence, not replacement authority.\n"
+        )
     return (
         f"[CODEARBITER_AUTHORITY_REQUEST:{request['request_id']}]\n"
         f"Target repository: {request['repository']['path']}\n"
         f"Frozen context: {request['context_ref']} sha256={request['context_sha256']}\n"
-        "Frozen target data follows as canonical JSON:\n"
-        + _canonical(context).decode("ascii") + "\n"
-        "Act as a fresh read-only independent codeArbiter reviewer. Do not edit files or "
+        + target
+        + "Act as a fresh read-only independent codeArbiter reviewer. Do not edit files or "
         "delegate. Review only the frozen target and return exactly one JSON object using "
         f"format {DECISION_FORMAT}. Bind request_id={request['request_id']}, "
         f"target_sha256={context['input_sha256']}, "
@@ -1912,6 +2111,7 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review request is not launchable")
         if tool_input != request.get("launch_envelope"):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
+        _require_frozen_context(root, request)
         if _ordinary_spawn_marker(session_id, turn_id).exists():
             request["state"] = "REJECTED"
             request["recovery"] = {
@@ -2116,6 +2316,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         if tool_input != request.get("launch_envelope"):
             _reject(root, request, "changed-launch-envelope")
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
+        _require_frozen_context(root, request)
         try:
             _refuse_shadowed_reviewer(root, session_root)
         except AuthorityError:
@@ -2317,6 +2518,10 @@ def publish_request(
         wrapper = request.get("wrapper")
         if not isinstance(wrapper, dict) or wrapper.get("state") != "CORROBORATED":
             raise AuthorityError("AUTHORITY_NOT_COMPLETE", "verifier wrapper completion is uncorroborated")
+    else:
+        # Check the original reference before the engine can recreate missing
+        # derived bytes while computing the current context.
+        _require_frozen_context(root, request)
     current, current_ref, current_hash = _context(
         root, client, request["context"]["subject"]["artifact_id"],
         request["context"]["subject"]["record_id"],
@@ -2354,11 +2559,11 @@ def publish_request(
 
 
 def recover_request(root: str | Path, request_id: str, disposition: str) -> dict[str, Any]:
-    """Retain an uncertain attempt and close it without ever rerunning commands."""
+    """Retain an uncertain attempt or abandon a review that never launched."""
     root = _real_root(root)
     if disposition not in {"failed", "abandoned"}:
         raise AuthorityError("INVALID_RECOVERY", "recovery disposition must be failed or abandoned")
-    request = _load(root, request_id)
+    request = _load(root, request_id, recover_armed_review=disposition == "abandoned")
     recoverable_completed = (
         request["state"] == "COMPLETED"
         and request["activity"] == "verification"
@@ -2371,7 +2576,11 @@ def recover_request(root: str | Path, request_id: str, disposition: str) -> dict
         and isinstance(request.get("wrapper"), dict)
         and request["wrapper"].get("state") in {"AUTHORIZED", "FAILED"}
     )
-    if request["state"] not in {"RUNNING", "LAUNCHING"} and not recoverable_completed and not recoverable_authorized:
+    abandonable_review = disposition == "abandoned" and _never_launched_review(request)
+    if (
+        request["state"] not in {"RUNNING", "LAUNCHING"}
+        and not recoverable_completed and not recoverable_authorized and not abandonable_review
+    ):
         raise AuthorityError("INVALID_RECOVERY", "only an interrupted active attempt can be recovered")
     request["state"] = disposition.upper()
     request["recovery"] = {

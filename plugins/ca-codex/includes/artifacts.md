@@ -278,7 +278,13 @@ separate and cannot be relabelled as qualified launch evidence.
 
 For `spec_review` or `quality_review`, arm the corresponding activity without
 workspace mappings and dispatch the returned `launch_envelope` unchanged to one
-fresh host subagent. The host hooks bind the exact launch call, child start and
+fresh host subagent. The bounded prompt names the retained, content-addressed
+evidence context instead of embedding its full input manifest. The reviewer
+must read that context and inspect its subject, coverage and source inputs.
+The adapter verifies the context's canonical bytes and digest before launch and
+publication; a missing or changed context blocks authority. Never shorten or
+rewrite the returned envelope yourself.
+The host hooks bind the exact launch call, child start and
 the child's first stop; a pasted or coordinator-authored decision is not review
 authority.
 Publish the completed request through the same `publish` command. `task-review`
@@ -286,6 +292,19 @@ records the separate verification and spec-review receipts. After every task in
 the scope reaches `REVIEW`, reverify against one current source snapshot, run the
 combined quality review, and use `accept-scope` once. Do not accept tasks
 individually.
+
+An ARMED review that never launched can be abandoned through the adapter:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-authority.py" recover --root "<project-root>" --request-id <request-id> --disposition abandoned
+```
+
+The adapter requires no attempt, launch, observation, receipt or prior recovery.
+It retains the request and its evidence, creates no receipt, and prohibits
+dispatching that request again. This also covers bounded legacy requests whose
+inline manifests made them too large for normal dispatch. Launched or captured
+requests remain subject to their existing recovery rules. Arm a new request
+only after the retained request is terminal.
 
 An interrupted or `BLOCKED` HTML task never resumes by editing its status. Arm
 the installed reconciliation adapter for the exact task or scope, present its
