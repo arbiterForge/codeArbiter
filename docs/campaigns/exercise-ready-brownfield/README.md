@@ -25,8 +25,10 @@ authority and task evidence before claiming campaign acceptance.
 
 The dated assessment, first reviews and original authoring evidence below remain historical.
 Their earlier no-implementation or no-approval statements describe those earlier sessions.
-This planning PR can be reviewed independently; implementation integrates #854's retained
-owners before #873's overlapping work. Debug correctness remains in #871.
+This planning PR can be reviewed independently. Overlapping #873 changes must revalidate
+the shared owner against #854's current head (T-001); starting that work does not require
+#854 to merge into main. This continuation stacks #873 on #854 to preserve those owners
+and make the combined changes reviewable. Debug correctness remains in #871.
 
 The outcome is a trustworthy first useful contribution in an unfamiliar fork, followed by lower repeated exploration without stale policy, lost human edits, weaker authority or excessive context. More files, passing text checks and an initialized marker are not success.
 
