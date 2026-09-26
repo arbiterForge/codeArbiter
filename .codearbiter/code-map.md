@@ -2,7 +2,8 @@
 
 Coarse concern → path → role orientation, synthesized from Scout C (architecture)
 evidence per `context-creation` Phase 5, against the tree as of the
-`fix/mode-write-clobber` merge with `origin/main` (2026-09-15). Module/concern
+`fix/mode-write-clobber` merge with `origin/main` (2026-09-15), with plugin version
+metadata refreshed on 2026-09-26. Module/concern
 granularity only — not a file listing. Kept in sync via `.provenance/code-map.json`.
 
 ## Shared hook library (core/pysrc)
