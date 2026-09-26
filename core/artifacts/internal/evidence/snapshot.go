@@ -3,6 +3,7 @@
 package evidence
 
 import (
+	"fmt"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/authority"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
@@ -22,6 +23,13 @@ import (
 const MaxInputFile = 32 << 20
 const MaxInputTotal = 256 << 20
 const MaxInputEntries = 50000
+
+func inputReadError(rel string, err error) error {
+	if fault.Code(err) == "MAX_BYTES" {
+		return fault.At("MAX_BYTES", "", "verification_inputs", fmt.Sprintf("input %q exceeds the %d-byte (32 MiB) file limit; review roots and explicit repository-relative exclude_directories for generated dependencies or output", rel, MaxInputFile))
+	}
+	return err
+}
 
 func internalOutputs(f *store.FS) (map[string]bool, error) {
 	out, e := f.Infrastructure()
@@ -165,6 +173,9 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 			roots = model.Strings(policy["roots"])
 			excludes = model.Strings(policy["exclude_directories"])
 		}
+		if errors := validate.InputPolicyErrors(plan.Norm()); len(errors) > 0 {
+			return nil, &errors[0]
+		}
 	}
 	for _, p := range roots {
 		if !validate.Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") {
@@ -181,7 +192,7 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 			return true
 		}
 		for _, x := range excludes {
-			if p == x {
+			if validate.InputWithin(x, p) {
 				return true
 			}
 		}
@@ -231,7 +242,7 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 			}
 			b, e := f.Read(p, MaxInputFile)
 			if e != nil {
-				return e
+				return inputReadError(p, e)
 			}
 			total += len(b)
 			if total > MaxInputTotal {
@@ -257,18 +268,38 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 		return nil
 	}
 	sort.Strings(roots)
+	walked := []string{}
 	for _, root := range roots {
+		if excluded(root) {
+			continue
+		}
+		covered := false
+		for _, prior := range walked {
+			if validate.InputWithin(prior, root) {
+				covered = true
+				break
+			}
+		}
+		if covered {
+			continue
+		}
 		if root != "." {
-			b, e := f.Read(root, MaxInputFile)
-			if e == nil {
+			info, err := f.Stat(root)
+			if os.IsNotExist(err) {
+				return nil, fault.At("MISSING_INPUT_ROOT", "", "verification_inputs.roots", fmt.Sprintf("input root %q does not exist; for proposed files select an existing containing directory so creation is tracked", root))
+			}
+			if err != nil {
+				return nil, err
+			}
+			if !info.IsDir() {
+				b, err := f.Read(root, MaxInputFile)
+				if err != nil {
+					return nil, inputReadError(root, err)
+				}
 				count++
 				total += len(b)
 				if count > MaxInputEntries || total > MaxInputTotal {
 					return nil, fault.New("MAX_INPUTS", "explicit input roots exceed manifest limits")
-				}
-				info, err := f.Stat(root)
-				if err != nil {
-					return nil, err
 				}
 				items[root] = map[string]any{"kind": "bytes", "sha256": canonical.BytesHash(b), "executable": info.Mode()&0111 != 0}
 				continue
@@ -277,6 +308,7 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 		if e = walk(root); e != nil {
 			return nil, e
 		}
+		walked = append(walked, root)
 	}
 	// Always include canonical normative artifacts even when scoped roots omit
 	// their directory. This also makes source-definition changes stale evidence.

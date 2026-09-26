@@ -121,6 +121,7 @@ def arm(root: str | Path, client: Any, spec_id: str, plan_id: str, *, delegate_m
     reply = f"approve-sprint {spec_id} {plan_id} {mode} {token}"
     ph = hashlib.sha256(reply.encode("utf-8")).hexdigest()
     context = client.call("sprint-approval-context", {"artifact_id": plan_id, "spec_id": spec_id, "delegate_methods": delegate_methods, "prompt_sha256": ph})
+    approval._preflight_plan_verification(client, context["pair"]["plan"])
     pending = {"format": FORMAT, "artifact_id": plan_id, "kind": "sprint-pair", "pair": context["pair"], "spec_context": context["spec_context"], "plan_context": context["plan_context"], "prompt_sha256": ph, "token_sha256": hashlib.sha256(token.encode("ascii")).hexdigest()}
     pending["request_key"] = _hash({"pair": pending["pair"], "prompt_sha256": ph})
     validate_pending(pending)

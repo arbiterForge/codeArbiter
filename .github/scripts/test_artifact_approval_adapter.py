@@ -540,6 +540,128 @@ class ApprovalAdapterTest(unittest.TestCase):
 
 
 
+class _PlanClient(_FakeClient):
+    def __init__(self, root):
+        super().__init__(root)
+        self.identity.update(artifact_id="PLAN-EXAMPLE", kind="plan")
+        self.tasks = [{"id": "T-001", "verification": [{
+            "availability": "proposed", "cwd": ".",
+            "argv": ["python", "-m", "unittest", "-v", "tests.future_test"],
+            "required_tests": ["test_future_behavior"], "expected_exit": 0,
+        }]}]
+        self.snapshot_error = None
+        self.drift_after = None
+        self.bad_next_offset = False
+
+    def call(self, operation, request=None, **kwargs):
+        request = dict(request or {})
+        if operation not in {"outline", "read", "snapshot"}:
+            return super().call(operation, request, **kwargs)
+        self.calls.append((operation, request))
+        identity = dict(self.identity)
+        if operation == "outline":
+            offset = request.get("offset", 0)
+            task = self.tasks[offset]
+            result = {**identity, "offset": offset, "total": len(self.tasks),
+                      "records": [{"id": task["id"], "kind": "tasks", "retired": False}],
+                      "next_offset": offset if self.bad_next_offset else
+                      (offset + 1 if offset + 1 < len(self.tasks) else None)}
+        elif operation == "read":
+            result = {**identity, "mode": "exact", "context_complete": False,
+                      "record": next(task for task in self.tasks if task["id"] == request["symbol"])}
+        else:
+            if self.snapshot_error:
+                raise self.snapshot_error
+            result = {"sha256": "8" * 64, "entry_count": 1,
+                      "platform": "fixture", "roots": ["."], "exclude_directories": []}
+        if operation == self.drift_after:
+            self.identity["model_sha256"] = "9" * 64
+        return result
+
+
+class PlanApprovalPreflightTest(unittest.TestCase):
+    setUp = ApprovalAdapterTest.setUp
+    tearDown = ApprovalAdapterTest.tearDown
+
+    def test_offline_bridge_does_not_import_runner_capabilities(self):
+        from test_artifact_installed_host import assert_offline_bridge
+        assert_offline_bridge((CORE_PYSRC / "_artifactlib.py").read_bytes())
+
+    def plan(self):
+        self.client = _PlanClient(self.root)
+        return self.client
+
+    def arm(self):
+        return self.adapter.arm_user_approval(
+            self.root, self.client, "PLAN-EXAMPLE", token="plan-preflight-token"
+        )
+
+    def test_reports_all_commands_and_snapshot_before_pending_approval(self):
+        client = self.plan()
+        client.tasks = [
+            {"id": task, "verification": [{"availability": "proposed", "cwd": ".",
+             "argv": [runner, "test"], "required_tests": ["named_test"], "expected_exit": 0}]}
+            for task, runner in (("T-001", "unsupported-one"), ("T-002", "unsupported-two"))
+        ]
+        client.snapshot_error = self.adapter._artifactlib.ArtifactError(
+            "MAX_BYTES", "site/node_modules/pagefind.exe exceeds 33554432 bytes"
+        )
+        with self.assertRaisesRegex(RuntimeError, "PLAN_VERIFICATION_UNAVAILABLE") as caught:
+            self.arm()
+        for detail in ("T-001", "T-002", "unsupported-one", "unsupported-two", "pagefind.exe", "MAX_BYTES"):
+            self.assertIn(detail, str(caught.exception))
+        self.assertEqual([r[1]["symbol"] for r in client.calls if r[0] == "read"], ["T-001", "T-002"])
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_snapshot_failure_alone_blocks_plan_approval(self):
+        client = self.plan()
+        client.snapshot_error = self.adapter._artifactlib.ArtifactError("UNSAFE_PATH", "included source is a link")
+        with self.assertRaisesRegex(RuntimeError, "UNSAFE_PATH"):
+            self.arm()
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_readiness_keeps_actionable_input_policy_diagnostics(self):
+        client = self.plan()
+        original = client.call
+        def diagnosed(operation, request=None, **kwargs):
+            result = original(operation, request, **kwargs)
+            if operation == "validate":
+                result.update(valid=False, diagnostics=[{
+                    "code": "INVALID_INPUT_POLICY", "field": "verification_inputs.exclude_directories",
+                    "message": "node_modules must be qualified as a repository-relative path such as site/node_modules",
+                }])
+            return result
+        with mock.patch.object(client, "call", side_effect=diagnosed):
+            with self.assertRaisesRegex(RuntimeError, "NOT_READY.*site/node_modules"):
+                self.arm()
+
+    def test_identity_change_during_read_never_arms(self):
+        self.plan().drift_after = "read"
+        with self.assertRaisesRegex(RuntimeError, "STALE_PLAN_PREFLIGHT"):
+            self.arm()
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_identity_change_during_snapshot_never_arms(self):
+        self.plan().drift_after = "snapshot"
+        with self.assertRaisesRegex(RuntimeError, "STALE_PLAN_PREFLIGHT"):
+            self.arm()
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_nonadvancing_outline_never_arms(self):
+        self.plan().bad_next_offset = True
+        with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+            self.arm()
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_proposed_test_does_not_need_to_exist_or_execute(self):
+        self.plan()
+        self.assertFalse((self.root / "tests/future_test.py").exists())
+        with mock.patch("subprocess.Popen", side_effect=AssertionError("preflight executed a process")):
+            result = self.arm()
+        self.assertEqual(result["artifact_id"], "PLAN-EXAMPLE")
+        self.assertIn("snapshot", [operation for operation, _ in self.client.calls])
+
+
 class SprintPairIntegrationTest(unittest.TestCase):
     """Real installed-engine fixtures, not authenticated model-turn proof."""
     @classmethod
@@ -584,6 +706,28 @@ class SprintPairIntegrationTest(unittest.TestCase):
     def decision(self):
         lenses = {k: {"verdict": "Adequate", "reason": "The recorded contract and bounded verification remain unchanged."} for k in ("Scalable", "Maintainable", "Available", "Reliable", "Testable", "Securable")}
         return {"task_id": "T-001", "options": [{"label": "Explicit precedence table", "steps": ["Retain the negative oracle.", "Implement precedence with a bounded table lookup."], "lenses": lenses}], "selected": 0, "strength": "moderate", "rationale": "The recorded spec requires environment precedence. This method conforms without changing paths, criteria or verification."}
+
+    def test_unsupported_runner_blocks_pair_before_any_pending_approval(self):
+        command = {"availability": "proposed", "cwd": ".", "argv": ["unsupported-pair", "test"],
+                   "required_tests": ["test_environment_overrides"], "expected_exit": 0,
+                   "assertion": "The named test must pass."}
+        self.h.mutate("apply", "PLAN-FLOW", changes=[{"op": "record.update", "symbol": "T-001",
+                                                      "fields": {"verification": [command]}}])
+        before = self.identities()
+        with self.assertRaisesRegex(RuntimeError, "PLAN_VERIFICATION_UNAVAILABLE.*T-001"):
+            self.arm()
+        self.assertEqual(self.identities(), before)
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+
+    def test_pair_preflight_reports_oversized_present_input_without_requiring_proposed_test(self):
+        self.assertFalse((self.root / "tests/test_config.py").exists())
+        with (self.root / "generated.exe").open("wb") as output:
+            output.truncate((32 << 20) + 1)
+        before = self.identities()
+        with self.assertRaisesRegex(RuntimeError, "PLAN_VERIFICATION_UNAVAILABLE.*generated.exe.*33554432"):
+            self.arm()
+        self.assertEqual(self.identities(), before)
+        self.assertFalse((self.root / self.approval.PENDING).exists())
 
     def test_one_reply_approves_both_without_individual_approve_calls(self):
         armed = self.arm()

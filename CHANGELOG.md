@@ -12,6 +12,21 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.22.1] - 2026-09-26
+
+### Fixed
+
+- Check all plan verification commands and input snapshots before requesting
+  approval, including paired approvals; report unsupported runners and ineffective
+  repository-relative exclusions together.
+- Collect exact Playwright JSON results and supported simple npm scripts; reject
+  ambiguous, skipped, duplicate and retried named results.
+- Launch Windows npm through pinned native Node and npm CLI files, preserving
+  literal arguments and rejecting runtime drift. Retain the qualified launch
+  contract in verification evidence.
+- Recognize both supported quote styles in verifier calls and preserve actionable
+  oversized-input diagnostics without allowing explicit roots to bypass exclusions.
+
 ## [2.22.0] - 2026-09-26
 
 ### Added
