@@ -135,6 +135,12 @@ EXPECTED_SUITES = {
         "test_worktree_planning_preserves_the_selected_pairs_exact_format",
     },
     "test_artifact_farm.py": {
+        "test_cleanup_success_needs_no_retry",
+        "test_cleanup_retries_a_transient_sharing_violation",
+        "test_cleanup_preserves_error_at_deadline",
+        "test_cleanup_attempt_limit_cannot_spin_forever",
+        "test_cleanup_does_not_retry_unrelated_failures",
+        "test_cleanup_real_owned_file_and_unrelated_sibling",
         "test_projection_binding_and_canary_preflight",
         "test_only_provider_enrichment_can_be_sealed_for_dispatch",
         "test_source_change_invalidates_canary_binding",

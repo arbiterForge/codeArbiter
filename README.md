@@ -10,9 +10,9 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.21.18" src="https://img.shields.io/badge/version-2.21.18-2b7489">
+<img alt="version 2.22.2" src="https://img.shields.io/badge/version-2.22.2-2b7489">
 <img alt="core lanes" src="https://img.shields.io/badge/core_lanes-18-555">
-<img alt="skills" src="https://img.shields.io/badge/skills-23-555">
+<img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-20-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 

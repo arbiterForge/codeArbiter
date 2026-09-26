@@ -35,8 +35,14 @@ the same hard gates; **only the cheap HTTP-chat worker ships today** — premium
 model) and agentic (a worker that reads files and iterates) are what the seam is designed for, roadmap
 not built. Cost arbitrage is one worker policy, not the definition.
 
-The worker prompt is enriched with the failing-test source and current in-scope file contents, byte-capped
-(`FARM_ENRICH_MAX_BYTES`) and secret-redacted before transmission to the endpoint.
+The worker prompt includes the failing-test source, current in-scope files, and available prior output.
+`FARM_ENRICH_MAX_BYTES` limits their rendered UTF-8 enrichment, including section text, file labels,
+separators, and any truncation notice. Complete source is redacted before truncation; a cut never splits
+an encoded code point. Current source takes priority over prior output. When a file does not fit, its
+body is shortened and later files are omitted. A label that cannot fit is omitted rather than split.
+Small limits use a compact notice; limits too small for that notice omit enrichment entirely.
+This is not a cap on task instructions, failure details, the full JSON request, model tokens, or local
+file-read memory. No additional model request or user checkpoint is made solely because context was cut.
 
 **Swapping the worker changes who writes the code, never whether it's reviewed.** Every task the farm
 reports green is still routed through the normal spec-compliance, quality, and fresh-verification
@@ -47,18 +53,84 @@ capable of the slice).
 
 ### Zero-token quality guards
 
-1. **Literal-leak** — rejects an impl that simply hard-codes the literal value the test asserts
-   (`return 42` for `expect(f()).toBe(42)`).
+1. **Literal-leak** — flags repeated whole, same-kind string or numeric spellings in a small
+   implementation (`return 42` for `expect(f()).toBe(42)`). A number inside an identifier, a larger
+   number/string, or a conventional source comment is not a match. String `"42"` and number `42`
+   are distinct. The existing five-code-line boundary determines rejection versus warning; a
+   rejection names the actual small-file match, not an earlier substantial-file match.
 2. **Mutation** — after the gate is green, mutates the worker's in-scope impl (operator flips, return
    replacement, boolean inversion) and re-runs **only the task's narrow test** (`gate.commands[0]`). A
-   surviving mutant is code the test does not constrain — gaming, dead code, or a weak test. The score
-   is **bounded by test strength**: a low score is a strong red flag, a high score is necessary but not
-   sufficient (Phases 3–5 remain the real quality gate). A low score attaches a **warning that rides
-   into Phase 3** for Claude to judge (worker gaming vs. weak test); only a near-zero score on a
-   non-trivial impl hard-escalates. Sampled and time-boxed so it never balloons wall-clock. Set
+   surviving mutant is an implementation change the test command did not reject. It can indicate
+   weak tests, dead code or an equivalent change; it does not by itself prove gaming. Bare nonzero
+   exits do not establish valid, assertion-killed mutants. Built-in positive rejection ratios remain
+   unverified bounds, not measured scores; see the accounting rule below. Any completed nonzero
+   built-in rerun leaves the measurement unavailable, whatever its ratio. It attaches a
+   **warning that rides into Phase 3** for independent review unless the existing near-zero bound
+   with sufficient evaluated evidence rejects the candidate. `FARM_MUTATION_WARN_BELOW` applies
+   only to measured scores from a successful external hook or a built-in all-pass zero result;
+   it cannot suppress an unavailable-measurement warning. Screening is sampled and time-boxed. Set
    `FARM_MUTATION_CMD` to swap the built-in text mutator for a real per-language framework (Stryker,
    mutmut, …); it runs in the worktree with `FARM_MUTATION_FILES` / `FARM_MUTATION_TEST_PATH` /
-   `FARM_MUTATION_TEST_CMD` set and must print a trailing JSON line with a numeric `score`.
+   `FARM_MUTATION_TEST_CMD` set. A measured hook score requires successful completion (exit 0,
+   no timeout, verified timeout cleanup when needed) and a trailing stdout JSON report with a finite
+   `score` in `[0, 1]`. A wrapper around a percentage-based framework must normalize its measurement;
+   stderr diagnostics are not the score channel. Optional counts and survivors remain absent unless
+   the hook actually reports them.
+
+The literal check is a bounded lexical heuristic, not an assertion parser or proof of intent. It
+ignores conventional slash comments in recognized C-family source suffixes and hash comments in
+Python; other suffixes do not acquire a guessed comment grammar. Plain quote delimiters and numeric
+spellings are compared without evaluating escapes or constant expressions. Dynamic templates are not
+constant-string evidence; only unambiguous expression-start regex forms are skipped. Language-specific
+prefixes, JSX and other ambiguous grammar are not fully interpreted. Test labels, inputs and legitimate
+shared constants can still match. Normal independent review remains authoritative; an absent lexical
+match neither skips the mutation check nor accepts the work.
+
+A configured hook that fails, times out, or reports invalid output supplies diagnostics, not a
+measured `mutationScore`. Ordinary unavailable measurements retain the existing warning policy and
+continue through normal independent review; this does not add a user checkpoint. Do not hide adverse
+evidence: a failed hook's parseable stdout report at or below the existing near-zero floor, with at
+least five explicitly reported evaluated mutants, still rejects that candidate pending successful
+remeasurement. It is not published as a valid score. No evaluated count is invented from absence or a
+survivor list. A retained alternative can qualify under the same rules before another model round.
+
+If timeout cleanup cannot establish that the mutation process tree stopped, qualification is fatal
+for that task: no further candidate, retry, commit or integration may run against a possibly live
+writer. Existing task reporting retains known spend and cleanup diagnostics. Neither an adverse
+report nor failed process containment can be converted into acceptance by scoring prose.
+
+The built-in text mutator bounds each test launch by the remaining mutation budget and any shorter
+configured gate timeout. Zero mutation budget launches no tests; disabling the general gate timeout
+does not disable this budget. Mutant writes count against the trial budget. Verified process teardown
+and defensive restoration can take additional time and must finish or refuse safely before work
+advances. An interrupted trial is not a killed mutant: stop screening, restore the worker's output,
+and return diagnostics without a measured score. Completed observations before the interruption stay
+explicitly unverified; the existing near-zero/five-completed-reruns floor still rejects an adverse
+candidate. A clean timeout otherwise warns through independent review, without another default
+user checkpoint. Unverified process cleanup retains the fatal containment boundary above.
+
+A completed nonzero rerun is an **unclassified gate rejection**, not a proved mutant kill. The
+built-in runner cannot distinguish a compiler, loader, infrastructure or assertion failure from an
+arbitrary command's exit status. Diagnostic wording and printed score-like JSON do not grant that
+classification. Preserve a bounded, redacted first-rejection witness and completed/pass counts;
+do not publish a positive `mutationScore` from these exits. For real language-specific measurements,
+use the existing explicitly configured external framework hook rather than another public command.
+
+For at least three completed reruns, retain `R / (S + R)` as an **unverified gate-rejection upper
+bound**, where `R` is completed nonzero reruns and `S` is successful reruns. Treating every rejected
+trial as a valid kill is the most favorable interpretation of those observations; excluding invalid
+rejections cannot increase that fraction. This is not a language-aware mutation score and does not
+classify equivalent or unexercised changes. Preserve the existing near-zero/five-completed-reruns
+rejection floor even on this bound: uncertainty cannot erase an already adverse result. Otherwise
+retain the ordinary warning and independent review, without spending another model round or adding a
+user checkpoint solely because the measurement is unavailable.
+
+With no rejected or interrupted trial, at least three successful reruns still produce the existing
+zero screening score and survivor list. A shorter all-pass run stays too thin to score; a short
+nonzero run reports its diagnostic without inventing a usable evaluated count. A budget ending
+between trials follows these same rules; interruption never publishes a partial measured score.
+Language-aware validity and semantic interpretation of literal overlap remain separate work. None
+of these screening outcomes is task or scope acceptance proof.
 
 Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
 the mutation guard runs `gate.commands[0]` as the per-mutant test (running an exhaustive suite per mutant
@@ -66,22 +138,56 @@ would be too slow).
 
 ### Best-of-N sampling and iterative retries
 
-By default the farm draws one worker completion per task attempt (`FARM_SAMPLES=1` — unchanged
-behavior). Because the gate is a deterministic pass/fail oracle and each task runs in an isolated
-worktree, you can instead draw **N candidates in parallel** and accept the first that passes the gate:
-set `FARM_SAMPLES=N`. Each sample runs in its own scratch worktree cut from the integration HEAD; the
-winner's files are taken into the task worktree and merged, the losers discarded. Total in-flight
-worker calls never exceed `FARM_CONCURRENCY` — sampling **shares** that budget, it does not multiply
-it. The cost is up to N× worker tokens (the cheap axis) for a higher first-time-go rate;
-`farm-report.json` records both the summed sample-token spend (`promptTokens`/`completionTokens`) and
-the accepted candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`) so the
-trade-off is visible. With `FARM_SAMPLES>1` the worker temperature is auto-bumped off 0 (to 0.7) so the
-samples actually diversify; set `FARM_TEMPERATURE` to control it.
+By default the farm draws one worker completion per task attempt (`FARM_SAMPLES=1`). With
+`FARM_SAMPLES=N`, it draws **N candidates** in isolated scratch worktrees from the task's frozen
+baseline. Total in-flight worker calls share `FARM_CONCURRENCY`; sampling does not multiply that cap.
 
-On a **retry** — a failed gate, or a sampling round with no green — the worker is shown its own previous
-in-scope output, not just the gate-failure tail, so it refines rather than restarts blind. That prior
-output rides the same byte-cap (`FARM_ENRICH_MAX_BYTES`) and secret-redaction chokepoint as all other
-injected context; out-of-scope drift is never carried forward.
+Sample gate success is only a shortlist. In deterministic sample-index order, each shortlisted
+candidate is materialized into the task worktree and receives the same containment, immutable-test,
+drift, task-gate, literal-risk and mutation checks as the single-worker path. Alternatives remain
+available until one passes those checks. A gate or high-risk rejection tries the next existing
+candidate before spending another model round. An integrity failure or an unusable reset/setup
+stops that task rather than disguising the failure with an unrelated passing candidate.
+
+Between candidates, tracked and non-ignored worker changes are reset to the task baseline and the
+existing setup phases are reapplied. Ignored dependency caches retain their existing policy. Cleanup
+is attempted for every sample, including exception paths; unresolved cleanup is reported. The same
+selection applies to detached canary work, which still stops before commit or merge.
+
+`farm-report.json` records summed known sample usage (`promptTokens`/`completionTokens`) separately from
+the selected candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionTokens`). Qualification
+makes no additional model requests, but can run local gates and mutation checks for multiple
+candidates. It is not comparative quality ranking or a measured savings claim. Normal independent
+reviews and acceptance still follow. With `FARM_SAMPLES>1` and no explicit temperature, sampling
+defaults to `0.7`; `FARM_TEMPERATURE` remains the operator override. An explicit
+`FARM_TEMPERATURE=0` is respected even with multiple samples and disables this automatic
+bump. Leave the override unset or choose a supported nonzero temperature when seeking
+more varied candidates; a temperature setting is not a guarantee of distinct outputs.
+
+On a **retry**, available output reported written by the selected previous candidate is retained only
+where it intersects implementation scope. Untouched baseline files remain current-source context, not
+previous work. Partial output and file evidence can survive rejection or a later qualification exception;
+sibling candidates are not mixed. Prior output uses the same byte cap and redaction as other context.
+Labels say **not accepted**, not that a test necessarily failed. Actual failure details distinguish a
+worker response, qualification, transport, or integration problem so valid work need not be rewritten
+blindly. Retained context grants no acceptance, new retry allowance, or permission.
+If the retry cannot reset its worktree, the task escalates without another model call.
+Its report retains the completed attempts' known token usage, last output/risk evidence,
+and any unresolved sample cleanup outcomes; a failed reset cannot erase them.
+
+A decoded provider response can contain reported usage even when its output is
+rejected. The worker preserves valid counters through malformed message content,
+read-only or escaping paths, and guarded-write refusals, including any already
+written file list. A malformed non-text response becomes an ordinary worker
+failure under the existing retry/selection policy, not an unhandled parser error.
+Counters must be explicitly reported nonnegative safe integers; validate prompt
+and completion independently. Explicit zero is valid; missing, invalid or
+undecodable counts stay absent at the worker boundary. The existing report sums
+known counts, so its total is not proof of complete usage or verified billing.
+No extra provider request is made to recover a missing counter. HTTP failures,
+transport retries without usable usage and provider pricing remain outside this
+accounting correction. Output rejection still enforces the original write,
+test, gate and independent-review requirements.
 
 ## Required
 
@@ -111,8 +217,16 @@ picks a model by *measurement*, not hearsay:
    an acceptable canary pass-rate. Otherwise re-select.
 2. **Discovery** — websearch the current free Zen roster to enumerate candidate ids (codenames included).
    This finds *candidates*; it does not judge quality.
-3. **Canary** — `farm.js --canary` runs the plan's smallest task against each candidate and ranks them by
-   measured pass-rate / attempts / latency (`FARM_CANDIDATE_MODELS` carries the list). The top passer wins.
+3. **Canary** — `farm.js --canary` runs the plan's smallest no-dependency task against each candidate
+   and ranks that task's gate result / attempts / latency (`FARM_CANDIDATE_MODELS` carries the list).
+   It freezes the configured base commit before probing, uses separate detached scratch worktrees
+   for each model and sample, and records `baseCommit` in `.farm/canary-report.json`. Candidate
+   selection overrides `task.model` for the trial only; normal dispatch keeps its task override.
+   Worker containment, immutable tests, drift and verification checks still apply. Evaluation stops
+   before staging, committing or merging: it does not reset or advance an existing integration
+   branch. Existing task branches and worktrees are not its scratch. The top passer wins only after
+   verified cleanup; retained scratch is reported and exits nonzero without recursively erasing it.
+   A single task's result is not a general model pass-rate or promotion qualification.
 4. **Surface** — the choice is presented with its measured basis (and a one-line websearched identity note
    for the audit log), then written to `plan.meta.model` + `.farm/model-cache.json`.
 5. **Fallback ladder** — if the canary can't run or none pass: cached model → unmeasured websearch pick
@@ -126,21 +240,21 @@ picks a model by *measurement*, not hearsay:
 | `FARM_API_BASE_URL` | `https://opencode.ai/zen/v1` | Endpoint URL (env → plan.json → this default). |
 | `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
 | `FARM_CONCURRENCY` | `4` | Max concurrent task workers — and the shared ceiling on TOTAL in-flight worker calls, including best-of-N samples. |
-| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per task attempt; first to pass the gate wins. `1` = today's single-candidate path. N>1 trades up to N× worker tokens for higher first-time-go; shares the `FARM_CONCURRENCY` budget (never N× it). |
-| `FARM_TEMPERATURE` | `0` | Sampling temperature sent to the worker. Auto-bumped to `0.7` when `FARM_SAMPLES>1` and left at `0` (so samples diversify); set explicitly to override. |
+| `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per attempt; first in index order to pass task-worktree gates and risk qualification is selected. `1` keeps the single-worker path. Shares `FARM_CONCURRENCY`; known reported usage from all candidates is summed. |
+| `FARM_TEMPERATURE` | `0` (one sample); `0.7` (multiple, unset) | Sampling temperature sent to the worker. Defaults to `0` when `FARM_SAMPLES=1` and `0.7` when `FARM_SAMPLES>1`. Any explicit value, including `0`, overrides the automatic default. |
 | `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
-| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout (prevents worker-slot deadlock). |
-| `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx (honors `Retry-After`). |
+| `FARM_REQUEST_TIMEOUT_MS` | `120000` | Per-request hard timeout. A valid provider `Retry-After` longer than this is not shortened; the task is deferred without another authoring attempt. |
+| `FARM_API_MAX_RETRIES` | `3` | Transport retries for 429/5xx. Bounded `Retry-After` is honored; exhaustion defers new authoring for that task. |
 | `FARM_ENTITLEMENT_PROBE_TIMEOUT_MS` | `35000` | Per-candidate wall-clock cap for the `--canary` entitlement pre-screen (drops 401 promo-expired models). |
-| `FARM_ENRICH_MAX_BYTES` | `131072` | Cap on bytes of test-source + in-scope file context injected into the worker prompt (data-minimization; redacted for secrets). |
+| `FARM_ENRICH_MAX_BYTES` | `131072` | UTF-8 cap on rendered current/prior file context, labels, separators and notices; not the complete prompt or request. |
 | `FARM_ABORT_ESCALATION_RATE` | `0.5` | Circuit breaker: abort once escalations exceed this fraction… |
 | `FARM_ABORT_MIN_TASKS` | `3` | …after at least this many tasks have settled. |
 | `FARM_MUTATION` | `on` | Mutation guard on/off. |
 | `FARM_MUTATION_SAMPLE` | `15` | Max mutants per task (sampled). |
 | `FARM_MUTATION_BUDGET_MS` | `30000` | Per-task mutation time box. |
-| `FARM_MUTATION_WARN_BELOW` | `0.5` | Score below this attaches a warning into Phase 3. |
+| `FARM_MUTATION_WARN_BELOW` | `0.5` | Measured scores below this warn in Phase 3 unless the rejection floor applies. Unavailable or unverified measurements warn independently of this threshold. |
 | `FARM_MUTATION_ESCALATE_BELOW` | `0.1` | Score at/below this (≥5 mutants) hard-escalates. |
 | `FARM_MUTATION_CMD` | _(unset)_ | Pluggable external mutation framework hook. |
 | `FARM_RUN_ID` | _(random)_ | Pin this run's id — also the name of its artifact directory (`.farm/runs/<run-id>/`). Must be 1–64 chars of `[A-Za-z0-9._-]`; anything else is refused at startup. Reusing an id publishes over that directory's receipts, so pin a fresh one per run. |
@@ -215,7 +329,7 @@ Every run owns an artifact directory keyed by its run id — `${CLAUDE_PROJECT_D
 that directory is the **durable receipt**, written by that run alone. Two farm processes against one
 repository therefore cannot overwrite each other's *evidence* (see the concurrency caveat below — the
 receipts are isolated, the git state is not):
-- `farm-report.json` — structured results: per-task status, attempts, files written, worker token spend,
+- `farm-report.json` — structured results: per-task status, attempts, files written, known reported worker usage,
   warnings (gaming-risk), and an `aborted` flag; plus a `blocked[]` array with reasons, and an
   `artifacts` block stating whether the streaming rail was complete and which tasks' diff evidence is
   unavailable.
@@ -228,7 +342,8 @@ own artifacts: `.farm/farm-report.json`, `.farm/farm-report.md`, `.farm/farm-res
 `.farm/diffs/<task-id>.patch`. Under concurrency the pointer is last-writer-wins — always a complete
 artifact, never a truncated one, but attributable only via its `run_id`. Reconcile against the run
 directory when it matters. Also in `.farm/`:
-- `canary-report.json` — model-probe ranking (when `--canary` was run).
+- `canary-report.json` — model-probe ranking, frozen `baseCommit`, and any cleanup failures
+  (when `--canary` was run). This is evaluation evidence, not task acceptance or integration proof.
 - `model-cache.json` — last selected model + timestamp + canary pass-rate.
 
 Every report write is atomic (same-directory temp file, then rename), so a reader of a report path sees
@@ -256,3 +371,39 @@ To run two farms against one repository at the same time, give each process:
 Escalated tasks leave their worktrees at `.farm/worktrees/<task-id>/` for inspection.
 
 Canary ranking: `FARM_CANDIDATE_MODELS=a,b,c farm.js --canary <plan.json>` (cwd at the project root).
+
+### Transport retry boundaries
+
+A 429 or server failure retries the HTTP request within `FARM_API_MAX_RETRIES`, not a fresh
+implementation. Recognized `Retry-After` delay-seconds and HTTP-date values are honored only when
+the wait fits the existing `FARM_REQUEST_TIMEOUT_MS` budget and the runtime timer range. An excessive
+valid cooldown is not shortened or allowed to park a worker indefinitely. Missing or malformed fields
+use the existing exponential backoff capped at 16 seconds; explicit zero or a past valid date permits
+an immediate retry. Request deadlines still cover headers and successful body reads; between-request
+waits are separate. Discarded error streams are aborted before waiting or returning.
+
+Once that HTTP retry budget is exhausted, or a valid cooldown cannot fit locally, the worker returns
+an explicit non-retryable transport disposition. The task does not spend another authoring attempt
+against the same unavailable provider. Already-produced candidates may still qualify, independently
+eligible tasks can continue under the existing circuit breaker, and dependent work remains unaccepted.
+This is a reported task deferral, not a new user-approval gate or automatic delayed-resume service.
+Network/body failures and ordinary implementation failures otherwise retain their existing retry
+policy. This does not introduce a provider-wide cooldown coordinator, a new setting, or a spend claim.
+
+### Merge-conflict recovery
+
+A failed integration merge uses the existing task retry budget, not a new interview.
+The dispatcher verifies merge rollback and clean tracked integration state, pins that
+integration commit, and checks task reset, cleanup and HEAD before the next author.
+It keeps the prior qualified implementation as labeled feedback instead of presenting
+replacement baseline files as the worker's previous output. A protected test brought
+in by the verified integration commit becomes the next attempt's immutable baseline;
+setup and worker edits to that test still fail the same checks. Retained samples use
+this path too. Ignored setup caches keep their existing fingerprint contract.
+
+The same explicit-path staging operation gets up to three attempts, with 150 ms
+and 300 ms waits after refusal. This repeats no worker or commit and never removes
+another process's index lock. Persistent staging refusal, unverified rollback/reset
+or an unreadable replacement test cannot be repaired by another model call. The task retains its actual
+attempt, written-file and known-usage evidence, without commit or acceptance bypass.
+This does not add process resume, a provider fallback or a new approval checkpoint.

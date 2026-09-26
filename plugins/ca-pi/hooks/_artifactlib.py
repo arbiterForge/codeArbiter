@@ -304,7 +304,7 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
         return result
 
     for filename in ("_approvallib.py", "_prerequisitelib.py", "_sprintapprovallib.py",
-                     "_reconciliationlib.py", "_artifactauthoritylib.py", "_gitexec.py",
+                     "_reconciliationlib.py", "_artifactauthoritylib.py", "_gitexec.py", "_replylib.py",
                      "artifact-authority.py", "artifact-authority-hook.py", "prompt-submit.py"):
         resource("hooks/" + filename)
     if host == "claude":

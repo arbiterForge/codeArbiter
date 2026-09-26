@@ -6,9 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.19] - 2026-09-25
+## [0.14.2] - 2026-09-25
 
 ### Fixed
+
+- Count measured partial token usage toward proven budget overruns while keeping
+  incomplete totals unknown; retain exact source identities without storing blobs.
 
 - Retain strict HTML intent-response identity checks and per-document source healing.
 - Bound oversized UTF-8 code-map diagnostics without rewriting human content.
@@ -17,6 +20,83 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - Internal closed scout-report decoding and test-owned observation accounting;
   onboarding dispatch and context-writing integration are not enabled by these helpers.
+
+## [0.14.1] - 2026-09-25
+
+### Removed
+
+- Retire the `new-skill` command, `skill-author` workflow and bundled template,
+  including generated host entries. This maintainer-approved compatibility break
+  has no replacement alias; resource edits use the existing change workflows.
+
+### Fixed
+
+- Complete context-creation, decomposition and release entry ownership while
+  preserving initialization aliases, operational procedures and dry-run limits.
+- Redact complete multiline secret spans before formatting mutation diagnostics
+  or truncating gate output for worker feedback.
+
+- Consolidate `reconcile` under `decision-variance` with shorter discovery metadata
+  and a private analysis card. Report-only and scoped requests avoid an unnecessary
+  decision interview; prior choices and sprint method authority are retained.
+- Preserve append-only history when reaffirming a stale architectural decision,
+  and require ADR marker cleanup on controlled failure as well as success.
+- Resolve ADR authoring markers through the same host project-root function as
+  the ADR guards, retain that path for cleanup, and distinguish first-record
+  directory creation from unreadable storage.
+
+- Consolidate ADR authoring and read-only status under one concise owner; load
+  authoring and acceptance details only on demand, preserving explicit entries
+  and full-stem identity without creating records during a status request.
+
+- Consolidate tribunal, threat modeling, manual drift, post-merge cleanup and PR
+  entry procedures under concise skill owners. Retain explicit entries and mode
+  authority; select PR watch/cleanup before creation preflight and avoid wrapper
+  reloads or repeated branch-fate questions for an explicit open-PR request.
+
+- Generate debug and refactor entries from their owning skills, retaining all
+  investigation and parity gates while removing duplicate routing policies.
+- Clarify rendered farm context budgets and neutral rejection feedback in the shared
+  private card; no new Codex backend or HTML farm support is introduced.
+- Recover farm merge conflicts against a verified integration commit, retaining
+  prior output and rechecking the current protected-test baseline.
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
+- Document bounded farm transport retries and task-local cooldown handling in
+  the shared private card without enabling a new backend or HTML farm support.
+- Clarify reported-versus-complete farm usage and rejected-response recovery in
+  the shared private card; no Codex farm backend or HTML farm support is added.
+- Keep built-in mutation nonzero exits as unclassified rejection evidence, not
+  measured kills; preserve adverse bounds, diagnostics and autonomous review.
+- Match whole, same-kind farm literals rather than substrings or conventional comments;
+  retain existing rejection thresholds and name the actual small-file risk evidence.
+
+- Document bounded built-in mutation screening and incomplete-evidence handling
+  in the shared private farm procedure, without enabling HTML farm.
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
+- Clarify retained-candidate farm qualification in the shared private procedure;
+  no Codex farm backend is added.
+- Synchronize shared runtime identity with the current candidate cohort and
+  document the isolated farm evaluation contract in the private resource. This
+  does not add a packaged Codex farm backend or enable HTML farm execution.
+
+## [0.14.0] - 2026-09-26
+
+### Added
+
+- Approve a structured artifact by typing a four-character code, for example
+  `approve K7MQ`, instead of pasting a long token. The hook expands it to the
+  exact armed reply, so the engine and recorded evidence are unchanged.
+- On Claude Code, approve by clicking an Approve option in the host's own
+  question dialog; the recorded origin names that seam.
+
+### Fixed
+
+- Replies with extra spacing, invisible characters, backticks, quotes or a
+  closing period are no longer ignored; a reply that still cannot match now
+  says why instead of failing silently.
 
 ## [0.13.18] - 2026-09-25
 

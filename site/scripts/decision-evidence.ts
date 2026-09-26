@@ -122,11 +122,11 @@ export const auditCases: EvidenceCase[] = [
 export const decisionRoutes = [
   { id: 'reconcile', label: 'Interactive reconciliation', entry: '/ca:reconcile', question: 'Which competing position should govern?', source: 'reconcile' as EvidenceSource,
     steps: [
-      { role: 'Command → skill', title: 'Locate and compare', detail: 'decision-variance locates the exact three project documents and indexes decisions plus scaffold evidence. Missing required inputs are surfaced.' },
+      { role: 'Command → skill', title: 'Locate and compare', detail: 'decision-variance selects full or named scope, locates the required exact sources and indexes relevant decisions plus scaffold evidence. Report-only returns without decision capture; missing inputs remain visible.' },
       { role: 'Skill · optional agents', title: 'Recommend with evidence', detail: 'The skill classifies variances and applies SMARTS. Large passes may use scout and grader; an optional decision-challenger does not decide for you.' },
-      { role: 'Human decision', title: 'Choose explicitly', detail: 'The user resolves each variance. A strong recommendation does not authorize the skill to record its own choice.' },
-      { role: 'Skill return', title: 'Append and recommend', detail: 'Append the attributed decision immediately. Recommend downstream work; do not edit the project artifacts or code to make the variance disappear.' },
-    ], endpoint: 'A recorded user choice and a downstream recommendation. Replacement ADR authoring and implementation remain separately directed.' },
+      { role: 'Human decision', title: 'Choose explicitly', detail: 'Report-only returns before this step. In reconciliation, the user resolves remaining variances; an already-selected concrete choice is not requested again. A strong recommendation is not decision authority.' },
+      { role: 'Skill return', title: 'Append and recommend', detail: 'In reconciliation, append the attributed choice immediately without rewriting history. Recommend downstream work; do not edit project artifacts or code to make the variance disappear.' },
+    ], endpoint: 'A read-only report, or a recorded user choice in reconciliation, with downstream recommendations. Replacement ADR authoring and implementation remain separately directed.' },
   { id: 'sprint', label: 'Autonomous execution', entry: '/ca:sprint', question: 'How can approved work proceed within its boundary?', source: 'sprint' as EvidenceSource,
     steps: [
       { role: 'Human approval', title: 'Establish the scope', detail: 'Review the initial specification and plan. Satisfy the actual installed approval requirements; typed method delegation is an additional scoped grant.' },

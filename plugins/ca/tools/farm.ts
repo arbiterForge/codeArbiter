@@ -32,9 +32,11 @@
  *
  * Canary mode (`--canary <plan.json>`): runs the smallest task against each
  * model in FARM_CANDIDATE_MODELS and reports a measured pass-rate ranking, so
- * model selection is objective rather than web hearsay. No merge, no mutation.
+ * model selection can use task evidence rather than web hearsay. All trials
+ * share one frozen base commit. Scratch worktrees and reports are written, but
+ * canary never commits, creates task branches, or changes integration refs.
  */
-import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, rmdir, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
@@ -705,7 +707,7 @@ export async function runGate(cwd: string, commands: string[]) {
       // redaction as injected file bodies before it leaves runGate, so a
       // secret-shaped string a test/gate happens to print is never transmitted.
       // (redactSecrets is a hoisted function declaration — callable here.)
-      return { ok: false as const, failed: cmd, tail: redactSecrets(r.out.slice(-3500)) };
+      return { ok: false as const, failed: cmd, tail: redactSecrets(r.out).slice(-3500) };
   }
   return { ok: true as const };
 }
@@ -726,14 +728,10 @@ export async function runGate(cwd: string, commands: string[]) {
 // against. Reads reflect the per-attempt worktree state because runTask calls
 // this AFTER any inter-attempt reset.
 //
-// ALL injected content is funneled through this ONE chokepoint and rendered by
-// `renderInjectedFile`, so T-05 can wrap the byte cap + secret redaction here
-// without touching buildPrompt or the call site. (T-04 does the injection +
-// shared reader only — cap and redaction are explicitly NOT done here.)
-// --------------------------------------------------------------------------
-// `prior` (F2): this file is the worker's OWN output from a FAILED previous
-// attempt, captured before the inter-attempt reset and shown read-only so a
-// retry refines rather than restarts. Rendered in its own labeled section.
+// buildPrompt is the outbound formatting boundary; collection does not truncate
+// file bodies before redaction or account for labels using a different renderer.
+// `prior` labels retained output from an unaccepted attempt, not proof that a
+// test gate ran or that otherwise qualified code must be rewritten.
 export type InjectedFile = { path: string; contents: string; readOnly: boolean; prior?: boolean };
 
 // AC-05 secret redaction + the secret-bearing-filename denylist now live in
@@ -741,61 +739,61 @@ export type InjectedFile = { path: string; contents: string; readOnly: boolean; 
 // imported at the top; behaviour, the span-aware PEM handling, and the
 // corpus-parity pin (architecture-001) are unchanged.
 
-// The single chokepoint for content that leaves the trust boundary. The byte
-// cap (applied over the rendered array in buildEnrichment) and the per-line
-// secret redaction (here) wrap every injected file body. Keep this the only
-// place injected file bodies are formatted so the boundary stays in one spot.
-function renderInjectedFile(file: InjectedFile): string {
+// One renderer owns file labels, redaction and the emitted enrichment budget.
+// Section text and separators count too; task instructions and failure details
+// are separate prompt fields. This does not bound the complete JSON request.
+function renderInjectedFile(file: InjectedFile): { frame: string; body: string } {
   const label = file.prior
-    ? `${file.path} (your previous attempt — FAILED)`
-    : file.readOnly
-      ? `${file.path} (read-only — the failing test)`
-      : file.path;
-  return [`--- ${label} ---`, redactSecrets(file.contents)].join("\n");
+    ? `${file.path} (your previous attempt — not accepted)`
+    : file.readOnly ? `${file.path} (read-only — the failing test)` : file.path;
+  return { frame: `--- ${label} ---\n`, body: redactSecrets(file.contents) };
 }
 
-// Deterministic byte cap over the TOTAL injected enrichment. Operates on the
-// InjectedFile[] (BEFORE buildPrompt renders it, so buildPrompt and the runTask
-// call site stay untouched) but budgets against each file's FULLY RENDERED size
-// — i.e. `renderInjectedFile` output, including the redaction substitutions and
-// the path label — so the cap reflects exactly what crosses the boundary.
-// Files are kept in order until the next would exceed the budget; the
-// overflowing file's contents are hard-truncated (UTF-8 safe) to fit and a
-// visible TRUNCATED marker appended; everything after is dropped. The prompt is
-// never unbounded. Measured in UTF-8 bytes — the unit the request body is
-// serialized in.
 const TRUNCATION_MARKER = "--- [TRUNCATED — injected context exceeded FARM_ENRICH_MAX_BYTES] ---";
+const CURRENT_CONTEXT = "Current source of the relevant files (the test is read-only; implement against it):";
+const PRIOR_CONTEXT = "Your PREVIOUS attempt was not accepted. Its retained in-scope output follows; use the current baseline and failure below to decide what to keep or repair:";
 
-function capInjected(injected: InjectedFile[], maxBytes: number): InjectedFile[] {
-  const out: InjectedFile[] = [];
-  let used = 0;
-  for (const file of injected) {
-    const renderedBytes = Buffer.byteLength(renderInjectedFile(file), "utf8");
-    if (used + renderedBytes <= maxBytes) {
-      out.push(file);
-      used += renderedBytes;
-      continue;
+/** Return a code-point-aligned UTF-8 prefix without replacement characters. */
+function utf8Prefix(text: string, maxBytes: number): string {
+  const bytes = Buffer.from(text, "utf8");
+  let end = Math.min(bytes.length, Math.max(0, Math.floor(maxBytes)));
+  while (end > 0 && end < bytes.length && (bytes[end] & 0xc0) === 0x80) end--;
+  return bytes.subarray(0, end).toString("utf8");
+}
+
+/** Bound actual rendered context, keeping current files ahead of prior output. */
+function capInjected(injected: InjectedFile[], maxBytes: number): string {
+  // Inserting one context element adds one separator in buildPrompt's join.
+  const budget = Number.isFinite(maxBytes) ? Math.max(0, Math.floor(maxBytes) - 1) : 0;
+  if (budget === 0 || injected.length === 0) return "";
+  const pieces: Array<{ frame: string; body: string }> = [];
+  for (const prior of [false, true]) {
+    const group = injected.filter(file => Boolean(file.prior) === prior);
+    for (const [index, file] of group.entries()) {
+      const rendered = renderInjectedFile(file);
+      const lead = index === 0 ? `${prior ? PRIOR_CONTEXT : CURRENT_CONTEXT}\n\n` : "";
+      const separator = pieces.length === 0 ? "" : index === 0 ? "\n\n" : "\n";
+      pieces.push({ frame: separator + lead + rendered.frame, body: rendered.body });
     }
-    // Fixed overhead this file's render adds around its contents (label line +
-    // joins): the difference between the rendered size and the contents size.
-    const contentBytes = Buffer.byteLength(redactSecrets(file.contents), "utf8");
-    const overhead = renderedBytes - contentBytes;
-    const remaining = maxBytes - used - overhead - Buffer.byteLength("\n" + TRUNCATION_MARKER, "utf8");
-    if (remaining > 0) {
-      // Truncate the (already redaction-safe) contents to the remaining byte
-      // budget on a UTF-8 boundary, then append the marker.
-      const safe = Buffer.from(redactSecrets(file.contents), "utf8")
-        .subarray(0, remaining)
-        .toString("utf8");
-      out.push({ ...file, contents: safe + "\n" + TRUNCATION_MARKER });
-    } else {
-      // No room even for this file's frame — emit a marker-only stub so the
-      // truncation is visible, then stop.
-      out.push({ ...file, contents: TRUNCATION_MARKER });
-    }
-    break;
   }
-  return out;
+  const bytes = (value: string) => Buffer.byteLength(value, "utf8");
+  const total = pieces.reduce((sum, piece) => sum + bytes(piece.frame) + bytes(piece.body), 0);
+  if (total <= budget) return pieces.map(piece => piece.frame + piece.body).join("");
+  // Reserve the notice before consuming the budget, including its separator.
+  // Never exceed an explicitly tiny limit just to fit a label or a notice.
+  const marker = bytes(TRUNCATION_MARKER) <= budget ? TRUNCATION_MARKER
+    : bytes("[TRUNCATED]") <= budget ? "[TRUNCATED]" : "";
+  if (!marker) return "";
+  let remaining = budget - bytes(marker) - 1;
+  let out = "";
+  for (const piece of pieces) {
+    const frameBytes = bytes(piece.frame);
+    if (frameBytes > remaining) break; // no partial path or orphan section label
+    out += piece.frame; remaining -= frameBytes;
+    if (bytes(piece.body) > remaining) { out += utf8Prefix(piece.body, remaining); break; }
+    out += piece.body; remaining -= bytes(piece.body);
+  }
+  return out ? `${out}\n${marker}` : marker;
 }
 
 async function buildEnrichment(
@@ -847,12 +845,8 @@ async function buildEnrichment(
     injected.push({ path: pf.path, contents: pf.contents, readOnly: true, prior: true });
   }
 
-  // AC-05: byte-cap the TOTAL injected context before it leaves the trust
-  // boundary. Redaction is applied per-file inside renderInjectedFile (the
-  // chokepoint), but the truncation stub here means contents already carry the
-  // redaction by the time they are re-rendered — redactSecrets is idempotent on
-  // the marker, so a redacted-then-truncated body stays redacted.
-  return capInjected(injected, ENV.enrichMaxBytes);
+  // Rendering and its exact byte limit are owned by buildPrompt.
+  return injected;
 }
 
 // F2: snapshot the worker's in-scope output from the worktree BEFORE the
@@ -860,13 +854,18 @@ async function buildEnrichment(
 // restart blind. Reads only filesInScope (never the read-only test, never a
 // secret-bearing filename), through the shared reader; a not-yet-written file is
 // skipped. Out-of-scope drift is never in filesInScope, so it is never captured
-// (AC-F2.2).
+// (AC-F2.2). Runtime callers supply the reported write set: untouched baseline
+// files belong in current-source enrichment, not in previous-attempt evidence.
+// The default preserves the existing explicit snapshot helper.
 export async function captureInScope(
   wt: string,
   t: Task,
+  filesWritten: readonly string[] = t.filesInScope,
 ): Promise<Array<{ path: string; contents: string }>> {
+  const written = new Set(filesWritten);
   const out: Array<{ path: string; contents: string }> = [];
   for (const f of t.filesInScope) {
+    if (!written.has(f)) continue;
     if (f === t.test.path) continue;
     if (isSecretBearingFilename(f)) continue;
     const src = await readWorktreeFile(wt, f);
@@ -879,35 +878,17 @@ export async function captureInScope(
 // --------------------------------------------------------------------------
 // worker prompt
 // --------------------------------------------------------------------------
+/** Assemble governed instructions with one bounded source/feedback block.
+ * The optional budget is a pure-test seam; runtime callers use the existing ENV setting.
+ */
 export function buildPrompt(
   t: Task,
   injected: InjectedFile[],
   priorFailure?: string,
   forbiddenExtra?: string[],
+  enrichmentBudget = ENV.enrichMaxBytes,
 ) {
-  // F2: split current source (the baseline + the read-only test) from the
-  // worker's prior failed output, so each renders in its own clearly-labeled
-  // section. A retry then sees BOTH what to build against and what it tried last.
-  const current = injected.filter((f) => !f.prior);
-  const priorFiles = injected.filter((f) => f.prior);
-  const enrichment = current.length
-    ? [
-        ``,
-        `Current source of the relevant files (the test is read-only; implement against it):`,
-        ``,
-        ...current.map(renderInjectedFile),
-        ``,
-      ]
-    : [];
-  const priorBlock = priorFiles.length
-    ? [
-        ``,
-        `Your PREVIOUS attempt FAILED the gate. Here is what you wrote last time — do NOT just repeat it; change it to fix the cause shown at the end:`,
-        ``,
-        ...priorFiles.map(renderInjectedFile),
-        ``,
-      ]
-    : [];
+  const enrichment = capInjected(injected, enrichmentBudget);
   return [
     `Implement exactly ONE task. Your only goal: make the failing test pass.`,
     ``,
@@ -923,8 +904,7 @@ export function buildPrompt(
     forbiddenExtra && forbiddenExtra.length
       ? `\nYour previous attempt wrote these FORBIDDEN paths — do NOT touch them again:\n${forbiddenExtra.map((f) => `  - ${f}`).join("\n")}`
       : ``,
-    ...enrichment,
-    ...priorBlock,
+    ...(enrichment ? [enrichment] : []),
     `Solve the task with REAL logic. Do not hard-code the literal values the`,
     `test asserts — an implementation that only returns the expected constant`,
     `will be rejected.`,
@@ -939,7 +919,7 @@ export function buildPrompt(
     ``,
     `Do not include any explanation outside the code blocks.`,
     priorFailure
-      ? `\nYour previous attempt FAILED the gate. Fix it.\nGate output (tail):\n${priorFailure}`
+      ? `\nPrevious attempt was not accepted. Use the failure details to decide what to repair:\n${redactSecrets(priorFailure)}`
       : ``,
   ].join("\n");
 }
@@ -996,6 +976,9 @@ export type WorkerResult = {
   error?: string;
   promptTokens?: number;
   completionTokens?: number;
+  // A provider cooldown / exhausted HTTP transport retry is not a request to
+  // regenerate code. Existing/custom workers omit this to retain their policy.
+  retryable?: false;
 };
 
 // Interpret a `/chat/completions` response BODY (already read as text). Split
@@ -1016,34 +999,62 @@ function diagnosticApiOrigin(apiBaseUrl: string): string {
   }
 }
 
-export function parseChatCompletion(
-  text: string,
-  apiBaseUrl: string,
-):
-  | { ok: true; content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } }
-  | { ok: false; error: string } {
-  let data: { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
+// Usage belongs to the completed provider response, not to whether its output
+// was acceptable. Preserve only explicitly reported safe nonnegative integers;
+// omitted/invalid counters remain unknown rather than coerced to zero or parsed
+// from provider diagnostics. These are reported tokens, not verified billing.
+type ChatUsage = { prompt_tokens?: number; completion_tokens?: number };
+type ChatCompletionResult =
+  | { ok: true; content: string; usage?: ChatUsage }
+  | { ok: false; error: string; usage?: ChatUsage; retryable?: false };
+
+function reportedUsage(value: unknown): ChatUsage | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const input = value as Record<string, unknown>;
+  const usage: ChatUsage = {};
+  for (const field of ["prompt_tokens", "completion_tokens"] as const) {
+    const count = input[field];
+    if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) usage[field] = count;
+  }
+  return Object.keys(usage).length ? usage : undefined;
+}
+
+export function parseChatCompletion(text: string, apiBaseUrl: string): ChatCompletionResult {
+  let data: unknown;
   try {
-    data = JSON.parse(text) as typeof data;
+    data = JSON.parse(text);
   } catch {
     return {
       ok: false,
       error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned a non-JSON body — check FARM_API_BASE_URL and that the endpoint path is correct (expected an OpenAI-compatible /chat/completions)`,
     };
   }
-  // dx-001 (T-08a): the `as typeof data` cast is unsound — valid JSON of an
-  // UNEXPECTED shape (an array, a non-object, or `{error: ...}`) passes the cast
-  // and then yields a silent `ok:true content:""`, exhausting retries without
-  // signalling the real cause (the #90 class of misconfiguration). Verify the
-  // chat-completions shape (a `choices` array) before trusting it; on a mismatch
-  // return an actionable, endpoint-naming error.
-  if (!data || typeof data !== "object" || !Array.isArray((data as { choices?: unknown }).choices)) {
+  const record = data && typeof data === "object" && !Array.isArray(data)
+    ? data as Record<string, unknown> : undefined;
+  const usage = reportedUsage(record?.usage);
+  if (!record || !Array.isArray(record.choices)) {
     return {
-      ok: false,
+      ok: false, usage,
       error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected shape (no 'choices' array) — check FARM_API_BASE_URL and that the endpoint is an OpenAI-compatible /chat/completions`,
     };
   }
-  return { ok: true, content: data.choices?.[0]?.message?.content ?? "", usage: data.usage };
+  // Empty choices / absent text retain the no-file-output path. Do not coerce
+  // structured or scalar content into text, nor let it throw inside the fence
+  // parser and discard the usage already reported by this response.
+  if (record.choices.length === 0) return { ok: true, content: "", usage };
+  const first: unknown = record.choices[0];
+  const message = first && typeof first === "object" && !Array.isArray(first)
+    ? (first as Record<string, unknown>).message : undefined;
+  if (!message || typeof message !== "object" || Array.isArray(message)) {
+    return { ok: false, usage,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned an unexpected first-choice message — expected a chat-completion object` };
+  }
+  const content = (message as Record<string, unknown>).content;
+  if (content !== undefined && content !== null && typeof content !== "string") {
+    return { ok: false, usage,
+      error: `endpoint ${diagnosticApiOrigin(apiBaseUrl)} returned non-text message content — expected text file blocks` };
+  }
+  return { ok: true, content: content ?? "", usage };
 }
 
 // --------------------------------------------------------------------------
@@ -1077,16 +1088,71 @@ export function buildChatBody(
   return body;
 }
 
+// Retry-After is an HTTP delay-seconds or HTTP-date, not an arbitrary Number.
+// Never pass a huge provider value to setTimeout: Node shortens overflowing
+// delays to 1ms. A provider cooldown beyond our existing request-wait budget
+// defers this task instead of ignoring the cooldown or holding a slot forever.
+// RFC 9110 sections 5.6.7 and 10.2.3; Node timers' signed-32-bit delay boundary.
+const MAX_API_TIMER_MS = 2_147_483_647;
+const HTTP_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const HTTP_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function httpDateMillis(value: string, now: number): number | null {
+  const modern = /^(Sun|Mon|Tue|Wed|Thu|Fri|Sat), (\d{2}) ([A-Z][a-z]{2}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT$/.exec(value);
+  const obsolete = /^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday), (\d{2})-([A-Z][a-z]{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}) GMT$/.exec(value);
+  const asctime = /^(Sun|Mon|Tue|Wed|Thu|Fri|Sat) ([A-Z][a-z]{2}) ( \d|\d{2}) (\d{2}):(\d{2}):(\d{2}) (\d{4})$/.exec(value);
+  const m = modern ?? obsolete;
+  if (!m && !asctime) return null;
+  const weekday = (m ? m[1] : asctime![1]).slice(0, 3);
+  const day = Number(m ? m[2] : asctime![3]);
+  const month = HTTP_MONTHS.indexOf(m ? m[3] : asctime![2]);
+  let year = Number(m ? m[4] : asctime![7]);
+  const hour = Number(m ? m[5] : asctime![4]);
+  const minute = Number(m ? m[6] : asctime![5]);
+  const second = Number(m ? m[7] : asctime![6]);
+  if (month < 0 || day < 1 || hour > 23 || minute > 59 || second > 60) return null;
+  if (obsolete) {
+    const current = new Date(now);
+    year += Math.floor(current.getUTCFullYear() / 100) * 100;
+    const fiftyYears = new Date(now);
+    fiftyYears.setUTCFullYear(current.getUTCFullYear() + 50);
+    if (Date.UTC(year, month, day, hour, minute, second) > fiftyYears.getTime()) year -= 100;
+  }
+  // setUTCFullYear avoids Date.UTC's implicit 1900 offset for years 00..99.
+  const date = new Date(0);
+  date.setUTCFullYear(year, month, day);
+  date.setUTCHours(hour, minute, Math.min(second, 59), 0);
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month || date.getUTCDate() !== day
+      || HTTP_DAYS[date.getUTCDay()] !== weekday) return null;
+  return date.getTime() + (second === 60 ? 1000 : 0);
+}
+
+// null means a valid provider wait cannot fit locally, NOT "retry immediately".
+// Malformed/absent fields retain the existing bounded exponential backoff.
+export function apiRetryDelay(raw: string | null, attempt: number, maxWaitMs: number, now = Date.now()): number | null {
+  const fallback = Math.min(2 ** Math.min(Math.max(0, attempt), 4) * 1000, 16_000);
+  const value = raw?.trim();
+  if (!value) return fallback;
+  let requested: number;
+  if (/^\d+$/.test(value)) {
+    requested = Number(value) * 1000;
+  } else {
+    const date = httpDateMillis(value, now);
+    if (date === null) return fallback;
+    requested = Math.max(0, date - now);
+  }
+  const bound = Math.min(maxWaitMs, MAX_API_TIMER_MS);
+  if (!Number.isFinite(requested) || requested > bound) return null;
+  return requested;
+}
+
 async function callApi(
   prompt: string,
   model: string,
   apiBaseUrl: string,
   apiKey: string,
   sampling: Sampling = readSampling(),
-): Promise<{ ok: true; content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } } | { ok: false; error: string }> {
-  // Validate at the fetch-producing boundary as well as at CLI config
-  // resolution. Exported callers (for example httpWorker/runTask) must not be
-  // able to bypass the transport rule by supplying their own base URL.
+): Promise<ChatCompletionResult> {
   try {
     assertSecureBaseUrl(apiBaseUrl);
   } catch (e) {
@@ -1095,84 +1161,59 @@ async function callApi(
   for (let attempt = 0; attempt <= ENV.apiMaxRetries; attempt++) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ENV.requestTimeoutMs);
-    let resp: Response;
+    let receivedHeaders = false;
+    let retryDelay: number;
     try {
-      resp = await fetch(`${apiBaseUrl}/chat/completions`, {
+      const resp = await fetch(`${apiBaseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify(buildChatBody(model, [{ role: "user", content: prompt }], sampling)),
         signal: ctrl.signal,
-        // A validated HTTPS URL is not permission to follow a 307/308 onto an
-        // unvalidated cleartext endpoint with the same POST body.
+        // Do not leak a validated request to an unvalidated redirect target.
         redirect: "error",
       });
-    } catch (e) {
-      clearTimeout(timer);
-      const aborted = (e as Error)?.name === "AbortError";
-      // network / timeout: retry with backoff
-      if (attempt < ENV.apiMaxRetries) {
-        await sleep(Math.min(2 ** attempt * 1000, 16_000));
-        continue;
-      }
-      return { ok: false, error: aborted ? `request timed out after ${ENV.requestTimeoutMs}ms` : `fetch failed: ${e}` };
-    }
-
-    // reliability-012: fetch() resolving only means the HEADERS arrived — the
-    // body may still be streaming. The old code cleared the timer here, which
-    // left every subsequent resp.text() call (below, and the error-path reads)
-    // completely unbounded: an endpoint that sends headers then stalls the
-    // body (slow-loris, buggy proxy buffering, a half-open connection) wedged
-    // the worker slot forever, since the scheduler's Promise.race never
-    // settles for the wedged task. Keep `ctrl`/`timer` ARMED through every body
-    // read below — fetch's AbortSignal covers the whole request lifecycle,
-    // including body consumption, so an abort here rejects an in-flight
-    // resp.text() the same way it rejects a hung fetch() — and clear the timer
-    // exactly once, in the finally, after the LAST body read on every branch.
-    try {
-      // Transport-level failure (rate limit / server) — back off and retry the
-      // REQUEST, not the task. A 429 is not a failed implementation attempt.
+      receivedHeaders = true;
       if (resp.status === 429 || resp.status >= 500) {
-        if (attempt < ENV.apiMaxRetries) {
-          const ra = Number(resp.headers.get("retry-after"));
-          const wait = Number.isFinite(ra) && ra > 0 ? ra * 1000 : Math.min(2 ** attempt * 1000, 16_000);
-          await sleep(wait);
-          continue;
+        // A saturated/unavailable provider is not a failed implementation.
+        // Never shorten a valid cooldown to fit, nor let an outer code retry
+        // bypass it. Already-produced siblings may still qualify below.
+        const wait = apiRetryDelay(resp.headers.get("retry-after"), attempt, ENV.requestTimeoutMs);
+        if (wait === null) {
+          return { ok: false, retryable: false,
+            error: `API ${resp.status}: Retry-After exceeds the local wait budget; task deferred without another authoring attempt` };
         }
-        // Consume the body while the timeout is armed, but never reflect
-        // provider-controlled content into stderr, retry prompts, or reports.
-        await resp.text();
-        return { ok: false, error: `API ${resp.status} after ${ENV.apiMaxRetries} retries` };
-      }
-      if (!resp.ok) {
-        await resp.text();
+        if (attempt >= ENV.apiMaxRetries) {
+          return { ok: false, retryable: false,
+            error: `API ${resp.status} after ${ENV.apiMaxRetries} retries; task deferred without another authoring attempt` };
+        }
+        retryDelay = wait;
+      } else if (!resp.ok) {
+        // No error body is used as evidence or reflected in diagnostics.
         return { ok: false, error: `API ${resp.status}` };
+      } else {
+        // Keep the deadline armed through successful body consumption. A
+        // server that sends only headers cannot hold the worker indefinitely.
+        return parseChatCompletion(await resp.text(), apiBaseUrl);
       }
-
-      // Read the body as text first, then parse — so a 2xx-with-non-JSON-body
-      // (the #90 stale-endpoint failure: a 200 whose body is "Not Found")
-      // yields an actionable, endpoint-naming error instead of an opaque
-      // SyntaxError. The body is consumed once, so a re-read on parse failure
-      // is not possible — parseChatCompletion works off the text we already
-      // hold.
-      const text = await resp.text();
-      return parseChatCompletion(text, apiBaseUrl);
     } catch (e) {
-      // reliability-012: a stalled body triggers the SAME armed AbortController
-      // as a stalled header, so this catches it as a timeout (not an opaque
-      // "fetch failed" — the request already succeeded at the transport level).
       const aborted = (e as Error)?.name === "AbortError";
-      return {
-        ok: false,
-        error: aborted
-          ? `request timed out after ${ENV.requestTimeoutMs}ms (reading response body)`
-          : `failed reading response body: ${e}`,
-      };
+      if (!receivedHeaders && attempt < ENV.apiMaxRetries) {
+        retryDelay = apiRetryDelay(null, attempt, ENV.requestTimeoutMs)!;
+      } else {
+        return { ok: false, error: aborted
+          ? `request timed out after ${ENV.requestTimeoutMs}ms${receivedHeaders ? " (reading response body)" : ""}`
+          : `${receivedHeaders ? "failed reading response body" : "fetch failed"}: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
+      }
     } finally {
+      // Abort covers the response stream too. Release discarded retry/error
+      // responses BEFORE sleeping or returning, rather than relying on GC or
+      // retaining one streaming body per retry until its original timer fires.
+      ctrl.abort();
       clearTimeout(timer);
     }
+    // The response has been closed; provider-controlled waits are already
+    // validated and bounded, and the transport retry count remains unchanged.
+    await sleep(retryDelay);
   }
   return { ok: false, error: "exhausted API retries" };
 }
@@ -1187,7 +1228,9 @@ async function runWorker(
   sampling?: Sampling,
 ): Promise<WorkerResult> {
   const api = await callApi(prompt, model, apiBaseUrl, apiKey, sampling ?? readSampling());
-  if (!api.ok) return { ok: false, filesWritten: [], error: api.error };
+  const tokens = { promptTokens: api.usage?.prompt_tokens, completionTokens: api.usage?.completion_tokens };
+  if (!api.ok) return { ok: false, filesWritten: [], error: api.error, ...tokens,
+    ...(api.retryable === false ? { retryable: false as const } : {}) };
 
   const blocks = extractFileBlocks(api.content);
   const filesWritten: string[] = [];
@@ -1196,20 +1239,23 @@ async function runWorker(
     const absPath = path.resolve(cwd, cleanPath);
     // Containment: untrusted output may not escape the worktree.
     if (!isInside(cwd, absPath)) {
-      return { ok: false, filesWritten, error: `path escapes worktree: ${cleanPath}` };
+      return { ok: false, filesWritten, error: redactSecrets(`path escapes worktree: ${cleanPath}`), ...tokens };
     }
     // The failing test is read-only — refuse to let the worker touch it.
     // Normalize to forward slashes: plan paths are POSIX-style, but
     // path.relative emits backslashes on Windows and the guard would miss.
     const rel = path.relative(cwd, absPath).split(path.sep).join("/");
     if (forbidden.has(rel)) {
-      return { ok: false, filesWritten, error: `worker tried to write read-only path: ${rel}` };
+      return { ok: false, filesWritten, error: redactSecrets(`worker tried to write read-only path: ${rel}`), ...tokens };
     }
     try {
       await writeWorktreeFile(cwd, rel, body.endsWith("\n") ? body : body + "\n");
     } catch (error) {
-      if (isUnsafeWorktreePathError(error)) return { ok: false, filesWritten, error: error.message };
-      throw error;
+      // Do not let even an ordinary I/O refusal erase a completed response's
+      // usage or the list of files already written. The existing task policy
+      // still owns rejection, reset/retry and eventual verification.
+      return { ok: false, filesWritten, ...tokens, error: isUnsafeWorktreePathError(error)
+        ? error.message : `worker output write failed: ${redactSecrets(msgOf(error)).slice(0, 300)}` };
     }
     filesWritten.push(rel);
   }
@@ -1219,15 +1265,13 @@ async function runWorker(
       ok: false,
       filesWritten: [],
       error: "no parseable file blocks in response",
-      promptTokens: api.usage?.prompt_tokens,
-      completionTokens: api.usage?.completion_tokens,
+      ...tokens,
     };
   }
   return {
     ok: true,
     filesWritten,
-    promptTokens: api.usage?.prompt_tokens,
-    completionTokens: api.usage?.completion_tokens,
+    ...tokens,
   };
 }
 
@@ -1358,8 +1402,11 @@ async function fileHash(p: string): Promise<string | null> {
 // once-per-attempt). Tracked changes and non-ignored untracked worker output are
 // still wiped, so nothing stale carries into the next attempt.
 async function resetWorktree(wt: string) {
-  await git(["reset", "--hard", "HEAD"], wt);
-  await git(["clean", "-fd"], wt);
+  for (const args of [["reset", "--hard", "HEAD"], ["clean", "-fd"]]) {
+    const result = await git(args, wt);
+    if (result.code !== 0)
+      throw new Error(`worktree reset failed: ${redactSecrets(result.out).slice(0, 300)}`);
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -2082,9 +2129,9 @@ function effectiveSampling(samples: number): Sampling {
 }
 
 // F1 — materialize the winning sample's in-scope files into the task worktree,
-// so the unchanged post-selection pipeline (sweep/tamper/drift/gate/anti-gaming/
-// commit/merge) runs against `wt` exactly as in the single-sample path. Only
-// in-scope impl files are written (the test is already present in `wt`); a path
+// so the shared task-worktree checks run before candidate selection is final.
+// The selected files reach the existing commit/merge path only after all checks.
+// Only in-scope impl files are written (the test is already present in `wt`); a path
 // that would escape the worktree is refused (defense-in-depth — winner files are
 // in-scope already).
 export async function writeFilesInto(wt: string, files: Array<{ path: string; contents: string }>): Promise<void> {
@@ -2100,6 +2147,16 @@ export async function writeFilesInto(wt: string, files: Array<{ path: string; co
 // integration HEAD. Drawn through the shared worker-call limiter (AC-F1.4). On
 // green it captures the in-scope impl files so the winner can be materialized
 // into the task worktree.
+// The shared task-worktree checks distinguish repairable candidate rejection
+// from a containment/integrity failure. These are internal outcomes, not a new
+// acceptance receipt or a plan-controlled bypass.
+type OutputAssessment =
+  | { kind: "pass"; warning?: string; mutationScore: number | null }
+  | { kind: "fatal"; note: string; unsafe?: boolean }
+  | { kind: "drift"; note: string; drift: string[] }
+  | { kind: "gate"; note: string }
+  | { kind: "risk"; note: string; mutationScore: number | null };
+
 type SampleOutcome = {
   green: boolean;
   filesWritten: string[];
@@ -2110,6 +2167,8 @@ type SampleOutcome = {
   completionTokens: number;
   wt: string;
   branch: string;
+  assessment?: OutputAssessment;
+  retryable?: false;
 };
 
 async function bestOfN(
@@ -2123,9 +2182,13 @@ async function bestOfN(
   allowed: Set<string>,
   n: number,
   deps: RunTaskDeps,
+  qualify: (sample: SampleOutcome) => Promise<OutputAssessment>,
+  evaluation?: EvaluationContext,
 ): Promise<{
   winner: SampleOutcome | null;
+  fatal: SampleOutcome | null;
   bestFailure: SampleOutcome | null;
+  deferred: SampleOutcome | null;
   promptTokens: number;
   completionTokens: number;
   // #398: one entry per sample resource torn down, ok or not.
@@ -2140,16 +2203,20 @@ async function bestOfN(
   // (AC-F1.2). This is immune to a non-overlapping sibling task moving
   // farm/integration mid-flight (which would otherwise gate a sample against a
   // newer baseline than the task worktree, causing a false escalation).
-  const taskBranch = `farm/${t.id}`;
+  const taskBranch = evaluation?.baseCommit ?? `farm/${t.id}`;
   const runSample = (k: number): Promise<SampleOutcome> =>
     workerLimit.run(async () => {
-      const branch = `farm/${t.id}__s${k}`;
-      const wt = path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
+      const branch = evaluation?.baseCommit ?? `farm/${t.id}__s${k}`;
+      const wt = evaluation
+        ? path.join(evaluation.worktreeRoot, `sample-${k}`)
+        : path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
       const base: SampleOutcome = {
         green: false, filesWritten: [], files: [], inScope: [], promptTokens: 0, completionTokens: 0, wt, branch,
       };
       try {
-        const prep = await deps.prepareWorktree(branch, wt, taskBranch);
+        const prep = evaluation
+          ? await prepareEvaluationWorktree(wt, taskBranch, deps.git)
+          : await deps.prepareWorktree(branch, wt, taskBranch);
         if (prep) return { ...base, note: prep };
         // Each sample gets a FRESH worktree, so its setup cache starts empty and
         // dies with the sample — a sample never reuses another worktree's install.
@@ -2159,49 +2226,99 @@ async function bestOfN(
         const w = await deps.worker.apply({ cwd: wt, prompt, model, apiBaseUrl, apiKey, forbidden, sampling });
         const pt = w.promptTokens ?? 0;
         const ct = w.completionTokens ?? 0;
-        if (!w.ok) return { ...base, note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
+        // A later filesystem/gate exception must not erase known billed usage.
+        base.promptTokens = pt;
+        base.completionTokens = ct;
+        base.filesWritten = [...w.filesWritten];
+        if (!w.ok) return { ...base, inScope: await captureInScope(wt, t, w.filesWritten), retryable: w.retryable,
+          note: redactSecrets(`worker error: ${w.error}`), promptTokens: pt, completionTokens: ct };
         const sweep = postApplySweep(wt, w.filesWritten, forbidden);
         if (sweep) return { ...base, filesWritten: w.filesWritten, note: sweep, promptTokens: pt, completionTokens: ct };
         const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
         if (testHashBefore !== null && testHashAfter !== testHashBefore)
           return { ...base, filesWritten: w.filesWritten, note: `tampered test: ${t.test.path}`, promptTokens: pt, completionTokens: ct };
+        // Retain this candidate before a later qualification exception or teardown.
+        // This snapshot is retry context only; it cannot make the sample green.
+        base.inScope = await captureInScope(wt, t, w.filesWritten);
         const drift = await deps.checkDrift(wt, allowed);
         if (drift.length > 0)
-          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: `drift: ${drift.join(", ")}`, promptTokens: pt, completionTokens: ct };
         const gate = await deps.runGate(wt, t.gate.commands);
         if (!gate.ok)
-          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
-        const inScope = await captureInScope(wt, t);
+          return { ...base, filesWritten: w.filesWritten, inScope: await captureInScope(wt, t, w.filesWritten), note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`), promptTokens: pt, completionTokens: ct };
+        const inScope = await captureInScope(wt, t, w.filesWritten);
         return { green: true, filesWritten: w.filesWritten, files: inScope, inScope, promptTokens: pt, completionTokens: ct, wt, branch };
       } catch (e) {
         // A sample that THROWS (fs/git error mid-flight) must still resolve to a
         // failure OUTCOME, not reject — so Promise.all below never rejects and the
         // cleanup loop always removes every scratch worktree (M1: no leak on the
         // exception path). `base` already carries this sample's wt/branch.
-        return { ...base, note: `sample error: ${e instanceof Error ? e.message : String(e)}` };
+        return { ...base, note: `sample error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
       }
     });
 
   const outcomes = await Promise.all(Array.from({ length: n }, (_, k) => runSample(k)));
   const promptTokens = outcomes.reduce((s, o) => s + o.promptTokens, 0);
   const completionTokens = outcomes.reduce((s, o) => s + o.completionTokens, 0);
-  // First green by sample index wins (deterministic; avoids a wall-clock race).
-  const winner = outcomes.find((o) => o.green) ?? null;
-  // Best failure to seed the retry: prefer one that reached the gate (has its
-  // in-scope output for F2), else any failure.
-  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0) ?? outcomes.find((o) => !o.green) ?? null;
-  // Discard every sample worktree — the winner's files are already captured.
-  // #398: verified, and EVERY sample is attempted even after one fails. The old
-  // loop swallowed each failure, so one stuck sample was indistinguishable from
-  // a clean sweep; worse, a leaked sample worktree keeps its branch checked out,
-  // which then makes the branch delete fail too. Both outcomes are returned so
-  // the task result can carry the full list of what is still on disk.
+  let winner: SampleOutcome | null = null;
+  let fatal: SampleOutcome | null = null;
   const cleanup: CleanupOutcome[] = [];
-  for (const o of outcomes) {
-    cleanup.push(await removeWorktreeVerified(deps.git, o.wt));
-    cleanup.push(await deleteBranchVerified(deps.git, o.branch));
+  try {
+    // Qualify in deterministic index order against the actual TASK worktree.
+    // Keep every alternative until materialization, gate and risk checks pass,
+    // not just until a sample's narrower gate is green. A rejected candidate
+    // does not purchase another model round while a usable alternative remains.
+    for (const outcome of outcomes) {
+      if (!outcome.green) continue;
+      try {
+        outcome.assessment = await qualify(outcome);
+      } catch (error) {
+        outcome.assessment = { kind: "fatal",
+          note: `candidate qualification failed: ${redactSecrets(msgOf(error)).slice(0, 300)}`,
+          unsafe: isUnsafeWorktreePathError(error) };
+        if (outcome.assessment.unsafe) outcome.assessment.note = msgOf(error);
+      }
+      if (outcome.assessment.kind === "pass") {
+        winner = outcome;
+        break;
+      }
+      outcome.green = false;
+      outcome.note = outcome.assessment.note;
+      if (outcome.assessment.kind === "fatal") {
+        fatal = outcome;
+        break; // Do not mask an integrity/containment failure with a sibling.
+      }
+    }
+  } finally {
+    // Attempt EVERY owned sample's verified cleanup even when qualification
+    // throws. Keep all failure records; teardown is not qualification evidence.
+    for (const outcome of outcomes) {
+      cleanup.push(await removeWorktreeVerified(deps.git, outcome.wt));
+      if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, outcome.branch));
+    }
   }
-  return { winner, bestFailure, promptTokens, completionTokens, cleanup };
+  const bestFailure = outcomes.find((o) => !o.green && o.inScope.length > 0)
+    ?? outcomes.find((o) => !o.green) ?? null;
+  const deferred = outcomes.find((o) => o.retryable === false) ?? null;
+  return { winner, fatal, bestFailure, deferred, promptTokens, completionTokens, cleanup };
+}
+
+// Internal canary context, not a plan field or a new CLI capability. Each caller
+// owns a fresh scratch directory and pins one verified commit before any probes.
+type EvaluationContext = { baseCommit: string; worktreeRoot: string };
+
+async function prepareEvaluationWorktree(wt: string, from: string, gitFn: GitRunner): Promise<string | null> {
+  try {
+    assertContainedWorktree(wt);
+  } catch (e) {
+    return msgOf(e);
+  }
+  // No pre-clean and no -b: evaluation may never reset/delete an existing branch.
+  // The caller owns the fresh namespace; a collision fails without replacing it.
+  return withWorktreeLock(async () => {
+    const added = await gitFn(["worktree", "add", "--detach", wt, from]);
+    return added.code === 0 ? null : `canary worktree add failed: ${redactSecrets(added.out).slice(0, 200)}`;
+  });
 }
 
 export async function runTask(
@@ -2210,9 +2327,10 @@ export async function runTask(
   apiBaseUrl: string,
   apiKey: string,
   deps: RunTaskDeps = defaultRunTaskDeps(),
+  evaluation?: EvaluationContext,
 ): Promise<Result> {
-  const branch = `farm/${t.id}`;
-  const wt = path.resolve(ENV.worktreeRoot, t.id);
+  const branch = evaluation?.baseCommit ?? `farm/${t.id}`;
+  const wt = evaluation ? path.join(evaluation.worktreeRoot, "task") : path.resolve(ENV.worktreeRoot, t.id);
   const limit = t.maxRetries ?? ENV.maxRetries;
   // Per-task model (AC-02): layer the optional task-level override on top of the
   // run-level resolved model (the `model` param, from resolveConfig:
@@ -2246,13 +2364,16 @@ export async function runTask(
   // along regardless of which exit the task takes.
   const finish = (r: Result): Result => (cleanupIssues.length ? { ...r, cleanup: [...cleanupIssues] } : r);
 
-  const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
+  const prepErr = evaluation
+    ? await prepareEvaluationWorktree(wt, evaluation.baseCommit, deps.git)
+    : await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
 
-  const testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
+  let testHashBefore = await deps.fileHash(path.resolve(wt, t.test.path));
 
   let priorFailure: string | undefined;
+  let rebasedForRetry = false;
   let driftedOnce = false;
   let lastFilesWritten: string[] = [];
   // F2: the failed attempt's in-scope output, captured before each reset and
@@ -2270,20 +2391,97 @@ export async function runTask(
   // installed" verdict from another task.
   const setupState: SetupState = { key: null };
 
+  // The same output checks govern a single worker and every materialized
+  // alternative. Selection never changes thresholds, mutation-count floors,
+  // warning policy or the independent scope/spec/quality review requirement.
+  const assessOutput = async (filesWritten: string[]): Promise<OutputAssessment> => {
+    const sweep = postApplySweep(wt, filesWritten, forbidden);
+    if (sweep) return { kind: "fatal", note: sweep };
+    const after = await deps.fileHash(path.resolve(wt, t.test.path));
+    if (testHashBefore !== null && after !== testHashBefore)
+      return { kind: "fatal", note: `tampered test: ${t.test.path}` };
+    const drift = await deps.checkDrift(wt, allowed);
+    if (drift.length) return { kind: "drift", drift, note: `drift: ${drift.join(", ")}` };
+    const gate = await deps.runGate(wt, t.gate.commands);
+    if (!gate.ok)
+      return { kind: "gate", note: redactSecrets(`failed: ${gate.failed}\n${gate.tail}`) };
+
+    const gaming = await deps.antiGamingCheck(wt, t);
+    let risk = gaming.risk;
+    let note = gaming.note;
+    let score: number | null = null;
+    if (risk !== "high") {
+      let mut: Awaited<ReturnType<typeof mutationCheck>>;
+      try {
+        mut = await deps.mutationCheck(wt, t);
+      } catch (error) {
+        if (isUnsafeWorktreePathError(error))
+          return { kind: "fatal", note: error.message, unsafe: true };
+        throw error;
+      }
+      if (mut && "score" in mut) {
+        score = mut.score;
+        // #525: only a reported usable count clears the hard-rejection floor.
+        // Missing/invalid count remains thin evidence, not an invented count.
+        if (mut.score <= MUT.escalateBelow && mut.evaluated !== undefined && mut.evaluated >= 5) {
+          risk = "high";
+          note = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
+        } else if (mut.score < MUT.warnBelow && risk !== "warn") {
+          risk = "warn";
+          note = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
+        }
+      } else if (mut && "failed" in mut) {
+        const failureLabel = mut.source === "builtin" ? "builtin-mutation-failed" : "mutation-hook-failed";
+        // A possibly live mutation process is not ordinary missing evidence.
+        // Preserve the candidate and do not switch, retry, stage or integrate.
+        if (mut.cleanupFailed)
+          return { kind: "fatal", note: redactSecrets(`mutation containment failed: ${mut.detail}`).slice(0, 500) };
+        // Some frameworks intentionally exit nonzero when their score breaks a
+        // threshold. Do not publish a failed invocation as a measured score,
+        // but do not erase a previously blocking adverse report either. Apply
+        // the same explicit-count floor; a clean remeasurement is still needed.
+        if (mut.unverified && mut.unverified.score <= MUT.escalateBelow &&
+            mut.unverified.evaluated !== undefined && mut.unverified.evaluated >= 5)
+          return { kind: "risk", mutationScore: null,
+            note: redactSecrets(`${failureLabel}: ${mut.detail}; adverse ${mut.source === "builtin" ? "completed reruns" : "stdout report"}; successful remeasurement required`).slice(0, 600) };
+        // Preserve the existing infrastructure-warning policy, not a new stop.
+        const diagnosticLabel = mut.source === "builtin" ? "built-in mutation failed" : "mutation hook failed";
+        process.stderr.write(`[FARM] ${diagnosticLabel} for task ${t.id}: ${mut.detail}\n`);
+        if (risk === "none") {
+          risk = "warn";
+          note = `${failureLabel}: ${mut.detail}`;
+        }
+      }
+    }
+    if (risk === "high") return { kind: "risk", note: note ?? "high implementation risk", mutationScore: score };
+    return { kind: "pass", warning: risk === "warn" ? note : undefined, mutationScore: score };
+  };
+
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
-    if (attempt > 1) {
+    if (attempt > 1 && !rebasedForRetry) {
       // F2: snapshot the failed attempt's in-scope output BEFORE the reset wipes
       // it, so the next attempt refines against what it wrote rather than
       // restarting from the baseline blind. Out-of-scope drift is not captured.
       // Only meaningful for the single-sample path (which writes into `wt`); under
       // best-of-N `priorInScope` is seeded explicitly from the best failing sample
-      // below, so the task worktree (never sample-written) must not clobber it.
+      // below, so the task worktree (which may hold a different rejected
+      // alternative) must not clobber it.
       // And only re-show output the worker ACTUALLY wrote: if the prior attempt
       // failed at the API level (no files written), captureInScope would return the
       // inherited baseline, which must not be mislabeled "your previous attempt".
-      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
-      await deps.resetWorktree(wt); // never accumulate stale files
+      if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t, lastFilesWritten) : [];
+      try {
+        await deps.resetWorktree(wt); // never accumulate stale files
+      } catch (e) {
+        // A failed reset cannot admit another worker. Return the evidence we
+        // already own instead of throwing it away in the scheduler's fallback.
+        return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+          note: redactSecrets(`retry reset failed: ${msgOf(e)}`).slice(0, 300),
+          filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore });
+      }
     }
+
+    rebasedForRetry = false;
 
     // Setup (#92/#391): `setup` runs ONCE per worktree — the reset above is
     // `clean -fd`, which preserves the ignored dependency tree setup is
@@ -2305,6 +2503,7 @@ export async function runTask(
     const prompt = buildPrompt(t, injected, priorFailure, forbiddenExtra);
 
     let worker: WorkerResult;
+    let assessment: OutputAssessment | undefined;
     if (samples <= 1) {
       // Single-sample path — identical to today (one worker call into the task
       // worktree), now drawn through the shared limiter (a no-op at N=1).
@@ -2318,187 +2517,166 @@ export async function runTask(
       lastFilesWritten = worker.filesWritten;
       if (!worker.ok) {
         priorFailure = redactSecrets(`worker error: ${worker.error}`);
+        if (worker.retryable === false) {
+          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+            note: priorFailure, filesWritten: lastFilesWritten, promptTokens, completionTokens });
+        }
         continue;
       }
     } else {
-      // Best-of-N (AC-F1.2): draw `samples` candidates concurrently in isolated
-      // scratch worktrees, gate each, accept the first green. The winner's files
-      // are materialized into `wt`; the post-selection pipeline below then runs
-      // against `wt` UNCHANGED. No green → seed the retry from the best failure
-      // (its in-scope output, per F2) and loop (AC-F1.5). Token spend across ALL
-      // samples is summed; the winner's own tokens are recorded separately (AC-F1.6).
-      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps);
+      // Retain gate-green alternatives until one passes the SAME task-worktree
+      // checks as a single worker. Rejections consume candidates, not retries.
+      let materialized = false;
+      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps,
+        async (candidate) => {
+          if (materialized) {
+            // Restore the task's frozen HEAD and ordinary setup contract before
+            // trying another candidate; rejected-only tracked/untracked files
+            // cannot contaminate it. Ignored setup caches retain existing policy.
+            await deps.resetWorktree(wt);
+            const setup = await runSetupPhases(wt, t, deps, setupState);
+            if (setup) return { kind: "fatal", note: setup };
+          }
+          materialized = true;
+          await writeFilesInto(wt, candidate.files);
+          return assessOutput(candidate.filesWritten);
+        }, evaluation);
       noteCleanup(...sel.cleanup); // #398: sample worktrees/branches left behind
       promptTokens += sel.promptTokens;
       completionTokens += sel.completionTokens;
       acceptedPromptTokens = sel.winner?.promptTokens ?? 0;
       acceptedCompletionTokens = sel.winner?.completionTokens ?? 0;
+      if (sel.fatal) {
+        const fatal = sel.fatal.assessment;
+        return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+          note: sel.fatal.note, filesWritten: fatal?.kind === "fatal" && fatal.unsafe ? [] : sel.fatal.filesWritten,
+          promptTokens, completionTokens });
+      }
+      if (!sel.winner && sel.deferred) {
+        return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+          note: sel.deferred.note, filesWritten: sel.deferred.filesWritten, promptTokens, completionTokens });
+      }
       if (!sel.winner) {
         lastFilesWritten = sel.bestFailure?.filesWritten ?? [];
         priorInScope = sel.bestFailure?.inScope ?? [];
-        priorFailure = sel.bestFailure?.note ?? "all samples failed the gate";
+        priorFailure = redactSecrets(sel.bestFailure?.note ?? "all samples failed qualification");
+        mutationScore = sel.bestFailure?.assessment?.kind === "risk"
+          ? sel.bestFailure.assessment.mutationScore : null;
         continue;
       }
-      try {
-        await writeFilesInto(wt, sel.winner.files);
-      } catch (error) {
-        if (isUnsafeWorktreePathError(error)) {
-          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
-        }
-        throw error;
-      }
+      // Already materialized and fully checked; no second risk decision after
+      // discarding siblings. Commit/merge (or no-commit canary) remains below.
+      assessment = sel.winner.assessment;
       worker = { ok: true, filesWritten: sel.winner.filesWritten };
       lastFilesWritten = worker.filesWritten;
     }
 
-    // Post-apply containment sweep (D6) — task-level enforcement over the
-    // worker's REPORTED writes (see postApplySweep header). Inspects the
-    // `filesWritten` the worker returned, so an escape or a read-only-test write
-    // is rejected even when the worker bypassed runWorker's inline guard —
-    // provided the path was reported. A NON-REPORTING worker that writes outside
-    // its reported set is NOT covered here ([NEEDS-TRIAGE], deferred to the
-    // item-3 sandbox). Runs alongside the checkDrift allowlist sweep below; the
-    // inline guards remain defense-in-depth.
-    const sweepErr = postApplySweep(wt, worker.filesWritten, forbidden);
-    if (sweepErr) {
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: sweepErr, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-    }
-
-    // The failing test must be untouched (defence in depth — the write path
-    // already refuses test.path, this catches a sneaky in-scope edit too).
-    const testHashAfter = await deps.fileHash(path.resolve(wt, t.test.path));
-    if (testHashBefore !== null && testHashAfter !== testHashBefore) {
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `tampered test: ${t.test.path}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-    }
-
-    // Drift: on the FIRST drift, retry once with a hardened prompt naming the
-    // offending paths — usually the cheap model is just being dumb, not the
-    // spec being ambiguous. Only escalate as drift after that retry.
-    const driftFiles = await deps.checkDrift(wt, allowed);
-    if (driftFiles.length > 0) {
+    const checked = assessment ?? await assessOutput(worker.filesWritten);
+    if (checked.kind === "fatal")
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+        note: checked.note, filesWritten: checked.unsafe ? [] : worker.filesWritten, promptTokens, completionTokens });
+    if (checked.kind === "drift") {
       if (!driftedOnce && attempt <= limit) {
         driftedOnce = true;
-        priorFailure = `drift: you wrote outside the allowed files: ${driftFiles.join(", ")}`;
+        priorFailure = `drift: you wrote outside the allowed files: ${checked.drift.join(", ")}`;
         continue;
       }
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `drift: ${driftFiles.join(", ")}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+        note: checked.note, filesWritten: worker.filesWritten, promptTokens, completionTokens });
     }
-
-    const gate = await deps.runGate(wt, t.gate.commands);
-    if (!gate.ok) {
-      // FINDING 2: redact the WHOLE priorFailure that reaches the next worker
-      // prompt — not just the gate.tail (already redacted in runGate). The
-      // failing command line (gate.failed) is echoed verbatim too, so a secret
-      // embedded in a gate command would otherwise cross the trust boundary.
-      // redactSecrets is idempotent, so re-running it over the already-redacted
-      // tail is safe.
-      priorFailure = redactSecrets(`failed: ${gate.failed}\n${gate.tail}`);
+    if (checked.kind === "gate") {
+      priorFailure = checked.note;
       continue;
     }
-
-    // Zero-token anti-gaming guard: fast literal-leak pass, then the deeper
-    // mutation pass (skipped if the leak pass already says "high").
-    const gaming = await deps.antiGamingCheck(wt, t);
-    let risk = gaming.risk;
-    let riskNote = gaming.note;
-    if (risk !== "high") {
-      let mut: Awaited<ReturnType<typeof mutationCheck>>;
-      try {
-        mut = await deps.mutationCheck(wt, t);
-      } catch (error) {
-        if (isUnsafeWorktreePathError(error)) {
-          return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: error.message, filesWritten: [], promptTokens, completionTokens });
-        }
-        throw error;
-      }
-      if (mut && "score" in mut) {
-        mutationScore = mut.score;
-        // #525: the unknown-count sentinel is GONE, and this is a deliberate,
-        // narrow behaviour change. This floor exists to refuse hard-rejecting a
-        // task on thin evidence; an unreported mutant count is the thinnest
-        // evidence there is, so it no longer clears the floor. Such a run warns
-        // instead of escalating.
-        //
-        // The alternative — keeping `?? 99` here — was measured and is worse.
-        // Before #525 the sentinel only applied to a NULLISH count, so a hook
-        // that reported an unusable one ("total":"4" from a shell hook that
-        // quotes its numbers, -5, 2.5, true) kept that value and failed the
-        // comparison, landing on warn. Routing every unusable value through the
-        // sentinel flipped twelve such shapes to escalate — false rejections in
-        // exactly the direction this floor guards. Requiring a reported count
-        // restores all twelve AND resolves the unreported case the same way.
-        if (mut.score <= MUT.escalateBelow && mut.evaluated !== undefined && mut.evaluated >= 5) {
-          risk = "high";
-          riskNote = `gaming: mutation ${mutationSurvivalNote(mut)} — the test does not constrain the implementation`;
-        } else if (mut.score < MUT.warnBelow) {
-          if (risk !== "warn") {
-            risk = "warn";
-            riskNote = `mutation-risk: ${mutationSurvivalNote(mut)} — weak test or under-implemented logic`;
-          }
-        }
-      } else if (mut && "failed" in mut) {
-        // observability-002 (#187): mutationCheck's pluggable-hook branch
-        // distinguishes "configured but failed" (non-zero exit, timeout,
-        // unparseable output) from "not configured" (both previously
-        // collapsed to `null`, so a broken FARM_MUTATION_CMD integration
-        // produced a report indistinguishable from one that never ran mutation
-        // checking). Surface it — mirroring the diagnostic discipline the
-        // primary API path already uses (callApi's stderr body dump) — without
-        // escalating or blocking the task on a hook-infrastructure failure.
-        process.stderr.write(`[FARM] mutation hook failed for task ${t.id}: ${mut.detail}\n`);
-        if (risk === "none") {
-          risk = "warn";
-          riskNote = `mutation-hook-failed: ${mut.detail}`;
-        }
-      }
+    if (checked.kind === "risk") {
+      mutationScore = checked.mutationScore;
+      priorFailure = redactSecrets(`${checked.note}. Implement real logic; do not hard-code or special-case the asserted value.`);
+      if (attempt <= limit) continue;
+      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+        note: checked.note, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
     }
-    if (risk === "high") {
-      priorFailure = `${riskNote}. Implement real logic; do not hard-code or special-case the asserted value.`;
-      if (attempt <= limit) continue; // give it a chance to fix
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
+    mutationScore = checked.mutationScore;
+    lastWarning = checked.warning;
+    if (evaluation) {
+      // Worker, containment, immutable-test, drift, gate and risk checks above
+      // are identical to normal authoring. Qualification stops BEFORE staging,
+      // committing or merging. The canary caller verifies scratch teardown even
+      // after escalation/exception; green here is not integrated/accepted work.
+      return finish({ id: t.id, status: "green", attempts: attempt, branch, worktree: wt,
+        warning: lastWarning, filesWritten: worker.filesWritten, promptTokens, completionTokens,
+        mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens });
     }
-    if (risk === "warn") lastWarning = riskNote;
 
-    // Commit + merge into the dedicated integration worktree.
-    // B-1: stage only the files the worker actually wrote, not everything in the
-    // worktree — git add -A would silently include any stale or injected files.
-    await deps.git(["add", "--", ...worker.filesWritten], wt);
-    const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
-    if (commit.code !== 0)
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `commit failed: ${commit.out.slice(0, 200)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
-
-    const diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
-
-    // Merge into the integration branch is INSIDE the attempt loop (AC-07/D4):
-    // a conflict is treated like a gate failure and re-enters regeneration,
-    // consuming ONE of the existing `maxRetries` attempts rather than escalating
-    // instantly. The merge stays serialized under withMergeLock so the
-    // integration worktree is never touched concurrently (T-06 prevents most
-    // overlaps; this is the residual defense-in-depth case).
-    const merged = await deps.withMergeLock(async () => {
-      const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
-      if (m.code !== 0) {
-        await deps.git(["merge", "--abort"], integrationWorktree).catch(() => {});
-        return m.out;
-      }
-      return null;
+    // Staging, merge rollback and baseline reset are part of qualification.
+    // A failed Git operation must not silently buy another authoring attempt.
+    const integrationFailure = (note: string): Result => finish({
+      id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+      note: redactSecrets(note).slice(0, 500), filesWritten: worker.filesWritten,
+      promptTokens, completionTokens, mutationScore, warning: lastWarning,
     });
-    if (merged !== null) {
-      // Regenerate-on-conflict (AC-07): with retries left, rebuild against the
-      // UPDATED baseline instead of escalating. Reset the task worktree+branch
-      // onto the new integration HEAD (so the next attempt cuts from what the
-      // merge target now contains), then re-run the worker with a redacted,
-      // concise merge-conflict note seeded into priorFailure. resetWorktree at
-      // the loop top is then a no-op reset to this same HEAD. Per D4 this is NOT
-      // a new unbounded loop — it spends one of the existing attempts.
-      if (attempt <= limit) {
-        await deps.git(["reset", "--hard", ENV.integration], wt).catch(() => {});
-        await deps.git(["clean", "-fd"], wt).catch(() => {});
-        priorFailure = redactSecrets(`merge conflict vs integration: rebuild against the updated baseline (integration HEAD moved)\n${String(merged).slice(0, 160)}`);
+    let diffstat: string;
+    try {
+      let staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
+      let stageAttempts = 1;
+      // Repeating the identical explicit-path stage is idempotent. Let brief
+      // filesystem/index contention clear without regenerating the candidate,
+      // removing somebody else's lock, or retrying a potentially made commit.
+      while (staged.code !== 0 && stageAttempts < 3) {
+        await sleep(150 * stageAttempts);
+        stageAttempts++;
+        staged = await deps.git(["add", "--", ...worker.filesWritten], wt);
+      }
+      if (staged.code !== 0) return integrationFailure(`stage failed after ${stageAttempts} attempts: ${staged.out}`);
+      const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
+      if (commit.code !== 0) return integrationFailure(`commit failed: ${redactSecrets(commit.out).slice(0, 200)}`);
+      diffstat = (await deps.git(["diff", "--stat", `${ENV.base}...${branch}`], wt)).out.trim();
+
+      const merged = await deps.withMergeLock(async () => {
+        const m = await deps.git([...NOSIGN, "merge", "--no-ff", "-m", `merge ${t.id}`, branch], integrationWorktree);
+        if (m.code === 0) return null;
+        // Keep rollback and its read-back inside the integration lock. A merge
+        // refusal with no recoverable MERGE_HEAD is not evidence of a conflict
+        // that can be repaired by regenerating code.
+        const aborted = await deps.git(["merge", "--abort"], integrationWorktree);
+        if (aborted.code !== 0) return { kind: "fatal" as const,
+          note: `merge recovery failed: could not abort failed merge: ${aborted.out}` };
+        const clean = await deps.git(["status", "--porcelain=v1", "--untracked-files=no"], integrationWorktree);
+        if (clean.code !== 0 || clean.stdout.trim()) return { kind: "fatal" as const,
+          note: "merge recovery failed: integration tracked state is not verified clean" };
+        if (attempt > limit) return { kind: "exhausted" as const,
+          note: `merge failed vs integration: ${m.out}` };
+        const head = await deps.git(["rev-parse", "--verify", "HEAD^{commit}"], integrationWorktree);
+        const base = head.stdout.trim();
+        if (head.code !== 0 || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base))
+          return { kind: "fatal" as const, note: "merge recovery failed: integration commit is unreadable" };
+        return { kind: "retry" as const, base, note: redactSecrets(m.out).slice(0, 300) };
+      });
+      if (merged !== null) {
+        if (merged.kind !== "retry") return integrationFailure(merged.note);
+        // Capture the actual qualified candidate BEFORE replacing its baseline.
+        // This also preserves the selected best-of-N output after sample cleanup.
+        const previous = await captureInScope(wt, t, worker.filesWritten);
+        const reset = await deps.git(["reset", "--hard", merged.base], wt);
+        if (reset.code !== 0) return integrationFailure(`merge recovery failed: task reset refused: ${reset.out}`);
+        const clean = await deps.git(["clean", "-fd"], wt);
+        if (clean.code !== 0) return integrationFailure(`merge recovery failed: task cleanup refused: ${clean.out}`);
+        const head = await deps.git(["rev-parse", "--verify", "HEAD^{commit}"], wt);
+        if (head.code !== 0 || head.stdout.trim() !== merged.base)
+          return integrationFailure("merge recovery failed: task did not reach the pinned integration commit");
+        // The worker may never edit its test. A verified integration baseline can
+        // legitimately carry a newer test; bind that identity before the next
+        // setup/worker, not to the prior candidate or to a post-worker hash.
+        const refreshedTest = await deps.fileHash(path.resolve(wt, t.test.path));
+        if (testHashBefore !== null && refreshedTest === null)
+          return integrationFailure("merge recovery failed: protected test is unavailable on the new baseline");
+        testHashBefore = refreshedTest;
+        priorInScope = previous;
+        rebasedForRetry = true;
+        priorFailure = `merge conflict vs integration: rebuild against pinned commit ${merged.base}\n${merged.note}`;
         continue;
       }
-      // retries exhausted — escalate exactly as before (worktree left for inspection)
-      return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: `merge failed vs integration: ${String(merged).slice(0, 160)}`, filesWritten: worker.filesWritten, promptTokens, completionTokens });
+    } catch (error) {
+      return integrationFailure(`merge recovery failed: ${msgOf(error)}`);
     }
 
     // success — drop the worktree (branch stays, merged into integration).
@@ -2924,14 +3102,17 @@ async function runCanary(plan: Plan) {
     console.error("Error: FARM_API_KEY is not set.");
     process.exit(1);
   }
-  await mkdir(ENV.worktreeRoot, { recursive: true });
+  // Freeze once BEFORE network/setup work. Never reset or check out integration
+  // for measurement: it may contain useful work or belong to an active dispatch.
+  const base = await git(["rev-parse", "--verify", "--end-of-options", `${ENV.base}^{commit}`]);
+  const baseCommit = base.stdout.trim();
+  if (base.code !== 0 || !/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(baseCommit)) {
+    console.error("Error: canary base must resolve to an existing commit.");
+    process.exit(1);
+  }
+  const scratchRoot = allowedWorktreeRoot();
+  await mkdir(scratchRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
-  // Reset integration to base so canary worktrees branch from a clean point.
-  await git(["branch", "-f", ENV.integration, ENV.base]);
-  integrationWorktree = path.resolve(ENV.reportDir, "integration-wt");
-  await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
-  await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {});
-  await git(["worktree", "add", integrationWorktree, ENV.integration]).catch(() => {});
 
   // smallest task = fewest filesInScope, no deps
   const task = [...plan.tasks]
@@ -2948,29 +3129,80 @@ async function runCanary(plan: Plan) {
   if (skipped.length)
     process.stderr.write(`Entitlement screen dropped ${skipped.length}/${ENV.candidateModels.length}: ${skipped.map((s) => `${s.model} (${s.reason})`).join(", ")}\n`);
 
-  const results: Array<{ model: string; green: boolean; attempts: number; ms: number; note?: string }> = [];
+  const results: Array<{ model: string; green: boolean; attempts: number; ms: number; note?: string; cleanup: CleanupOutcome[] }> = [];
   for (const model of survivors) {
     const t0 = Date.now();
-    const r = await runTask({ ...task, id: `canary-${task.id}` }, model, apiBaseUrl, apiKey);
-    results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note });
-    await git(["worktree", "remove", "--force", path.resolve(ENV.worktreeRoot, `canary-${task.id}`)]).catch(() => {});
-    await git(["branch", "-D", `farm/canary-${task.id}`]).catch(() => {});
+    // Atomic directory reservation gives this trial exclusive scratch ownership.
+    // Neither old canary-<task> worktrees nor normal task branches are touched.
+    const trialRoot = await mkdtemp(path.join(scratchRoot, "canary-"));
+    const wt = path.join(trialRoot, "task");
+    let r: Result;
+    const cleanup: CleanupOutcome[] = [];
+    try {
+      // Candidate selection deliberately overrides task.model ONLY for canary.
+      // Every result label now names the worker model that was actually used.
+      r = await runTask({ ...task, model }, model, apiBaseUrl, apiKey, defaultRunTaskDeps(),
+        { baseCommit, worktreeRoot: trialRoot });
+      cleanup.push(...(r.cleanup ?? []));
+    } catch (e) {
+      r = { id: task.id, status: "escalate", attempts: 0, branch: baseCommit, worktree: wt,
+        note: `canary error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
+    } finally {
+      const removed = await removeWorktreeVerified(git, wt);
+      if (!removed.ok) cleanup.push(removed);
+      // Remove only an EMPTY namespace. Never recursively erase leaked samples
+      // or conceal a cleanup failure behind an otherwise green model result.
+      try {
+        await rmdir(trialRoot);
+      } catch (e) {
+        cleanup.push({ ok: false, target: trialRoot, attempts: 1,
+          detail: `canary scratch retained: ${redactSecrets(msgOf(e)).slice(0, 300)}` });
+      }
+    }
+    results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note, cleanup });
   }
-  await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
 
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
   // Skipped candidates are surfaced DISTINCTLY (their own array), never folded
   // into the capability `results` as a FAIL.
-  await writeFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: new Date().toISOString() }, null, 2));
+  await atomicWriteFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, baseCommit, results, skipped, ts: new Date().toISOString() }, null, 2));
+  const cleanupComplete = results.every((r) => r.cleanup.length === 0);
   const summary = [
     "\nCanary results (best first):",
     ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`),
     ...skipped.map((s) => `  SKIP  ${s.model}  (${s.reason}: ${s.note})`),
-    `\nRecommended: ${results[0]?.green ? results[0].model : "NONE PASSED — set FARM_MODEL manually or revise the plan"}`,
+    ...results.flatMap((r) => r.cleanup.map((c) => `  CLEANUP FAILED  ${r.model}: ${c.detail ?? c.target}`)),
+    `\nRecommended: ${!cleanupComplete ? "NONE — canary cleanup remains incomplete" : results[0]?.green ? results[0].model : "NONE PASSED — set FARM_MODEL manually or revise the plan"}`,
     "",
   ].join("\n");
   await new Promise<void>((resolve) => process.stdout.write(summary, () => resolve()));
-  process.exit(results[0]?.green ? 0 : 2);
+  process.exit(results[0]?.green && cleanupComplete ? 0 : 2);
+}
+
+// Select a compatible batch from dependency-ready work, then reserve its scopes.
+// Pending but unready tasks cannot reserve a file ahead of their own prerequisite.
+// Preserve ID ordering among overlapping dependency-ready siblings, including
+// one waiting on a running task; no ordering edge is written into the plan.
+export function selectReadyTasks(
+  byId: ReadonlyMap<string, Pick<Task, "deps" | "filesInScope">>,
+  pending: ReadonlySet<string>,
+  running: Iterable<string>,
+  done: ReadonlyMap<string, Pick<Result, "status">>,
+): string[] {
+  const occupied = new Set<string>();
+  for (const id of running) for (const file of byId.get(id)!.filesInScope) occupied.add(file);
+  const selected: string[] = [];
+  for (const id of [...pending].sort()) {
+    const task = byId.get(id)!;
+    if (!(task.deps ?? []).every((dep) => done.get(dep)?.status === "green")) continue;
+    const conflicts = task.filesInScope.some((file) => occupied.has(file));
+    // A dependency-ready predecessor retains its place even when another
+    // running/selected sibling currently owns one of its files. This preserves
+    // the established lexical order across overlapping ready chains.
+    for (const file of task.filesInScope) occupied.add(file);
+    if (!conflicts) selected.push(id);
+  }
+  return selected;
 }
 
 // --------------------------------------------------------------------------
@@ -3092,44 +3324,10 @@ async function main() {
     const pending = new Set(plan.tasks.map((t) => t.id));
     const running = new Map<string, Promise<{ id: string; r: Result }>>();
 
-    // AC-06: scope-aware readiness. Two tasks whose filesInScope intersect
-    // collide at merge time if dispatched concurrently, and a later-cut worktree
-    // would miss the earlier task's merge. This is enforced as a DERIVED
-    // readiness filter — never written as a `deps` edge — so it cannot create a
-    // plan-validation cycle (Risks: "Scheduling deadlock/starvation").
-    const scopeOf = (id: string) => new Set(byId.get(id)!.filesInScope ?? []);
-    const overlaps = (a: Set<string>, b: Iterable<string>) => {
-      for (const f of b) if (a.has(f)) return true;
-      return false;
-    };
-
-    const ready = () =>
-      [...pending].filter((id) => {
-        const deps = byId.get(id)!.deps ?? [];
-        if (deps.some((d) => escalated.has(d))) return false;
-        if (!deps.every((d) => done.get(d)?.status === "green")) return false;
-
-        // A candidate is ready iff its written deps are green (above) AND no
-        // overlapping sibling is still in flight or ordered ahead of it:
-        //   - no currently-RUNNING task with intersecting filesInScope, AND
-        //   - no still-PENDING task with intersecting filesInScope and a lower
-        //     (lexicographic) id.
-        // Effect: among an overlapping group, members run sequentially in id
-        // order, each cutting its worktree from the integration HEAD that already
-        // contains the prior member's merge. A SETTLED sibling (green-merged or
-        // escalated) is neither running nor pending, so it no longer blocks —
-        // hence no deadlock and no starvation.
-        const myScope = scopeOf(id);
-        if (myScope.size === 0) return true;
-        for (const rid of running.keys()) {
-          if (overlaps(myScope, scopeOf(rid))) return false;
-        }
-        for (const pid of pending) {
-          if (pid === id) continue;
-          if (pid < id && overlaps(myScope, scopeOf(pid))) return false;
-        }
-        return true;
-      });
+    // AC-06: reserve overlapping files only among dependency-ready tasks and
+    // actual running work. This preserves sequential integration inheritance
+    // without letting a blocked lower-ID sibling deadlock its prerequisite.
+    const ready = () => selectReadyTasks(byId, pending, running.keys(), done);
 
     const tripped = () => {
       const settled = done.size;

@@ -442,8 +442,11 @@ dev-inclusive CVE gate, whose sweep lives in `docs.yml`. Adding a coverage
 provider does not change that posture — the provider is a dev dependency, and
 the audit scope is unchanged.
 
-There is **no coverage tooling for the Python hooks** (`plugins/*/hooks/*.py`,
-`.github/scripts/*.py`). No numeric floor exists for those surfaces, so `tdd`
+There is **no coverage tooling for the Python hooks or build tools**
+(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).
+These Python surfaces use direct unittest and behavioral contract checks; the
+TypeScript coverage configurations above do not instrument them. No numeric
+floor exists for those surfaces, so `tdd`
 Phase 5 and `refactor` Phase 2 and Phase 6 all take the **no-tooling exemption**
 — whose conditions live in `plugins/ca/includes/maturity-coverage.md` and are
 NOT restated here. In short: it requires a citation, not an assertion, and the

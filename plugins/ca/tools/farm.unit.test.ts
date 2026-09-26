@@ -4,11 +4,12 @@
  */
 import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import path from "node:path";
+import * as farmAPI from "./farm.ts";
 import { readFileSync, mkdtempSync, mkdirSync, symlinkSync, rmSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir, chmod as fsChmod, stat as fsStat, open as fsOpen } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId, WINDOWS_PIN_READY_TIMEOUT_MS, releaseWindowsPinGuard } from "./farm.ts";
+import { selectReadyTasks, extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId, WINDOWS_PIN_READY_TIMEOUT_MS, releaseWindowsPinGuard } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines, withWorktreeLock, prepareWorktree } from "./farm.ts";
@@ -42,6 +43,26 @@ describe("Windows artifact executable pin guard", () => {
 // SECRET_RE: catch known high-entropy key prefixes, not just trigger words.
 // ---------------------------------------------------------------------------
 describe("redactSecrets — high-entropy key prefixes (checkpoint 2026-06-22)", () => {
+  it("redacts a complete synthetic PEM before truncating actual gate output", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "ca-gate-redaction-"));
+    try {
+      const syntheticBody = "QUFB".repeat(1400);
+      const output = ["-----BEGIN " + "PRIVATE KEY-----", syntheticBody,
+        "-----END " + "PRIVATE KEY-----", "ordinary failure"].join("\n");
+      await fsWriteFile(path.join(root, "gate-output.cjs"),
+        `process.stdout.write(${JSON.stringify(output)}); process.exitCode = 1;`);
+      const result = await runGate(root, ["node gate-output.cjs"]);
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected a rejected gate");
+      expect(result.tail).not.toContain("QUFB".repeat(24));
+      expect(result.tail).toContain("[REDACTED");
+      expect(result.tail).toContain("ordinary failure");
+      expect(result.tail.length).toBeLessThanOrEqual(3500);
+    } finally {
+      await fsRm(root, { recursive: true, force: true });
+    }
+  });
+
   it("redacts an AWS access key id with no trigger word on the line", () => {
     const out = redactSecrets("const id = AKIAIOSFODNN7EXAMPLE;");
     expect(out).not.toContain("AKIAIOSFODNN7EXAMPLE");
@@ -201,6 +222,38 @@ describe("extractLiterals", () => {
   it("deduplicates repeated literals", () => {
     const lits = extractLiterals('toBe("abc"); toBe("abc");');
     expect(lits.filter((l) => l === "abc")).toHaveLength(1);
+  });
+
+  it("extracts whole numeric spellings rather than their decimal substrings", () => {
+    expect(extractLiterals("const values = [420, 42.5, 1e42, 0x42, 42n];"))
+      .toEqual(["420", "42.5", "1e42", "0x42", "42n"]);
+  });
+
+  it("does not read literals out of comments, identifiers or regular expressions", () => {
+    expect(extractLiterals('/* "magic" 42 */ const item42 = /42/; // "other" 99'))
+      .toEqual([]);
+  });
+
+  it("keeps comment markers within quoted literals and does not split their numbers", () => {
+    expect(extractLiterals('const value = "https://example.test/42#value";'))
+      .toEqual(["https://example.test/42#value"]);
+  });
+
+  it("does not interpret escape spellings or interpolated templates as constants", () => {
+    expect(extractLiterals('const value = `prefix${answer}suffix`;')).toEqual([]);
+    expect(extractLiterals('const value = "escaped\\\\value";'))
+      .toEqual(["escaped\\\\value"]);
+  });
+
+  it.each([
+    ['const value = "unterminated\nconst other = 42;', ["42"]],
+    ['const value = "unterminated', []],
+    ['const value = .42; const other = 42_000;', [".42", "42_000"]],
+    ['const value = 42foo; const 𐐀42 = compute();', []],
+    ['#!/usr/bin/env node\r\n// "ignored" 42\rconst n = 33;', ["33"]],
+    ['const value = /[42\/]/gi; return /"quoted"/;', []],
+  ])("keeps bounded lexical extraction for %s", (source, expected) => {
+    expect(extractLiterals(source as string)).toEqual(expected);
   });
 
   it("returns empty array for no literals", () => {
@@ -1149,6 +1202,7 @@ describe("Regenerate-on-conflict — merge conflict re-enters regeneration (AC-0
           if (out !== null) return { code: 1, out, stdout: "", stderr: out };
           return { code: 0, out: "", stdout: "", stderr: "" };
         }
+        if (args[0] === "rev-parse") return { code: 0, out: "a".repeat(40), stdout: "a".repeat(40), stderr: "" };
         if (args[0] === "reset" || args[0] === "clean") {
           opts.resetCalls.push(args);
         }
@@ -3073,5 +3127,1331 @@ describe("#398 — verified, retried, reported worktree teardown", () => {
     expect(lines.join("\n")).toMatch(/CLEANUP DEGRADED/);
     expect(lines.join("\n")).toMatch(/integration-wt/);
     expect(lines.join("\n")).toMatch(/still registered after 3 attempt\(s\)/);
+  });
+});
+
+// Readiness is a property of the actual DAG plus occupied write scopes, never
+// of lexicographically earlier work that cannot run. Keep this selector pure.
+
+describe("dependency-ready scope batching", () => {
+  type Item = { deps?: string[]; filesInScope: string[] };
+  const select = (items: Record<string, Item>, pending = Object.keys(items), running: string[] = [], green: string[] = [], failed: string[] = []) =>
+    selectReadyTasks(new Map(Object.entries(items)), new Set(pending), running,
+      new Map<string, { status: "green" | "escalate" }>([...green.map(id => [id, { status: "green" as const }] as const),
+        ...failed.map(id => [id, { status: "escalate" as const }] as const)]));
+
+  it("does not reserve a dependent's file ahead of its higher-ID prerequisite", () => {
+    expect(select({ a: { deps: ["z"], filesInScope: ["x"] }, z: { filesInScope: ["x"] } })).toEqual(["z"]);
+  });
+  it("does not let a failed prerequisite's dependent block independent work", () => {
+    expect(select({ a: { deps: ["failed"], filesInScope: ["x"] }, z: { filesInScope: ["x"] }, failed: { filesInScope: [] } },
+      ["a", "z"], [], [], ["failed"])).toEqual(["z"]);
+  });
+  it("selects compatible ready tasks in stable lexical order", () => {
+    expect(select({ z: { filesInScope: ["x"] }, b: { filesInScope: ["y"] }, a: { filesInScope: ["x"] } })).toEqual(["a", "b"]);
+  });
+  it("preserves existing ID ordering through overlapping ready chains", () => {
+    expect(select({ a: { filesInScope: ["x"] }, b: { filesInScope: ["x", "y"] }, c: { filesInScope: ["y"] } })).toEqual(["a"]);
+  });
+  it("reserves all running scopes while allowing unrelated ready work", () => {
+    expect(select({ a: { filesInScope: ["x"] }, b: { filesInScope: ["y"] }, running: { filesInScope: ["x"] } }, ["a", "b"], ["running"])).toEqual(["b"]);
+  });
+  it("requires every predecessor to be green and permits empty scopes", () => {
+    const items = { a: { deps: ["x", "y"], filesInScope: [] }, b: { filesInScope: [] }, x: { filesInScope: [] }, y: { filesInScope: [] } };
+    expect(select(items, ["a", "b"], [], ["x"])).toEqual(["b"]);
+    expect(select(items, ["a", "b"], [], ["x", "y"])).toEqual(["a", "b"]);
+  });
+  it("neither mutates written dependencies nor its scheduler inputs", () => {
+    const task = { deps: Object.freeze(["z"]), filesInScope: Object.freeze(["x"]) };
+    const byId = new Map([ ["a", { deps: [...task.deps], filesInScope: [...task.filesInScope] }], ["z", { filesInScope: ["x"], deps: [] }] ]);
+    const pending = new Set(["a", "z"]);
+    const before = JSON.stringify([...byId]);
+    expect(selectReadyTasks(byId, pending, [], new Map())).toEqual(["z"]);
+    expect([...pending]).toEqual(["a", "z"]);
+    expect(JSON.stringify([...byId])).toBe(before);
+  });
+  it("makes progress for every three-task DAG order and two-file scope assignment", () => {
+    const orders = [["a", "b", "c"], ["a", "c", "b"], ["b", "a", "c"], ["b", "c", "a"], ["c", "a", "b"], ["c", "b", "a"]];
+    const scopes = [[], ["x"], ["y"], ["x", "y"]];
+    let cases = 0;
+    for (const order of orders) for (let edges = 0; edges < 8; edges++) for (let mask = 0; mask < 64; mask++) {
+      const byId = new Map<string, Item>(order.map((id, i) => [id, { deps: [], filesInScope: scopes[(mask >> (i * 2)) & 3] }]));
+      let bit = 0;
+      for (let to = 1; to < 3; to++) for (let from = 0; from < to; from++, bit++)
+        if (edges & (1 << bit)) byId.get(order[to])!.deps!.push(order[from]);
+      const pending = new Set([...order].reverse());
+      const done = new Map<string, { status: "green" }>();
+      while (pending.size) {
+        const batch = selectReadyTasks(byId, pending, [], done);
+        expect(batch.length, JSON.stringify({ order, edges, mask })).toBeGreaterThan(0);
+        const occupied = new Set<string>();
+        for (const id of batch) {
+          expect(byId.get(id)!.deps!.every(dep => done.has(dep))).toBe(true);
+          for (const file of byId.get(id)!.filesInScope) { expect(occupied.has(file)).toBe(false); occupied.add(file); }
+        }
+        for (const id of batch) { pending.delete(id); done.set(id, { status: "green" }); }
+      }
+      expect(done.size).toBe(3);
+      cases++;
+    }
+    expect(cases).toBe(3072);
+  });
+});
+
+// F09: the TASK worktree must qualify a retained candidate before siblings are
+// discarded. These are real contained file fixtures with injected worker/Git
+// boundaries, not externally billed model calls or real project commits.
+describe("qualified best-of-N alternatives", () => {
+  const roots: string[] = [];
+  const savedSamples = process.env.FARM_SAMPLES;
+  const savedTemperature = process.env.FARM_TEMPERATURE;
+  afterEach(async () => {
+    if (savedSamples === undefined) delete process.env.FARM_SAMPLES;
+    else process.env.FARM_SAMPLES = savedSamples;
+    if (savedTemperature === undefined) delete process.env.FARM_TEMPERATURE;
+    else process.env.FARM_TEMPERATURE = savedTemperature;
+    for (const root of roots.splice(0)) await fsRm(root, { recursive: true, force: true });
+  });
+
+  async function fixture() {
+    process.env.FARM_SAMPLES = "2";
+    process.env.FARM_TEMPERATURE = "0";
+    const id = `qualify-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const task: Task = { id, description: "qualify actual retained alternatives",
+      filesInScope: ["src/impl.ts", "src/rejected-only.ts"],
+      test: { path: "test.txt" }, gate: { commands: ["test"] }, maxRetries: 0 };
+    const wt = path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+    roots.push(wt, wt + "__s0", wt + "__s1");
+    let calls = 0;
+    const gitCalls: string[][] = [];
+    const quality: string[] = [];
+    const deps: RunTaskDeps = {
+      prepareWorktree: async (_branch, dir) => {
+        await fsMkdir(path.join(dir, "src"), { recursive: true });
+        await fsWriteFile(path.join(dir, "test.txt"), "immutable test");
+        return null;
+      },
+      resetWorktree: async (dir) => {
+        await fsRm(path.join(dir, "src"), { recursive: true, force: true });
+        await fsMkdir(path.join(dir, "src"), { recursive: true });
+        await fsWriteFile(path.join(dir, "test.txt"), "immutable test");
+      },
+      worker: { async apply(ctx) {
+        calls++;
+        const k = ctx.cwd.endsWith("__s0") ? 0 : 1;
+        const written = ["src/impl.ts"];
+        await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"), `candidate-${k}\n`);
+        if (k === 0) {
+          await fsWriteFile(path.join(ctx.cwd, "src/rejected-only.ts"), "must not leak\n");
+          written.push("src/rejected-only.ts");
+        }
+        return { ok: true, filesWritten: written, promptTokens: 10 + k, completionTokens: 20 + k };
+      } },
+      fileHash: async (file) => fsReadFile(file, "utf8").catch(() => null),
+      checkDrift: async () => [],
+      runGate: async () => ({ ok: true as const }),
+      antiGamingCheck: async (dir) => {
+        quality.push(await fsReadFile(path.join(dir, "src/impl.ts"), "utf8"));
+        return { risk: "none" as const };
+      },
+      mutationCheck: async () => null,
+      git: async (args) => { gitCalls.push(args); return { code: 0, out: "", stdout: "", stderr: "" }; },
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+    };
+    return { task, wt, deps, gitCalls, quality, calls: () => calls };
+  }
+
+  it("uses the next retained candidate after high risk with no new worker round", async () => {
+    const f = await fixture();
+    f.deps.antiGamingCheck = async dir => {
+      const text = await fsReadFile(path.join(dir, "src/impl.ts"), "utf8");
+      return text.startsWith("candidate-0") ? { risk: "high", note: "literal risk" } : { risk: "none" };
+    };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.attempts).toBe(1);
+    expect(f.calls()).toBe(2);
+    expect(r.promptTokens).toBe(21);
+    expect(r.completionTokens).toBe(41);
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(r.acceptedCompletionTokens).toBe(21);
+    expect(await fsReadFile(path.join(f.wt, "src/impl.ts"), "utf8")).toBe("candidate-1\n");
+    await expect(fsStat(path.join(f.wt, "src/rejected-only.ts"))).rejects.toThrow();
+    expect(f.gitCalls.filter(args => args.includes("commit"))).toHaveLength(1);
+  });
+
+  it("retains an alternative until the materialized task gate passes", async () => {
+    const f = await fixture();
+    f.deps.runGate = async dir => dir === f.wt &&
+      (await fsReadFile(path.join(dir, "src/impl.ts"), "utf8")).startsWith("candidate-0")
+        ? { ok: false, failed: "test", tail: "task-context rejection" } : { ok: true };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(f.calls()).toBe(2);
+  });
+
+  it("applies the unchanged mutation evidence floor before accepting an alternative", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async dir =>
+      (await fsReadFile(path.join(dir, "src/impl.ts"), "utf8")).startsWith("candidate-0")
+        ? { score: 0, evaluated: 5, survivors: ["fixture survivor"] } : { score: 1, evaluated: 5, survivors: [] };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.mutationScore).toBe(1);
+    expect(r.warning).toBeUndefined();
+    expect(f.calls()).toBe(2);
+  });
+
+  it("checks both candidates before spending the configured next retry", async () => {
+    const f = await fixture();
+    const attempts: string[] = [];
+    f.deps.antiGamingCheck = async dir => {
+      attempts.push(await fsReadFile(path.join(dir, "src/impl.ts"), "utf8"));
+      return { risk: "high", note: "still rejected" };
+    };
+    const r = await runTask({ ...f.task, maxRetries: 1 }, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.attempts).toBe(2);
+    expect(attempts).toEqual(["candidate-0\n", "candidate-1\n", "candidate-0\n", "candidate-1\n"]);
+    expect(f.calls()).toBe(4);
+    expect(r.promptTokens).toBe(42);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("does not penalize a candidate for missing mutation count beyond the existing warning policy", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ score: 0 });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.acceptedPromptTokens).toBe(10);
+    expect(r.warning).toContain("mutation-risk");
+    expect(f.quality).toEqual(["candidate-0\n"]);
+  });
+
+  it("retains mutation-hook infrastructure warnings rather than inventing an escalation rule", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ failed: true, detail: "fixture unavailable" });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.warning).toContain("mutation-hook-failed");
+    expect(r.mutationScore).toBeNull();
+    expect(f.quality).toEqual(["candidate-0\n"]);
+  });
+
+  it("retains the adverse-report count floor without publishing failed scores", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async dir =>
+      (await fsReadFile(path.join(dir, "src/impl.ts"), "utf8")).startsWith("candidate-0")
+        ? { failed: true, detail: "exit 1", unverified: {score: 0, evaluated: 5} }
+        : { score: 1, evaluated: 5 };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(r.mutationScore).toBe(1);
+    expect(f.quality).toEqual(["candidate-0\n", "candidate-1\n"]);
+    expect(f.calls()).toBe(2);
+  });
+
+  for (const evaluated of [undefined, 0, 4]) {
+    it(`does not invent a blocking count from a failed hook (${evaluated})`, async () => {
+      const f = await fixture();
+      f.deps.mutationCheck = async () => ({failed: true, detail: "exit 1", unverified: {score: 0, evaluated}});
+      const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("green");
+      expect(r.mutationScore).toBeNull();
+      expect(r.warning).toContain("mutation-hook-failed");
+      expect(f.quality).toEqual(["candidate-0\n"]);
+    });
+  }
+
+  for (const samples of [1, 2]) {
+    it(`stops after mutation containment is unverified with ${samples} candidate(s)`, async () => {
+      const f = await fixture();
+      process.env.FARM_SAMPLES = String(samples);
+      f.deps.mutationCheck = async () => ({ failed: true,
+        cleanupFailed: true, detail: "CLEANUP UNVERIFIED fixture" });
+      const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("escalate");
+      expect(r.note).toContain("mutation containment failed");
+      expect(r.mutationScore).toBeUndefined();
+      expect(f.calls()).toBe(samples);
+      expect(f.quality).toHaveLength(1);
+      expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+      expect(r.promptTokens).toBe(samples === 2 ? 21 : 11);
+    });
+  }
+
+  for (const samples of [1, 2]) {
+    it(`keeps unclassified nonzero outcomes diagnostic with ${samples} candidate(s)`, async () => {
+      const f = await fixture();
+      process.env.FARM_SAMPLES = String(samples);
+      f.deps.mutationCheck = async () => ({ failed: true, source: "builtin",
+        detail: "3 unclassified nonzero rerun(s); upper bound 1.000 is not a measured score",
+        unverified: {score:1,evaluated:3,survivors:[]} });
+      const r = await runTask({...f.task,maxRetries:1},"stub","https://example.invalid","placeholder",f.deps);
+      expect(r.status).toBe("green");
+      expect(r.mutationScore).toBeNull();
+      expect(r.warning).toContain("unclassified nonzero");
+      expect(r.attempts).toBe(1);
+      expect(f.calls()).toBe(samples);
+      expect(f.quality).toHaveLength(1);
+      expect(f.gitCalls.filter(args => args.includes("commit"))).toHaveLength(1);
+    });
+  }
+
+  for (const [score, evaluated, rejected] of [[0.1,10,true],[0.2,5,false],[0,4,false]] as const) {
+    it(`retains the upper-bound/count policy (${score}, ${evaluated}) before buying another sample round`, async () => {
+      const f = await fixture();
+      f.deps.mutationCheck = async dir =>
+        (await fsReadFile(path.join(dir,"src/impl.ts"),"utf8")).startsWith("candidate-0")
+          ? {failed:true,source:"builtin",detail:"unclassified rejection; upper bound",unverified:{score,evaluated}}
+          : null;
+      const r = await runTask(f.task,"stub","https://example.invalid","placeholder",f.deps);
+      expect(r.status).toBe("green");
+      expect(r.mutationScore).toBeNull();
+      expect(f.calls()).toBe(2);
+      expect(f.quality).toHaveLength(rejected ? 2 : 1);
+      expect(r.acceptedPromptTokens).toBe(rejected ? 11 : 10);
+      if (!rejected) expect(r.warning).toContain("builtin-mutation-failed");
+    });
+  }
+
+  it("keeps a clean built-in timeout diagnostic without spending another model round", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ failed: true, source: "builtin", detail: "trial timed out" });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.warning).toContain("builtin-mutation-failed");
+    expect(r.mutationScore).toBeNull();
+    expect(f.calls()).toBe(2);
+    expect(f.quality).toHaveLength(1);
+    expect(f.gitCalls.filter(args => args.includes("commit"))).toHaveLength(1);
+  });
+
+  it("retains a low completed built-in result before interruption and tries its sibling", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async dir =>
+      (await fsReadFile(path.join(dir, "src/impl.ts"), "utf8")).startsWith("candidate-0")
+        ? { failed: true, source: "builtin", detail: "trial timed out", unverified: {score: 0, evaluated: 5} }
+        : { score: 1, evaluated: 5 };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(r.mutationScore).toBe(1);
+    expect(f.quality).toEqual(["candidate-0\n", "candidate-1\n"]);
+    expect(f.calls()).toBe(2);
+  });
+
+  it("does not invent an adequate completed count for interrupted built-in screening", async () => {
+    const f = await fixture();
+    f.deps.mutationCheck = async () => ({ failed: true, source: "builtin", detail: "trial timed out",
+      unverified: {score: 0, evaluated: 4} });
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.warning).toContain("builtin-mutation-failed");
+    expect(r.mutationScore).toBeNull();
+    expect(f.quality).toHaveLength(1);
+  });
+
+  for (const samples of [1, 2]) {
+    it(`retains the built-in containment refusal with ${samples} candidate(s)`, async () => {
+      const f = await fixture();
+      process.env.FARM_SAMPLES = String(samples);
+      f.deps.mutationCheck = async () => ({ failed: true, source: "builtin",
+        cleanupFailed: true, detail: "cleanup unverified" });
+      const r = await runTask({...f.task, maxRetries: 1}, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("escalate");
+      expect(r.note).toContain("mutation containment failed");
+      expect(r.mutationScore).toBeUndefined();
+      expect(f.calls()).toBe(samples);
+      expect(f.quality).toHaveLength(1);
+      expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+      expect(r.promptTokens).toBe(samples === 2 ? 21 : 11);
+    });
+  }
+
+  it("records known tokens and cleans all sample resources when qualification throws", async () => {
+    const f = await fixture();
+    f.deps.antiGamingCheck = async () => { throw new Error("qualification fixture unavailable"); };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("qualification");
+    expect(r.promptTokens).toBe(21);
+    expect(f.calls()).toBe(2);
+    expect(new Set(f.gitCalls.filter(args => args[0] === "worktree" && args[1] === "remove")
+      .map(args => args[args.length - 1]))).toEqual(new Set([f.wt + "__s0", f.wt + "__s1"]));
+    // Stub Git does not remove real fixture directories: verified teardown
+    // honestly reports both leftovers rather than equating exit zero with clean.
+    expect(r.cleanup?.filter(c => !c.ok)).toHaveLength(2);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("does not switch candidates across an unresolved task reset failure", async () => {
+    const f = await fixture();
+    f.deps.antiGamingCheck = async () => ({ risk: "high", note: "reject" });
+    f.deps.resetWorktree = async () => { throw new Error("reset unavailable"); };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("reset unavailable");
+    expect(f.calls()).toBe(2);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+    expect(new Set(f.gitCalls.filter(args => args[0] === "worktree" && args[1] === "remove")
+      .map(args => args[args.length - 1]))).toEqual(new Set([f.wt + "__s0", f.wt + "__s1"]));
+    // Stub Git does not remove real fixture directories: verified teardown
+    // honestly reports both leftovers rather than equating exit zero with clean.
+    expect(r.cleanup?.filter(c => !c.ok)).toHaveLength(2);
+  });
+
+  it.each([1, 2])("preserves evidence when retry reset fails after %i rejected sampling rounds", async (rounds) => {
+    const f = await fixture();
+    const reset = f.deps.resetWorktree;
+    let resets = 0;
+    const secret = "ghp_" + "a".repeat(36);
+    f.deps.mutationCheck = async () => ({ score: 0, evaluated: 5, survivors: ["fixture survivor"] });
+    f.deps.resetWorktree = async dir => {
+      // One reset between candidates, then one at the next attempt. Only the
+      // latter fails; sample cleanup and usage already exist by that point.
+      if (++resets === rounds * 2) throw new Error(`reset unavailable\n${secret}\n${"x".repeat(400)}`);
+      await reset(dir);
+    };
+    const r = await runTask({ ...f.task, maxRetries: rounds },
+      "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.attempts).toBe(rounds + 1);
+    expect(resets).toBe(rounds * 2);
+    expect(f.calls()).toBe(rounds * 2); // Reset failure cannot buy another round.
+    expect(r.promptTokens).toBe(rounds * 21);
+    expect(r.completionTokens).toBe(rounds * 41);
+    expect(r.mutationScore).toBe(0);
+    expect(r.filesWritten).toEqual(["src/impl.ts", "src/rejected-only.ts"]);
+    expect(r.note).toContain("retry reset failed:");
+    expect(r.note).not.toContain(secret);
+    expect(r.note).toContain("[REDACTED");
+    expect(r.note!.length).toBeLessThanOrEqual(300);
+    // This fixture's Git stub leaves the actual sample directories in place.
+    // Each unresolved teardown must survive the subsequent reset exception.
+    expect(r.cleanup).toHaveLength(rounds * 2);
+    expect(r.cleanup!.every(c => !c.ok)).toBe(true);
+    expect(new Set(r.cleanup!.map(c => c.target))).toEqual(new Set([f.wt + "__s0", f.wt + "__s1"]));
+    expect(f.gitCalls.some(args => ["add", "commit", "merge"].includes(args[0]))).toBe(false);
+    const recorded = JSON.parse(JSON.stringify(r));
+    expect(recorded.cleanup).toEqual(r.cleanup);
+    expect(recorded.promptTokens).toBe(rounds * 21);
+    expect(recorded.completionTokens).toBe(rounds * 41);
+  });
+
+  it("preserves single-worker usage when retry reset fails without inventing cleanup", async () => {
+    const f = await fixture();
+    process.env.FARM_SAMPLES = "1";
+    f.deps.runGate = async () => ({ ok: false, failed: "test", tail: "known first-attempt rejection" });
+    f.deps.resetWorktree = async () => { throw new Error("single-worker reset unavailable"); };
+    const r = await runTask({ ...f.task, maxRetries: 1 },
+      "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.attempts).toBe(2);
+    expect(f.calls()).toBe(1);
+    expect(r.promptTokens).toBe(11);
+    expect(r.completionTokens).toBe(21);
+    expect(r.filesWritten).toEqual(["src/impl.ts"]);
+    expect(r.note).toContain("retry reset failed: single-worker reset unavailable");
+    expect(r.cleanup).toBeUndefined();
+    expect(f.gitCalls.some(args => ["add", "commit", "merge"].includes(args[0]))).toBe(false);
+    expect(await fsReadFile(path.join(f.wt, "src/impl.ts"), "utf8")).toBe("candidate-1\n");
+  });
+
+  it("does not try a sibling after the task's immutable test changes", async () => {
+    const f = await fixture();
+    let reads = 0;
+    f.deps.fileHash = async file => {
+      const content = await fsReadFile(file, "utf8").catch(() => null);
+      if (file === path.join(f.wt, "test.txt") && ++reads > 1) return "changed test";
+      return content;
+    };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("tampered test");
+    expect(f.quality).toEqual([]);
+    expect(f.calls()).toBe(2);
+    expect(r.promptTokens).toBe(21);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("does not replace a failed between-candidate setup with a green sibling", async () => {
+    const f = await fixture();
+    let taskSetup = 0;
+    f.deps.runGate = async (dir, commands) => {
+      if (dir === f.wt && commands[0] === "setup" && ++taskSetup > 1)
+        return { ok: false, failed: "setup", tail: "required environment unavailable" };
+      return { ok: true };
+    };
+    f.deps.antiGamingCheck = async () => ({ risk: "high", note: "reject first" });
+    const r = await runTask({ ...f.task, setupEachAttempt: ["setup"] },
+      "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.note).toContain("setup");
+    expect(taskSetup).toBe(2);
+    expect(f.calls()).toBe(2);
+    expect(r.promptTokens).toBe(21);
+    expect(f.gitCalls.some(args => args.includes("commit"))).toBe(false);
+  });
+
+  it("retains known sample usage when a later sample check throws", async () => {
+    const f = await fixture();
+    f.deps.checkDrift = async dir => {
+      if (dir.endsWith("__s0")) throw new Error("sample inspection unavailable");
+      return [];
+    };
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green");
+    expect(r.promptTokens).toBe(21);
+    expect(r.completionTokens).toBe(41);
+    expect(r.acceptedPromptTokens).toBe(11);
+    expect(f.calls()).toBe(2);
+  });
+});
+
+
+// F12: provider accounting is evidence about a completed response, not a
+// reward for accepting its output. Validate untrusted shapes before decoding.
+describe("worker response evidence", () => {
+  const endpoint = "https://user:private-password@provider.example/v1?key=private-query";
+  const usage = { prompt_tokens: 7, completion_tokens: 11 };
+
+  it.each([
+    ["missing choices", { usage }],
+    ["non-array choices", { choices: {}, usage }],
+    ["null choice", { choices: [null], usage }],
+    ["missing message", { choices: [{}], usage }],
+    ["scalar message", { choices: [{ message: 42 }], usage }],
+    ["array message", { choices: [{ message: [] }], usage }],
+    ["object content", { choices: [{ message: { content: { opaque: "private-response" } } }], usage }],
+    ["numeric content", { choices: [{ message: { content: 42 } }], usage }],
+    ["array content", { choices: [{ message: { content: ["private-response"] } }], usage }],
+    ["boolean content", { choices: [{ message: { content: true } }], usage }],
+  ])("retains validated counters on %s without reflecting the body", (_name, body) => {
+    const result = parseChatCompletion(JSON.stringify(body), endpoint);
+    expect(result.ok).toBe(false);
+    expect(result.usage).toEqual(usage);
+    if (!result.ok) {
+      expect(result.error).toContain("https://provider.example");
+      expect(result.error).not.toMatch(/private-(?:password|query|response)/);
+    }
+  });
+
+  it.each([undefined, null, ""])("keeps absent or empty text %s on the no-output path", (content) => {
+    expect(parseChatCompletion(JSON.stringify({ choices: [{ message: { content } }], usage }), endpoint))
+      .toEqual({ ok: true, content: "", usage });
+  });
+
+  it("preserves empty-choice and explicit-zero semantics", () => {
+    expect(parseChatCompletion(JSON.stringify({ choices: [], usage: { prompt_tokens: 0, completion_tokens: 0 } }), endpoint))
+      .toEqual({ ok: true, content: "", usage: { prompt_tokens: 0, completion_tokens: 0 } });
+  });
+
+  it.each([-1, 1.5, "3", true, null, {}, [], Number.MAX_SAFE_INTEGER + 1].map((value) => [value]))(
+    "does not coerce an invalid reported count %j or discard its valid sibling", (invalid) => {
+      const result = parseChatCompletion(JSON.stringify({ choices: [{ message: { content: "hello" } }],
+        usage: { prompt_tokens: invalid, completion_tokens: 11, provider_extra: "private-usage" } }), endpoint);
+      expect(result.ok).toBe(true);
+      expect(result.usage).toEqual({ completion_tokens: 11 });
+      expect(result.usage).not.toHaveProperty("prompt_tokens");
+      expect(result.usage).not.toHaveProperty("provider_extra");
+    });
+
+  it("rejects infinite JSON counters independently in both directions", () => {
+    const result = parseChatCompletion('{"choices":[{"message":{"content":"hello"}}],"usage":{"prompt_tokens":9,"completion_tokens":1e309}}', endpoint);
+    expect(result.usage).toEqual({ prompt_tokens: 9 });
+  });
+
+  it.each([undefined, null, [], "unknown", {}].map((value) => [value]))("leaves absent/malformed usage %j unknown", (counts) => {
+    const result = parseChatCompletion(JSON.stringify({ choices: [], usage: counts }), endpoint);
+    expect(result.usage).toBeUndefined();
+  });
+
+  it("does not infer usage from an undecodable body", () => {
+    const result = parseChatCompletion('{"usage":{"prompt_tokens":7}', endpoint);
+    expect(result.ok).toBe(false);
+    expect(result.usage).toBeUndefined();
+  });
+});
+
+describe("worker rejection accounting", () => {
+  let cwd: string;
+  const realFetch = global.fetch;
+  beforeEach(async () => { cwd = await mkdtemp(path.join(tmpdir(), "farm-response-evidence-")); });
+  afterEach(async () => {
+    global.fetch = realFetch;
+    vi.restoreAllMocks();
+    await fsRm(cwd, { recursive: true, force: true });
+  });
+  const block = (p: string) => "```text:" + p + "\nfixture contents\n```";
+  const apply = (content: unknown, usage: unknown = { prompt_tokens: 7, completion_tokens: 11 }) => {
+    global.fetch = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content } }], usage,
+    }), { status: 200 })) as unknown as typeof fetch;
+    return httpWorker.apply({ cwd, prompt: "fixture", model: "fixture", apiBaseUrl: "https://provider.example/v1",
+      apiKey: "fixture-key", forbidden: new Set(["readonly.txt"]) });
+  };
+
+  it.each(["readonly.txt", "../outside.txt", "/absolute-outside.txt"])("preserves usage when refusing %s", async (target) => {
+    const result = await apply(block(target));
+    expect(result.ok).toBe(false);
+    expect(result.filesWritten).toEqual([]);
+    expect(result.promptTokens).toBe(7);
+    expect(result.completionTokens).toBe(11);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(await fsReaddir(cwd)).toEqual([]);
+  });
+
+  it("returns partial-write evidence and usage when a later block is read-only", async () => {
+    const result = await apply(block("first.txt") + "\n" + block("readonly.txt"));
+    expect(result).toMatchObject({ ok: false, filesWritten: ["first.txt"], promptTokens: 7, completionTokens: 11 });
+    expect(await fsReadFile(path.join(cwd, "first.txt"), "utf8")).toBe("fixture contents\n");
+    expect(await fsReaddir(cwd)).toEqual(["first.txt"]);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves the guarded-writer refusal and reported counters", async () => {
+    await fsMkdir(path.join(cwd, "directory.txt"));
+    const result = await apply(block("directory.txt"));
+    expect(result).toMatchObject({ ok: false, filesWritten: [], promptTokens: 7, completionTokens: 11 });
+    expect(result.error).toMatch(/unsafe|regular|directory/i);
+    expect((await fsStat(path.join(cwd, "directory.txt"))).isDirectory()).toBe(true);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns malformed text as a worker failure instead of throwing away usage", async () => {
+    const result = await apply({ private: "opaque" });
+    expect(result).toMatchObject({ ok: false, filesWritten: [], promptTokens: 7, completionTokens: 11 });
+    expect(result.error).toMatch(/non-text/);
+    expect(result.error).not.toContain("opaque");
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(await fsReaddir(cwd)).toEqual([]);
+  });
+
+  it("preserves no-output failure and exact zero counts", async () => {
+    const result = await apply("ordinary prose", { prompt_tokens: 0, completion_tokens: 0 });
+    expect(result).toMatchObject({ ok: false, filesWritten: [], promptTokens: 0, completionTokens: 0 });
+    expect(result.error).toMatch(/no parseable file blocks/);
+  });
+
+  it("does not mark unknown usage as measured zero on a successful write", async () => {
+    const result = await apply(block("first.txt"), { prompt_tokens: "7", completion_tokens: -1 });
+    expect(result).toMatchObject({ ok: true, filesWritten: ["first.txt"] });
+    expect(result.promptTokens).toBeUndefined();
+    expect(result.completionTokens).toBeUndefined();
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+// Provider transport retry is separate from authoring retry. No new producer or
+// real provider is used here: time-policy tests, a mock fetch lifecycle, and an
+// injected worker each test one boundary; real source/bundle HTTP is below.
+describe("HTTP retry delay policy", () => {
+  const now = Date.UTC(2026, 8, 24, 12, 0, 0);
+  it.each([
+    [null, 0, 1000], ["", 1, 2000], ["garbage", 2, 4000],
+    ["-1", 3, 8000], ["1.5", 4, 16000], ["1e9", 5, 16000],
+    ["Infinity", 6, 16000], ["0x10", 0, 1000], ["+1", 0, 1000],
+    ["1, 2", 0, 1000], ["2026-09-24", 0, 1000], ["Thu, 31 Sep 2026 12:00:01 GMT", 0, 1000],
+    ["Thu, 24 Foo 2026 12:00:01 GMT", 0, 1000], ["Thu, 00 Sep 2026 12:00:01 GMT", 0, 1000],
+    ["Thu, 24 Sep 2026 24:00:01 GMT", 0, 1000], ["Thu, 24 Sep 2026 12:60:01 GMT", 0, 1000],
+    ["Thu, 24 Sep 2026 12:00:61 GMT", 0, 1000], ["Fri, 24 Sep 2026 12:00:01 GMT", 0, 1000],
+    ["Thu, 30 Feb 2026 12:00:01 GMT", 0, 1000], ["Thu Sep 24 12:00:01 2026, 2", 0, 1000],
+  ])("uses bounded local fallback for %s at attempt %s", (value, attempt, expected) => {
+    expect(farmAPI.apiRetryDelay(value, attempt, 120000, now)).toBe(expected);
+  });
+  it.each([
+    ["0", 0], [" 2 ", 2000], ["0003", 3000], ["120", 120000],
+    ["Thu, 24 Sep 2026 12:00:02 GMT", 2000],
+    ["Thursday, 24-Sep-26 12:00:02 GMT", 2000],
+    ["Thu Sep 24 12:00:02 2026", 2000],
+    ["Sun, 06 Nov 1994 08:49:37 GMT", 0],
+    ["Sunday, 06-Nov-94 08:49:37 GMT", 0],
+    ["Sun Nov  6 08:49:37 1994", 0],
+  ])("honors bounded HTTP delay/date %s", (value, expected) => {
+    expect(farmAPI.apiRetryDelay(value, 0, 120000, now)).toBe(expected);
+  });
+  it.each(["121", "2147484", "9".repeat(320), "Fri, 25 Sep 2026 12:00:00 GMT"])(
+    "defers an excessive valid wait rather than shortening it: %s", (value) => {
+      expect(farmAPI.apiRetryDelay(value, 0, 120000, now)).toBeNull();
+    });
+  it("accepts the HTTP leap-second spelling without normalizing a different calendar day", () => {
+    expect(farmAPI.apiRetryDelay("Tue, 30 Jun 2026 23:59:60 GMT", 0, 120000, Date.UTC(2026, 5, 30, 23, 59, 59))).toBe(1000);
+  });
+  it("prevents timer overflow even when the configured local budget is larger", () => {
+    expect(farmAPI.apiRetryDelay("2147484", 0, 1e12, now)).toBeNull();
+    expect(farmAPI.apiRetryDelay("2147483", 0, 1e12, now)).toBe(2147483000);
+  });
+});
+
+describe("HTTP transport retry lifecycle", () => {
+  const originalFetch = global.fetch;
+  const ctx = { cwd: process.cwd(), prompt: "fixture", model: "fixture-model",
+    apiBaseUrl: "https://api.example/v1", apiKey: "fixture-key", forbidden: new Set<string>() };
+  afterEach(() => { global.fetch = originalFetch; vi.useRealTimers(); vi.restoreAllMocks(); });
+
+  it("closes the discarded response before sleeping, then preserves final usage", async () => {
+    vi.useFakeTimers();
+    const signals: AbortSignal[] = [];
+    const ignoredBody = new Response("private provider diagnostic", { status: 429, headers: { "retry-after": "2" } });
+    const ignoredRead = vi.spyOn(ignoredBody, "text");
+    const fetcher = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      if (signals.length === 1) return ignoredBody;
+      expect(signals[0].aborted).toBe(true);
+      return new Response(JSON.stringify({ choices: [], usage: { prompt_tokens: 7, completion_tokens: 11 } }));
+    });
+    global.fetch = fetcher as typeof fetch;
+    const pending = httpWorker.apply(ctx);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(signals[0].aborted).toBe(true);
+    expect(ignoredRead).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1998);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    const result = await pending;
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(result).toMatchObject({ ok: false, error: "no parseable file blocks in response", promptTokens: 7, completionTokens: 11 });
+    expect(result.retryable).toBeUndefined();
+    expect(signals.every(s => s.aborted)).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([429, 503])("defers excessive cooldown at HTTP %s without another request", async (status) => {
+    vi.useFakeTimers();
+    let signal: AbortSignal | undefined;
+    const response = new Response("not public", { status, headers: { "retry-after": "86400" } });
+    const read = vi.spyOn(response, "text");
+    global.fetch = vi.fn(async (_url: unknown, init?: RequestInit) => { signal = init!.signal!; return response; }) as typeof fetch;
+    const result = await httpWorker.apply(ctx);
+    expect(result).toMatchObject({ ok: false, retryable: false, filesWritten: [] });
+    expect(result.error).toMatch(/Retry-After exceeds the local wait budget/);
+    expect(result.error).not.toContain("not public");
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(read).not.toHaveBeenCalled();
+    expect(signal!.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([429, 500, 503])("keeps HTTP %s exhaustion out of the authoring retry loop", async (status) => {
+    vi.useFakeTimers();
+    const signals: AbortSignal[] = [];
+    global.fetch = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      return new Response("not public", { status, headers: { "retry-after": "0" } });
+    }) as typeof fetch;
+    const pending = httpWorker.apply(ctx);
+    await vi.runAllTimersAsync();
+    expect(await pending).toMatchObject({ ok: false, retryable: false, filesWritten: [] });
+    expect(global.fetch).toHaveBeenCalledTimes(4); // original request + existing default of three transport retries
+    expect(signals.every(s => s.aborted)).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("preserves the existing exponential fallback for a malformed header", async () => {
+    vi.useFakeTimers();
+    let calls = 0;
+    global.fetch = vi.fn(async () => ++calls === 1
+      ? new Response("not public", { status: 503, headers: { "retry-after": "-1" } })
+      : new Response(JSON.stringify({ choices: [] }))) as typeof fetch;
+    const pending = httpWorker.apply(ctx);
+    await vi.advanceTimersByTimeAsync(999);
+    expect(calls).toBe(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect((await pending).error).toBe("no parseable file blocks in response");
+    expect(calls).toBe(2);
+  });
+
+  it("closes a terminal error response without awaiting its unused body", async () => {
+    let signal: AbortSignal | undefined;
+    const response = new Response("private diagnostic", { status: 403 });
+    const read = vi.spyOn(response, "text");
+    global.fetch = vi.fn(async (_url: unknown, init?: RequestInit) => { signal = init!.signal!; return response; }) as typeof fetch;
+    const result = await httpWorker.apply(ctx);
+    expect(result).toMatchObject({ ok: false, error: "API 403" });
+    expect(result.retryable).toBeUndefined(); // only the explicit cooldown/exhaustion disposition changed
+    expect(read).not.toHaveBeenCalled();
+    expect(signal!.aborted).toBe(true);
+  });
+});
+
+describe("transport deferral preserves task retry boundaries", () => {
+  const savedSamples = process.env.FARM_SAMPLES;
+  afterEach(() => { if (savedSamples === undefined) delete process.env.FARM_SAMPLES; else process.env.FARM_SAMPLES = savedSamples; });
+  const task: Task = { id: "transport-deferral", description: "respect provider cooldown",
+    filesInScope: ["src/impl.ts"], test: { path: "tests/impl.test.ts" }, gate: { commands: ["node -p 0"] }, maxRetries: 2 };
+  function deps(worker: Worker): RunTaskDeps {
+    return { worker, prepareWorktree: async () => null, resetWorktree: vi.fn(async () => {}),
+      fileHash: async () => null, checkDrift: async () => [], runGate: vi.fn(async () => ({ ok: true as const })),
+      antiGamingCheck: async () => ({ risk: "none" as const }), mutationCheck: async () => null,
+      git: vi.fn(async () => ({ code: 0, out: "", stdout: "", stderr: "" })),
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn() };
+  }
+  it.each([1, 2])("does not start another authoring round after %s deferred sample(s)", async (n) => {
+    process.env.FARM_SAMPLES = String(n);
+    const worker: Worker = { apply: vi.fn(async () => ({ ok: false, filesWritten: [], error: "provider cooldown",
+      retryable: false as const, promptTokens: 3, completionTokens: 5 })) };
+    const d = deps(worker);
+    const result = await runTask(task, "fixture", "https://api.example/v1", "fixture", d);
+    expect(result).toMatchObject({ status: "escalate", attempts: 1, promptTokens: 3*n, completionTokens: 5*n });
+    expect(result.note).toContain("provider cooldown");
+    expect(worker.apply).toHaveBeenCalledTimes(n);
+    expect(d.resetWorktree).not.toHaveBeenCalled();
+    expect(d.runGate).not.toHaveBeenCalled();
+    expect(vi.mocked(d.git).mock.calls.some(([args]) => args[0] === "add" || args[0] === "commit" || args[0] === "merge")).toBe(false);
+  });
+  it("retains ordinary custom-worker retries when no disposition was returned", async () => {
+    process.env.FARM_SAMPLES = "1";
+    const worker: Worker = { apply: vi.fn(async () => ({ ok: false, filesWritten: [], error: "ordinary failed implementation" })) };
+    const d = deps(worker);
+    const result = await runTask(task, "fixture", "https://api.example/v1", "fixture", d);
+    expect(result.status).toBe("escalate");
+    expect(worker.apply).toHaveBeenCalledTimes(3);
+    expect(d.resetWorktree).toHaveBeenCalledTimes(2);
+  });
+});
+
+// Failure-path coverage for the existing HTTP policy. No provider call is made:
+// the injected fetch and clock exercise request ownership and terminal evidence.
+describe("HTTP connection and body failure evidence", () => {
+  let worker: Worker;
+  const ctx = { cwd: process.cwd(), prompt: "fixture", model: "fixture-model",
+    apiBaseUrl: "https://api.example/v1", apiKey: "fixture-key", forbidden: new Set<string>() };
+  const emptyCompletion = () => new Response(JSON.stringify({ choices: [],
+    usage: { prompt_tokens: 7, completion_tokens: 11 } }));
+  beforeEach(async () => {
+    vi.resetModules();
+    vi.stubEnv("FARM_REQUEST_TIMEOUT_MS", "200");
+    vi.stubEnv("FARM_API_MAX_RETRIES", "2");
+    worker = (await import("./farm.ts")).httpWorker;
+    vi.useFakeTimers({ now: 0 });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it("retries connection errors with identical requests and fresh released signals", async () => {
+    const calls: Array<{ time: number; url: unknown; init: RequestInit }> = [];
+    const fetcher = vi.fn(async (url: unknown, init?: RequestInit) => {
+      if (calls.length) expect(calls.at(-1)!.init.signal!.aborted).toBe(true);
+      calls.push({ time: Date.now(), url, init: init! });
+      if (calls.length < 3) throw new Error("fixture connection reset");
+      return emptyCompletion();
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const pending = worker.apply(ctx);
+    await vi.advanceTimersByTimeAsync(999);
+    expect(calls).toHaveLength(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(calls).toHaveLength(2);
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(calls).toHaveLength(2);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await pending).toMatchObject({ ok: false,
+      error: "no parseable file blocks in response", promptTokens: 7, completionTokens: 11 });
+    expect(calls.map(call => call.time)).toEqual([0, 1000, 3000]);
+    const first = calls[0];
+    for (const call of calls) {
+      expect(call.url).toBe("https://api.example/v1/chat/completions");
+      expect(call.init.body).toBe(first.init.body);
+      expect(call.init.headers).toEqual(first.init.headers);
+      expect(call.init.method).toBe("POST");
+      expect(call.init.redirect).toBe("error");
+      expect(call.init.signal!.aborted).toBe(true);
+    }
+    expect(new Set(calls.map(call => call.init.signal)).size).toBe(3);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([new Error("fixture connection reset"), "fixture connection reset", null, undefined])(
+    "keeps exhausted network failures distinct from an HTTP cooldown: %s", async (failure) => {
+      const signals: AbortSignal[] = [];
+      const times: number[] = [];
+      vi.stubGlobal("fetch", vi.fn(async (_url: unknown, init?: RequestInit) => {
+        signals.push(init!.signal!); times.push(Date.now()); throw failure;
+      }));
+      const pending = worker.apply(ctx);
+      await vi.runAllTimersAsync();
+      const result = await pending;
+      expect(result).toMatchObject({ ok: false, filesWritten: [] });
+      expect(result.error).toMatch(/^fetch failed: /);
+      expect(result.retryable).toBeUndefined();
+      expect(result.promptTokens).toBeUndefined();
+      expect(result.completionTokens).toBeUndefined();
+      expect(times).toEqual([0, 1000, 3000]);
+      expect(signals.every(signal => signal.aborted)).toBe(true);
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
+  it("times out stalled headers on each original deadline without leaking timers", async () => {
+    const signals: AbortSignal[] = [];
+    const times: number[] = [];
+    vi.stubGlobal("fetch", vi.fn((_url: unknown, init?: RequestInit) => {
+      const signal = init!.signal!; signals.push(signal); times.push(Date.now());
+      return new Promise<Response>((_resolve, reject) => signal.addEventListener("abort",
+        () => reject(new DOMException("fixture deadline", "AbortError")), { once: true }));
+    }));
+    const pending = worker.apply(ctx);
+    await vi.runAllTimersAsync();
+    const result = await pending;
+    expect(result).toMatchObject({ ok: false, filesWritten: [], error: "request timed out after 200ms" });
+    expect(result.retryable).toBeUndefined();
+    expect(times).toEqual([0, 1200, 3400]);
+    expect(Date.now()).toBe(3600);
+    expect(signals.every(signal => signal.aborted)).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([new Error("fixture stream reset"), "fixture stream reset", null, undefined])(
+    "does not replay a request after response headers when body consumption fails: %s", async (failure) => {
+      let signal: AbortSignal | undefined;
+      const response = emptyCompletion();
+      const read = vi.spyOn(response, "text").mockRejectedValue(failure);
+      const fetcher = vi.fn(async (_url: unknown, init?: RequestInit) => {
+        signal = init!.signal!; return response;
+      });
+      vi.stubGlobal("fetch", fetcher);
+      const result = await worker.apply(ctx);
+      expect(result).toMatchObject({ ok: false, filesWritten: [] });
+      expect(result.error).toMatch(/^failed reading response body: /);
+      expect(result.retryable).toBeUndefined();
+      expect(result.promptTokens).toBeUndefined();
+      expect(result.completionTokens).toBeUndefined();
+      expect(fetcher).toHaveBeenCalledTimes(1);
+      expect(read).toHaveBeenCalledTimes(1);
+      expect(signal!.aborted).toBe(true);
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
+  it("keeps the body on the original deadline after headers arrive late", async () => {
+    let signal: AbortSignal | undefined;
+    let settled = false;
+    const response = emptyCompletion();
+    const read = vi.spyOn(response, "text").mockImplementation(() => new Promise<string>((_resolve, reject) => {
+      signal!.addEventListener("abort", () => reject(new DOMException("fixture deadline", "AbortError")), { once: true });
+    }));
+    const fetcher = vi.fn((_url: unknown, init?: RequestInit) => {
+      signal = init!.signal!;
+      return new Promise<Response>(resolve => setTimeout(() => resolve(response), 150));
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const pending = worker.apply(ctx).then(result => { settled = true; return result; });
+    await vi.advanceTimersByTimeAsync(149);
+    expect(read).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(read).toHaveBeenCalledTimes(1);
+    expect(signal!.aborted).toBe(false);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await pending).toMatchObject({ ok: false, filesWritten: [],
+      error: "request timed out after 200ms (reading response body)" });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(signal!.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(["fetch", "body"])("redacts and bounds %s failure diagnostics without inventing usage", async (phase) => {
+    const secret = "sk-ant-" + "fixture".repeat(12);
+    const failure = new Error("fixture failure\nAuthorization: Bearer " + secret + "\n" + "z".repeat(600));
+    let lastSignal: AbortSignal | undefined;
+    const response = emptyCompletion();
+    vi.spyOn(response, "text").mockRejectedValue(failure);
+    const fetcher = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      lastSignal = init!.signal!;
+      if (phase === "fetch") throw failure;
+      return response;
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const pending = worker.apply(ctx);
+    await vi.runAllTimersAsync();
+    const result = await pending;
+    const prefix = phase === "fetch" ? "fetch failed: " : "failed reading response body: ";
+    expect(result.error).toContain(prefix);
+    expect(result.error).toContain("[REDACTED");
+    expect(result.error).not.toContain(secret);
+    expect(result.error!.length).toBeLessThanOrEqual(prefix.length + 300);
+    expect(result.promptTokens).toBeUndefined();
+    expect(result.completionTokens).toBeUndefined();
+    expect(fetcher).toHaveBeenCalledTimes(phase === "fetch" ? 3 : 1);
+    expect(lastSignal!.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+// The conflict-retry boundary must retain useful work, rebind to a verified
+// integration commit, and rerun the same checks without buying blind retries.
+describe("verified merge recovery", () => {
+  const roots: string[] = [];
+  const samplesBefore = process.env.FARM_SAMPLES;
+  const temperatureBefore = process.env.FARM_TEMPERATURE;
+  afterEach(async () => {
+    for (const [key, value] of [["FARM_SAMPLES", samplesBefore], ["FARM_TEMPERATURE", temperatureBefore]]) {
+      if (value === undefined) delete process.env[key!]; else process.env[key!] = value;
+    }
+    for (const root of roots.splice(0)) await fsRm(root, { recursive: true, force: true });
+  });
+  async function fixture(samples = 1, failure = "", reverseArrival = false) {
+    process.env.FARM_SAMPLES = String(samples);
+    process.env.FARM_TEMPERATURE = "0";
+    const id = `merge-recovery-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const task: Task = { id, description: "recover a merge without losing prior work",
+      filesInScope: ["src/impl.ts"], test: { path: "test.txt" },
+      gate: { commands: ["fixture gate"] }, maxRetries: 1 };
+    const wt = path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+    roots.push(wt, wt + "__s0", wt + "__s1");
+    const baseline = "a".repeat(40);
+    const prompts: string[] = [], events: string[] = [], resets: string[][] = [];
+    let calls = 0, merges = 0, commits = 0, gateCalls = 0;
+    const firstCandidates = new Map<string, string>();
+    const arrivals: string[] = [];
+    let sampleOneStarted!: () => void;
+    const sampleOneReady = new Promise<void>(done => { sampleOneStarted = done; });
+    let protectedTest = "original protected test", head = "b".repeat(40);
+    const deps: RunTaskDeps = {
+      prepareWorktree: async (_branch, dir) => {
+        await fsMkdir(path.join(dir, "src"), { recursive: true });
+        await fsWriteFile(path.join(dir, "test.txt"), protectedTest);
+        await fsWriteFile(path.join(dir, "src/impl.ts"), "initial implementation\n");
+        return null;
+      },
+      resetWorktree: async () => { events.push("retry-reset"); },
+      fileHash: async file => fsReadFile(file, "utf8").catch(() => null),
+      checkDrift: async () => [],
+      runGate: async () => { gateCalls++; return { ok: true }; },
+      antiGamingCheck: async () => ({ risk: "none" }), mutationCheck: async () => null,
+      worker: { async apply(ctx) {
+        // Arrival order is not sample index. Force the opposite order in one
+        // case without changing runtime concurrency or accepting either answer.
+        if (reverseArrival && ctx.cwd === wt + "__s0" && !firstCandidates.has(ctx.cwd))
+          await sampleOneReady;
+        prompts.push(ctx.prompt); calls++; arrivals.push(ctx.cwd);
+        const candidate = `worker-candidate-${calls}\n`;
+        if (!firstCandidates.has(ctx.cwd)) firstCandidates.set(ctx.cwd, candidate);
+        if (ctx.cwd === wt + "__s1") sampleOneStarted();
+        await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"), candidate);
+        if (failure === "worker-tamper" && merges > 0)
+          await fsWriteFile(path.join(ctx.cwd, "test.txt"), "worker changed the protected test");
+        return { ok: true, filesWritten: ["src/impl.ts"], promptTokens: 7, completionTokens: 11 };
+      } },
+      withMergeLock: async <T,>(fn: () => Promise<T>) => { events.push("lock"); try { return await fn(); } finally { events.push("unlock"); } },
+      git: async (args, cwd) => {
+        const good = (out = "") => ({ code: 0, out, stdout: out, stderr: "" });
+        const bad = () => ({ code: 1, out: "fixture refusal", stdout: "", stderr: "fixture refusal" });
+        if (args[0] === "add" && failure === "stage") return bad();
+        if (args.includes("commit")) commits++;
+        if (args.includes("merge") && args.includes("--no-ff")) {
+          merges++; return merges === 1 ? bad() : good();
+        }
+        if (args[0] === "merge" && args[1] === "--abort") {
+          events.push("abort");
+          if (failure === "abort-throw") throw new Error("fixture abort exception");
+          return failure === "abort" ? bad() : good();
+        }
+        if (args[0] === "status") return failure === "dirty-integration" ? good("M  retained.txt\n") : good();
+        if (args[0] === "rev-parse") {
+          events.push(cwd === wt ? "task-head" : "integration-head");
+          if (failure === "unreadable-head") return bad();
+          return good((cwd === wt ? (failure === "wrong-head" ? "c".repeat(40) : head) : baseline) + "\n");
+        }
+        if (args[0] === "reset" && args.includes("--hard") && args.at(-1) !== "HEAD") {
+          resets.push(args); events.push("rebase");
+          if (failure === "reset-throw") throw new Error("fixture reset exception");
+          if (failure === "reset") return bad();
+          head = baseline;
+          protectedTest = failure === "same-test" ? protectedTest : "advanced protected test";
+          await fsWriteFile(path.join(wt, "test.txt"), protectedTest);
+          if (failure === "missing-test") await fsRm(path.join(wt, "test.txt"));
+          await fsWriteFile(path.join(wt, "src/impl.ts"), "advanced implementation\n");
+        }
+        if (args[0] === "clean" && failure === "clean") return bad();
+        return good();
+      },
+    };
+    return { task, deps, wt, baseline, prompts, events, resets, firstCandidates, arrivals,
+      state: () => ({ calls, merges, commits, gateCalls }) };
+  }
+  for (const [samples, reverseArrival] of [[1, false], [2, false], [2, true]] as const) {
+    it(`recovers on the exact advanced baseline and keeps previous candidate with ${samples} samples, reversed arrival=${reverseArrival}`, async () => {
+      const f = await fixture(samples, "", reverseArrival);
+      const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("green"); expect(r.attempts).toBe(2);
+      expect(f.state().calls).toBe(2 * samples); expect(f.state().merges).toBe(2);
+      expect(r.promptTokens).toBe(14 * samples); expect(r.completionTokens).toBe(22 * samples);
+      expect(f.resets[0].at(-1)).toBe(f.baseline);
+      const next = f.prompts[samples];
+      expect(next).toContain("advanced protected test");
+      expect(next).toContain("advanced implementation");
+      const prior = next.split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+      const selectedPath = samples === 1 ? f.wt : f.wt + "__s0";
+      const selected = f.firstCandidates.get(selectedPath);
+      expect(selected, "sample zero remains the deterministic selection").toBeDefined();
+      expect(prior).toContain(selected!.trim());
+      if (samples === 2) {
+        const sibling = f.firstCandidates.get(f.wt + "__s1");
+        expect(sibling).toBeDefined();
+        expect(prior).not.toContain(sibling!.trim());
+      }
+      if (reverseArrival) {
+        expect(f.arrivals.slice(0, 2)).toEqual([f.wt + "__s1", f.wt + "__s0"]);
+        expect(selected).toBe("worker-candidate-2\n");
+      }
+      expect(prior).not.toContain("advanced implementation");
+      expect(f.state().gateCalls).toBeGreaterThanOrEqual(2);
+      const read = f.events.indexOf("integration-head");
+      expect(read).toBeGreaterThan(f.events.indexOf("lock"));
+      expect(read).toBeLessThan(f.events.indexOf("unlock"));
+    });
+  }
+  it.each(["abort", "abort-throw", "dirty-integration", "unreadable-head", "reset", "reset-throw", "clean", "wrong-head", "missing-test"])(
+    "retains evidence and dispatches no new author when recovery fails: %s", async failure => {
+      const f = await fixture(1, failure);
+      const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+      expect(r.status).toBe("escalate"); expect(r.attempts).toBe(1);
+      expect(f.state().calls).toBe(1); expect(f.state().merges).toBe(1);
+      expect(r.promptTokens).toBe(7); expect(r.completionTokens).toBe(11);
+      expect(r.filesWritten).toEqual(["src/impl.ts"]);
+      expect(r.note).toMatch(/merge recovery/i);
+    });
+  it("does not turn a refused staging operation into a partial commit", async () => {
+    const f = await fixture(1, "stage");
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate"); expect(f.state().commits).toBe(0);
+    expect(f.state().merges).toBe(0); expect(f.state().calls).toBe(1);
+    expect(r.note).toMatch(/stage failed/); expect(r.promptTokens).toBe(7);
+  });
+  it.each([1, 2])("retries %s transient stages without another worker or authoring allowance", async failures => {
+    const f = await fixture(1, "same-test");
+    const original = f.deps.git;
+    let stages = 0, commits = 0;
+    const stageArgs: string[][] = [];
+    f.deps.git = async (args, cwd) => {
+      if (args[0] === "add") {
+        stageArgs.push(args); stages++;
+        if (stages <= failures) return { code: 1, out: "fixture stage temporarily refused", stdout: "", stderr: "fixture stage temporarily refused" };
+      }
+      if (args.includes("commit")) commits++;
+      if (args.includes("merge") && args.includes("--no-ff")) return { code: 0, out: "", stdout: "", stderr: "" };
+      return original(args, cwd);
+    };
+    const r = await runTask({ ...f.task, maxRetries: 0 }, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("green"); expect(r.attempts).toBe(1);
+    expect(f.state().calls).toBe(1); expect(commits).toBe(1);
+    expect(stages).toBe(failures + 1);
+    expect(stageArgs.every(args => JSON.stringify(args) === JSON.stringify(["add", "--", "src/impl.ts"]))).toBe(true);
+    expect(r.promptTokens).toBe(7); expect(r.completionTokens).toBe(11);
+    expect(f.events).not.toContain("rebase");
+  });
+  it("still rejects worker edits to the newly bound protected test", async () => {
+    const f = await fixture(1, "worker-tamper");
+    const r = await runTask(f.task, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate"); expect(r.note).toContain("tampered test");
+    expect(f.state().calls).toBe(2); expect(f.state().merges).toBe(1);
+  });
+  it("keeps the original retry budget at zero without rebasing", async () => {
+    const f = await fixture(1, "same-test");
+    const r = await runTask({ ...f.task, maxRetries: 0 }, "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate"); expect(r.attempts).toBe(1);
+    expect(f.resets).toHaveLength(0); expect(f.state().calls).toBe(1);
+  });
+});
+
+/** Retry feedback is evidence from one candidate, not a copy of the baseline. */
+describe("attributed retry context", () => {
+  const roots: string[] = [];
+  const saved = { samples: process.env.FARM_SAMPLES, temperature: process.env.FARM_TEMPERATURE };
+  afterEach(async () => {
+    for (const [key, value] of [["FARM_SAMPLES", saved.samples], ["FARM_TEMPERATURE", saved.temperature]]) {
+      if (value === undefined) delete process.env[key!]; else process.env[key!] = value;
+    }
+    for (const root of roots.splice(0)) await fsRm(root, { recursive: true, force: true });
+  });
+  async function fixture(mode: string, samples = 2, maxRetries = 1) {
+    process.env.FARM_SAMPLES = String(samples); process.env.FARM_TEMPERATURE = "0";
+    const id = `feedback-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const task: Task = { id, description: "retain useful implementation without misattribution",
+      filesInScope: ["src/impl.ts", "src/untouched.ts"], test: { path: "test.txt" },
+      gate: { commands: ["fixture gate"] }, maxRetries };
+    const wt = path.resolve(process.env.FARM_WORKTREE_ROOT ?? ".farm/worktrees", id);
+    roots.push(wt, wt + "__s0", wt + "__s1");
+    const prompts: string[] = [], calls = new Map<string, number>();
+    const seed = async (dir: string) => {
+      await fsMkdir(path.join(dir, "src"), { recursive: true });
+      await fsWriteFile(path.join(dir, "test.txt"), "IMMUTABLE TEST\n");
+      await fsWriteFile(path.join(dir, "src/impl.ts"), "BASELINE IMPLEMENTATION\n");
+      await fsWriteFile(path.join(dir, "src/untouched.ts"), "UNTOUCHED BASELINE\n");
+    };
+    const deps: RunTaskDeps = {
+      prepareWorktree: async (_branch, dir) => { await seed(dir); return null; },
+      resetWorktree: seed,
+      fileHash: async file => fsReadFile(file, "utf8").catch(() => null),
+      checkDrift: async dir => {
+        if (mode === "drift-throw" && (calls.get(dir) ?? 0) === 1) throw new Error("fixture drift read failed");
+        return [];
+      },
+      runGate: async dir => {
+        if ((calls.get(dir) ?? 0) !== 1) return { ok: true };
+        if (mode === "gate-throw") throw new Error("fixture gate launch failed");
+        return { ok: false, failed: "fixture gate", tail: "ordinary failed gate" };
+      },
+      antiGamingCheck: async () => ({ risk: "none" }), mutationCheck: async () => null,
+      withMergeLock: async <T,>(fn: () => Promise<T>) => fn(),
+      git: async () => ({ code: 0, out: "", stdout: "", stderr: "" }),
+      worker: { async apply(ctx) {
+        prompts.push(ctx.prompt);
+        const round = (calls.get(ctx.cwd) ?? 0) + 1; calls.set(ctx.cwd, round);
+        const index = Number(ctx.cwd.match(/__s(\d+)$/)?.[1] ?? 0);
+        const empty = round === 1 && (mode === "no-output" || mode === "select-partial" && index === 0);
+        if (!empty) await fsWriteFile(path.join(ctx.cwd, "src/impl.ts"),
+          `CANDIDATE-${index}\nOPENAI_API_KEY=synthetic-feedback-secret\n`);
+        const filesWritten = empty ? [] : ["src/impl.ts"];
+        const usage = { promptTokens: 7, completionTokens: 11 };
+        if (round === 1 && ["partial-worker", "select-partial", "no-output"].includes(mode))
+          return { ok: false, filesWritten, error: "later block refused", ...usage };
+        return { ok: true, filesWritten, ...usage };
+      } },
+    };
+    return { task, deps, wt, prompts, calls };
+  }
+  for (const mode of ["partial-worker", "gate-failed", "gate-throw", "drift-throw", "select-partial"]) {
+    it(`carries one candidate through ${mode} without replaying untouched source`, async () => {
+      const f = await fixture(mode);
+      const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+      expect(r.status).toBe("green"); expect(r.attempts).toBe(2);
+      expect(f.prompts).toHaveLength(4);
+      expect(r.promptTokens).toBe(28); expect(r.completionTokens).toBe(44);
+      const retry = f.prompts[2];
+      expect(retry).toContain("UNTOUCHED BASELINE");
+      const prior = retry.split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+      expect(prior).toContain(mode === "select-partial" ? "CANDIDATE-1" : "CANDIDATE-0");
+      expect(prior).not.toContain("UNTOUCHED BASELINE");
+      expect(prior).not.toContain("BASELINE IMPLEMENTATION");
+      expect(prior).not.toContain("synthetic-feedback-secret"); expect(prior).toContain("[REDACTED");
+      expect(prior).not.toContain("FAILED the gate");
+      expect(await fsReadFile(path.join(f.wt, "test.txt"), "utf8")).toBe("IMMUTABLE TEST\n");
+      expect(await fsReadFile(path.join(f.wt, "src/untouched.ts"), "utf8")).toBe("UNTOUCHED BASELINE\n");
+    });
+  }
+  it("filters the single-worker retry against the same reported write set", async () => {
+    const f = await fixture("partial-worker", 1);
+    const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+    expect(r.status).toBe("green"); expect(f.prompts).toHaveLength(2);
+    const prior = f.prompts[1].split("Your PREVIOUS attempt")[1]?.split("Solve the task")[0];
+    expect(prior).toContain("CANDIDATE-0"); expect(prior).not.toContain("UNTOUCHED BASELINE");
+    expect(r.promptTokens).toBe(14);
+  });
+  it.each(["gate-throw", "drift-throw"])("retains the last written-file list on terminal %s", async mode => {
+    const f = await fixture(mode, 2, 0);
+    const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+    expect(r.status).toBe("escalate"); expect(f.prompts).toHaveLength(2);
+    expect(r.filesWritten).toEqual(["src/impl.ts"]);
+    expect(r.promptTokens).toBe(14); expect(r.completionTokens).toBe(22);
+  });
+  it("does not invent previous work from an empty failure", async () => {
+    const f = await fixture("no-output");
+    const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
+    expect(r.status).toBe("green"); expect(f.prompts).toHaveLength(4);
+    expect(f.prompts[2]).not.toContain("Your PREVIOUS attempt");
+  });
+  it.each([[], ["src/untouched.ts"], ["src/impl.ts", "test.txt", "../outside", "secret.key"]].map(written => [written]))(
+    "capture accepts only reported in-scope implementation files: %j", async written => {
+      const f = await fixture("partial-worker");
+      await f.deps.prepareWorktree("fixture", f.wt, "fixture");
+      const captured = await captureInScope(f.wt, f.task, written);
+      expect(captured.map(file => file.path)).toEqual(written.filter(file => f.task.filesInScope.includes(file)));
+    });
+  it("keeps the legacy explicit snapshot helper when no write filter is supplied", async () => {
+    const f = await fixture("partial-worker");
+    await f.deps.prepareWorktree("fixture", f.wt, "fixture");
+    expect((await captureInScope(f.wt, f.task)).map(file => file.path)).toEqual(f.task.filesInScope);
+  });
+});
+
+/** The limit covers emitted enrichment, not merely pre-rendered file bodies. */
+describe("rendered enrichment budget", () => {
+  const task: Task = { id: "prompt-budget", description: "Implement current requirements",
+    filesInScope: ["src/impl.ts"], test: { path: "src/check.ts" }, gate: { commands: ["fixture"] } };
+  // Compatible baseline invocation: old code ignores the proposed optional budget.
+  const prompt = buildPrompt as (t: Task, files: InjectedFile[], failure?: string,
+    forbidden?: string[], budget?: number) => string;
+  const size = (text: string) => Buffer.byteLength(text, "utf8");
+  function measure(files: InjectedFile[], budget: number, failure?: string) {
+    const rendered = prompt(task, files, failure, undefined, budget);
+    return { rendered, added: size(rendered) - size(prompt(task, [], failure, undefined, budget)) };
+  }
+  it.each([1, 11, 12, 65, 96, 128, 256, 512])("never expands a %s-byte budget to fit a file label or notice", budget => {
+    const { rendered, added } = measure([{ path: "x".repeat(600) + ".ts", contents: "BODY_MUST_NOT_FIT", readOnly: false }], budget);
+    expect(added).toBeLessThanOrEqual(budget);
+    expect(rendered).not.toContain("BODY_MUST_NOT_FIT");
+    expect(rendered).not.toContain("--- " + "x".repeat(100));
+    if (budget >= 12) expect(rendered).toContain("TRUNCATED");
+    expect(rendered).toContain("Make it pass WITHOUT modifying, deleting, or weakening that test.");
+    expect(rendered).toContain("Respond with ONLY the files you need to create or modify.");
+  });
+  it("keeps exact-fit enrichment whole and counts framing and separators", () => {
+    const files: InjectedFile[] = [{ path: "src/check.ts", contents: "TEST_SOURCE", readOnly: true },
+      { path: "src/impl.ts", contents: "CURRENT_SOURCE", readOnly: false },
+      { path: "src/impl.ts", contents: "PRIOR_SOURCE", readOnly: true, prior: true }];
+    const full = measure(files, 10000);
+    expect(measure(files, full.added).rendered).toBe(full.rendered);
+    const trimmed = measure(files, full.added - 1);
+    expect(trimmed.added).toBeLessThanOrEqual(full.added - 1); expect(trimmed.rendered).toContain("TRUNCATED");
+  });
+  it.each(["é", "界", "😀", "e\u0301"])("truncates %s on UTF-8 code-point boundaries at every nearby cut", token => {
+    const files: InjectedFile[] = [{ path: "src/impl.ts", contents: token.repeat(2000), readOnly: false }];
+    for (let budget = 170; budget < 200; budget++) {
+      const { rendered, added } = measure(files, budget);
+      expect(added).toBeLessThanOrEqual(budget); expect(rendered).not.toContain("\uFFFD");
+      expect(rendered).toContain("TRUNCATED");
+      const body = rendered.split("--- src/impl.ts ---\n")[1]?.split("\n--- [TRUNCATED")[0];
+      if (body) expect(token.repeat(2000).startsWith(body)).toBe(true);
+    }
+  });
+  it("gives current source priority over prior samples even when input order differs", () => {
+    const files: InjectedFile[] = [{ path: "src/impl.ts", contents: "OLD_CANDIDATE_".repeat(200), readOnly: true, prior: true },
+      { path: "src/impl.ts", contents: "CURRENT_FIRST\n" + "x".repeat(2000), readOnly: false }];
+    const { rendered, added } = measure(files, 512);
+    expect(added).toBeLessThanOrEqual(512); expect(rendered).toContain("CURRENT_FIRST");
+    expect(rendered).not.toContain("OLD_CANDIDATE"); expect(rendered).not.toContain("Your PREVIOUS attempt");
+  });
+  it("drops files after the first overflow instead of filling with later smaller files", () => {
+    const { rendered, added } = measure([
+      { path: "src/impl.ts", contents: "A".repeat(3000), readOnly: false },
+      { path: "src/later.ts", contents: "LATER_MUST_NOT_APPEAR", readOnly: false }], 256);
+    expect(added).toBeLessThanOrEqual(256); expect(rendered).toContain("TRUNCATED");
+    expect(rendered).not.toContain("LATER_MUST_NOT_APPEAR"); expect(rendered).not.toContain("--- src/later.ts");
+  });
+  it("redacts complete source before choosing a prefix, not after breaking a sensitive span", () => {
+    // Build delimiters for deliberately non-key test material. This keeps the
+    // exact same runtime span without embedding a key-shaped source literal.
+    const pemMarker = (edge: "BEGIN" | "END") => `-----${edge} PRIVATE KEY-----`;
+    const contents = ["SAFE_START", pemMarker("BEGIN"), "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
+      pemMarker("END"), "SAFE_END"].join("\n");
+    const { rendered, added } = measure([{ path: "src/impl.ts", contents, readOnly: false }], 256);
+    expect(added).toBeLessThanOrEqual(256); expect(rendered).not.toContain("NOT_REAL_PRIVATE_MATERIAL");
+    expect(rendered).toContain("SAFE_START"); expect(rendered).toContain("[REDACTED");
+  });
+  it.each(["worker error: no file blocks", "merge conflict: verified baseline changed", "failed: npm test\nassertion failed"])(
+    "retains the real failure without claiming a different failure phase: %s", failure => {
+      const { rendered } = measure([{ path: "src/impl.ts", contents: "VALID_PRIOR_CODE", readOnly: true, prior: true }], 4096, failure);
+      expect(rendered).toContain(failure); expect(rendered).toContain("VALID_PRIOR_CODE");
+      expect(rendered).toContain("was not accepted"); expect(rendered).not.toContain("FAILED the gate");
+      expect(rendered).not.toContain("previous attempt — FAILED");
+      expect(rendered).not.toContain("Gate output (tail)");
+    });
+  it("leaves non-enrichment task instructions and failure evidence outside this specific cap", () => {
+    const reason = "diagnostic-detail-".repeat(50);
+    const { rendered, added } = measure([{ path: "src/impl.ts", contents: "LARGE_SOURCE".repeat(100), readOnly: false }], 1, reason);
+    expect(added).toBe(0); expect(rendered).toContain(reason);
+    expect(rendered).toContain(task.description); expect(rendered).toContain(task.test.path);
+    expect(rendered).toContain("Respond with ONLY the files you need to create or modify.");
+  });
+  it("adds nothing for an empty source list", () => {
+    expect(measure([], 1).added).toBe(0); expect(measure([], 1000).rendered).not.toContain("TRUNCATED");
   });
 });

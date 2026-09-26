@@ -398,6 +398,7 @@ jobs:
               - 'plugins/ca/hooks/hooks.json'
               - '.github/scripts/test_artifact_prerequisite_adapter.py'
               - '.github/scripts/test_artifact_reconciliation_adapter.py'
+              - '.github/scripts/test_replylib.py'
               - '.github/scripts/test_artifact_authoring.py'
               - '.github/scripts/test_artifact_installed_host.py'
               - '.github/scripts/test_artifact_consumers.py'
@@ -548,6 +549,8 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python .github/scripts/test_artifact_reconciliation_adapter.py
+      - name: Test forgiving authority reply capture and short codes
+        run: python .github/scripts/test_replylib.py
       - name: Test canonical spec and plan authoring behavior
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
@@ -2066,7 +2069,7 @@ jobs:
         # includes/routing-table.md are the orchestrator's routing surface,
         # not passive docs -- a stale row can send it to a skill that no
         # longer exists, or leave a real one unreachable. This was an
-        # authoring discipline (skill-author Phase 5 prose) with nothing
+        # authoring discipline (formerly maintained as prose) with nothing
         # mechanical behind it; check_routing_index_parity.py makes it a
         # CI-checked invariant: every skill/routine/agent/ca-codex
         # command-wrapper skill has exactly one INDEX row pointing at a

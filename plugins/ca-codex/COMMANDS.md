@@ -13,12 +13,12 @@ loads only when that route is invoked. Never bulk-read the directory.
 | Visibility | Count |
 |---|---:|
 | Core | 18 |
-| Advanced | 11 |
-| Canonical total | 29 |
+| Advanced | 10 |
+| Canonical total | 28 |
 | Compatibility aliases | 5 |
 | Internal | 1 |
 | Deprecated | 1 |
-| **Total** | **36** |
+| **Total** | **35** |
 
 ## Core lanes
 
@@ -106,12 +106,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 | `$ca-standup` | _(none)_ | Review repository hygiene, then confirm each safe cleanup action separately. |
 | `$ca-audit` | `[range]` | Assemble a dated governance packet from source records. Read-only. |
 | `$ca-metrics` | `[--window N]` | Report override, small-lane, and low-confidence trends against the prior window. |
-
-### Extend
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `$ca-new-skill` | `"gap"` | Prove a capability gap, approve a spec, then author a new skill. |
 
 ### Help
 

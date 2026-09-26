@@ -2949,11 +2949,41 @@ class EnvironmentIsolationTest(CheckerPresentMixin, unittest.TestCase):
             codex_home = Path(temporary) / "codex-home"
             codex_home.mkdir()
             environment = self.checker._isolated_environment(codex_home)
+            self.assert_isolated_profile(environment, Path(temporary), codex_home)
+
+    def assert_isolated_profile(self, environment, temporary, codex_home):
+        """Check actual fixture identity before cleanup, not Windows path spelling."""
         self.assertNotIn("OPENAI_API_KEY", environment)
         self.assertNotIn("WORKSPACE_TOKEN", environment)
-        self.assertEqual(Path(environment["HOME"]).parent, Path(temporary))
+        self.assertTrue(Path(environment["HOME"]).parent.samefile(temporary))
         self.assertEqual(environment["HOME"], environment["USERPROFILE"])
         self.assertEqual(environment["CODEX_HOME"], str(codex_home.resolve()))
+
+    def test_profile_identity_accepts_alias_but_rejects_another_directory(self):
+        """An alias of owned scratch is valid; an unrelated profile is not."""
+        with tempfile.TemporaryDirectory() as temporary:
+            outer = Path(temporary).resolve()
+            physical, alias, foreign = outer / "physical", outer / "alias", outer / "foreign"
+            physical.mkdir()
+            foreign.mkdir()
+            if os.name == "nt":
+                made = subprocess.run(
+                    ["cmd", "/d", "/c", "mklink", "/J", str(alias), str(physical)],
+                    capture_output=True, text=True, timeout=15,
+                )
+                self.assertEqual(made.returncode, 0, made.stdout + made.stderr)
+            else:
+                alias.symlink_to(physical, target_is_directory=True)
+            codex_home = alias / "codex-home"
+            codex_home.mkdir()
+            environment = self.checker._isolated_environment(codex_home)
+            self.assertNotEqual(Path(environment["HOME"]).parent, alias)
+            self.assert_isolated_profile(environment, alias, codex_home)
+            (foreign / "profile").mkdir()
+            wrong = dict(environment, HOME=str(foreign / "profile"),
+                         USERPROFILE=str(foreign / "profile"))
+            with self.assertRaises(AssertionError):
+                self.assert_isolated_profile(wrong, alias, codex_home)
 
     def test_explicit_credential_like_extra_environment_is_rejected(self):
         """A test override must not become a backdoor for passing durable credentials."""

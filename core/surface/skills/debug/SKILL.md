@@ -1,11 +1,27 @@
 ---
 name: debug
-description: "Investigate-then-decide root-cause analysis for a defect whose cause is unknown (distinct from /fix, which assumes a known bug). Five gated phases: capture, hypothesize, gather, decide, hand off. Investigation only, no code changes; exits to /fix, /adr, or a no-action close."
+description: "Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff. A no-action close records a board note. Not for implementing a known fix, new features, or explanation-only questions."
+argument-hint: "<observed symptom>"
 ---
 
 # debug
 
-Find the cause first, fix it never. `debug` investigates and routes; it does not touch code. It drives one closed loop — **reproduce** (Phase 1) → confirm by cited evidence (Phases 2–3) → hand `/fix` a regression test that re-runs the repro and must pass (**verify**). The minimal repro is the anchor that closes the loop; code changes belong to `/fix`.
+Select this owning procedure for a root-cause investigation, whether requested in
+plain language or through `/debug`. The command spelling is not a prerequisite.
+Investigation and implementation remain separate: this procedure never changes code.
+It closes the reproduce, evidence, and regression-test handoff loop through `/fix`.
+
+## Entry boundaries
+
+- A known bug with a named regression test belongs to `/fix` directly.
+- A design discussion without failing behavior belongs to `/adr`; attribution is
+  still required before authoring an ADR. New behavior belongs to `/feature`.
+- An explanation-only question stays in the non-mutating question-answer path;
+  it does not require a debug invocation or a command spelled by the user.
+- Do not re-enter from an active `/fix` or `/adr` invocation. Complete that
+  invocation before a separate investigation; do not create a routing cycle.
+- The phase gates below own symptom precision, evidence, and the one named exit.
+  A no-action close uses the board helper in Phase 5, never a direct file append.
 
 ## Pre-flight
 

@@ -13,12 +13,12 @@ loads only when that route is invoked. Never bulk-read the directory.
 | Visibility | Count |
 |---|---:|
 | Core | 18 |
-| Advanced | 13 |
-| Canonical total | 31 |
+| Advanced | 12 |
+| Canonical total | 30 |
 | Compatibility aliases | 5 |
 | Internal | 1 |
 | Deprecated | 1 |
-| **Total** | **38** |
+| **Total** | **37** |
 
 ## Core lanes
 
@@ -108,12 +108,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 | `/ca:metrics` | `[--window N]` | Report override, small-lane, and low-confidence trends against the prior window. |
 | `/ca:statusline` | `install \| uninstall \| status` | Install, remove, or inspect the Claude Code statusline. |
 | `/ca:prune` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Inspect or trim transcript bulk; gains apply after resume or compaction. |
-
-### Extend
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `/ca:new-skill` | `"gap"` | Prove a capability gap, approve a spec, then author a new skill. |
 
 ### Help
 

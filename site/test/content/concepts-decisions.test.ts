@@ -99,3 +99,54 @@ describe('periodic checkpoint map', () => {
     expect(svg).not.toContain('/ca:pr');
   });
 });
+
+
+describe('ADR owner modes', () => {
+  it('documents a read-only status path without authoring prerequisites', () => {
+    const owner = read('src/curated/skills/decision-lifecycle.md').replace(/\s+/g, ' ');
+    expect(owner).toContain('A status request reads existing records without loading the authoring procedure.');
+    expect(owner).toContain('does not create a missing decisions directory');
+    expect(owner).toContain('only after explicit intent and');
+    expect(owner).not.toContain('3. (Status mode)');
+  });
+  it('preserves numeric-selector ambiguity and reports full-stem delivery state', () => {
+    const status = read('src/curated/commands/adr-status.md');
+    expect(status).toContain('exactly one full filename stem');
+    expect(status).toContain('No match or multiple matches is reported');
+    expect(status).toContain('delivery: Accepted/Planned');
+    expect(status).toContain('Illustrative report, not a captured run');
+    expect(status).not.toMatch(/- ADR-\d{4} —/);
+  });
+  it('keeps command and natural-language authoring under the same attribution gate', () => {
+    const author = read('src/curated/commands/adr.md');
+    expect(author).toContain('The explicit entry and a direct request to record a decision use the same owner.');
+    expect(author).toContain('on-demand authoring procedure');
+    expect(author).toContain('explicit instruction');
+    expect(author).not.toContain('`/adr` is the only path that can arm it');
+  });
+});
+
+
+describe('D14 owner and operator guidance', () => {
+  it('teaches report-only scope without adding a decision interview', () => {
+    const command = read('src/curated/commands/reconcile.md');
+    const skill = read('src/curated/skills/decision-variance.md');
+    for (const text of [command, skill]) {
+      expect(text).toContain('scoped');
+      expect(text).toContain('Report-only');
+      expect(text).toContain('separately authorized');
+      expect(text).not.toContain('Route to /ca:adr');
+    }
+    expect(command).toContain('unrelated decomposition files are not prerequisites');
+    expect(skill).toContain('without file changes or a decision interview');
+    expect(decisionRoutes[0].steps[0].detail).toContain('full or named scope');
+  });
+  it('teaches append-only stale ratification and preserves selected continuation', () => {
+    const command = read('src/curated/commands/reconcile.md');
+    const skill = read('src/curated/skills/decision-variance.md');
+    expect(command).toContain('never edits the old entry');
+    expect(command).toContain('without another routing menu');
+    expect(skill).toContain('does not duplicate a choice');
+    expect(skill).toContain('does not restrict delegated sprint methods');
+  });
+});

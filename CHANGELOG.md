@@ -12,9 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.18] - 2026-09-25
+## [2.22.2] - 2026-09-25
 
 ### Fixed
+
+- Count measured partial token usage toward proven budget overruns while keeping
+  incomplete totals unknown; retain exact source identities without storing blobs.
 
 - Retain strict HTML intent-response identity checks and per-document source healing.
 - Bound oversized UTF-8 code-map diagnostics without rewriting human content.
@@ -23,6 +26,86 @@ predate the plugin rewrite and are grouped by date.
 
 - Internal closed scout-report decoding and test-owned observation accounting;
   onboarding dispatch and context-writing integration are not enabled by these helpers.
+
+## [2.22.1] - 2026-09-25
+
+### Removed
+
+- Retire the `new-skill` command, `skill-author` workflow and bundled template,
+  including generated host entries. This maintainer-approved compatibility break
+  has no replacement alias; resource edits use the existing change workflows.
+
+### Fixed
+
+- Complete context-creation, decomposition and release entry ownership while
+  preserving initialization aliases, operational procedures and dry-run limits.
+- Redact complete multiline secret spans before formatting mutation diagnostics
+  or truncating gate output for worker feedback.
+
+- Consolidate `reconcile` under `decision-variance` with shorter discovery metadata
+  and a private analysis card. Report-only and scoped requests avoid an unnecessary
+  decision interview; prior choices and sprint method authority are retained.
+- Preserve append-only history when reaffirming a stale architectural decision,
+  and require ADR marker cleanup on controlled failure as well as success.
+- Resolve ADR authoring markers through the same host project-root function as
+  the ADR guards, retain that path for cleanup, and distinguish first-record
+  directory creation from unreadable storage.
+
+- Consolidate ADR authoring and read-only status under one concise owner; load
+  authoring and acceptance details only on demand, preserving explicit entries
+  and full-stem identity without creating records during a status request.
+
+- Consolidate tribunal, threat modeling, manual drift, post-merge cleanup and PR
+  entry procedures under concise skill owners. Retain explicit entries and mode
+  authority; select PR watch/cleanup before creation preflight and avoid wrapper
+  reloads or repeated branch-fate questions for an explicit open-PR request.
+
+- Generate debug and refactor entries from their owning skills, retaining all
+  investigation and parity gates while removing duplicate routing policies.
+- Bound rendered farm enrichment, including labels and notices; preserve UTF-8
+  boundaries and actual retry failure context without extra authoring calls.
+- Recover farm merge conflicts against a verified integration commit, retaining
+  prior output and rechecking the current protected-test baseline.
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
+- Bound farm provider-directed retry waits and close discarded responses before
+  backoff; preserve independent progress without regenerating against a cooldown.
+- Preserve valid provider-reported tokens when worker output is rejected; validate
+  response shapes and counters without coercion, extra requests or weaker gates.
+- Keep built-in mutation nonzero exits as unclassified rejection evidence, not
+  measured kills; preserve adverse bounds, diagnostics and autonomous review.
+- Match whole, same-kind farm literals rather than substrings or conventional comments;
+  retain existing rejection thresholds and name the actual small-file risk evidence.
+
+- Bound built-in farm mutation trials by their remaining budget; retain timeout
+  diagnostics and completed adverse evidence without crediting an interrupted score.
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
+- Qualify retained farm candidates before discarding alternatives or retrying.
+  Preserve complete native CI qualification within a bounded 30-minute job budget.
+- Resolve farm dependencies before overlapping-file arbitration, so an unready
+  lower-ID task cannot block its own prerequisite. Preserve ready-sibling ordering.
+- Evaluate canary models and samples on one frozen commit in isolated detached
+  worktrees, without changing integration or existing task branches. Report the
+  effective candidate model and incomplete cleanup instead of hiding it.
+- Keep worker/test/verification gates and the separate HTML farm restriction intact.
+
+## [2.22.0] - 2026-09-26
+
+### Added
+
+- Approve a structured artifact by typing a four-character code, for example
+  `approve K7MQ`, instead of pasting a long token. The hook expands it to the
+  exact armed reply, so the engine and recorded evidence are unchanged.
+- On Claude Code, approve by clicking an Approve option in the host's own
+  question dialog; the recorded origin names that seam.
+
+### Fixed
+
+- Replies with extra spacing, invisible characters, backticks, quotes or a
+  closing period are no longer ignored; a reply that still cannot match now
+  says why instead of failing silently.
 
 ## [2.21.17] - 2026-09-25
 
