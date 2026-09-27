@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.14.5] - 2026-09-26
+
+### Fixed
+
+- Explain input-manifest entry kinds to independent reviewers so normative artifact
+  identities are not compared with raw HTML hashes.
+
 ## [0.14.4] - 2026-09-26
 
 ### Fixed

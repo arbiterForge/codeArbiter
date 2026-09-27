@@ -3246,6 +3246,51 @@ class CodexNativeV1HookTest(unittest.TestCase):
         self.assertNotEqual(armed["request_id"], legacy["request_id"])
         self.assertNotIn("codex_review_profile", self.adapter._load(self.root, legacy["request_id"]))
 
+    def test_native_review_prompt_explains_frozen_manifest_entry_semantics(self):
+        self.client = FakeClient(self.root)
+        context = self.client.context
+        context["activity"] = "spec_review"
+        context.pop("commands")
+        context["input_manifest"] = {
+            "format": "codearbiter.verification-inputs/0.1.0",
+            "engine": "fixture", "platform": "windows/amd64", "engine_toolchain": "fixture",
+            "roots": ["."], "exclude_directories": [],
+            "entries": {
+                "src/example.py": {"kind": "bytes", "sha256": "a" * 64, "executable": False},
+                "src/": {"kind": "directory", "members": ["example.py"]},
+                ".codearbiter/specs/example.html": {
+                    "kind": "artifact_normative", "sha256": "b" * 64,
+                },
+            },
+        }
+        context["input_sha256"] = hashlib.sha256(
+            self.adapter._canonical(context["input_manifest"])
+        ).hexdigest()
+
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+            request_nonce="native-manifest-semantics", codex_review_profile="native-v1",
+        )
+        prompt = armed["dispatch_prompt"]
+        self.assertEqual(armed["launch_envelope"]["message"], prompt)
+        self.assertIn("kind=bytes", prompt)
+        self.assertIn("raw file bytes", prompt)
+        self.assertIn("executable", prompt)
+        self.assertIn("kind=directory", prompt)
+        self.assertIn("members", prompt)
+        self.assertIn("kind=artifact_normative", prompt)
+        self.assertIn("normative_sha256", prompt)
+        self.assertIn("installed", prompt)
+        self.assertIn("snapshot", prompt)
+        self.assertIn("identity", prompt)
+        self.assertIn("raw rendered HTML", prompt)
+        self.assertIn("input_sha256", prompt)
+        self.assertIn("returned sha256 with input_sha256", prompt)
+        self.assertIn("exclude_directories", prompt)
+        self.assertIn("output policy", prompt)
+        self.assertNotIn("compare its manifest", prompt)
+        self.assertIn("Do not pass", prompt)
+
     def test_native_v1_real_entrypoint_completes_both_start_post_orders(self):
         for activity in ("spec_review", "quality_review"):
             for order in (("pre", "start", "post", "stop"), ("pre", "post", "start", "stop")):
