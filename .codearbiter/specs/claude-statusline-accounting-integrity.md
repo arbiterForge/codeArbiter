@@ -46,6 +46,18 @@
 - Each cold partition now carries a membership filter (Bloom, 10 bits per key, 7 probes). It lives in the hot evidence file, which ingesting renders already read and write, and never in the compact summary, which no-change renders read. A filter is rebuilt only when its partition's key set grows (eviction, split, or a new key written into it). It adds no file and no replacement.
 - A filter may only prove absence. A missing, malformed or undersized filter means "maybe present" and falls back to reading the partition. A false "absent" would double-count a fork replay of an evicted request, so it is never assumed. Tests pin eviction-then-replay, malformed filters, split membership and later eviction into a filtered partition, and each is killed by a mutant.
 
+**2026-09-27 — AC-39 incremental count gate and AC-01 compact labels (owner decisions).**
+
+- **AC-39.** The owner chose to gate incremental renders on bytes and wall-clock, and to bound file counts by formula (see AC-39). Evidence came from a quiet back-to-back 40-render benchmark with one hot-to-cold eviction in the window:
+  - every timing and byte gate passed;
+  - median incremental time was 150–165 ms against 187–277 ms at base;
+  - ledger bytes read fell 50–94%;
+  - replacements were 96 against 80 at 1k requests and 181 against 80 at 10k. The excess is one eviction batch rewriting about 16 or about 100 partitions.
+- **Trade-off accepted:** an evicting render (about 1 in 64–128) is write-bursty and holds the lock longer. On a slow or synced home directory that render costs more, and a concurrent render can show a stale `*` once. The alternative was a time-routed cold store touching about one file per eviction. It was rejected because its dedupe lookup would rest on an unproven timestamp-routing assumption for fork replays.
+- **AC-01 labels.** The owner accepted two renderings:
+  - In a box too narrow for the full label, the word drops and the provenance symbol stays (`≈$N`, `≥$N`, `h≈$N`), so a figure is never clipped mid-number.
+  - When usage exists but no defensible dollar figure does (unavailable with no host estimate, or everything unpriceable), the cell reads `api≈?`, distinct from `$0`.
+
 ## Intent
 
 Make the Claude Code statusline's token and dollar accounting trustworthy in all of these conditions:
@@ -898,7 +910,13 @@ The statusline is not required to add another reconciliation segment. The diagno
   - an incremental render stays within budget;
   - presentation decodes no JSONL.
 
-  The benchmark runs one subprocess per render through the statusline entry point, with counters taken by an in-child audit wrapper. The candidate's structural counters are ≤ base. Its warm median and p95 are ≤ base × 1.05 on identical fixtures and the same machine, with the report retained in the PR.
+  The benchmark runs one subprocess per render through the statusline entry point, with counters taken by an in-child audit wrapper. Its warm median and p95 are ≤ base × 1.05 on identical fixtures and the same machine, with the report retained in the PR. The candidate's structural counters are ≤ base, with two exceptions:
+
+  - **Transcript bytes** may exceed base by the D-20 allowance of two bounded fingerprint windows per changed source per render.
+  - **Incremental file counts** (opens, replacements) are bounded by formula and reported against base, not held to it. Incremental renders still gate strictly on bytes read, decoded and written, and on wall-clock. The formula:
+    - each render writes at most 2 files (summary and hot evidence);
+    - at most ⌈new identities / (`HOT_MAX`/2)⌉ renders evict, and an evicting render adds at most one rewrite per live partition;
+    - opens exceed base by at most two per such partition rewrite, plus one partition read per membership-filter false positive (bounded at 2% of new identities).
 
 - **AC-40 — History scaling.** At 1k, 10k and 100k accepted requests, a no-change render deserializes no evidence. A *k*-new-record incremental render deserializes at most *k* partitions, each no larger than the fixed maximum partition size. A test grows one partition past that maximum and asserts that it splits. Derived totals equal a from-scratch recomputation.
 

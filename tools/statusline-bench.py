@@ -55,6 +55,18 @@ INCREMENTAL_RENDERS = 40   # long enough that hot->cold eviction lands inside th
 # Spec D-20 permits, per changed source per render, at most two bounded
 # fingerprint windows (D-15: each <= 4 KiB) beyond the accounting byte budget.
 FP_SPEC_WINDOW = 4096
+# Spec AC-39 (amended 2026-09-27): incremental renders gate on bytes and time;
+# file counts are bounded by formula instead of held to base. A render writes at
+# most the summary and hot file (2) plus, when it evicts, one batch of partition
+# rewrites (at most every live partition). An eviction moves at least
+# EVICT_BATCH identities, and every extra partition write costs at most one read
+# open and one write open.
+STEADY_WRITES = 2
+EVICT_BATCH = 128                     # _ledgerlib.HOT_MAX // 2
+BOUNDED_COUNTERS = ("opens", "ledger_replacements")
+# A cold-partition membership filter (10 bits/key, 7 probes: ~0.8% theoretical)
+# can send a brand-new identity to one partition read it did not need.
+FILTER_FP_BOUND = 0.02
 MAX_WARMUP = 80
 TS_BASE = "2026-09-27T10:{mm:02d}:{ss:02d}.{ms:03d}Z"
 
@@ -264,7 +276,7 @@ def _render(entry, env, cwd, payload, counters_path):
     return elapsed, counters, proc.stdout
 
 
-def _phase(results, changed_sources=0):
+def _phase(results, changed_sources=0, new_ids=0):
     times = [t for t, _c in results]
     totals = {}
     for _t, c in results:
@@ -272,7 +284,11 @@ def _phase(results, changed_sources=0):
             totals[k] = totals.get(k, 0) + v
     ordered = sorted(times)
     p95 = ordered[min(len(ordered) - 1, int(round(0.95 * (len(ordered) - 1))))]
+    writes = [c.get("ledger_replacements", 0) for _t, c in results]
     return {"renders": len(results), "totals": totals, "changed_sources": changed_sources,
+            "new_ids": new_ids,
+            "eviction_renders": sum(1 for w in writes if w > STEADY_WRITES),
+            "max_render_writes": max(writes, default=0),
             "median_ms": statistics.median(times), "p95_ms": p95}
 
 
@@ -321,16 +337,19 @@ def run_scenario(entry, name, parent_n, children, child_n):
                                               counters_path)[:2]
                                       for i in range(HOST_ONLY_RENDERS)])
         final_cost = 1.0 + HOST_ONLY_RENDERS * 0.25
-        inc, changed = [], 0
+        inc, changed, new_ids = [], 0, 0
         for i in range(INCREMENTAL_RENDERS):
             _write_jsonl(parent, _request_lines(f"pi{i}_", 3, "claude-opus-5-5"), mode="a")
-            changed += 1
+            changed, new_ids = changed + 1, new_ids + 3
             if children and i % 2 == 0:
                 _write_jsonl(os.path.join(sub, "agent-bench000.jsonl"),
                              _request_lines(f"ci{i}_", 2, "claude-sonnet-5", True), mode="a")
-                changed += 1
+                changed, new_ids = changed + 1, new_ids + 2
             inc.append(_render(entry, env, work, payload(final_cost), counters_path)[:2])
-        report["incremental"] = _phase(inc, changed)
+        report["incremental"] = _phase(inc, changed, new_ids)
+        report["incremental"]["partition_files"] = sum(
+            len(names) for base_, _d, names in os.walk(os.path.dirname(ledger))
+            if base_.endswith(".ev"))
         return report
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
@@ -358,6 +377,35 @@ def cmd_run(args):
     print(args.out)
 
 
+def _incremental_bounds(name, b, h):
+    """AC-39 as amended: file counts in the incremental phase are bounded by
+    formula, not by the base count."""
+    out, n = [], h["renders"]
+    parts = h.get("partition_files")
+    if parts is None:
+        return [f"{name}/incremental: head report lacks partition_files (re-run head)"]
+    evictions = h.get("eviction_renders", 0)
+    max_evictions = -(-h.get("new_ids", 0) // EVICT_BATCH)
+    if evictions > max_evictions:
+        out.append(f"{name}/incremental: {evictions} eviction renders > {max_evictions} "
+                   f"({h.get('new_ids', 0)} new ids / batch {EVICT_BATCH})")
+    if h.get("max_render_writes", 0) > STEADY_WRITES + parts:
+        out.append(f"{name}/incremental: one render wrote {h['max_render_writes']} files "
+                   f"> {STEADY_WRITES} + {parts} partitions")
+    writes = h["totals"].get("ledger_replacements", 0)
+    cap = STEADY_WRITES * n + evictions * parts
+    if writes > cap:
+        out.append(f"{name}/incremental: ledger_replacements {writes} > {cap} "
+                   f"({STEADY_WRITES}/render + {evictions} batch(es) x {parts} partitions)")
+    extra = max(0, writes - STEADY_WRITES * n)
+    false_pos = -(-int(h.get("new_ids", 0) * FILTER_FP_BOUND * 1000) // 1000)
+    opens_cap = b["totals"].get("opens", 0) + 2 * extra + false_pos
+    if h["totals"].get("opens", 0) > opens_cap:
+        out.append(f"{name}/incremental: opens {h['totals']['opens']} > base "
+                   f"{b['totals'].get('opens', 0)} + 2 x {extra} batch writes + {false_pos} filter false positives")
+    return out
+
+
 def cmd_compare(args):
     with open(args.base, encoding="utf-8") as f:
         base = json.load(f)
@@ -375,11 +423,17 @@ def cmd_compare(args):
             for c in GATED_COUNTERS:
                 bv, hv = b["totals"].get(c, 0), h["totals"].get(c, 0)
                 rows.append((name, phase, c, bv, hv))
+                if phase == "incremental" and c in BOUNDED_COUNTERS:
+                    continue                  # formula bound below (AC-39 as amended)
                 allowed = bv * (1 + BYTE_NOISE) if c in NOISY_COUNTERS else bv
                 if c == "transcript_bytes_read":
                     allowed += 2 * FP_SPEC_WINDOW * h.get("changed_sources", 0)
                 if hv > allowed:
                     failures.append(f"{name}/{phase}: {c} head {hv} > base {bv}")
+            if phase == "incremental":
+                failures += _incremental_bounds(name, b, h)
+                for k in ("new_ids", "eviction_renders", "max_render_writes", "partition_files"):
+                    rows.append((name, phase, k, b.get(k, "-"), h.get(k, "-")))
             if b["renders"]:
                 rows.append((name, phase, "writes_per_render",
                              round(b["totals"].get("ledger_replacements", 0) / b["renders"], 2),
@@ -394,7 +448,8 @@ def cmd_compare(args):
     if failures:
         print("\nFAIL:\n  " + "\n  ".join(failures))
         return 1
-    print("\nPASS: head <= base on every gated structural counter"
+    print("\nPASS: head <= base on every gated structural counter (incremental file"
+          " counts within the AC-39 formula bound)"
           + ("" if args.structural_only else f" and timing within x{TIMING_TOLERANCE}"))
     return 0
 
