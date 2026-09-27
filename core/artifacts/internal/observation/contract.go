@@ -72,7 +72,17 @@ func ContextSchema() map[string]any {
 		"subject":  subjectSchema(), "input_sha256": hash(), "prompt_sha256": hash(),
 		"record_sha256": hash(), "record": map[string]any{"type": "object"},
 	}, "format", "activity", "subject", "input_sha256", "prompt_sha256", "record_sha256", "record")
-	return map[string]any{"oneOf": []any{task, scope, prompt}}
+	contextPrompt := closed(map[string]any{
+		"format":   map[string]any{"const": "codearbiter.evidence-context/0.1.0"},
+		"activity": map[string]any{"const": "context_approval"},
+		"subject":  subjectSchema(), "input_sha256": hash(), "prompt_sha256": hash(),
+		"record_sha256": hash(), "record": closed(map[string]any{"preview_binding_sha256": hash()}, "preview_binding_sha256"),
+		"preview": map[string]any{"type": "object"}, "preview_document": text(),
+		"after_document_sha256":    hash(),
+		"before_document_base64":   map[string]any{"oneOf": []any{map[string]any{"type": "string"}, map[string]any{"type": "null"}}},
+		"before_provenance_base64": map[string]any{"oneOf": []any{map[string]any{"type": "string"}, map[string]any{"type": "null"}}},
+	}, "format", "activity", "subject", "input_sha256", "prompt_sha256", "record_sha256", "record", "preview", "preview_document", "after_document_sha256", "before_document_base64", "before_provenance_base64")
+	return map[string]any{"oneOf": []any{task, scope, prompt, contextPrompt}}
 }
 
 func testResultSchema() map[string]any {
@@ -84,12 +94,19 @@ func commandResultSchema() map[string]any {
 		"tests": map[string]any{"type": "array", "items": testResultSchema()}, "stdout_sha256": hash(), "stderr_sha256": hash(),
 	}, "definition_sha256", "exit", "tests", "stdout_sha256", "stderr_sha256")
 }
-func commandBindingSchema() map[string]any {
-	return closed(map[string]any{
+func commandBindingSchema(qualified bool) map[string]any {
+	contract := closed(map[string]any{
 		"definition_sha256": hash(), "argv": map[string]any{"type": "array", "items": text(), "minItems": int64(1)},
 		"cwd": text(), "cwd_filesystem_id": text(), "workspace_root": text(), "workspace_filesystem_id": text(),
 		"git_common_dir": text(), "git_common_filesystem_id": text(), "executable_sha256": hash(),
 	}, "definition_sha256", "argv", "cwd", "cwd_filesystem_id", "workspace_root", "workspace_filesystem_id", "git_common_dir", "git_common_filesystem_id", "executable_sha256")
+	if qualified {
+		properties := model.M(contract["properties"])
+		properties["collector_profile"] = map[string]any{"enum": model.List("python-unittest-text/0.1.0", "codearbiter-named-lines/0.1.0", "vitest-verbose/0.1.0", "playwright-json/0.1.0", "exit-only/0.1.0")}
+		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(4), "items": launchFileSchema()}
+		contract["required"] = append(model.A(contract["required"]), "collector_profile", "launch_files")
+	}
+	return contract
 }
 func workspaceSchema() map[string]any {
 	return closed(map[string]any{
@@ -97,10 +114,10 @@ func workspaceSchema() map[string]any {
 		"head": text(), "status_sha256": hash(), "content_sha256": hash(),
 	}, "root", "filesystem_id", "git_common_dir", "git_common_filesystem_id", "head", "status_sha256", "content_sha256")
 }
-func verificationResultSchema() map[string]any {
+func verificationResultSchema(qualified bool) map[string]any {
 	return closed(map[string]any{
 		"environment_sha256": hash(),
-		"command_bindings":   map[string]any{"type": "array", "items": commandBindingSchema(), "minItems": int64(1)},
+		"command_bindings":   map[string]any{"type": "array", "items": commandBindingSchema(qualified), "minItems": int64(1)},
 		"workspace_before":   map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
 		"workspace_after":    map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
 		"commands":           map[string]any{"type": "array", "items": commandResultSchema(), "minItems": int64(1)},
@@ -111,8 +128,9 @@ func verificationResultSchema() map[string]any {
 // correlation shape, so one host's launch evidence can never be relabelled as
 // another's.
 const (
-	CodexReviewProfile  = "codex-review/0.1.0"
-	ClaudeReviewProfile = "claude-review/0.1.0"
+	CodexReviewProfile         = "codex-review/0.1.0"
+	CodexNativeV1ReviewProfile = "codex-native-v1/0.145.0"
+	ClaudeReviewProfile        = "claude-review/0.1.0"
 	// ClaudeReviewer is the plugin-shipped read-only reviewer agent a Claude
 	// review launch must pin.
 	ClaudeReviewer = "ca:authority-reviewer"
@@ -135,6 +153,15 @@ func claudeReviewResultSchema() map[string]any {
 	}, "parent_session_id", "parent_prompt_id", "tool_use_id", "post_confirmed", "agent_id", "agent_type", "subagent_type", "model", "resolved_model", "first_stop")
 	return closed(map[string]any{"launch": launch, "decision": reviewDecisionSchema()}, "launch", "decision")
 }
+func codexNativeV1ReviewResultSchema() map[string]any {
+	uuid := map[string]any{"type": "string", "pattern": `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`}
+	launch := closed(map[string]any{
+		"parent_session_id": text(), "parent_turn_id": text(), "tool_use_id": text(), "post_confirmed": map[string]any{"const": true},
+		"agent_id": uuid, "agent_type": map[string]any{"const": "default"}, "codex_review_profile": map[string]any{"const": CodexNativeV1ReviewProfile},
+		"child_turn_id": uuid, "fork_context": map[string]any{"const": false}, "first_stop": map[string]any{"const": true},
+	}, "parent_session_id", "parent_turn_id", "tool_use_id", "post_confirmed", "agent_id", "agent_type", "codex_review_profile", "child_turn_id", "fork_context", "first_stop")
+	return closed(map[string]any{"launch": launch, "decision": reviewDecisionSchema()}, "launch", "decision")
+}
 func reviewResultSchema() map[string]any {
 	launch := closed(map[string]any{
 		"parent_session_id": text(), "parent_turn_id": text(), "tool_use_id": text(), "post_confirmed": map[string]any{"const": true},
@@ -155,14 +182,16 @@ func promptResultSchema() map[string]any {
 }
 func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
-		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")},
+		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", "host-user-context-preview/0.1.0", PairProfile, SMARTSProfile)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
 	if current {
-		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(), reviewResultSchema(), claudeReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
+		profiles := model.M(base["producer_profile"])
+		profiles["enum"] = append(model.A(profiles["enum"]), CodexNativeV1ReviewProfile)
+		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), reviewResultSchema(), claudeReviewResultSchema(), codexNativeV1ReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
 		required = append(required, "producer_result")
 	}
 	return closed(base, required...)
@@ -248,7 +277,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
+	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) || kind == "context_approval" && profile != "host-user-context-preview/0.1.0" {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -276,11 +305,38 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 			if !validateReview(observed, event, context) {
 				return fail()
 			}
+		} else if kind == "context_approval" {
+			if !validateContextPrompt(observed, event, context) {
+				return fail()
+			}
 		} else if !validatePrompt(observed, event, context) {
 			return fail()
 		}
 	}
 	return nil
+}
+func validateContextPrompt(observed, event, context map[string]any) bool {
+	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
+	binding := model.S(context["input_sha256"])
+	subject := model.M(context["subject"])
+	preview := model.M(context["preview"])
+	recordHash, err := canonical.Hash(context["record"])
+	if err != nil {
+		return false
+	}
+	return model.S(event["authority_kind"]) == "user_workflow" &&
+		model.S(event["verdict"]) == "approved" && len(payload) == 1 &&
+		model.S(payload["preview_binding_sha256"]) == binding &&
+		model.S(model.M(context["record"])["preview_binding_sha256"]) == binding &&
+		model.S(context["record_sha256"]) == recordHash &&
+		canonical.BytesHash([]byte(model.S(context["preview_document"]))) == model.S(context["after_document_sha256"]) &&
+		model.S(subject["normative_sha256"]) == binding &&
+		model.S(subject["artifact_id"]) == "CONTEXT-"+strings.ToUpper(model.S(preview["document_id"])) &&
+		model.S(subject["record_id"]) == model.S(subject["artifact_id"]) &&
+		model.S(context["prompt_sha256"]) == canonical.BytesHash([]byte(model.S(event["source_text"]))) &&
+		model.S(result["prompt_sha256"]) == model.S(context["prompt_sha256"]) &&
+		model.S(event["origin"]) == model.S(result["host"])+":UserPromptSubmit:"+model.S(result["session_id"]) &&
+		model.S(observed["producer_run_id"]) == model.S(result["host"])+":"+model.S(result["session_id"])
 }
 func validatePrompt(observed, event, context map[string]any) bool {
 	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
@@ -359,12 +415,20 @@ func validateVerification(observed, event, context map[string]any) bool {
 				return false
 			}
 		}
-		argv, declared := model.Strings(binding["argv"]), model.Strings(definition["argv"])
-		if len(argv) != len(declared) || len(argv) == 0 || !filepath.IsAbs(argv[0]) {
-			return false
-		}
-		for n := 1; n < len(argv); n++ {
-			if argv[n] != declared[n] {
+		if model.S(observed["producer_profile"]) == QualifiedCommandProfile {
+			if !validateQualifiedBinding(binding, definition) {
+				return false
+			}
+		} else {
+			// Retained legacy evidence cannot be relabelled with the new producer's fields.
+			if _, ok := binding["collector_profile"]; ok {
+				return false
+			}
+			if _, ok := binding["launch_files"]; ok {
+				return false
+			}
+			argv, declared := model.Strings(binding["argv"]), model.Strings(definition["argv"])
+			if len(argv) != len(declared) || len(argv) == 0 || !filepath.IsAbs(argv[0]) || !same(argv[1:], declared[1:]) {
 				return false
 			}
 		}
@@ -403,13 +467,18 @@ func reviewContractHash() string {
 func validateReview(observed, event, context map[string]any) bool {
 	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
 	launch, decision := model.M(result["launch"]), model.M(result["decision"])
-	// The closed oneOf admits either host's launch shape; bind it to the
-	// declared profile so evidence cannot be relabelled across hosts.
+	// The closed oneOf admits each producer's launch shape; bind it to the
+	// declared profile so evidence cannot be relabelled across hosts or versions.
 	_, codexShape := launch["parent_turn_id"]
 	_, claudeShape := launch["parent_prompt_id"]
+	_, nativeV1Shape := launch["codex_review_profile"]
 	switch model.S(observed["producer_profile"]) {
 	case CodexReviewProfile:
-		if !codexShape || claudeShape {
+		if !codexShape || claudeShape || nativeV1Shape {
+			return false
+		}
+	case CodexNativeV1ReviewProfile:
+		if !codexShape || claudeShape || model.S(launch["codex_review_profile"]) != CodexNativeV1ReviewProfile || model.S(launch["child_turn_id"]) == model.S(launch["parent_turn_id"]) {
 			return false
 		}
 	case ClaudeReviewProfile:

@@ -120,6 +120,9 @@
 from __future__ import annotations
 
 import os
+import posixpath
+import re
+import stat
 from enum import Enum
 
 from _hooklib import MARKER_FRESHNESS_MINUTES, marker_fresh
@@ -211,6 +214,150 @@ REGISTRY: dict[str, ProtectedPolicy] = {
 }
 
 
+def context_writer_protection() -> dict[str, ProtectedPolicy]:
+    """Return context candidates only after a fresh shipped-writer check.
+
+    Called only while resolving a context target, never at module import.
+    """
+    import _artifactlib
+
+    if not _artifactlib.context_writer_qualified():
+        return {}
+    return {path: ProtectedPolicy.HELPER_ONLY
+            for path in _artifactlib._CONTEXT_TARGETS.values()}
+
+
+def _committed_context_journal(root, document_id, target):
+    """Find the native writer's durable two-target commit, with bounded reads.
+
+    None means the journal inventory is uncertain: protect context paths until
+    it is reconciled. An empty or absent directory is not enrollment.
+    """
+    import _artifactlib
+
+    directory = os.path.join(root, ".codearbiter", ".artifacts", "transactions")
+    for parent in (os.path.join(root, ".codearbiter"),
+                   os.path.join(root, ".codearbiter", ".artifacts"), directory):
+        if os.path.islink(parent):
+            return None
+    if not os.path.lexists(directory):
+        return False
+    if not os.path.isdir(directory):
+        return None
+    try:
+        entries = []
+        with os.scandir(directory) as scan:
+            for entry in scan:
+                entries.append(entry)
+                if len(entries) > 1024:
+                    return None
+        total_bytes = 0
+        for entry in entries:
+            if entry.name.endswith(".next"):
+                continue
+            if (not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{7,79}\.json", entry.name)
+                    or not entry.is_file(follow_symlinks=False)):
+                return None
+            descriptor = _artifactlib._open_pinned_regular(entry.path)
+            try:
+                info = os.fstat(descriptor)
+                total_bytes += info.st_size
+                if (info.st_size > 65536 or info.st_size <= 0 or total_bytes > 8 << 20
+                        or not stat.S_ISREG(info.st_mode)
+                        or getattr(info, "st_file_attributes", 0) &
+                        getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)):
+                    return None
+                raw = os.read(descriptor, 65537)
+            finally:
+                os.close(descriptor)
+            journal = _artifactlib._decode(raw)
+            if not isinstance(journal, dict):
+                return None
+            historical = journal.get("format") == "codearbiter.transaction/0.1.0"
+            if (journal.get("format") not in {"codearbiter.transaction/0.1.0",
+                                               "codearbiter.transaction/0.2.0"}
+                    or set(journal) != ({"format", "operation_id", "request_sha256",
+                                         "state", "entries"} if historical else
+                                        {"format", "operation_id", "request_sha256",
+                                         "state", "entries", "result"})
+                    or journal.get("operation_id") != entry.name[:-5]
+                    or not isinstance(journal.get("request_sha256"), str)
+                    or re.fullmatch(r"[0-9a-f]{64}", journal["request_sha256"]) is None
+                    or journal.get("state") not in {"prepared", "committed", "rolled_back"}):
+                return None
+            rows = journal.get("entries")
+            if (not isinstance(rows, list) or not 1 <= len(rows) <= 128
+                    or any(not isinstance(row, dict)
+                           or set(row) != {"path", "stage", "backup", "before_sha256",
+                                              "after_sha256", "size"}
+                           or not isinstance(row["path"], str)
+                           or not row["path"] or row["path"].startswith("/")
+                           or posixpath.normpath(row["path"]) != row["path"]
+                           or any(part in {"", ".", ".."} or part.endswith((".", " "))
+                                  or re.fullmatch(
+                                      r"(?i)(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?",
+                                      part) is not None
+                                  for part in row["path"].split("/"))
+                           or any(char in row["path"] for char in '\\:*?<>|"')
+                           or any(ord(char) < 32 or ord(char) == 127 for char in row["path"])
+                           or not isinstance(row["after_sha256"], str)
+                           or re.fullmatch(r"[0-9a-f]{64}", row["after_sha256"]) is None
+                           or (row["before_sha256"] is not None and
+                               (not isinstance(row["before_sha256"], str) or
+                                re.fullmatch(r"[0-9a-f]{64}", row["before_sha256"]) is None))
+                           or type(row["size"]) is not int or not 0 <= row["size"] <= 8 << 20
+                           or row["stage"] !=
+                           f"{os.path.dirname(row['path'])}/.ca-artifact-{journal['operation_id']}-{i}.new"
+                           or row["backup"] !=
+                           f".codearbiter/.artifacts/history/{journal['operation_id']}-{i}.before"
+                           for i, row in enumerate(rows))):
+                return None
+            paths = [row["path"] for row in rows]
+            if historical:
+                if target in paths:
+                    return None
+                continue
+            result = journal.get("result")
+            if not isinstance(result, dict):
+                if target in paths:
+                    return None
+                continue
+            if result.get("document_id") != document_id or result.get("target_path") != target:
+                if target in paths:
+                    return None
+                continue
+            if (set(result) != {"document_id", "target_path", "document_sha256",
+                                "provenance_sha256", "mode"}
+                    or result["mode"] not in {"create", "adopt", "update"}
+                    or len(rows) != 2
+                    or paths !=
+                    [target, f".codearbiter/.provenance/{document_id}.json"]
+                    or rows[0].get("after_sha256") != result["document_sha256"]
+                    or rows[1].get("after_sha256") != result["provenance_sha256"]):
+                return None
+            if journal.get("state") == "committed":
+                return True
+            if journal.get("state") == "prepared":
+                return None
+        return False
+    except (OSError, ValueError, _artifactlib.ArtifactError):
+        return None
+
+
+def _context_policy(rel_path, root):
+    import _artifactlib
+
+    document_id = next((doc for doc, target in _artifactlib._CONTEXT_TARGETS.items()
+                        if _canon(target) == _canon(rel_path)), None)
+    if document_id is None:
+        return None
+    target = _artifactlib._CONTEXT_TARGETS[document_id]
+    enrolled = _committed_context_journal(root, document_id, target)
+    if enrolled is not False:
+        return ProtectedPolicy.HELPER_ONLY
+    return context_writer_protection().get(target)
+
+
 def _canon(rel_path):
     """Canonical comparison form of a repo-relative path: separator-
     normalized (`norm_path`), then whitespace-stripped, `./`-prefix-
@@ -263,7 +410,7 @@ def _canon(rel_path):
     return p.lower()
 
 
-def lookup_policy(rel_path, registry=None):
+def lookup_policy(rel_path, registry=None, *, root=None):
     """The ProtectedPolicy registered for `rel_path`, or None if it carries
     no policy. Both `rel_path` and every registry key are canonicalized
     (`_canon`, above) before comparison — separator-normalized, `./`/
@@ -284,12 +431,15 @@ def lookup_policy(rel_path, registry=None):
     and realpath-resolved forms of a path - a flank that calls
     `lookup_policy` directly with its own ad hoc dict re-opens the symlink
     alias this module does not itself guard against."""
+    dynamic = registry is None and root is not None
     if registry is None:
         registry = REGISTRY
     normalized = _canon(rel_path)
     for key, policy in registry.items():
         if _canon(key) == normalized:
             return policy
+    if dynamic:
+        return _context_policy(rel_path, root)
     return None
 
 
@@ -341,7 +491,7 @@ def resolve_registered_path(fpath, root, registry=None):
     for p in (raw_repo_rel(fpath, root), repo_rel(fpath, root)):
         if not p:
             continue
-        policy = lookup_policy(p, registry)
+        policy = lookup_policy(p, registry, root=root)
         if policy is not None:
             return p, policy
     return None, None

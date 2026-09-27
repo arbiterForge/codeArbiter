@@ -1,38 +1,52 @@
 # Exercise-ready brownfield onboarding and reusable repository context
 
 **Campaign:** `exercise-ready-brownfield`
-**State:** the maintainer authorized continued work; #873 contains partial source implementation. The native spec/plan remain draft and record no accepted tasks.
-**Working baseline:** current-main integration at `arbiterForge/codeArbiter@a5a3d79cb5633cae3982552d6a7cf724de83aa49`.
-**Recorded:** 2026-09-25
+**State:** approved specification revision 8 and plan revision 15; integrated source implementation and candidate qualification are in progress. Native task acceptance and live contribution readiness are not claimed.
+**Compared main:** `arbiterForge/codeArbiter@8e88bce938ebf7dc8cfd934307b8d6859092d86e`.
+**Execution checkout:** `codex/pr872-stack-completion`; the source candidate integrates current main and preserves the native workflow's actual pending states.
+**Updated:** 2026-09-27
 
 ## Start here
 
-The current continuation is recorded in [#873](https://github.com/arbiterForge/codeArbiter/pull/873)
-and the [maintainer progress record](https://github.com/arbiterForge/codeArbiter/pull/872#issuecomment-5841514671).
-It includes T-002 fixture preparation, the T-003 observation contract, T-004 intent validation,
-the T-005 report decoder, and portions of the shared-source healing and map-budget work.
-These are tested source units, not completion of CP-00/CP-01 or the full 60-task plan.
-The next source units are T-006/T-007/T-008: inert hashing, membership coverage and
-source/output identity. Context writing, lifecycle integration, actor delivery and installed
-contribution qualification remain outstanding.
+The implementation continues in [#872](https://github.com/arbiterForge/codeArbiter/pull/872).
+The prerequisite changes in [#854](https://github.com/arbiterForge/codeArbiter/pull/854)
+and [#873](https://github.com/arbiterForge/codeArbiter/pull/873) are merged. Debug
+correctness remains a separate delivery in [#871](https://github.com/arbiterForge/codeArbiter/pull/871).
+The dated [implementation evidence](implementation-evidence.md) records concrete source
+tests and their limits; the native specification and plan remain the requirements and task owners.
 
-A fresh installed-engine inspection confirms specification revision 7 (41 criteria, 101 scenarios)
-and plan revision 2 (60 tasks, 11 checkpoints) pass structural and ready validation. Approval
-validation still reports `AUTHORITY_UNVERIFIED` for the spec and `DRAFT_BINDING` for the plan.
-Those native states are preserved. They do not retract the maintainer's authorization or
-turn source-test results into accepted tasks. The owning workflow must reconcile genuine
-authority and task evidence before claiming campaign acceptance.
+The current source implements bounded reports and snapshot evidence, the repository-context
+writer and recovery, initialization and refresh, task-scoped context selection, and delivery
+to feature, fix, test and review actors. It includes first-real-input acquisition, attempt
+and file-effect accounting, package resource closure, loader fixtures, and upgrade controls.
+These source results do not establish installed or live-host qualification.
 
-The dated assessment, first reviews and original authoring evidence below remain historical.
-Their earlier no-implementation or no-approval statements describe those earlier sessions.
-This planning PR can be reviewed independently. Overlapping #873 changes must revalidate
-the shared owner against #854's current head (T-001); starting that work does not require
-#854 to merge into main. This continuation stacks #873 on #854 to preserve those owners
-and make the combined changes reviewable. Debug correctness remains in #871.
+The finite verification runners check actual named native outcomes and fail on missing,
+duplicate, skipped or failed results. The candidate pipeline must collect all six native
+platform receipts, assemble their exact host packages, and exercise the public installed
+context path in cold package cells on GitHub-hosted runners. Ordinary source builds remain
+disabled for context writes. Cold fixture execution is candidate proof; it does not prove
+that a host supplied instructions, contained a scout or completed a real contribution.
+
+The Claude trial preparation provides paired disposable repositories, separate held-out
+oracles, native-load capture, installed-selector delivery and all-attempt accounting.
+The real trial still needs its exact candidate, observed confinement, complete workflow
+traces, and the separately required provider/data/resource decision. No measured model
+benefit, native guidance rollout or other-host qualification is claimed.
+
+The selected installed engine verifies specification revision 8 (41 criteria, 101 scenarios)
+and bound plan revision 15 (60 original tasks plus the finite verification prerequisite,
+11 checkpoints). Logged source-preparation overrides implement the maintainer's direction
+to continue without repeated unchanged review cycles. They preserve actual task states and
+do not mint verification, review or acceptance receipts. A source candidate makes the required
+hosted tests executable; it is not a declaration that all live plan work is complete.
+
+The dated assessment, earlier reviews and original authoring evidence below remain historical.
+Their no-implementation and no-approval statements describe those earlier sessions.
 
 The outcome is a trustworthy first useful contribution in an unfamiliar fork, followed by lower repeated exploration without stale policy, lost human edits, weaker authority or excessive context. More files, passing text checks and an initialized marker are not success.
 
-This campaign has one requirements owner, `.codearbiter/specs/exercise-ready-brownfield.html`, and one implementation-plan owner, `.codearbiter/plans/exercise-ready-brownfield.html`. Both are engine-authored drafts prepared at the maintainer request. This guide owns campaign purpose, priorities, integration and evidence interpretation, not a second requirements or task ledger. Planning does not approve product implementation.
+This campaign has one requirements owner, `.codearbiter/specs/exercise-ready-brownfield.html`, and one implementation-plan owner, `.codearbiter/plans/exercise-ready-brownfield.html`. Both have genuine native approval. This guide owns campaign purpose, priorities, integration and evidence interpretation, not a second requirements or task ledger. The native workflow owns eligibility, execution and acceptance.
 
 ## Durable assessment and its limits
 
@@ -81,7 +95,7 @@ Preserve report-only synthesis, isolated scouts and required logical coverage; h
 
 ## Decisions and evidence still needed
 
-The single draft specification records reversible implementation bounds. The actual exercise environment remains to be profiled at qualification time; that is not permission to assume an OS/provider/network policy. The future guidance kind and publication/rollout need their own explicit gate under the same specification, not another competing spec. The existing authorization and source work must be reconciled through the native owner before claiming approved or accepted campaign work.
+The single approved specification records reversible implementation bounds. The actual exercise environment remains to be profiled at qualification time; that is not permission to assume an OS/provider/network policy. The future guidance kind and publication/rollout need their own explicit gate under the same specification, not another competing spec. Existing source work must be reverified through the native owner after plan approval before claiming accepted campaign work.
 
 Finish E0-E2 on demonstrated correctness and first-contribution usefulness. Proceed with P1 only on better maintenance-adjusted task outcomes than map-only, with no authority, preservation or correctness regression. Publish scoped support claims, not universal parity or invented token/dollar savings.
 
@@ -93,12 +107,13 @@ Draft WIP PR: [#872](https://github.com/arbiterForge/codeArbiter/pull/872). At t
 
 The first draft attempted to bound legacy context writing and native loading claims. The subsequent correctness review below identifies the missing writer ownership and distinguishes a profile readiness milestone from the all-live-task commit gate. The maintainer then explicitly requested further review, amendments and an implementation plan; no execution approval was inferred.
 
-## Current correctness review and implementation plan
+## Historical correctness review and implementation plan
 
-[CORRECTNESS-REVIEW.md](CORRECTNESS-REVIEW.md) records thirteen findings and the corrections, including the reproduced installed HTML intent-consumer error. [plan-authoring-evidence.json](plan-authoring-evidence.json) binds the current validation. The [single draft plan](../../../.codearbiter/plans/exercise-ready-brownfield.html) contains 60 pending tasks in 11 checkpoints, with exact owner/generated paths, dependencies, verification and rollback. The current spec is revision 7, retains 41 criteria and now has 101 scenarios. Both artifacts are draft and unapproved.
+[CORRECTNESS-REVIEW.md](CORRECTNESS-REVIEW.md) records thirteen findings and the corrections, including the reproduced installed HTML intent-consumer error. [plan-authoring-evidence.json](plan-authoring-evidence.json) preserves that historical validation. At that handoff, the [single plan](../../../.codearbiter/plans/exercise-ready-brownfield.html) contained 60 pending tasks in 11 checkpoints, with exact owner/generated paths, dependencies, verification and rollback. Specification revision 7 retained 41 criteria and 101 scenarios; both artifacts were then draft and unapproved. The current approval and plan revision are described above; these historical evidence files are unchanged.
 
 Core context work now explicitly includes the missing repository-context kind with bounded codecs for five canonical Markdown documents. It is a proposed per-kind enrollment, not an automatic migration or a new evidence database. The native-guidance pilot remains a later explicit decision. A no-go requires an approved amendment of the same plan to retire unstarted pilot implementation tasks; it cannot turn them into accepted implementation or bypass the normal commit gate.
 
-Current continuation: reconcile the existing authorization and source-unit evidence through
-the native owner, then resume the remaining CP-00/CP-01 work. Schema readiness and merging
-this planning PR do not create native approval, accepted tasks, or campaign completion.
+Current continuation: push the integrated source candidate, collect exact-candidate hosted
+and installed results, and run the separately authorized live contribution exercise. Then
+resolve the conditional guidance decision and reconcile the same native plan. Source tests,
+schema readiness and a candidate commit do not create accepted tasks or campaign completion.

@@ -31,14 +31,14 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 
 | Surface | Claude Code (`ca`) | Codex CLI (`ca-codex`) | Pi (`ca-pi`) | Evidence |
 |---|---|---|---|---|
-| Public entries | 38 `/ca:*` commands | 36 `$ca-*` entry skills | 37 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
-| Orchestrator routines | 23 generated skills | 23 generated routines | 23 generated routines | `python tools/build-surface.py --check` |
+| Public entries | 37 `/ca:*` commands | 35 `$ca-*` entry skills | 36 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
+| Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
 | Role charters | 19 current plugin agents | published releases from 0.7.5 contain the complete packaged resource charter set for their release; current source and 0.9.4 contain 19 | 19 current generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
-Catalog counts are derived from generated outputs: `ca: 38`, `ca-codex: 36`,
-and `ca-pi: 37`. They differ from the 38-entry shared source catalog under
+Catalog counts are derived from generated outputs: `ca: 37`, `ca-codex: 35`,
+and `ca-pi: 36`. They differ from the 37-entry shared source catalog under
 `core/surface/commands/` because each host excludes entries it cannot serve
 (`core/hosts.json`), so a source count is never a host count. Pinned by
 `.github/scripts/test_pi_parity.py` — nothing else compares this table to the

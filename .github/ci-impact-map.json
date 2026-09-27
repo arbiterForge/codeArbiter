@@ -60,40 +60,52 @@
       "lane": "CHECK",
       "scope": "CORE",
       "contract": "Structured artifact native Chrome qualification"
+    },
+    {
+      "id": "hooks",
+      "lane": "CHECK",
+      "scope": "REPO",
+      "contract": "Shared hook and context source contracts"
+    },
+    {
+      "id": "artifact-package-cold",
+      "lane": "CHECK",
+      "scope": "CORE",
+      "contract": "Exact-head cold package qualification"
     }
   ],
   "edges": [
     {
       "glob": "core/artifacts/**",
-      "checks": ["artifact-engine", "artifact-browser"]
+      "checks": ["artifact-engine", "artifact-browser", "artifact-package-cold"]
     },
     {
       "glob": "docs/artifacts/**",
-      "checks": ["artifact-engine", "artifact-browser"]
+      "checks": ["artifact-engine", "artifact-browser", "artifact-package-cold"]
     },
     {
       "glob": "core/surface/**",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold", "hooks"]
     },
     {
       "glob": "plugins/ca-pi/tools/src/**",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": "plugins/ca/tools/farm.ts",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": "plugins/ca/tools/farm.js",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": "site/src/content/docs/**",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": "site/src/curated/**",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": "site/package.json",
@@ -113,55 +125,115 @@
     },
     {
       "glob": "tools/*artifact*.py",
-      "checks": ["artifact-engine", "artifact-browser"]
+      "checks": ["artifact-engine", "artifact-browser", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_bridge.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_prerequisite_adapter.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_authoring.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_installed_host.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_consumers.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_conformance.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_farm.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_native.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_cli.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_coverage.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_package.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_surface.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/scripts/test_artifact_workflow.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": ".github/requirements/artifact-conformance*",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/fixtures/context-onboarding/**",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/_context_fixturelib.py",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/_contextverificationlib.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/scripts/test_context_fixtures.py",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/test_context_contracts.py",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/test_context_evaluation.py",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/test_context_named_output.py",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/test_context_host.py",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/test_context_consumers.py",
+      "checks": ["hooks"]
+    },
+    {
+      "glob": ".github/scripts/test_context_workflow.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/scripts/test_context_verification.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/scripts/test_context_native.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/scripts/test_context_installed.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
       "glob": "plugins/ca-pi/**",
@@ -169,7 +241,7 @@
     },
     {
       "glob": "core/pysrc/**",
-      "checks": ["broad-lane", "artifact-engine"]
+      "checks": ["broad-lane", "artifact-engine", "artifact-package-cold", "hooks"]
     },
     {
       "kind": "descriptor_surface",

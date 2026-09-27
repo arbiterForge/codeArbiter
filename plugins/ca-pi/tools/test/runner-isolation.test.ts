@@ -872,7 +872,11 @@ describe("Task 6 exact Pi child launch", () => {
     expect(replayInput.trimEnd().split("\n")).toHaveLength(2);
   });
 
-  test("returns the same fixed degraded result for every isolated-runner failure branch", async () => {
+  // These are separate lifecycles, not one five-second aggregate. The old
+  // grouped case outlived its test deadline on Windows, so its still-running
+  // cleanup could touch the following test's reset mocks. Keep every scenario
+  // and assertion, but let each settle before afterEach resets shared state.
+  test("returns the fixed degraded result before spawn for an invalid launch identity", async () => {
     const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
     const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
     const request = await materializedRequest();
@@ -880,14 +884,23 @@ describe("Task 6 exact Pi child launch", () => {
     runnerMocks.spawn.mockImplementation(() => { spawnCalls += 1; throw new Error("must not spawn"); });
     expect(await runPiChild({ ...request, nodePath: "node" } as never, new AbortController().signal)).toEqual(expected);
     expect(spawnCalls).toBe(0);
+  });
 
+  test("returns the fixed degraded result without spawning a pre-cancelled request", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
+    let spawnCalls = 0;
     const preAborted = new AbortController();
     preAborted.abort();
     const abortedRequest = await materializedRequest();
     runnerMocks.spawn.mockImplementation(() => { spawnCalls += 1; return new FakeChild(true); });
     expect(await runPiChild({ ...abortedRequest, timeoutMs: 5 } as never, preAborted.signal)).toEqual(expected);
     expect(spawnCalls).toBe(0);
+  });
 
+  test("returns the fixed degraded result and removes private auth after spawn throws", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
     const spawnRequest = await materializedRequest();
     const spawnOperatorHome = resolve(dirname(spawnRequest.cwd), "spawn-operator-home");
     const spawnOperatorAgent = resolve(spawnOperatorHome, ".pi", "agent");
@@ -906,47 +919,47 @@ describe("Task 6 exact Pi child launch", () => {
     expect(rejectedSpawnAgent).not.toBe(spawnOperatorAgent);
     expect(existsSync(rejectedSpawnAgent!)).toBe(false);
     expect(existsSync(resolve(spawnOperatorAgent, "auth.json"))).toBe(true);
+  });
 
-    const runEventFailure = async (
-      trigger: (child: FakeChild, controller: AbortController) => void,
-      timeoutMs = 5_000,
-    ) => {
-      const child = new FakeChild(true);
-      const controller = new AbortController();
-      const baseRequest = await materializedRequest();
-      const operatorHome = resolve(dirname(baseRequest.cwd), "failure-operator-home");
-      const operatorAgent = resolve(operatorHome, ".pi", "agent");
-      await mkdir(operatorAgent, { recursive: true });
-      await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify({
-        openai: { type: "api_key", key: "failure-selected-provider-secret" },
-        anthropic: { type: "api_key", key: "failure-foreign-provider-secret" },
-      }), "utf8");
-      baseRequest.parentEnv.HOME = operatorHome;
-      baseRequest.parentEnv.USERPROFILE = operatorHome;
-      baseRequest.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
-      const failureRequest = { ...baseRequest, timeoutMs };
-      let childAgentDir: string | undefined;
-      runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
-        childAgentDir = (options.env as NodeJS.ProcessEnv).PI_CODING_AGENT_DIR;
-        setImmediate(() => trigger(child, controller));
-        return child;
-      });
-      const result = await runPiChild(failureRequest as never, controller.signal);
-      expect(result).toEqual(expected);
-      expect(JSON.stringify(result)).not.toContain("raw-secret-sentinel");
-      expect(childAgentDir).toBeDefined();
-      expect(childAgentDir).not.toBe(operatorAgent);
-      expect(existsSync(childAgentDir!)).toBe(false);
-      expect(existsSync(resolve(operatorAgent, "auth.json"))).toBe(true);
-    };
-    await runEventFailure((child) => child.emit("error", new Error("raw-secret-sentinel")));
-    await runEventFailure((_child, controller) => controller.abort());
-    await runEventFailure((child) => child.stdout.write("{malformed raw-secret-sentinel}\n"));
-    await runEventFailure((child) => child.stdout.write("x".repeat(65_537)));
-    await runEventFailure((child) => child.stdout.write("x".repeat(1_048_577)));
-    await runEventFailure((child) => child.stderr.write("raw-secret-sentinel" + "x".repeat(16_385)));
-    await runEventFailure((child) => child.close(7));
-    await runEventFailure(() => { /* timeout is the trigger */ }, 1);
+  test.each([
+    { label: "error event", trigger: (child: FakeChild) => child.emit("error", new Error("raw-secret-sentinel")) },
+    { label: "cancellation", trigger: (_child: FakeChild, controller: AbortController) => controller.abort() },
+    { label: "malformed protocol", trigger: (child: FakeChild) => child.stdout.write("{malformed raw-secret-sentinel}\n") },
+    { label: "line overflow", trigger: (child: FakeChild) => child.stdout.write("x".repeat(65_537)) },
+    { label: "stream overflow", trigger: (child: FakeChild) => child.stdout.write("x".repeat(1_048_577)) },
+    { label: "stderr overflow", trigger: (child: FakeChild) => child.stderr.write("raw-secret-sentinel" + "x".repeat(16_385)) },
+    { label: "early close", trigger: (child: FakeChild) => child.close(7) },
+    { label: "timeout", trigger: (_child: FakeChild) => {}, timeoutMs: 1 },
+  ])("returns fixed degraded and preserves operator auth for $label", async ({ trigger, timeoutMs = 5_000 }) => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
+    const child = new FakeChild(true);
+    const controller = new AbortController();
+    const baseRequest = await materializedRequest();
+    const operatorHome = resolve(dirname(baseRequest.cwd), "failure-operator-home");
+    const operatorAgent = resolve(operatorHome, ".pi", "agent");
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify({
+      openai: { type: "api_key", key: "failure-selected-provider-secret" },
+      anthropic: { type: "api_key", key: "failure-foreign-provider-secret" },
+    }), "utf8");
+    baseRequest.parentEnv.HOME = operatorHome;
+    baseRequest.parentEnv.USERPROFILE = operatorHome;
+    baseRequest.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
+    const failureRequest = { ...baseRequest, timeoutMs };
+    let childAgentDir: string | undefined;
+    runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+      childAgentDir = (options.env as NodeJS.ProcessEnv).PI_CODING_AGENT_DIR;
+      setImmediate(() => trigger(child, controller));
+      return child;
+    });
+    const result = await runPiChild(failureRequest as never, controller.signal);
+    expect(result).toEqual(expected);
+    expect(JSON.stringify(result)).not.toContain("raw-secret-sentinel");
+    expect(childAgentDir).toBeDefined();
+    expect(childAgentDir).not.toBe(operatorAgent);
+    expect(existsSync(childAgentDir!)).toBe(false);
+    expect(existsSync(resolve(operatorAgent, "auth.json"))).toBe(true);
   });
 
   test.each([

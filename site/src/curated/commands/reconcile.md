@@ -2,51 +2,56 @@
 entity: commands/reconcile
 related: [adr, adr-status, conflict, skills/decision-variance]
 gates:
-  - gate: explicit choice per variance
-    when: every variance presented
-    effect: "you pick ratify, supersede, or surface as [CONFIRM-NN] — \"you decide\" or \"use your best judgment\" is declined; only your verbatim acceptance of the recommendation counts as a decision"
+  - gate: explicit choice per recorded variance
+    when: recording an arbitration outcome, not returning a report
+    effect: "Only your concrete choice is recorded. A choice you already supplied is carried forward without asking again; general delegation is not an arbitration decision."
 ---
 
 ## What it does
 
-Arbitrates variances between the project's three architectural artifacts
-(`01-architecture-breakdown.md`, `02-phased-build-plan.md`, `03-task-backlog.md`) and what the
-scaffold or prior ADRs actually show. Every divergent, scaffold-silent, or artifact-silent case
-gets a SMARTS analysis of its resolution options and a strength-labeled recommendation — but the
-skill never arbitrates on its own. Each variance ends in exactly one of three user-chosen outcomes:
-ratify the existing decision, supersede it (appending a new decision log entry and, if warranted, a
-replacement ADR via `/ca:adr`), or surface it as an unresolved `[CONFIRM-NN]`. Called bare it runs
-the full reconciliation pass; give it a target and it narrows to just that ADR, conflict, or
-artifact.
+Compares architectural records with the scaffold and prior decisions using SMARTS.
+The explicit command and a natural-language reconciliation request use the same
+`decision-variance` owner. A variance-report request is read-only: it returns
+findings and recommendations without recording decisions or starting an interview.
+Report-only never enters the decision-capture phase.
+
+A full pass locates `01-architecture-breakdown.md`, `02-phased-build-plan.md`, and
+`03-task-backlog.md` by exact name. A named ADR, artifact, or area selects a scoped
+pass; unrelated decomposition files are not prerequisites. Missing or unreadable
+inputs remain visible coverage gaps, never a clean result. This comparison uses
+Markdown architectural records; typed HTML feature specs/plans retain their
+existing typed workflow owner, not Markdown section-hash handling.
 
 ## Usage
 
-```
+```text
 /ca:reconcile [<ADR-id | artifact | scope>]
 ```
 
-Leave it bare for a full reconciliation pass; pass an ADR ID, artifact name, or other scope to
-narrow it to one variance.
+Leave the target empty for a full pass. ADR numbers must resolve to one full
+filename stem; an ambiguous number is not silently assigned to the first match.
 
 ## Example
 
+Illustrative read-only request:
+
 ```text
-> /ca:reconcile ADR-0004
-
-Variance: ADR-0004 (fast-forward hotfix branch) vs. scaffold — divergent.
-Artifact position: hotfixes may fast-forward directly to main.
-Scaffold evidence: git-enforce.py H-01 blocks any direct commit to main, no hotfix carve-out found.
-
-SMARTS analysis... recommendation: supersede (moderate).
-Your call — ratify, supersede, or surface as [CONFIRM-NN]?
-> supersede
-
-Decision log entry appended, Decided by: dev@example.com.
-Route to /ca:adr to author the replacement ADR? (y/n)
+Show a variance report for 0004-cache-boundary. Do not change files.
 ```
+
+The report identifies the selected record, evidence, unresolved choices and
+coverage limits. It does not write an evidence-index file, update a decision hash,
+create a question, or author an ADR.
+
+During reconciliation, you choose ratify, supersede or defer. The choice is logged
+with your attribution. Reaffirming a decision against a changed source section
+appends a replacement binding with the current hash; it never edits the old entry.
+A replacement ADR or implementation is a separately authorized continuation. An
+already selected request passes to its owning procedure without another routing menu.
 
 ## When to reach for it
 
-A variance already exists between artifacts, code, or prior decisions and needs a user-attributed
-resolution. For a brand-new decision with no prior conflict, use `/ca:adr`; for ADR health alone,
-use `/ca:adr-status`.
+Use it to examine a real architectural variance. ADR recording and health use
+`decision-lifecycle`; ordinary explanation does not require reconciliation. Routine
+Git text conflicts stay with their existing workflow. Delegated sprint method
+choices retain sprint's SMARTS scoring and do not inherit an arbitration interview.

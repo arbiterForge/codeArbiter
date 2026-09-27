@@ -29,6 +29,10 @@ ambiguity handed to `/ca:adr`, or a documented decision that no action is needed
 
 ## Usage
 
+A plain-language request for root-cause investigation selects the same owning
+skill. `/ca:debug` remains an explicit entry generated from that skill, not a
+second independently maintained procedure. The gates below still apply.
+
 ```
 /ca:debug <observed symptom>
 ```

@@ -1,11 +1,25 @@
 ---
 name: tribunal
-description: The deep, rarely-convened whole-codebase audit lane. Routed to when the user invokes /ca:tribunal. Seven gated phases — cost/model, map, roster dispatch, triage, report, approval+filing, telemetry. Costs on the order of millions of tokens; proceeds only after the user acknowledges the estimate; never a required gate; nothing filed or sent without explicit authorization.
+description: "Run an opt-in deep codebase audit with persisted findings. Confirm cost before dispatch; filing and telemetry need separate approval."
+argument-hint: "[scope-path] [--tag <label>]"
 ---
 
 # tribunal
 
-The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Routed to when the user invokes `/ca:tribunal`. Eleven specialist lenses judge the codebase; every finding persists to its own file (plus append-only triage/run logs) under a run dir that survives compaction and disconnects, so the run resumes from disk.
+The deepest, most expensive review codeArbiter offers — convened rarely, on demand, never as a gate. Selected by a deliberate request for a deep codebase audit, including `/ca:tribunal`. Eleven specialist lenses judge the codebase; every finding persists to its own file (plus append-only triage/run logs) under a run dir that survives compaction and disconnects, so the run resumes from disk.
+
+## Entry boundaries
+
+A direct audit request is sufficient routing intent; do not ask the user to repeat a
+command. An explanation-only question does not start an audit. Ordinary diff review,
+periodic checkpoints and a single-feature threat model retain their separate owners.
+Cost acknowledgment, issue filing and telemetry authorization remain separate below.
+
+`[scope-path]` limits the audit to that subtree (default: repository root). Evaluate
+applicability across the full roster; skip a lens only when its concern is absent and
+record the launched/skipped set. A smaller scope does not require irrelevant lenses.
+`--tag <label>` supplies the optional freeform run label governed by the telemetry card;
+it is not authorization to transmit anything.
 
 ## Pre-flight
 
@@ -22,11 +36,11 @@ Read these, or STOP and surface the gap — never guess a command or a path:
 
 This lane is expensive. Orient and get explicit go-ahead before dispatching anything.
 
-- **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. If found, check completion: incomplete (no `report-written` event in its `run.jsonl`) means either resumable or stale, judged by that run dir's latest `run.jsonl` timestamp. A run whose `run.jsonl` carries `run-aborted` is terminal — never offered for resume; a fresh run starts. Younger than 7 days → recover position with the cheap cursor scan in `references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting; skip the estimate. Older than 7 days → STOP and ask the user to resume anyway or start fresh — the codebase may have drifted under the findings, and stale-tree findings must not silently merge with fresh ones. Complete → start a fresh run.
+- **Resume check.** Scan `.codearbiter/reports/` for the most recent run dir matching the current scope-slug, any date — never just today's. If none, skip to sizing. If found, check completion: incomplete (no `report-written` event in its `run.jsonl`) means either resumable or stale, judged by that run dir's latest `run.jsonl` timestamp. A run whose `run.jsonl` carries `run-aborted` is terminal — never offered for resume; a fresh run starts. Younger than 7 days → recover position with the cheap cursor scan in `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/schemas.md` (grep the last `wave-triaged`, do not read finding bodies) and offer to resume at the first un-triaged wave instead of restarting; skip the estimate. Older than 7 days → STOP and ask the user to resume anyway or start fresh — the codebase may have drifted under the findings, and stale-tree findings must not silently merge with fresh ones. Complete → start a fresh run.
 - **Abandon.** If the user tells the orchestrator to abandon the run, log a `run-aborted` event to `run.jsonl` before stopping.
 - **Cost acknowledgment.** Size the job, compute the token band, recommend the model (highest-reasoning available, high effort), and offer the cost-control levers. Present the band plainly; nothing dispatches until the user acknowledges it and confirms the model.
 - Establish `RUN_ID` = `<UTC-date>-<scope-slug>` on a fresh run; create `.codearbiter/reports/<run-id>/`; open `run.jsonl`. On resume, reuse the existing `RUN_ID` as-is — the date is the run's creation date and never changes on resume.
-- Procedure: `references/cost-and-models.md` — load now.
+- Procedure: `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/cost-and-models.md` — load now.
 
 Gate: the user has acknowledged the estimated cost and confirmed the model. An unacknowledged run does not pass.
 
@@ -34,18 +48,18 @@ Gate: the user has acknowledged the estimated cost and confirmed the model. An u
 
 Map before reviewing; the map decides what gets scrutiny.
 
-- Produce the inventory (inline, or on a large repo dispatch the optional cheap mappers per `references/cost-and-models.md`): file tree, language breakdown, entry points/routes, core-logic and shared-utility locations, dependency and integration surface. Write `inventory.md`.
-- Apply the judgment overlay in `references/ai-markers.md`: risk-rank directories (untrusted input, money, auth, PII, churn = highest), mark trust boundaries, record AI-authorship markers and an iteration-depth estimate. High-marker / high-iteration areas carry a scrutiny boost and a small severity prior.
-- Choose the active lenses — the roster IS the set of cards under `references/lenses/`; the active set is that roster minus any lens whose concern is absent from scope (no migrations → drop the migration lens). Record launched/skipped as `run.jsonl` events.
-- Choose the wave partition — the default in `references/cost-and-models.md`, or a repartition for cause — and record it in the `run-started` event (`references/schemas.md`); resume reads this recorded partition, never re-derives it.
+- Produce the inventory (inline, or on a large repo dispatch the optional cheap mappers per `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/cost-and-models.md`): file tree, language breakdown, entry points/routes, core-logic and shared-utility locations, dependency and integration surface. Write `inventory.md`.
+- Apply the judgment overlay in `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/ai-markers.md`: risk-rank directories (untrusted input, money, auth, PII, churn = highest), mark trust boundaries, record AI-authorship markers and an iteration-depth estimate. High-marker / high-iteration areas carry a scrutiny boost and a small severity prior.
+- Choose the active lenses — the roster IS the set of cards under `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/`; the active set is that roster minus any lens whose concern is absent from scope (no migrations → drop the migration lens). Record launched/skipped as `run.jsonl` events.
+- Choose the wave partition — the default in `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/cost-and-models.md`, or a repartition for cause — and record it in the `run-started` event (`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/schemas.md`); resume reads this recorded partition, never re-derives it.
 
 Gate: `inventory.md` written with the risk/boundary/marker overlay, and the active-lens set recorded.
 
 ## Phase 2 — Roster dispatch (dual output: finding files + summary) · gate: BLOCK
 
-Dispatch one `tribunal-lens-reviewer` per active lens, in the wave partition recorded at Phase 1 (default in `references/cost-and-models.md`) at the concurrency from `references/cost-and-models.md` (≤5 in flight). Each dispatch carries the assignment block from the agent's Assignment Format — its FIRST line is the title `Tribunal lens: <lens-slug> — <scope summary>` — naming the lens slug, the scope slice, the run dir, and the findings dir, on the model/effort from `references/cost-and-models.md`. The agent itself reads its own mandate (`references/lenses/<lens>.md`, including that card's Required-reading docs) and the finding contract (`references/finding-record.md`), and loads neither the other lenses' mandates nor the orchestrator schemas. The orchestrator reads `references/finding-record.md` to read findings at triage, and consults a lens mandate only to adjudicate that lens's finding.
+Dispatch one `tribunal-lens-reviewer` per active lens, in the wave partition recorded at Phase 1 (default in `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/cost-and-models.md`) at the concurrency from `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/cost-and-models.md` (≤5 in flight). Each dispatch carries the assignment block from the agent's Assignment Format — its FIRST line is the title `Tribunal lens: <lens-slug> — <scope summary>` — naming the lens slug, the scope slice, the run dir, and the findings dir, on the model/effort from `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/cost-and-models.md`. The agent itself reads its own mandate from `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/lenses/` (the recorded active lens slug plus `.md`, including that card's Required-reading docs) and the finding contract (`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md`), and loads neither the other lenses' mandates nor the orchestrator schemas. The orchestrator reads `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md` to read findings at triage, and consults a lens mandate only to adjudicate that lens's finding.
 
-- Each dispatched lens reviewer writes each finding to its own file `findings/<lens>/<finding-id>.json` the moment it is found — one file per finding, never a batched write at the end (write contract: `references/finding-record.md`).
+- Each dispatched lens reviewer writes each finding to its own file `findings/<lens>/<finding-id>.json` the moment it is found — one file per finding, never a batched write at the end (write contract: `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/finding-record.md`).
 - **Evidence-or-drop.** Every finding cites a concrete `path:line` and the minimal snippet. An absence claim — "no handler", "no teardown", "missing validation" — requires reading the whole unit, never a truncated window.
 - Specialists never dispatch further subagents. Update each wave's status in `run.jsonl` as it flushes.
 - When a lens's summary returns, record a `lens-completed` event in `run.jsonl` with `surface_seen`/`findings`/`model` taken from the agent's summary, plus `tokens` when the orchestrator can observe that lens's spend.
@@ -60,13 +74,13 @@ Triage per wave from disk as soon as it flushes; do not wait for the whole run.
 - **Calibrate independently.** Set `final_severity`/`final_confidence` from the evidence yourself — the lens's values are provisional input; every critical/high carries a `counter_argument`.
 - **Decide per finding, logged.** Each finding gets one decision from the vocabulary, appended as one line to `triage.jsonl`. Below the confidence gate after calibration → `investigate` (medium/low) or `decision-required` (critical/high) — never dropped silently.
 - **Plan the wave.** Write `plans/phase-<n>.md` for its kept (`keep`/`combine`) work.
-- Procedure: `references/triage.md` — load now.
+- Procedure: `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/triage.md` — load now.
 
 Gate: every wave's findings triaged into `triage.jsonl` and a `plans/phase-<n>.md` written for its kept work.
 
 ## Phase 4 — Report · gate: BLOCK
 
-Regenerate `report.md` and `manifest.yaml` from the two logs per `references/report.md` — projections, never hand-authored. Task-list-structured (not prose): findings grouped by **calibrated** severity then type, each with id, `path:line`, one-line description, remediation shape, triage decision, and a link to its phase plan; `decision-required` in its own section; a launched/skipped-lens summary; an investigate appendix. Apply `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/` (`core` + `medium-documents`) to the prose.
+Regenerate `report.md` and `manifest.yaml` from the two logs per `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/report.md` — projections, never hand-authored. Task-list-structured (not prose): findings grouped by **calibrated** severity then type, each with id, `path:line`, one-line description, remediation shape, triage decision, and a link to its phase plan; `decision-required` in its own section; a launched/skipped-lens summary; an investigate appendix. Apply `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/` (`core` + `medium-documents`) to the prose.
 
 State plainly that critical/high are blocking-severity findings — work that should block shipping the affected code — but that this lane is not itself a gate and blocks nothing.
 
@@ -79,7 +93,7 @@ Findings become GitHub issues only on explicit selection and authorization. Sile
 - **Dedup first.** Skip findings already carrying an `issue_ref` in `triage.jsonl`, then dedup against the tracker — this lane reruns over time and will re-find the same issues.
 - **Default is hand-off.** Write and print `issue-commands.sh`; execute only on explicit approval, writing each `issue_ref` back into `triage.jsonl`.
 - Findings file as GitHub issues, never `open-tasks.md` — a periodic-review finding must survive PR abandonment.
-- Procedure: `references/issue-filing.md` — load now.
+- Procedure: `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/issue-filing.md` — load now.
 
 Gate: either `issue-commands.sh` written and printed, or — on approval — issues filed with the id→result table and `issue_ref` recorded. Nothing filed without explicit selection; no duplicates against the tracker.
 
@@ -89,7 +103,7 @@ Optional, opt-in KPI feedback to refine the skill and the estimator — off by d
 
 - **Scrub.** The payload is aggregates and per-lens exposure counts only — no code, paths, or finding text; no repo identity unless the user adds `--tag`.
 - **Show before send.** Write the payload to the run dir and show it in full; state plainly that it posts publicly to the codeArbiter repo. Default: hand the user the ready command; post only on explicit approval.
-- Procedure: `references/telemetry.md` — load now.
+- Procedure: `${CLAUDE_PLUGIN_ROOT}/skills/tribunal/references/telemetry.md` — load now.
 
 Gate: the payload is shown, and it is either handed to the user as a command or — on approval — posted. No telemetry leaves without per-run authorization.
 

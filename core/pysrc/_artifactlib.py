@@ -79,6 +79,106 @@ def helper_installation(helper_file: str) -> Path:
     return Path(helper_file).resolve().parent.parent / "helpers" / "artifacts"
 
 
+def read_context_preview_request(root: str | Path, request_file: str | Path) -> dict[str, Any]:
+    """Read a bounded inert preview request from this repository only."""
+    repository = _trusted_directory(root, "UNSAFE_ROOT")
+    candidate = Path(request_file)
+    if not candidate.is_absolute():
+        candidate = repository / candidate
+    try:
+        relative = candidate.resolve(strict=True).relative_to(repository)
+        if not relative.parts:
+            raise ValueError("request names the repository root")
+        fd = _open_pinned_regular(candidate)
+        try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode) or info.st_size > (1 << 20):
+                raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview request is not a bounded regular file")
+            raw = os.read(fd, (1 << 20) + 1)
+        finally:
+            os.close(fd)
+        value = _decode(raw)
+    except (OSError, ValueError) as exc:
+        raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview request is unavailable or outside the repository") from exc
+    if not isinstance(value, dict):
+        raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview request must be an object")
+    return value
+
+
+_CONTEXT_TARGETS = {
+    "CONTEXT": ".codearbiter/CONTEXT.md",
+    "tech-stack": ".codearbiter/tech-stack.md",
+    "coding-standards": ".codearbiter/coding-standards.md",
+    "security-controls": ".codearbiter/security-controls.md",
+    "code-map": ".codearbiter/code-map.md",
+}
+_CONTEXT_PREVIEW_KEYS = frozenset({
+    "operation_id", "mode", "document_id", "target_path", "typed",
+    "selections", "expected_document_sha256", "expected_provenance_sha256",
+    "proposed_provenance",
+})
+_CONTEXT_FINALIZE_KEYS = frozenset({
+    "operation_id", "mode", "document_id", "target_path", "expected",
+})
+_CONTEXT_FINALIZE_PATHS = frozenset({
+    *(_CONTEXT_TARGETS.values()),
+    *(f".codearbiter/.provenance/{name}.json" for name in _CONTEXT_TARGETS),
+    ".codearbiter/open-tasks.md", ".codearbiter/open-questions.md",
+    ".codearbiter/overrides.log",
+})
+
+
+def context_writer_qualified() -> bool:
+    """Inspect this shipped package's actual context writer, without caller flags."""
+    installation = helper_installation(__file__)
+    try:
+        client = ArtifactClient(installation.parent.parent, installation)
+        client.require_context_workflow()
+    except ArtifactError:
+        return False
+    return True
+
+
+def validate_context_writer_request(request: dict[str, Any]) -> tuple[str, dict]:
+    """Parse only the finite preview or receipt request for the native workflow."""
+    if not isinstance(request, dict):
+        raise ArtifactError("INVALID_CONTEXT_REQUEST", "context request must be an object")
+    operation = request.get("operation")
+    if operation == "preview" and set(request) == {"operation", "preview"}:
+        preview = request["preview"]
+        mode = preview.get("mode") if isinstance(preview, dict) else None
+        document_id = preview.get("document_id") if isinstance(preview, dict) else None
+        regular = (isinstance(preview, dict) and set(preview) == _CONTEXT_PREVIEW_KEYS
+                   and isinstance(mode, str) and mode in {"create", "adopt", "update"}
+                   and isinstance(document_id, str)
+                   and _CONTEXT_TARGETS.get(document_id) == preview.get("target_path"))
+        final = (isinstance(preview, dict) and set(preview) == _CONTEXT_FINALIZE_KEYS
+                 and isinstance(mode, str) and mode == "finalize" and document_id == "CONTEXT"
+                 and preview.get("target_path") == _CONTEXT_TARGETS["CONTEXT"]
+                 and isinstance(preview.get("expected"), dict)
+                 and set(preview["expected"]) == _CONTEXT_FINALIZE_PATHS
+                 and all(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+                         for value in preview["expected"].values()))
+        if not (regular or final):
+            raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview must name one bounded context target")
+    elif operation == "apply" and set(request) == {"operation", "receipt"}:
+        receipt = request["receipt"]
+        if (not isinstance(receipt, str) or re.fullmatch(
+                r"\.codearbiter/\.artifacts/receipts/[0-9a-f]{64}\.json", receipt) is None):
+            raise ArtifactError("INVALID_CONTEXT_REQUEST", "apply requires one receipt reference")
+    else:
+        raise ArtifactError("INVALID_CONTEXT_REQUEST", "select a closed preview or receipt apply request")
+
+    return ("preview", preview) if operation == "preview" else ("apply", {"receipt": receipt})
+
+
+def context_writer_client(root: str | Path) -> "ArtifactClient":
+    """Construct the installed native writer only after strict request validation."""
+    client = ArtifactClient(root, helper_installation(__file__))
+    client.require_context_workflow()
+    return client
+
+
 def _open_pinned_regular(path: Path) -> int:
     """Open without following the final link and pin Windows replacement.
 
@@ -304,7 +404,7 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
         return result
 
     for filename in ("_approvallib.py", "_prerequisitelib.py", "_sprintapprovallib.py",
-                     "_reconciliationlib.py", "_artifactauthoritylib.py", "_gitexec.py", "_replylib.py",
+                     "_reconciliationlib.py", "_artifactauthoritylib.py", "_artifactpromptlib.py", "_gitexec.py", "_replylib.py",
                      "artifact-authority.py", "artifact-authority-hook.py", "prompt-submit.py"):
         resource("hooks/" + filename)
     if host == "claude":
@@ -345,7 +445,9 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
 
     required = [("UserPromptSubmit", None, "prompt-submit.py")]
     tools = ("Bash", "Agent") if host == "claude" else (
-        "Bash", "shell_command", "exec_command", "unified_exec", "spawn_agent")
+        "Bash", "shell_command", "exec_command", "unified_exec", "spawn_agent",
+        "collaborationspawn_agent", "multi_agent_v1send_input", "multi_agent_v1resume_agent",
+        "multi_agent_v1close_agent")
     required += [(event, tool, "artifact-authority-hook.py")
                  for event in ("PreToolUse", "PostToolUse") for tool in tools]
     required += [(event, None, "artifact-authority-hook.py")
@@ -791,6 +893,48 @@ def _bounded_child(argv: list[str], request: bytes, fd: int, timeout: float) -> 
     return process.returncode, bytes(buffers[0]), bytes(buffers[1])
 
 
+_CONTEXT_NATIVE_CASES = [
+    "TestContextBoundedRender", "TestContextDocumentContract",
+    "TestContextMarkdownPreservation", "TestContextMutationAdmission",
+    "TestContextRecoveryAndPaths", "TestContextRepresentationBoundary",
+]
+
+
+def _context_release_qualified(installation: Path) -> bool:
+    """Require exact context evidence added by the native receipt assembler."""
+    system = {"Linux": "linux", "Darwin": "darwin", "Windows": "windows"}.get(platform.system())
+    arch = {"x86_64": "amd64", "amd64": "amd64", "aarch64": "arm64", "arm64": "arm64"}.get(platform.machine().lower())
+    if system is None or arch is None:
+        return False
+    try:
+        fd = _open_pinned_regular(installation / "release.json")
+        try:
+            if os.fstat(fd).st_size > 65_536:
+                return False
+            manifest = _decode(os.read(fd, 65_537))
+        finally:
+            os.close(fd)
+        entry = manifest["binaries"][f"{system}/{arch}"]
+        record = manifest["context_qualification"][f"{system}/{arch}"]
+        return (
+            isinstance(record, dict)
+            and set(record) == {"source_commit", "workflow", "run_id", "binary_sha256",
+                                "observation_sha256", "module_sha256", "native_cases"}
+            and isinstance(record["source_commit"], str)
+            and re.fullmatch(r"[0-9a-f]{40}", record["source_commit"]) is not None
+            and record["workflow"] == ".github/workflows/ci.yml"
+            and isinstance(record["run_id"], str)
+            and re.fullmatch(r"[1-9][0-9]*", record["run_id"]) is not None
+            and record["binary_sha256"] == entry["sha256"]
+            and all(isinstance(record[field], str)
+                    and re.fullmatch(r"[0-9a-f]{64}", record[field]) is not None
+                    for field in ("observation_sha256", "module_sha256"))
+            and record["native_cases"] == _CONTEXT_NATIVE_CASES
+        )
+    except (ArtifactError, OSError, KeyError, TypeError, ValueError):
+        return False
+
+
 class ArtifactClient:
     def __init__(self, root: str | Path, installation: str | Path, *, timeout: float = 30):
         self.root = _trusted_directory(root, "UNSAFE_ROOT")
@@ -800,6 +944,24 @@ class ArtifactClient:
     def workflow_preflight(self) -> dict[str, object]:
         """Read fresh installed prerequisites; never attest live host authority."""
         return _installed_workflow_preflight(self.installation)
+
+    def require_context_workflow(self) -> dict[str, object]:
+        """Admit only the packaged native context candidate on a supported host."""
+        installed = self.workflow_preflight()
+        capability = self.call("capabilities")
+        context = capability.get("repository_context")
+        if (installed.get("resources_available") is not True
+                or installed.get("host") not in {"codex", "claude"}
+                or not isinstance(context, dict)
+                or set(context) != {"source_present", "kind_registered", "host_default_enabled", "qualification", "mutation_available"}
+                or context["source_present"] is not True
+                or context["kind_registered"] is not True
+                or context["host_default_enabled"] is not False
+                or context["qualification"] != "package-required"
+                or context["mutation_available"] is not True
+                or not _context_release_qualified(self.installation)):
+            raise ArtifactError("CONTEXT_WORKFLOW_UNAVAILABLE", "installed repository-context workflow is not qualified")
+        return {**context, "host_default_enabled": True, "qualification": "packaged-candidate"}
 
     def _open_binary(self) -> int:
         system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}.get(platform.system())
@@ -822,7 +984,9 @@ class ArtifactClient:
                 manifest = _decode(raw)
             except ArtifactError as exc:
                 raise ArtifactError("INVALID_INSTALLATION", "invalid release manifest JSON") from exc
-            if not isinstance(manifest, dict) or set(manifest) != {"format", "version", "protocol", "schema_version", "binaries"}:
+            if not isinstance(manifest, dict) or set(manifest) not in (
+                    {"format", "version", "protocol", "schema_version", "binaries"},
+                    {"format", "version", "protocol", "schema_version", "binaries", "context_qualification"}):
                 raise ArtifactError("INVALID_INSTALLATION", "unexpected release manifest")
             if manifest["format"] != "codearbiter.artifact-release/0.1.0" or manifest["protocol"] != PROTOCOL or manifest["schema_version"] != SCHEMA_VERSION:
                 raise ArtifactError("UNSUPPORTED_VERSION", "installed binary/adapter version mismatch")
@@ -867,6 +1031,8 @@ class ArtifactClient:
     def call(self, operation: str, request: dict[str, Any] | None = None, *, permit_invalid: bool = False) -> dict:
         if not re.fullmatch(r"[a-z][a-z-]{0,39}", operation):
             raise ArtifactError("UNKNOWN_OPERATION", "invalid internal operation name")
+        if operation in {"context-evidence-context", "context-finalize-evidence-context", "context-apply"}:
+            self.require_context_workflow()
         request = dict(request or {})
         if "protocol" in request and request["protocol"] != PROTOCOL:
             raise ArtifactError("UNSUPPORTED_VERSION", "request protocol mismatch")

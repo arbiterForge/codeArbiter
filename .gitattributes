@@ -14,6 +14,12 @@ hooks/* text eol=lf
 # Preserve those exact bytes on Windows as well as Unix checkouts.
 core/artifacts/** text eol=lf
 
+# Native HTML and retained engine evidence are hashed as exact bytes. Disable
+# checkout and staging conversion; historical before-images may contain CRLF.
+/.codearbiter/specs/*.html -text
+/.codearbiter/plans/*.html -text
+/.codearbiter/.artifacts/** -text
+
 # The reviewed structured-artifact reference pair is renderer-verified against
 # its exact generated HTML bytes. A Windows autocrlf checkout must not turn the
 # LF renderer output into CRLF and manufacture RENDER_DRIFT.

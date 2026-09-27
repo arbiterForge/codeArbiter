@@ -25,7 +25,7 @@ def main() -> int:
     tool = payload.get("tool_name")
     root = _hooklib.project_root(payload)
     try:
-        if event in {"PreToolUse", "PostToolUse"} and tool != "spawn_agent":
+        if event in {"PreToolUse", "PostToolUse"} and tool not in _artifactauthoritylib.CODEX_REVIEW_TOOLS:
             result = _artifactauthoritylib.observe_verifier_hook(root, payload)
             if result is None:
                 return 0
@@ -40,26 +40,9 @@ def main() -> int:
         else:
             sys.stderr.write(reason + "\n")
         return 0
-    if event == "PreToolUse" and result.get("state") == "AUTHORIZED":
-        print(json.dumps({
-            "decision": "allow",
-            "reason": (
-                "codeArbiter authorized this wrapper for the exact resolved child set: "
-                + json.dumps(result["command_bindings"], sort_keys=True)
-            ),
-        }))
-    if event == "SubagentStop" and result.get("state") == "COMPLETED":
-        print(json.dumps({
-            "continue": True,
-            "hookSpecificOutput": {
-                "hookEventName": "SubagentStop",
-                "additionalContext": (
-                    "codeArbiter: independent review observation recorded for request "
-                    + result["request_id"]
-                    + "; publish it through the production authority adapter."
-                ),
-            },
-        }))
+    # Saved observations are the result. Success is silent: Codex's closed
+    # SubagentStop schema has no additionalContext, and an explicit approval
+    # would unnecessarily override the host's normal permission processing.
     return 0
 
 

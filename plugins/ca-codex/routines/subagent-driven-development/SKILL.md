@@ -97,6 +97,27 @@ The subagent works test-first by routing through the `tdd` skill ([routines/tdd/
 `tdd` Phase 1. Brief it with the task's path set, its spec obligation, and its verification command.
 Nothing else from prior tasks leaks in.
 
+Before dispatch, obtain current bounded inputs for the selected task paths:
+existing code-map text if available, assessed provenance, scoped command
+records and collector observations, applicable constraint references, and
+host-effective native instructions in precedence order. Call the private
+`_artifactpromptlib.compose_feature_actor_input` with the chosen author name,
+brief, exact approved spec and plan IDs, task ID, task paths, and those inputs.
+Send its returned `input` as the fresh child's actual input. The returned
+packet never grants task start, source-snapshot admission, or permission to
+mutate or execute a discovered command. Resolve an applicable critical
+unresolved constraint before that material action. An unavailable optional
+map permits bounded read-only orientation, not an invented complete map.
+For each author or reviewer dispatch, call `_contextselectlib.prepare_actor_delivery`
+on that actor's freshly selected packet with the actual actor/task, absolute
+worktree, current source identity, and host epoch when observable. Send its
+bounded `delivery_text` to that child on `deliver` and retain the counted
+attempt. Treat `observed` only as caller-reported load/input evidence; do not
+use a shared session or persona/read marker as a receipt. On `blocked`, stop
+the material action and report the delivery gap. Re-select after resume,
+compaction, scope expansion, or worktree switch; missing epochs get at most
+two counted deliveries for the same binding.
+
 Gate: all six `tdd` phases must be green before acceptance. Never redispatch merely to evade a failing gate.
 Under an approved `/sprint`, an ordinary implementation/test failure routes to **Recovery within the approved sprint** in [SPRINT.md](../../SPRINT.md); rerun the original gate after an evidence-led correction.
 An attended invocation returns the blocked prerequisite to its caller. A real authority or security block
@@ -106,6 +127,12 @@ halts the affected work and is surfaced under the hard rules, in either mode.
 
 Did the change satisfy the task's obligation? Measure the result against the spec line the task
 traces to — not against whether tests merely pass.
+
+For an independent spec reviewer, freshly compose the same task-scoped input
+with actor `spec-reviewer` and the exact artifact/task IDs, then send the
+returned `input` to that reviewer before its substantive verdict. Do not
+substitute the author's packet or the coordinator's summary for reviewer
+delivery; the reviewer independently checks source identity and constraints.
 
 - Every acceptance claim in the task's obligation is met by the change.
 - Scope is clean: nothing implemented beyond the task; nothing required by it omitted.
@@ -130,6 +157,13 @@ where review pays. (A scope of one task reviews that task's diff — same rule, 
 Dispatch the reviewers applicable to what the combined diff touches, then `finding-triage`
 ([agents/finding-triage.md](../../agents/finding-triage.md)) to classify every finding by severity. Select
 reviewers by the diff, not blanket — dispatching an irrelevant reviewer wastes a context:
+
+For each dispatched reviewer, compose and send a fresh actor input with the
+union of paths in the combined scope, the current bounded context inputs,
+exact approved spec/plan IDs, and the scope task binding. Preserve independent
+review judgment and all existing review gates. A packet read only by the
+coordinator is not reviewer delivery; unresolved critical constraints block a
+substantive verdict while bounded source inspection remains possible.
 
 - `security-reviewer` ([agents/security-reviewer.md](../../agents/security-reviewer.md)) — any security-relevant path (authn/authz, deploy, CI, trust boundary).
 - `auth-crypto-reviewer` ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) — auth, crypto, key, or secret changes.

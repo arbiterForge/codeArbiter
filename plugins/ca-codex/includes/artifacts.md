@@ -72,6 +72,30 @@ ADR compatibility review, open-question handling, harvest and user/SMARTS gates.
 One criterion may need multiple tests. Never invent a condition, oracle, source,
 command, result, approval or reviewer to satisfy a required field.
 
+Before requesting review or approval of a plan, use the private
+`_approvallib._preflight_plan_verification(client, identity)` with its current engine identity.
+It checks all task verification definitions through complete bounded engine reads
+and collects the current source-input snapshot, reporting every unsupported
+command and any input-policy failure together. Both ordinary and initial paired
+approval arming enforce this check. No declared command, test discovery, or test
+module is executed or imported. Proposed test files and names may be absent;
+the installed collector still has to support the proposed runner's output format.
+Missing package-script definitions cannot establish a runner contract: declare a
+supported direct runner or supply the reviewed script definition first. Runtime
+executable/workspace binding and fresh named-result evidence remain required.
+
+`verification_inputs.roots` and `exclude_directories` use exact slash-separated
+repository-relative paths. Exclusions are directory paths, not globs or basename
+matches and not relative to an individual root. For root `site`, a generated
+dependency exclusion is `site/node_modules`, not `node_modules`. Review each
+excluded output directory explicitly; `.gitignore` does not define this policy.
+An exclusion outside all selected roots is rejected as ineffective. Overlapping
+roots cannot reinclude an excluded directory. Roots must exist before execution;
+use an existing containing directory for a planned new file so its creation
+changes the snapshot. An oversized included file is reported with its path and
+the 32 MiB per-file limit; revise the explicit policy rather than increasing the
+limit or excluding source/test/governance inputs needed for the task.
+
 The existing user, SMARTS, reviewer, or verification boundary must first persist
 its actual policy-owned workflow event as canonical JSON in the reserved
 content-addressed authority-source store. Interactive prompt approval currently
@@ -230,16 +254,78 @@ workspace or executable drift. If an attempt is interrupted, use the adapter's
 `recover` operation to retain it as failed or abandoned; never rerun an uncertain
 attempt under the same request.
 
+Named Playwright commands require `test --reporter=json`; each required name must
+equal a unique native `spec.title`. Named Vitest commands require
+`run --reporter=verbose`; use the complete rendered `suite > case` identity after
+the filename, not a leaf-name alias. Named unittest commands require `-v` or
+`--verbose`. A passing row cannot conceal a duplicate, skip, failure or retry.
+Plain exit checks cannot attest named tests.
+
+Named npm commands support inspectable single-runner scripts, a contained
+repository-relative `--prefix`, and arguments forwarded after `--`. Compound
+scripts and pre/post lifecycle scripts require separately declared direct-runner
+commands; retain every check from the original suite when splitting commands.
+On Windows, only the qualified standard `npm.cmd` layout is adapted: the runner
+pins the wrapper, sibling `node.exe`, sibling `node_modules/npm/bin/npm-cli.js`,
+and script manifest. It deliberately selects that sibling CLI rather than the
+shim's optional global-prefix redirection. Unknown batch wrappers fail closed.
+Direct Node script entrypoints are also pinned. These launch-file bindings do
+not establish transitive dependency closure for deliberately excluded inputs.
+
+New observations use the closed `declared-command/0.2.0` producer profile to
+retain collector and launch-file identities. Historical `0.1.0` bindings remain
+separate and cannot be relabelled as qualified launch evidence.
+
 For `spec_review` or `quality_review`, arm the corresponding activity without
 workspace mappings and dispatch the returned `launch_envelope` unchanged to one
-fresh host subagent. The host hooks bind the exact launch call, child start and
+fresh host subagent. The bounded prompt names the retained, content-addressed
+evidence context instead of embedding its full input manifest. The reviewer
+must read that context and inspect its subject, coverage and source inputs.
+The adapter verifies the context's canonical bytes and digest before launch and
+publication; a missing or changed context blocks authority. Never shorten or
+rewrite the returned envelope yourself.
+The host hooks bind the exact launch call, child start and
 the child's first stop; a pasted or coordinator-authored decision is not review
 authority.
+Codex review requires an explicitly qualified native V1 interface. Before arming,
+inspect the actual registered `multi_agent_v1.spawn_agent` tool: it must expose
+`message` and `fork_context`, and its native result must carry the child UUID.
+Model names, cached metadata and disabling `multi_agent_v2` alone do not prove
+this interface is registered. Add `--codex-review-profile native-v1` to the review
+`arm` command. The exact envelope contains only `message` and `fork_context:false`;
+do not add a role, model, reasoning, service tier, inherited context or other input.
+The observed child role must be `default`. This is a cooperative read-only review,
+not an OS sandbox. The profile is `codex-native-v1/0.145.0`; historical profileless
+requests cannot be relabelled as native V1 evidence.
+
+The adapter joins the launch session, parent turn and call ID to the returned
+UUID, then joins the same session and UUID to the child's own turn and default
+role. Both Start-before-Post and Post-before-Start are supported. A first Stop
+before association rejects the request once associated; no later result replaces
+it. Do not send input, resume or close the reviewer. These operations invalidate
+an active review even if their host hook fails to prevent the operation.
+Default V2 `collaboration.spawn_agent` returns only a task path and is unsupported
+for review authority. Its exact native hook name is registered for refusal only.
+Use a fresh request in the qualified V1 interface; never substitute a coordinator
+message, wait result, transcript, or synthesized event.
 Publish the completed request through the same `publish` command. `task-review`
 records the separate verification and spec-review receipts. After every task in
 the scope reaches `REVIEW`, reverify against one current source snapshot, run the
 combined quality review, and use `accept-scope` once. Do not accept tasks
 individually.
+
+An ARMED review that never launched can be abandoned through the adapter:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-authority.py" recover --root "<project-root>" --request-id <request-id> --disposition abandoned
+```
+
+The adapter requires no attempt, launch, observation, receipt or prior recovery.
+It retains the request and its evidence, creates no receipt, and prohibits
+dispatching that request again. This also covers bounded legacy requests whose
+inline manifests made them too large for normal dispatch. Launched or captured
+requests remain subject to their existing recovery rules. Arm a new request
+only after the retained request is terminal.
 
 An interrupted or `BLOCKED` HTML task never resumes by editing its status. Arm
 the installed reconciliation adapter for the exact task or scope, present its

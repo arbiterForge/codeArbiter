@@ -54,7 +54,7 @@
     },
     "adr": {
       "name": "adr",
-      "description": "Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/.",
+      "description": "Record user-decided ADRs or inspect their health read-only. Preserve attribution and acceptance evidence.",
       "commandPath": "commands/adr.md",
       "visibility": "core",
       "workflow": "decide",
@@ -63,7 +63,7 @@
     },
     "adr-status": {
       "name": "adr-status",
-      "description": "Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only.",
+      "description": "Inspect ADR health read-only; optionally select one ADR with --adr N.",
       "commandPath": "commands/adr-status.md",
       "visibility": "advanced",
       "workflow": "decide",
@@ -107,7 +107,7 @@
     },
     "cleanup": {
       "name": "cleanup",
-      "description": "Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed.",
+      "description": "Clean up an already-merged local branch after proving containment. Confirm each discard and preserve unique work.",
       "commandPath": "commands/cleanup.md",
       "visibility": "alias",
       "workflow": "ship",
@@ -143,7 +143,7 @@
     },
     "context-check": {
       "name": "context-check",
-      "description": "Optional manual drift audit — report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.",
+      "description": "Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs.",
       "commandPath": "commands/context-check.md",
       "visibility": "alias",
       "workflow": "operate",
@@ -152,7 +152,7 @@
     },
     "create-context": {
       "name": "create-context",
-      "description": "Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized.",
+      "description": "Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates.",
       "commandPath": "commands/create-context.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -161,7 +161,7 @@
     },
     "debug": {
       "name": "debug",
-      "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca:fix, /ca:adr, or a no-action close.",
+      "description": "Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff. A no-action close records a board note. Not for implementing a known fix, new features, or explanation-only questions.",
       "commandPath": "commands/debug.md",
       "visibility": "advanced",
       "workflow": "change",
@@ -170,7 +170,7 @@
     },
     "decompose": {
       "name": "decompose",
-      "description": "Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized.",
+      "description": "Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates.",
       "commandPath": "commands/decompose.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -225,15 +225,6 @@
       "canonical": "metrics",
       "legacyRoutes": []
     },
-    "new-skill": {
-      "name": "new-skill",
-      "description": "Assess a request for a new reusable codeArbiter skill, prove the uncovered gap, agree scope, author and integrate it. Questions and one-off tasks do not authorize adding a skill.",
-      "commandPath": "commands/new-skill.md",
-      "visibility": "advanced",
-      "workflow": "extend",
-      "canonical": "new-skill",
-      "legacyRoutes": []
-    },
     "override": {
       "name": "override",
       "description": "Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed.",
@@ -245,7 +236,7 @@
     },
     "pr": {
       "name": "pr",
-      "description": "Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch.",
+      "description": "Open a PR or finish branch disposition; route CI watching and post-merge cleanup to their owners. Merge and discard need explicit authority.",
       "commandPath": "commands/pr.md",
       "visibility": "core",
       "workflow": "ship",
@@ -275,7 +266,7 @@
     },
     "reconcile": {
       "name": "reconcile",
-      "description": "SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice.",
+      "description": "Inspect architectural variances with SMARTS; record only explicit user choices. Report-only requests make no changes.",
       "commandPath": "commands/reconcile.md",
       "visibility": "advanced",
       "workflow": "decide",
@@ -284,7 +275,7 @@
     },
     "refactor": {
       "name": "refactor",
-      "description": "Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change.",
+      "description": "Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work.",
       "commandPath": "commands/refactor.md",
       "visibility": "core",
       "workflow": "change",
@@ -293,7 +284,7 @@
     },
     "release": {
       "name": "release",
-      "description": "Cut a release the only sanctioned way — derive the target's declared version policy from the commit log, roll its changelog, compose an annotated tag, and optionally publish its exact declared assets. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag.",
+      "description": "Prepare a declared release target, or preview it with --dry-run. Derive its version and require authorization before publication.",
       "commandPath": "commands/release.md",
       "visibility": "core",
       "workflow": "ship",
@@ -367,7 +358,7 @@
     },
     "threat-model": {
       "name": "threat-model",
-      "description": "Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought.",
+      "description": "Threat-model a sensitive design with STRIDE on request. Read-only analysis of threats, controls, and implementation constraints.",
       "commandPath": "commands/threat-model.md",
       "visibility": "advanced",
       "workflow": "review",
@@ -376,7 +367,7 @@
     },
     "tribunal": {
       "name": "tribunal",
-      "description": "Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.",
+      "description": "Run an opt-in deep codebase audit with persisted findings. Confirm cost before dispatch; filing and telemetry need separate approval.",
       "commandPath": "commands/tribunal.md",
       "visibility": "advanced",
       "workflow": "review",

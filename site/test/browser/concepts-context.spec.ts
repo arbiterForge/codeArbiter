@@ -174,7 +174,7 @@ test('record complete C03 pages, pointer cases and aligned arrows from the built
   const observations: Record<string, unknown> = {
     commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     tree: execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim(),
-    helperSource: capture.source_revision, browser: page.context().browser()?.version(),
+    helperSources: capture.source_blobs, browser: page.context().browser()?.version(),
   };
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });

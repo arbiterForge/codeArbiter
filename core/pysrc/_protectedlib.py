@@ -218,7 +218,7 @@ def is_marker_path(rel):
     return bool(MARKERS_RE.search(norm_path(rel)))
 
 
-def is_registered_state_path(rel):
+def is_registered_state_path(rel, root=None):
     """True iff `rel` carries a policy in the protected-state registry
     (`_protectedstatelib.lookup_policy`, B1/#564) — the fifth protected class
     `classify_protected` recognizes (T-05a), evaluated strictly AFTER the
@@ -253,7 +253,7 @@ def is_registered_state_path(rel):
     It is a local import, not file I/O or a git call, so it does not violate
     this module's zero-side-effects-at-import invariant."""
     import _protectedstatelib
-    return _protectedstatelib.lookup_policy(rel) is not None
+    return _protectedstatelib.lookup_policy(rel, root=root) is not None
 
 
 def classify_protected(fpath, root):
@@ -315,7 +315,7 @@ def classify_protected(fpath, root):
     for p in (raw_repo_rel(fpath, root), repo_rel(fpath, root)):
         if not p:
             continue
-        if is_registered_state_path(p):
+        if is_registered_state_path(p, root):
             hits.add("state")
             break
     return hits

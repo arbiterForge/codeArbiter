@@ -21,7 +21,7 @@ The SessionStart drift line is the usual signal that this check is worth running
 /ca:context-check
 ```
 
-Takes no arguments. This is a retained compatibility route; prefer `/ca:status drift` where the installed command catalog declares that route.
+Takes no arguments. Prefer `/ca:status drift` where the installed catalog declares it, or request a provenance drift audit directly. Both reach the same owner as this retained compatibility entry; neither selects repairs on your behalf.
 
 ## Example
 

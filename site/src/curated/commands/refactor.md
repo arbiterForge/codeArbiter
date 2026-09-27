@@ -25,6 +25,10 @@ reroutes to feature work instead of finishing as a refactor.
 
 ## Usage
 
+A plain-language request for behavior-preserving restructure selects the same owning
+skill. `/ca:refactor` remains an explicit entry generated from that skill, not a
+second independently maintained procedure. The gates below still apply.
+
 ```
 /ca:refactor <surface and motivation>
 ```

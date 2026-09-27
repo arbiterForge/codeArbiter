@@ -4,6 +4,117 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-09-27
+
+### Added
+
+- Add bounded task-context selection, per-document freshness and attempt accounting
+  to the shared governance payload, with explicit actor-delivery gaps.
+- Carry shared context resources while preserving Pi's refusal of the unqualified
+  repository-context write workflow. No live Pi qualification is claimed.
+
+## [0.15.5] - 2026-09-26
+
+### Fixed
+
+- Explain input-manifest entry kinds to independent reviewers so normative artifact
+  identities are not compared with raw HTML hashes.
+
+## [0.15.4] - 2026-09-26
+
+### Fixed
+
+- Count measured partial token usage toward proven budget overruns while keeping
+  incomplete totals unknown; retain exact source identities without storing blobs.
+
+- Retain strict HTML intent-response identity checks and per-document source healing.
+- Bound oversized UTF-8 code-map diagnostics without rewriting human content.
+
+### Added
+
+- Internal closed scout-report decoding and test-owned observation accounting;
+  onboarding dispatch and context-writing integration are not enabled by these helpers.
+
+## [0.15.3] - 2026-09-26
+
+### Removed
+
+- Retire the `new-skill` command, `skill-author` workflow and bundled template,
+  including generated host entries. This maintainer-approved compatibility break
+  has no replacement alias; resource edits use the existing change workflows.
+
+### Fixed
+
+- Complete context-creation, decomposition and release entry ownership while
+  preserving initialization aliases, operational procedures and dry-run limits.
+- Redact complete multiline secret spans before formatting mutation diagnostics
+  or truncating gate output for worker feedback.
+
+- Consolidate `reconcile` under `decision-variance` with shorter discovery metadata
+  and a private analysis card. Report-only and scoped requests avoid an unnecessary
+  decision interview; prior choices and sprint method authority are retained.
+- Preserve append-only history when reaffirming a stale architectural decision,
+  and require ADR marker cleanup on controlled failure as well as success.
+- Resolve ADR authoring markers through the same host project-root function as
+  the ADR guards, retain that path for cleanup, and distinguish first-record
+  directory creation from unreadable storage.
+
+- Consolidate ADR authoring and read-only status under one concise owner; load
+  authoring and acceptance details only on demand, preserving explicit entries
+  and full-stem identity without creating records during a status request.
+
+- Consolidate tribunal, threat modeling, manual drift, post-merge cleanup and PR
+  entry procedures under concise skill owners. Retain explicit entries and mode
+  authority; select PR watch/cleanup before creation preflight and avoid wrapper
+  reloads or repeated branch-fate questions for an explicit open-PR request.
+
+- Generate debug and refactor entries from their owning skills, retaining all
+  investigation and parity gates while removing duplicate routing policies.
+- Bound shared farm prompt enrichment and retain neutral retry evidence; existing
+  preview authority and HTML farm restrictions remain unchanged.
+- Recover farm merge conflicts against a verified integration commit, retaining
+  prior output and rechecking the current protected-test baseline.
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
+- Document bounded farm transport retries and task-local cooldown handling in
+  the shared private card without enabling a new backend or HTML farm support.
+- Preserve known rejected-response usage in the shared farm backend and document
+  its limits; existing preview authority and HTML farm restrictions remain.
+- Keep built-in mutation nonzero exits as unclassified rejection evidence, not
+  measured kills; preserve adverse bounds, diagnostics and autonomous review.
+- Match whole, same-kind farm literals rather than substrings or conventional comments;
+  retain existing rejection thresholds and name the actual small-file risk evidence.
+
+- Document bounded built-in mutation screening and incomplete-evidence handling
+  in the shared private farm procedure, without enabling HTML farm.
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
+- Retain farm alternatives through task-worktree qualification before retrying;
+  shared backend boundaries remain unchanged.
+- Synchronize shared runtime identity with the current candidate cohort and
+  document dependency-ready scheduling and detached canary evaluation in the
+  shared farm resource. Existing preview dispatch authority and HTML farm
+  restrictions remain unchanged.
+
+## [0.15.2] - 2026-09-26
+
+### Fixed
+
+- Update the shared artifact adapter and guidance for bounded review prompts
+  and safe abandonment of never-launched review requests on supported hosts.
+  Pi's native verification and review authority remain unavailable.
+- Shared authority request writes reject stale state during concurrent operations.
+
+## [0.15.1] - 2026-09-26
+
+### Fixed
+
+- Ship the shared whole-plan verification preflight, exact named-result collectors,
+  and pinned native Windows npm runner contract.
+- Reject ineffective snapshot exclusions, prevent explicit roots from bypassing
+  exclusions, and retain actionable oversized-input diagnostics.
+
 ## [0.15.0] - 2026-09-26
 
 ### Added

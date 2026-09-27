@@ -20,6 +20,43 @@ dispatch remains blocked.
 
 Test-first, or it does not ship. Routed to by `/feature` (after spec approval), `/fix`, and `/refactor`.
 
+For a feature author, including a confirmed small-lane feature, the owning
+coordinator selects task paths and obtains the current bounded map, provenance,
+scoped command records and collector observations, applicable constraint
+references, and host-effective instructions in native precedence order. Before
+the author mutates or executes a discovered command, compose the fresh child
+input with `_artifactpromptlib.compose_feature_actor_input` and send its
+returned `input` to that child. Bind the actual approved spec and plan IDs
+for full-lane work. For a confirmed small-lane feature, pass its mini-spec
+text as `confirmed_mini_spec` and leave both artifact IDs absent; do not invent
+a plan or bypass its existing gate. The packet
+is an orientation aid with `requires_actor_check`, not admission. Recheck
+worktree/source identity and resolve applicable critical constraints before a
+material action. Missing optional map detail permits bounded read-only source
+inspection, with full schema or document body read only when needed.
+Apply `_contextselectlib.prepare_actor_delivery` to that selected packet for
+the actual child, task, worktree and current source/host epochs. Send its
+`delivery_text` when requested and count the attempt before the material
+action; an unknown receipt or surviving session marker never proves delivery.
+Re-select on resume, compaction, scope or worktree change, and report a blocked
+delivery gap rather than assuming the child retained prior context.
+
+For a fix or targeted test-only change, use the caller that already owns the
+task. Before the author mutates or executes a discovered command, call
+`_contextselectlib.compose_fix_or_test_actor_input` with the current scoped
+sources, exact command cwd and collector evidence, then send its returned
+`input` to that actor. Use `route='fix'`, `caller='fix'`, and the confirmed
+bug-origin evidence and named regression for a fix. Use `route='test_change'`
+with the existing `fix`, `feature`, or `refactor` caller for a test-only change;
+do not create a feature spec pair merely to deliver context. The selected
+caller retains its own approval and TDD gates. Reuse an actual bug-origin RED
+when it already proves the named regression; for a targeted test change,
+validate the test against the real defect or an honest fault fixture. Never
+change production behavior merely to manufacture a failing test. If this
+conflicts with a required TDD gate, surface the conflict to that gate's owner;
+context delivery does not waive it. The packet remains reported evidence, not
+task admission.
+
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess a command or a threshold:
@@ -117,9 +154,12 @@ Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — a rigor k
 gate. The threshold table is the shared `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md` (the
 single source of truth, also used by `refactor` Phase 2).
 
-Run the coverage command from `tech-stack.md`. **Lines and branches must both clear the threshold**
-— a report satisfying one and not the other does not pass (issue #507). Below it on either → add
-tests until both are met.
+Resolve the surface's **declared coverage profile** from `tech-stack.md` against
+`${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md`, then run its coverage command.
+Every required metric must clear the maturity threshold. Apply the shared
+profile-selection, report-validity and critical-path evidence requirements;
+do not substitute metrics or treat an unmeasured metric as passed. Below the
+floor on any required metric → add meaningful tests until it is met.
 
 **Name the host you measured on**, and for a tree `tech-stack.md` marks as platform-forked, the
 figure is the UNION across its supported hosts — a single-host report scores the other platform's
@@ -139,8 +179,9 @@ still reads as satisfied, which is worse than an absent one.
 regression could rot unnoticed — not just "below threshold." The number is the rule; the untested paths
 are why it matters.
 
-Gate: threshold met on BOTH lines and branches for the current maturity value, or the no-tooling
-exemption taken WITH its citation. A test added only to move the percentage fails this gate in
+Gate: threshold met on every required metric in the declared coverage profile
+for the current maturity value, with the shared critical-path evidence, or the no-tooling
+exemption taken WITH its citation and Phase 4 proof. A test added only to move the percentage fails this gate in
 spirit — it converts an honest red into a green that asserts nothing.
 
 ## Phase 6 — Lint · gate: BLOCK

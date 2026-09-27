@@ -17,6 +17,11 @@ service, elevation of privilege — marking each threat's mitigation `PRESENT`, 
 It reads no code changes to review after the fact; for code already written, `/ca:review` or
 `/ca:checkpoint` cover that ground instead.
 
+The report distinguishes `PROCEED`, `PROCEED-WITH-CONSTRAINTS`, and `STOP`.
+A critical, currently exploitable, unmitigated threat stops the pass. Missing required
+security controls is a separate prerequisite failure. The pass and any optional
+reviewers are read-only; they do not create an ADR or change project files.
+
 ## Usage
 
 ```
@@ -43,8 +48,8 @@ Public webhook receiving partner payment notifications; no prior auth boundary h
 ## Recommended controls before implementation
 - HMAC signature verification on the webhook payload before any processing.
 
-## Clearance
-BLOCKED — resolve findings first
+## Verdict
+PROCEED-WITH-CONSTRAINTS: implement signature verification before exposing the endpoint.
 ```
 
 ## When to reach for it

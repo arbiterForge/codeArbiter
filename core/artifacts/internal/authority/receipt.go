@@ -32,7 +32,7 @@ func subjectSchema() map[string]any {
 	return obj(map[string]any{"artifact_id": str(), "normative_sha256": digestSchema(), "record_id": str()}, "artifact_id", "normative_sha256", "record_id")
 }
 func ReceiptSchema() map[string]any {
-	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.2.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema(), "authority_source_ref": str(), "authority_source_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256", "authority_source_ref", "authority_source_sha256")
+	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.2.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema(), "authority_source_ref": str(), "authority_source_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256", "authority_source_ref", "authority_source_sha256")
 }
 func legacyReceiptSchema() map[string]any {
 	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.1.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256")
@@ -49,7 +49,7 @@ func EventSchema() map[string]any {
 		observed[k] = v
 	}
 	observed["format"] = map[string]any{"const": "codearbiter.workflow-event/0.2.0"}
-	observed["kind"] = map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}
+	observed["kind"] = map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")}
 	observed["observation_ref"] = str()
 	observed["observation_sha256"] = digestSchema()
 	return map[string]any{"oneOf": []any{
@@ -227,6 +227,42 @@ func (r *Receipt) Subject(d *model.Document, id, kind string) error {
 	return nil
 }
 func (r *Receipt) Payload() map[string]any { return model.M(r.Event["payload"]) }
+
+// ValidateContextPreview admits only a current host-observed reply for this
+// exact renderer preview. A receipt reference is a locator, never a grant by
+// itself; Load independently checks its source, event, observation and context.
+func ValidateContextPreview(f *store.FS, receiptRef, binding string) error {
+	if !digest.MatchString(binding) {
+		return fault.New("AUTHORITY_UNVERIFIED", "context preview binding is malformed")
+	}
+	r, err := Load(f, receiptRef)
+	if err != nil {
+		return err
+	}
+	if model.S(r.Data["kind"]) != "context_approval" || model.S(r.Data["authority_kind"]) != "user_workflow" || model.S(r.Event["verdict"]) != "approved" {
+		return fault.New("AUTHORITY_UNVERIFIED", "receipt is not a host-observed context preview approval")
+	}
+	payload := r.Payload()
+	if len(payload) != 1 || model.S(payload["preview_binding_sha256"]) != binding {
+		return fault.New("STALE_EVIDENCE", "context approval does not bind this preview")
+	}
+	observed, _, err := observation.Load(f, model.S(r.Event["observation_ref"]), model.S(r.Event["observation_sha256"]))
+	if err != nil || model.S(observed["producer_profile"]) != "host-user-context-preview/0.1.0" {
+		return fault.New("AUTHORITY_UNVERIFIED", "context approval lacks its supported host observation")
+	}
+	context, _, err := observation.LoadContext(f, model.S(observed["context_ref"]), model.S(observed["context_sha256"]))
+	if err != nil {
+		return err
+	}
+	preview := model.M(context["preview"])
+	documentID := model.S(preview["document_id"])
+	subjectID := "CONTEXT-" + strings.ToUpper(documentID)
+	subject := model.M(r.Data["subject"])
+	if documentID == "" || model.S(context["activity"]) != "context_approval" || model.S(context["input_sha256"]) != binding || model.S(model.M(context["record"])["preview_binding_sha256"]) != binding || model.S(subject["artifact_id"]) != subjectID || model.S(subject["record_id"]) != subjectID || model.S(subject["normative_sha256"]) != binding {
+		return fault.New("STALE_EVIDENCE", "context approval has the wrong kind, document or preview scope")
+	}
+	return nil
+}
 func Approved(f *store.FS, d *model.Document) (*Receipt, error) {
 	gov := model.M(d.Data["governance"])
 	if model.S(gov["state"]) != "approved" {
@@ -340,6 +376,10 @@ func ValidateEvent(ev map[string]any) error {
 	case "farm_authorization":
 		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "approved" {
 			return fault.New("AUTHORITY_UNVERIFIED", "farm authorization requires current workflow authority")
+		}
+	case "context_approval":
+		if authority != "user_workflow" || verdict != "approved" {
+			return fault.New("AUTHORITY_UNVERIFIED", "context approval requires an observed user workflow reply")
 		}
 	}
 	return nil

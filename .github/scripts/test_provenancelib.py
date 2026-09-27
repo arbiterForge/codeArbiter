@@ -16,7 +16,9 @@ Stdlib only. Exit 0 = all tests pass; non-zero = failure.
 """
 
 import json
+import inspect
 import os
+from pathlib import Path
 import sys
 import tempfile
 import unittest
@@ -2311,6 +2313,9 @@ class WriteStubTest(unittest.TestCase):
         fd, path = _tf.mkstemp(suffix=".json")
         os.close(fd)
         try:
+            # Stub creation targets an absent record; present empty/corrupt
+            # records are preserved for reconciliation by the shared writer.
+            os.remove(path)
             pl.write_stub(path, "tech-stack")
 
             # Round-trip via read_provenance
@@ -2358,6 +2363,7 @@ class WriteStubTest(unittest.TestCase):
         fd, path = _tf.mkstemp(suffix=".json")
         os.close(fd)
         try:
+            os.remove(path)
             pl.write_stub(path, "coding-standards")
             record = pl.read_provenance(path)
             self.assertIsNotNone(record)
@@ -2404,6 +2410,7 @@ class WriteStubTest(unittest.TestCase):
         fd, path = _tf.mkstemp(suffix=".json")
         os.close(fd)
         try:
+            os.remove(path)
             pl.write_stub(path, "tech-stack", created="2026-01-01")
             record = pl.read_provenance(path)
             self.assertIsNotNone(record)
@@ -2426,6 +2433,7 @@ class WriteStubTest(unittest.TestCase):
         fd, path = _tf.mkstemp(suffix=".json")
         os.close(fd)
         try:
+            os.remove(path)
             pl.write_stub(path, "tech-stack", interview_derived=False)
             record = pl.read_provenance(path)
             self.assertIsNotNone(record)
@@ -2841,6 +2849,629 @@ class TestReleaseTargetsTriggers(unittest.TestCase):
             errors = self.builder.check(record_path=partial)
         self.assertTrue(errors)
         self.assertTrue(any("declared but not recorded" in e for e in errors))
+
+
+
+
+class SharedSourceHealingTest(unittest.TestCase):
+    """One fresh dependent must not hide another document's stale evidence."""
+
+    @staticmethod
+    def record(doc, hash_value, trigger=True, path="package.json"):
+        return pl.new_record(doc, created="2026-09-25", entries=[
+            {"path": path, "hash": hash_value, "drift_trigger": trigger, "claims": []}])
+
+    def test_fresh_first_document_does_not_hide_stale_second(self):
+        records = {"fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old")}
+        current = {"package.json": "current"}
+        self.assertEqual(pl.compute_drift(records, current),
+                         {"stale": [{"path": "package.json", "kind": "changed"}]})
+        self.assertEqual(pl.heal_worklist(["package.json"], records, current), ["package.json"])
+
+    def test_all_document_orders_preserve_stale_dependents(self):
+        import itertools
+        records = [self.record("fresh", "current"), self.record("old", "old"),
+                   self.record("older", "older")]
+        for order in itertools.permutations(records):
+            with self.subTest(order=[r["doc"] for r in order]):
+                by_doc = {r["doc"]: r for r in order}
+                self.assertEqual(pl.heal_worklist(["package.json"], by_doc,
+                                                 {"package.json": "current"}), ["package.json"])
+                self.assertEqual(set(pl.compute_drift(by_doc, {"package.json": "current"})),
+                                 {"old", "older"})
+
+    def test_duplicate_entries_do_not_make_first_hash_authoritative(self):
+        record = self.record("stack", "current")
+        record["entries"] += self.record("stack", "old")["entries"]
+        self.assertEqual(pl.heal_worklist(["package.json"], {"stack": record},
+                                         {"package.json": "current"}), ["package.json"])
+
+    def test_all_fresh_sources_remain_noop(self):
+        records = {name: self.record(name, "current") for name in ("a", "b")}
+        self.assertEqual(pl.heal_worklist(["package.json"], records,
+                                         {"package.json": "current"}), [])
+
+    def test_disabled_stale_dependency_does_not_trigger_healing(self):
+        records = {"fresh": self.record("fresh", "current"),
+                   "inactive": self.record("inactive", "old", False)}
+        self.assertEqual(pl.heal_worklist(["package.json"], records,
+                                         {"package.json": "current"}), [])
+
+    def test_staged_order_dedup_and_document_scope_remain_stable(self):
+        records = {"fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old"),
+                   "deleted": self.record("deleted", "old", path="go.mod"),
+                   "unstaged": self.record("unstaged", "old", path="Cargo.toml")}
+        current = {"package.json": "current"}
+        self.assertEqual(pl.heal_worklist(["go.mod", "package.json", "go.mod", "README.md"],
+                                         records, current), ["go.mod", "package.json"])
+        drift = pl.compute_drift(records, current)
+        self.assertEqual(pl.changed_scope(records["stale"], drift), ["package.json"])
+        self.assertNotIn("fresh", drift)
+
+    def test_malformed_neighbors_do_not_hide_valid_stale_evidence(self):
+        records = {"bad": None, "fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old")}
+        records["fresh"]["entries"].extend([None, [], {"path": [], "drift_trigger": True}])
+        self.assertEqual(pl.heal_worklist([None, [], "package.json"], records,
+                                         {"package.json": "current"}), ["package.json"])
+
+    def test_worklist_is_pure_and_does_not_rebaseline(self):
+        import copy
+        records = {"fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old")}
+        paths, hashes = ["package.json"], {"package.json": "current"}
+        before = copy.deepcopy((records, paths, hashes))
+        pl.heal_worklist(paths, records, hashes)
+        self.assertEqual((records, paths, hashes), before)
+
+
+class CommitGateHealingContractTest(unittest.TestCase):
+    """The commit instructions must consume per-document drift after path selection."""
+
+    def test_shared_source_routes_each_stale_document_through_heal(self):
+        records = {
+            name: pl.new_record(name, entries=[{
+                "path": "package.json", "hash": baseline,
+                "drift_trigger": True, "claims": [],
+            }])
+            for name, baseline in (("fresh", "current"), ("stale", "old"),
+                                   ("older", "older"))
+        }
+        hashes = {"package.json": "current"}
+        paths = pl.heal_worklist(["package.json"], records, hashes)
+        drift = pl.compute_drift(records, hashes)
+        self.assertEqual(paths, ["package.json"])
+        self.assertEqual({doc: pl.changed_scope(record, drift)
+                          for doc, record in records.items()
+                          if pl.changed_scope(record, drift)},
+                         {"stale": paths, "older": paths})
+
+        # This is an instruction-contract check, not a model-execution test.
+        # A path-only instruction can pass every helper assertion above while
+        # still letting the commit workflow silently skip a dependent doc.
+        source = (Path(REPO) / "core/surface/skills/commit-gate/SKILL.md"
+                  ).read_text(encoding="utf-8")
+        phase = source.split("## Phase 5.5", 1)[1].split("## Phase 6", 1)[0]
+        self.assertIn("compute_drift(provenance, current_hashes)", phase)
+        self.assertIn("changed_scope(doc_provenance, drift)", phase)
+        self.assertIn("for each stale document", phase.lower())
+        self.assertIn("only that document's provenance record", phase.lower())
+
+
+class CodeMapByteBudgetTest(unittest.TestCase):
+    """Entry count alone does not bound the context cost of one enormous role."""
+
+    def test_map_byte_budget_is_explicit(self):
+        self.assertEqual(getattr(pl, "CODE_MAP_MAX_BYTES", None), 20 * 1024)
+
+    def test_single_oversized_role_is_diagnosed(self):
+        result = pl.lint_code_map("- `src/` -- " + "x" * 100000)
+        self.assertTrue(any("bytes" in warning for warning in result), result)
+
+    def test_utf8_bytes_not_character_count(self):
+        value = "# Map\n" + "é" * 11000
+        self.assertLess(len(value), 20 * 1024)
+        self.assertTrue(any("bytes" in warning for warning in pl.lint_code_map(value)))
+
+    def test_exact_budget_passes_and_one_byte_over_warns(self):
+        prefix = "- `src/` -- "
+        value = prefix + "x" * (20 * 1024 - len(prefix))
+        self.assertEqual(pl.lint_code_map(value), [])
+        self.assertTrue(any("bytes" in warning for warning in pl.lint_code_map(value + "x")))
+
+    def test_bad_unicode_is_not_a_clean_result(self):
+        result = pl.lint_code_map("- `src/` -- \ud800")
+        self.assertTrue(result)
+        self.assertTrue(all(warning.isascii() for warning in result))
+
+    def test_existing_entry_and_multiline_checks_still_run(self):
+        value = "\n".join("- `src/%d` -- role" % n for n in range(51))
+        value += "\n  continuation" + "x" * (20 * 1024)
+        result = pl.lint_code_map(value)
+        self.assertTrue(any("bytes" in warning for warning in result))
+        self.assertTrue(any("entries" in warning for warning in result))
+        self.assertTrue(any("multi-line" in warning for warning in result))
+
+    def test_empty_advisory_map_still_has_no_violations(self):
+        for value in (None, ""):
+            self.assertEqual(pl.lint_code_map(value), [])
+
+
+class BoundedContextMapTest(unittest.TestCase):
+    """T-031: a code map is a bounded optional orientation, never source authority."""
+
+    def shortDescription(self):
+        return None
+
+    def test_t031_bounded_context_map_positive_controls(self):
+        self.assertIn("root", inspect.signature(pl.lint_code_map).parameters)
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root, "src", "small.py")
+            source.parent.mkdir()
+            source.write_text("value = 1\n", encoding="utf-8")
+            text = "## Core\n- `src/small.py` -- small module\n"
+            self.assertEqual(pl.lint_code_map(text, root=root), [])
+            self.assertEqual(source.read_text(encoding="utf-8"), "value = 1\n")
+            self.assertEqual(pl.lint_code_map(text), [])
+            record = pl.new_record("code-map", entries=[{
+                "path": "src/small.py", "hash": "old", "drift_trigger": False,
+                "claims": [],
+            }])
+            pl.write_provenance(Path(root, ".codearbiter", ".provenance", "code-map.json"), record)
+            self.assertEqual(pl.startup_drift_line(root), "")
+
+    def test_t031_bounded_context_map_negative_controls(self):
+        self.assertIn("root", inspect.signature(pl.lint_code_map).parameters)
+        with tempfile.TemporaryDirectory() as root:
+            map_path = Path(root, ".codearbiter", "code-map.md")
+            map_path.parent.mkdir()
+            oversized = "## Core\n- `src/missing.py` -- " + "x" * 100000 + "\n"
+            map_path.write_text(oversized, encoding="utf-8")
+            warnings = pl.lint_code_map(oversized, root=root)
+            self.assertTrue(any("bytes" in item for item in warnings), warnings)
+            self.assertTrue(any("missing" in item for item in warnings), warnings)
+            self.assertEqual(map_path.read_text(encoding="utf-8"), oversized)
+
+            traversal = pl.lint_code_map("- `../outside.py` -- escape\n", root=root)
+            self.assertTrue(any("path" in item for item in traversal), traversal)
+            absolute = pl.lint_code_map("- `C:\\outside.py` -- escape\n", root=root)
+            self.assertTrue(any("path" in item for item in absolute), absolute)
+            control = pl.lint_code_map("- `bad\x1b/` -- escape\n")
+            self.assertTrue(any("path" in item for item in control), control)
+            self.assertTrue(pl.lint_code_map(["not", "text"]))
+
+            record = pl.new_record("code-map", entries=[{
+                "path": "src/moved.py", "hash": "old", "drift_trigger": False,
+                "claims": [],
+            }])
+            self.assertEqual(pl.compute_drift({"code-map": record}, {}), {
+                "code-map": [{"path": "src/moved.py", "kind": "missing"}],
+            })
+            pl.write_provenance(Path(root, ".codearbiter", ".provenance", "code-map.json"), record)
+            self.assertIn("1 stale source(s)", pl.startup_drift_line(root))
+class ProvenanceV2ContractTest(unittest.TestCase):
+    """T-009: v2 evidence is separate from semantic authority and v1 history."""
+
+    def shortDescription(self):
+        # The installed named collector expects one verbose line per method.
+        return None
+
+    @staticmethod
+    def _v2(doc="tech-stack"):
+        return {
+            "schema": 2,
+            "doc": doc,
+            "created": "2026-09-27",
+            "document": {
+                "path": f".codearbiter/{doc}.md" if doc != "CONTEXT" else ".codearbiter/CONTEXT.md",
+                "digest_method": "sha256-raw",
+                "digest": "a" * 64,
+            },
+            "fields": [{
+                "id": "FIELD-RUNTIME",
+                "owner_ref": "repository-context:FIELD-RUNTIME",
+                "claims": [{
+                    "id": "CLAIM-RUNTIME",
+                    "semantic_review": {"state": "reviewed", "reference": "review:runtime"},
+                    "evidence": [
+                        {"kind": "content", "path": "package.json",
+                         "digest_method": "sha256-raw", "digest": "b" * 64},
+                        {"kind": "membership", "predicate": "manifests",
+                         "scope_paths": ["."], "digest_method": "sha256-membership-v1",
+                         "digest": "c" * 64},
+                    ],
+                    "effective_authority_refs": ["ADR-0037"],
+                }],
+            }],
+        }
+
+    def test_t030_context_coverage_states_positive_controls(self):
+        """Complete v2 identities retain each document without semantic promotion."""
+        first = self._v2()
+        second = self._v2("code-map")
+        second["fields"][0]["claims"][0]["semantic_review"] = {
+            "state": "identity_acknowledged", "reference": "hash-only:code-map"}
+        snapshot = {
+            "source": {"files": {"package.json": {"digest_method": "sha256-raw",
+                                               "digest": "b" * 64}},
+                       "membership": [{"predicate": "manifests", "scope_paths": ["."],
+                                       "digest_method": "sha256-membership-v1",
+                                       "digest": "c" * 64}]},
+            "targets": {doc["document"]["path"]: {"status": "file",
+                         "digest_method": "sha256-raw", "digest": "a" * 64}
+                        for doc in (first, second)},
+        }
+        with tempfile.TemporaryDirectory() as store:
+            for record in (first, second):
+                Path(store, record["doc"] + ".json").write_text(
+                    json.dumps(record), encoding="utf-8")
+            status = pl.assess_context_provenance(
+                store, ["tech-stack", "code-map"], snapshot,
+                snapshot_probe=lambda _: {"source_current": True,
+                                          "targets_current": True})
+            self.assertEqual(status["coverage"], "complete")
+            self.assertEqual(status["identity"], "current")
+            self.assertEqual(status["documents"], {"tech-stack": "v2_current",
+                                                   "code-map": "v2_current"})
+            self.assertEqual(status["semantic"], "unverified")
+            self.assertFalse(status["verified_fresh"])
+            self.assertEqual(json.loads(Path(store, "code-map.json").read_text()), second)
+            import _readinjectlib as inject
+            selected = inject.governing_docs("package.json", {
+                "adr": [], "spec": [], "provenance": {"tech-stack": first}},
+                runner=lambda *_: self.fail("v2 identity must not use legacy Git hash"))
+            self.assertTrue(any("unverified" in pointer["text"]
+                                for pointer in selected), selected)
+            self.assertFalse(any("notes:" in pointer["text"] for pointer in selected))
+
+    def test_t030_context_coverage_states_negative_controls(self):
+        """Unknown neighbors and failed hashes never erase good records or claim clean."""
+        good = self._v2()
+        snapshot = {
+            "source": {"files": {"package.json": {"digest_method": "sha256-raw",
+                                               "digest": "b" * 64}},
+                       "membership": [{"predicate": "manifests", "scope_paths": ["."],
+                                       "digest_method": "sha256-membership-v1",
+                                       "digest": "c" * 64}]},
+            "targets": {good["document"]["path"]: {"status": "file",
+                        "digest_method": "sha256-raw", "digest": "a" * 64}},
+        }
+        current = lambda _: {"source_current": True, "targets_current": True}
+        with tempfile.TemporaryDirectory() as store:
+            empty = pl.assess_context_provenance(store, ["tech-stack"], snapshot,
+                                                 snapshot_probe=current)
+            self.assertEqual(empty["documents"]["tech-stack"], "missing")
+            self.assertEqual(empty["coverage"], "incomplete")
+            context_root = Path(store, "project")
+            (context_root / ".codearbiter" / ".provenance").mkdir(parents=True)
+            (context_root / ".codearbiter" / "CONTEXT.md").write_text(
+                "# Context\n<!--INITIALIZED-->\n", encoding="utf-8")
+            import importlib.util
+            start_spec = importlib.util.spec_from_file_location(
+                "t030_session_start", Path(HOOKS, "session-start.py"))
+            start = importlib.util.module_from_spec(start_spec)
+            start_spec.loader.exec_module(start)
+            line = start.context_coverage_line(str(context_root))
+            self.assertIn("incomplete", line)
+            self.assertIn("missing", line)
+            self.assertNotIn("fresh", line)
+            Path(context_root, "package.json").write_text("{}\n", encoding="utf-8")
+            pl.write_provenance(
+                str(context_root / ".codearbiter" / ".provenance" / "tech-stack.json"),
+                pl.new_record("tech-stack", entries=[{
+                    "path": "package.json", "hash": "a" * 40,
+                    "drift_trigger": True, "claims": [],
+                }]))
+            failed_hash = start.provenance_drift_line(
+                str(context_root), runner=lambda *_: "", report_unknown=True)
+            self.assertIn("partial hash", failed_hash)
+            self.assertNotIn("stale source", failed_hash)
+            Path(store, "tech-stack.json").write_text(json.dumps(good), encoding="utf-8")
+            Path(store, "code-map.json").write_text("{broken", encoding="utf-8")
+            mixed = pl.assess_context_provenance(
+                store, ["tech-stack", "code-map"], snapshot,
+                snapshot_probe=current)
+            self.assertEqual(mixed["documents"], {"tech-stack": "v2_current",
+                                                   "code-map": "corrupt"})
+            self.assertEqual(mixed["coverage"], "incomplete")
+            self.assertEqual(mixed["identity"], "unknown")
+            self.assertFalse(mixed["verified_fresh"])
+            Path(store, "code-map.json").write_text('{"schema":99}', encoding="utf-8")
+            unsupported = pl.assess_context_provenance(
+                store, ["tech-stack", "code-map"], snapshot,
+                snapshot_probe=current)
+            self.assertEqual(unsupported["documents"]["code-map"], "unsupported")
+            self.assertEqual(unsupported["documents"]["tech-stack"], "v2_current")
+            duplicated = json.dumps(self._v2("code-map")).replace(
+                '"schema": 2', '"schema": 2, "schema": 2', 1)
+            Path(store, "code-map.json").write_text(duplicated, encoding="utf-8")
+            ambiguous = pl.assess_context_provenance(
+                store, ["tech-stack", "code-map"], snapshot,
+                snapshot_probe=current)
+            self.assertEqual(ambiguous["documents"]["code-map"], "corrupt")
+            self.assertEqual(ambiguous["documents"]["tech-stack"], "v2_current")
+            self.assertEqual(ambiguous["coverage"], "incomplete")
+
+            # Patch small ceilings: real startup need not allocate a huge blob.
+            from contextlib import nullcontext
+            good_bytes = Path(store, "tech-stack.json").read_bytes()
+            record_cap = len(good_bytes) + 8
+            Path(store, "code-map.json").write_bytes(b" " * (record_cap + 1))
+            with os.scandir(store) as scan:
+                entries = {entry.name: entry for entry in scan}
+            ordered = [entries["tech-stack.json"], entries["code-map.json"]]
+            with mock.patch.object(pl, "MAX_CONTEXT_RECORD_BYTES", record_cap, create=True), \
+                 mock.patch.object(pl, "MAX_CONTEXT_STORE_BYTES", 2 * record_cap,
+                                   create=True), \
+                 mock.patch.object(pl.os, "scandir", return_value=nullcontext(ordered)):
+                too_large = pl.assess_context_provenance(
+                    store, ["tech-stack", "code-map"], snapshot,
+                    snapshot_probe=current)
+            self.assertEqual(too_large["documents"]["code-map"], "oversize")
+            self.assertEqual(too_large["documents"]["tech-stack"], "v2_current")
+            self.assertEqual(too_large["coverage"], "incomplete")
+
+            Path(store, "code-map.json").write_text(json.dumps(self._v2("code-map")),
+                                                      encoding="utf-8")
+            with os.scandir(store) as scan:
+                entries = {entry.name: entry for entry in scan}
+            ordered = [entries["tech-stack.json"], entries["code-map.json"]]
+            with mock.patch.object(pl, "MAX_CONTEXT_STORE_BYTES", len(good_bytes) + 8,
+                                   create=True), \
+                 mock.patch.object(pl.os, "scandir", return_value=nullcontext(ordered)):
+                aggregate = pl.assess_context_provenance(
+                    store, ["tech-stack", "code-map"], snapshot,
+                    snapshot_probe=current)
+            self.assertEqual(aggregate["documents"]["tech-stack"], "v2_current")
+            self.assertEqual(aggregate["documents"]["code-map"], "oversize")
+            self.assertEqual(aggregate["coverage"], "incomplete")
+
+            Path(store, "extra.json").write_text("{}", encoding="utf-8")
+            with os.scandir(store) as scan:
+                entries = {entry.name: entry for entry in scan}
+
+            def count_limited():
+                yield entries["tech-stack.json"]
+                yield entries["code-map.json"]
+                yield entries["extra.json"]
+                raise AssertionError("scandir consumed beyond finite file limit")
+
+            with mock.patch.object(pl, "MAX_CONTEXT_STORE_FILES", 2, create=True), \
+                 mock.patch.object(pl.os, "scandir", return_value=nullcontext(count_limited())):
+                truncated = pl.assess_context_provenance(
+                    store, ["tech-stack", "code-map"], snapshot,
+                    snapshot_probe=current)
+            self.assertEqual(truncated["coverage"], "incomplete")
+            self.assertEqual(truncated["documents"]["tech-stack"], "v2_current")
+            Path(store, "extra.json").unlink()
+            Path(store, "code-map.json").unlink()
+            partial = pl.assess_context_provenance(
+                store, ["tech-stack"], snapshot,
+                snapshot_probe=lambda _: (_ for _ in ()).throw(OSError("partial hash")))
+            self.assertEqual(partial["coverage"], "incomplete")
+            self.assertEqual(partial["identity"], "unknown")
+            self.assertNotEqual(partial["documents"]["tech-stack"], "v2_current")
+            self.assertFalse(partial["verified_fresh"])
+            # A changed digest with only an identity acknowledgement remains stale.
+            stale = dict(snapshot)
+            stale["source"] = dict(snapshot["source"])
+            stale["source"]["files"] = {"package.json": {
+                "digest_method": "sha256-raw", "digest": "d" * 64}}
+            drifted = pl.assess_context_provenance(store, ["tech-stack"], stale,
+                                                   snapshot_probe=current)
+            self.assertEqual(drifted["documents"]["tech-stack"], "v2_stale")
+            self.assertEqual(drifted["identity"], "stale")
+
+    def test_t009_context_provenance_v2_positive_controls(self):
+        """Closed v2 round trip and current identities do not mint semantic authority."""
+        import copy
+        import hashlib
+
+        record = self._v2()
+        self.assertTrue(pl.valid_provenance_record(record))
+        self.assertEqual(pl.new_record("tech-stack", created="2026-09-27")["schema"], 1)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "tech-stack.json")
+            prior = pl.new_record("tech-stack", created="2026-09-27")
+            pl.write_provenance(path, prior)
+            before = Path(path).read_bytes()
+            prior_digest = hashlib.sha256(before).hexdigest()
+            observed = []
+
+            def capability_probe(contract, hosts):
+                observed.append((contract, tuple(hosts)))
+                return {"contract": contract, "producer": {"status": "supported",
+                        "contract": contract}, "consumers": {
+                            host: {"status": "supported", "contract": contract}
+                            for host in hosts}}
+
+            def ownership_probe(candidate_digest, doc, fields):
+                return {"status": "accepted", "record_digest": candidate_digest,
+                        "doc": doc, "field_ids": list(fields)}
+
+            pl.write_provenance(path, record, capability_probe=capability_probe,
+                                ownership_probe=ownership_probe,
+                                expected_previous_sha256=prior_digest)
+            self.assertEqual(pl.read_provenance(path), record)
+            self.assertEqual(observed, [(pl.V2_CONTRACT, tuple(pl.V2_HOSTS))])
+            self.assertNotEqual(Path(path).read_bytes(), before)
+            self.assertEqual(prior, pl.new_record("tech-stack", created="2026-09-27"))
+            v2_bytes = Path(path).read_bytes()
+            with self.assertRaises(ValueError):
+                pl.write_provenance(path, prior)
+            self.assertEqual(Path(path).read_bytes(), v2_bytes)
+
+            # A complete current snapshot can establish identity only. The stored
+            # review label/reference and inert authority reference are not receipts.
+            snap = {
+                "source": {"files": {"package.json": {"digest_method": "sha256-raw",
+                                                    "digest": "b" * 64}},
+                           "membership": [{"predicate": "manifests", "scope_paths": ["."],
+                                           "digest_method": "sha256-membership-v1",
+                                           "digest": "c" * 64}]},
+                "targets": {".codearbiter/tech-stack.md": {"status": "file",
+                            "digest_method": "sha256-raw", "digest": "a" * 64}},
+            }
+            status = pl.assess_context_provenance(
+                tmp, ["tech-stack"], snap,
+                snapshot_probe=lambda _: {"source_current": True,
+                                          "targets_current": True})
+            self.assertEqual(status["coverage"], "complete")
+            self.assertEqual(status["identity"], "current")
+            self.assertEqual(status["semantic"], "unverified")
+            self.assertFalse(status["verified_fresh"])
+            self.assertEqual(record, copy.deepcopy(pl.read_provenance(path)))
+
+    def test_t009_context_provenance_v2_negative_controls(self):
+        """Old, partial, unsupported and falsely approved records fail closed."""
+        import copy
+        import hashlib
+
+        good = self._v2()
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError):
+                pl.write_provenance(os.path.join(tmp, "unguarded.json"), good)
+        invalid = []
+        for change in (
+            lambda r: r.update(approved=True),
+            lambda r: r["fields"][0]["claims"][0].update(id="FIELD-RUNTIME"),
+            lambda r: r["fields"][0]["claims"][0]["evidence"][0].update(
+                digest_method="git-oid"),
+            lambda r: r["fields"][0]["claims"][0]["evidence"][1].update(
+                predicate=".*"),
+            lambda r: r["fields"][0]["claims"][0]["semantic_review"].update(
+                state="approved"),
+        ):
+            candidate = copy.deepcopy(good)
+            change(candidate)
+            invalid.append(candidate)
+        for candidate in invalid:
+            self.assertFalse(pl.valid_provenance_record(candidate))
+
+        legacy = pl.new_record("tech-stack", created="2026-09-27")
+        self.assertTrue(pl.valid_provenance_record(legacy))
+
+        def assess_fixture(records, expected, snapshot, snapshot_probe):
+            with tempfile.TemporaryDirectory() as store:
+                for name, item in records.items():
+                    with open(os.path.join(store, name + ".json"), "w", encoding="utf-8") as f:
+                        f.write(item if isinstance(item, str) else json.dumps(item))
+                return pl.assess_context_provenance(store, expected, snapshot,
+                                                     snapshot_probe=snapshot_probe)
+
+        statuses = [
+            assess_fixture(records, ["tech-stack", "code-map"], {},
+                           lambda _: {"source_current": True,
+                                      "targets_current": True})
+            for records in ({}, {"tech-stack": legacy},
+                            {"tech-stack": good},
+                            {"tech-stack": good, "code-map": {"schema": 99}})
+        ]
+        self.assertTrue(all(s["coverage"] == "incomplete" and not s["verified_fresh"]
+                            for s in statuses))
+        self.assertEqual(statuses[1]["documents"].get("tech-stack"), "legacy_unverified")
+        self.assertEqual(assess_fixture(
+            {"tech-stack": good}, ["tech-stack"], {},
+            lambda _: {"source_current": False,
+                       "targets_current": True})["identity"], "stale")
+        self.assertEqual(assess_fixture(
+            {"tech-stack": good}, ["tech-stack"], {},
+            lambda _: (_ for _ in ()).throw(OSError("partial hash"))
+        )["identity"], "unknown")
+        self.assertEqual(assess_fixture(
+            {"tech-stack": good}, ["tech-stack"], {},
+            lambda _: (_ for _ in ()).throw(OSError("partial hash"))
+        )["coverage"], "incomplete")
+        self.assertEqual(assess_fixture(
+            {"tech-stack": good}, ["tech-stack"],
+            {"source": {"files": {}, "membership": []}, "targets": {}},
+            lambda _: {"source_current": True, "targets_current": True}
+        )["coverage"], "incomplete")
+        self.assertEqual(pl.assess_context_provenance(
+            {}, [["unhashable"]], {}, snapshot_probe=lambda _: True
+        )["coverage"], "incomplete")
+        for records in (
+            {"tech-stack": good, "extra": "{corrupt"},
+            {"tech-stack": good, "shadow": good},
+            {"tech-stack": good, "extra": {"schema": 99}},
+        ):
+            self.assertEqual(assess_fixture(
+                records, ["tech-stack"], {},
+                lambda _: {"source_current": True, "targets_current": True}
+            )["coverage"], "incomplete")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "tech-stack.json")
+            neighbour = os.path.join(tmp, "unsupported.json")
+            pl.write_provenance(path, legacy)
+            with open(neighbour, "wb") as f:
+                f.write(b'{"schema":99,"unknown":"keep exactly"}\n')
+            before = Path(path).read_bytes()
+            neighbour_before = Path(neighbour).read_bytes()
+            digest = hashlib.sha256(before).hexdigest()
+            admitted = lambda contract, hosts: {
+                "contract": contract, "producer": {"status": "supported", "contract": contract},
+                "consumers": {host: {"status": "supported", "contract": contract}
+                              for host in hosts}}
+            accepted = lambda candidate_digest, doc, fields: {
+                "status": "accepted", "record_digest": candidate_digest,
+                "doc": doc, "field_ids": list(fields)}
+            alias = os.path.join(tmp, "shadow.json")
+            with self.assertRaises(ValueError):
+                pl.write_provenance(alias, good, capability_probe=admitted,
+                                    ownership_probe=accepted,
+                                    expected_previous_sha256="absent")
+            self.assertFalse(os.path.exists(alias))
+            failures = [
+                {},
+                {"capability_probe": lambda *args: True,
+                 "ownership_probe": accepted, "expected_previous_sha256": digest},
+                {"capability_probe": lambda contract, hosts: {
+                    "contract": contract, "producer": {"status": "supported",
+                                                    "contract": contract},
+                    "consumers": {host: {"status": "unsupported", "contract": contract}
+                                  for host in hosts}},
+                 "ownership_probe": accepted, "expected_previous_sha256": digest},
+                {"capability_probe": admitted, "ownership_probe": lambda *args: True,
+                 "expected_previous_sha256": digest},
+                {"capability_probe": admitted, "ownership_probe": accepted,
+                 "expected_previous_sha256": "0" * 64},
+            ]
+            for kwargs in failures:
+                with self.subTest(kwargs=tuple(kwargs)):
+                    with self.assertRaises(ValueError):
+                        pl.write_provenance(path, good, **kwargs)
+                    self.assertEqual(Path(path).read_bytes(), before)
+                    self.assertEqual(Path(neighbour).read_bytes(), neighbour_before)
+            # An unsupported record at the *target* also remains byte-for-byte
+            # intact, even when fixture probes report compatible consumers.
+            with open(path, "wb") as f:
+                f.write(b'{"schema":99,"unknown":"retain this target"}\n')
+            unsupported_before = Path(path).read_bytes()
+            with self.assertRaises(ValueError):
+                pl.write_provenance(
+                    path, good, capability_probe=admitted,
+                    ownership_probe=accepted,
+                    expected_previous_sha256=hashlib.sha256(unsupported_before).hexdigest())
+            self.assertEqual(Path(path).read_bytes(), unsupported_before)
+
+            # Legacy callers share the same store: malformed or newer records
+            # are not an absent slot they may silently replace with schema 1.
+            for prior_bytes in (
+                b'{"schema":99,"unknown":"retain this target"}\n',
+                b'{"schema":2,"doc":"tech-stack","incomplete":true}\n',
+                b'{unfinished human edit',
+                b'\xff\xfe',
+                b'',
+            ):
+                with self.subTest(legacy_prior=prior_bytes):
+                    Path(path).write_bytes(prior_bytes)
+                    with self.assertRaisesRegex(ValueError, "UNSUPPORTED_PREVIOUS_RECORD"):
+                        pl.write_provenance(path, legacy)
+                    self.assertEqual(Path(path).read_bytes(), prior_bytes)
+                    self.assertEqual(Path(neighbour).read_bytes(), neighbour_before)
 
 
 if __name__ == "__main__":

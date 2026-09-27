@@ -76,12 +76,10 @@ class PayloadDerivationTest(unittest.TestCase):
             },
         )
 
-    def test_stub_payloads_are_not_derived(self):
-        # The two per-host router stubs render from a DIFFERENT source
-        # template (commands/release.md) and carry no prose of their own
-        # (test_consumer_smoke.py proves that directly); this function
-        # only ever resolves skills/release/SKILL.md, so neither stub path
-        # can appear here regardless of what core/hosts.json says.
+    def test_composed_commands_do_not_become_independent_owner_proof(self):
+        # Public commands now compose the full owner, but the recorded exercise
+        # remains bound to a direct owner rendering. Composition/parity and the
+        # five-payload consumer scan do not invent another host's agent proof.
         payloads = G.full_prose_release_skill_payloads()
         self.assertNotIn("plugins/ca-codex/skills/ca-release/SKILL.md", payloads)
         self.assertNotIn("plugins/ca-pi/skills/ca-release/SKILL.md", payloads)

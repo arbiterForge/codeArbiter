@@ -1616,3 +1616,21 @@ Options: (a) commit the 1,723-line month-old accumulation with the feature; (b) 
   Qualification starts at zero on this date; the June 2026 run earns no credit. Material farm or
   provider/model-set change before promotion invalidates affected evidence. Promotion is stable
   opt-in only and does not enable typed-HTML farm projection. Strength: strong.
+
+## BROWNFIELD-SD-20260926-01 — reuse the bounded existing fixture unit · confidence: high · intent: per user PR continuation and approved T-001 source reconciliation
+
+- **Point:** The approved plan is in the #872 worktree, while the previously delivered fixture unit is in #873. T-001 must test the actual integrated execution root.
+- **Options:** (a) import all of #873 and its farm ancestry; (b) reuse only the existing fixture module, stdlib helper and catalog, with its fixture CI trigger/filter/runner and exact guard inventory; (c) redirect tests to another checkout.
+- **SMARTS:**
+
+  | Lens | Whole branch | Bounded fixture closure | External checkout tests |
+  |---|---|---|---|
+  | Scalable | Weak. It couples independent campaigns and farm changes. | Adequate. Later units can retain their separate dependency boundaries. | Weak. Each workspace adds another implicit external dependency. |
+  | Maintainable | Weak. It imports unrelated owners and release edits. | Strong. Exact source blobs and the small integration delta remain reviewable. | Weak. Test roots no longer match their execution plan. |
+  | Available | Adequate. The branch is locally available. | Strong. The unit needs only local Git objects and stdlib dependencies. | Weak. Results depend on another mutable checkout. |
+  | Reliable | Weak. Unrelated changes enlarge conflict and provenance risks. | Strong. Preserve source assertions and bind the actual current CI inventory. | Weak. Passing results do not prove the planned execution root. |
+  | Testable | Weak. Additional runners need unrelated unfinished integration. | Strong. Existing fixture and CI mutation tests discriminate omitted filters, runners and guard entries. | Weak. Tests can pass while the execution root remains incomplete. |
+  | Securable | Weak. It exceeds the approved owner-import boundary. | Strong. No farm owner, package version, dependency or authority tool changes. | Weak. Cross-checkout rescue obscures the proof boundary. |
+
+- **Chosen:** (b), strength strong. Source commit `4e2a02f19f2ec23c0b50c221a24cf518fec9f573`; reuse `.github/scripts/test_context_fixtures.py`, `.github/scripts/_context_fixturelib.py`, and `.github/fixtures/context-onboarding/cases.json`. Adapt only `.github/workflows/ci.yml` and `.github/scripts/test_hook_ci_partition.py` for that fixture runner. Do not import report/evaluation runners, other product helpers, farm owners, package versions or releases.
+- **Authority and evidence:** The user already requested continuing #854 and the related PRs, including brownfield, and then approved this campaign's specification and plan. This is integration of previously delivered source work within that scope. It does not accept T-001/T-002, approve a new host/provider/install action, or satisfy debug's owner gate. Observe missing-CI regressions before wiring the fixture and preserve independent native verification/review requirements. Full source identities are retained in the task evidence.
