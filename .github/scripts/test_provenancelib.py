@@ -2843,5 +2843,120 @@ class TestReleaseTargetsTriggers(unittest.TestCase):
         self.assertTrue(any("declared but not recorded" in e for e in errors))
 
 
+
+
+class SharedSourceHealingTest(unittest.TestCase):
+    """One fresh dependent must not hide another document's stale evidence."""
+
+    @staticmethod
+    def record(doc, hash_value, trigger=True, path="package.json"):
+        return pl.new_record(doc, created="2026-09-25", entries=[
+            {"path": path, "hash": hash_value, "drift_trigger": trigger, "claims": []}])
+
+    def test_fresh_first_document_does_not_hide_stale_second(self):
+        records = {"fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old")}
+        current = {"package.json": "current"}
+        self.assertEqual(pl.compute_drift(records, current),
+                         {"stale": [{"path": "package.json", "kind": "changed"}]})
+        self.assertEqual(pl.heal_worklist(["package.json"], records, current), ["package.json"])
+
+    def test_all_document_orders_preserve_stale_dependents(self):
+        import itertools
+        records = [self.record("fresh", "current"), self.record("old", "old"),
+                   self.record("older", "older")]
+        for order in itertools.permutations(records):
+            with self.subTest(order=[r["doc"] for r in order]):
+                by_doc = {r["doc"]: r for r in order}
+                self.assertEqual(pl.heal_worklist(["package.json"], by_doc,
+                                                 {"package.json": "current"}), ["package.json"])
+                self.assertEqual(set(pl.compute_drift(by_doc, {"package.json": "current"})),
+                                 {"old", "older"})
+
+    def test_duplicate_entries_do_not_make_first_hash_authoritative(self):
+        record = self.record("stack", "current")
+        record["entries"] += self.record("stack", "old")["entries"]
+        self.assertEqual(pl.heal_worklist(["package.json"], {"stack": record},
+                                         {"package.json": "current"}), ["package.json"])
+
+    def test_all_fresh_sources_remain_noop(self):
+        records = {name: self.record(name, "current") for name in ("a", "b")}
+        self.assertEqual(pl.heal_worklist(["package.json"], records,
+                                         {"package.json": "current"}), [])
+
+    def test_disabled_stale_dependency_does_not_trigger_healing(self):
+        records = {"fresh": self.record("fresh", "current"),
+                   "inactive": self.record("inactive", "old", False)}
+        self.assertEqual(pl.heal_worklist(["package.json"], records,
+                                         {"package.json": "current"}), [])
+
+    def test_staged_order_dedup_and_document_scope_remain_stable(self):
+        records = {"fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old"),
+                   "deleted": self.record("deleted", "old", path="go.mod"),
+                   "unstaged": self.record("unstaged", "old", path="Cargo.toml")}
+        current = {"package.json": "current"}
+        self.assertEqual(pl.heal_worklist(["go.mod", "package.json", "go.mod", "README.md"],
+                                         records, current), ["go.mod", "package.json"])
+        drift = pl.compute_drift(records, current)
+        self.assertEqual(pl.changed_scope(records["stale"], drift), ["package.json"])
+        self.assertNotIn("fresh", drift)
+
+    def test_malformed_neighbors_do_not_hide_valid_stale_evidence(self):
+        records = {"bad": None, "fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old")}
+        records["fresh"]["entries"].extend([None, [], {"path": [], "drift_trigger": True}])
+        self.assertEqual(pl.heal_worklist([None, [], "package.json"], records,
+                                         {"package.json": "current"}), ["package.json"])
+
+    def test_worklist_is_pure_and_does_not_rebaseline(self):
+        import copy
+        records = {"fresh": self.record("fresh", "current"),
+                   "stale": self.record("stale", "old")}
+        paths, hashes = ["package.json"], {"package.json": "current"}
+        before = copy.deepcopy((records, paths, hashes))
+        pl.heal_worklist(paths, records, hashes)
+        self.assertEqual((records, paths, hashes), before)
+
+
+class CodeMapByteBudgetTest(unittest.TestCase):
+    """Entry count alone does not bound the context cost of one enormous role."""
+
+    def test_map_byte_budget_is_explicit(self):
+        self.assertEqual(getattr(pl, "CODE_MAP_MAX_BYTES", None), 20 * 1024)
+
+    def test_single_oversized_role_is_diagnosed(self):
+        result = pl.lint_code_map("- `src/` -- " + "x" * 100000)
+        self.assertTrue(any("bytes" in warning for warning in result), result)
+
+    def test_utf8_bytes_not_character_count(self):
+        value = "# Map\n" + "é" * 11000
+        self.assertLess(len(value), 20 * 1024)
+        self.assertTrue(any("bytes" in warning for warning in pl.lint_code_map(value)))
+
+    def test_exact_budget_passes_and_one_byte_over_warns(self):
+        prefix = "- `src/` -- "
+        value = prefix + "x" * (20 * 1024 - len(prefix))
+        self.assertEqual(pl.lint_code_map(value), [])
+        self.assertTrue(any("bytes" in warning for warning in pl.lint_code_map(value + "x")))
+
+    def test_bad_unicode_is_not_a_clean_result(self):
+        result = pl.lint_code_map("- `src/` -- \ud800")
+        self.assertTrue(result)
+        self.assertTrue(all(warning.isascii() for warning in result))
+
+    def test_existing_entry_and_multiline_checks_still_run(self):
+        value = "\n".join("- `src/%d` -- role" % n for n in range(51))
+        value += "\n  continuation" + "x" * (20 * 1024)
+        result = pl.lint_code_map(value)
+        self.assertTrue(any("bytes" in warning for warning in result))
+        self.assertTrue(any("entries" in warning for warning in result))
+        self.assertTrue(any("multi-line" in warning for warning in result))
+
+    def test_empty_advisory_map_still_has_no_violations(self):
+        for value in (None, ""):
+            self.assertEqual(pl.lint_code_map(value), [])
+
+
 if __name__ == "__main__":
     unittest.main()
