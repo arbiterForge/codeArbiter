@@ -130,6 +130,11 @@ The local corpus scanned was 23 parent transcripts, 92 delegated transcripts and
    - `relocated`, `agent-name`, `custom-title`, `system`, `user`, `fork-context-ref`.
    - `cost-state` records hold the host's own cumulative per-model usage, including hidden side-query models such as Haiku title generation, which appear in no transcript usage record, and host model labels like `claude-opus-5[1m]`. They are host evidence, not reconstructed usage.
 9. **Child metadata:** `<session>/subagents/agent-*.meta.json` carries `agentType`, `description` and `spawnDepth`. Accounting discovery must glob `*.jsonl` only.
+10. **Line sizes:**
+    - The largest line in the corpus is 279 KB (a `user` record). Assistant lines reach at most 118 KB, and no line exceeds 1 MiB.
+    - In assistant lines, `"type":"assistant"` is *not* near the start of the line (p50 offset 1.6 KB, max 118 KB), so a cheap prefix check cannot classify a line.
+    - The `"usage":` key always sits within 49 KB of the line's end (p99 13.5 KB).
+    - Escaped occurrences inside content (`\"usage\"`) do not contain the byte sequence `"usage":`.
 
 ## User-facing accounting contract
 
@@ -472,9 +477,14 @@ Each render has explicit budgets:
 - **Accounting byte budget** — total transcript bytes read across sources.
 - **Record budget** — records decoded.
 - **Source budget** — sources opened.
-- **Per-record byte ceiling** — a single JSONL line longer than the ceiling is consumed without being decoded.
+- **Per-record byte ceiling** — 4 MiB, about 14× the largest line observed (observation 10). A single JSONL line longer than the ceiling is consumed without being decoded.
 
-An oversized line is still consumed deterministically: the scanner advances past its terminating newline. If the line's terminator lies beyond the render's byte budget, the scanner persists a *skip-until-newline* position and continues next render. The oversized line records `oversized_record` and makes coverage partial. It is never silently skipped as though it held no usage.
+An oversized line is still consumed deterministically: the scanner advances past its terminating newline. If the line's terminator lies beyond the render's byte budget, the scanner persists a *skip-until-newline* position and continues next render.
+
+While passing over the line, the scanner retains only its final 64 KiB. That window covers the observed usage position with more than 1.3× headroom.
+
+- If that tail contains the byte sequence `"usage":`, the line is **usage-bearing**. It records `oversized_record` and makes coverage partial, never being silently skipped as though it held no usage.
+- Otherwise it is a non-usage line, such as a large `user`/`attachment` tool result or image, and it is ignored without affecting coverage.
 
 Reads are line-streamed from the stored offset. The remaining tail is never read whole.
 
@@ -549,10 +559,12 @@ Remove statements that `cost.total_cost_usd` is authoritative, "real", guarantee
 
 Steady-state statusline cost must be equal to or lower than on `main`. Structural I/O is the gated measure, because CI timing is noisy. Wall-clock is compared as an acceptance artifact.
 
-- **No-change render** (no source's `stat` changed, no new source discovered):
+- **No-change render** means: no source's `stat` changed, no new source was discovered, the host estimate payload is unchanged, and the ledger heartbeat (`LEDGER_HEARTBEAT`, 300 s, which keeps a live session inside its TTL) is not due. Such a render has:
   - zero transcript content bytes read;
   - zero ledger files written;
   - zero request-evidence partitions deserialized.
+- **Host-only change:** a changed host estimate rewrites the compact summary only, reading no transcript bytes and no evidence partitions.
+- **Heartbeat:** the heartbeat write happens at most once per `LEDGER_HEARTBEAT` and touches only the compact summary. It is intentional, and it is tested so that it is neither removed nor multiplied.
 - **Incremental render:** transcript bytes read ≤ the accounting byte budget, plus at most two bounded fingerprint windows per changed source.
 - **Single decode:** each JSONL record is decoded at most once per render, by the accounting scanner only. Presentation decodes no JSONL.
 - **History scaling:** the work of a no-change render, and of an incremental render with *k* new records, does not grow with the count of already-accepted requests. Fixtures at 1k, 10k and 100k accepted requests demonstrate this through counters of bytes deserialized and evidence partitions loaded (D-21).
@@ -563,7 +575,7 @@ Steady-state statusline cost must be equal to or lower than on `main`. Structura
   - warm no-change renders;
   - incremental renders.
 
-  The benchmark counts file opens, bytes read, bytes decoded, ledger writes, and elapsed time. The candidate's structural counters for no-change and incremental renders are ≤ base. Warm-render median and p95 on identical fixtures and the same machine are ≤ base × 1.05, and the report is retained in the implementation PR.
+  Production runs one fresh process per render, so the benchmark does the same. It drives the stable external entry point — the statusline script, with a JSON status payload on stdin and `HOME`/ledger/transcript roots redirected by environment variable — as **one subprocess per render**, so that import cost is measured. A small wrapper installs a `sys.audit` hook plus read/write accounting in that child process, so the identical harness runs unchanged against base and head. It counts file opens, bytes read, bytes decoded, ledger writes, and elapsed time. The candidate's structural counters for no-change and incremental renders are ≤ base. Warm-render median and p95 on identical fixtures and the same machine are ≤ base × 1.05, and the report is retained in the implementation PR.
 
 ### D-21 — Derived totals are maintained incrementally
 
@@ -574,7 +586,9 @@ Normalized request records remain the authoritative evidence. Renders read **der
 - session totals;
 - a compact per-session summary, consisting of Session + per-day totals, coverage, offsets, fingerprints, presentation summaries and the host estimate.
 
-Request evidence is stored so that an incremental render deserializes only what its new records touch. One way is to partition it by identity-hash bucket, keeping the compact summary separate from the evidence. The layout is implementation-owned, provided D-20's history-scaling counters hold.
+Request evidence is stored so that an incremental render deserializes only the partitions its new records touch, and the compact summary is stored separately from the evidence.
+
+**Every evidence partition has a fixed maximum size**, a named constant. A partition that would exceed it splits, for example by extending its identity-hash prefix. A fixed bucket count that grows O(history/B) does not satisfy this rule. The layout is otherwise implementation-owned, provided D-20's history-scaling counters hold.
 
 Full rebuild of the derived state occurs only in these cases:
 
@@ -599,16 +613,21 @@ See D-2. `max_seen` is the displayed `host≈` value, which makes the tracked ma
 
 ### D-24 — Malformed records affect coverage, not rendering
 
-Rendering stays fail-soft. Accounting records its uncertainty. A consumed record is `malformed_record`, and coverage becomes partial, when its shape prevents determining whether it represented billable usage. That covers:
+Rendering stays fail-soft. Accounting records its uncertainty. A consumed record is `malformed_record`, and coverage becomes partial, when its shape prevents determining whether it represented billable usage.
 
-- undecodable JSON;
-- valid JSON that is not an object, on a line that otherwise looks like an assistant record. The implementation defines this with a cheap byte-level check;
+One rule applies to undecodable, non-object and oversized lines alike. A line is **usage-bearing** when its bytes contain `"usage":` (observation 10). Only usage-bearing lines can affect coverage. The cases are:
+
+- a usage-bearing line that is undecodable JSON, or is valid JSON but not an object;
 - an assistant record whose `usage` is present but not an object;
 - non-finite, negative or boolean counters;
 - fractional token counters;
 - counters above a sanity ceiling.
 
-Recognized non-usage record types (observation 8), and unknown record types with no `message.usage`, are ignored without affecting coverage.
+These are ignored without affecting coverage:
+
+- recognized non-usage record types (observation 8);
+- unknown record types with no `message.usage`;
+- non-usage-bearing undecodable or oversized lines.
 
 ### D-25 — Discovery is bounded
 
@@ -622,18 +641,25 @@ For a record with `usage.iterations`:
 
 - The top-level counters represent the `type:"message"` iterations (observation 2). They are priced at the record's model.
 - Each `type:"advisor_message"` iteration is a separate charge component. It is priced at *that iteration's* `model`, with its own input/output/cache counters, and attributed to the same request identity and event time.
+- Iterations are aggregated in two stages:
+  1. **Within one representation**, iterations of the same (type, model) are **summed**, because one turn can contain several advisor calls.
+  2. **Across representations** of the request, those sums reconcile by **maximum** (D-6).
+
+  Taking the maximum per individual iteration would undercount.
 - An iteration of any other `type` with non-zero counters makes coverage partial (`unknown_iteration`).
 - An advisor iteration without a model, or with an unknown one, counts its tokens and makes coverage partial (`unknown_model`).
 
-Advisor components reconcile across representations by maximum per (iteration type, model, component) under D-6. Their tokens appear in Session/Today token totals.
+Advisor tokens appear in Session/Today token totals.
 
 ### D-27 — Observed price modifiers are priced explicitly or make coverage partial
 
 - `speed`: `standard` or absent is standard. `fast` is priced only for models with a published fast rate (Opus 5.5, Opus 5, Opus 4.8), using the registry's fast rates, with the cache multipliers applied on top as published. Otherwise `unpriced_modifier`.
-- `inference_geo`: absent, `not_available` or `global` is standard; `not_available` is the host's report for default routing. `us` applies the published 1.1× multiplier on models 4.6 and later. Any other value is `unpriced_modifier`.
+- `inference_geo`: absent, `not_available` or `global` is standard. `us` applies the published 1.1× multiplier on models 4.6 and later. Any other value is `unpriced_modifier`.
 - `service_tier`: `standard` or absent is standard. Any other value is `unpriced_modifier`.
 
-Absence of an opt-in modifier is treated as standard because the corresponding request parameter defaults to standard. That is the documented default, not a guess about an observed value.
+**Documented default:** `speed`, `inference_geo` and `service_tier` are opt-in request parameters, and each defaults to standard pricing. That is why an absent field is treated as standard.
+
+**Assumption:** treating `inference_geo: "not_available"` as standard is an *inference*, not documented host behavior. It is the only value observed across 18,412 records from a Claude Code install that never opted into data residency. The rule is isolated in the modifier table, so that a contrary observation changes one entry. T-02 records this assumption with the fixtures.
 
 ## Logical ledger model
 
@@ -839,23 +865,32 @@ The statusline is not required to add another reconciliation segment. The diagno
 
 - **AC-38 — Malformed-record coverage.** Every D-24 case is covered:
 
-  - malformed JSON on an assistant-looking line;
+  - undecodable or non-object JSON on a usage-bearing line;
   - non-object usage;
   - non-finite, negative, boolean and fractional counters;
   - counters above the ceiling;
-  - an oversized record.
+  - an oversized usage-bearing record.
 
-  Each advances the scanner and makes coverage partial with the right reason. Unknown non-usage record types, and every observed non-usage type in observation 8, leave coverage complete.
+  Each advances the scanner and makes coverage partial with the right reason.
+
+  These leave coverage complete:
+
+  - unknown non-usage record types;
+  - every observed non-usage type in observation 8;
+  - an undecodable or oversized line without `"usage":`, e.g. a large `user` tool result;
+  - escaped `\"usage\"` text inside content.
 
 - **AC-39 — Performance contract.** The D-20 benchmark exists in a commit preceding implementation code, and its base report is recorded. Structural I/O tests show:
 
-  - a no-change render reads zero transcript content bytes, writes zero ledger files and deserializes zero evidence partitions, with 0/1/12/13/64 children;
+  - a no-change render (as defined in D-20) reads zero transcript content bytes, writes zero ledger files and deserializes zero evidence partitions, with 0/1/12/13/64 children;
+  - a host-only change writes only the compact summary;
+  - the heartbeat writes at most once per `LEDGER_HEARTBEAT`;
   - an incremental render stays within budget;
   - presentation decodes no JSONL.
 
-  The candidate's structural counters are ≤ base. Its warm median and p95 are ≤ base × 1.05 on identical fixtures and the same machine, with the report retained in the PR.
+  The benchmark runs one subprocess per render through the statusline entry point, with counters taken by an in-child audit wrapper. The candidate's structural counters are ≤ base. Its warm median and p95 are ≤ base × 1.05 on identical fixtures and the same machine, with the report retained in the PR.
 
-- **AC-40 — History scaling.** At 1k, 10k and 100k accepted requests, a no-change render and a *k*-new-record incremental render deserialize the same number of bytes, independent of history size, within the evidence-partition bound. Derived totals equal a from-scratch recomputation.
+- **AC-40 — History scaling.** At 1k, 10k and 100k accepted requests, a no-change render deserializes no evidence. A *k*-new-record incremental render deserializes at most *k* partitions, each no larger than the fixed maximum partition size. A test grows one partition past that maximum and asserts that it splits. Derived totals equal a from-scratch recomputation.
 
 - **AC-41 — Non-blocking lock, no false zeros.** Hold the ledger lock in another process. A render returns within the try-lock bound plus render time, shows the last committed snapshot flagged stale with its coverage preserved, and never shows `$0`/zero tokens that the snapshot does not contain. With no snapshot, it shows unavailable rather than zero.
 
@@ -863,7 +898,7 @@ The statusline is not required to add another reconciliation segment. The diagno
 
 - **AC-43 — Cross-midnight replay.** Two representations of one request fall on opposite sides of midnight, in parent and child and in both arrival orders. The request is attributed by minimum event time, deterministically, and the affected day scopes carry `conflicting_event_day`. No arrival order moves the spend.
 
-- **AC-44 — Advisor iterations.** A fixture follows the observed 3-iteration shape: `message`, `advisor_message` on another model, `message`. It prices the top-level counters at the record's model and the advisor iteration at its own model, each exactly once across streaming snapshots, and advisor tokens appear in token totals. An unknown iteration type with non-zero counters makes coverage partial.
+- **AC-44 — Advisor iterations.** A fixture follows the observed 3-iteration shape: `message`, `advisor_message` on another model, `message`. It prices the top-level counters at the record's model and the advisor iteration at its own model, each exactly once across streaming snapshots, and advisor tokens appear in token totals. A turn with **two** advisor calls on the same model sums both within the representation before reconciling by maximum across representations. An unknown iteration type with non-zero counters makes coverage partial.
 
 - **AC-45 — Price modifiers.** Coverage behaves as follows:
 
@@ -878,7 +913,7 @@ The statusline is not required to add another reconciliation segment. The diagno
 
 - **AC-48 — Discovery bound.** A session directory with more JSONL entries than the discovery bound does not trigger an unbounded walk. Known sources are retained and coverage is partial (`discovery_bound`). Within the bound, every child is accounted.
 
-- **AC-49 — Oversized record progress.** A single JSONL line larger than the per-record ceiling, including one larger than a render's byte budget, is passed deterministically across renders, with no wedge and no unbounded read. It marks `oversized_record`, and the following records are consumed exactly once.
+- **AC-49 — Oversized record progress.** A single JSONL line larger than the per-record ceiling, including one larger than a render's byte budget, is passed deterministically across renders, with no wedge and no unbounded read. A usage-bearing oversized line (`"usage":` in its final 64 KiB) marks `oversized_record`. A non-usage oversized line leaves coverage unchanged. In both cases the following records are consumed exactly once.
 
 - **AC-50 — Presentation from summaries.** The subagent panel renders from ledger presentation summaries and filesystem metadata alone. An instrumented test proves that `_subagentslib` opens no child JSONL, and that its rows, labels and liveness match the pre-change output for equivalent fixtures.
 
