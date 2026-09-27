@@ -34,3 +34,4 @@ premium (Max-pool) path. That is the revert signal for the farm experiment.
 ## Other
 
 - `statusline-screenshot.py` — renders a sample of the codeArbiter statusline.
+- `statusline-bench.py` — deterministic statusline accounting benchmark: one subprocess per render through `plugins/ca/hooks/statusline.py`, with structural I/O counters taken in-child; `run` writes a report, `compare` gates head against base.

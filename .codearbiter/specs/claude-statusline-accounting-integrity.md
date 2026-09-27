@@ -37,6 +37,7 @@
   - The top-level cache TTL split is stale on multi-iteration records (D-9).
   - `<synthetic>` records are non-billable (D-8).
   - Price modifiers are present in the records (D-27).
+- **2026-09-27 (at implementation start):** the usage-bearing test now requires both `"usage":` and `"type":"assistant"`, because attachment task-notifications carry a `usage` summary (observation 10). v2 state uses new file names alongside legacy shards, so that older statusline processes still running cannot ping-pong the schema.
 - AC-01..AC-34 keep their numbers. AC-08, AC-09, AC-15, AC-16, AC-22, AC-23, AC-28 and AC-30 are rewritten in place. AC-35..AC-52 are new.
 
 ## Intent
@@ -135,6 +136,8 @@ The local corpus scanned was 23 parent transcripts, 92 delegated transcripts and
     - In assistant lines, `"type":"assistant"` is *not* near the start of the line (p50 offset 1.6 KB, max 118 KB), so a cheap prefix check cannot classify a line.
     - The `"usage":` key always sits within 49 KB of the line's end (p99 13.5 KB).
     - Escaped occurrences inside content (`\"usage\"`) do not contain the byte sequence `"usage":`.
+    - `"type":"assistant"` sits within 1.6 KB of the end of every assistant line.
+    - 11 `attachment` records (`task-notification`) carry `"usage":{"totalTokens",...}`, which summarizes a child's usage. They are **never** billable usage: counting them would double-count the child transcript.
 
 ## User-facing accounting contract
 
@@ -483,7 +486,7 @@ An oversized line is still consumed deterministically: the scanner advances past
 
 While passing over the line, the scanner retains only its final 64 KiB. That window covers the observed usage position with more than 1.3× headroom.
 
-- If that tail contains the byte sequence `"usage":`, the line is **usage-bearing**. It records `oversized_record` and makes coverage partial, never being silently skipped as though it held no usage.
+- If that tail contains both `"usage":` and `"type":"assistant"`, the line is **usage-bearing**. It records `oversized_record` and makes coverage partial, never being silently skipped as though it held no usage.
 - Otherwise it is a non-usage line, such as a large `user`/`attachment` tool result or image, and it is ignored without affecting coverage.
 
 Reads are line-streamed from the stored offset. The remaining tail is never read whole.
@@ -615,7 +618,7 @@ See D-2. `max_seen` is the displayed `host≈` value, which makes the tracked ma
 
 Rendering stays fail-soft. Accounting records its uncertainty. A consumed record is `malformed_record`, and coverage becomes partial, when its shape prevents determining whether it represented billable usage.
 
-One rule applies to undecodable, non-object and oversized lines alike. A line is **usage-bearing** when its bytes contain `"usage":` (observation 10). Only usage-bearing lines can affect coverage. The cases are:
+One rule applies to undecodable, non-object and oversized lines alike. A line is **usage-bearing** when its final 64 KiB contain both `"usage":` and `"type":"assistant"` (observation 10). This excludes the `attachment` task-notification usage summaries. Only usage-bearing lines can affect coverage. The cases are:
 
 - a usage-bearing line that is undecodable JSON, or is valid JSON but not an object;
 - an assistant record whose `usage` is present but not an object;
@@ -877,7 +880,8 @@ The statusline is not required to add another reconciliation segment. The diagno
 
   - unknown non-usage record types;
   - every observed non-usage type in observation 8;
-  - an undecodable or oversized line without `"usage":`, e.g. a large `user` tool result;
+  - an undecodable or oversized line that is not usage-bearing, e.g. a large `user` tool result;
+  - `attachment` task-notification records carrying a `usage` summary, which are never counted as usage;
   - escaped `\"usage\"` text inside content.
 
 - **AC-39 — Performance contract.** The D-20 benchmark exists in a commit preceding implementation code, and its base report is recorded. Structural I/O tests show:
@@ -913,7 +917,7 @@ The statusline is not required to add another reconciliation segment. The diagno
 
 - **AC-48 — Discovery bound.** A session directory with more JSONL entries than the discovery bound does not trigger an unbounded walk. Known sources are retained and coverage is partial (`discovery_bound`). Within the bound, every child is accounted.
 
-- **AC-49 — Oversized record progress.** A single JSONL line larger than the per-record ceiling, including one larger than a render's byte budget, is passed deterministically across renders, with no wedge and no unbounded read. A usage-bearing oversized line (`"usage":` in its final 64 KiB) marks `oversized_record`. A non-usage oversized line leaves coverage unchanged. In both cases the following records are consumed exactly once.
+- **AC-49 — Oversized record progress.** A single JSONL line larger than the per-record ceiling, including one larger than a render's byte budget, is passed deterministically across renders, with no wedge and no unbounded read. A usage-bearing oversized line (both markers in its final 64 KiB) marks `oversized_record`. A non-usage oversized line leaves coverage unchanged. In both cases the following records are consumed exactly once.
 
 - **AC-50 — Presentation from summaries.** The subagent panel renders from ledger presentation summaries and filesystem metadata alone. An instrumented test proves that `_subagentslib` opens no child JSONL, and that its rows, labels and liveness match the pre-change output for equivalent fixtures.
 
