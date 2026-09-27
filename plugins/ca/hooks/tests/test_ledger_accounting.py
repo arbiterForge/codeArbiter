@@ -500,6 +500,26 @@ class TestMessageIdOnly(AccountingCase):
             self.assertEqual((sess["in"], sess["out"]), (10, 40))
 
 
+class TestMessageIdOnlyAfterEviction(AccountingCase):
+
+    def test_mid_only_record_finds_its_request_in_cold_storage(self):
+        with mock.patch.object(L, "HOT_MAX", 8), mock.patch.object(L, "PART_MAX", 16):
+            self.write(self.parent, [A("m1", inp=10, out=2)]
+                       + [A(f"f{i}", inp=1, out=1) for i in range(60)])
+            self.settle()
+            self.assertTrue(L._read_json(L._hot_file(self.ledger, self.sid)) is not None)
+            late = A("m1", inp=10, out=40)
+            del late["requestId"]
+            self.write(self.parent, [late], mode="a")
+            _, sess, _ = self.settle()
+            self.assertEqual((sess["in"], sess["out"]), (10 + 60, 40 + 60))
+            again = A("m1", inp=10, out=40)
+            del again["requestId"]
+            self.write(self.parent, [again], mode="a")
+            _, sess, _ = self.settle()
+            self.assertEqual((sess["in"], sess["out"]), (10 + 60, 40 + 60))
+
+
 class TestTodayAcrossSessions(AccountingCase):
 
     def test_other_session_backlog_makes_today_catching_up(self):

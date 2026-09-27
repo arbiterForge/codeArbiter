@@ -499,31 +499,50 @@ def _burn_touch(rec, key, old, new):
             rec["burn"] = rec["burn"][-BURN_RING:]
 
 
+def _find_by_mid(store, mid_key):
+    """(rid key, entry, location) of the request whose stored message id is
+    `mid_key`. A full evidence walk: it runs only for a message-ID-only record
+    whose alias is not yet known, which the observed corpus never produced for
+    billable usage (spec observation 5)."""
+    for key, entry, where in list(store.all_locations()):
+        if entry.get("m") == mid_key and "s" in entry:
+            return key, entry, where
+    return None, None, None
+
+
 def _ingest(store, rec, src, key, alias, fact):
     """Merge one source's fact into its request's evidence and move the derived
-    indices by exactly (new contribution - old contribution)."""
+    indices by exactly (new contribution - old contribution).
+
+    Identity is `rid:` when a request id exists. The record's message id is kept
+    inside that entry (`m`), so a message-ID-only representation of the same
+    request resolves to it in either arrival order without an eager alias entry
+    per request (spec D-5)."""
     entry, where = store.get(key)
     if entry is not None and "a" in entry:     # message-ID-only record of an aliased request
         key = entry["a"]
         entry, where = store.get(key)
+    elif entry is None and key.startswith("mid:"):
+        found, fentry, fwhere = _find_by_mid(store, key)
+        if found is not None:
+            store.put(key, {"a": found}, "hot")        # remember: no second walk
+            key, entry, where = found, fentry, fwhere
     old = _contrib(entry) if entry is not None and entry.get("s") else None
     if entry is None:
         entry, where = {"s": {}}, None
     folded = False
-    if alias:
-        if rec.get("mid_only", 0) > 0:
-            aentry, awhere = store.get(alias)
-            if aentry is not None and aentry.get("s"):
-                _apply(rec, _contrib(aentry), -1)      # earlier mid-only evidence joins this request
-                for s2, f2 in aentry["s"].items():
-                    entry["s"][s2] = _usagelib.merge(entry["s"].get(s2), f2)
-                rec["mid_only"] -= 1
-                store.put(alias, {"a": key}, awhere)
-                folded = True
-            elif aentry is None:
-                store.put(alias, {"a": key}, "hot")
-        elif alias not in store._load_hot()["ev"]:
-            store.put(alias, {"a": key}, "hot")
+    if alias and rec.get("mid_only", 0) > 0:
+        aentry, awhere = store.get(alias)
+        if aentry is not None and aentry.get("s"):
+            _apply(rec, _contrib(aentry), -1)          # earlier mid-only evidence joins
+            for s2, f2 in aentry["s"].items():
+                entry["s"][s2] = _usagelib.merge(entry["s"].get(s2), f2)
+            rec["mid_only"] -= 1
+            store.put(alias, {"a": key}, awhere)
+            folded = True
+    if alias and entry.get("m") != alias:
+        entry["m"] = alias
+        folded = folded or old is not None
     prev = entry["s"].get(src)
     merged = _usagelib.merge(prev, fact)
     if not folded and old is not None and merged == prev:
@@ -624,87 +643,86 @@ class _Scan:
         self.stop = "budget"
 
 
-def _scan(s, path, byte_budget, record_budget, sid_kind):
-    """Consume complete records from s["off"] within the budgets. Never advances
-    past bytes it did not consume; an oversized line is passed deterministically
-    across renders via the persisted `skip` line start."""
+def _scan(s, f, byte_budget, record_budget, sid_kind):
+    """Consume complete records from s["off"] of the open file `f` within the
+    budgets. Never advances past bytes it did not consume; an oversized line is
+    passed deterministically across renders via the persisted `skip` line start."""
     out = _Scan()
     pos = s["off"]
     consumed_tail = b""
-    with open(path, "rb") as f:
-        f.seek(pos)
-        while out.bytes < byte_budget and out.records < record_budget:
-            if s["skip"] is not None:
-                line_start = s["skip"]
-                line_tail = b""
-                done = False
-                while out.bytes < byte_budget:
-                    chunk = f.read(min(65536, byte_budget - out.bytes))
-                    if not chunk:
-                        break
-                    out.bytes += len(chunk)
-                    nl = chunk.find(b"\n")
-                    if nl < 0:
-                        pos += len(chunk)
-                        line_tail = (line_tail + chunk)[-_usagelib.TAIL_WINDOW:]
-                        continue
-                    pos += nl + 1
-                    line_tail = (line_tail + chunk[:nl + 1])[-_usagelib.TAIL_WINDOW:]
-                    done = True
+    f.seek(pos)
+    while out.bytes < byte_budget and out.records < record_budget:
+        if s["skip"] is not None:
+            line_start = s["skip"]
+            line_tail = b""
+            done = False
+            while out.bytes < byte_budget:
+                chunk = f.read(min(65536, byte_budget - out.bytes))
+                if not chunk:
                     break
-                if not done:
-                    s["off"] = pos
-                    out.stop = "skip"
-                    break
-                want = min(_usagelib.TAIL_WINDOW, pos - line_start)
-                if len(line_tail) < want:
-                    f.seek(pos - want)
-                    line_tail = f.read(want)
-                    out.bytes += want
-                if _usagelib.usage_bearing(line_tail):
-                    out.ovr += 1
-                s["skip"] = None
-                s["off"] = pos
-                out.records += 1
-                consumed_tail = line_tail[-FP_WINDOW:]
-                f.seek(pos)
-                continue
-            remaining = byte_budget - out.bytes
-            limit = min(MAX_RECORD_BYTES, remaining) + 1
-            line = f.readline(limit)
-            out.bytes += len(line)
-            if not line:
-                out.stop = "eof"
+                out.bytes += len(chunk)
+                nl = chunk.find(b"\n")
+                if nl < 0:
+                    pos += len(chunk)
+                    line_tail = (line_tail + chunk)[-_usagelib.TAIL_WINDOW:]
+                    continue
+                pos += nl + 1
+                line_tail = (line_tail + chunk[:nl + 1])[-_usagelib.TAIL_WINDOW:]
+                done = True
                 break
-            if line.endswith(b"\n"):
-                pos += len(line)
-                out.records += 1
-                consumed_tail = (consumed_tail + line)[-FP_WINDOW:]
-                _consume(line, pos - len(line), out, s, sid_kind)
+            if not done:
                 s["off"] = pos
-                continue
-            if len(line) < limit:
-                out.stop = "partial"           # writer-flushed partial line: wait
+                out.stop = "skip"
                 break
-            if limit - 1 >= MAX_RECORD_BYTES:
-                s["skip"] = pos                # oversized: pass it without decoding
-                pos += len(line)
-                s["off"] = pos
-                continue
-            break                              # fits the ceiling, not this render's budget
-        # Fingerprint the consumed region for replacement detection (spec D-15).
-        if s["off"]:
-            head_len = min(FP_WINDOW, s["off"])
-            if s["fp"] is None or s["fp"][0] < head_len:
-                f.seek(0)
-                head = _digest(f.read(head_len))
-            else:
-                head_len, head = s["fp"][0], s["fp"][1]
-            want = min(FP_WINDOW, s["off"])
-            if len(consumed_tail) < want:
-                f.seek(s["off"] - want)
-                consumed_tail = f.read(want)
-            s["fp"] = [head_len, head, _digest(consumed_tail[-want:])]
+            want = min(_usagelib.TAIL_WINDOW, pos - line_start)
+            if len(line_tail) < want:
+                f.seek(pos - want)
+                line_tail = f.read(want)
+                out.bytes += want
+            if _usagelib.usage_bearing(line_tail):
+                out.ovr += 1
+            s["skip"] = None
+            s["off"] = pos
+            out.records += 1
+            consumed_tail = line_tail[-FP_WINDOW:]
+            f.seek(pos)
+            continue
+        remaining = byte_budget - out.bytes
+        limit = min(MAX_RECORD_BYTES, remaining) + 1
+        line = f.readline(limit)
+        out.bytes += len(line)
+        if not line:
+            out.stop = "eof"
+            break
+        if line.endswith(b"\n"):
+            pos += len(line)
+            out.records += 1
+            consumed_tail = (consumed_tail + line)[-FP_WINDOW:]
+            _consume(line, pos - len(line), out, s, sid_kind)
+            s["off"] = pos
+            continue
+        if len(line) < limit:
+            out.stop = "partial"           # writer-flushed partial line: wait
+            break
+        if limit - 1 >= MAX_RECORD_BYTES:
+            s["skip"] = pos                # oversized: pass it without decoding
+            pos += len(line)
+            s["off"] = pos
+            continue
+        break                              # fits the ceiling, not this render's budget
+    # Fingerprint the consumed region for replacement detection (spec D-15).
+    if s["off"]:
+        head_len = min(FP_WINDOW, s["off"])
+        if s["fp"] is None or s["fp"][0] < head_len:
+            f.seek(0)
+            head = _digest(f.read(head_len))
+        else:
+            head_len, head = s["fp"][0], s["fp"][1]
+        want = min(FP_WINDOW, s["off"])
+        if len(consumed_tail) < want:
+            f.seek(s["off"] - want)
+            consumed_tail = f.read(want)
+        s["fp"] = [head_len, head, _digest(consumed_tail[-want:])]
     return out
 
 
@@ -831,12 +849,11 @@ def _account(store, rec, tx):
             share_b, share_r = max(1, bytes_left // 2), max(1, records_left // 2)
         opened += 1
         try:
-            with open(path, "rb") as f:
-                intact = _verify(f, s, st_key)
-            if not intact:
-                _drop_source(store, rec, sid_)
-                _reset_source(s)
-            result = _scan(s, path, share_b, share_r, s["k"])
+            with open(path, "rb") as f:          # one handle: verify, then scan
+                if not _verify(f, s, st_key):
+                    _drop_source(store, rec, sid_)
+                    _reset_source(s)
+                result = _scan(s, f, share_b, share_r, s["k"])
         except OSError:
             continue
         bytes_left -= result.bytes
