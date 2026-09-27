@@ -1,9 +1,16 @@
 ---
 name: context-creation
-description: The brownfield back-fill. Routed to by /create-context, and by startup when .codearbiter/CONTEXT.md lacks the <!--INITIALIZED--> body marker but source code exists. Six gated phases — pre-flight, scout dispatch, synthesis, gap interview, write, lock. Reads the existing codebase through parallel scouts, drafts every surviving project-state doc, resolves gaps with the user, and locks the project as initialized.
+description: Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates.
+argument-hint: (none)
 ---
 
 # context-creation
+
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `{{CMD:init}} --brownfield` for new usage. This installed route remains
+> functional under the command-route compatibility policy at {{PLUGIN_ROOT}}/includes/command-compatibility.md;
+> continue with the unchanged brownfield workflow below.
+<!-- catalog-compatibility-notice:end -->
 
 Wrap an existing codebase in project state, without guessing. Routed to by `/create-context`, and by startup when `.codearbiter/CONTEXT.md` exists but carries no `<!--INITIALIZED-->` body marker and meaningful source code is present. When no meaningful source exists, this is the wrong skill — route to `decompose` instead.
 

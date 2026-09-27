@@ -25,15 +25,16 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "finish": {
           "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
-          "quote": "**execute those steps here; do not re-invoke `{{CMD:pr}}`**"
+          "quote": "**execute those steps here; do not re-invoke `{{CMD:pr}}`**",
+          "currentQuote": "execute the **Open-PR procedure** below in this owner. Do not load or re-invoke the PR command wrapper."
         },
         "pair": {
           "path": "core/surface/SPRINT.md",
           "quote": "commits approval plus plan binding in one recoverable native transaction."
         },
         "pr": {
-          "path": "core/surface/commands/pr.md",
-          "quote": "Confirm the commit gate cleared"
+          "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+          "quote": "`commit-gate` MUST have cleared on the current HEAD."
         },
         "sprint": {
           "path": "core/surface/SPRINT.md",
@@ -591,19 +592,23 @@ export const workflows: readonly WorkflowDefinition[] = [
       "outcome": "The decision, decision-log append and exact acceptance binding are retained. Accepted/Planned does not prove implementation, verification or a merged PR.",
       "sources": {
         "adr": {
-          "path": "core/surface/commands/adr.md",
-          "quote": "Status transitions require\nexplicit user instruction"
+          "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
+          "quote": "Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction"
         },
         "adrAccept": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "### Accepted/Planned binding"
         },
         "adrCommit": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "its `source_commit` cannot truthfully name a commit that does\n   not exist yet."
         },
         "adrWrite": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "Author it with `status: proposed`."
         }
       },
@@ -800,16 +805,19 @@ export const workflows: readonly WorkflowDefinition[] = [
       "outcome": "An exact published tag and declared asset inventory after authorization and read-back. When provenance is declared, retain the original receipt and merge its separate closeout PR; publication alone does not finish that record.",
       "sources": {
         "pr": {
-          "path": "core/surface/commands/pr.md",
-          "quote": "Confirm the commit gate cleared"
+          "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+          "quote": "`commit-gate` MUST have cleared on the current HEAD."
         },
         "release": {
           "path": "core/surface/commands/release.md",
+          "currentPath": "core/surface/skills/release/SKILL.md",
           "quote": "## Dry run"
         },
         "releaseAssets": {
           "path": "core/surface/commands/release.md",
-          "quote": "declared assets are qualified in the protected publisher before any tag push"
+          "currentPath": "core/surface/skills/release/SKILL.md",
+          "quote": "declared assets are qualified in the protected publisher before any tag push",
+          "currentQuote": "The qualifying hosted publisher MUST declare and enforce one reviewed asset path before the release PR merges"
         },
         "releaseAuth": {
           "path": "core/surface/skills/release/SKILL.md",
@@ -833,7 +841,9 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "releaseVersion": {
           "path": "core/surface/commands/release.md",
-          "quote": "The base accounts for both the last compatible tag and every declared manifest."
+          "currentPath": "core/surface/skills/release/SKILL.md",
+          "quote": "The base accounts for both the last compatible tag and every declared manifest.",
+          "currentQuote": "**`$BASE_VERSION`"
         }
       },
       "chapters": [

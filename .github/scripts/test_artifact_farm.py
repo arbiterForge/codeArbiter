@@ -15,7 +15,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
+from unittest import mock
 
 from test_artifact_authoring import (
     ArtifactError,
@@ -39,6 +41,105 @@ def canonical_bytes(value: object) -> bytes:
     ).encode("utf-8")
 
 
+def cleanup_installation(owner: tempfile.TemporaryDirectory) -> None:
+    """Remove owned test scratch, allowing only bounded Windows sharing retries.
+
+    The ARM conformance run reached teardown after all assertions passed but
+    encountered WinError 32 on its copied executable. Its holder was not known.
+    Never ignore that error: a persistent holder or any other failure still
+    fails the suite. This changes neither process containment nor production I/O.
+    """
+    deadline = time.monotonic() + 2.0
+    for attempt in range(41):
+        try:
+            owner.cleanup()
+            return
+        except PermissionError as error:
+            remaining = deadline - time.monotonic()
+            if getattr(error, "winerror", None) != 32 or remaining <= 0 or attempt == 40:
+                raise
+            time.sleep(min(0.05, remaining))
+
+
+class InstallationCleanupTest(unittest.TestCase):
+    @staticmethod
+    def sharing_error() -> PermissionError:
+        error = PermissionError("test-owned file is held")
+        error.winerror = 32
+        return error
+
+    def test_cleanup_success_needs_no_retry(self) -> None:
+        owner = mock.Mock()
+        with mock.patch.object(time, "sleep") as wait:
+            cleanup_installation(owner)
+        owner.cleanup.assert_called_once_with()
+        wait.assert_not_called()
+
+    def test_cleanup_retries_a_transient_sharing_violation(self) -> None:
+        owner = mock.Mock()
+        owner.cleanup.side_effect = [self.sharing_error(), None]
+        with mock.patch.object(time, "monotonic", return_value=0), mock.patch.object(time, "sleep") as wait:
+            cleanup_installation(owner)
+        self.assertEqual(owner.cleanup.call_count, 2)
+        wait.assert_called_once_with(0.05)
+
+    def test_cleanup_preserves_error_at_deadline(self) -> None:
+        owner = mock.Mock()
+        error = self.sharing_error()
+        owner.cleanup.side_effect = error
+        with mock.patch.object(time, "monotonic", side_effect=[0, 0, 2]), mock.patch.object(time, "sleep") as wait:
+            with self.assertRaises(PermissionError) as caught:
+                cleanup_installation(owner)
+        self.assertIs(caught.exception, error)
+        self.assertEqual(owner.cleanup.call_count, 2)
+        wait.assert_called_once_with(0.05)
+
+    def test_cleanup_attempt_limit_cannot_spin_forever(self) -> None:
+        owner = mock.Mock()
+        error = self.sharing_error()
+        owner.cleanup.side_effect = error
+        with mock.patch.object(time, "monotonic", return_value=0), mock.patch.object(time, "sleep") as wait:
+            with self.assertRaises(PermissionError) as caught:
+                cleanup_installation(owner)
+        self.assertIs(caught.exception, error)
+        self.assertEqual(owner.cleanup.call_count, 41)
+        self.assertEqual(wait.call_count, 40)
+
+    def test_cleanup_does_not_retry_unrelated_failures(self) -> None:
+        denied = PermissionError("access denied")
+        denied.winerror = 5
+        for error in [denied, PermissionError("ordinary permissions"), OSError("I/O failure")]:
+            with self.subTest(error=str(error)):
+                owner = mock.Mock()
+                owner.cleanup.side_effect = error
+                with mock.patch.object(time, "sleep") as wait:
+                    with self.assertRaises(type(error)) as caught:
+                        cleanup_installation(owner)
+                self.assertIs(caught.exception, error)
+                owner.cleanup.assert_called_once_with()
+                wait.assert_not_called()
+
+    def test_cleanup_real_owned_file_and_unrelated_sibling(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="ca-cleanup-boundary-") as outer:
+            sibling = Path(outer) / "unrelated"
+            sibling.write_bytes(b"retain")
+            owner = tempfile.TemporaryDirectory(prefix="owned-", dir=outer)
+            path = Path(owner.name) / "held.bin"
+            path.write_bytes(b"owned")
+            handle = path.open("rb")
+            try:
+                # Release an actual Windows deletion-denying handle at the
+                # retry boundary, without a timer race or external process.
+                with mock.patch.object(time, "sleep", side_effect=lambda _delay: handle.close()) as wait:
+                    cleanup_installation(owner)
+                self.assertFalse(Path(owner.name).exists())
+                self.assertEqual(sibling.read_bytes(), b"retain")
+                self.assertEqual(wait.call_count, 1 if os.name == "nt" else 0)
+            finally:
+                handle.close()
+                owner.cleanup()
+
+
 class ArtifactFarmTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -47,7 +148,7 @@ class ArtifactFarmTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         if cls.installation_owner is not None:
-            cls.installation_owner.cleanup()
+            cleanup_installation(cls.installation_owner)
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-farm-")

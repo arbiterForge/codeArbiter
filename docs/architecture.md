@@ -128,7 +128,6 @@ flowchart TD
         C_statusline["/ca:statusline"]
         C_doctor["/ca:doctor"]
         C_standup["/ca:standup"]
-        C_newskill["/ca:new-skill"]
         C_btw["/ca:btw"]
         C_override["/ca:override"]
         C_audit["/ca:audit"]
@@ -154,7 +153,6 @@ flowchart TD
         S_decvar["decision-variance"]
         S_decompose["decompose"]
         S_ctxcreate["context-creation"]
-        S_skillauthor["skill-author"]
         S_worktrees["using-git-worktrees"]
         S_tribunal["tribunal"]
     end
@@ -254,7 +252,6 @@ flowchart TD
     C_createctx --> S_ctxcreate
     S_ctxcreate --> A_internal
     C_decompose --> S_decompose
-    C_newskill --> S_skillauthor
     C_standup --> STANDUPGIT{{"orchestrator git actions<br/>ff-only pull, prune, per-action confirm"}}
     C_prune --> PRUNEPY["prune-transcript.py (dry-run default)"]
     C_doctor --> DOCTORPY["doctor.py (live-fire probe, read-only)"]

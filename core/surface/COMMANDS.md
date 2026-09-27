@@ -105,12 +105,6 @@ loads only when that route is invoked. Never bulk-read the directory.
 | `{{CMD:prune}}` | `status \| dry \| run <path> \| audit <path> \| on \| off` | Select shared prune policy and use Pi native compaction without rewriting the active session. |
 {{END}}
 
-### Extend
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `{{CMD:new-skill}}` | `"gap"` | Prove a capability gap, approve a spec, then author a new skill. |
-
 ### Help
 
 | Command | Argument | Purpose |

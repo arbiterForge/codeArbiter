@@ -1,9 +1,16 @@
 ---
 name: decompose
-description: The greenfield decomposition interview. Routed to at startup when .codearbiter/CONTEXT.md lacks the <!--INITIALIZED--> body marker and no source code exists, or when the user invokes /decompose. A senior-architect persona drives a six-layer interview, persists every layer to disk so a context reset loses nothing, then populates .codearbiter/ and locks it initialized. No project-state doc is written before the layers are solid; orchestration does not resume until the lock is set.
+description: Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates.
+argument-hint: (none)
 ---
 
 # decompose
+
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `{{CMD:init}} --greenfield` for new usage. This installed route remains
+> functional under the command-route compatibility policy at {{PLUGIN_ROOT}}/includes/command-compatibility.md;
+> continue with the unchanged greenfield workflow below.
+<!-- catalog-compatibility-notice:end -->
 
 Spec the project before a line of code exists. Routed to at greenfield startup, or by `/decompose`.
 

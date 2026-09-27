@@ -1,0 +1,317 @@
+{
+  "format": "brownfield-fixture-foundation-evidence/0.1.0",
+  "recorded_at": "2026-09-25T22:16:20.794833+00:00",
+  "repository": "arbiterForge/codeArbiter",
+  "base_commit": "4187f1e22dc7da3cf755a2654bbf7ec268236126",
+  "parent_commit": "d4a9589b85fe56691f16b0eb5a63ab0a3e52cd1c",
+  "campaign_commit": "4decde20df14cf4dfcd1e2762723772d1d5c8b53",
+  "scope": "CI closure and test-only deterministic fixture preparation; no product lifecycle/report writer or native campaign acceptance",
+  "overlap854_commit": "2530d1ce55490a0647810eb271f34bbaa17869f1",
+  "overlap871_commit": "2b6e5a5bcfdb5d4713ba6d8f655d9cc99bfd4827",
+  "fixture_cases": 11,
+  "windows_fixture_test_methods": 19,
+  "linux": {
+    "python": "3.13.5",
+    "platform": "Linux x86_64",
+    "test_methods": 15,
+    "seconds": 1.155,
+    "exit": 0,
+    "selection": [
+      "TestFixtureInventory",
+      "TestFixtureInputRejection",
+      "TestFixtureMaterialization"
+    ],
+    "scope": "Independent same-byte fixture tests; four repo CI/campaign selectors were not run in the reduced Linux copy"
+  },
+  "native_authoring_package": {
+    "tag": "v2.21.16",
+    "archive_sha256": "32588a10eb5070b408443e5a0ef23453128725d33574c49a93f5edf5edf22fb8",
+    "resources_available": true,
+    "live_host_verified": false,
+    "used_for": "Read exact canonical campaign task records, not native approval; source-built engine used separately for conformance tests"
+  },
+  "ci_closure": {
+    "failed_parent_run": 36183939006,
+    "causes": [
+      "README version badge",
+      "Two missing native test inventory members",
+      "Stale site capture/helper identities"
+    ],
+    "root_provenance_review_comment": 4108290980,
+    "root_package_git_blob": "51759cdd450b86a1f0b0ebca40991c65c6ab5fa4",
+    "previous_hook_command_steps": 59,
+    "current_hook_command_steps": 60,
+    "all_previous_steps_preserved_in_order": true,
+    "new_step": "python .github/scripts/test_context_fixtures.py",
+    "strict_command_digest": "e90e50d6ec3437a0783ea89a09598615e7d0cd1b31b945284eaec5b2acd3322f",
+    "fixture_only_trigger": true,
+    "captured_observations_unchanged": true,
+    "overlap854_farm_case_members_preserved": 13
+  },
+  "checks": [
+    {
+      "label": "badge-check",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_badge_consistency.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "_mismatch_fails) ... ok\r\ntest_clean_facts_pass (__main__.DriftDetectionTest.test_clean_facts_pass) ... ok\r\ntest_count_badge_drift_fails (__main__.DriftDetectionTest.test_count_badge_drift_fails) ... ok\r\ntest_missing_readme_core_lane_fails (__main__.DriftDetectionTest.test_missing_readme_core_lane_fails) ... ok\r\ntest_raw_command_count_marketing_fails (__main__.DriftDetectionTest.test_raw_command_count_marketing_fails) ... ok\r\ntest_version_badge_drift_fails (__main__.DriftDetectionTest.test_version_badge_drift_fails) ... ok\r\ntest_head_is_consistent (__main__.LiveRepoTest.test_head_is_consistent) ... ok\r\ntest_catalog_slugs_from_table (__main__.ParsersTest.test_catalog_slugs_from_table) ... ok\r\ntest_core_lane_slugs_are_scoped_to_the_marked_chooser (__main__.ParsersTest.test_core_lane_slugs_are_scoped_to_the_marked_chooser) ... ok\r\ntest_count_badges (__main__.ParsersTest.test_count_badges) ... ok\r\ntest_raw_command_count_marketing_is_detected (__main__.ParsersTest.test_raw_command_count_marketing_is_detected) ... ok\r\ntest_version_badge (__main__.ParsersTest.test_version_badge) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 12 tests in 0.008s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "capture-check",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "site/scripts/capture-context-examples.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "Context helper capture matches exact sources and all disposable observations.\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "capture-parity-current",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "site/scripts/capture-context-examples.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "Context helper capture matches exact sources and all disposable observations.\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "fixture-final",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_context_fixtures.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "s_are_real (__main__.TestFixtureMaterialization.test_linked_detached_and_sparse_boundaries_are_real)\r\nDetached linked state and sparse absence are actual Git configurations. ... ok\r\ntest_repeated_materialization_has_identical_content_snapshots (__main__.TestFixtureMaterialization.test_repeated_materialization_has_identical_content_snapshots)\r\nInstance directory and clock values do not affect input identity. ... ok\r\ntest_staged_working_and_untracked_bytes_remain_distinct (__main__.TestFixtureMaterialization.test_staged_working_and_untracked_bytes_remain_distinct)\r\nA common HEAD never hides a working/index content disagreement. ... ok\r\ntest_task_and_dirty_recipe_are_bound_beyond_initial_snapshot (__main__.TestFixtureMaterialization.test_task_and_dirty_recipe_are_bound_beyond_initial_snapshot)\r\nEqual initial files cannot hide a changed task or index/working recipe. ... ok\r\ntest_unborn_and_ignored_inputs_are_not_promoted (__main__.TestFixtureMaterialization.test_unborn_and_ignored_inputs_are_not_promoted)\r\nNo HEAD and ignored data remain distinct from ordinary tracked files. ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 19 tests in 6.136s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "overlap854-fixture-suite",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_context_fixtures.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "s_are_real (__main__.TestFixtureMaterialization.test_linked_detached_and_sparse_boundaries_are_real)\r\nDetached linked state and sparse absence are actual Git configurations. ... ok\r\ntest_repeated_materialization_has_identical_content_snapshots (__main__.TestFixtureMaterialization.test_repeated_materialization_has_identical_content_snapshots)\r\nInstance directory and clock values do not affect input identity. ... ok\r\ntest_staged_working_and_untracked_bytes_remain_distinct (__main__.TestFixtureMaterialization.test_staged_working_and_untracked_bytes_remain_distinct)\r\nA common HEAD never hides a working/index content disagreement. ... ok\r\ntest_task_and_dirty_recipe_are_bound_beyond_initial_snapshot (__main__.TestFixtureMaterialization.test_task_and_dirty_recipe_are_bound_beyond_initial_snapshot)\r\nEqual initial files cannot hide a changed task or index/working recipe. ... ok\r\ntest_unborn_and_ignored_inputs_are_not_promoted (__main__.TestFixtureMaterialization.test_unborn_and_ignored_inputs_are_not_promoted)\r\nNo HEAD and ignored data remain distinct from ordinary tracked files. ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 19 tests in 5.394s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "overlap854-partition",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_hook_ci_partition.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "Hook partition contract validated: {'contracts': 58, 'functional': 1, 'isolation': 1, 'guard': 1, 'setup': 2}\r\n",
+      "stderr_tail": "actTests.test_missing_direct_suite_fails) ... ok\r\ntest_missing_full_history_fails (__main__.PartitionContractTests.test_missing_full_history_fails) ... ok\r\ntest_missing_partition_fails (__main__.PartitionContractTests.test_missing_partition_fails) ... ok\r\ntest_missing_tags_fails (__main__.PartitionContractTests.test_missing_tags_fails) ... ok\r\ntest_replaced_contract_command_fails (__main__.PartitionContractTests.test_replaced_contract_command_fails) ... ok\r\ntest_softened_check_fails (__main__.PartitionContractTests.test_softened_check_fails) ... ok\r\ntest_timeout_ceiling_cannot_expand (__main__.PartitionContractTests.test_timeout_ceiling_cannot_expand) ... ok\r\ntest_unassigned_contract_fails (__main__.PartitionContractTests.test_unassigned_contract_fails) ... ok\r\ntest_valid_five_cell_contract (__main__.PartitionContractTests.test_valid_five_cell_contract) ... ok\r\ntest_wrong_functional_route_fails (__main__.PartitionContractTests.test_wrong_functional_route_fails) ... ok\r\ntest_wrong_windows_exclusion_fails (__main__.PartitionContractTests.test_wrong_windows_exclusion_fails) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 18 tests in 0.001s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "partition-final",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_hook_ci_partition.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "Hook partition contract validated: {'contracts': 58, 'functional': 1, 'isolation': 1, 'guard': 1, 'setup': 2}\r\n",
+      "stderr_tail": "actTests.test_missing_direct_suite_fails) ... ok\r\ntest_missing_full_history_fails (__main__.PartitionContractTests.test_missing_full_history_fails) ... ok\r\ntest_missing_partition_fails (__main__.PartitionContractTests.test_missing_partition_fails) ... ok\r\ntest_missing_tags_fails (__main__.PartitionContractTests.test_missing_tags_fails) ... ok\r\ntest_replaced_contract_command_fails (__main__.PartitionContractTests.test_replaced_contract_command_fails) ... ok\r\ntest_softened_check_fails (__main__.PartitionContractTests.test_softened_check_fails) ... ok\r\ntest_timeout_ceiling_cannot_expand (__main__.PartitionContractTests.test_timeout_ceiling_cannot_expand) ... ok\r\ntest_unassigned_contract_fails (__main__.PartitionContractTests.test_unassigned_contract_fails) ... ok\r\ntest_valid_five_cell_contract (__main__.PartitionContractTests.test_valid_five_cell_contract) ... ok\r\ntest_wrong_functional_route_fails (__main__.PartitionContractTests.test_wrong_functional_route_fails) ... ok\r\ntest_wrong_windows_exclusion_fails (__main__.PartitionContractTests.test_wrong_windows_exclusion_fails) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 18 tests in 0.001s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "ci-impact-final",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_ci_impact.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": ".....................................................................................\r\n----------------------------------------------------------------------\r\nRan 85 tests in 3.375s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "site-second-full",
+      "argv": [
+        "C:\\Program Files\\nodejs\\npm.cmd",
+        "test"
+      ],
+      "exit": 0,
+      "stdout_tail": "/reference/skills/tdd/index.html (+2ms) \n18:05:50   ├─ /reference/skills/tribunal/index.html (+2ms) \n18:05:50   ├─ /reference/skills/using-git-worktrees/index.html (+3ms) \n18:05:50   ├─ /reference/skills/writing-plans/index.html (+3ms) \n18:05:50   ├─ /reference/tribunal-lenses/appsec/index.html (+3ms) \n18:05:50   ├─ /reference/tribunal-lenses/architecture/index.html (+3ms) \n18:05:50   ├─ /reference/tribunal-lenses/coverage/index.html (+2ms) \n18:05:50   ├─ /reference/tribunal-lenses/infra/index.html (+2ms) \n18:05:50   ├─ /reference/tribunal-lenses/migration/index.html (+29ms) \n18:05:50   ├─ /reference/tribunal-lenses/observability/index.html (+10ms) \n18:05:50   ├─ /reference/tribunal-lenses/performance/index.html (+3ms) \n18:05:50   ├─ /reference/tribunal-lenses/reliability/index.html (+3ms) \n18:05:50   ├─ /reference/tribunal-lenses/secrets-supply/index.html (+3ms) \n18:05:50   ├─ /reference/tribunal-lenses/test-fidelity/index.html (+2ms) \n18:05:50   ├─ /reference/tribunal-lenses/typesafety/index.html (+3ms) \n18:05:50   ├─ /trust/index.html (+3ms) \n18:05:50 ✓ Completed in 1.56s.\n\n18:05:51 [build] ✓ Completed in 3.29s.\n18:05:51 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`\n18:05:52 [codearbiter:complete-pagefind] Verified search bundle: 192 pages, 204 assets; pagefind.js 45555 bytes (252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009).\n18:05:52 [build] 173 page(s) built in 8.72s\n18:05:52 [build] Complete!\nrendered release applicability: OK\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "native-single-cell-conformance",
+      "result": "not completed at evidence capture; do not count as pass"
+    },
+    {
+      "label": "core-parity-current",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "tools/sync-core.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "sync-core --check: OK (78 core file(s) x 3 plugin(s), all byte-identical)\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "surface-parity-current",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "build-surface --check: OK (claude, codex, pi in sync)\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "package-parity-current",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "tools/build-host-packages.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "package.json matches plugins/ca-pi/package.json and the Pi descriptor\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "site-default-build",
+      "argv": [
+        "C:\\Program Files\\nodejs\\npm.cmd",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "stdout_tail": "2m \n18:16:25   ├─ /reference/skills/tdd/index.html (+3ms) \n18:16:25   ├─ /reference/skills/tribunal/index.html (+8ms) \n18:16:25   ├─ /reference/skills/using-git-worktrees/index.html (+2ms) \n18:16:25   ├─ /reference/skills/writing-plans/index.html (+2ms) \n18:16:25   ├─ /reference/tribunal-lenses/appsec/index.html (+3ms) \n18:16:25   ├─ /reference/tribunal-lenses/architecture/index.html (+2ms) \n18:16:25   ├─ /reference/tribunal-lenses/coverage/index.html (+2ms) \n18:16:25   ├─ /reference/tribunal-lenses/infra/index.html (+2ms) \n18:16:25   ├─ /reference/tribunal-lenses/migration/index.html (+3ms) \n18:16:25   ├─ /reference/tribunal-lenses/observability/index.html (+3ms) \n18:16:25   ├─ /reference/tribunal-lenses/performance/index.html (+4ms) \n18:16:25   ├─ /reference/tribunal-lenses/reliability/index.html (+2ms) \n18:16:25   ├─ /reference/tribunal-lenses/secrets-supply/index.html (+2ms) \n18:16:25   ├─ /reference/tribunal-lenses/test-fidelity/index.html (+2ms) \n18:16:25   ├─ /reference/tribunal-lenses/typesafety/index.html (+2ms) \n18:16:25   ├─ /trust/index.html (+2ms) \n18:16:25 ✓ Completed in 859ms.\n\n18:16:25 [build] ✓ Completed in 2.68s.\n18:16:25 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`\n18:16:27 [codearbiter:complete-pagefind] Verified search bundle: 192 pages, 204 assets; pagefind.js 45555 bytes (252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009).\n18:16:27 [build] 173 page(s) built in 4.62s\n18:16:27 [build] Complete!\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "site-typecheck",
+      "argv": [
+        "C:\\Program Files\\nodejs\\npm.cmd",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "stdout_tail": "\n> codearbiter-docs@0.1.0 typecheck\n> tsc --noEmit\n\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "context-browser",
+      "argv": [
+        "C:\\Program Files\\nodejs\\node.EXE",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "test/browser/concepts-context.spec.ts"
+      ],
+      "exit": 0,
+      "stdout_tail": "3 › C03 actual context observations and roles remain readable at 390px (433ms)\n  ok  3 [chrome] › test\\browser\\concepts-context.spec.ts:44:3 › C03 actual context observations and roles remain readable at 768px (470ms)\n  ok  4 [chrome] › test\\browser\\concepts-context.spec.ts:44:3 › C03 actual context observations and roles remain readable at 1024px (446ms)\n  ok  5 [chrome] › test\\browser\\concepts-context.spec.ts:44:3 › C03 actual context observations and roles remain readable at 1440px (439ms)\n  ok  6 [chrome] › test\\browser\\concepts-context.spec.ts:54:1 › every context selection exposes the unchanged actual capture and has no side effects (409ms)\n  ok  7 [chrome] › test\\browser\\concepts-context.spec.ts:78:1 › context controls reconnect after navigating to the other concept and back (2.3s)\n  ok  8 [chrome] › test\\browser\\concepts-context.spec.ts:91:3 › C03 controls retain keyboard operation and contrast with none forced colors (931ms)\n  ok  9 [chrome] › test\\browser\\concepts-context.spec.ts:91:3 › C03 controls retain keyboard operation and contrast with active forced colors (927ms)\n  ok 10 [chrome] › test\\browser\\concepts-context.spec.ts:106:30 › provenance-drift: no-script, enlarged text and print preserve every observation (249ms)\n  ok 11 [chrome] › test\\browser\\concepts-context.spec.ts:106:30 › jit-context-injection: no-script, enlarged text and print preserve every observation (266ms)\n  ok 12 [chrome] › test\\browser\\concepts-context.spec.ts:106:30 › persona-and-context: no-script, enlarged text and print preserve every observation (271ms)\n  ok 13 [chrome] › test\\browser\\concepts-context.spec.ts:123:1 › print restores context cases hidden by a reading selection (241ms)\n  ok 14 [chrome] › test\\browser\\concepts-context.spec.ts:133:1 › historical rationale and hardening remain explicitly separate from current efficacy (222ms)\n  ok 15 [chrome] › test\\browser\\concepts-context.spec.ts:143:1 › the exact role lookup stays complete and readable without JavaScript or lost release limits (269ms)\n  ok 16 [chrome] › test\\browser\\concepts-context.spec.ts:172:1 › record complete C03 pages, pointer cases and aligned arrows from the built candidate (4.5s)\n\n  16 passed (16.8s)\n",
+      "stderr_tail": ""
+    }
+  ],
+  "failures_retained": [
+    {
+      "run": "full-site",
+      "result": "915 passed; unchanged sidebar import case exceeded its original 5000ms deadline. Isolated five-test diagnostic and subsequent full 916-test pipeline passed without deadline/assertion changes. Cause not established."
+    },
+    {
+      "run": "full-conformance",
+      "result": "Assembled six-platform released payload was the wrong setup for package fixtures expecting a single native candidate. That failed run is not product qualification. Normal source-built single-cell path is recorded separately."
+    },
+    {
+      "run": "ci-impact",
+      "result": "Existing worktree fixture hit Windows filename limits under long session scratch path. Local-only scratch core.longpaths and cleanup of the failed test-owned branch allowed the unchanged 85-test suite to pass; no global setting changed."
+    },
+    {
+      "run": "compound-terminal-inspection",
+      "result": "Blocked before execution. No result or repository change attributed to it."
+    }
+  ],
+  "evidence_boundaries": [
+    "Evaluator placement is not host confinement.",
+    "Proposed fixture oracles are not independently approved.",
+    "No model turns, provider-cost trials, consumer instruction writes, migrations or full campaign acceptance occurred.",
+    "Previous source/prerequisite evidence stays historical."
+  ],
+  "file_sha256": [
+    {
+      "path": ".codearbiter/.provenance/release-targets.json",
+      "sha256": "504d381f64d751759701b16f954ac071360832faf0219acb8a7678ea28c6a187"
+    },
+    {
+      "path": ".github/scripts/test_artifact_conformance.py",
+      "sha256": "79bc12f08374fa6e28bf1cf93f7062973da66911dbacf70adb1555c1af6677b4"
+    },
+    {
+      "path": ".github/scripts/test_hook_ci_partition.py",
+      "sha256": "640f1b226220fe2563142543a879831cf1594ac169bfb27d4b8e9df9d7cc6b29"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "1d0ad61f5568e59459e3f6b7f766c2be67ab149af15f66d2d5e97605f02ba117"
+    },
+    {
+      "path": "README.md",
+      "sha256": "13c0a743b08f033e0a38a1303ab5dd483403ca7470b39b21867de86493427dc0"
+    },
+    {
+      "path": "site/scripts/capture-context-examples.py",
+      "sha256": "b90e43fc6b7276717935d0f82365042b179aa38e308009faff8d894bc4f57645"
+    },
+    {
+      "path": "site/src/components/ContextExplorer.astro",
+      "sha256": "3bf6e26b68d6b8e8dc33340f625f5b8a7a6a5048e94af09c6b26a31ed2a73c70"
+    },
+    {
+      "path": "site/src/data/context-examples.json",
+      "sha256": "5220103f71ac5277a8406cb2c1a88ae3cac9328a4ef3f6eef2983b2502e6b080"
+    },
+    {
+      "path": "site/test/browser/concepts-context.spec.ts",
+      "sha256": "9da48104f33e6e08c2f3da45a5f334b58267b0a9c2d46fa9d1f34feb64b2294d"
+    },
+    {
+      "path": "site/test/content/concepts-context.test.ts",
+      "sha256": "b8de3fb60a3bc16288727e0a36bf10571b3ac3615a9c34f5d5034ff4490c047a"
+    },
+    {
+      "path": ".github/scripts/_context_fixturelib.py",
+      "sha256": "7ed162a3f05d5734b00b94d9ee0f8a6718a3628b350906262d3c6883f7c6444a"
+    },
+    {
+      "path": ".github/scripts/test_context_fixtures.py",
+      "sha256": "4a838ff3fc3b5ddd98d0179db3baa961bafc84a530c5287015db62370e85c9e8"
+    },
+    {
+      "path": ".github/fixtures/context-onboarding/cases.json",
+      "sha256": "3fdd5942211c692aa6be312ad8a3e6714e6715112bf33f596953c6ae67087160"
+    },
+    {
+      "path": ".github/fixtures/context-onboarding/README.md",
+      "sha256": "f2631619d091a403b61bb446905456cdf9f90a6706821d759ba51f233d21f1b2"
+    },
+    {
+      "path": "docs/reviews/2026-09-25-brownfield-fixture-foundation.md",
+      "sha256": "12b48a2f02dfd75b407251a8608fecbe8be7bc1714b01b74dd577fec1c113aec"
+    }
+  ],
+  "later_overlap854_observation": {
+    "head": "a469bf51d65ecbd88fae9d21994470f63f78630c",
+    "delta_files": 7,
+    "overlaid_fixture_ci_capture_paths_changed": false,
+    "qualification_still_bound_to": "2530d1ce55490a0647810eb271f34bbaa17869f1"
+  },
+  "publication_checks": {
+    "staged_paths": 16,
+    "whitespace": "passed",
+    "gitleaks": {
+      "result": "passed",
+      "changed_file_scope": 16,
+      "rules_unchanged": true
+    }
+  }
+}

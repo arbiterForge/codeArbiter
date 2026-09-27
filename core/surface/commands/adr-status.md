@@ -1,29 +1,14 @@
 ---
-description: Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only.
+description: "Inspect ADR health read-only; optionally select one ADR with --adr N."
 argument-hint: "(none) | --adr N"
+{{IF:claude}}
+disable-model-invocation: true
+{{END}}
 ---
 
-# {{CMD:adr-status}} — ADR health scan
+# {{CMD:adr-status}} — read-only mode adapter
 
-Survey the health of recorded ADRs. Read-only — no file is modified. With `--adr N` the scan focuses
-on a single ADR; with no argument it scans every ADR under
-`{{PROJECT_DIR}}/.codearbiter/decisions/`.
-
-## Routes to
-
-The `decision-lifecycle` skill (`{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md`) in its
-health-scan mode. For each ADR it flags: aged decisions, `proposed` ADRs never challenged,
-supersession candidates (a newer ADR or code pattern contradicts the decision), and unresolved
-`[CONFIRM-NN]` placeholders. Findings aggregate into a structured report; nothing is changed.
-
-## When NOT to use
-
-- Author a new ADR → `{{CMD:adr}}`.
-- Challenge or reconcile a specific ADR in depth → `{{CMD:reconcile}}`.
-- Ask what a specific ADR says → `{{CMD:btw}}`.
-
-## Hard gate
-
-Read-only — MUST NOT modify any file. MUST NOT resolve a `[CONFIRM-NN]` found during the scan —
-surface it and stop. A supersession candidate that contradicts an accepted ADR is flagged for
-`{{CMD:conflict}}`.
+Load `{{PLUGIN_ROOT}}/skills/decision-lifecycle/SKILL.md` in **status only** mode,
+passing the unchanged arguments. The owner validates `(none) | --adr N` before
+any authoring prerequisite. Return its report; do not invoke `{{CMD:adr}}` or
+continue to authoring. Read-only — MUST NOT modify any file.

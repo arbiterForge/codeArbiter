@@ -7,13 +7,14 @@ gates:
     effect: context, decision, alternatives, and consequences are confirmed with you directly — an unknown becomes an inline `[CONFIRM-NN]`, never a guess
   - gate: numbering + marker
     when: writing the file
-    effect: the next ADR number is fixed with no gap, and a short-lived authoring marker is armed so the write hooks allow the file — `/adr` is the only path that can arm it
+    effect: the next ADR number is fixed with no gap, and a short-lived authoring marker is armed so the write hooks allow the file — the authorized authoring workflow arms it, whether selected by a command or a direct request
 ---
 
 ## What it does
 
-Records an architectural decision as a numbered, dated ADR under `.codearbiter/decisions/`. This is
-the only sanctioned way an ADR gets written: the underlying skill drops a 30-minute authoring marker
+Records an architectural decision as a numbered, dated ADR under `.codearbiter/decisions/`.
+The explicit entry and a direct request to record a decision use the same owner.
+Its on-demand authoring procedure drops a 30-minute authoring marker
 immediately before the write, and the repo's pre-write/pre-edit hooks refuse to touch a
 `.codearbiter/decisions/NNNN-*.md` file without one. Status transitions
 (`proposed → accepted → superseded | rejected`) always require your explicit instruction — the

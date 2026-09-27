@@ -95,7 +95,12 @@ class BridgeTests(unittest.TestCase):
         (self.root / ".codearbiter" / "plans").mkdir(parents=True)
 
         def corrupt_binary(destination, release):
-            entry = next(iter(release["binaries"].values()))
+            # A released payload can contain several platforms. Corrupt the
+            # binary this host will execute, not the manifest's first entry.
+            system = {"Linux": "linux", "Darwin": "darwin", "Windows": "windows"}[platform.system()]
+            architecture = {"x86_64": "amd64", "amd64": "amd64",
+                            "aarch64": "arm64", "arm64": "arm64"}[platform.machine().lower()]
+            entry = release["binaries"][f"{system}/{architecture}"]
             binary = destination / entry["file"]
             binary.write_bytes(binary.read_bytes() + b"corrupt")
 

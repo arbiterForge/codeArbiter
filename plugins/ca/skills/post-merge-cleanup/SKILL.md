@@ -1,11 +1,12 @@
 ---
 name: post-merge-cleanup
-description: Finish an already-merged branch. Proves the branch is contained in the fetched default, classifies leftover artifacts as unique / redundant / superseded, returns to a clean --ff-only default checkout, and deletes the merged local branch — every discard confirmed per item. Routed to by /ca:cleanup.
+description: "Clean up an already-merged local branch after proving containment. Confirm each discard and preserve unique work."
+argument-hint: "(none)"
 ---
 
 # post-merge-cleanup
 
-The walk back from a merged PR. Routed to by `/ca:cleanup`.
+The walk back from a merged PR, selected by cleanup intent or an explicit entry.
 
 The work has landed on the default branch. What is left is local: the branch you
 are standing on, and whatever the run left in the tree. This skill returns you to
@@ -17,6 +18,22 @@ cannot proceed, it names the gate that stopped it. Issue #308 recorded the
 alternative: with no owner for this transition, the routing loop reached for
 `/ca:chore`, then for `/ca:override` — a bypass manufactured to cover a
 coverage hole.
+
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `/ca:pr --cleanup` for new explicit usage. The retained entry
+> and natural-language intent use this owner under
+> ${CLAUDE_PLUGIN_ROOT}/includes/command-compatibility.md.
+<!-- catalog-compatibility-notice:end -->
+
+## Entry boundaries
+
+Select this owner for an already-merged branch cleanup request, `/ca:pr --cleanup`,
+or the explicit `/ca:cleanup` compatibility entry. Do not require repeated slash
+syntax. An explanation-only or dirty-state question is read-only, not a deletion
+request. An unmerged branch belongs to the finishing owner, not this cleanup.
+MUST NOT require `/ca:override` for ordinary cleanup; name a real blocker instead.
+This owner neither stages nor commits. Keeping work may hand it to the existing
+commit owner; no discard is implied by that handoff or by a cleanup request.
 
 ## Pre-flight
 
