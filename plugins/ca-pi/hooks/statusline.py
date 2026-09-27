@@ -106,7 +106,6 @@ except Exception:  # pragma: no cover — never let an import break the statusli
 try:
     import _ledgerlib
     ledger_update = _ledgerlib.ledger_update
-    _tx_accumulate = _ledgerlib._tx_accumulate
     persist_sess_start = _ledgerlib.persist_sess_start
 except Exception:  # pragma: no cover — never let an import break the statusline
     _ledgerlib = None
@@ -295,17 +294,15 @@ try:
                                                _subagentslib.read_subagents,
                                                _subagentslib.sub_label)
     ACTIVE_WINDOW, SHOW_WINDOW = _subagentslib.ACTIVE_WINDOW, _subagentslib.SHOW_WINDOW
-    MAX_SUB_ROWS, MAX_SUB_FILES, MAX_SUB_LINES = (_subagentslib.MAX_SUB_ROWS,
-                                                  _subagentslib.MAX_SUB_FILES,
-                                                  _subagentslib.MAX_SUB_LINES)
+    MAX_SUB_ROWS, MAX_SUB_FILES = _subagentslib.MAX_SUB_ROWS, _subagentslib.MAX_SUB_FILES
 except Exception:  # pragma: no cover — never let an import break the statusline
     _subagentslib = None
-    ACTIVE_WINDOW = SHOW_WINDOW = MAX_SUB_ROWS = MAX_SUB_FILES = MAX_SUB_LINES = 0
+    ACTIVE_WINDOW = SHOW_WINDOW = MAX_SUB_ROWS = MAX_SUB_FILES = 0
 
     def subagent_dir(data, root, sid):
         return None
 
-    def read_subagents(sdir):
+    def read_subagents(sdir, rec=None):
         return 0, 0, [], (0, 0)
 
     def sub_label(content):
@@ -354,6 +351,7 @@ try:
     EFF_DISP, model_pill, usage_row = _segmentslib.EFF_DISP, _segmentslib.model_pill, _segmentslib.usage_row
     seg_lines, seg_pr, seg_prune = _segmentslib.seg_lines, _segmentslib.seg_pr, _segmentslib.seg_prune
     redshift = _segmentslib.redshift
+    cost_cell, USAGE_ROW_FIXED = _segmentslib.cost_cell, _segmentslib.USAGE_ROW_FIXED
 except Exception:  # pragma: no cover — never let an import break the statusline
     _segmentslib = None
     EFF_DISP = {}
@@ -371,7 +369,12 @@ except Exception:  # pragma: no cover — never let an import break the statusli
         return f"{V2}{model}{RESET}"
 
     def usage_row(label, tin, tout, cost, trail=""):
-        return f"{label} {fmt_tok(tin)}/{fmt_tok(tout)} {usd_fine(cost)}"
+        return f"{label} {fmt_tok(tin)}/{fmt_tok(tout)} {cost}"
+
+    USAGE_ROW_FIXED = 30
+
+    def cost_cell(scope, width, allow_host=False):
+        return "api≈?"   # no segment lib: never claim a figure it cannot label
 
     def seg_lines(data):
         return None
@@ -577,8 +580,11 @@ def _render_active_palette(raw):
 
     led = safe(ledger_update, data, sid)
     if not (isinstance(led, tuple) and len(led) == 3):
-        led = ({}, {"in": 0.0, "out": 0.0, "cost": 0.0}, {"in": 0.0, "out": 0.0, "cost": 0.0})
+        blank = {"in": 0.0, "out": 0.0, "cost": 0.0, "pd": 0, "state": "unavailable",
+                 "reasons": [], "stale": False, "host": None}
+        led = ({}, dict(blank), dict(blank))
     rec, sess, day = led
+    rec = rec if isinstance(rec, dict) else {}
     spark = safe(burn_spark, rec) or ""
     # True session age from Claude Code's session metadata (the wall clock /usage
     # shows, incl. idle gaps); fall back to the current transcript's first message.
@@ -649,8 +655,15 @@ def _render_active_palette(raw):
     # double-height left table; the right column carries the context-window
     # detail. Rate limits live on the header line now, not their own row.
     LW = max(34, min(50, inner // 2))   # proportional: don't starve the ctx panel at narrow widths
-    srow = safe(usage_row, "Session", sess["in"], sess["out"], sess["cost"], s_trail) or ""
-    trow = safe(usage_row, "Today", day["in"], day["out"], day["cost"]) or ""
+    # The cost cell carries its provenance label (api≈ / api≥ / api≈? / host≈);
+    # widen the usage column just enough that a figure is never clipped
+    # mid-number, while the ctx panel keeps at least 8 columns.
+    avail = (inner - 11) - USAGE_ROW_FIXED
+    scell = safe(cost_cell, sess, avail, allow_host=True) or "api≈?"
+    tcell = safe(cost_cell, day, avail) or "api≈?"
+    LW = max(LW, min(USAGE_ROW_FIXED + max(vlen(scell), vlen(tcell)), inner - 11))
+    srow = safe(usage_row, "Session", sess.get("in"), sess.get("out"), scell, s_trail) or ""
+    trow = safe(usage_row, "Today", day.get("in"), day.get("out"), tcell) or ""
     ctxl = safe(seg_ctx_lines, data, max(8, inner - LW - 3)) or [f"{GREY}ctx --{RESET}", ""]
     div = f"{V0}{V}{RESET}"
     box.row(f"{pad(srow, LW)} {div} {ctxl[0]}")
@@ -663,7 +676,7 @@ def _render_active_palette(raw):
     if not compact:
         sdir = safe(subagent_dir, data, root, sid)
         if sdir:
-            res = safe(read_subagents, sdir)
+            res = safe(read_subagents, sdir, rec)
             if res:
                 active, recent, shown, (tin, tout) = res
                 if shown:

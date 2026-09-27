@@ -56,14 +56,43 @@ def tearDownModule():
 
 
 
+def _subagents_through_ledger(td, files):
+    """Run child transcripts through the ONE accounting parser, then render the
+    subagent rows from its presentation summaries (spec D-7). `files` maps a
+    child file name to its raw JSONL lines."""
+    import _ledgerlib
+    sid = "sid-" + os.path.basename(td)
+    tx = os.path.join(td, sid + ".jsonl")
+    sub = os.path.join(td, sid, "subagents")
+    os.makedirs(sub, exist_ok=True)
+    with open(tx, "w", encoding="utf-8") as f:
+        f.write("")
+    for name, lines in files.items():
+        with open(os.path.join(sub, name), "w", encoding="utf-8", newline="\n") as f:
+            for ln in lines:
+                f.write((ln if isinstance(ln, str) else json.dumps(ln)) + "\n")
+    rec = {}
+    for _ in range(20):
+        rec, sess, _day = _ledgerlib.ledger_update({"transcript_path": tx}, sid)
+        if sess["state"] != "catching_up":
+            break
+    return subs.read_subagents(sub, rec)
+
+
+def _assistant_record(i, message):
+    """A realistic assistant record: the scanner keys on type=assistant + usage."""
+    message = dict(message)
+    message.setdefault("usage", {"input_tokens": 1, "output_tokens": 1})
+    return {"type": "assistant", "requestId": f"r{i}", "timestamp": "2026-09-27T10:00:00Z",
+            "message": message}
+
+
 class TestSubagentModels(unittest.TestCase):
     def _read(self, messages):
         with tempfile.TemporaryDirectory() as td:
-            path = os.path.join(td, "agent-123456.jsonl")
-            with open(path, "w", encoding="utf-8") as f:
-                for i, message in enumerate(messages):
-                    f.write(json.dumps({"requestId": f"r{i}", "message": message}) + "\n")
-            return subs.read_subagents(td)[2][0]
+            lines = [({"type": "user", "message": m} if m.get("role") == "user"
+                      else _assistant_record(i, m)) for i, m in enumerate(messages)]
+            return _subagents_through_ledger(td, {"agent-123456.jsonl": lines})[2][0]
 
     def test_one_model_keeps_family_and_version(self):
         row = self._read([
@@ -266,133 +295,306 @@ class TestFmtTok(unittest.TestCase):
         self.assertEqual(sl.fmt_tok(None), "0")
 
 
-# =========================================================================== _tx_accumulate
-class TestTxAccumulate(unittest.TestCase):
-    """Tests for the transcript-accumulation inner loop (no subprocess)."""
+# =========================================================================== subagents from summaries
+class TestSubagentsFromLedgerSummaries(unittest.TestCase):
+    """Spec D-7 / AC-50: the subagent panel renders from the accounting scanner's
+    presentation summaries plus filesystem metadata. It opens no child JSONL, and
+    for equivalent fixtures its rows match the pre-change parser's output (the
+    GOLDEN below was captured from main's read_subagents on this exact fixture)."""
 
-    def _make_tx(self, entries, tmp_dir):
-        """Write a list of JSON objects (one per line) to a temp .jsonl file."""
-        path = os.path.join(tmp_dir, "tx.jsonl")
-        with open(path, "w", encoding="utf-8") as f:
-            for obj in entries:
-                f.write(json.dumps(obj) + "\n")
-        return path
+    GOLDEN = {
+        "active": 1, "recent": 3, "tot": (126.0, 25.0),
+        "shown": [
+            {"label": "Review the parser", "model": "model:sonnet-5",
+             "inp": 115.0, "out": 14.0, "active": True},
+            {"label": "Check the docs for drift and report.", "model": "model:mixed",
+             "inp": 8.0, "out": 8.0, "active": False},
+            {"label": "agent-ccccc3", "model": "model:opus-5-5",
+             "inp": 3.0, "out": 3.0, "active": False},
+        ],
+    }
 
-    def _assistant_line(self, request_id, prompt_tokens=100, output_tokens=50,
-                        model="claude-sonnet", timestamp="2026-01-01T00:00:00Z"):
-        return {
-            "type": "assistant",
-            "requestId": request_id,
-            "timestamp": timestamp,
-            "message": {
-                "id": f"msg_{request_id}",
-                "model": model,
-                "usage": {
-                    "input_tokens": prompt_tokens,
-                    "output_tokens": output_tokens,
-                },
-            },
-        }
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self._home = redirect_home(self.tmp)
+        self._orig = os.environ.get("CODEARBITER_LEDGER")
+        os.environ["CODEARBITER_LEDGER"] = os.path.join(self.tmp, ".codearbiter", "ledger.json")
+        self.tx = os.path.join(self.tmp, "proj", "sid-sub.jsonl")
+        self.sub = os.path.join(self.tmp, "proj", "sid-sub", "subagents")
+        os.makedirs(self.sub)
+        with open(self.tx, "w", encoding="utf-8") as f:
+            f.write(json.dumps(self._a("p0", "claude-opus-5-5", 1, 1)) + "\n")
+        u = self._u
+        a = self._a
+        self._w("agent-aaaaaa1.jsonl", [u("Review the parser"), a("r1", "claude-sonnet-5", 10, 1),
+                                        a("r1", "claude-sonnet-5", 10, 9),
+                                        a("r2", "claude-sonnet-5", 5, 5, 100)], 30)
+        self._w("agent-bbbbbb2.jsonl", [u("You are a reviewer. Check the docs for drift and report."),
+                                        a("r3", "claude-haiku-4-5-20251001", 7, 7),
+                                        a("r4", "claude-opus-5-5", 1, 1)], 200)
+        self._w("agent-cccccc3.jsonl", [a("r5", "claude-opus-5-5", 3, 3)], 400)
+        self._w("agent-dddddd4.jsonl", [u("Too old"), a("r6", "claude-opus-5-5", 3, 3)], 5000)
 
-    def test_basic_accumulation(self):
-        with tempfile.TemporaryDirectory() as td:
-            entries = [
-                self._assistant_line("req-1", prompt_tokens=100, output_tokens=50),
-                self._assistant_line("req-2", prompt_tokens=200, output_tokens=80),
-            ]
-            path = self._make_tx(entries, td)
-            rec = {}
-            result = sl._tx_accumulate(rec, path)
-            self.assertTrue(result)
-            # Two distinct requestIds → two entries in reqs
-            self.assertEqual(len(rec["reqs"]), 2)
+    def tearDown(self):
+        restore_home(self._home)
+        if self._orig is None:
+            os.environ.pop("CODEARBITER_LEDGER", None)
+        else:
+            os.environ["CODEARBITER_LEDGER"] = self._orig
 
-    def test_deduplication_by_request_id(self):
-        """Same requestId appearing twice must count only once."""
-        with tempfile.TemporaryDirectory() as td:
-            dup_id = "req-dup"
-            entries = [
-                self._assistant_line(dup_id, prompt_tokens=100, output_tokens=50),
-                self._assistant_line(dup_id, prompt_tokens=100, output_tokens=50),
-            ]
-            path = self._make_tx(entries, td)
-            rec = {}
-            sl._tx_accumulate(rec, path)
-            self.assertEqual(len(rec["reqs"]), 1)
+    @staticmethod
+    def _a(rid, model, inp, out, cw=0):
+        return {"type": "assistant", "requestId": rid, "timestamp": "2026-09-27T10:00:00Z",
+                "message": {"id": "m" + rid, "role": "assistant", "model": model,
+                            "usage": {"input_tokens": inp, "output_tokens": out,
+                                      "cache_creation_input_tokens": cw}}}
 
-    def test_dedup_upsert_uses_last_value(self):
-        """When the same requestId appears twice (streaming replay), the final
-        usage values replace the first (UPSERT semantics)."""
-        with tempfile.TemporaryDirectory() as td:
-            dup_id = "req-dup"
-            entries = [
-                self._assistant_line(dup_id, prompt_tokens=100, output_tokens=50),
-                self._assistant_line(dup_id, prompt_tokens=150, output_tokens=70),
-            ]
-            path = self._make_tx(entries, td)
-            rec = {}
-            sl._tx_accumulate(rec, path)
-            stored = rec["reqs"][dup_id]
-            # Latest value wins
-            self.assertEqual(stored["in"], 150.0)
-            self.assertEqual(stored["out"], 70.0)
+    @staticmethod
+    def _u(text):
+        return {"type": "user", "message": {"role": "user", "content": text}}
 
-    def test_missing_usage_field_handled_gracefully(self):
-        """Lines missing the usage dict should be skipped, not crash."""
-        with tempfile.TemporaryDirectory() as td:
-            entries = [
-                {"type": "assistant", "requestId": "r1",
-                 "message": {"model": "claude-sonnet"}},   # no 'usage' key
-                self._assistant_line("r2", prompt_tokens=80, output_tokens=40),
-            ]
-            path = self._make_tx(entries, td)
-            rec = {}
-            sl._tx_accumulate(rec, path)
-            # Only r2 had valid usage
-            self.assertIn("r2", rec["reqs"])
+    def _w(self, name, recs, age):
+        p = os.path.join(self.sub, name)
+        with open(p, "w", encoding="utf-8") as f:
+            for r in recs:
+                f.write(json.dumps(r) + "\n")
+        t = time.time() - age
+        os.utime(p, (t, t))
 
-    def test_non_assistant_lines_ignored(self):
-        with tempfile.TemporaryDirectory() as td:
-            entries = [
-                {"type": "user", "message": {"role": "user", "content": "hello"}},
-                self._assistant_line("req-1"),
-            ]
-            path = self._make_tx(entries, td)
-            rec = {}
-            sl._tx_accumulate(rec, path)
-            self.assertEqual(len(rec["reqs"]), 1)
+    def _summary(self):
+        import _ledgerlib
+        rec = None
+        for _ in range(20):
+            rec, sess, _day = _ledgerlib.ledger_update({"transcript_path": self.tx}, "sid-sub")
+            if sess["state"] != "catching_up":
+                break
+        return rec
 
-    def test_returns_false_for_nonexistent_file(self):
-        rec = {}
-        result = sl._tx_accumulate(rec, "/nonexistent/path/tx.jsonl")
-        self.assertFalse(result)
+    def test_rows_match_pre_change_output_without_opening_child_jsonl(self):
+        import builtins
+        rec = self._summary()
+        real = builtins.open
+        opened = []
 
-    def test_burn_ring_populated(self):
-        with tempfile.TemporaryDirectory() as td:
-            entries = [
-                self._assistant_line(f"req-{i}", prompt_tokens=100, output_tokens=50)
-                for i in range(5)
-            ]
-            path = self._make_tx(entries, td)
-            rec = {}
-            sl._tx_accumulate(rec, path)
-            self.assertIsInstance(rec.get("burn"), list)
-            self.assertEqual(len(rec["burn"]), 5)
+        def guard(path, *a, **k):
+            if str(path).endswith(".jsonl"):
+                opened.append(path)
+            return real(path, *a, **k)
+        with mock.patch.object(builtins, "open", guard):
+            active, recent, shown, tot = subs.read_subagents(self.sub, rec)
+        self.assertEqual(opened, [])
+        self.assertEqual((active, recent, tuple(tot)),
+                         (self.GOLDEN["active"], self.GOLDEN["recent"], self.GOLDEN["tot"]))
+        self.assertEqual([{k: v for k, v in s.items() if k != "age"} for s in shown],
+                         self.GOLDEN["shown"])
 
-    def test_incremental_offset_advancement(self):
-        """A second call with the same rec should not re-count previous lines."""
-        with tempfile.TemporaryDirectory() as td:
-            entries = [self._assistant_line("req-1")]
-            path = self._make_tx(entries, td)
-            rec = {}
-            sl._tx_accumulate(rec, path)
-            first_off = rec["tx_off"]
-            # Append a second message
-            with open(path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(self._assistant_line("req-2")) + "\n")
-            sl._tx_accumulate(rec, path)
-            self.assertEqual(len(rec["reqs"]), 2)
-            self.assertGreater(rec["tx_off"], first_off)
+    def test_unscanned_child_shows_a_fallback_row_not_an_error(self):
+        active, recent, shown, tot = subs.read_subagents(self.sub, {})
+        self.assertEqual((active, recent), (1, 3))
+        self.assertEqual(shown[0]["label"], "agent-aaaaa1")
+        self.assertEqual((shown[0]["inp"], shown[0]["out"]), (0, 0))
+
+    def test_vanished_directory_is_an_empty_result(self):
+        self.assertEqual(subs.read_subagents(os.path.join(self.sub, "nope"), {}),
+                         (0, 0, [], (0, 0)))
+
+
+# =========================================================================== cost labels
+class TestCostLabels(unittest.TestCase):
+    """Spec AC-01/02/41 and D-19: the dollar figure carries its provenance. The
+    renderer consumes the ledger's structured coverage; it never infers
+    completeness from a number, never shows the host estimate for Today, and
+    never clips a figure mid-number at narrow widths."""
+
+    def _scope(self, state="complete", cost=2.0, tin=1000, tout=10, reasons=(), stale=False,
+               host=None):
+        return {"in": float(tin), "out": float(tout), "cost": cost, "pd": int(round(cost * 1e12)),
+                "state": state, "reasons": list(reasons), "stale": stale, "host": host,
+                "host_delta": None}
+
+    def _render(self, sess, day, width=140):
+        env = {"CODEARBITER_WIDTH": str(width), "NO_COLOR": "1"}
+        with mock.patch.dict(os.environ, env, clear=False), \
+                mock.patch.object(sl, "ledger_update", return_value=({}, sess, day)):
+            plain = sl.ANSI.sub("", sl.render(json.dumps({"session_id": "sid"})))
+        rows = plain.splitlines()
+        srow = next(r for r in rows if "Session" in r)
+        trow = next(r for r in rows if "Today" in r)
+        return srow, trow
+
+    def test_complete_is_api_approx(self):
+        s, t = self._render(self._scope(cost=2.0), self._scope(cost=1.5))
+        self.assertIn("api≈$2.00", s)
+        self.assertIn("api≈$1.50", t)
+
+    def test_partial_and_catching_up_are_lower_bounds(self):
+        for state in ("partial", "catching_up"):
+            with self.subTest(state=state):
+                s, _t = self._render(self._scope(state=state, cost=2.0,
+                                                 reasons=["unknown_model"]),
+                                     self._scope())
+                self.assertIn("api≥$2.00", s)
+                self.assertNotIn("api≈$2.00", s)
+
+    def test_known_usage_with_nothing_priced_is_not_a_precise_total(self):
+        s, _t = self._render(self._scope(state="partial", cost=0.0, reasons=["unknown_model"]),
+                             self._scope())
+        self.assertIn("api≈?", s)
+        self.assertNotIn("$0.00", s)
+
+    def test_host_fallback_is_session_only_and_labelled(self):
+        s, t = self._render(self._scope(state="unavailable", cost=0.0, tin=0, tout=0, host=5.0),
+                            self._scope(state="unavailable", cost=0.0, tin=0, tout=0, host=5.0))
+        self.assertIn("host≈$5.00", s)
+        self.assertNotIn("host", t)
+        self.assertNotIn("$5.00", t)
+
+    def test_host_never_replaces_available_reconstruction(self):
+        s, _t = self._render(self._scope(cost=2.0, host=9.0), self._scope())
+        self.assertIn("api≈$2.00", s)
+        self.assertNotIn("$9.00", s)
+
+    def test_unavailable_without_host_is_not_zero(self):
+        s, t = self._render(self._scope(state="unavailable", cost=0.0, tin=0, tout=0),
+                            self._scope(state="unavailable", cost=0.0, tin=0, tout=0))
+        self.assertIn("api≈?", s)
+        self.assertNotIn("$0.00", s)
+        self.assertNotIn("$0.00", t)
+
+    def test_stale_snapshot_is_marked(self):
+        s, t = self._render(self._scope(cost=2.0, stale=True), self._scope(cost=1.0, stale=True))
+        self.assertIn("api≈$2.00*", s)
+        self.assertIn("api≈$1.00*", t)
+
+    def test_narrow_width_uses_compact_label_and_never_clips_the_number(self):
+        for width in (60, 72, 80, 90):
+            with self.subTest(width=width):
+                s, t = self._render(self._scope(state="partial", cost=12.34,
+                                                reasons=["unknown_model"]),
+                                    self._scope(cost=3.21), width=width)
+                self.assertRegex(s, r"(api)?≥\$12\.3")
+                self.assertRegex(t, r"(api)?≈\$3\.21")
+
+    def test_tightest_width_falls_back_to_the_compact_symbolic_label(self):
+        s, t = self._render(self._scope(state="partial", cost=12.34, reasons=["unknown_model"]),
+                            self._scope(cost=3.21), width=52)
+        self.assertIn("≥$12.3", s)
+        self.assertNotIn("api≥", s)
+        self.assertIn("≈$3.21", t)
+
+    def test_no_row_exceeds_the_box_at_any_width(self):
+        for width in (40, 60, 80, 120, 200):
+            with self.subTest(width=width):
+                env = {"CODEARBITER_WIDTH": str(width), "NO_COLOR": "1"}
+                sess = self._scope(state="partial", cost=123.45, tin=12_345_678, tout=9_876_543,
+                                   reasons=["unknown_model"], stale=True)
+                with mock.patch.dict(os.environ, env, clear=False), \
+                        mock.patch.object(sl, "ledger_update", return_value=({}, sess, sess)):
+                    plain = sl.ANSI.sub("", sl.render(json.dumps({"session_id": "sid"})))
+                for line in plain.splitlines():
+                    self.assertLessEqual(sl.vlen(line), width)
+
+    def test_malformed_ledger_result_degrades_to_unavailable(self):
+        with mock.patch.object(sl, "ledger_update", return_value=None), \
+                mock.patch.dict(os.environ, {"NO_COLOR": "1"}, clear=False):
+            plain = sl.ANSI.sub("", sl.render(json.dumps({"session_id": "sid"})))
+        self.assertIn("Session", plain)
+        self.assertNotIn("$0.00", plain)
+
+
+# =========================================================================== fail-soft matrix
+class TestAccountingFailSoftThroughRender(unittest.TestCase):
+    """Spec AC-29/AC-30: every hostile accounting input degrades only its own
+    state. The bar still renders, never with a traceback, and never with network
+    I/O. Each case runs the REAL ledger through the real render()."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.proj = os.path.join(self.tmp, "proj")
+        os.makedirs(os.path.join(self.proj, "sid-fs", "subagents"))
+        self.tx = os.path.join(self.proj, "sid-fs.jsonl")
+        self._env = mock.patch.dict(os.environ, {
+            "CODEARBITER_LEDGER": os.path.join(self.tmp, "ledger.json"), "NO_COLOR": "1",
+            "CODEARBITER_WIDTH": "120"}, clear=False)
+        self._env.start()
+
+    def tearDown(self):
+        self._env.stop()
+
+    def _line(self, rid, model="claude-sonnet-5", **usage):
+        u = {"input_tokens": 5, "output_tokens": 5}
+        u.update(usage)
+        return json.dumps({"type": "assistant", "requestId": rid,
+                           "timestamp": "2026-09-27T10:00:00Z",
+                           "message": {"role": "assistant", "model": model, "usage": u}})
+
+    def _render(self, lines, extra=None):
+        with open(self.tx, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+        payload = {"session_id": "sid-fs", "transcript_path": self.tx}
+        payload.update(extra or {})
+        import socket
+
+        def no_network(*a, **k):
+            raise AssertionError("statusline render attempted network I/O")
+        with mock.patch.object(socket, "socket", no_network), \
+                mock.patch.object(socket, "create_connection", no_network):
+            out = sl.render(json.dumps(payload))
+        plain = sl.ANSI.sub("", out)
+        self.assertNotIn("Traceback", plain)
+        self.assertIn("Session", plain)
+        self.assertIn("Today", plain)
+        return plain
+
+    def test_malformed_unknown_and_oversized_inputs(self):
+        lines = [self._line("ok1"), "{not json", "[1,2,3]", '"just a string"',
+                 self._line("u1", model="mystery-9"),
+                 self._line("bad", input_tokens=-5),
+                 self._line("big") .replace('"input_tokens": 5', '"input_tokens": 5, "pad": "' + "z" * 70000 + '"'),
+                 self._line("tool", server_tool_use={"mystery_requests": 2}),
+                 self._line("it", iterations=[{"type": "critic", "input_tokens": 3}])]
+        plain = self._render(lines)
+        self.assertRegex(plain, r"(api)?[≥≈]")
+
+    def test_missing_transcript_path(self):
+        plain = sl.ANSI.sub("", sl.render(json.dumps({"session_id": "sid-none"})))
+        self.assertIn("Session", plain)
+
+    def test_nonexistent_transcript_and_vanished_children(self):
+        os.rmdir(os.path.join(self.proj, "sid-fs", "subagents"))
+        payload = {"session_id": "sid-gone", "transcript_path": os.path.join(self.proj, "nope.jsonl")}
+        plain = sl.ANSI.sub("", sl.render(json.dumps(payload)))
+        self.assertIn("Session", plain)
+
+    def test_permission_error_on_transcript_open(self):
+        import builtins
+        real = builtins.open
+
+        def deny(path, *a, **k):
+            if str(path).endswith("sid-fs.jsonl") and "b" in (a[0] if a else k.get("mode", "")):
+                raise PermissionError("denied")
+            return real(path, *a, **k)
+        with open(self.tx, "w", encoding="utf-8") as f:
+            f.write(self._line("p1") + "\n")
+        with mock.patch.object(builtins, "open", deny):
+            plain = sl.ANSI.sub("", sl.render(json.dumps({"session_id": "sid-fs",
+                                                          "transcript_path": self.tx})))
+        self.assertIn("Session", plain)
+
+    def test_held_ledger_lock(self):
+        import _hooklib
+        owner = _hooklib.acquire_lock(os.environ["CODEARBITER_LEDGER"])
+        try:
+            plain = self._render([self._line("p1")])
+        finally:
+            _hooklib.release_lock(owner)
+        self.assertNotIn("$0.00", plain.split("Session", 1)[1].splitlines()[0])
+
+    def test_host_cost_garbage(self):
+        for bad in ("x", None, [], {"a": 1}, float("nan")):
+            with self.subTest(bad=bad):
+                cost = {"total_cost_usd": bad} if bad == bad else {"total_cost_usd": "nan"}
+                self._render([self._line("p1")], {"cost": cost})
 
 
 # =========================================================================== ledger_update
@@ -842,7 +1044,7 @@ class TestRenderParity(unittest.TestCase):
         # them bound on the statusline module. Only the names this module (and its
         # test suite) actually use are re-bound — the rest were dead re-binds
         # removed as part of architecture-002.
-        for name in ("ledger_update", "_tx_accumulate", "persist_sess_start"):
+        for name in ("ledger_update", "persist_sess_start"):
             self.assertTrue(hasattr(sl, name), f"sl.{name} missing after extraction")
 
     def test_burn_spark_returns_string(self):
@@ -977,13 +1179,16 @@ class TestSubagentResultContract(unittest.TestCase):
                 "{not json at all",
                 json.dumps({"requestId": "r1",
                             "message": {"role": "user", "content": "Do the thing"}}),
-                json.dumps({"requestId": "r1",
+                json.dumps({"type": "assistant", "requestId": "r1",
                             "message": {"role": "assistant",
                                         "model": "claude-sonnet-4-6-20250514",
                                         "usage": {"input_tokens": 10,
                                                   "output_tokens": 4}}}),
             ])
-            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+            with open(os.path.join(td, "agent-aaaaaa.jsonl"), encoding="utf-8") as f:
+                lines = f.read().splitlines()
+            active, recent, shown, (tin, tout) = _subagents_through_ledger(
+                td, {"agent-aaaaaa.jsonl": lines})
         self.assertEqual(recent, 1)
         self.assertEqual(len(shown), 1, "the valid records after the bad ones must survive")
         self.assertEqual(shown[0]["label"], "Do the thing")
@@ -991,15 +1196,17 @@ class TestSubagentResultContract(unittest.TestCase):
 
     def test_a_corrupt_file_does_not_suppress_a_later_valid_file(self):
         with tempfile.TemporaryDirectory() as td:
-            self._write(td, "agent-000001.jsonl", ["[]", "null"])
-            self._write(td, "agent-000002.jsonl", [
-                json.dumps({"requestId": "r9",
-                            "message": {"role": "user", "content": "Second agent"}}),
-                json.dumps({"requestId": "r9",
-                            "message": {"role": "assistant",
-                                        "usage": {"input_tokens": 7, "output_tokens": 2}}}),
-            ])
-            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+            files = {
+                "agent-000001.jsonl": ["[]", "null"],
+                "agent-000002.jsonl": [
+                    json.dumps({"requestId": "r9",
+                                "message": {"role": "user", "content": "Second agent"}}),
+                    json.dumps({"type": "assistant", "requestId": "r9",
+                                "message": {"role": "assistant",
+                                            "usage": {"input_tokens": 7, "output_tokens": 2}}}),
+                ],
+            }
+            active, recent, shown, (tin, tout) = _subagents_through_ledger(td, files)
         self.assertEqual(recent, 2)
         self.assertEqual((tin, tout), (7, 2))
         self.assertIn("Second agent", [row["label"] for row in shown])
@@ -1012,30 +1219,28 @@ class TestSubagentResultContract(unittest.TestCase):
         # — neither OSError nor ValueError. Under an OSError-only boundary it
         # escapes read_subagents entirely and blanks every subagent row.
         with tempfile.TemporaryDirectory() as td:
-            poison = self._write(td, "agent-aaaaaa.jsonl", [
-                json.dumps({"requestId": ["not", "hashable"],
-                            "message": {"role": "assistant",
-                                        "usage": {"input_tokens": 999,
-                                                  "output_tokens": 999}}}),
-            ])
-            self._write(td, "agent-bbbbbb.jsonl", [
-                json.dumps({"requestId": "ok1",
-                            "message": {"role": "user", "content": "Healthy agent"}}),
-                json.dumps({"requestId": "ok1",
-                            "message": {"role": "assistant",
-                                        "usage": {"input_tokens": 6,
-                                                  "output_tokens": 3}}}),
-            ])
-            # Make the poisoned transcript the most recent, so it is processed
-            # first and cannot be reached only after the healthy one.
-            now = time.time()
-            os.utime(poison, (now, now))
-            active, recent, shown, (tin, tout) = subs.read_subagents(td)
+            files = {
+                "agent-aaaaaa.jsonl": [
+                    json.dumps({"type": "assistant", "requestId": ["not", "hashable"],
+                                "message": {"role": "assistant", "id": {"also": "bad"},
+                                            "usage": {"input_tokens": 999,
+                                                      "output_tokens": 999}}}),
+                ],
+                "agent-bbbbbb.jsonl": [
+                    json.dumps({"requestId": "ok1",
+                                "message": {"role": "user", "content": "Healthy agent"}}),
+                    json.dumps({"type": "assistant", "requestId": "ok1",
+                                "message": {"role": "assistant",
+                                            "usage": {"input_tokens": 6,
+                                                      "output_tokens": 3}}}),
+                ],
+            }
+            active, recent, shown, (tin, tout) = _subagents_through_ledger(td, files)
         self.assertEqual(recent, 2)
         self.assertEqual((tin, tout), (6, 3),
                          "the poisoned transcript must contribute nothing, and "
                          "must not take the healthy one down with it")
-        self.assertEqual([row["label"] for row in shown], ["Healthy agent"])
+        self.assertIn("Healthy agent", [row["label"] for row in shown])
 
 
 if __name__ == "__main__":
