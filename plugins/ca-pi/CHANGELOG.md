@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.5] - 2026-09-26
+
+### Fixed
+
+- Explain input-manifest entry kinds to independent reviewers so normative artifact
+  identities are not compared with raw HTML hashes.
+
 ## [0.15.4] - 2026-09-26
 
 ### Fixed
