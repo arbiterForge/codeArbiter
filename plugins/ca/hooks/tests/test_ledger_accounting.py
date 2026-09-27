@@ -484,6 +484,37 @@ class TestMultiSource(AccountingCase):
         self.assertEqual(sess["state"], "catching_up")
 
 
+class TestAdversarialCombinations(AccountingCase):
+    """Spec adversarial-matrix rows not covered by a single-mechanism test."""
+
+    def test_background_child_growth_while_parent_is_unchanged(self):
+        self.write(self.parent, [A("p1", inp=1000, out=100)])
+        self.child("agent-bg.jsonl", [A("bg0", inp=10, out=1, sidechain=True)])
+        rec, base, _ = self.settle()
+        parent_tok = list(rec["src"]["p"]["tok"])
+        self.child("agent-bg.jsonl", [A(f"bg{i}", inp=10, out=1, sidechain=True)
+                                      for i in range(1, 301)], mode="a")
+        with mock.patch.object(L, "ACCT_RECORD_BUDGET", 25):
+            _, first, _ = self.update()
+            self.assertEqual(first["state"], "catching_up")
+            self.assertLess(first["in"], 1000 + 10 * 301)
+            rec, sess, _ = self.settle()
+        self.assertEqual((sess["in"], sess["out"]), (1000 + 10 * 301, 100 + 301))
+        self.assertEqual(sess["state"], "complete")
+        self.assertEqual(list(rec["src"]["p"]["tok"]), parent_tok)
+
+    def test_sibling_fork_replay_counted_once_with_smallest_owner(self):
+        self.write(self.parent, [A("p1", inp=1000, out=100)])
+        self.child("agent-y.jsonl", [A("shared", inp=20, out=50, sidechain=True),
+                                     A("y-own", inp=1, out=2, sidechain=True)])
+        self.child("agent-x.jsonl", [A("shared", inp=20, out=5, sidechain=True)])
+        rec, sess, _ = self.settle()
+        self.assertEqual((sess["in"], sess["out"]), (1000 + 20 + 1, 100 + 50 + 2))
+        self.assertEqual(dollars(sess), usd(SONNET5, inp=1021, out=152))
+        self.assertEqual(rec["src"]["c:agent-x.jsonl"]["tok"][1], 50)
+        self.assertEqual(rec["src"]["c:agent-y.jsonl"]["tok"][1], 2)
+
+
 # =========================================================================== T-18 starvation
 class TestMessageIdOnly(AccountingCase):
 
@@ -718,6 +749,39 @@ class TestReplacementLifecycle(AccountingCase):
         self.assertEqual(sess["in"], self.base["in"])
         self.assertEqual(sess["state"], "complete")
 
+    def test_vanish_then_reappear_counts_once(self):
+        p = os.path.join(self.subdir, "agent-b.jsonl")
+        with open(p, "rb") as f:
+            content = f.read()
+        os.remove(p)
+        self.settle()
+        with open(p, "wb") as f:
+            f.write(content)
+        _, sess, _ = self.settle()
+        self.assertEqual((sess["in"], sess["out"]), (self.base["in"], self.base["out"]))
+        self.assertEqual(sess["state"], "complete")
+        self.child("agent-b.jsonl", [A("b-late", inp=7, out=3, sidechain=True)], mode="a")
+        _, sess, _ = self.settle()
+        self.assertEqual((sess["in"], sess["out"]), (self.base["in"] + 7, self.base["out"] + 3))
+
+    def test_reappeared_unscanned_source_is_live_again(self):
+        self.child("agent-c.jsonl", [A("c1", inp=5, out=5, sidechain=True)])
+        p = os.path.join(self.subdir, "agent-c.jsonl")
+        with open(p, "rb") as f:
+            content = f.read()
+        with mock.patch.object(L, "ACCT_SOURCE_BUDGET", 0):
+            self.update()                              # discovered, not yet scanned
+            os.remove(p)
+            _, gone, _ = self.update()
+            self.assertIn("source_vanished_with_backlog", gone["reasons"])
+            with open(p, "wb") as f:
+                f.write(content)
+            _, back, _ = self.update()
+        self.assertNotIn("source_vanished_with_backlog", back["reasons"])
+        self.assertEqual(back["state"], "catching_up")
+        _, sess, _ = self.settle()
+        self.assertEqual((sess["in"], sess["state"]), (self.base["in"] + 5, "complete"))
+
     def test_vanish_with_backlog_is_partial_and_preserves_subtotal(self):
         self.child("agent-c.jsonl", self._child_bytes("c", 30, 50))
         with mock.patch.object(L, "ACCT_RECORD_BUDGET", 10):
@@ -860,7 +924,7 @@ class TestHistoryScaling(AccountingCase):
 
     def test_no_change_and_incremental_costs_do_not_grow_with_history(self):
         observations = {}
-        for n in (1000, 10000):
+        for n in (1000, 10000, 100000):
             shutil.rmtree(os.path.dirname(self.ledger), ignore_errors=True)
             self.write(self.parent, [A(f"h{i}", inp=1, out=1) for i in range(n)])
             with mock.patch.object(L, "ACCT_RECORD_BUDGET", 10**6), \
