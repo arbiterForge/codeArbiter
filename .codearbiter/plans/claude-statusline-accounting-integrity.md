@@ -1,9 +1,9 @@
 # Plan — Claude statusline accounting integrity
 
-**Status:** DRAFT (revised 2026-09-27), awaiting plan approval; no implementation authority  
+**Status:** APPROVED 2026-09-27 by the repository owner (in-session, together with the amended spec)  
 **Date:** 2026-09-26 (revised 2026-09-27)  
 **Slug:** `claude-statusline-accounting-integrity`  
-**Source spec:** `.codearbiter/specs/claude-statusline-accounting-integrity.md`. Amended 2026-09-27 and awaiting re-approval.  
+**Source spec:** `.codearbiter/specs/claude-statusline-accounting-integrity.md`. Amended and APPROVED 2026-09-27.  
 **Branch for planning artifacts:** `spec/claude-statusline-accounting-integrity`
 
 ## Revision note (2026-09-27)
@@ -163,7 +163,7 @@ All test paths are under `plugins/ca/hooks/tests/`, where the tests are plugin-o
 
 | ID | Work | Path(s) | Verification | Maps to | Covers | Depends on | Status |
 |---|---|---|---|---|---|---|---|
-| T-01 | Run the intent backstop on the exact approved spec bytes; stop on any output. | spec | `python core/pysrc/_intentlib.py uncovered-intent .codearbiter/specs/claude-statusline-accounting-integrity.md` empty | Preflight | AC-34 | — | PENDING (passed on draft bytes 2026-09-27) |
+| T-01 | Run the intent backstop on the exact approved spec bytes; stop on any output. | spec | `python core/pysrc/_intentlib.py uncovered-intent .codearbiter/specs/claude-statusline-accounting-integrity.md` empty | Preflight | AC-34 | — | ACCEPTED (empty on approved bytes 2026-09-27) |
 | T-02 | Capture sanitized structural fixtures from real local transcripts. Shapes: fork-context-ref + replay, 3-iteration advisor record, stale top-level cache split, streaming snapshot group, `<synthetic>`, modifier fields, a `cost-state` record. Replace IDs/UUIDs and strip all content. Confirm where `spawnDepth>1` children are written. Record provenance (Claude Code version, capture date) in a fixture README. | `tests/fixtures/statusline_accounting/` (new) | A fixture-lint test (this is a public repo) rejects content fields, real IDs/UUIDs, absolute paths, `cwd`, `gitBranch`, usernames, hostnames and emails, and asserts each named shape is present. The README records the `inference_geo:not_available` assumption (spec D-27) | Characterization | AC-51, AC-08, AC-44 | T-01 | PENDING |
 | T-03 | Add `tools/statusline-bench.py`. It generates deterministic fixtures (long parent; 0/1/12/13/64 children; 1k/10k/100k-request ledgers), runs warm no-change, host-only-change and incremental renders as **one subprocess per render** through the statusline entry point (JSON payload on stdin; `HOME`/ledger/transcript roots redirected by env), with a child-side wrapper installing `sys.audit` + read/write counters, and emits a JSON report. The same harness must run unchanged on base and head. **Run it on the base commit and commit the base report before any `core/pysrc` change.** | `tools/statusline-bench.py`, `.codearbiter/benchmarks/statusline-accounting-base.json`, `tools/README.md` | The base report exists in a commit whose tree has unchanged `core/pysrc` accounting files; the script is deterministic across two runs (structural counters identical) | Performance baseline | AC-39, AC-40 | T-01 | PENDING |
 

@@ -1,6 +1,6 @@
 # Spec — Claude statusline accounting integrity
 
-**Status:** AMENDED 2026-09-27. Awaiting re-approval. The original version was approved on 2026-09-26. This amendment reconciles `.codearbiter/review.md` and a real-transcript characterization; see *Amendment log*.  
+**Status:** APPROVED 2026-09-27 by the repository owner. The amended spec was approved in-session on the condition that current Opus is priced at Opus 5.5 rates, which it is: `claude-opus-5-5` is priced at $4/$20/$5/$8/$0.20, and the Opus 5 rates apply only to records whose model is `claude-opus-5`. The original version was approved 2026-09-26. See *Amendment log*.  
 **Date:** 2026-09-26 (amended 2026-09-27)  
 **Slug:** `claude-statusline-accounting-integrity`  
 **Format:** Markdown authority for this externally authored review campaign; this PR creates no same-slug HTML shadow.
