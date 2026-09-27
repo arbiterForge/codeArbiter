@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -231,7 +230,14 @@ func TestContextRecoveryAndPaths(t *testing.T) {
 		human := []byte("human lower-case alias\n")
 		mutationWrite(t, g, alias, human)
 		aliasRequest := mutationRequest(t, "create", nil, nil, "context-case-0001")
-		if runtime.GOOS == "windows" {
+		// Case sensitivity belongs to the mounted filesystem, not the OS.
+		// Hosted macOS also resolves this spelling to the existing human file.
+		canonicalInfo, statErr := os.Stat(filepath.Join(g.Root, filepath.FromSlash(recoveryDocument)))
+		if statErr == nil {
+			aliasInfo, err := os.Stat(filepath.Join(g.Root, filepath.FromSlash(alias)))
+			if err != nil || !os.SameFile(canonicalInfo, aliasInfo) {
+				t.Fatalf("canonical path must identify the human alias before mutation: %v", err)
+			}
 			if _, err := Apply(g, aliasRequest, fixtureMutationAuthority(t, aliasRequest)); err == nil {
 				t.Fatal("case alias accepted as absent canonical document")
 			}
@@ -240,8 +246,11 @@ func TestContextRecoveryAndPaths(t *testing.T) {
 			}
 			return
 		}
+		if !os.IsNotExist(statErr) {
+			t.Fatalf("inspect canonical case spelling: %v", statErr)
+		}
 		if _, err := Apply(g, aliasRequest, fixtureMutationAuthority(t, aliasRequest)); err != nil {
-			t.Fatalf("case-distinct target rejected on %s: %v", runtime.GOOS, err)
+			t.Fatalf("case-distinct target rejected on a case-sensitive filesystem: %v", err)
 		}
 		if !bytes.Equal(recoveryBytes(t, g, alias), human) || recoveryBytes(t, g, recoveryProvenance) == nil {
 			t.Fatal("case-distinct creation changed human alias or lost provenance")

@@ -289,7 +289,7 @@ def run_go_case(
 
 def _native_platform() -> str:
     operating_system = {"Windows": "windows", "Linux": "linux", "Darwin": "darwin"}.get(platform.system())
-    architecture = {"AMD64": "amd64", "x86_64": "amd64", "aarch64": "arm64", "arm64": "arm64"}.get(platform.machine())
+    architecture = {"amd64": "amd64", "x86_64": "amd64", "aarch64": "arm64", "arm64": "arm64"}.get(platform.machine().casefold())
     if operating_system is None or architecture is None:
         raise VerificationError("installed host platform is unsupported")
     return f"{operating_system}/{architecture}"

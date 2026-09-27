@@ -12,6 +12,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import _contextverificationlib as bridge
 
@@ -80,7 +81,7 @@ class ContextVerificationBridge(unittest.TestCase):
         binary = installation / "ca-artifact-fixture"
         binary.write_bytes(b"inert test binary")
         system = {"Windows": "windows", "Linux": "linux", "Darwin": "darwin"}[platform.system()]
-        machine = {"AMD64": "amd64", "x86_64": "amd64", "aarch64": "arm64", "arm64": "arm64"}[platform.machine()]
+        machine = {"amd64": "amd64", "x86_64": "amd64", "aarch64": "arm64", "arm64": "arm64"}[platform.machine().casefold()]
         release = installation / "release.json"
         release.write_text(json.dumps({"binaries": {f"{system}/{machine}": {
             "file": binary.name, "sha256": digest(binary), "native_tested": True,
@@ -112,6 +113,22 @@ class ContextVerificationBridge(unittest.TestCase):
         )
         args.update(changes)
         return args
+
+    def test_windows_arm64_installed_inputs_bind_native_release(self):
+        with mock.patch.object(platform, "system", return_value="Windows"), \
+                mock.patch.object(platform, "machine", return_value="ARM64"):
+            inputs = self.installed_inputs()
+            release = inputs["plugin_root"] / "helpers" / "artifacts" / "release.json"
+            self.assertIn("windows/arm64", json.loads(release.read_text(
+                encoding="utf-8"))["binaries"])
+            invocation = bridge.build_installed_invocation(**inputs)
+        self.assertEqual(invocation.proof_kind, "candidate-preflight")
+
+    def test_unknown_installed_architecture_remains_unsupported(self):
+        inputs = self.installed_inputs()
+        with mock.patch.object(platform, "machine", return_value="unknown-cpu"):
+            with self.assertRaisesRegex(bridge.VerificationError, "platform is unsupported"):
+                bridge.build_installed_invocation(**inputs)
 
     def test_go_bridge_observes_a_real_named_fixture(self):
         observation = self.run_fixture()
