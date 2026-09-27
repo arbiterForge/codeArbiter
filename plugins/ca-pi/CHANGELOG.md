@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.6] - 2026-09-27
+
+### Fixed
+
+- Keep reconciliation bookkeeping outside verification inputs so an unchanged
+  workspace can be reconciled without locked-file failures or stale approvals.
+
 ## [0.15.5] - 2026-09-26
 
 ### Fixed

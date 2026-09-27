@@ -23,8 +23,10 @@ import _replylib
 
 ID_RE = re.compile(r"[A-Z][A-Z0-9_-]{0,127}")
 TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
-PENDING_DIR = Path(".codearbiter/.markers/reconciliations")
-ATTEMPT_DIR = Path(".codearbiter/.markers/reconciliation-attempts")
+PENDING_DIR = Path("pending")
+ATTEMPT_DIR = Path("attempts")
+LEGACY_PENDING_DIR = Path(".codearbiter/.markers/reconciliations")
+LEGACY_ATTEMPT_DIR = Path(".codearbiter/.markers/reconciliation-attempts")
 SOURCE_DIR = Path(".codearbiter/.artifacts/authority-sources")
 PROVEN_UNCOMMITTED = frozenset({"REVISION_CONFLICT", "OPERATION_ROLLED_BACK"})
 
@@ -53,6 +55,65 @@ def _attempt(pending: dict[str, Any]) -> Path:
     return ATTEMPT_DIR / f"{_operation_id(pending)}.json"
 
 
+def _state_root(root: Path) -> Path:
+    """Keep operational state outside every repository input root."""
+    try:
+        spool = _artifactauthoritylib._spool_root(root)
+        return _artifactauthoritylib._safe_directory(spool, Path("reconciliations"), create=True)
+    except _artifactauthoritylib.AuthorityError as exc:
+        raise ReconciliationError("Git admin reconciliation storage is unavailable or unsafe") from exc
+
+
+def _legacy_pending(root: Path, artifact_id: str) -> Path:
+    return _legacy_file(root, LEGACY_PENDING_DIR, f"{artifact_id}.json")
+
+
+def _legacy_file(root: Path, directory: Path, filename: str) -> Path:
+    try:
+        parent = _approvallib._safe_directory(root, directory, create=False)
+    except FileNotFoundError:
+        return root / directory / filename
+    except _approvallib.ApprovalError as exc:
+        raise ReconciliationError("legacy reconciliation directory is unsafe") from exc
+    return parent / filename
+
+
+def _state_file(root: Path, directory: Path, filename: str) -> Path:
+    try:
+        parent = _artifactauthoritylib._safe_directory(_state_root(root), directory, create=True)
+    except _artifactauthoritylib.AuthorityError as exc:
+        raise ReconciliationError("Git admin reconciliation directory is unsafe") from exc
+    return parent / filename
+
+
+def _present(path: Path) -> bool:
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        return False
+    return True
+
+
+def _pending_path(root: Path, artifact_id: str) -> Path:
+    current = _state_file(root, PENDING_DIR, f"{artifact_id}.json")
+    legacy = _legacy_pending(root, artifact_id)
+    if _present(current) and _present(legacy):
+        raise ReconciliationError("ambiguous reconciliation state in repository and Git admin storage")
+    return legacy if _present(legacy) else current
+
+
+def _attempt_path(root: Path, pending: dict[str, Any]) -> Path:
+    filename = f"{_operation_id(pending)}.json"
+    legacy = _legacy_file(root, LEGACY_ATTEMPT_DIR, filename)
+    current = _state_file(root, ATTEMPT_DIR, filename)
+    legacy_pending = _present(_legacy_pending(root, pending["artifact_id"]))
+    if (_present(legacy) and _present(current)) or (
+        legacy_pending and _present(current)
+    ) or (not legacy_pending and _present(legacy)):
+        raise ReconciliationError("mixed reconciliation state requires explicit repair")
+    return legacy if legacy_pending else current
+
+
 def _mutation_request(pending: dict[str, Any], receipt: str) -> dict[str, Any]:
     identity = pending["identity"]
     request = {
@@ -72,7 +133,7 @@ def _reconciliation_lock(root: Path, artifact_id: str):
     """Serialize all transitions for one artifact, including authority revocation."""
     if ID_RE.fullmatch(artifact_id) is None:
         raise ReconciliationError("reconciliation ID is invalid")
-    parent = _approvallib._safe_directory(root, PENDING_DIR, create=True)
+    parent = _state_file(root, PENDING_DIR, artifact_id).parent
     path = parent / f"{artifact_id}.lock"
     flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     fd = os.open(path, flags, 0o600)
@@ -147,11 +208,11 @@ def _write_attempt(root: Path, pending: dict[str, Any], request: dict[str, Any])
         "format": "codearbiter.reconciliation-attempt/0.1.0",
         "pending_sha256": _digest(_canonical(pending)), "request": request,
     }
-    _write_atomic_new(root, _attempt(pending), _canonical(record))
+    _write_atomic_new(_state_root(root), _attempt(pending), _canonical(record))
 
 
 def _load_attempt(root: Path, pending: dict[str, Any]) -> dict[str, Any] | None:
-    path = root / _attempt(pending)
+    path = _attempt_path(root, pending)
     try:
         info = path.lstat()
     except FileNotFoundError:
@@ -225,6 +286,8 @@ def _arm_reconciliation_unlocked(
     token = token or secrets.token_urlsafe(24)
     if TOKEN_RE.fullmatch(token) is None:
         raise ReconciliationError("reconciliation token is invalid")
+    if _present(_legacy_pending(root, artifact_id)):
+        raise ReconciliationError("PENDING_RECONCILIATION: legacy request must be cancelled or recovered")
     identity, snapshot, record = _current(client, artifact_id, target_id)
     reply = (
         f"reconcile-task {artifact_id} {target_id} {target_state} {token}"
@@ -240,10 +303,11 @@ def _arm_reconciliation_unlocked(
         "prompt_sha256": _digest(reply.encode()),
     }
     relative = _pending(artifact_id)
+    state = _state_root(root)
     created = False
     try:
         pending_bytes = _canonical(pending)
-        _write_atomic_new(root, relative, pending_bytes)
+        _write_atomic_new(state, relative, pending_bytes)
         created = True
         _artifactpromptlib.register(
             root, "reconciliation", artifact_id, reply,
@@ -254,7 +318,7 @@ def _arm_reconciliation_unlocked(
     except Exception:
         if created:
             try:
-                (root / relative).unlink()
+                (state / relative).unlink()
             except OSError:
                 pass
         raise
@@ -267,7 +331,7 @@ def _arm_reconciliation_unlocked(
 
 def _load(root: Path, artifact_id: str) -> dict[str, Any]:
     try:
-        path = root / _pending(artifact_id)
+        path = _pending_path(root, artifact_id)
         info = path.lstat()
         reparse = getattr(info, "st_file_attributes", 0) & 0x400
         if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISREG(info.st_mode) or info.st_size > 131072:
@@ -328,7 +392,7 @@ def _cancel_reconciliation_unlocked(root: Path, artifact_id: str, prompt: str) -
         raise ReconciliationError("reconciliation authority binding is unavailable") from exc
     if binding != _digest(_canonical(pending)):
         raise ReconciliationError("pending reconciliation changed after arming")
-    (root / _pending(artifact_id)).unlink()
+    _pending_path(root, artifact_id).unlink()
     _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
     return {"artifact_id": artifact_id, "cancelled": True}
 
@@ -349,7 +413,7 @@ def cancel_orphaned_reconciliation(root: str | Path, artifact_id: str) -> dict[s
                 raise ReconciliationError("reconciliation authority binding is unreadable") from exc
         if binding == _digest(_canonical(pending)):
             raise ReconciliationError("reconciliation route is active; cancel with its exact prompt")
-        (root / _pending(artifact_id)).unlink()
+        _pending_path(root, artifact_id).unlink()
         if binding is not None:
             _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
         return {"artifact_id": artifact_id, "cancelled": True, "orphaned": True}
@@ -379,9 +443,10 @@ def recover_reconciliation(root: str | Path, client: Any, artifact_id: str) -> d
                 raise
             result = None
             committed = False
-        (root / _pending(artifact_id)).unlink()
+        attempt_path = _attempt_path(root, pending)
+        _pending_path(root, artifact_id).unlink()
         _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
-        (root / _attempt(pending)).unlink()
+        attempt_path.unlink()
         return {
             "artifact_id": artifact_id, "committed": committed,
             "revision": result.get("revision") if committed else None,
@@ -407,6 +472,8 @@ def _consume_reconciliation_unlocked(
     parts = prompt.split(" ")
     artifact_id, target_id = parts[1], parts[2]
     pending = _load(root, artifact_id)
+    if _present(_legacy_pending(root, artifact_id)):
+        raise ReconciliationError("legacy reconciliation must be cancelled or recovered before consumption")
     if not isinstance(host, str) or not host or not isinstance(session_id, str) or not session_id:
         raise ReconciliationError("reconciliation host context is invalid")
     try:
@@ -456,9 +523,10 @@ def _consume_reconciliation_unlocked(
             if request is None:
                 raise ReconciliationError("in-flight reconciliation record disappeared")
     result = client.call(pending["operation"], request)
-    (root / _pending(artifact_id)).unlink()
+    attempt_path = _attempt_path(root, pending)
+    _pending_path(root, artifact_id).unlink()
     _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
-    (root / _attempt(pending)).unlink()
+    attempt_path.unlink()
     return {"matched": True, "reconciled": True, "artifact_id": artifact_id, "target_id": target_id, "receipt": request["receipt"], "revision": result.get("revision")}
 
 
