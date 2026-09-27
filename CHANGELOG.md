@@ -24,6 +24,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
 - Resolve nested source membership through anchored paths and synchronize adapter
   version identities with the release manifests.
 - Account for failed attempts, new source membership, actor changes and compaction

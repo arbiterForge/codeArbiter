@@ -353,17 +353,24 @@ def test_context_creation_scout_isolation():
     codex_phase2 = codex_skill[codex_phase2_start:codex_phase3_start]
     scout_words = " ".join(scout.lower().split())
 
-    check(
-        "isolated subagent" in phase2.lower() and "block" in phase2.lower(),
-        "context-creation Phase 2 must block when isolated scout subagents are unavailable",
-    )
+    for host, phase in (("Claude", phase2), ("Codex", codex_phase2)):
+        phase_words = " ".join(phase.lower().split())
+        check(
+            all(phrase in phase_words for phrase in (
+                "block before dispatch unless", "fresh child identity",
+                "host-enforced read-only containment", "no inline fallback",
+            )),
+            f"{host} context-creation Phase 2 must require a qualified isolated "
+            "child profile and block inline fallback",
+        )
     check(
         "inline one scope" not in codex_phase2.lower(),
         "Codex context-creation must not claim inline scopes preserve report-only isolation",
     )
     check(
-        "`context-creation` always" in scout_words
-        and "decision-variance" in scout_words,
+        "under ~50 files, `decision-variance` scans inline" in scout_words
+        and "`context-creation` dispatches its six fixed, isolated scout assignments" in scout_words
+        and "`context-creation` must block before dispatch" in scout_words,
         "scout charter must scope the small-repo shortcut away from context-creation",
     )
     check(

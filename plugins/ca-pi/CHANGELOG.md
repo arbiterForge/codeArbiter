@@ -15,6 +15,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
 - Synchronize the packaged adapter version with its release manifest.
 
 ## [0.15.5] - 2026-09-26

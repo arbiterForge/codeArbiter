@@ -17,6 +17,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
 - Resolve nested source membership through anchored paths and synchronize the
   packaged adapter version with its release manifests.
 - Preserve explicit gaps and account for retries, changed inputs and actor delivery

@@ -902,7 +902,7 @@ class TestSolvableFixFixture(unittest.TestCase):
         self.assertEqual(case['snapshot_sha256'],
                          '1d2e70e92a8fa90b7c1d85118c9b4c5b359dae6387bada53f7fb16ff72ba74a9')
         with tempfile.TemporaryDirectory(prefix='ca-context-fix-problem-') as temp:
-            instance = materialize(catalog, case['id'], Path(temp) / 'case')
+            instance = materialize(catalog, case['id'], Path(temp).resolve() / 'case')
             solver = instance['solver']
             original = snapshot(solver)
             argv = [str(Path(sys.executable).resolve()), '-B', '-m', 'unittest',

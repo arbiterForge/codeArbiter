@@ -132,7 +132,7 @@ _FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(?:[^`~].*)?$")
 
 def context_state_text(text):
     """Return (enabled, malformed, initialized) from one CONTEXT.md parse."""
-    lines = (text or "").splitlines()
+    lines = (text or "").split("\n")
     if not lines:
         return (False, False, False)
     first = lines[0].lstrip("﻿")  # tolerate a leading UTF-8 BOM

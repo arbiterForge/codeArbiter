@@ -58,7 +58,7 @@ class TestSharedInitializationParser(unittest.TestCase):
         self.assertEqual(getattr(startup, "initialized_body_text", lambda _text: None)(text),
                          initialized)
         with tempfile.TemporaryDirectory() as tmp:
-            ctx = Path(tmp) / ".codearbiter" / "CONTEXT.md"
+            ctx = Path(tmp).resolve() / ".codearbiter" / "CONTEXT.md"
             ctx.parent.mkdir()
             ctx.write_text(text, encoding="utf-8")
             before = ctx.read_bytes()
@@ -155,7 +155,7 @@ class TestPassiveBeforeActivation(unittest.TestCase):
     def test_t020_passive_before_activation_positive_controls(self):
         """An explicit-root read inventories denied effects and preserves active state."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             state = root / ".codearbiter"
             state.mkdir()
             ctx = state / "CONTEXT.md"
@@ -199,7 +199,7 @@ class TestPassiveBeforeActivation(unittest.TestCase):
     def test_t020_passive_before_activation_negative_controls(self):
         """Unqualified or malformed roots never promote authority or run effects."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             report = self._inspect(root)
             self.assertEqual(report["context"]["exists"], False)
             self.assertFalse(report["context"]["enabled"])
@@ -241,7 +241,7 @@ class TestContextWriterBridge(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         state = self.root / ".codearbiter"
         state.mkdir()
         self.human = state / "tech-stack.md"
@@ -472,7 +472,7 @@ class TestContextFinalization(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         (self.root / ".codearbiter").mkdir()
         self.preview = {
             "operation_id": "context-final-0001", "mode": "finalize",
@@ -1004,7 +1004,7 @@ class TestInitializedRefreshRoutes(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.state = self.root / ".codearbiter"
         self.state.mkdir()
         (self.state / "CONTEXT.md").write_text(
@@ -1108,7 +1108,7 @@ class TestPartialOnboardingRecovery(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.state = self.root / ".codearbiter"
 
     def _init(self):
@@ -1225,11 +1225,11 @@ class TestPartialOnboardingRecovery(unittest.TestCase):
         self.assertEqual(self._snapshot(), before)
         self.assertFalse(missing.exists())
         with tempfile.TemporaryDirectory() as stray_root:
-            stray = Path(stray_root) / ".codearbiter"
+            stray = Path(stray_root).resolve() / ".codearbiter"
             (stray / ".provenance").mkdir(parents=True)
             (stray / ".provenance" / "tech-stack.json").write_bytes(b"human record\n")
             with self.assertRaisesRegex(SystemExit, "existing state without a scaffold"):
-                initializer.main(["--root", stray_root])
+                initializer.main(["--root", str(stray.parent)])
             self.assertFalse((stray / "CONTEXT.md").exists())
             self.assertEqual((stray / ".provenance" / "tech-stack.json").read_bytes(),
                              b"human record\n")
@@ -1247,7 +1247,7 @@ class TestHumanContextPreservation(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name) / "project"
+        self.root = Path(self.tmp.name).resolve() / "project"
         self.state = self.root / ".codearbiter"
         self.state.mkdir(parents=True)
         self.context = self.state / "CONTEXT.md"
@@ -1316,9 +1316,9 @@ class TestHumanContextPreservation(unittest.TestCase):
 
         if os.name == "nt":
             with tempfile.TemporaryDirectory() as fixture:
-                base = Path(fixture) / "project"
+                base = Path(fixture).resolve() / "project"
                 base.mkdir()
-                outside = Path(fixture) / "human-state"
+                outside = Path(fixture).resolve() / "human-state"
                 outside.mkdir()
                 sentinel = outside / "human.txt"
                 sentinel.write_bytes(b"owned outside the project\n")
@@ -1360,7 +1360,7 @@ class TestFirstRealContextInput(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name) / "project"
+        self.root = Path(self.tmp.name).resolve() / "project"
         self.root.mkdir()
         subprocess.run(["git", "-C", str(self.root), "init", "-q", "-b", "main"],
                        check=True, capture_output=True)
@@ -1434,7 +1434,7 @@ class TestFirstRealContextInput(unittest.TestCase):
         self.assertEqual(self._state(), before)
         (self.root / "package.json").write_bytes(b'{"name":"first"}\n')
         self.snapshot = self._snapshot()
-        other = Path(self.tmp.name) / "other"
+        other = self.root.parent / "other"
         other.mkdir()
         (other / ".codearbiter/.provenance").mkdir(parents=True)
         (other / ".codearbiter/.provenance/tech-stack.json").write_bytes(
@@ -1470,7 +1470,7 @@ class TestContextUpgradeAndRollback(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.state = self.root / ".codearbiter"
         self.store = self.state / ".provenance"
         self.store.mkdir(parents=True)
