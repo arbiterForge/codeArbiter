@@ -14,8 +14,11 @@ make that edit: the backing script backs up any existing `statusLine` before ove
 The renderer itself is global — folder, git, model, rate limits, context, cumulative tokens, and
 an estimated API-equivalent cost render in every repo. The arbiter-specific segments (stage,
 tasks, open questions, overrides) show up only in a repo that has opted in via CONTEXT.md
-frontmatter. Token and cost figures are read from the session transcript's real per-model
-usage — the cost is an estimated pay-as-you-go equivalent, not a bill.
+frontmatter. Token and cost figures are reconstructed from the session transcript and its
+subagent transcripts, each request counted once. The cost is an estimated pay-as-you-go
+equivalent, not a bill, and its label says how complete it is: `api≈` complete, `api≥` a lower
+bound, `api≈?` no defensible figure, `host≈` Claude Code's own estimate (Session only, when
+reconstruction is unavailable). See the statusline guide for the full contract.
 
 ## Usage
 

@@ -15,9 +15,32 @@ The renderer is global — its usage box (folder, git, model, rate limits, conte
 API-equivalent cost, per-call token burn) renders in every repo. The arbiter segments
 (`stage · tasks · q · over`) light up only where `.codearbiter/CONTEXT.md` sets `arbiter: enabled`.
 
-Token and cost figures come from the session transcript: real per-model token usage is accumulated,
-and the cost is the estimated pay-as-you-go **API-equivalent** (labelled `api≈`) — what the same
-tokens would have cost at list API rates — not a bill.
+Token and cost figures are reconstructed from the transcripts on disk: the parent session transcript
+and every delegated subagent transcript under it. Each request is counted once, even when streaming
+snapshots or forked subagents replay it. The dollar figure is the estimated pay-as-you-go
+**API-equivalent**, meaning what the same tokens would have cost at the list API rates shipped with
+codeArbiter. It is not a bill, and it is not what a subscription charges. Each Session and Today
+figure carries its own label:
+
+- `api≈$N` — every observed request was priced, so the figure is complete.
+- `api≥$N` — a lower bound. Some usage could not be priced (an unknown model, tool, or price
+  modifier), or the scanner is still catching up on a large transcript. The number only rises as
+  coverage improves.
+- `api≈?` — usage exists but no defensible dollar figure does. The renderer never shows a precise
+  number it cannot stand behind.
+- `host≈$N` — Session only, and only when reconstruction is unavailable: Claude Code's own session
+  estimate, the highest value it has reported. It is never mixed with `api` figures and never
+  used for Today.
+- A trailing `*` marks a stale figure. That render could not take the ledger lock, so it showed
+  the last committed totals instead of zeros.
+
+In a narrow box the words drop and the symbol stays (`≈$N`, `≥$N`, `h≈$N`), so a figure is never
+cut off mid-number.
+
+The statusline refreshes only when Claude Code redraws it, and codeArbiter adds no timer. Work that a
+render defers (bounded reads on a large backlog) is never lost. It resumes on the next redraw, and
+until then the figure reads `api≥`. The per-call burn sparkline tracks the parent session's own
+requests only. Subagent usage counts toward the totals but not toward burn.
 
 Each visible subagent row reports its recorded model. Claude IDs retain a compact family/version
 label such as `model:sonnet-4-6`; multiple models report `model:mixed`, while absent or malformed

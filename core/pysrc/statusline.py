@@ -13,19 +13,21 @@
 #   - native-font glyphs only: box-drawing, block elements, arrows, ASCII labels.
 #   - top line = active folder; second line = git project (owner/name + branch),
 #     with a no-git fallback.
-#   - token COUNTS come from the session TRANSCRIPT (deduped per requestId; the
-#     host sends no cumulative counts). The COST is the host's authoritative
-#     cost.total_cost_usd — it already prices every call (incl. subagents, which
-#     live in separate transcripts) the way your bill does; a token*price table
-#     would miss subagents and drift, so it is used only as a fallback.
+#   - token counts AND cost are reconstructed from the transcripts (parent plus
+#     every subagent transcript, each request counted once) and priced at the
+#     list rates pinned in _usagelib: api≈ when complete, api≥ as a lower bound,
+#     api≈? when no defensible figure exists. The host's cost.total_cost_usd is a
+#     separate estimate, shown as host≈ for Session only when reconstruction is
+#     unavailable, and never added to or substituted for an api figure.
 #   - context trusts context_window.used_percentage + context_window_size
 #     (1M for million-token models, 200K otherwise) — never exceeds 100%.
 #
-# A small user-level ledger (~/.codearbiter/ledger.json) tails each session's
-# transcript from a stored byte offset (append-only -> O(new lines) per render),
-# accumulating true cumulative tokens + API-equivalent cost per session, so the
-# box shows this session, today's totals across sessions, and a sparkline of the
-# real per-message token burn.
+# A small user-level ledger (per-session state under
+# ~/.codearbiter/ledger.json.sessions/) tails each transcript from a stored byte
+# offset within a fixed per-render budget, so the box shows this session, today's
+# totals across sessions, and a sparkline of the parent session's per-request
+# burn. Deferred work is never lost: it resumes on the next host redraw (the
+# statusline has no timer of its own), and until then the figure reads api≥.
 #
 # Robustness contract: this script must NEVER print a traceback. The host pipes
 # arbitrary JSON on stdin and the output lands in the user's terminal. Every
@@ -404,9 +406,10 @@ except Exception:  # pragma: no cover — never let an import break the statusli
 # the lib's numeric samples into a colored sparkline, so it keeps the ANSI
 # dependency out of the lib.
 def burn_spark(rec):
-    """Sparkline of recent per-message token burn — real per-API-call totals
-    accumulated from the transcript (via _ledgerlib.burn_samples), not a
-    time-extrapolated estimate."""
+    """Sparkline of recent per-request token burn, parent session only (child
+    usage counts toward totals, not burn): real per-API-call totals accumulated
+    from the transcript (via _ledgerlib.burn_samples), not a time-extrapolated
+    estimate."""
     samples = _ledgerlib.burn_samples(rec) if _ledgerlib is not None else []
     return sparkline(samples) if len(samples) >= 2 else ""
 
