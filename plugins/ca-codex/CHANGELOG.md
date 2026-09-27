@@ -6,12 +6,19 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.14.6] - 2026-09-27
+## [0.14.7] - 2026-09-27
 
 ### Changed
 
 - Synchronize the shared hook core with the Claude statusline accounting rewrite (ca 2.23.0).
   Codex and Pi behavior is unchanged.
+
+## [0.14.6] - 2026-09-27
+
+### Fixed
+
+- Keep reconciliation bookkeeping outside verification inputs so an unchanged
+  workspace can be reconciled without locked-file failures or stale approvals.
 
 ## [0.14.5] - 2026-09-26
 

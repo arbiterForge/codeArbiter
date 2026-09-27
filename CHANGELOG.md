@@ -34,6 +34,13 @@ predate the plugin rewrite and are grouped by date.
 - Streaming snapshots and fork replays no longer double-count tokens or cost.
 - Subagent usage is no longer missing from Session and Today totals.
 
+## [2.22.6] - 2026-09-27
+
+### Fixed
+
+- Keep reconciliation bookkeeping outside verification inputs so an unchanged
+  workspace can be reconciled without locked-file failures or stale approvals.
+
 ## [2.22.5] - 2026-09-26
 
 ### Fixed

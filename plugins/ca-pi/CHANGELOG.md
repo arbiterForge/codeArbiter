@@ -4,12 +4,19 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.15.6] - 2026-09-27
+## [0.15.7] - 2026-09-27
 
 ### Changed
 
 - Synchronize the shared hook core with the Claude statusline accounting rewrite (ca 2.23.0).
   Codex and Pi behavior is unchanged.
+
+## [0.15.6] - 2026-09-27
+
+### Fixed
+
+- Keep reconciliation bookkeeping outside verification inputs so an unchanged
+  workspace can be reconciled without locked-file failures or stale approvals.
 
 ## [0.15.5] - 2026-09-26
 
