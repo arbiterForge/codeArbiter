@@ -51,7 +51,10 @@ GATED_COUNTERS = ("opens", "transcript_bytes_read", "ledger_bytes_read",
                   "json_decoded_bytes", "ledger_bytes_written", "ledger_replacements")
 NO_CHANGE_RENDERS = 15
 HOST_ONLY_RENDERS = 5
-INCREMENTAL_RENDERS = 10
+INCREMENTAL_RENDERS = 40   # long enough that hot->cold eviction lands inside the window
+# Spec D-20 permits, per changed source per render, at most two bounded
+# fingerprint windows (D-15: each <= 4 KiB) beyond the accounting byte budget.
+FP_SPEC_WINDOW = 4096
 MAX_WARMUP = 80
 TS_BASE = "2026-09-27T10:{mm:02d}:{ss:02d}.{ms:03d}Z"
 
@@ -261,7 +264,7 @@ def _render(entry, env, cwd, payload, counters_path):
     return elapsed, counters, proc.stdout
 
 
-def _phase(results):
+def _phase(results, changed_sources=0):
     times = [t for t, _c in results]
     totals = {}
     for _t, c in results:
@@ -269,7 +272,7 @@ def _phase(results):
             totals[k] = totals.get(k, 0) + v
     ordered = sorted(times)
     p95 = ordered[min(len(ordered) - 1, int(round(0.95 * (len(ordered) - 1))))]
-    return {"renders": len(results), "totals": totals,
+    return {"renders": len(results), "totals": totals, "changed_sources": changed_sources,
             "median_ms": statistics.median(times), "p95_ms": p95}
 
 
@@ -318,14 +321,16 @@ def run_scenario(entry, name, parent_n, children, child_n):
                                               counters_path)[:2]
                                       for i in range(HOST_ONLY_RENDERS)])
         final_cost = 1.0 + HOST_ONLY_RENDERS * 0.25
-        inc = []
+        inc, changed = [], 0
         for i in range(INCREMENTAL_RENDERS):
             _write_jsonl(parent, _request_lines(f"pi{i}_", 3, "claude-opus-5-5"), mode="a")
+            changed += 1
             if children and i % 2 == 0:
                 _write_jsonl(os.path.join(sub, "agent-bench000.jsonl"),
                              _request_lines(f"ci{i}_", 2, "claude-sonnet-5", True), mode="a")
+                changed += 1
             inc.append(_render(entry, env, work, payload(final_cost), counters_path)[:2])
-        report["incremental"] = _phase(inc)
+        report["incremental"] = _phase(inc, changed)
         return report
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
@@ -371,8 +376,14 @@ def cmd_compare(args):
                 bv, hv = b["totals"].get(c, 0), h["totals"].get(c, 0)
                 rows.append((name, phase, c, bv, hv))
                 allowed = bv * (1 + BYTE_NOISE) if c in NOISY_COUNTERS else bv
+                if c == "transcript_bytes_read":
+                    allowed += 2 * FP_SPEC_WINDOW * h.get("changed_sources", 0)
                 if hv > allowed:
                     failures.append(f"{name}/{phase}: {c} head {hv} > base {bv}")
+            if b["renders"]:
+                rows.append((name, phase, "writes_per_render",
+                             round(b["totals"].get("ledger_replacements", 0) / b["renders"], 2),
+                             round(h["totals"].get("ledger_replacements", 0) / h["renders"], 2)))
             for t in ("median_ms", "p95_ms"):
                 rows.append((name, phase, t, round(b[t], 1), round(h[t], 1)))
                 if not args.structural_only and h[t] > b[t] * TIMING_TOLERANCE:
