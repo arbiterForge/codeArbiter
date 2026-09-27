@@ -24,6 +24,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Preserve explicit gaps and account for retries, changed inputs and actor delivery
   without inventing current evidence or workflow authority.
 
+## [0.14.6] - 2026-09-27
+
+### Fixed
+
+- Keep reconciliation bookkeeping outside verification inputs so an unchanged
+  workspace can be reconciled without locked-file failures or stale approvals.
+
 ## [0.14.5] - 2026-09-26
 
 ### Fixed

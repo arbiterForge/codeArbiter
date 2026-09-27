@@ -854,7 +854,7 @@ def assert_packaged_consumers(plugin_root: Path) -> None:
             loaded[name] = module
         if loaded["_artifactauthoritylib"]._canonical({"cold": True}) != b'{"cold":true}':
             raise AssertionError("installed authority canonicalizer is not executable")
-        if loaded["_reconciliationlib"]._pending("PLAN-COLD").as_posix() != ".codearbiter/.markers/reconciliations/PLAN-COLD.json":
+        if loaded["_reconciliationlib"]._pending("PLAN-COLD").as_posix() != "pending/PLAN-COLD.json":
             raise AssertionError("installed reconciliation adapter is not executable")
         for filename in ("artifact-authority.py", "artifact-authority-hook.py", "artifact-reconcile.py"):
             path = hooks / filename

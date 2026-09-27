@@ -54,4 +54,8 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (_reconciliationlib.ReconciliationError, _artifactlib.ArtifactError, OSError) as exc:
+        print(f"codeArbiter: reconciliation failed: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc

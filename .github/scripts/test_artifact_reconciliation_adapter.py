@@ -6,6 +6,7 @@ import importlib.util
 import hashlib
 import io
 import json
+import subprocess
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 import sys
@@ -77,11 +78,33 @@ class FakeClient:
         raise AssertionError(operation)
 
 
+class FilesystemSnapshotClient(FakeClient):
+    """Model a plan whose input root includes operational .codearbiter paths."""
+
+    def __init__(self, root, input_root=".codearbiter"):
+        super().__init__(root)
+        self.input_root = input_root
+
+    def call(self, operation, request=None, **kwargs):
+        if operation == "snapshot":
+            digest = hashlib.sha256()
+            for path in sorted((self.root / self.input_root).rglob("*")):
+                relative = path.relative_to(self.root)
+                if (relative.parts[0] != ".git"
+                        and relative.parts[:2] != (".codearbiter", ".artifacts")
+                        and path.is_file()):
+                    digest.update(path.relative_to(self.root).as_posix().encode())
+                    digest.update(path.read_bytes())
+            return {"sha256": digest.hexdigest()}
+        return super().call(operation, request, **kwargs)
+
+
 class ReconciliationTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         (self.root / ".codearbiter").mkdir()
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         self.adapter = importlib.import_module("_reconciliationlib")
         self.routes = importlib.import_module("_artifactpromptlib")
         self.old_registry = self.routes.REGISTRY_PARENT
@@ -109,6 +132,210 @@ class ReconciliationTest(unittest.TestCase):
             target_state="PENDING", reason="Interrupted verifier.",
             assessment="The prior attempt has no established completion.", token=token,
         )
+
+    def test_arming_does_not_change_a_governed_codearbiter_input(self):
+        (self.root / ".codearbiter/open-tasks.md").write_text("original\n", encoding="utf-8")
+        self.client = FilesystemSnapshotClient(self.root)
+        before = self.client.call("snapshot", {"artifact_id": "PLAN-EXAMPLE"})["sha256"]
+        self.arm_task()
+        after = self.client.call("snapshot", {"artifact_id": "PLAN-EXAMPLE"})["sha256"]
+        self.assertEqual(before, after, "arming changed the governed plan input")
+
+    def test_arming_does_not_change_a_whole_repository_input(self):
+        (self.root / ".codearbiter/open-tasks.md").write_text("original\n", encoding="utf-8")
+        self.client = FilesystemSnapshotClient(self.root, ".")
+        with tempfile.TemporaryDirectory() as registry:
+            self.routes.REGISTRY_PARENT = Path(registry)
+            self.replies.REGISTRY_PARENT = Path(registry)
+            before = self.client.call("snapshot", {"artifact_id": "PLAN-EXAMPLE"})["sha256"]
+            self.arm_task()
+            after = self.client.call("snapshot", {"artifact_id": "PLAN-EXAMPLE"})["sha256"]
+        self.assertEqual(before, after, "arming changed the whole repository input")
+
+    def test_genuine_governed_source_change_remains_stale(self):
+        source = self.root / ".codearbiter/open-tasks.md"
+        source.write_text("original\n", encoding="utf-8")
+        self.client = FilesystemSnapshotClient(self.root)
+        armed = self.arm_task()
+        source.write_text("changed\n", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "target changed after arming"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="stale-source"
+            )
+        self.assertFalse(any(name == "task-reconcile" for name, _ in self.client.calls))
+
+    def test_linked_worktrees_have_distinct_admin_reconciliation_state(self):
+        source = self.root / ".codearbiter/open-tasks.md"
+        source.write_text("shared\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(self.root), "add", ".codearbiter/open-tasks.md"], check=True)
+        subprocess.run([
+            "git", "-C", str(self.root), "-c", "user.name=Fixture", "-c", "user.email=fixture@example.test",
+            "commit", "-qm", "fixture",
+        ], check=True)
+        with tempfile.TemporaryDirectory() as sibling:
+            linked = Path(sibling) / "linked"
+            subprocess.run(["git", "-C", str(self.root), "worktree", "add", "-q", "--detach", str(linked)], check=True)
+            first = self.arm_task(token="first-worktree-token")
+            second = self.adapter.arm_reconciliation(
+                linked, FakeClient(linked), "PLAN-EXAMPLE", "T-001", "task-reconcile",
+                target_state="PENDING", reason="Interrupted verifier.",
+                assessment="The prior attempt has no established completion.", token="second-worktree-token",
+            )
+            self.assertNotEqual(self.adapter._state_root(self.root), self.adapter._state_root(linked))
+            self.assertTrue(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+            self.assertTrue(self.adapter._pending_path(linked, "PLAN-EXAMPLE").exists())
+            self.assertNotEqual(first["reply"], second["reply"])
+
+    def test_legacy_armed_request_requires_exact_cancellation_before_rearming(self):
+        armed = self.arm_task()
+        legacy = self.root / self.adapter.LEGACY_PENDING_DIR / "PLAN-EXAMPLE.json"
+        legacy.parent.mkdir(parents=True)
+        self.adapter._pending_path(self.root, "PLAN-EXAMPLE").rename(legacy)
+        with self.assertRaisesRegex(RuntimeError, "legacy reconciliation"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="legacy"
+            )
+        before_snapshots = len([name for name, _ in self.client.calls if name == "snapshot"])
+        with self.assertRaisesRegex(RuntimeError, "PENDING_RECONCILIATION"):
+            self.arm_task(token="replacement-token")
+        self.assertEqual(before_snapshots, len([name for name, _ in self.client.calls if name == "snapshot"]))
+        self.assertTrue(self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])["cancelled"])
+        self.assertFalse(legacy.exists())
+
+    def test_legacy_interrupted_attempt_replays_its_exact_request(self):
+        armed = self.arm_task()
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="before-upgrade"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        attempt = self.adapter._attempt_path(self.root, pending)
+        legacy_pending = self.root / self.adapter.LEGACY_PENDING_DIR / "PLAN-EXAMPLE.json"
+        legacy_attempt = self.root / self.adapter.LEGACY_ATTEMPT_DIR / attempt.name
+        legacy_pending.parent.mkdir(parents=True)
+        legacy_attempt.parent.mkdir(parents=True)
+        self.adapter._pending_path(self.root, "PLAN-EXAMPLE").rename(legacy_pending)
+        attempt.rename(legacy_attempt)
+        self.assertTrue(self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")["committed"])
+        self.assertFalse(legacy_pending.exists())
+        self.assertFalse(legacy_attempt.exists())
+        requests = [request for name, request in self.client.calls if name == "task-reconcile"]
+        self.assertEqual(requests[0], requests[1])
+
+    def test_dual_legacy_and_admin_pending_state_is_ambiguous(self):
+        self.arm_task()
+        legacy = self.root / self.adapter.LEGACY_PENDING_DIR / "PLAN-EXAMPLE.json"
+        legacy.parent.mkdir(parents=True)
+        legacy.write_bytes(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").read_bytes())
+        with self.assertRaisesRegex(RuntimeError, "ambiguous reconciliation state"):
+            self.adapter._load(self.root, "PLAN-EXAMPLE")
+
+    def test_legacy_pending_with_admin_attempt_cannot_be_cancelled_or_recovered(self):
+        armed = self.arm_task()
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="lost-response"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        admin_attempt = self.adapter._attempt_path(self.root, pending)
+        legacy_pending = self.root / self.adapter.LEGACY_PENDING_DIR / "PLAN-EXAMPLE.json"
+        legacy_pending.parent.mkdir(parents=True)
+        self.adapter._pending_path(self.root, "PLAN-EXAMPLE").rename(legacy_pending)
+        before = len([name for name, _ in self.client.calls if name == "task-reconcile"])
+        with self.assertRaisesRegex(RuntimeError, "mixed reconciliation state"):
+            self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])
+        with self.assertRaisesRegex(RuntimeError, "mixed reconciliation state"):
+            self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertEqual(before, len([name for name, _ in self.client.calls if name == "task-reconcile"]))
+        self.assertTrue(legacy_pending.exists())
+        self.assertTrue(admin_attempt.exists())
+
+    def test_admin_pending_with_legacy_attempt_cannot_be_cancelled_or_recovered(self):
+        armed = self.arm_task()
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="lost-response"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        admin_pending = self.adapter._pending_path(self.root, "PLAN-EXAMPLE")
+        admin_attempt = self.adapter._attempt_path(self.root, pending)
+        legacy_attempt = self.root / self.adapter.LEGACY_ATTEMPT_DIR / admin_attempt.name
+        legacy_attempt.parent.mkdir(parents=True)
+        admin_attempt.rename(legacy_attempt)
+        before = len([name for name, _ in self.client.calls if name == "task-reconcile"])
+        with self.assertRaisesRegex(RuntimeError, "mixed reconciliation state"):
+            self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])
+        with self.assertRaisesRegex(RuntimeError, "mixed reconciliation state"):
+            self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertEqual(before, len([name for name, _ in self.client.calls if name == "task-reconcile"]))
+        self.assertTrue(admin_pending.exists())
+        self.assertTrue(legacy_attempt.exists())
+
+    def test_dual_attempt_locations_cannot_be_cancelled_or_recovered(self):
+        armed = self.arm_task()
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="lost-response"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        admin_attempt = self.adapter._attempt_path(self.root, pending)
+        legacy_attempt = self.root / self.adapter.LEGACY_ATTEMPT_DIR / admin_attempt.name
+        legacy_attempt.parent.mkdir(parents=True)
+        legacy_attempt.write_bytes(admin_attempt.read_bytes())
+        with self.assertRaisesRegex(RuntimeError, "mixed reconciliation state"):
+            self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])
+        with self.assertRaisesRegex(RuntimeError, "mixed reconciliation state"):
+            self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertTrue(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+        self.assertTrue(admin_attempt.exists())
+        self.assertTrue(legacy_attempt.exists())
+
+    def test_attempt_persistence_does_not_change_governed_snapshot(self):
+        source = self.root / ".codearbiter/open-tasks.md"
+        source.write_text("original\n", encoding="utf-8")
+        self.client = FilesystemSnapshotClient(self.root)
+        before = self.client.call("snapshot", {"artifact_id": "PLAN-EXAMPLE"})["sha256"]
+        self.client.snapshot_sha = before
+        armed = self.arm_task()
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="lost-response"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        self.assertTrue(self.adapter._attempt_path(self.root, pending).exists())
+        after = self.client.call("snapshot", {"artifact_id": "PLAN-EXAMPLE"})["sha256"]
+        self.assertEqual(before, after, "attempt persistence changed the governed plan input")
+
+    def test_unsafe_admin_attempt_directory_blocks_consumption(self):
+        armed = self.arm_task()
+        attempts = self.adapter._state_root(self.root) / self.adapter.ATTEMPT_DIR
+        attempts.write_text("not a directory", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "directory is unsafe"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="unsafe-attempts"
+            )
+        self.assertFalse(any(name == "task-reconcile" for name, _ in self.client.calls))
+
+    def test_unavailable_admin_spool_fails_closed_in_hook_and_cli(self):
+        armed = self.arm_task()
+        unavailable = self.adapter._artifactauthoritylib.AuthorityError("AUTHORITY_BUSY", "spool unavailable")
+        with mock.patch.object(self.adapter._artifactauthoritylib, "_spool_root", side_effect=unavailable):
+            notice = self.hook(armed["reply"])
+        self.assertIn("Git admin reconciliation storage is unavailable or unsafe", notice)
+        self.assertFalse(any(name == "task-reconcile" for name, _ in self.client.calls))
+
+        cli = HERE.parent.parent / "core/pysrc/artifact-reconcile.py"
+        with tempfile.TemporaryDirectory() as nongit:
+            command = [sys.executable, str(cli), "--root", nongit, "--artifact-id", "PLAN-EXAMPLE", "--cancel-orphan"]
+            result = subprocess.run(command, capture_output=True, text=True, check=False)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Git admin reconciliation storage is unavailable or unsafe", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
 
     def test_short_code_with_restated_state_reconciles_from_hook(self):
         armed = self.arm_task()
@@ -191,7 +418,7 @@ class ReconciliationTest(unittest.TestCase):
             target_state="PENDING", reason="Interrupted.", assessment="First request.",
             token="first-reconcile-token",
         )
-        pending = self.root / ".codearbiter/.markers/reconciliations/PLAN-EXAMPLE.json"
+        pending = self.adapter._pending_path(self.root, "PLAN-EXAMPLE")
         original = pending.read_bytes()
         with self.assertRaisesRegex(RuntimeError, "PENDING_RECONCILIATION"):
             self.adapter.arm_reconciliation(
@@ -238,7 +465,7 @@ class ReconciliationTest(unittest.TestCase):
                     target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
                     token="bound-reconcile-token",
                 )
-                pending_path = self.root / ".codearbiter/.markers/reconciliations/PLAN-EXAMPLE.json"
+                pending_path = self.adapter._pending_path(self.root, "PLAN-EXAMPLE")
                 pending = json.loads(pending_path.read_text(encoding="utf-8"))
                 pending[field] = value
                 pending_path.write_text(json.dumps(pending), encoding="utf-8")
@@ -308,11 +535,11 @@ class ReconciliationTest(unittest.TestCase):
                 self.root, self.client, armed["reply"], host="codex", session_id="first-session"
             )
         pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
-        self.assertTrue((self.root / self.adapter._attempt(pending)).exists())
+        self.assertTrue((self.adapter._attempt_path(self.root, pending)).exists())
         result = self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
         self.assertFalse(result["committed"])
-        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
-        self.assertFalse((self.root / self.adapter._attempt(pending)).exists())
+        self.assertFalse((self.adapter._pending_path(self.root, "PLAN-EXAMPLE")).exists())
+        self.assertFalse((self.adapter._attempt_path(self.root, pending)).exists())
         self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
         self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
         self.adapter.arm_reconciliation(
@@ -337,7 +564,7 @@ class ReconciliationTest(unittest.TestCase):
         self.assertEqual(result["revision"], 4)
         self.assertEqual(len(self.client.reconciled_requests), 1)
         self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
-        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+        self.assertFalse((self.adapter._pending_path(self.root, "PLAN-EXAMPLE")).exists())
 
     def test_scope_recovery_replays_after_prompt_route_is_lost(self):
         self.client.record = {"id": "CP-01", "title": "Scope", "tasks": ["T-001"]}
@@ -359,8 +586,8 @@ class ReconciliationTest(unittest.TestCase):
         self.assertEqual(mutations[0], mutations[1])
         self.assertEqual(len(self.client.reconciled_requests), 1)
         self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
-        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
-        self.assertFalse((self.root / self.adapter._attempt(pending)).exists())
+        self.assertFalse((self.adapter._pending_path(self.root, "PLAN-EXAMPLE")).exists())
+        self.assertFalse((self.adapter._attempt_path(self.root, pending)).exists())
 
     def test_recovery_preserves_attempt_on_unclassified_engine_error(self):
         armed = self.adapter.arm_reconciliation(
@@ -376,8 +603,8 @@ class ReconciliationTest(unittest.TestCase):
         pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
         with self.assertRaisesRegex(RuntimeError, "RECOVERY_REQUIRED"):
             self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
-        self.assertTrue((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
-        self.assertTrue((self.root / self.adapter._attempt(pending)).exists())
+        self.assertTrue((self.adapter._pending_path(self.root, "PLAN-EXAMPLE")).exists())
+        self.assertTrue((self.adapter._attempt_path(self.root, pending)).exists())
 
     def test_recovery_preserves_attempt_on_malformed_success_response(self):
         armed = self.adapter.arm_reconciliation(
@@ -401,8 +628,8 @@ class ReconciliationTest(unittest.TestCase):
                 with mock.patch.object(self.client, "call", return_value=response):
                     with self.assertRaisesRegex(RuntimeError, "malformed"):
                         self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
-                self.assertTrue((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
-                self.assertTrue((self.root / self.adapter._attempt(pending)).exists())
+                self.assertTrue((self.adapter._pending_path(self.root, "PLAN-EXAMPLE")).exists())
+                self.assertTrue((self.adapter._attempt_path(self.root, pending)).exists())
 
     def test_recovery_rejects_armed_request_without_attempt(self):
         armed = self.adapter.arm_reconciliation(
@@ -462,7 +689,7 @@ class ReconciliationTest(unittest.TestCase):
                 with self.assertRaises(SystemExit) as exit_status:
                     cli.main(["--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE", "--recover", *extra])
                 self.assertEqual(exit_status.exception.code, 2)
-        self.assertTrue((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+        self.assertTrue((self.adapter._pending_path(self.root, "PLAN-EXAMPLE")).exists())
 
     def test_failed_attempt_publication_leaves_no_partial_record_and_can_cancel(self):
         armed = self.adapter.arm_reconciliation(
@@ -480,7 +707,7 @@ class ReconciliationTest(unittest.TestCase):
                         self.root, self.client, armed["reply"], host="codex", session_id="session-1"
                     )
         pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
-        self.assertFalse((self.root / self.adapter._attempt(pending)).exists())
+        self.assertFalse((self.adapter._attempt_path(self.root, pending)).exists())
         self.assertTrue(self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])["cancelled"])
 
     def test_cancel_cannot_revoke_a_concurrently_dispatched_mutation(self):
@@ -570,7 +797,7 @@ class ReconciliationTest(unittest.TestCase):
                     target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
                     token="pending-atomic-token",
                 )
-        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+        self.assertFalse((self.adapter._pending_path(self.root, "PLAN-EXAMPLE")).exists())
 
     def test_cancel_cli_requires_exact_prompt_and_rejects_arming_fields(self):
         armed = self.adapter.arm_reconciliation(
