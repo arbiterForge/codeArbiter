@@ -1128,7 +1128,7 @@ class TestObservationAccounting(unittest.TestCase):
         from _context_fixturelib import load_catalog, snapshot
         catalog = load_catalog(ROOT / '.github/fixtures/context-onboarding/cases.json')
         with tempfile.TemporaryDirectory() as root:
-            pair = prepare_qualification_pair(catalog, 'tiny-python', Path(root) / 'pair')
+            pair = prepare_qualification_pair(catalog, 'tiny-python', Path(root).resolve() / 'pair')
             self.assertEqual(set(pair['arms']), {'A', 'B'})
             self.assertEqual(snapshot(pair['arms']['A']['solver']),
                              snapshot(pair['arms']['B']['solver']))
@@ -1191,11 +1191,11 @@ class TestObservationAccounting(unittest.TestCase):
             fix_catalog = load_catalog(
                 ROOT / '.github/fixtures/context-onboarding/solvable-fix.json')
             fix_pair = prepare_qualification_pair(fix_catalog, 'falsy-override-fix',
-                                                  Path(root) / 'fix-pair')
+                                                  Path(root).resolve() / 'fix-pair')
             self.assertEqual(fix_pair['case_sha256'],
                              '866a9ce336cb45479f29a207a409835922cdf320b0c629cd20e5199b5224a871')
             self.assertEqual(fix_pair['arms']['A']['files'], fix_pair['arms']['B']['files'])
-            installed = Path(root) / 'installed-candidate'
+            installed = Path(root).resolve() / 'installed-candidate'
             installed.mkdir()
             helper = installed / '_contextselectlib.py'
             helper.write_text('def prepare_actor_delivery(packet, **kw):\n'
@@ -1223,9 +1223,9 @@ class TestObservationAccounting(unittest.TestCase):
         catalog = load_catalog(ROOT / '.github/fixtures/context-onboarding/cases.json')
         with tempfile.TemporaryDirectory() as root:
             pair = prepare_qualification_pair(catalog, 'already-instructed',
-                                               Path(root) / 'pair')
+                                               Path(root).resolve() / 'pair')
             with self.assertRaises(ValueError):
-                prepare_qualification_pair(catalog, 'already-instructed', Path(root) / 'pair')
+                prepare_qualification_pair(catalog, 'already-instructed', Path(root).resolve() / 'pair')
             with self.assertRaises(ValueError):
                 capture_qualification_attempt(pair, arm='C', attempt_id='ATTEMPT-1',
                     argv=[sys.executable, '-c', 'print(1)'], actor_input='task',
@@ -1299,7 +1299,7 @@ class TestObservationAccounting(unittest.TestCase):
         from _context_fixturelib import load_catalog
         catalog = load_catalog(ROOT / '.github/fixtures/context-onboarding/cases.json')
         with tempfile.TemporaryDirectory() as root:
-            pair = prepare_qualification_pair(catalog, 'tiny-python', Path(root) / 'pair')
+            pair = prepare_qualification_pair(catalog, 'tiny-python', Path(root).resolve() / 'pair')
             observations = {}
             profile = {key: 'fixture-host' for key in
                        observation_schema()['properties']['profile']['properties']}
@@ -1351,7 +1351,7 @@ class TestObservationAccounting(unittest.TestCase):
         catalog = load_catalog(ROOT / '.github/fixtures/context-onboarding/cases.json')
         with tempfile.TemporaryDirectory() as root:
             pair = prepare_qualification_pair(catalog, 'already-instructed',
-                                               Path(root) / 'pair')
+                                               Path(root).resolve() / 'pair')
             profile = {key: 'fixture-host' for key in
                        observation_schema()['properties']['profile']['properties']}
             profile['package_sha256'] = 'a' * 64
