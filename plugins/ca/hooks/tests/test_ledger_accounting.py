@@ -64,6 +64,11 @@ def UREC(text="Do the thing", ts=f"{TODAY}T09:59:00Z"):
     return {"type": "user", "timestamp": ts, "message": {"role": "user", "content": text}}
 
 
+def read_jsonl(path):
+    with open(path, encoding="utf-8") as f:
+        return [json.loads(x) for x in f]
+
+
 def dollars(result):
     return Fraction(result["pd"], 10**12)
 
@@ -423,8 +428,8 @@ class TestMultiSource(AccountingCase):
     def test_fork_replay_counted_once_with_owner_rule(self):
         self.copy_fixture_tree()
         rec, sess, _ = self.settle()
-        parent = [json.loads(x) for x in open(self.parent, encoding="utf-8")]
-        kids = {n: [json.loads(x) for x in open(os.path.join(self.subdir, n), encoding="utf-8")]
+        parent = read_jsonl(self.parent)
+        kids = {n: read_jsonl(os.path.join(self.subdir, n))
                 for n in os.listdir(self.subdir)}
         # Independent: max output per requestId across ALL sources, counted once.
         best = {}
