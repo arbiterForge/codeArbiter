@@ -163,7 +163,7 @@ func memberBoundary(f *store.FS, relative string) (string, error) {
 			if entry.Name() != ".git" {
 				continue
 			}
-			info, err := entry.Info()
+			info, err := f.Stat(current + "/.git")
 			if err != nil || info.Mode()&os.ModeSymlink != 0 {
 				return "", fault.New("SOURCE_EVIDENCE_UNKNOWN", "nested repository marker is unreadable")
 			}
@@ -252,7 +252,7 @@ func MembershipDigest(f *store.FS, predicate string, scopes []string) (string, e
 			if !memberPath(child, false) {
 				return "", fault.New("SOURCE_EVIDENCE_UNSUPPORTED", "membership path requires exact ASCII grammar")
 			}
-			info, err := entry.Info()
+			info, err := f.Stat(child)
 			if err != nil || info.Mode()&os.ModeSymlink != 0 {
 				return "", fault.New("SOURCE_EVIDENCE_UNKNOWN", "membership entry is unreadable")
 			}

@@ -12,11 +12,12 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
 func mutationFixture(t *testing.T, name string) (*store.FS, func()) {
 	t.Helper()
-	root := t.TempDir()
+	root := testutil.Root(t)
 	if err := os.Mkdir(filepath.Join(root, ".codearbiter"), 0755); err != nil {
 		t.Fatal(err)
 	}

@@ -24,6 +24,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Resolve nested source membership through anchored paths and synchronize adapter
+  version identities with the release manifests.
 - Account for failed attempts, new source membership, actor changes and compaction
   without treating unknown evidence as current or granting action authority.
 

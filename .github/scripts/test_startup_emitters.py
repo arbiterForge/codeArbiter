@@ -356,7 +356,7 @@ def _driver(fixture, host):
     with contextlib.redirect_stdout(buf):
         print("=== codeArbiter startup state ===")
         M.emit_banner(fixture["host_name"], mode)
-        if not M.INITIALIZED_RE.search(fixture["ctx_text"]):
+        if not M.initialized_body_text(fixture["ctx_text"]):
             M.emit_not_initialized(fixture.get("root", "."), host, mode)
             return buf.getvalue().splitlines()
         M.emit_stage(fixture["ctx_text"])

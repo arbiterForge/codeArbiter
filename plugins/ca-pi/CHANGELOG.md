@@ -13,6 +13,10 @@ All notable changes to `ca-pi` are documented in this file.
 - Carry shared context resources while preserving Pi's refusal of the unqualified
   repository-context write workflow. No live Pi qualification is claimed.
 
+### Fixed
+
+- Synchronize the packaged adapter version with its release manifest.
+
 ## [0.15.5] - 2026-09-26
 
 ### Fixed

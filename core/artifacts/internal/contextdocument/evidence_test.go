@@ -7,14 +7,42 @@ import (
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
+
+func TestMembershipDigestNestedRegularEntries(t *testing.T) {
+	root := testutil.Root(t)
+	path := filepath.Join(root, "src", "pkg", "package.json")
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte("{}\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	f, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	before, err := MembershipDigest(f, "manifests", []string{"."})
+	if err != nil {
+		t.Fatalf("nested regular member must be readable: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "src", "pkg", "pyproject.toml"), []byte("[project]\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	after, err := MembershipDigest(f, "manifests", []string{"."})
+	if err != nil || after == before {
+		t.Fatalf("nested manifest addition must change digest: before %s after %s error %v", before, after, err)
+	}
+}
 
 // The seven expected digests came from the real T-008
 // _contextsnapshotlib.membership_snapshot on the identical file fixture,
 // retained in brownfield-t015-membership-oracle.py and the author handoff.
 func assertMembershipParity(t *testing.T) {
 	t.Helper()
-	root := t.TempDir()
+	root := testutil.Root(t)
 	for _, dir := range []string{".git", "nested/.git", "submodule", "Z", "a"} {
 		if err := os.MkdirAll(filepath.Join(root, filepath.FromSlash(dir)), 0755); err != nil {
 			t.Fatal(err)
@@ -83,7 +111,7 @@ func assertMembershipParity(t *testing.T) {
 	if _, err := MembershipDigest(f, "instructions", []string{"."}); fault.Code(err) != "SOURCE_EVIDENCE_UNSUPPORTED" {
 		t.Fatalf("Unicode casefold was approximated: %v", err)
 	}
-	missingRoot := t.TempDir()
+	missingRoot := testutil.Root(t)
 	missing, err := store.Open(missingRoot)
 	if err != nil {
 		t.Fatal(err)

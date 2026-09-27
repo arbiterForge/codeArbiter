@@ -17,6 +17,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Resolve nested source membership through anchored paths and synchronize the
+  packaged adapter version with its release manifests.
 - Preserve explicit gaps and account for retries, changed inputs and actor delivery
   without inventing current evidence or workflow authority.
 
