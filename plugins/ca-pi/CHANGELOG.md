@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.6] - 2026-09-27
+
+### Changed
+
+- Synchronize the shared hook core with the Claude statusline accounting rewrite (ca 2.23.0).
+  Codex and Pi behavior is unchanged.
+
 ## [0.15.5] - 2026-09-26
 
 ### Fixed

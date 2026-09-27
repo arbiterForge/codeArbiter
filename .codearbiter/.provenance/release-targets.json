@@ -1,30 +1,30 @@
 {
-  "created": "2026-09-09",
+  "created": "2026-09-27",
   "doc": "release-targets",
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "ecb64fb48f7be724ec4360c801ee6488c75b13d9",
+      "hash": "31519d8ac34be20ea081a902d2f8e3d64097b756",
       "path": "CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "d53cf9c5b1979055f34ff983f4764739d65af3fc",
+      "hash": "5066e4035f6aad8a1e308ef142ca5476269ce315",
       "path": "package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "a69746c6106c130b47cb52ece6c7e53a3104dfa4",
+      "hash": "0942e9795f424653f8daa2ed570e753a1cc3a02f",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "0cb518e5533805bfb14a85d7ed4fb4b8dff6473d",
+      "hash": "833419b759b02c5544031dfb951fc9d4df95efa1",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "ce6217b44b0cb8ed358287b9466bf182e58afb36",
+      "hash": "e605416913d6b3f27bc47ff1d10bd87ce61e70c5",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -39,7 +39,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "0145eb07650a32aadfa4f620dd105d8505238a4f",
+      "hash": "973de8af186f4d9f1a567ba0b10d89bb1d7862f1",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -64,12 +64,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "55d3584a1b05a726904cf0c15265c2577afd3164",
+      "hash": "3c42956bf34307472eb619e7dbd84ec91e291bea",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "04c77f5efcc306e36cd073a6037b1fd2d9d44be9",
+      "hash": "bf6a7b3f23f0a4342965b42c352f0b8ce9be1be0",
       "path": "plugins/ca/tools/farm.js"
     }
   ],
