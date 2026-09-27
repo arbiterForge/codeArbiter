@@ -520,6 +520,103 @@ class TestMessageIdOnlyAfterEviction(AccountingCase):
             self.assertEqual((sess["in"], sess["out"]), (10 + 60, 40 + 60))
 
 
+class TestColdMembershipFilter(AccountingCase):
+    """The per-partition filter may only prove absence. A request evicted to
+    cold storage and later replayed by a forked child is still counted once,
+    whether the filter is present, malformed, or the partition has split."""
+
+    def _cold_session(self, n=60):
+        self.write(self.parent, [A(f"p{i}", inp=1, out=1) for i in range(n)])
+        _, sess, _ = self.settle()
+        self.assertEqual(sess["in"], n)
+        hot = L._read_json(L._hot_file(self.ledger, self.sid))
+        self.assertTrue(hot["f"], "eviction must leave per-partition filters")
+        return hot
+
+    def _cold_keys(self):
+        ev = L._ev_dir(self.ledger, self.sid)
+        out = {}
+        for n in os.listdir(ev):
+            with open(os.path.join(ev, n), encoding="utf-8") as f:
+                out[n[1:-5]] = set(json.load(f)["ev"])
+        return out
+
+    def test_fork_replay_of_evicted_request_counted_once(self):
+        with mock.patch.object(L, "HOT_MAX", 8), mock.patch.object(L, "PART_MAX", 16):
+            self._cold_session()
+            cold = set().union(*self._cold_keys().values())
+            self.assertIn("rid:p0", cold)
+            self.child("agent-fork.jsonl", [A("p0", inp=1, out=1, sidechain=True)])
+            _, sess, _ = self.settle()
+            self.assertEqual((sess["in"], sess["out"]), (60, 60))
+
+    def test_malformed_filters_fall_back_to_the_partition(self):
+        bad_values = ([64, "!!not-base64!!"], [8, "AAAA"], "x", [True, "AA=="], None, [0, ""])
+        for bad in bad_values:
+            with self.subTest(bad=bad), mock.patch.object(L, "HOT_MAX", 8), mock.patch.object(
+                    L, "PART_MAX", 16):
+                shutil.rmtree(os.path.join(self.proj, self.sid), ignore_errors=True)
+                shutil.rmtree(os.path.dirname(self.ledger), ignore_errors=True)
+                hot = self._cold_session()
+                hot["f"] = {prefix: bad for prefix in hot["f"]}
+                with open(L._hot_file(self.ledger, self.sid), "w", encoding="utf-8") as f:
+                    json.dump(hot, f)
+                self.child("agent-fork.jsonl", [A("p0", inp=1, out=1, sidechain=True)])
+                _, sess, _ = self.settle()
+                self.assertEqual((sess["in"], sess["out"]), (60, 60))
+
+    def test_split_partitions_keep_every_member(self):
+        with mock.patch.object(L, "HOT_MAX", 8), mock.patch.object(L, "PART_MAX", 16):
+            hot = self._cold_session(200)
+            parts = self._cold_keys()
+            self.assertGreater(len(parts), 1)
+            for prefix, keys in parts.items():
+                for key in keys:
+                    self.assertFalse(L._filter_absent(hot["f"][prefix], key), (prefix, key))
+
+    def test_later_eviction_into_a_filtered_partition_refilters_it(self):
+        with mock.patch.object(L, "HOT_MAX", 8), mock.patch.object(L, "PART_MAX", 16):
+            self._cold_session()
+            before = self._cold_keys()
+            self.write(self.parent, [A(f"q{i}", inp=1, out=1) for i in range(20)], mode="a")
+            _, sess, _ = self.settle()
+            self.assertEqual(sess["in"], 80)
+            after = self._cold_keys()
+            grown = [(p, k) for p, ks in after.items() if p in before
+                     for k in ks - before[p] if k.startswith("rid:q")]
+            self.assertTrue(grown, "a later eviction must land in an existing partition")
+            self.child("agent-fork.jsonl",
+                       [A(k[len("rid:"):], inp=1, out=1, sidechain=True) for _p, k in grown])
+            _, sess, _ = self.settle()
+            self.assertEqual((sess["in"], sess["out"]), (80, 80))
+
+    def test_new_key_put_into_a_partition_keeps_the_filter_a_superset(self):
+        with mock.patch.object(L, "HOT_MAX", 8), mock.patch.object(L, "PART_MAX", 16):
+            self._cold_session()
+            rec = L._load_summary(self.ledger, self.sid)
+            store = L._Store(self.ledger, self.sid, rec)
+            prefix = next(p for p, seq in rec["parts"].items() if seq)
+            store.put("rid:brand-new", {"s": {}}, prefix)
+            self.assertTrue(store.flush(rec["seq"] + 1))
+            self.assertFalse(L._filter_absent(store.hot["f"][prefix], "rid:brand-new"))
+
+    def test_new_identities_read_no_cold_partition(self):
+        with mock.patch.object(L, "HOT_MAX", 8), mock.patch.object(L, "PART_MAX", 16):
+            self._cold_session(200)
+            self.write(self.parent, [A(f"fresh{k}", inp=1, out=1) for k in range(3)], mode="a")
+            reads = []
+            real = L._read_json
+
+            def spy(path, default=None):
+                if (".ev" + os.sep) in path:
+                    reads.append(path)
+                return real(path, default)
+            with mock.patch.object(L, "_read_json", spy):
+                _, sess, _ = self.update()
+            self.assertEqual(sess["in"], 203)
+            self.assertEqual(reads, [])
+
+
 class TestTodayAcrossSessions(AccountingCase):
 
     def test_other_session_backlog_makes_today_catching_up(self):

@@ -40,6 +40,12 @@
 - **2026-09-27 (at implementation start):** the usage-bearing test now requires both `"usage":` and `"type":"assistant"`, because attachment task-notifications carry a `usage` summary (observation 10). v2 state uses new file names alongside legacy shards, so that older statusline processes still running cannot ping-pong the schema.
 - AC-01..AC-34 keep their numbers. AC-08, AC-09, AC-15, AC-16, AC-22, AC-23, AC-28 and AC-30 are rewritten in place. AC-35..AC-52 are new.
 
+**2026-09-27 — implementation note: cold-partition membership filter (D-21 layout).**
+
+- The evidence layout is implementation-owned under D-21. Benchmarking showed that an incremental render looked up each brand-new identity in its cold partition, even though new identities are almost always absent. At 64 children that cost about 256 KB of partition reads per render, above the base ledger bytes.
+- Each cold partition now carries a membership filter (Bloom, 10 bits per key, 7 probes). It lives in the hot evidence file, which ingesting renders already read and write, and never in the compact summary, which no-change renders read. A filter is rebuilt only when its partition's key set grows (eviction, split, or a new key written into it). It adds no file and no replacement.
+- A filter may only prove absence. A missing, malformed or undersized filter means "maybe present" and falls back to reading the partition. A false "absent" would double-count a fork replay of an evicted request, so it is never assumed. Tests pin eviction-then-replay, malformed filters, split membership and later eviction into a filtered partition, and each is killed by a mutant.
+
 ## Intent
 
 Make the Claude Code statusline's token and dollar accounting trustworthy in all of these conditions:

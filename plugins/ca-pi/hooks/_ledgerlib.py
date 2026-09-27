@@ -36,6 +36,7 @@
 #                                               bounded Pi session/day snapshot
 #   burn_samples(rec) -> list[float]         recent per-request (parent-only) burn values
 
+import base64
 import hashlib
 import json
 import math
@@ -258,6 +259,46 @@ def _ident_hash(key):
     return hashlib.sha256(key.encode("utf-8", "replace")).hexdigest()
 
 
+# Per-partition membership filter (Bloom), carried in the hot file so a render
+# that ingests brand-new identities can prove "not in this cold partition"
+# without reading it. A filter only ever answers "definitely absent" or "maybe
+# present"; a missing, malformed or undersized filter is "maybe present" and
+# falls back to the partition read, because a false "absent" would silently
+# double-count a fork replay (never fold unreadable into absent).
+FILTER_BITS_PER_KEY = 10
+FILTER_PROBES = 7
+
+
+def _filter_probes(key, m):
+    d = hashlib.sha256(b"filter:" + key.encode("utf-8", "replace")).digest()
+    return [int.from_bytes(d[4 * i:4 * i + 4], "big") % m for i in range(FILTER_PROBES)]
+
+
+def _filter_build(keys):
+    keys = list(keys)
+    m = max(64, FILTER_BITS_PER_KEY * len(keys))
+    m += -m % 8
+    bits = bytearray(m // 8)
+    for key in keys:
+        for b in _filter_probes(key, m):
+            bits[b >> 3] |= 1 << (b & 7)
+    return [m, base64.b64encode(bytes(bits)).decode("ascii")]
+
+
+def _filter_absent(flt, key):
+    """True only when `flt` is well-formed and proves `key` absent."""
+    try:
+        m, enc = flt
+        if isinstance(m, bool) or not isinstance(m, int) or m <= 0 or m % 8 or not isinstance(enc, str):
+            return False
+        bits = base64.b64decode(enc.encode("ascii"), validate=True)
+        if len(bits) * 8 != m:
+            return False
+    except (TypeError, ValueError, UnicodeError):
+        return False
+    return any(not bits[b >> 3] & (1 << (b & 7)) for b in _filter_probes(key, m))
+
+
 def _fresh_summary(sid, now):
     return {"v": 2, "sid": sid, "first_ts": now, "last_ts": now, "reg": _usagelib.REGISTRY_VERSION,
             "seq": 0, "hot_seq": 0, "parts": {}, "mid_only": 0, "src": {}, "cursor": "",
@@ -288,6 +329,7 @@ class _Store:
         self.hot_dirty = False
         self.parts = {}
         self.parts_dirty = set()
+        self.grown = set()                     # partitions whose key set grew: refilter
         self.obsolete = []
 
     def _part_file(self, prefix):
@@ -301,9 +343,11 @@ class _Store:
                 if not (isinstance(v, dict) and v.get("seq") == want
                         and isinstance(v.get("ev"), dict) and isinstance(v.get("order"), list)):
                     raise _Inconsistent
-                self.hot = {"ev": v["ev"], "order": [k for k in v["order"] if k in v["ev"]]}
+                flt = v.get("f")
+                self.hot = {"ev": v["ev"], "order": [k for k in v["order"] if k in v["ev"]],
+                            "f": dict(flt) if isinstance(flt, dict) else {}}
             else:
-                self.hot = {"ev": {}, "order": []}
+                self.hot = {"ev": {}, "order": [], "f": {}}
         return self.hot
 
     def _leaf(self, h):
@@ -332,6 +376,10 @@ class _Store:
             return hot["ev"][key], "hot"
         if self.rec["parts"]:
             prefix = self._leaf(_ident_hash(key))
+            if prefix not in self.parts and (
+                    not self.rec["parts"].get(prefix)
+                    or _filter_absent(hot["f"].get(prefix), key)):
+                return None, None
             part = self._load_part(prefix)
             if key in part:
                 return part[key], prefix
@@ -346,7 +394,10 @@ class _Store:
             hot["order"].append(key)
             self.hot_dirty = True
         else:
-            self._load_part(where)[key] = entry
+            part = self._load_part(where)
+            if key not in part:
+                self.grown.add(where)          # keep the filter a superset
+            part[key] = entry
             self.parts_dirty.add(where)
 
     def delete(self, key, where):
@@ -373,6 +424,7 @@ class _Store:
             prefix = self._leaf(_ident_hash(key))
             self._load_part(prefix)[key] = entry
             self.parts_dirty.add(prefix)
+            self.grown.add(prefix)
         self.hot_dirty = True
         for prefix in list(self.parts_dirty):
             self._split(prefix)
@@ -393,6 +445,7 @@ class _Store:
             self.rec["parts"][child] = 0
             self.parts[child] = entries
             self.parts_dirty.add(child)
+            self.grown.add(child)
         for child in children:
             self._split(child)
 
@@ -421,10 +474,17 @@ class _Store:
                 if self.rec["parts"].get(prefix):
                     self.obsolete.append(self._part_file(prefix))
                 self.rec["parts"][prefix] = 0
+        if self.grown:
+            hot = self._load_hot()
+            for prefix in self.grown:
+                if self.parts.get(prefix):
+                    hot["f"][prefix] = _filter_build(self.parts[prefix])
+            self.hot_dirty = True
         if self.hot_dirty:
             hot = self._load_hot()
+            live = {p: f for p, f in hot["f"].items() if self.rec["parts"].get(p)}
             if not _atomic_json(_hot_file(self.path, self.sid),
-                                {"seq": seq, "ev": hot["ev"], "order": hot["order"]}):
+                                {"seq": seq, "ev": hot["ev"], "order": hot["order"], "f": live}):
                 return False
             self.rec["hot_seq"] = seq
         return True
