@@ -23,7 +23,7 @@ const qualityRouteCases = [
   {
     path: "/",
     status: 200,
-    title: "Agentic Coding Governance for Claude Code, Codex, and Pi | codeArbiter",
+    title: "codeArbiter — Agentic Coding Governance for Claude Code, Codex & Pi",
     description: "codeArbiter is an open-source governance layer for AI coding agents, with repository-owned guardrails, reviews, audit trails, and durable project context for Claude Code, Codex, and Pi.",
     canonicalPath: "/",
     h1: "codeArbiter: hard gates for agentic coding.",
