@@ -412,6 +412,10 @@ jobs:
               - '.github/scripts/test_artifact_package.py'
               - '.github/scripts/test_artifact_surface.py'
               - '.github/scripts/test_artifact_workflow.py'
+              - '.github/scripts/_contextverificationlib.py'
+              - '.github/scripts/test_context_verification.py'
+              - '.github/scripts/test_context_native.py'
+              - '.github/scripts/test_context_workflow.py'
               - '.github/requirements/artifact-conformance.in'
               - '.github/requirements/artifact-conformance-py314.lock'
               # Auto-release consumes this exact-head package cohort. A
@@ -448,11 +452,10 @@ jobs:
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    # Run 36079069513: Intel macOS passed its 42 authoring and 35 package
-    # cases, then hit the former 15-minute job ceiling during the full
-    # conformance replay. Windows ARM took 12m07s. Retain every required
-    # suite and bound the entire cold-toolchain/native population at 30m.
-    timeout-minutes: 30
+    # Run 36321825183: Intel macOS passed the final conformance suite at
+    # the 30-minute deadline, before it could bind and upload its receipt.
+    # Retain every suite; allow 45m on Intel macOS and 30m elsewhere.
+    timeout-minutes: ${{ matrix.expected_platform == 'darwin/amd64' && 45 || 30 }}
     permissions:
       contents: read
     env:
@@ -533,6 +536,20 @@ jobs:
           overwrite: false
       - name: Verify named native storage and recovery contract
         run: python .github/scripts/test_artifact_native.py
+      - name: Verify the finite context Go test bridge
+        run: python .github/scripts/test_context_verification.py
+      - name: Verify named context document Go cases
+        env:
+          CONTEXT_NATIVE_OBSERVATION_OUTPUT: ${{ runner.temp }}/context-native-observation.json
+        run: python .github/scripts/test_context_native.py
+      - name: Reject missing and nonisolated installed context candidates
+        run: >-
+          python .github/scripts/test_context_installed.py
+          InstalledContextQualification.test_t044_rejects_missing_candidate_identity
+          InstalledContextQualification.test_t044_rejects_nonisolated_environment
+          -v
+      - name: Verify context workflow with the pinned Go toolchain
+        run: python .github/scripts/test_context_workflow.py
       - name: Build native qualified candidate
         run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
       - name: Generate review examples with the native candidate
@@ -602,6 +619,7 @@ jobs:
           python tools/build-artifacts.py
           --qualify-existing "${{ runner.temp }}/artifact-candidate"
           --qualification-output "${{ runner.temp }}/artifact-qualification.json"
+          --context-native-observation "${{ runner.temp }}/context-native-observation.json"
       - name: Preserve the exact native candidate and qualification receipt
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -2367,6 +2385,15 @@ jobs:
       - name: Validate brownfield observation accounting
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_context_evaluation.py
+      - name: Validate named brownfield test outcomes
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_named_output.py
+      - name: Validate context host containment controls
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_host.py
+      - name: Validate scoped context consumers
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_consumers.py
       - name: Run shipped-skill portability guard
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # A-6.1: a skill under core/surface/skills/** renders into every

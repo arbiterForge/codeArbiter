@@ -12,6 +12,25 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.0] - 2026-09-28
+
+### Added
+
+- Add bounded repository-context writing, recovery, selective refresh and task-scoped
+  context delivery while preserving human-owned records and initialization state.
+- Require exact native qualification receipts and cold installed context checks before
+  assembled Claude and Codex candidates admit context writes. Source-only builds remain
+  disabled; live host containment and contribution qualification remain separate.
+
+### Fixed
+
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
+- Resolve nested source membership through anchored paths and synchronize adapter
+  version identities with the release manifests.
+- Account for failed attempts, new source membership, actor changes and compaction
+  without treating unknown evidence as current or granting action authority.
+
 ## [2.23.1] - 2026-09-27
 
 ### Fixed

@@ -8,6 +8,9 @@ run_verification(...) -> dict
 observe_codex_hook(...) -> dict
 observe_claude_hook(...) -> dict
 publish_request(...) -> dict
+arm_context_preview(...) -> dict
+cancel_context_preview(...) -> dict
+capture_context_preview(...) -> dict
 
 The artifact engine owns every target binding.  Callers select only an activity
 and record; they cannot supply an authority kind, verdict, evidence payload, or
@@ -44,6 +47,8 @@ import time
 from typing import Any
 
 from _gitexec import git_executable, root_bound_git_env
+import _artifactpromptlib
+import _artifactlib
 
 
 OBSERVATION_DIR = Path(".codearbiter/.artifacts/observations")
@@ -72,6 +77,15 @@ MAX_OUTPUT = 8 << 20
 MAX_DECISION = 65536
 REGISTRY_PARENT = Path(tempfile.gettempdir())
 HOSTS = frozenset({"codex", "claude"})
+CONTEXT_ROUTE = "context_approval"
+CONTEXT_PREVIEW_KEYS = frozenset({
+    "operation_id", "mode", "document_id", "target_path", "typed",
+    "selections", "expected_document_sha256", "expected_provenance_sha256",
+    "proposed_provenance",
+})
+CONTEXT_FINALIZE_KEYS = frozenset({
+    "operation_id", "mode", "document_id", "target_path", "expected",
+})
 CLAUDE_REVIEWER = "ca:authority-reviewer"
 CLAUDE_REVIEWER_MODELS = frozenset({"opus", "sonnet", "haiku"})
 CLAUDE_REVIEW_PROFILE = "claude-review/0.1.0"
@@ -1799,6 +1813,162 @@ def capture_user_prompt(
         **captured, "authority_source": source_ref.as_posix(),
         "observation_ref": observation_ref.as_posix(),
     }
+
+
+def _context_preview_context(root: Path, client: Any, preview: dict[str, Any], prompt: str):
+    operation = ("context-finalize-evidence-context" if preview.get("mode") == "finalize"
+                 else "context-evidence-context")
+    result = client.call(operation, {**preview, "prompt_sha256": _digest(prompt.encode("utf-8"))})
+    if not isinstance(result, dict):
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview issuer returned no context")
+    context_hash = _validate_hash(result.get("context_sha256"), "context_sha256")
+    context_ref = f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
+    if result.get("context_ref") != context_ref:
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview locator is malformed")
+    try:
+        raw = (root / context_ref).read_bytes()
+        context = json.loads(raw.decode("utf-8"))
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview issuer bytes are unavailable") from exc
+    binding = result.get("preview_binding_sha256")
+    _validate_hash(binding, "preview_binding_sha256")
+    subject = {"artifact_id": "CONTEXT-" + preview["document_id"].upper(),
+               "record_id": "CONTEXT-" + preview["document_id"].upper(),
+               "normative_sha256": binding}
+    if (
+        _digest(raw) != context_hash or raw != _canonical(context)
+        or context.get("activity") != CONTEXT_ROUTE
+        or context.get("preview") != preview
+        or context.get("subject") != subject
+        or context.get("record") != {"preview_binding_sha256": binding}
+        or context.get("record_sha256") != _digest(_canonical(context.get("record")))
+        or context.get("input_sha256") != binding
+        or context.get("prompt_sha256") != _digest(prompt.encode("utf-8"))
+        or result.get("subject") != subject
+        or not isinstance(context.get("preview_document"), str)
+        or not context["preview_document"]
+        or _digest(context["preview_document"].encode("utf-8")) != context.get("after_document_sha256")
+        or result.get("preview_document") != context["preview_document"]
+        or result.get("after_document_sha256") != context["after_document_sha256"]
+    ):
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "issued context does not bind the exact preview")
+    return context, context_ref, context_hash, binding
+
+
+def arm_context_preview(root: str | Path, client: Any, preview: dict[str, Any], *, token: str | None = None) -> dict[str, Any]:
+    """Arm an exact preview reply; this step does not assert approval."""
+    root = _real_root(root)
+    valid_content = (isinstance(preview, dict) and set(preview) == CONTEXT_PREVIEW_KEYS
+                     and isinstance(preview.get("mode"), str)
+                     and preview.get("mode") in {"create", "adopt", "update"}
+                     and isinstance(preview.get("document_id"), str)
+                     and preview.get("document_id") in {"CONTEXT", "tech-stack", "coding-standards", "security-controls", "code-map"})
+    valid_final = (isinstance(preview, dict) and set(preview) == CONTEXT_FINALIZE_KEYS
+                   and preview.get("mode") == "finalize" and preview.get("document_id") == "CONTEXT"
+                   and preview.get("target_path") == ".codearbiter/CONTEXT.md"
+                   and isinstance(preview.get("expected"), dict))
+    if not (valid_content or valid_final):
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview request contains unsupported or authority fields")
+    token = token or secrets.token_urlsafe(24)
+    if TOKEN_RE.fullmatch(token) is None:
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview token is invalid")
+    artifact_id = "CONTEXT-" + preview["document_id"].upper()
+    prompt = f"approve-context {artifact_id} {token}"
+    context, context_ref, context_hash, binding = _context_preview_context(root, client, preview, prompt)
+    _artifactpromptlib.register(root, CONTEXT_ROUTE, artifact_id, prompt, binding_sha256=context_hash)
+    return {"reply": prompt, "artifact_id": artifact_id, "preview_binding_sha256": binding,
+            "context_ref": context_ref, "context_sha256": context_hash,
+            "target_path": preview["target_path"], "preview_document": context["preview_document"],
+            "after_document_sha256": context["after_document_sha256"]}
+
+
+def cancel_context_preview(root: str | Path, document_id: str) -> dict[str, Any]:
+    """Retire one pending context reply without altering a document or receipt."""
+    if document_id not in {"CONTEXT", "tech-stack", "coding-standards", "security-controls", "code-map"}:
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "unknown context document")
+    artifact_id = "CONTEXT-" + document_id.upper()
+    _artifactpromptlib.unregister(_real_root(root), CONTEXT_ROUTE, artifact_id)
+    return {"artifact_id": artifact_id, "cancelled": True}
+
+
+def capture_context_preview(root: str | Path, client: Any, prompt: str, *, host: str, session_id: str) -> dict[str, Any]:
+    """Capture an exact host UserPromptSubmit reply for one armed context preview."""
+    root = _real_root(root)
+    if not isinstance(prompt, str):
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview reply is malformed")
+    parts = prompt.split(" ")
+    if (len(parts) != 3 or parts[0] != "approve-context" or ID_RE.fullmatch(parts[1]) is None
+            or TOKEN_RE.fullmatch(parts[2]) is None):
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview reply is unrelated")
+    artifact_id = parts[1]
+    routed = _artifactpromptlib.resolve(CONTEXT_ROUTE, prompt)
+    if routed != root:
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "context preview reply has no armed route")
+    context_hash = _artifactpromptlib.binding(root, CONTEXT_ROUTE, artifact_id)
+    context_ref = f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
+    try:
+        raw = (root / context_ref).read_bytes()
+        context = json.loads(raw.decode("utf-8"))
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "armed preview context is unavailable") from exc
+    preview = context.get("preview") if isinstance(context, dict) else None
+    if (not isinstance(preview, dict) or set(preview) not in
+            (CONTEXT_PREVIEW_KEYS, CONTEXT_FINALIZE_KEYS)):
+        raise AuthorityError("INVALID_CONTEXT_AUTHORITY", "armed preview context is malformed")
+    fresh, fresh_ref, fresh_hash, binding = _context_preview_context(root, client, preview, prompt)
+    if fresh_ref != context_ref or fresh_hash != context_hash or fresh != context or _digest(raw) != context_hash:
+        raise AuthorityError("STALE_CONTEXT_AUTHORITY", "context preview changed after it was armed")
+    producer_run_id = f"{_host_id(host, 'host')}:{_host_id(session_id, 'session_id')}"
+    producer_result = {"host": host, "session_id": session_id,
+                       "prompt_sha256": _digest(prompt.encode("utf-8"))}
+    payload = {"preview_binding_sha256": binding}
+    observation = {
+        "format": OBSERVATION_FORMAT, "kind": CONTEXT_ROUTE,
+        "subject": context["subject"], "context_ref": context_ref,
+        "context_sha256": context_hash, "payload_sha256": _digest(_canonical(payload)),
+        "producer_profile": "host-user-context-preview/0.1.0", "producer_run_id": producer_run_id,
+        "producer_result": producer_result, "producer_result_sha256": _digest(_canonical(producer_result)),
+    }
+    observation_raw = _canonical(observation)
+    observation_hash = _digest(observation_raw)
+    observation_ref = OBSERVATION_DIR / f"{observation_hash}.json"
+    _publish_immutable(root, observation_ref, observation_raw)
+    event = {
+        "format": EVENT_FORMAT, "kind": CONTEXT_ROUTE, "authority_kind": "user_workflow",
+        "subject": context["subject"], "actor": "interactive repository user",
+        "origin": f"{host}:UserPromptSubmit:{session_id}", "verdict": "approved",
+        "payload": payload, "source_text": prompt,
+        "observation_ref": observation_ref.as_posix(), "observation_sha256": observation_hash,
+    }
+    event_raw = _canonical(event)
+    event_hash = _digest(event_raw)
+    source_ref = SOURCE_DIR / f"{event_hash}.json"
+    _publish_immutable(root, source_ref, event_raw)
+    captured = client.call("capture-observation", {"source_ref": source_ref.as_posix(), "source_sha256": event_hash})
+    if not isinstance(captured, dict) or not isinstance(captured.get("receipt"), str):
+        raise AuthorityError("INVALID_RECEIPT", "context preview capture returned no receipt")
+    _artifactpromptlib.unregister(root, CONTEXT_ROUTE, artifact_id)
+    return {**captured, "preview_binding_sha256": binding,
+            "authority_source": source_ref.as_posix(), "observation_ref": observation_ref.as_posix()}
+
+
+def capture_context_preview_from_hook(*, root: str | Path, plugin_root: str | Path,
+                                      prompt: str, host: str, session_id: str) -> str:
+    """Route only an armed exact context reply from the host prompt seam."""
+    if not isinstance(prompt, str) or not prompt.startswith("approve-context "):
+        return ""
+    try:
+        routed = _artifactpromptlib.resolve(CONTEXT_ROUTE, prompt)
+        if routed is None:
+            return ""
+        client = _artifactlib.ArtifactClient(
+            routed, Path(plugin_root) / "helpers" / "artifacts"
+        )
+        result = capture_context_preview(routed, client, prompt, host=host, session_id=session_id)
+    except (AuthorityError, _artifactpromptlib.PromptRouteError, OSError, RuntimeError) as exc:
+        return f"codeArbiter: context preview approval capture failed: {exc}"
+    return ("codeArbiter: context preview approval recorded for "
+            f"{result['preview_binding_sha256']} (receipt {result['receipt']}).")
 
 
 def run_verification(

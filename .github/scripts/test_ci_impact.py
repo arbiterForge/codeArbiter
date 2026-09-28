@@ -2520,18 +2520,20 @@ class ReceiptCommandTest(unittest.TestCase):
                 # issue #390.  A Pi payload edit now predicts all three Pi
                 # contracts plus artifact surface closure; omitting either
                 # class under-reports the required jobs a reviewer must wait on.
-                ["artifact-engine", "pi-adapter", "pi-checks", "pi-latest"],
+                ["artifact-engine", "artifact-package-cold", "pi-adapter",
+                 "pi-checks", "pi-latest"],
             )
             self.assertEqual(
                 receipt["predicted_not_selected"],
-                ["ca-surface", "codex-surface", "pi-surface", "artifact-browser"],
-            )
-            self.assertEqual(
-                receipt["selected"][1]["reproduce"],
-                "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10",
+                ["ca-surface", "codex-surface", "pi-surface", "artifact-browser",
+                 "hooks"],
             )
             self.assertEqual(
                 receipt["selected"][2]["reproduce"],
+                "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10",
+            )
+            self.assertEqual(
+                receipt["selected"][3]["reproduce"],
                 "npm --prefix plugins/ca-pi/tools test",
             )
             self.assertEqual(
@@ -3236,12 +3238,15 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertFalse(selected.fallback, path)
             self.assertIn("artifact-engine", {check.id for check in selected.selected})
 
-    def test_native_qualification_has_a_bounded_thirty_minute_job_budget(self):
-        # PR859's Intel macOS cell exhausted 15 minutes during conformance after
-        # passing the preceding suites. Preserve the complete qualification path.
+    def test_native_qualification_has_a_bounded_platform_job_budget(self):
+        # Intel macOS needs enough time to retain its completed conformance
+        # result; every platform still executes the complete qualification path.
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         job = jobs["artifact-engine"]
-        self.assertEqual(_JOB_TIMEOUT.findall(job), ["30"])
+        self.assertEqual(
+            re.findall(r"(?m)^    timeout-minutes: (.+)$", job),
+            ["${{ matrix.expected_platform == 'darwin/amd64' && 45 || 30 }}"],
+        )
         self.assertIn("fail-fast: false", job)
         self.assertNotIn("continue-on-error:", job)
         for required in ("test_artifact_conformance.py", "test_artifact_package.py",
@@ -3278,7 +3283,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         self.assertIn("needs: changes", job)
         self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
-        self.assertRegex(job, r"(?m)^    timeout-minutes: 30$")
+        self.assertIn(
+            "    timeout-minutes: ${{ matrix.expected_platform == 'darwin/amd64' && 45 || 30 }}",
+            job,
+        )
         for runner in (
             "ubuntu-24.04", "ubuntu-24.04-arm", "windows-2025", "windows-11-arm",
             "macos-15-intel", "macos-26",
@@ -3709,14 +3717,100 @@ class SiteBrowserBehaviorContractTest(unittest.TestCase):
                                 "check geometry both before and during visible search results")
 
 
+class ContextImpactClosureTest(unittest.TestCase):
+    """The context producer, consumer and schema changes reach their real runners."""
+
+    def shortDescription(self):
+        return None
+
+    def _assert_context_closure(self, ci, impact):
+        jobs = workflow_jobs(ci)
+        hooks = jobs["hooks"]
+        engine = jobs["artifact-engine"]
+        cold = jobs["artifact-package-cold"]
+        aggregate = jobs["ci-passed"]
+        for script in (
+            "test_context_fixtures.py", "test_context_contracts.py",
+            "test_context_evaluation.py", "test_context_named_output.py",
+            "test_context_host.py", "test_context_consumers.py",
+        ):
+            command = f"python .github/scripts/{script}"
+            self.assertEqual(run_step_index(hooks, command) >= 0, True, command)
+        for script in ("test_context_verification.py", "test_context_native.py",
+                       "test_context_workflow.py"):
+            command = f"python .github/scripts/{script}"
+            index = run_step_index(engine, command)
+            self.assertGreater(index, run_step_index(engine, "go test -buildvcs=false ./..."), command)
+            self.assertLess(index, engine.splitlines().index(
+                '          --qualify-existing "${{ runner.temp }}/artifact-candidate"'), command)
+        self.assertIn('go-version: "1.27.1"', engine)
+        self.assertIn("needs: [changes, artifact-package-assembly]", cold)
+        self.assertIn("needs.artifact-package-assembly.result == 'success'", cold)
+        self.assertIn('name: artifact-release-packages-${{ github.sha }}', cold)
+        self.assertIn('--cold-package-root "${{ runner.temp }}/artifact-release-packages"', cold)
+        self.assertIn("${{ needs['artifact-package-cold'].result }}", aggregate)
+        for path, required in (
+            ("core/pysrc/_contextreportlib.py", {"hooks", "artifact-engine", "artifact-package-cold"}),
+            ("core/surface/skills/context-creation/SKILL.md", {"hooks", "artifact-engine", "artifact-package-cold"}),
+            ("core/artifacts/schemas/context.schema.json", {"artifact-engine", "artifact-package-cold"}),
+            (".github/fixtures/context-onboarding/observation.schema.json", {"hooks"}),
+            (".github/scripts/_contextverificationlib.py", {"artifact-engine"}),
+            (".github/scripts/test_context_native.py", {"artifact-engine"}),
+            (".github/scripts/test_context_workflow.py", {"artifact-engine"}),
+            (".github/scripts/test_context_host.py", {"hooks"}),
+            (".github/scripts/test_context_consumers.py", {"hooks"}),
+        ):
+            selected = module.evaluate(impact, [path], hosts())
+            self.assertFalse(selected.fallback, path)
+            self.assertTrue(required <= {check.id for check in selected.selected}, path)
+        for path in (".github/scripts/_contextverificationlib.py",
+                     ".github/scripts/test_context_native.py",
+                     ".github/scripts/test_context_verification.py",
+                     ".github/scripts/test_context_workflow.py"):
+            self.assertIn(path, paths_filter(ci, "artifacts"))
+        self.assertIn(".github/fixtures/context-onboarding/**", paths_filter(ci, "hooks"))
+
+    def test_t043_context_impact_closure_positive_controls(self):
+        self._assert_context_closure(
+            CI_WORKFLOW.read_text(encoding="utf-8"),
+            module.load_map(REPO_ROOT / ".github/ci-impact-map.json"),
+        )
+
+    def test_t043_context_impact_closure_negative_controls(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        impact = module.load_map(REPO_ROOT / ".github/ci-impact-map.json")
+        for before, after in (
+            ("run: python .github/scripts/test_context_native.py", "run: python absent.py"),
+            ('go-version: "1.27.1"', 'go-version: "1.22"'),
+            ("needs: [changes, artifact-package-assembly]", "needs: changes"),
+            ('--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
+             '--cold-package-root "${{ runner.temp }}/source-checkout"'),
+            ("${{ needs['artifact-package-cold'].result }}", "${{ needs.changes.result }}"),
+        ):
+            with self.subTest(removed=before):
+                self.assertIn(before, ci)
+                with self.assertRaises(AssertionError):
+                    self._assert_context_closure(ci.replace(before, after, 1), impact)
+        missing_host_edge = module.ImpactMap(
+            checks=impact.checks,
+            edges=tuple(edge for edge in impact.edges
+                        if edge.glob != ".github/scripts/test_context_host.py"),
+        )
+        with self.assertRaises(AssertionError):
+            self._assert_context_closure(ci, missing_host_edge)
+
+
 class NativeQualificationTimeBudgetTest(unittest.TestCase):
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         source = CI_WORKFLOW.read_text(encoding="utf-8")
         block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
-        # The inspected macOS cell passed product suites but was cancelled at
-        # the old 15-minute job deadline during final conformance. Retain every
-        # qualification layer and the bounded job rather than skipping a proof.
-        self.assertRegex(block, r"(?m)^    timeout-minutes: 30$")
+        # Run 36321825183 passed Intel macOS conformance at the 30-minute
+        # deadline but was cancelled before its qualification receipt. Give
+        # that host 45 minutes; keep every other host bounded at 30 minutes.
+        self.assertIn(
+            "    timeout-minutes: ${{ matrix.expected_platform == 'darwin/amd64' && 45 || 30 }}",
+            block,
+        )
         for script in ("test_artifact_native.py", "test_artifact_bridge.py",
                        "test_artifact_approval_adapter.py", "test_artifact_authority_adapter.py",
                        "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",

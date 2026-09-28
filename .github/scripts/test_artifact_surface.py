@@ -20,9 +20,11 @@ POLICY_STARTUP_FIXTURES = (
     "core/pysrc/session-start.py",
 )
 # Historical artifact-policy baseline is immutable. PR843 separately reviewed
-# the resident routing body; do not freeze all future policy to the pilot.
+# the resident routing body; PR872 reviewed initialized-state parsing and bounded
+# context-coverage notices. Keep both content pins separate from the pilot.
 STARTUP_CONTENT_SHA256 = {
     "core/surface/arbiter.md": "4bbe2beb49d1026271025d2553709728af1b300a9fdabd7c9d80978925faeb14",
+    "core/pysrc/session-start.py": "2cc0d575e3f85824a3eba4b21e54cca9d0285f4ce4bf8c41e5331344c18c9c80",
 }
 
 ARTIFACT_GUIDANCE_PATHS = (
@@ -309,7 +311,7 @@ class ArtifactSurfaceTest(unittest.TestCase):
         # A golden content digest survives a squash merge; a feature-branch
         # commit object or ancestry requirement would not. Historical baseline
         # provenance is still checked separately by test_startup_fixtures_match_baseline.
-        self.assertEqual(set(STARTUP_CONTENT_SHA256), {"core/surface/arbiter.md"})
+        self.assertEqual(set(STARTUP_CONTENT_SHA256), set(POLICY_STARTUP_FIXTURES))
         for path, expected in STARTUP_CONTENT_SHA256.items():
             self.assertIn(path, POLICY_STARTUP_FIXTURES)
             self.assertRegex(expected, r"^[0-9a-f]{64}$")

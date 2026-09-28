@@ -20,6 +20,43 @@ dispatch remains blocked.
 
 Test-first, or it does not ship. Routed to by `/feature` (after spec approval), `/fix`, and `/refactor`.
 
+For a feature author, including a confirmed small-lane feature, the owning
+coordinator selects task paths and obtains the current bounded map, provenance,
+scoped command records and collector observations, applicable constraint
+references, and host-effective instructions in native precedence order. Before
+the author mutates or executes a discovered command, compose the fresh child
+input with `_artifactpromptlib.compose_feature_actor_input` and send its
+returned `input` to that child. Bind the actual approved spec and plan IDs
+for full-lane work. For a confirmed small-lane feature, pass its mini-spec
+text as `confirmed_mini_spec` and leave both artifact IDs absent; do not invent
+a plan or bypass its existing gate. The packet
+is an orientation aid with `requires_actor_check`, not admission. Recheck
+worktree/source identity and resolve applicable critical constraints before a
+material action. Missing optional map detail permits bounded read-only source
+inspection, with full schema or document body read only when needed.
+Apply `_contextselectlib.prepare_actor_delivery` to that selected packet for
+the actual child, task, worktree and current source/host epochs. Send its
+`delivery_text` when requested and count the attempt before the material
+action; an unknown receipt or surviving session marker never proves delivery.
+Re-select on resume, compaction, scope or worktree change, and report a blocked
+delivery gap rather than assuming the child retained prior context.
+
+For a fix or targeted test-only change, use the caller that already owns the
+task. Before the author mutates or executes a discovered command, call
+`_contextselectlib.compose_fix_or_test_actor_input` with the current scoped
+sources, exact command cwd and collector evidence, then send its returned
+`input` to that actor. Use `route='fix'`, `caller='fix'`, and the confirmed
+bug-origin evidence and named regression for a fix. Use `route='test_change'`
+with the existing `fix`, `feature`, or `refactor` caller for a test-only change;
+do not create a feature spec pair merely to deliver context. The selected
+caller retains its own approval and TDD gates. Reuse an actual bug-origin RED
+when it already proves the named regression; for a targeted test change,
+validate the test against the real defect or an honest fault fixture. Never
+change production behavior merely to manufacture a failing test. If this
+conflicts with a required TDD gate, surface the conflict to that gate's owner;
+context delivery does not waive it. The packet remains reported evidence, not
+task admission.
+
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess a command or a threshold:

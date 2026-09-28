@@ -6,6 +6,24 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-09-27
+
+### Added
+
+- Add bounded repository-context writing, recovery, selective refresh and task-scoped
+  delivery to feature, fix, test and review actors. Preserve human-owned project records.
+- Require per-platform native receipts and cold installed candidate checks for context
+  writes. Source builds stay disabled; live host contribution readiness is unverified.
+
+### Fixed
+
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
+- Resolve nested source membership through anchored paths and synchronize the
+  packaged adapter version with its release manifests.
+- Preserve explicit gaps and account for retries, changed inputs and actor delivery
+  without inventing current evidence or workflow authority.
+
 ## [0.14.8] - 2026-09-27
 
 ### Fixed

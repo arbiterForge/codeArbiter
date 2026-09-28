@@ -72,7 +72,17 @@ func ContextSchema() map[string]any {
 		"subject":  subjectSchema(), "input_sha256": hash(), "prompt_sha256": hash(),
 		"record_sha256": hash(), "record": map[string]any{"type": "object"},
 	}, "format", "activity", "subject", "input_sha256", "prompt_sha256", "record_sha256", "record")
-	return map[string]any{"oneOf": []any{task, scope, prompt}}
+	contextPrompt := closed(map[string]any{
+		"format":   map[string]any{"const": "codearbiter.evidence-context/0.1.0"},
+		"activity": map[string]any{"const": "context_approval"},
+		"subject":  subjectSchema(), "input_sha256": hash(), "prompt_sha256": hash(),
+		"record_sha256": hash(), "record": closed(map[string]any{"preview_binding_sha256": hash()}, "preview_binding_sha256"),
+		"preview": map[string]any{"type": "object"}, "preview_document": text(),
+		"after_document_sha256":    hash(),
+		"before_document_base64":   map[string]any{"oneOf": []any{map[string]any{"type": "string"}, map[string]any{"type": "null"}}},
+		"before_provenance_base64": map[string]any{"oneOf": []any{map[string]any{"type": "string"}, map[string]any{"type": "null"}}},
+	}, "format", "activity", "subject", "input_sha256", "prompt_sha256", "record_sha256", "record", "preview", "preview_document", "after_document_sha256", "before_document_base64", "before_provenance_base64")
+	return map[string]any{"oneOf": []any{task, scope, prompt, contextPrompt}}
 }
 
 func testResultSchema() map[string]any {
@@ -172,9 +182,9 @@ func promptResultSchema() map[string]any {
 }
 func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
-		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")},
+		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", "host-user-context-preview/0.1.0", PairProfile, SMARTSProfile)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
@@ -267,7 +277,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
+	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) || kind == "context_approval" && profile != "host-user-context-preview/0.1.0" {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -295,11 +305,38 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 			if !validateReview(observed, event, context) {
 				return fail()
 			}
+		} else if kind == "context_approval" {
+			if !validateContextPrompt(observed, event, context) {
+				return fail()
+			}
 		} else if !validatePrompt(observed, event, context) {
 			return fail()
 		}
 	}
 	return nil
+}
+func validateContextPrompt(observed, event, context map[string]any) bool {
+	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
+	binding := model.S(context["input_sha256"])
+	subject := model.M(context["subject"])
+	preview := model.M(context["preview"])
+	recordHash, err := canonical.Hash(context["record"])
+	if err != nil {
+		return false
+	}
+	return model.S(event["authority_kind"]) == "user_workflow" &&
+		model.S(event["verdict"]) == "approved" && len(payload) == 1 &&
+		model.S(payload["preview_binding_sha256"]) == binding &&
+		model.S(model.M(context["record"])["preview_binding_sha256"]) == binding &&
+		model.S(context["record_sha256"]) == recordHash &&
+		canonical.BytesHash([]byte(model.S(context["preview_document"]))) == model.S(context["after_document_sha256"]) &&
+		model.S(subject["normative_sha256"]) == binding &&
+		model.S(subject["artifact_id"]) == "CONTEXT-"+strings.ToUpper(model.S(preview["document_id"])) &&
+		model.S(subject["record_id"]) == model.S(subject["artifact_id"]) &&
+		model.S(context["prompt_sha256"]) == canonical.BytesHash([]byte(model.S(event["source_text"]))) &&
+		model.S(result["prompt_sha256"]) == model.S(context["prompt_sha256"]) &&
+		model.S(event["origin"]) == model.S(result["host"])+":UserPromptSubmit:"+model.S(result["session_id"]) &&
+		model.S(observed["producer_run_id"]) == model.S(result["host"])+":"+model.S(result["session_id"])
 }
 func validatePrompt(observed, event, context map[string]any) bool {
 	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])

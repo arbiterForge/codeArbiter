@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin root + capability flags
 from _durabilitylib import is_ephemeral_path  # noqa: E402
 from _hooklib import (  # noqa: E402
-    frontmatter_enabled, get_host, marker_root, project_root, set_host,
+    frontmatter_enabled, get_host, initialized_body_text, marker_root, project_root, set_host,
     utf8_stdio, write_text_atomic,
 )
 from _standuplib import (  # noqa: E402
@@ -59,7 +59,6 @@ import _updatelib  # noqa: E402 — update-available notifier (cache read + noti
 from _modelib import _DEV_PENDING_CLOSE_MAX, _settle_dev_close  # noqa: E402,F401
 import _modelib  # noqa: E402
 
-INITIALIZED_RE = re.compile(r"<!--\s*INITIALIZED\s*-->")
 STAGE_RE = re.compile(r"^stage:\s*([0-9]+)", re.I | re.M)
 CONFIRM_RE = re.compile(r"CONFIRM-[0-9]+")
 
@@ -853,7 +852,7 @@ def clear_mode_marker(root, host_name=None, session_id=None, now=None):
     _settle_dev_close(root, marker=marker, new_line=line, host_name=host_name)
 
 
-def provenance_drift_line(root, runner=None):
+def provenance_drift_line(root, runner=None, report_unknown=False):
     """One-line SessionStart drift notice, or "" when clean/degraded.
 
     Wraps _provenancelib.startup_drift_line; any failure degrades to "" so the
@@ -861,10 +860,24 @@ def provenance_drift_line(root, runner=None):
     injectable so tests are deterministic/offline; production passes None which
     lets the lib bind its default `git -C root hash-object` runner. (T-16)"""
     try:
-        return _provenancelib.startup_drift_line(
-            root, runner=runner, cmd_ref=get_host().cmd_ref)
+        unknown = [] if report_unknown else None
+        line = _provenancelib.startup_drift_line(
+            root, runner=runner, cmd_ref=get_host().cmd_ref, unknown=unknown)
+        if report_unknown and unknown:
+            return "context coverage: unknown ({}) -- run {}".format(
+                unknown[0], get_host().cmd_ref("context-check"))
+        return line
     except Exception:  # noqa: BLE001 — never crash session startup
         return ""
+
+
+def context_coverage_line(root):
+    """Bounded provenance coverage notice; no source hash or authority claim."""
+    try:
+        return _provenancelib.startup_context_coverage_line(
+            root, cmd_ref=get_host().cmd_ref)
+    except Exception:  # noqa: BLE001 — never crash session startup
+        return "context coverage: unknown -- run /ca:context-check"
 
 
 # --- Update-available notifier (spec: update-available-notifier.md) ---------
@@ -1110,6 +1123,11 @@ def emit_daily_briefing(root, summary, date_iso, marker_present, ctx_text=None,
 
 
 def main():
+    # This is the ACTIVE host startup path. It may settle mode state, heal a
+    # host-owned statusline pin, install Git enforcement, and spawn fetch/update
+    # children. An unfamiliar repository must be inspected by the explicit-root
+    # init --check --passive route BEFORE entering a host session; a later skill
+    # cannot retroactively prevent SessionStart effects.
     utf8_stdio()
     # get_host() (#257): resolves the SAME Host run(host) already primed via
     # set_host(), instead of a second hostapi.load_host() disk/probe.
@@ -1231,7 +1249,7 @@ def main():
     emit_banner(getattr(host, "name", "unknown"), mode)
 
     ctx_text = read_text(ctx) or ""
-    if not INITIALIZED_RE.search(ctx_text):
+    if not initialized_body_text(ctx_text):
         emit_not_initialized(root, host, mode)
         sys.exit(0)
 
@@ -1246,8 +1264,9 @@ def main():
     emit_task_summary(ot_text)
 
     # --- Passive provenance drift notice (T-16, spec pillar 4) ---
-    _drift = provenance_drift_line(root)
+    _drift = provenance_drift_line(root, report_unknown=True)
     emit_provenance_drift(_drift)
+    emit_provenance_drift(context_coverage_line(root))
 
     # --- Update-available notice (AC-1/AC-2/AC-3) --------------------------
     _update = update_notice_line(plugin)

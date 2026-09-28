@@ -144,6 +144,7 @@ from _activationlib import (  # noqa: F401
     arbiter_active,
     frontmatter_enabled,
     frontmatter_enabled_text,
+    initialized_body_text,
     get_host,
     marker_root,
     project_root,

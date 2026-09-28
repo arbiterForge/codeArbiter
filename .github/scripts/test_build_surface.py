@@ -1780,7 +1780,7 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
 
     def test_drift_and_cleanup_operational_bodies_are_preserved(self):
         import hashlib
-        expected = {'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
+        expected = {'context-check': '06be2a22d9b9ddc28e4826fed24b9d6edad44deab2c241a5e20c02c41d343954', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
         for command, digest in expected.items():
             owner = self.OWNERS[command]
             text = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')

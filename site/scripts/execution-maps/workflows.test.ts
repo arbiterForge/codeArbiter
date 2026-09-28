@@ -99,7 +99,30 @@ describe('C04 distinct workflow routes', () => {
     expect(mapText('greenfield')).toContain('02-phased-build-plan.md');
     expect(mapText('greenfield')).toContain('03-task-backlog.md');
     expect(mapText('greenfield')).toContain('all three outputs are approved');
-    expect(mapText('brownfield')).toContain('Six isolated');
+    const brownfield = getWorkflow('brownfield').map;
+    const scouts = brownfield.chapters.flatMap(chapter => chapter.nodes).find(node => node.id === 'brown-scouts')!;
+    const scoutSource = brownfield.sources.scouts;
+    expect(scoutSource.quote).toContain('Dispatch six isolated `scout` subagents simultaneously.');
+    expect(scoutSource.currentQuote).toContain('one full run with six root');
+    expect(read(scoutSource.path)).toContain(scoutSource.currentQuote!);
+    expect(read(scoutSource.path)).toContain('For an affected-scope refresh, create only the affected root assignments');
+    expect(brownfield.boundary).toContain('six logical scout categories');
+    expect(brownfield.boundary).toContain('scoped refreshes cover only declared affected categories');
+    expect(brownfield.boundary).toContain('must stop before dispatch');
+    expect(scouts.href).toBe('/reference/skills/context-creation/');
+    expect(scouts.detail).toContain('Queue within host limits');
+    expect(scouts.detail).not.toContain('in parallel');
+    expect(brownfield.alternatives.find(edge => edge.from === 'brown-scouts' && edge.to === 'brown-synthesis')?.detail)
+      .toContain('exactly the affected categories for scoped refresh');
+    for (const page of [
+      'site/src/content/docs/concepts/workflow-routes.mdx',
+      'site/src/content/docs/guides/understand-an-existing-project.md',
+    ]) {
+      const prose = read(page);
+      expect(prose).toContain('six logical');
+      expect(prose).toContain('scoped refresh');
+      expect(prose).toContain('current generated host surfaces');
+    }
     expect(mapText('brownfield')).toContain('does not invent');
     expect(mapText('brownfield')).toContain('conditional on real evidence');
   });

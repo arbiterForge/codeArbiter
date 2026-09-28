@@ -42,9 +42,11 @@ EXPECTED_LEGACY_BODY_SHA256 = {
     "context-check": "1b4ac38f1bd4d5d8ce4d037d5cc070ea87691bde361c547a5cfc2bfd91948326",
 }
 
+# The init body includes T-020's bounded passive inspection before the normal
+# scaffold procedure. T-027 adds its refresh pointer inside the additive mode.
 EXPECTED_DEFAULT_BODY_SHA256 = {
     "pr": "068521a57a408bfaa9ca84f8ae6b5ccd5292c81e3030b9a7522add07122a7ad7",
-    "init": "f6053db11c296e53afee8964f474602b43c60a92fd72addd28b90acc9e655fc9",
+    "init": "14a38ed019243f3998b8f2f37b671b0c792f75f0052e0ef0e897903e2677e8d2",
     "status": "0888f248ea6848d93201fa96ea167ae9575a55055b5518d58a74b323e6144f80",
 }
 
@@ -73,10 +75,12 @@ EXPECTED_FIRST_CONTAINING_RELEASES = {
 COMPOSED_OWNERS = {"cleanup": "post-merge-cleanup", "context-check": "context-check",
                    "pr": "finishing-a-development-branch", "create-context": "context-creation",
                    "decompose": "decompose", "release": "release"}
-OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d', 'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198'}
+OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d', 'context-check': '06be2a22d9b9ddc28e4826fed24b9d6edad44deab2c241a5e20c02c41d343954'}
+# T-027 keeps the composed create-context owner and its initialized lock, while
+# routing explicit initialized refresh through the existing context-check owner.
 OWNER_OPERATIONAL_SHA256.update({
-    'create-context': '88d6a1f49810cccff530e3c9eaf811e3a3da8548ce989931d83a624c02e75cad',
-    'decompose': 'b1d86ecdd5721188ef52d9f86e6a9c2b56aa35f02dae30d10d173b1db958e5f9',
+    'create-context': 'd72fb799f98eca2a8f9c733713ee63075f94309f46d213e17298ac9c72b22c88',
+    'decompose': 'a39e4078ebfc81e6d83fe961a2570ebb04fd76b72fb6719a9baa7c8501b175d4',
 })
 
 def command_source(slug: str) -> str:

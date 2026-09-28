@@ -147,6 +147,19 @@ Then write the surviving project-state docs. Every file holds actual content der
 
 **Provenance stubs and code-map stub:** once the project-state docs above are on disk, write a provenance stub per derived doc to `.codearbiter/.provenance/<doc>.json` via `_provenancelib.write_stub` (`interview_derived: true`, empty `entries`) — one stub for each scout/source-derived doc (`CONTEXT`, `tech-stack`, `coding-standards`, `security-controls`). Also write a `.codearbiter/code-map.md` stub — a placeholder empty coarse map. WHY: greenfield has no source code yet, so real provenance entries and code-map contents populate on the first commit-gate auto-heal (or `{{CMD:context-check}}`) once code exists.
 
+After initialization, the first real package manifest is acquired through the
+normal `{{CMD:context-check}}` route, not another decomposition interview. An
+empty interview-derived `tech-stack` stub is intended context only. At task
+time, use a source/target snapshot with root `manifests` membership and call
+`_provenancelib.assess_context_provenance` for the selected document. Its
+`first_input_pending` state names the newly observed manifest paths and only
+`tech-stack` as a bounded refresh candidate. Inspect those real files through
+the selected refresh, reconcile facts with the intended architecture, and use
+the existing owner preview and receipt before any update. An empty membership
+or an uninspected boundary supplies no package command, dependency, database
+claim, or nested guidance. Preserve the initialized marker and interview
+history; the first input is not authority to rewrite them.
+
 Gate: every project-state doc written with real content; no `status: draft` ADRs remain in `decisions/`; `[CONFIRM-NN]` items are acceptable in `open-questions.md` for genuinely unresolved items; provenance stubs and code-map stub written.
 
 ## Phase 6 — Initialization lock & cleanup · gate: BLOCK

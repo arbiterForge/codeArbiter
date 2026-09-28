@@ -99,6 +99,9 @@ class FakeClient:
 
 
 class AuthorityAdapterTest(unittest.TestCase):
+    def shortDescription(self):
+        return None
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -187,6 +190,146 @@ class AuthorityAdapterTest(unittest.TestCase):
                 )
 
         self.assertEqual(self.client.calls, [])
+
+    def test_t017_context_authority_boundary_positive_controls(self):
+        """A fixture host reply captures only its engine-issued exact context preview."""
+        binding = "a" * 64
+        preview = {
+            "operation_id": "context-fixture-001", "mode": "update",
+            "document_id": "tech-stack", "target_path": ".codearbiter/tech-stack.md",
+            "typed": {"format": "codearbiter.repository-context/0.1.0", "document_id": "tech-stack", "entries": []},
+            "selections": [], "expected_document_sha256": "b" * 64,
+            "expected_provenance_sha256": "c" * 64,
+            "proposed_provenance": {"schema": 2},
+        }
+
+        class ContextClient(FakeClient):
+            def call(inner, operation, request=None, **kwargs):
+                if operation == "context-evidence-context":
+                    inner.calls.append((operation, dict(request or {})))
+                    prompt_hash = request["prompt_sha256"]
+                    inner.context = {
+                        "format": "codearbiter.evidence-context/0.1.0",
+                        "activity": "context_approval",
+                        "subject": {"artifact_id": "CONTEXT-TECH-STACK", "record_id": "CONTEXT-TECH-STACK", "normative_sha256": binding},
+                        "input_sha256": binding, "prompt_sha256": prompt_hash,
+                        "record_sha256": hashlib.sha256(self.adapter._canonical({"preview_binding_sha256": binding})).hexdigest(),
+                        "record": {"preview_binding_sha256": binding},
+                        "preview": preview,
+                        "preview_document": "# Fixture preview\n",
+                        "after_document_sha256": hashlib.sha256(b"# Fixture preview\n").hexdigest(),
+                        "before_document_base64": None, "before_provenance_base64": None,
+                    }
+                    raw = self.adapter._canonical(inner.context)
+                    digest = hashlib.sha256(raw).hexdigest()
+                    relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+                    target = self.root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(raw)
+                    return {"context_ref": relative.as_posix(), "context_sha256": digest,
+                            "preview_binding_sha256": binding, "subject": inner.context["subject"],
+                            "preview_document": inner.context["preview_document"],
+                            "after_document_sha256": inner.context["after_document_sha256"]}
+                return super().call(operation, request, **kwargs)
+
+        client = ContextClient(self.root)
+        self.assertTrue(callable(getattr(self.adapter, "arm_context_preview", None)),
+                        "context preview authority must be armed by the host adapter")
+        self.assertTrue(callable(getattr(self.adapter, "capture_context_preview", None)),
+                        "context preview approval must be captured from the host reply")
+        armed = self.adapter.arm_context_preview(self.root, client, preview, token="fixture-context-token-001")
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=client):
+            notice = self.adapter.capture_context_preview_from_hook(
+                root=self.root, plugin_root=self.root, prompt=armed["reply"],
+                host="codex", session_id="fixture-session"
+            )
+        self.assertIn(client.receipt, notice)
+        self.assertIn(binding, notice)
+        self.assertEqual(client.calls[-1][0], "capture-observation")
+        source_ref = client.calls[-1][1]["source_ref"]
+        source = json.loads((self.root / source_ref).read_text("utf-8"))
+        self.assertEqual((source["kind"], source["authority_kind"], source["verdict"]),
+                         ("context_approval", "user_workflow", "approved"))
+        self.assertEqual(source["payload"], {"preview_binding_sha256": binding})
+        observed = json.loads((self.root / source["observation_ref"]).read_text("utf-8"))
+        self.assertEqual(observed["producer_profile"], "host-user-context-preview/0.1.0")
+        self.assertEqual(observed["context_sha256"], armed["context_sha256"])
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=client):
+            self.assertEqual(self.adapter.capture_context_preview_from_hook(
+                root=self.root, plugin_root=self.root, prompt=armed["reply"],
+                host="codex", session_id="fixture-session"
+            ), "")
+
+    def test_t017_context_authority_boundary_negative_controls(self):
+        """Wrong scope, replay and caller-authored approval labels cannot grant context authority."""
+        self.assertTrue(callable(getattr(self.adapter, "arm_context_preview", None)),
+                        "context preview authority must reject caller approval labels")
+        self.assertTrue(callable(getattr(self.adapter, "capture_context_preview", None)),
+                        "context preview authority must reject unrelated approval replies")
+        preview = {"operation_id": "context-fixture-002", "mode": "update", "document_id": "tech-stack"}
+        for extras in ({"approved": True}, {"authority_kind": "user_workflow"},
+                       {"receipt": self.client.receipt}, {"kind": "approval"}):
+            with self.subTest(extras=extras), self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
+                self.adapter.arm_context_preview(self.root, self.client, {**preview, **extras})
+        self.assertEqual(self.client.calls, [])
+        with self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
+            self.adapter.capture_context_preview(
+                self.root, self.client, "approve PLAN-EXAMPLE unrelated-token",
+                host="codex", session_id="fixture-session"
+            )
+        self.assertEqual(self.client.calls, [])
+
+        full_preview = {
+            "operation_id": "context-fixture-003", "mode": "create", "document_id": "CONTEXT",
+            "target_path": ".codearbiter/CONTEXT.md", "typed": {"format": "codearbiter.repository-context/0.1.0"},
+            "selections": [], "expected_document_sha256": None,
+            "expected_provenance_sha256": None, "proposed_provenance": {"schema": 2},
+        }
+        for activity, artifact_id in (("approval", "CONTEXT-CONTEXT"),
+                                      ("context_approval", "PLAN-EXAMPLE")):
+            with self.subTest(activity=activity, artifact_id=artifact_id):
+                class WrongContextClient:
+                    def call(inner, operation, request=None, **_kwargs):
+                        self.assertEqual(operation, "context-evidence-context")
+                        context = {
+                            "format": "codearbiter.evidence-context/0.1.0", "activity": activity,
+                            "subject": {"artifact_id": artifact_id, "record_id": artifact_id,
+                                        "normative_sha256": "a" * 64},
+                            "input_sha256": "a" * 64, "prompt_sha256": request["prompt_sha256"],
+                            "record_sha256": hashlib.sha256(self.adapter._canonical({"preview_binding_sha256": "a" * 64})).hexdigest(),
+                            "record": {"preview_binding_sha256": "a" * 64}, "preview": full_preview,
+                            "preview_document": "# Wrong fixture\n",
+                            "after_document_sha256": hashlib.sha256(b"# Wrong fixture\n").hexdigest(),
+                            "before_document_base64": None, "before_provenance_base64": None,
+                        }
+                        raw = self.adapter._canonical(context)
+                        digest = hashlib.sha256(raw).hexdigest()
+                        relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+                        target = self.root / relative
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        target.write_bytes(raw)
+                        return {"context_ref": relative.as_posix(), "context_sha256": digest,
+                                "preview_binding_sha256": "a" * 64, "subject": context["subject"],
+                                "preview_document": context["preview_document"],
+                                "after_document_sha256": context["after_document_sha256"]}
+
+                with self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
+                    self.adapter.arm_context_preview(
+                        self.root, WrongContextClient(), full_preview,
+                        token="fixture-context-token-003",
+                    )
+
+        installed = self.adapter._artifactlib.ArtifactClient.__new__(
+            self.adapter._artifactlib.ArtifactClient
+        )
+        pending = {"source_present": True, "kind_registered": True,
+                   "host_default_enabled": False, "qualification": "pending",
+                   "mutation_available": False}
+        with mock.patch.object(installed, "workflow_preflight", return_value={
+            "resources_available": True, "host": "codex"
+        }), mock.patch.object(installed, "call", return_value={"repository_context": pending}):
+            with self.assertRaisesRegex(RuntimeError, "CONTEXT_WORKFLOW_UNAVAILABLE"):
+                installed.require_context_workflow()
 
     def test_verifier_executes_engine_argv_without_shell_and_publishes_observation(self):
         armed = self.adapter.arm_request(

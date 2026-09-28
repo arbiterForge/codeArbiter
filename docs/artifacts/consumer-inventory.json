@@ -307,6 +307,23 @@
       "reason": "The binary bridge pins the package-owned payload and manifest, performs exact-format routing and typed operations without PATH or network fallback, and normal host packages now carry the qualified candidate payload. On Claude Code and Codex, the approval bridge binds a host-observed exact prompt to current artifact identity before capture and approval. Pi prompt authority, publication read-back and non-user authority adapters remain separate gates."
     },
     {
+      "id": "context-writer-protected-state",
+      "area": "context-capability",
+      "owner": "shared protected-state hook library",
+      "live": true,
+      "default_path": false,
+      "treatment": "partial",
+      "closure": "context-writer-enrollment-source-only",
+      "task_refs": ["T-021", "T-042"],
+      "canonical_paths": ["core/pysrc/_protectedstatelib.py"],
+      "generated_paths": [
+        "plugins/ca/hooks/_protectedstatelib.py",
+        "plugins/ca-codex/hooks/_protectedstatelib.py",
+        "plugins/ca-pi/hooks/_protectedstatelib.py"
+      ],
+      "reason": "The shared protected-state hook queries the installed native context writer and transaction journal before guarding enrolled context targets. This records source and generated ownership only; live host behavior and native context qualification remain separate."
+    },
+    {
       "id": "governing-spec-discovery",
       "area": "context-capability",
       "owner": "read-injection library",
