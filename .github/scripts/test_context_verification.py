@@ -41,6 +41,74 @@ def passing_output():
     ))
 
 
+class GoOutputContract(unittest.TestCase):
+    def verify(self, raw, **changes):
+        inputs = dict(raw_stdout=raw, raw_stderr=b'', exit_code=0,
+                      case='TestBridgeFixture', expected_subtests=('works',))
+        return bridge.verify_go_output(**{**inputs, **changes})
+
+    def test_parallel_events_and_unselected_package_preserve_raw_evidence(self):
+        raw = (event('start', package='idle') + event('skip', package='idle') +
+               event('run', 'TestBridgeFixture') +
+               event('run', 'TestBridgeFixture/works') +
+               event('pause', 'TestBridgeFixture/works') +
+               event('cont', 'TestBridgeFixture/works') +
+               event('output', 'TestBridgeFixture/works') +
+               event('pass', 'TestBridgeFixture/works') +
+               event('pass', 'TestBridgeFixture') + event('pass'))
+        observed = self.verify(raw, raw_stderr=b'diagnostic\n')
+        self.assertEqual(observed.raw_stdout, raw)
+        self.assertEqual(observed.raw_stderr, b'diagnostic\n')
+        self.assertEqual(observed.subtests, ('works',))
+        self.assertFalse(observed.live_qualified)
+
+    def test_duplicate_keys_invalid_utf8_and_truncated_stream_are_rejected(self):
+        for raw, error in (
+            (b'{"Action":"fail","Action":"pass","Package":"fixture"}\n' +
+             passing_output(), 'duplicate Go JSON key'),
+            (b'\xff\n' + passing_output(), 'malformed Go JSON'),
+            (passing_output().rstrip(b'\n'), 'truncated Go JSON stream'),
+        ):
+            with self.subTest(error=error):
+                with self.assertRaisesRegex(bridge.VerificationError, error):
+                    self.verify(raw)
+
+    def test_named_results_cannot_cross_packages_or_run_after_passing(self):
+        raw = passing_output()
+        cases = (
+            (raw.replace(event('pass', 'TestBridgeFixture/works'),
+                         event('pass', 'TestBridgeFixture/works', package='other')),
+             'crossed package identity'),
+            (raw.replace(event('run', 'TestBridgeFixture'), b'') +
+             event('run', 'TestBridgeFixture'), 'absent, duplicate or incomplete'),
+            (raw + event('run', 'TestBridgeFixture'), 'absent, duplicate or incomplete'),
+            (raw + event('pass'), 'no unique passing outcome'),
+            (raw + event('run', 'TestBridgeFixtureSibling'), 'unexpected test or subtest'),
+        )
+        for output, error in cases:
+            with self.subTest(error=error):
+                with self.assertRaisesRegex(bridge.VerificationError, error):
+                    self.verify(output)
+
+    def test_exit_code_requires_an_integer_zero(self):
+        for code in (False, True, '0', 0.0, None, 1, -1):
+            with self.subTest(code=code):
+                with self.assertRaisesRegex(bridge.VerificationError, 'did not exit successfully'):
+                    self.verify(passing_output(), exit_code=code)
+
+    def test_subtest_selection_requires_unique_exact_names(self):
+        for names in (['works'], ('works', 'works'), ('works child',), ('',), ('works.*',)):
+            with self.subTest(names=names):
+                with self.assertRaises(bridge.VerificationError):
+                    self.verify(passing_output(), expected_subtests=names)
+
+    def test_stderr_byte_limit_is_inclusive(self):
+        stderr = b'x' * bridge.MAX_STDERR_BYTES
+        self.assertEqual(self.verify(passing_output(), raw_stderr=stderr).raw_stderr, stderr)
+        with self.assertRaisesRegex(bridge.VerificationError, 'exceeds its bound'):
+            self.verify(passing_output(), raw_stderr=stderr + b'x')
+
+
 class ContextVerificationBridge(unittest.TestCase):
     def shortDescription(self):
         return None

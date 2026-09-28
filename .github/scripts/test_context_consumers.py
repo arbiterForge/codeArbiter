@@ -150,6 +150,81 @@ class TestTaskContextSelection(unittest.TestCase):
     def shortDescription(self):
         return None
 
+    def select(self, paths, **changes):
+        commands, constraints, code_map = self.fixture()
+        inputs = dict(code_map=code_map, provenance={}, commands=commands,
+                      constraints=constraints, effective_instructions=[],
+                      evidence_ids={'E1', 'E2', 'E3'})
+        return selector.select_task_context(paths, **{**inputs, **changes})
+
+    def test_package_prefix_does_not_select_a_sibling_owner(self):
+        packet = self.select(['packages/beta/src/main.py'])
+        self.assertEqual(packet['commands'], [])
+        self.assertEqual(packet['map'], [])
+        self.assertEqual([item['id'] for item in packet['constraints']], ['RULE-ROOT'])
+        self.assertEqual(packet['admission'], 'requires_actor_check')
+
+    def test_directory_task_selects_all_descendant_owners(self):
+        packet = self.select(['packages'])
+        self.assertEqual([item['id'] for item in packet['commands']],
+                         ['CMD-A', 'CMD-B', 'CMD-C'])
+        self.assertEqual([item['id'] for item in packet['constraints']],
+                         ['RULE-ROOT', 'RULE-B', 'RULE-C'])
+        self.assertEqual(len(packet['map']), 4)
+
+    def test_duplicate_command_is_collapsed_but_conflicting_source_is_rejected(self):
+        commands, _, _ = self.fixture()
+        duplicate = copy.deepcopy(commands[1])
+        packet = self.select(['packages/b'], commands=[commands[1], duplicate])
+        self.assertEqual([item['id'] for item in packet['commands']], ['CMD-B'])
+        duplicate[1]['EB']['digest'] = 'f' * 64
+        with self.assertRaisesRegex(selector.SelectionError, '^CONFLICTING_COMMAND$'):
+            self.select(['packages/b'], commands=[commands[1], duplicate])
+
+    def test_instruction_packet_byte_boundary_preserves_source_references(self):
+        instructions = [
+            {'id': f'I{i}', 'path': f'rules/{i}.md', 'scope': '.',
+             'epoch': 'g1', 'text': 'é' * 4096} for i in range(3)]
+        original = copy.deepcopy(instructions)
+        exact = self.select(['packages/b'], effective_instructions=instructions)
+        self.assertEqual(exact['instructions'], instructions)
+        self.assertEqual(exact['unresolved'], [])
+        instructions.append({'id': 'I3', 'path': 'rules/3.md', 'scope': '.',
+                             'epoch': 'g1', 'text': 'x'})
+        bounded = self.select(['packages/b'], effective_instructions=instructions)
+        self.assertEqual(bounded['instructions'],
+                         [{**item, 'text': None} for item in instructions])
+        self.assertEqual(bounded['unresolved'], [{'code': 'INSTRUCTION_PACKET_OVERSIZE'}])
+        self.assertEqual(instructions[:3], original)
+
+    def test_single_instruction_limit_counts_utf8_bytes(self):
+        instruction = {'id': 'ROOT', 'path': 'AGENTS.md', 'scope': '.',
+                       'epoch': 'g1', 'text': 'é' * 4096}
+        self.assertEqual(self.select(['.'], effective_instructions=[instruction])[
+            'instructions'], [instruction])
+        instruction['text'] += 'x'
+        with self.assertRaisesRegex(selector.SelectionError, '^INVALID_INSTRUCTION$'):
+            self.select(['.'], effective_instructions=[instruction])
+
+    def test_duplicate_instructions_keep_host_order_and_report_conflicts(self):
+        local = {'id': 'LOCAL', 'path': 'packages/b/AGENTS.md', 'scope': 'packages/b',
+                 'epoch': 'g1', 'text': 'Local rule'}
+        root = {'id': 'ROOT', 'path': 'AGENTS.md', 'scope': '.',
+                'epoch': 'g1', 'text': 'Root rule'}
+        packet = self.select(['packages/b'], effective_instructions=[
+            local, root, copy.deepcopy(local), {**local, 'text': 'Conflicting rule'}])
+        self.assertEqual(packet['instructions'], [local, root])
+        self.assertEqual(packet['unresolved'],
+                         [{'code': 'CONFLICTING_INSTRUCTION', 'id': 'LOCAL'}])
+
+    def test_task_path_count_boundary(self):
+        paths = [f'packages/b/file{i}.py' for i in range(32)]
+        self.assertEqual(self.select(paths)['task_paths'], paths)
+        for invalid in ([], paths + ['packages/b/extra.py'], 'packages/b'):
+            with self.subTest(paths=invalid):
+                with self.assertRaisesRegex(selector.SelectionError, '^INVALID_TASK_PATHS$'):
+                    self.select(invalid)
+
     @staticmethod
     def fixture():
         commands = []
@@ -280,6 +355,61 @@ class TestTaskContextSelection(unittest.TestCase):
                                          provenance={}, commands=[{'id': 'BAD'}],
                                          constraints=[], effective_instructions=[],
                                          evidence_ids=set())
+
+
+class TestActorDeliveryReceipts(unittest.TestCase):
+    def setUp(self):
+        root = tempfile.TemporaryDirectory()
+        self.addCleanup(root.cleanup)
+        self.packet = selector.select_task_context(**TestFeatureActorContext.inputs())
+        self.args = dict(actor='backend-author', task_id='T-1', worktree=root.name,
+                         source_epoch='source-1', host_epoch='host-1')
+
+    def test_receipt_after_retry_exhaustion_records_observation(self):
+        first = selector.prepare_actor_delivery(self.packet, **self.args)
+        second = selector.prepare_actor_delivery(
+            self.packet, **self.args, attempts=[first['attempt']])
+        attempts = [first['attempt'], second['attempt']]
+        blocked = selector.prepare_actor_delivery(self.packet, **self.args, attempts=attempts)
+        self.assertEqual(blocked['action'], 'blocked')
+        self.assertEqual(blocked['gap'], 'ACTOR_DELIVERY_UNOBSERVED')
+        for source in ('host-load-event', 'child-input-capture'):
+            with self.subTest(source=source):
+                receipt = dict(binding=first['binding'], actor=self.args['actor'],
+                               observed=True, source=source)
+                observed = selector.prepare_actor_delivery(
+                    self.packet, **self.args, attempts=attempts, receipt=receipt)
+                self.assertEqual(observed['action'], 'observed')
+                self.assertEqual(observed['attempts_used'], 2)
+                self.assertIsNone(observed['attempt'])
+                self.assertIsNone(observed['delivery_text'])
+
+    def test_receipt_requires_boolean_observation_and_known_source(self):
+        first = selector.prepare_actor_delivery(self.packet, **self.args)
+        receipt = dict(binding=first['binding'], actor=self.args['actor'],
+                       observed=True, source='host-load-event')
+        for changes in ({'observed': 1}, {'observed': 'true'}, {'observed': False},
+                        {'source': 'actor-assertion'}, {'actor': 'spec-reviewer'}):
+            with self.subTest(changes=changes):
+                result = selector.prepare_actor_delivery(
+                    self.packet, **self.args, attempts=[first['attempt']],
+                    receipt={**receipt, **changes})
+                self.assertEqual(result['action'], 'deliver')
+                self.assertEqual(result['attempt']['number'], 2)
+
+    def test_packet_content_change_invalidates_receipt_without_changing_epochs(self):
+        first = selector.prepare_actor_delivery(self.packet, **self.args)
+        receipt = dict(binding=first['binding'], actor=self.args['actor'],
+                       observed=True, source='host-load-event')
+        packet = copy.deepcopy(self.packet)
+        packet['instructions'][0]['text'] = 'Updated root instruction'
+        result = selector.prepare_actor_delivery(
+            packet, **self.args, attempts=[first['attempt']], receipt=receipt)
+        self.assertEqual(result['action'], 'deliver')
+        self.assertEqual(result['attempt']['number'], 1)
+        self.assertNotEqual(result['binding']['packet_sha256'], first['binding']['packet_sha256'])
+        self.assertIn('Updated root instruction', result['delivery_text'])
+        self.assertEqual(self.packet['instructions'][0]['text'], 'Root instruction')
 
 
 class TestFeatureActorContext(unittest.TestCase):

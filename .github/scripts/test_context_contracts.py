@@ -713,6 +713,64 @@ class TestMembershipCoverage(unittest.TestCase):
 
 
 class TestContextSnapshot(unittest.TestCase):
+    @staticmethod
+    def effect_file(**changes):
+        return {'status': 'file', 'digest': 'a' * 64, 'size': 3,
+                'mtime_ns': 100, **changes}
+
+    def test_effect_comparison_distinguishes_bytes_timestamps_creation_and_deletion(self):
+        absent = {'status': 'absent', 'digest': None, 'size': None, 'mtime_ns': None}
+        before = {'root': '/fixture', 'files': {
+            'unchanged.md': self.effect_file(),
+            'touched.md': self.effect_file(),
+            'deleted.md': self.effect_file(),
+            'created.md': absent,
+            'bytes.md': self.effect_file(),
+        }}
+        after = copy.deepcopy(before)
+        after['files'].update({
+            'touched.md': self.effect_file(mtime_ns=101),
+            'deleted.md': absent,
+            'created.md': self.effect_file(),
+            'bytes.md': self.effect_file(digest='b' * 64, mtime_ns=101),
+        })
+        original = copy.deepcopy((before, after))
+        self.assertEqual(S.compare_context_effects(before, after), {
+            'no_op': False,
+            'byte_changes': ['bytes.md', 'created.md', 'deleted.md'],
+            'timestamp_only_changes': ['touched.md'],
+        })
+        self.assertEqual(S.compare_context_effects(before, copy.deepcopy(before)), {
+            'no_op': True, 'byte_changes': [], 'timestamp_only_changes': [],
+        })
+        self.assertEqual((before, after), original)
+
+    def test_effect_comparison_rejects_mismatched_observation_scope(self):
+        before = {'root': '/fixture', 'files': {'result.md': self.effect_file()}}
+        for after in ({**before, 'root': '/sibling'},
+                      {**before, 'files': {}},
+                      {**before, 'extra': True}):
+            with self.subTest(after=after):
+                with self.assertRaisesRegex(S.SnapshotError, 'EFFECT_CONTEXT_MISMATCH'):
+                    S.compare_context_effects(before, after)
+
+    def test_effect_comparison_rejects_invalid_records_on_either_side(self):
+        valid = {'root': '/fixture', 'files': {'result.md': self.effect_file()}}
+        for changes in ({'size': True}, {'mtime_ns': False}, {'size': -1},
+                        {'mtime_ns': -1}, {'digest': 'A' * 64}, {'digest': 'a' * 63},
+                        {'status': 'directory'}, {'status': 'absent'}, {'extra': None}):
+            invalid = {'root': '/fixture', 'files': {'result.md': self.effect_file(**changes)}}
+            for before, after in ((valid, invalid), (invalid, valid)):
+                with self.subTest(changes=changes, invalid_before=before is invalid):
+                    with self.assertRaisesRegex(S.SnapshotError, 'INVALID_EFFECTS'):
+                        S.compare_context_effects(before, after)
+
+    def test_effect_comparison_accepts_empty_file_and_zero_timestamp(self):
+        effects = {'root': '/fixture', 'files': {
+            'empty.md': self.effect_file(digest=hashlib.sha256(b'').hexdigest(),
+                                         size=0, mtime_ns=0)}}
+        self.assertTrue(S.compare_context_effects(effects, copy.deepcopy(effects))['no_op'])
+
     """T-008: actual Git worktrees and independent source/output identities."""
 
     def shortDescription(self):

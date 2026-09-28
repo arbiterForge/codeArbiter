@@ -1,14 +1,137 @@
 package contextdocument
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
+
+func TestMembershipDigestTracksNamesSeparatelyFromContent(t *testing.T) {
+	f, done := mutationFixture(t, "membership-identity")
+	defer done()
+	mutationWrite(t, f, "src/package.json", []byte("{}\n"))
+	digest := func() string {
+		t.Helper()
+		got, err := MembershipDigest(f, "manifests", []string{"src"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return got
+	}
+	before := digest()
+	mutationWrite(t, f, "src/package.json", []byte("{\"name\":\"changed\"}\n"))
+	mutationWrite(t, f, "src/README.md", []byte("Unrelated content\n"))
+	if got := digest(); got != before {
+		t.Fatalf("content changes altered membership: %s != %s", got, before)
+	}
+	mutationWrite(t, f, "src/pyproject.toml", []byte("[project]\n"))
+	if got := digest(); got == before {
+		t.Fatal("new manifest did not invalidate membership")
+	}
+	if err := os.Remove(filepath.Join(f.Root, "src", "pyproject.toml")); err != nil {
+		t.Fatal(err)
+	}
+	if got := digest(); got != before {
+		t.Fatalf("restored member set did not restore identity: %s != %s", got, before)
+	}
+}
+
+func TestMembershipDigestScopeOrderAndOwnershipBoundaries(t *testing.T) {
+	f, done := mutationFixture(t, "membership-scopes")
+	defer done()
+	for _, path := range []string{"src/package.json", "src-extra/go.mod", "other/pyproject.toml"} {
+		mutationWrite(t, f, path, []byte("fixture\n"))
+	}
+	scopes := []string{"src", "other"}
+	before, err := MembershipDigest(f, "manifests", scopes)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(scopes, []string{"src", "other"}) {
+		t.Fatalf("caller scope order mutated: %v", scopes)
+	}
+	after, err := MembershipDigest(f, "manifests", []string{"other", "src"})
+	if err != nil || after != before {
+		t.Fatalf("scope reordering changed identity: %s %s %v", before, after, err)
+	}
+	mutationWrite(t, f, "src-extra/package.json", []byte("{}\n"))
+	after, err = MembershipDigest(f, "manifests", scopes)
+	if err != nil || after != before {
+		t.Fatalf("similarly named sibling leaked into scopes: %s %s %v", before, after, err)
+	}
+	for _, invalid := range [][]string{nil, {"src", "src"}, {"src", "SRC"}, {"src", "src/nested"}} {
+		if got, err := MembershipDigest(f, "manifests", invalid); got != "" || fault.Code(err) != "SOURCE_EVIDENCE_UNSUPPORTED" {
+			t.Errorf("invalid scopes %v yielded %q, %v", invalid, got, err)
+		}
+	}
+}
+
+func TestMembershipDigestDoesNotTraverseExcludedBoundaries(t *testing.T) {
+	for _, boundary := range []string{"vendor", "generated", "nested", "submodule"} {
+		t.Run(boundary, func(t *testing.T) {
+			f, done := mutationFixture(t, "membership-boundary")
+			defer done()
+			prefix := "src/" + boundary
+			mutationWrite(t, f, prefix+"/package.json", []byte("{}\n"))
+			if boundary == "nested" {
+				if err := os.Mkdir(filepath.Join(f.Root, filepath.FromSlash(prefix), ".git"), 0755); err != nil {
+					t.Fatal(err)
+				}
+			} else if boundary == "submodule" {
+				mutationWrite(t, f, prefix+"/.git", []byte("gitdir: elsewhere\n"))
+			}
+			before, err := MembershipDigest(f, "manifests", []string{"src"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			mutationWrite(t, f, prefix+"/go.mod", []byte("module fixture\n"))
+			after, err := MembershipDigest(f, "manifests", []string{"src"})
+			if err != nil || after != before {
+				t.Fatalf("excluded %s content affected digest: %s %s %v", boundary, before, after, err)
+			}
+		})
+	}
+}
+
+func TestMembershipDigestFileLimitIncludesNonmatchingFiles(t *testing.T) {
+	f, done := mutationFixture(t, "membership-limit")
+	defer done()
+	for i := 0; i < 1024; i++ {
+		mutationWrite(t, f, fmt.Sprintf("src/file-%04d.txt", i), []byte("x"))
+	}
+	if got, err := MembershipDigest(f, "manifests", []string{"src"}); err != nil || len(got) != 64 {
+		t.Fatalf("exact file limit rejected: %q %v", got, err)
+	}
+	mutationWrite(t, f, "src/one-more.txt", []byte("x"))
+	if got, err := MembershipDigest(f, "manifests", []string{"src"}); got != "" || fault.Code(err) != "SOURCE_EVIDENCE_UNKNOWN" {
+		t.Fatalf("over-limit traversal returned evidence: %q %v", got, err)
+	}
+}
+
+func TestContentEvidencePathRejectsSensitiveComponents(t *testing.T) {
+	for _, path := range []string{
+		".env", "src/.ENV.local", "config/credentials.json", "config/.ssh/README.md",
+		"certs/server.PEM", "certs/client.key", "certs/archive.p12", "certs/archive.pfx",
+		"src/.git/config", "../outside", "src-é/package.json",
+	} {
+		t.Run(path, func(t *testing.T) {
+			if contentEvidencePath(path) {
+				t.Fatalf("unsafe content evidence path admitted: %s", path)
+			}
+		})
+	}
+	for _, path := range []string{"src/package.json", "docs/environment.md", "src/key.go", "config/credentials-guide.md"} {
+		if !contentEvidencePath(path) {
+			t.Errorf("ordinary evidence path rejected: %s", path)
+		}
+	}
+}
 
 func TestMembershipDigestNestedRegularEntries(t *testing.T) {
 	root := testutil.Root(t)

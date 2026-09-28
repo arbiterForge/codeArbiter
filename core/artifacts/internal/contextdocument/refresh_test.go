@@ -2,10 +2,78 @@ package contextdocument
 
 import (
 	"bytes"
+	"reflect"
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 )
+
+func TestContextMetadataRefreshPreservesDocumentAndReplays(t *testing.T) {
+	f, done := mutationFixture(t, "metadata-refresh")
+	defer done()
+	const doc = ".codearbiter/CONTEXT.md"
+	const prov = ".codearbiter/.provenance/CONTEXT.json"
+	old := []byte("---\r\narbiter: enabled\r\nstage: 2\r\n---\r\n<!--INITIALIZED-->\r\n# Project: Old\r\n\r\n## Human\r\nKeep these bytes.\r\n")
+	prior := mutationProvenance(t, old, "project_name")
+	proposed := alterMutationProvenance(t, prior, func(record map[string]any) {
+		field := record["fields"].([]any)[0].(map[string]any)
+		claim := field["claims"].([]any)[0].(map[string]any)
+		claim["semantic_review"].(map[string]any)["reference"] = "review:refreshed"
+	})
+	mutationWrite(t, f, doc, old)
+	mutationWrite(t, f, prov, prior)
+	r := Mutation{OperationID: "metadata-refresh-001", Mode: "update", Typed: mutationTyped("Old"),
+		Selections:       []PreviewSelection{{EntryID: "FIELD-NAME", Anchor: "project_name"}},
+		ExpectedDocument: old, ExpectedProvenance: prior, ProposedProvenance: proposed}
+	preview, _, err := PreviewBinding(r)
+	if err != nil || !bytes.Equal(preview.Bytes, old) {
+		t.Fatalf("metadata refresh changed document preview: %q %v", preview.Bytes, err)
+	}
+	if !bytes.Equal(mutationRead(t, f, prov), prior) {
+		t.Fatal("preview changed provenance")
+	}
+	authority := fixtureMutationAuthority(t, r)
+	out, err := Apply(f, r, authority)
+	if err != nil || out.State != "committed" || out.Replay {
+		t.Fatalf("selected metadata refresh failed: %+v %v", out, err)
+	}
+	if !bytes.Equal(mutationRead(t, f, doc), old) || !bytes.Equal(mutationRead(t, f, prov), proposed) {
+		t.Fatal("refresh failed to preserve document bytes or publish selected provenance")
+	}
+	replay, err := Apply(f, r, authority)
+	if err != nil || !replay.Replay || !reflect.DeepEqual(replay.Paths, out.Paths) {
+		t.Fatalf("identical metadata refresh did not replay: %+v %v", replay, err)
+	}
+}
+
+func TestContextMetadataRefreshBindsExactProposedProvenance(t *testing.T) {
+	f, done := mutationFixture(t, "metadata-authority")
+	defer done()
+	const doc = ".codearbiter/CONTEXT.md"
+	const prov = ".codearbiter/.provenance/CONTEXT.json"
+	old := []byte("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n# Project: Old\n\n## Human\nKeep.\n")
+	prior := mutationProvenance(t, old, "project_name")
+	refresh := func(reference string) []byte {
+		return alterMutationProvenance(t, prior, func(record map[string]any) {
+			field := record["fields"].([]any)[0].(map[string]any)
+			claim := field["claims"].([]any)[0].(map[string]any)
+			claim["semantic_review"].(map[string]any)["reference"] = reference
+		})
+	}
+	mutationWrite(t, f, doc, old)
+	mutationWrite(t, f, prov, prior)
+	r := Mutation{OperationID: "metadata-authority-001", Mode: "update", Typed: mutationTyped("Old"),
+		Selections:       []PreviewSelection{{EntryID: "FIELD-NAME", Anchor: "project_name"}},
+		ExpectedDocument: old, ExpectedProvenance: prior, ProposedProvenance: refresh("review:first")}
+	authority := fixtureMutationAuthority(t, r)
+	r.ProposedProvenance = refresh("review:second")
+	if _, err := Apply(f, r, authority); fault.Code(err) != "AUTHORITY_REQUIRED" {
+		t.Fatalf("authority reused for a different metadata proposal: %v", err)
+	}
+	if !bytes.Equal(mutationRead(t, f, doc), old) || !bytes.Equal(mutationRead(t, f, prov), prior) {
+		t.Fatal("rejected refresh changed the document/provenance pair")
+	}
+}
 
 func TestContextSelectedMetadataRefreshGuards(t *testing.T) {
 	const doc = ".codearbiter/CONTEXT.md"
