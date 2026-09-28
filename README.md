@@ -2,10 +2,10 @@
 
 <img src="docs/readme-hero.webp" alt="codeArbiter. Hard gates for agentic coding." width="100%">
 
-**Shared enforcement and project-context parity across Claude Code, Codex CLI, and Pi.**
+**Open-source governance and hard guardrails for AI coding agents across Claude Code, Codex CLI, and Pi.**
 
-One repository-owned governance layer for tests, reviews, security checks, decisions, and durable
-project context. You decide. codeArbiter enforces.
+codeArbiter is a repository-owned governance layer for tests, reviews, security checks, decisions,
+and durable project context. You decide. codeArbiter enforces.
 
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
@@ -16,11 +16,11 @@ project context. You decide. codeArbiter enforces.
 <img alt="agents" src="https://img.shields.io/badge/agents-20-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
-[Start learning](https://arbiterforge.github.io/codeArbiter/learn/)
+[Start learning](https://codearbiter.dev/learn/)
 &nbsp;&nbsp;·&nbsp;&nbsp;
-[Install](https://arbiterforge.github.io/codeArbiter/getting-started/install/)
+[Install](https://codearbiter.dev/getting-started/install/)
 &nbsp;&nbsp;·&nbsp;&nbsp;
-[Browse the reference](https://arbiterforge.github.io/codeArbiter/reference/)
+[Browse the reference](https://codearbiter.dev/reference/)
 
 <sub>Install it globally. It stays dormant until a repository explicitly opts in.</sub>
 
@@ -54,13 +54,13 @@ takes the full spec, test-first, review, and PR path.
 
 The Codex path was live-verified on **Codex CLI 0.144.1** with trusted SessionStart injection and a
 real `[H-03]` PreToolUse block. The dated
-[Claude Code + Codex evidence](https://arbiterforge.github.io/codeArbiter/getting-started/claude-code-and-codex/)
+[Claude Code + Codex evidence](https://codearbiter.dev/getting-started/claude-code-and-codex/)
 separates continuously verified packaging from the live checks that require a model-backed turn.
 
 ## See it catch something
 
 The landing page includes a
-[faithful replay of a shipped hook invocation](https://arbiterforge.github.io/codeArbiter/#proof).
+[faithful replay of a shipped hook invocation](https://codearbiter.dev/#proof).
 It invokes the real `pre-bash.py` guard, records the source digest, proves the blocked command never
 ran, and preserves the exact stderr and audit effect. It does not pretend that a direct hook replay
 proves host discovery or trust.
@@ -87,7 +87,7 @@ The user owns the decision. The repository keeps the evidence.
 ## Get running
 
 Choose the adapter for the coding host you already use. The
-[host chooser](https://arbiterforge.github.io/codeArbiter/getting-started/choose-your-host/) covers
+[host chooser](https://codearbiter.dev/getting-started/choose-your-host/) covers
 stability, command syntax, trust, and platform differences.
 
 | Host | Adapter | Command form | Status |
@@ -101,7 +101,7 @@ Git 2.45.0+ with `--no-lazy-fetch` on all three governance hosts; unavailable fl
 verification with an upgrade prerequisite, never an implicit fetch fallback. Pi also requires Node.js
 22.19+. If Python is missing, Pi installs its final wrappers but blocks mutating calls and points to
 `/ca-doctor`; Claude Code and Codex surface an interpreter breadcrumb instead of silently claiming
-governance is active. The [compatibility matrix](https://arbiterforge.github.io/codeArbiter/getting-started/compatibility/)
+governance is active. The [compatibility matrix](https://codearbiter.dev/getting-started/compatibility/)
 defines the supported native Git/runtime and linked-worktree boundary; mixed Windows Git and WSL Git
 over one shared repository are not supported.
 
@@ -205,7 +205,7 @@ project to `decompose`. `doctor` must report a healthy interpreter, current payl
 live-fire probe before you treat the repository as governed.
 
 Follow the complete
-[first-repository walkthrough](https://arbiterforge.github.io/codeArbiter/getting-started/quickstart/)
+[first-repository walkthrough](https://codearbiter.dev/getting-started/quickstart/)
 for expected output, proof, and recovery.
 
 ## Practice before using your own repository
@@ -225,14 +225,14 @@ The site is designed as a continuous path from first contact to source-backed op
 
 | Need | Start here | You finish able to... |
 |---|---|---|
-| Understand the promise | [What is codeArbiter](https://arbiterforge.github.io/codeArbiter/overview/) | explain command, route, dispatch, gate, and ship |
-| Choose and install a host | [Start](https://arbiterforge.github.io/codeArbiter/getting-started/choose-your-host/) | install, trust, activate, and verify one adapter |
-| Learn in order | [Learning path](https://arbiterforge.github.io/codeArbiter/learn/) | progress from foundation through the power-user capstone |
-| Run daily work | [Workflows](https://arbiterforge.github.io/codeArbiter/guides/feature-lane/) | select and complete the smallest correct lane |
-| Understand the model | [Concept map](https://arbiterforge.github.io/codeArbiter/concepts/) | trace routing, decisions, context, review, and audit evidence |
-| Diagnose a problem | [Troubleshooting](https://arbiterforge.github.io/codeArbiter/guides/troubleshooting/) | follow a symptom to a deterministic recovery |
-| Look up exact behavior | [Reference](https://arbiterforge.github.io/codeArbiter/reference/) | inspect generated commands, skills, agents, hooks, and configuration |
-| Evaluate preview work | [Feature Forge](https://arbiterforge.github.io/codeArbiter/feature-forge/overview/) | opt in, verify the off switch, and understand the promotion bar |
+| Understand the promise | [What is codeArbiter](https://codearbiter.dev/overview/) | explain command, route, dispatch, gate, and ship |
+| Choose and install a host | [Start](https://codearbiter.dev/getting-started/choose-your-host/) | install, trust, activate, and verify one adapter |
+| Learn in order | [Learning path](https://codearbiter.dev/learn/) | progress from foundation through the power-user capstone |
+| Run daily work | [Workflows](https://codearbiter.dev/guides/feature-lane/) | select and complete the smallest correct lane |
+| Understand the model | [Concept map](https://codearbiter.dev/concepts/) | trace routing, decisions, context, review, and audit evidence |
+| Diagnose a problem | [Troubleshooting](https://codearbiter.dev/guides/troubleshooting/) | follow a symptom to a deterministic recovery |
+| Look up exact behavior | [Reference](https://codearbiter.dev/reference/) | inspect generated commands, skills, agents, hooks, and configuration |
+| Evaluate preview work | [Feature Forge](https://codearbiter.dev/feature-forge/overview/) | opt in, verify the off switch, and understand the promotion bar |
 
 Command, skill, agent, and hook-gate reference pages are generated from shipped source on every site
 build. Hand-authored guides teach the workflow; generated pages define the exact current surface.
@@ -274,7 +274,7 @@ The project record lives beside the code:
 └── overrides.log          append-only sanctioned bypass record
 ```
 
-The [.codearbiter directory reference](https://arbiterforge.github.io/codeArbiter/codearbiter-directory/)
+The [.codearbiter directory reference](https://codearbiter.dev/codearbiter-directory/)
 explains who creates, reads, and updates every artifact, plus its recovery rules.
 
 ### The hard gates
@@ -302,8 +302,8 @@ recommendation. The user still decides.
 `/ca:sprint` uses the same lenses for bounded non-hard decisions and writes every call to
 `.codearbiter/sprint-log.md` with a confidence flag. Security boundaries, irreversible operations,
 gate bypasses, merges, and unresolved questions remain true stops. See
-[SMARTS](https://arbiterforge.github.io/codeArbiter/concepts/smarts/) and
-[autonomous sprints](https://arbiterforge.github.io/codeArbiter/guides/autonomous-sprints/).
+[SMARTS](https://codearbiter.dev/concepts/smarts/) and
+[autonomous sprints](https://codearbiter.dev/guides/autonomous-sprints/).
 
 ## Core lanes
 
@@ -322,7 +322,7 @@ compatibility routes remain available in the complete reference.
 | Operate | `/ca:status`, `/ca:task`, `/ca:doctor`, `/ca:override` | Inspect state, manage the task board, verify enforcement, or log an allowed bypass |
 <!-- core-lane-chooser:end -->
 
-[Complete command reference](https://arbiterforge.github.io/codeArbiter/reference/commands/) includes
+[Complete command reference](https://codearbiter.dev/reference/commands/) includes
 advanced operations, compatibility routes, internal protocols, deprecation guidance, and host
 availability. The generated host catalogs remain inspectable in
 [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md),
@@ -348,8 +348,8 @@ The optional `/ca:sprint --farm` preview is a distinct opt-in network feature. I
 secret-redacted task context to the OpenAI-compatible endpoint you configure and is inert without
 the flag and provider key.
 
-See [Enforcement and Security](https://arbiterforge.github.io/codeArbiter/enforcement/) and the
-[Hooks Reference](https://arbiterforge.github.io/codeArbiter/hooks/) for the exact event, read,
+See [Enforcement and Security](https://codearbiter.dev/enforcement/) and the
+[Hooks Reference](https://codearbiter.dev/hooks/) for the exact event, read,
 write, block, and network contract.
 
 ### Pi operational contract
@@ -387,7 +387,7 @@ spending or trust requirements.
 | `ca-sandbox` | install the sibling plugin | real untrusted repositories and interactive `--with-claude` use |
 
 The source-backed
-[live Forge catalog](https://arbiterforge.github.io/codeArbiter/feature-forge/whats-in-the-forge/)
+[live Forge catalog](https://codearbiter.dev/feature-forge/whats-in-the-forge/)
 names every opt-in, off switch, dependency, trust boundary, and promotion signal.
 
 The farm preview uses one checked-in `farm.js` backend across supported hosts. A Pi-native embedded
@@ -424,8 +424,8 @@ Update the Claude marketplace explicitly:
 
 The operator-facing environment-variable catalog, defaults, accepted values, safety boundaries,
 and verification steps live in the
-[Configuration Reference](https://arbiterforge.github.io/codeArbiter/reference/configuration/).
-Release notes are in the [Changelog](https://arbiterforge.github.io/codeArbiter/changelog/).
+[Configuration Reference](https://codearbiter.dev/reference/configuration/).
+Release notes are in the [Changelog](https://codearbiter.dev/changelog/).
 
 </details>
 
@@ -437,7 +437,7 @@ with Claude Code's plugin manager, run `codex plugin remove ca-codex@codearbiter
 `pi remove` with the pinned Git source for Pi. The repository-owned `.codearbiter/` record survives,
 so another supported host can keep using it.
 
-Follow [Uninstall and Disable](https://arbiterforge.github.io/codeArbiter/guides/uninstalling/) for
+Follow [Uninstall and Disable](https://codearbiter.dev/guides/uninstalling/) for
 host-specific removal, pinning, and verification.
 
 </details>
@@ -499,7 +499,7 @@ Inspect the repository, grant project trust, start a fresh Pi session, then run 
 
 codeArbiter v2 is a ground-up rebuild of the earlier vendored `.agents/` framework as a native,
 multi-host plugin system. The complete record is in [`CHANGELOG.md`](./CHANGELOG.md) and the
-[site changelog](https://arbiterforge.github.io/codeArbiter/changelog/). The v1 implementation
+[site changelog](https://codearbiter.dev/changelog/). The v1 implementation
 remains available in early repository history.
 
 ## License and contributions
