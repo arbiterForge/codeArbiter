@@ -1,0 +1,597 @@
+{
+  "captured": "2026-09-27T03:56:01",
+  "checkout_rev": "b6fff82c9a0de4d134282b6e1b5d3d9983bcd0a2",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.6",
+  "scenarios": {
+    "p10k_c0": {
+      "first": {
+        "changed_sources": 0,
+        "eviction_renders": 1,
+        "max_render_writes": 228,
+        "median_ms": 773.3935000142083,
+        "new_ids": 0,
+        "p95_ms": 773.3935000142083,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 5949965,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 1289473,
+          "ledger_replacements": 228,
+          "listdirs": 3,
+          "opens": 232,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 8389121
+        }
+      },
+      "host_only": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 1,
+        "median_ms": 135.91069995891303,
+        "new_ids": 0,
+        "p95_ms": 260.88829996297136,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 34259,
+          "ledger_bytes_read": 24146,
+          "ledger_bytes_written": 24148,
+          "ledger_replacements": 5,
+          "listdirs": 15,
+          "opens": 25,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "changed_sources": 40,
+        "eviction_renders": 1,
+        "max_render_writes": 103,
+        "median_ms": 147.35734998248518,
+        "new_ids": 120,
+        "p95_ms": 182.97739996341988,
+        "partition_files": 256,
+        "renders": 40,
+        "totals": {
+          "json_decoded_bytes": 4695704,
+          "ledger_bytes_read": 4457044,
+          "ledger_bytes_written": 4483677,
+          "ledger_replacements": 181,
+          "listdirs": 120,
+          "opens": 523,
+          "other_bytes_read": 60400,
+          "transcript_bytes_read": 242750
+        }
+      },
+      "no_change": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 128.4140999778174,
+        "new_ids": 0,
+        "p95_ms": 169.58180000074208,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 102765,
+          "ledger_bytes_read": 72435,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 45,
+          "opens": 60,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "changed_sources": 0,
+        "eviction_renders": 2,
+        "max_render_writes": 258,
+        "median_ms": 1203.4994999994524,
+        "new_ids": 0,
+        "p95_ms": 1420.6825000001118,
+        "renders": 3,
+        "totals": {
+          "json_decoded_bytes": 10937170,
+          "ledger_bytes_read": 3785707,
+          "ledger_bytes_written": 5313231,
+          "ledger_replacements": 508,
+          "listdirs": 9,
+          "opens": 998,
+          "other_bytes_read": 4530,
+          "transcript_bytes_read": 10076431
+        }
+      }
+    },
+    "p1k_c0": {
+      "first": {
+        "changed_sources": 0,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 246.7179999803193,
+        "new_ids": 0,
+        "p95_ms": 246.7179999803193,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1305359,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 286178,
+          "ledger_replacements": 18,
+          "listdirs": 3,
+          "opens": 22,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 1839742
+        }
+      },
+      "host_only": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 1,
+        "median_ms": 124.12250001216307,
+        "new_ids": 0,
+        "p95_ms": 132.21959996735677,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 23295,
+          "ledger_bytes_read": 13197,
+          "ledger_bytes_written": 13198,
+          "ledger_replacements": 5,
+          "listdirs": 15,
+          "opens": 25,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "changed_sources": 40,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 145.562149991747,
+        "new_ids": 120,
+        "p95_ms": 214.84279999276623,
+        "partition_files": 16,
+        "renders": 40,
+        "totals": {
+          "json_decoded_bytes": 2953251,
+          "ledger_bytes_read": 2714711,
+          "ledger_bytes_written": 2718089,
+          "ledger_replacements": 96,
+          "listdirs": 120,
+          "opens": 354,
+          "other_bytes_read": 60400,
+          "transcript_bytes_read": 242750
+        }
+      },
+      "no_change": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 123.8263999694027,
+        "new_ids": 0,
+        "p95_ms": 161.15280002122745,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 69870,
+          "ledger_bytes_read": 39585,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 45,
+          "opens": 60,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 147.6871999911964,
+        "new_ids": 0,
+        "p95_ms": 147.6871999911964,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 4658,
+          "ledger_bytes_read": 2639,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 3,
+          "opens": 4,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 0
+        }
+      }
+    },
+    "p1k_c1": {
+      "first": {
+        "changed_sources": 0,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 262.22560001770034,
+        "new_ids": 0,
+        "p95_ms": 262.22560001770034,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1358155,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 297082,
+          "ledger_replacements": 18,
+          "listdirs": 4,
+          "opens": 23,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 1913984
+        }
+      },
+      "host_only": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 1,
+        "median_ms": 129.86919999821112,
+        "new_ids": 0,
+        "p95_ms": 167.68720000982285,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 26479,
+          "ledger_bytes_read": 16381,
+          "ledger_bytes_written": 16382,
+          "ledger_replacements": 5,
+          "listdirs": 20,
+          "opens": 25,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "changed_sources": 60,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 146.97679996606894,
+        "new_ids": 160,
+        "p95_ms": 218.16640003817156,
+        "partition_files": 16,
+        "renders": 40,
+        "totals": {
+          "json_decoded_bytes": 3013962,
+          "ledger_bytes_read": 2722922,
+          "ledger_bytes_written": 2753929,
+          "ledger_replacements": 96,
+          "listdirs": 160,
+          "opens": 373,
+          "other_bytes_read": 60400,
+          "transcript_bytes_read": 327000
+        }
+      },
+      "no_change": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 125.62800000887364,
+        "new_ids": 0,
+        "p95_ms": 162.47219999786466,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 79425,
+          "ledger_bytes_read": 49140,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 60,
+          "opens": 60,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 128.88050003675744,
+        "new_ids": 0,
+        "p95_ms": 128.88050003675744,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 5295,
+          "ledger_bytes_read": 3276,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 4,
+          "opens": 4,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 0
+        }
+      }
+    },
+    "p1k_c12": {
+      "first": {
+        "changed_sources": 0,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 370.34189997939393,
+        "new_ids": 0,
+        "p95_ms": 370.34189997939393,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1939396,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 437745,
+          "ledger_replacements": 18,
+          "listdirs": 4,
+          "opens": 34,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 2731206
+        }
+      },
+      "host_only": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 1,
+        "median_ms": 132.63409998035058,
+        "new_ids": 0,
+        "p95_ms": 169.46840001037344,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 60337,
+          "ledger_bytes_read": 50224,
+          "ledger_bytes_written": 50226,
+          "ledger_replacements": 5,
+          "listdirs": 20,
+          "opens": 25,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "changed_sources": 60,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 147.41720000165515,
+        "new_ids": 160,
+        "p95_ms": 201.35299995308742,
+        "partition_files": 16,
+        "renders": 40,
+        "totals": {
+          "json_decoded_bytes": 3630748,
+          "ledger_bytes_read": 3339588,
+          "ledger_bytes_written": 3386294,
+          "ledger_replacements": 96,
+          "listdirs": 160,
+          "opens": 372,
+          "other_bytes_read": 60400,
+          "transcript_bytes_read": 327000
+        }
+      },
+      "no_change": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 126.01399997947738,
+        "new_ids": 0,
+        "p95_ms": 164.95110001415014,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 180990,
+          "ledger_bytes_read": 150660,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 60,
+          "opens": 60,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 133.53529997402802,
+        "new_ids": 0,
+        "p95_ms": 133.53529997402802,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 12066,
+          "ledger_bytes_read": 10044,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 4,
+          "opens": 4,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 0
+        }
+      }
+    },
+    "p1k_c13": {
+      "first": {
+        "changed_sources": 0,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 358.44250000081956,
+        "new_ids": 0,
+        "p95_ms": 358.44250000081956,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1992433,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 451363,
+          "ledger_replacements": 18,
+          "listdirs": 4,
+          "opens": 35,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 2805728
+        }
+      },
+      "host_only": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 1,
+        "median_ms": 131.08490000013262,
+        "new_ids": 0,
+        "p95_ms": 172.17320000054315,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 63402,
+          "ledger_bytes_read": 53289,
+          "ledger_bytes_written": 53291,
+          "ledger_replacements": 5,
+          "listdirs": 20,
+          "opens": 25,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "changed_sources": 60,
+        "eviction_renders": 2,
+        "max_render_writes": 18,
+        "median_ms": 148.86099999421276,
+        "new_ids": 160,
+        "p95_ms": 227.81940002460033,
+        "partition_files": 16,
+        "renders": 40,
+        "totals": {
+          "json_decoded_bytes": 4122884,
+          "ledger_bytes_read": 3831724,
+          "ledger_bytes_written": 3875603,
+          "ledger_replacements": 112,
+          "listdirs": 160,
+          "opens": 404,
+          "other_bytes_read": 60400,
+          "transcript_bytes_read": 327000
+        }
+      },
+      "no_change": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 124.99949999619275,
+        "new_ids": 0,
+        "p95_ms": 127.9849000275135,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 190185,
+          "ledger_bytes_read": 159855,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 60,
+          "opens": 60,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 130.1579999853857,
+        "new_ids": 0,
+        "p95_ms": 130.1579999853857,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 12679,
+          "ledger_bytes_read": 10657,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 4,
+          "opens": 4,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 0
+        }
+      }
+    },
+    "p1k_c64": {
+      "first": {
+        "changed_sources": 0,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 384.43089998327196,
+        "new_ids": 0,
+        "p95_ms": 384.43089998327196,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 2098507,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 490696,
+          "ledger_replacements": 18,
+          "listdirs": 4,
+          "opens": 37,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 2954772
+        }
+      },
+      "host_only": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 1,
+        "median_ms": 131.78610004251823,
+        "new_ids": 0,
+        "p95_ms": 174.9959000153467,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 220132,
+          "ledger_bytes_read": 210019,
+          "ledger_bytes_written": 210023,
+          "ledger_replacements": 5,
+          "listdirs": 20,
+          "opens": 25,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "changed_sources": 60,
+        "eviction_renders": 1,
+        "max_render_writes": 18,
+        "median_ms": 152.01040002284572,
+        "new_ids": 160,
+        "p95_ms": 222.12390002096072,
+        "partition_files": 16,
+        "renders": 40,
+        "totals": {
+          "json_decoded_bytes": 5715513,
+          "ledger_bytes_read": 5424353,
+          "ledger_bytes_written": 5470950,
+          "ledger_replacements": 96,
+          "listdirs": 160,
+          "opens": 372,
+          "other_bytes_read": 60400,
+          "transcript_bytes_read": 327000
+        }
+      },
+      "no_change": {
+        "changed_sources": 0,
+        "eviction_renders": 0,
+        "max_render_writes": 0,
+        "median_ms": 127.44070001645014,
+        "new_ids": 0,
+        "p95_ms": 157.6712999958545,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 660375,
+          "ledger_bytes_read": 630045,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 60,
+          "opens": 60,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "changed_sources": 0,
+        "eviction_renders": 3,
+        "max_render_writes": 18,
+        "median_ms": 379.772599961143,
+        "new_ids": 0,
+        "p95_ms": 441.93180004367605,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 4821104,
+          "ledger_bytes_read": 2212181,
+          "ledger_bytes_written": 2779982,
+          "ledger_replacements": 56,
+          "listdirs": 20,
+          "opens": 177,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 3651578
+        }
+      }
+    }
+  },
+  "schema": "codearbiter.statusline-bench/v1"
+}

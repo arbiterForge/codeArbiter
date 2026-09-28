@@ -1,39 +1,48 @@
 #!/usr/bin/env python3
 # codeArbiter — cost/token ledger subsystem for the statusline (extracted T-12).
 #
-# Owns the user-level token/cost accounting the statusline renders: an Anthropic
-# API price table, transcript-tailing accumulation (deduped per requestId), the
-# per-session JSON ledger (~/.codearbiter/ledger.json) with TTL pruning + an
-# atomic write, and the per-call burn samples that feed the sparkline. The
-# statusline imports this for its cost segment; it carries NO rendering concern
-# (no ANSI, no box drawing) so the accounting is unit-testable in isolation.
+# Owns the user-level Claude accounting the statusline renders (spec
+# claude-statusline-accounting-integrity): a bounded, starvation-free scanner over
+# the parent transcript AND every delegated `<session>/subagents/*.jsonl`
+# transcript. It is the ONE JSONL parser on the render path. Around it sit
+# per-session v2 state under ~/.codearbiter/ledger.json.sessions/, incrementally
+# maintained Session/Today totals with structured coverage, the separately kept
+# host-reported estimate, and parent-only burn samples for the sparkline. What a
+# usage record MEANS (identity, reconciliation, pricing) is owned by _usagelib;
+# this module persists, schedules and aggregates. No rendering concern (no ANSI,
+# no box drawing), so the accounting is unit-testable in isolation.
 #
 # Design principles (mirroring _metricslib.py / _taskboardlib.py):
 #   - Stdlib only; no third-party imports ever — runs on stock Python.
 #   - Zero side effects at import time: no git calls, no file I/O.
-#   - Pure functions are fully testable with synthetic input. ledger_update()
-#     and pi_ledger_update() are the only filesystem entry points; everything
-#     else is pure or a private bounded persistence helper.
-#   - Never raise on malformed user input — every reader degrades to safe blanks.
+#   - ledger_update(), persist_sess_start() and pi_ledger_update() are the only
+#     filesystem entry points; everything else is pure or a private bounded
+#     persistence helper.
+#   - Bounds defer work, never discard it: an offset never advances past bytes
+#     that were not consumed, and backlog shows as `catching_up`.
+#   - Steady-state cost never grows with history. A no-change render reads only
+#     compact summaries; request evidence is loaded only for new records.
+#   - Never raise on malformed user input — every reader degrades to safe blanks,
+#     and uncertainty surfaces as coverage reasons, never as a fabricated figure.
 #
 # Public API:
-#   price_for(model) -> tuple                (input,out,c5,c1,cr) USD per 1M tokens
-#   api_cost(tok) -> float                   estimated API-equivalent USD for {model: tokens}
-#   ledger_path() -> str                     resolved ledger file path (env-overridable)
-#   _tx_accumulate(rec, tx_path) -> bool     tail a transcript into rec; True if offset advanced
-#   _agg_reqs(reqs, only=None) -> dict       aggregate per-request map -> {model: tokens}
-#   _totals(models) -> dict                  {in,out,cost} display totals for a model map
-#   ledger_update(data, sid) -> tuple        (rec, session_totals, today_totals)
+#   ledger_path() -> str                     resolved ledger anchor path (env-overridable)
+#   ledger_update(data, sid) -> tuple        (summary, session, today); session/today carry
+#                                            in/out tokens, exact picodollars `pd`, display
+#                                            `cost`, coverage `state`, `reasons`, `stale`
+#   persist_sess_start(sid, value) -> bool   cache a resolved session-start epoch
 #   pi_ledger_path() -> str                  separate user-global Pi ledger path
 #   pi_ledger_update(session_key, scan_start, scan_end, facts, path=None) -> dict
 #                                               bounded Pi session/day snapshot
-#   burn_samples(rec) -> list[float]         recent per-call token-burn values for the sparkline
+#   burn_samples(rec) -> list[float]         recent per-request (parent-only) burn values
 
+import base64
 import hashlib
 import json
 import math
 import os
 import re
+import shutil
 import stat
 import sys
 import time
@@ -56,11 +65,17 @@ from _hooklib import LOCK_WAIT  # noqa: E402
 # stays importable for this module's call sites and the test suite. No cycle
 # risk — _fmtlib imports only _colorlib, never _ledgerlib.
 from _fmtlib import parse_iso  # noqa: E402,F401
+# Usage semantics (normalization, identity, reconciliation, pricing) have ONE
+# owner; this module only persists, schedules and aggregates what it returns.
+import _usagelib  # noqa: E402
+try:  # presentation label for child transcripts, derived by the one parser here
+    from _subagentslib import sub_label as _sub_label  # noqa: E402
+except Exception:  # pragma: no cover — a label is never worth breaking accounting
+    _sub_label = None
 
 # Tunables (module constants; mirrored from the original inline statusline block).
 SESSION_TTL = 36 * 3600  # prune sessions older than ~1.5 days
 BURN_RING = 40           # recent per-call token-burn samples kept for the sparkline
-TX_MAX_NEW_LINES = 20000 # hot-path bound: transcript lines parsed per render
 # `last_ts` exists only to keep a live record inside SESSION_TTL. Stamping it on
 # EVERY render made every render a writing render (#392) — the statusline runs in
 # a fresh process per refresh, so that was two atomic replacements per refresh
@@ -96,19 +111,6 @@ PI_TOTAL_KEYS = frozenset({
 PI_FACT_KEYS = frozenset({"position", "timestamp"}) | PI_TOTAL_KEYS
 PI_STATUSES = frozenset({"ok", "invalid", "corrupt", "lock_failed", "write_failed"})
 
-# API list prices, USD per 1M tokens (captured 2026-06-10 from Anthropic's
-# pricing pages). Used ONLY to estimate the pay-as-you-go API-equivalent cost of
-# this session's REAL tokens — the bar labels it "api≈"; it is not a bill.
-# Per model family: (input, output, cache_write_5m, cache_write_1h, cache_read).
-# Cache multipliers are the standard ones: write 1.25x/2x input, read 0.1x.
-API_PRICES = {
-    "fable":  (10.0, 50.0, 12.50, 20.0, 1.00),
-    "opus":   (5.0, 25.0, 6.25, 10.0, 0.50),
-    "sonnet": (3.0, 15.0, 3.75,  6.0, 0.30),
-    "haiku":  (1.0,  5.0, 1.25,  2.0, 0.10),
-}
-
-
 # --------------------------------------------------------------------------- coercion
 def num(x, default=0.0):
     """Coerce any host value to float; tolerate strings, None, and containers."""
@@ -136,29 +138,7 @@ def get(d, *path, default=None):
     return cur
 
 
-# --------------------------------------------------------------------------- pricing
-def price_for(model):
-    ml = str(model).lower()
-    for fam, p in API_PRICES.items():
-        if fam in ml:
-            return p
-    return API_PRICES["sonnet"]   # reasonable mid default for an unrecognized model
-
-
-def api_cost(tok):
-    """Estimated pay-as-you-go API cost (USD) for accumulated per-model tokens."""
-    total = 0.0
-    for model, t in (tok or {}).items():
-        if not isinstance(t, dict):
-            continue
-        pin, pout, p5, p1, pr = price_for(model)
-        total += (num(t.get("in")) * pin + num(t.get("out")) * pout
-                  + num(t.get("c5")) * p5 + num(t.get("c1")) * p1
-                  + num(t.get("cr")) * pr) / 1e6
-    return total
-
-
-# --------------------------------------------------------------------------- ledger
+# --------------------------------------------------------------------------- ledger files
 def ledger_path():
     return os.environ.get("CODEARBITER_LEDGER") or \
         os.path.join(os.path.expanduser("~"), ".codearbiter", "ledger.json")
@@ -195,6 +175,13 @@ def _atomic_json(path, value):
                 pass
 
 
+def _remove(path):
+    try:
+        os.remove(path)
+    except OSError:
+        pass
+
+
 def _session_dir(path):
     return f"{path}.sessions"
 
@@ -204,6 +191,8 @@ def _session_key(sid):
 
 
 def _session_file(path, sid):
+    """The LEGACY (v1) per-session shard. v2 never writes it; it is read once to
+    seed a migrating session and otherwise only stat-ed for pruning."""
     return os.path.join(_session_dir(path), f"{_session_key(sid)}.json")
 
 
@@ -211,332 +200,1013 @@ def _start_file(path, sid):
     return os.path.join(_session_dir(path), f"{_session_key(sid)}.start.json")
 
 
-def _merge_sessions(path):
-    """Merge the legacy snapshot with authoritative independently-written shards.
+def _acct_file(path, sid):
+    return os.path.join(_session_dir(path), f"{_session_key(sid)}.acct.json")
 
-    Returns (sessions, legacy) where `legacy` is the compatibility snapshot's own
-    mapping exactly as it was read from disk (None when the file is absent or
-    malformed). Callers compare the merged result against `legacy` to tell whether
-    the snapshot on disk is already in sync, so the whole-snapshot rewrite happens
-    only when it would actually change bytes (#392). Session records are copied out
-    of `legacy` so later in-place edits (the .start.json overlay below, and the
-    caller's own record) cannot mutate the comparison baseline.
-    """
-    led = _read_json(path, {})
-    legacy = led.get("sessions") if isinstance(led, dict) else None
-    if not isinstance(legacy, dict):
-        legacy = None
-    sessions = {} if legacy is None else {
-        sid: dict(rec) for sid, rec in legacy.items() if isinstance(rec, dict)}
+
+def _hot_file(path, sid):
+    return os.path.join(_session_dir(path), f"{_session_key(sid)}.hot.json")
+
+
+def _ev_dir(path, sid):
+    return os.path.join(_session_dir(path), f"{_session_key(sid)}.ev")
+
+
+# --------------------------------------------------------------------------- v2 accounting (spec
+# claude-statusline-accounting-integrity). One compact SUMMARY per session is read
+# on every render; request EVIDENCE lives in a bounded hot file plus hash-prefix
+# partitions that split before they exceed PART_MAX, and is loaded only for the
+# identities a render's new records touch. Derived totals are maintained by
+# subtract-old / add-new, so steady-state work never grows with history.
+ACCT_SCHEMA = "codearbiter.claude-accounting/v2"
+ACCT_BYTE_BUDGET = 8 * 1024 * 1024     # transcript bytes read per render, all sources
+ACCT_RECORD_BUDGET = 50000             # complete JSONL lines consumed per render
+ACCT_SOURCE_BUDGET = 16                # sources opened per render
+MAX_RECORD_BYTES = 4 * 1024 * 1024     # per-line ceiling (~14x the largest observed line)
+DISCOVERY_BOUND = 4096                 # child transcripts discovered per session
+HOT_MAX = 256                          # hot evidence entries before eviction to cold
+PART_MAX = 256                         # entries per cold partition before it splits
+UI_LOCK_WAIT = 0.02                    # render-path try-lock budget (seconds)
+FP_WINDOW = 512                        # head/tail fingerprint window (bytes)
+UNPROVEN_KEEP = 8                      # byte positions of unproven records kept per source
+_LEGACY_SHARD = re.compile(r"[0-9a-f]{64}\.json\Z")
+_HEX = "0123456789abcdef"
+
+
+class _Inconsistent(Exception):
+    """Evidence on disk does not match the summary that should own it."""
+
+
+def _local_day(ts):
+    """Local calendar day (YYYY-MM-DD) of a trustworthy transcript timestamp."""
+    e = parse_iso(ts)
+    try:
+        return datetime.fromtimestamp(e).strftime("%Y-%m-%d")
+    except (TypeError, OSError, OverflowError, ValueError):
+        return None
+
+
+def _today():
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+def _order_sources(ids):
+    """Deterministic child scheduling order (a test seam for order independence)."""
+    return sorted(ids)
+
+
+def _ident_hash(key):
+    return hashlib.sha256(key.encode("utf-8", "replace")).hexdigest()
+
+
+# Per-partition membership filter (Bloom), carried in the hot file so a render
+# that ingests brand-new identities can prove "not in this cold partition"
+# without reading it. A filter only ever answers "definitely absent" or "maybe
+# present"; a missing, malformed or undersized filter is "maybe present" and
+# falls back to the partition read, because a false "absent" would silently
+# double-count a fork replay (never fold unreadable into absent).
+FILTER_BITS_PER_KEY = 10
+FILTER_PROBES = 7
+
+
+def _filter_probes(key, m):
+    d = hashlib.sha256(b"filter:" + key.encode("utf-8", "replace")).digest()
+    return [int.from_bytes(d[4 * i:4 * i + 4], "big") % m for i in range(FILTER_PROBES)]
+
+
+def _filter_build(keys):
+    keys = list(keys)
+    m = max(64, FILTER_BITS_PER_KEY * len(keys))
+    m += -m % 8
+    bits = bytearray(m // 8)
+    for key in keys:
+        for b in _filter_probes(key, m):
+            bits[b >> 3] |= 1 << (b & 7)
+    return [m, base64.b64encode(bytes(bits)).decode("ascii")]
+
+
+def _filter_absent(flt, key):
+    """True only when `flt` is well-formed and proves `key` absent."""
+    try:
+        m, enc = flt
+        if isinstance(m, bool) or not isinstance(m, int) or m <= 0 or m % 8 or not isinstance(enc, str):
+            return False
+        bits = base64.b64decode(enc.encode("ascii"), validate=True)
+        if len(bits) * 8 != m:
+            return False
+    except (TypeError, ValueError, UnicodeError):
+        return False
+    return any(not bits[b >> 3] & (1 << (b & 7)) for b in _filter_probes(key, m))
+
+
+def _fresh_summary(sid, now):
+    return {"v": 2, "sid": sid, "first_ts": now, "last_ts": now, "reg": _usagelib.REGISTRY_VERSION,
+            "seq": 0, "hot_seq": 0, "parts": {}, "mid_only": 0, "src": {}, "cursor": "",
+            "tot": {"in": 0, "out": 0, "pd": 0}, "rc": {}, "days": {}, "unk_time": 0,
+            "host": {"latest": None, "max": None, "anom": False, "missing": False, "seen": False},
+            "burn": [], "flags": {}, "cov": {}}
+
+
+def _summary_valid(rec, sid):
+    try:
+        return (rec.get("v") == 2 and rec.get("sid") == sid
+                and isinstance(rec.get("src"), dict) and isinstance(rec.get("tot"), dict)
+                and isinstance(rec.get("days"), dict) and isinstance(rec.get("parts"), dict)
+                and isinstance(rec.get("host"), dict) and isinstance(rec.get("burn"), list)
+                and isinstance(rec.get("rc"), dict) and isinstance(rec.get("seq"), int))
+    except AttributeError:
+        return False
+
+
+class _Store:
+    """Evidence for one session: a bounded LRU hot map plus cold hash-prefix
+    partitions. Every file carries the summary sequence number it was written
+    under; a mismatch on load means a torn commit and raises _Inconsistent."""
+
+    def __init__(self, path, sid, rec):
+        self.path, self.sid, self.rec = path, sid, rec
+        self.hot = None
+        self.hot_dirty = False
+        self.parts = {}
+        self.parts_dirty = set()
+        self.grown = set()                     # partitions whose key set grew: refilter
+        self.obsolete = []
+
+    def _part_file(self, prefix):
+        return os.path.join(_ev_dir(self.path, self.sid), f"p{prefix}.json")
+
+    def _load_hot(self):
+        if self.hot is None:
+            want = self.rec.get("hot_seq", 0)
+            if want:
+                v = _read_json(_hot_file(self.path, self.sid))
+                if not (isinstance(v, dict) and v.get("seq") == want
+                        and isinstance(v.get("ev"), dict) and isinstance(v.get("order"), list)):
+                    raise _Inconsistent
+                flt = v.get("f")
+                self.hot = {"ev": v["ev"], "order": [k for k in v["order"] if k in v["ev"]],
+                            "f": dict(flt) if isinstance(flt, dict) else {}}
+            else:
+                self.hot = {"ev": {}, "order": [], "f": {}}
+        return self.hot
+
+    def _leaf(self, h):
+        parts = self.rec["parts"]
+        for k in range(len(h) + 1):
+            if h[:k] in parts:
+                return h[:k]
+        raise _Inconsistent
+
+    def _load_part(self, prefix):
+        if prefix not in self.parts:
+            want = self.rec["parts"].get(prefix, 0)
+            if not want:
+                self.parts[prefix] = {}
+            else:
+                v = _read_json(self._part_file(prefix))
+                if not (isinstance(v, dict) and v.get("seq") == want and isinstance(v.get("ev"), dict)):
+                    raise _Inconsistent
+                self.parts[prefix] = v["ev"]
+        return self.parts[prefix]
+
+    def get(self, key):
+        """(entry, location) where location is "hot" or a partition prefix."""
+        hot = self._load_hot()
+        if key in hot["ev"]:
+            return hot["ev"][key], "hot"
+        if self.rec["parts"]:
+            prefix = self._leaf(_ident_hash(key))
+            if prefix not in self.parts and (
+                    not self.rec["parts"].get(prefix)
+                    or _filter_absent(hot["f"].get(prefix), key)):
+                return None, None
+            part = self._load_part(prefix)
+            if key in part:
+                return part[key], prefix
+        return None, None
+
+    def put(self, key, entry, where):
+        if where is None or where == "hot":
+            hot = self._load_hot()
+            if key in hot["ev"]:
+                hot["order"].remove(key)
+            hot["ev"][key] = entry
+            hot["order"].append(key)
+            self.hot_dirty = True
+        else:
+            part = self._load_part(where)
+            if key not in part:
+                self.grown.add(where)          # keep the filter a superset
+            part[key] = entry
+            self.parts_dirty.add(where)
+
+    def delete(self, key, where):
+        if where == "hot":
+            hot = self._load_hot()
+            hot["ev"].pop(key, None)
+            if key in hot["order"]:
+                hot["order"].remove(key)
+            self.hot_dirty = True
+        elif where is not None:
+            self._load_part(where).pop(key, None)
+            self.parts_dirty.add(where)
+
+    def evict(self):
+        hot = self.hot
+        if hot is None or len(hot["ev"]) <= HOT_MAX:
+            return
+        if not self.rec["parts"]:
+            self.rec["parts"][""] = 0
+        n = len(hot["ev"]) - HOT_MAX // 2
+        victims, hot["order"] = hot["order"][:n], hot["order"][n:]
+        for key in victims:
+            entry = hot["ev"].pop(key)
+            prefix = self._leaf(_ident_hash(key))
+            self._load_part(prefix)[key] = entry
+            self.parts_dirty.add(prefix)
+            self.grown.add(prefix)
+        self.hot_dirty = True
+        for prefix in list(self.parts_dirty):
+            self._split(prefix)
+
+    def _split(self, prefix):
+        part = self._load_part(prefix)
+        if len(part) <= PART_MAX or len(prefix) >= 64:
+            return
+        if self.rec["parts"].get(prefix):
+            self.obsolete.append(self._part_file(prefix))
+        del self.rec["parts"][prefix]
+        del self.parts[prefix]
+        self.parts_dirty.discard(prefix)
+        children = {prefix + c: {} for c in _HEX}
+        for key, entry in part.items():
+            children[prefix + _ident_hash(key)[len(prefix)]][key] = entry
+        for child, entries in children.items():
+            self.rec["parts"][child] = 0
+            self.parts[child] = entries
+            self.parts_dirty.add(child)
+            self.grown.add(child)
+        for child in children:
+            self._split(child)
+
+    def all_locations(self):
+        """Every (key, entry, location) — a full walk, only for rebuilds."""
+        hot = self._load_hot()
+        for key in list(hot["ev"]):
+            yield key, hot["ev"][key], "hot"
+        for prefix in list(self.rec["parts"]):
+            part = self._load_part(prefix)
+            for key in list(part):
+                yield key, part[key], prefix
+
+    def flush(self, seq):
+        """Write dirty evidence under `seq`; False on any failure (the caller
+        must then NOT commit the summary)."""
+        for prefix in sorted(self.parts_dirty):
+            if prefix not in self.rec["parts"]:
+                continue
+            entries = self.parts.get(prefix, {})
+            if entries:
+                if not _atomic_json(self._part_file(prefix), {"seq": seq, "ev": entries}):
+                    return False
+                self.rec["parts"][prefix] = seq
+            else:
+                if self.rec["parts"].get(prefix):
+                    self.obsolete.append(self._part_file(prefix))
+                self.rec["parts"][prefix] = 0
+        if self.grown:
+            hot = self._load_hot()
+            for prefix in self.grown:
+                if self.parts.get(prefix):
+                    hot["f"][prefix] = _filter_build(self.parts[prefix])
+            self.hot_dirty = True
+        if self.hot_dirty:
+            hot = self._load_hot()
+            live = {p: f for p, f in hot["f"].items() if self.rec["parts"].get(p)}
+            if not _atomic_json(_hot_file(self.path, self.sid),
+                                {"seq": seq, "ev": hot["ev"], "order": hot["order"], "f": live}):
+                return False
+            self.rec["hot_seq"] = seq
+        return True
+
+
+def _bump(counts, reason, sign):
+    n = counts.get(reason, 0) + sign
+    if n:
+        counts[reason] = n
+    else:
+        counts.pop(reason, None)
+
+
+def _contrib(entry):
+    """Priced contribution of one request's accepted evidence."""
+    facts = entry["s"]
+    acc = None
+    for src in sorted(facts):
+        acc = _usagelib.merge(acc, facts[src])
+    p = _usagelib.price(acc)
+    return {"o": "p" if "p" in facts else min(facts), "day": _usagelib.event_day(acc),
+            "days": _usagelib.days_seen(acc), "in": p["in"], "out": p["out"], "pd": p["pd"],
+            "r": sorted(p["reasons"])}
+
+
+def _apply(rec, c, sign):
+    """Add (sign=+1) or remove (sign=-1) one contribution from every derived index."""
+    tot = rec["tot"]
+    tot["in"] += sign * c["in"]
+    tot["out"] += sign * c["out"]
+    tot["pd"] += sign * c["pd"]
+    for r in c["r"]:
+        _bump(rec["rc"], r, sign)
+    if c["day"]:
+        day = rec["days"].setdefault(c["day"], {"in": 0, "out": 0, "pd": 0, "rc": {}})
+        day["in"] += sign * c["in"]
+        day["out"] += sign * c["out"]
+        day["pd"] += sign * c["pd"]
+        for r in c["r"]:
+            _bump(day["rc"], r, sign)
+        if len(c["days"]) > 1:
+            for d in c["days"]:
+                other = rec["days"].setdefault(d, {"in": 0, "out": 0, "pd": 0, "rc": {}})
+                _bump(other["rc"], "conflicting_event_day", sign)
+        for d in set(c["days"]) | {c["day"]}:
+            b = rec["days"].get(d)
+            if b is not None and not (b["in"] or b["out"] or b["pd"] or b["rc"]):
+                del rec["days"][d]
+    else:
+        rec["unk_time"] += sign
+    src = rec["src"].get(c["o"])
+    if src is not None:
+        src["tok"][0] += sign * c["in"]
+        src["tok"][1] += sign * c["out"]
+        src["pd"] += sign * c["pd"]
+
+
+def _burn_touch(rec, key, old, new):
+    """Parent-only burn (spec AC-24): one sample per parent-owned request, in
+    order of first acceptance, updated as later snapshots grow it."""
+    if new is None or new["o"] != "p":
+        return
+    tag = _ident_hash(key)[:12]
+    value = new["in"] + new["out"]
+    for item in rec["burn"]:
+        if item[0] == tag:
+            item[1] = value
+            return
+    if old is None or old["o"] != "p":
+        rec["burn"].append([tag, value])
+        if len(rec["burn"]) > BURN_RING:
+            rec["burn"] = rec["burn"][-BURN_RING:]
+
+
+def _find_by_mid(store, mid_key):
+    """(rid key, entry, location) of the request whose stored message id is
+    `mid_key`. A full evidence walk: it runs only for a message-ID-only record
+    whose alias is not yet known, which the observed corpus never produced for
+    billable usage (spec observation 5)."""
+    for key, entry, where in list(store.all_locations()):
+        if entry.get("m") == mid_key and "s" in entry:
+            return key, entry, where
+    return None, None, None
+
+
+def _ingest(store, rec, src, key, alias, fact):
+    """Merge one source's fact into its request's evidence and move the derived
+    indices by exactly (new contribution - old contribution).
+
+    Identity is `rid:` when a request id exists. The record's message id is kept
+    inside that entry (`m`), so a message-ID-only representation of the same
+    request resolves to it in either arrival order without an eager alias entry
+    per request (spec D-5)."""
+    entry, where = store.get(key)
+    if entry is not None and "a" in entry:     # message-ID-only record of an aliased request
+        key = entry["a"]
+        entry, where = store.get(key)
+    elif entry is None and key.startswith("mid:"):
+        found, fentry, fwhere = _find_by_mid(store, key)
+        if found is not None:
+            store.put(key, {"a": found}, "hot")        # remember: no second walk
+            key, entry, where = found, fentry, fwhere
+    old = _contrib(entry) if entry is not None and entry.get("s") else None
+    if entry is None:
+        entry, where = {"s": {}}, None
+    folded = False
+    if alias and rec.get("mid_only", 0) > 0:
+        aentry, awhere = store.get(alias)
+        if aentry is not None and aentry.get("s"):
+            _apply(rec, _contrib(aentry), -1)          # earlier mid-only evidence joins
+            for s2, f2 in aentry["s"].items():
+                entry["s"][s2] = _usagelib.merge(entry["s"].get(s2), f2)
+            rec["mid_only"] -= 1
+            store.put(alias, {"a": key}, awhere)
+            folded = True
+    if alias and entry.get("m") != alias:
+        entry["m"] = alias
+        folded = folded or old is not None
+    prev = entry["s"].get(src)
+    merged = _usagelib.merge(prev, fact)
+    if not folded and old is not None and merged == prev:
+        return False
+    entry["s"][src] = merged
+    if old is None and not folded and key.startswith("mid:"):
+        rec["mid_only"] = rec.get("mid_only", 0) + 1
+    new = _contrib(entry)
+    if old is not None:
+        _apply(rec, old, -1)
+    _apply(rec, new, +1)
+    _burn_touch(rec, key, old, new)
+    store.put(key, entry, where)
+    return True
+
+
+def _drop_source(store, rec, src_id):
+    """Remove every trace of one source generation (replacement/truncation).
+    A full evidence walk — permitted only for this rebuild case (spec D-21)."""
+    for key, entry, where in list(store.all_locations()):
+        if "s" not in entry or src_id not in entry["s"]:
+            continue
+        _apply(rec, _contrib(entry), -1)
+        del entry["s"][src_id]
+        if entry["s"]:
+            new = _contrib(entry)
+            _apply(rec, new, +1)
+            store.put(key, entry, where)
+        else:
+            store.delete(key, where)
+            if key.startswith("mid:"):
+                rec["mid_only"] = max(0, rec.get("mid_only", 0) - 1)
+    if src_id == "p":
+        rec["burn"] = []
+
+
+def _reprice(store, rec):
+    """Recompute every derived index from evidence (registry version change)."""
+    rec["tot"] = {"in": 0, "out": 0, "pd": 0}
+    rec["rc"], rec["days"], rec["unk_time"] = {}, {}, 0
+    for s in rec["src"].values():
+        s["tok"], s["pd"] = [0, 0], 0
+    for _key, entry, _where in store.all_locations():
+        if "s" in entry:
+            _apply(rec, _contrib(entry), +1)
+    rec["reg"] = _usagelib.REGISTRY_VERSION
+
+
+# --------------------------------------------------------------------------- scanning
+def _stat_key(st):
+    return [st.st_size, st.st_mtime_ns, getattr(st, "st_ino", 0) or 0]
+
+
+def _digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def _new_source(kind, locator):
+    return {"k": kind, "path": locator, "off": 0, "stat": None, "size": 0, "fp": None,
+            "seen": None, "skip": None, "life": "live", "label": None, "label_done": kind == "p",
+            "models": [], "tok": [0, 0], "pd": 0, "mt": 0, "unp": 0, "unpp": [], "mal": 0,
+            "ovr": 0}
+
+
+def _reset_source(s):
+    keep = {k: s[k] for k in ("k", "path")}
+    s.clear()
+    s.update(_new_source(keep["k"], keep["path"]))
+
+
+def _verify(f, s, st_key):
+    """True when the stored consumed region is still this file's content."""
+    off = s["off"]
+    if off == 0 or s["fp"] is None:
+        return True
+    size = st_key[0]
+    if size < off:
+        return False
+    old = s.get("seen") or [0, 0, 0]
+    head_len, head, tail = s["fp"]
+    grew_in_place = old[2] == st_key[2] and size > old[0]
+    if not grew_in_place:
+        f.seek(0)
+        if _digest(f.read(head_len)) != head:
+            return False
+    start = max(0, off - FP_WINDOW)
+    f.seek(start)
+    return _digest(f.read(off - start)) == tail
+
+
+class _Scan:
+    """Result of scanning one source within a render's remaining budget."""
+
+    def __init__(self):
+        self.facts, self.bytes, self.records = [], 0, 0
+        self.unp, self.unpp, self.mal, self.ovr = 0, [], 0, 0
+        self.label, self.models, self.t0 = None, [], None
+        self.stop = "budget"
+
+
+def _scan(s, f, byte_budget, record_budget, sid_kind):
+    """Consume complete records from s["off"] of the open file `f` within the
+    budgets. Never advances past bytes it did not consume; an oversized line is
+    passed deterministically across renders via the persisted `skip` line start."""
+    out = _Scan()
+    pos = s["off"]
+    consumed_tail = b""
+    f.seek(pos)
+    while out.bytes < byte_budget and out.records < record_budget:
+        if s["skip"] is not None:
+            line_start = s["skip"]
+            line_tail = b""
+            done = False
+            while out.bytes < byte_budget:
+                chunk = f.read(min(65536, byte_budget - out.bytes))
+                if not chunk:
+                    break
+                out.bytes += len(chunk)
+                nl = chunk.find(b"\n")
+                if nl < 0:
+                    pos += len(chunk)
+                    line_tail = (line_tail + chunk)[-_usagelib.TAIL_WINDOW:]
+                    continue
+                pos += nl + 1
+                line_tail = (line_tail + chunk[:nl + 1])[-_usagelib.TAIL_WINDOW:]
+                done = True
+                break
+            if not done:
+                s["off"] = pos
+                out.stop = "skip"
+                break
+            want = min(_usagelib.TAIL_WINDOW, pos - line_start)
+            if len(line_tail) < want:
+                f.seek(pos - want)
+                line_tail = f.read(want)
+                out.bytes += want
+            if _usagelib.usage_bearing(line_tail):
+                out.ovr += 1
+            s["skip"] = None
+            s["off"] = pos
+            out.records += 1
+            consumed_tail = line_tail[-FP_WINDOW:]
+            f.seek(pos)
+            continue
+        remaining = byte_budget - out.bytes
+        limit = min(MAX_RECORD_BYTES, remaining) + 1
+        line = f.readline(limit)
+        out.bytes += len(line)
+        if not line:
+            out.stop = "eof"
+            break
+        if line.endswith(b"\n"):
+            pos += len(line)
+            out.records += 1
+            consumed_tail = (consumed_tail + line)[-FP_WINDOW:]
+            _consume(line, pos - len(line), out, s, sid_kind)
+            s["off"] = pos
+            continue
+        if len(line) < limit:
+            out.stop = "partial"           # writer-flushed partial line: wait
+            break
+        if limit - 1 >= MAX_RECORD_BYTES:
+            s["skip"] = pos                # oversized: pass it without decoding
+            pos += len(line)
+            s["off"] = pos
+            continue
+        break                              # fits the ceiling, not this render's budget
+    # Fingerprint the consumed region for replacement detection (spec D-15).
+    if s["off"]:
+        head_len = min(FP_WINDOW, s["off"])
+        if s["fp"] is None or s["fp"][0] < head_len:
+            f.seek(0)
+            head = _digest(f.read(head_len))
+        else:
+            head_len, head = s["fp"][0], s["fp"][1]
+        want = min(FP_WINDOW, s["off"])
+        if len(consumed_tail) < want:
+            f.seek(s["off"] - want)
+            consumed_tail = f.read(want)
+        s["fp"] = [head_len, head, _digest(consumed_tail[-want:])]
+    return out
+
+
+def _consume(line, start, out, s, kind):
+    if not s["label_done"] and (b'"role":"user"' in line or b'"role": "user"' in line):
+        try:
+            o = json.loads(line)
+        except ValueError:
+            o = None
+        msg = o.get("message") if isinstance(o, dict) else None
+        if isinstance(msg, dict) and msg.get("role") == "user":
+            s["label_done"] = True
+            if _sub_label is not None:
+                label = safe(_sub_label, msg.get("content"))
+                s["label"] = label or None
+    if not _usagelib.usage_bearing(line):
+        return
+    try:
+        o = json.loads(line)
+    except ValueError:
+        out.mal += 1
+        return
+    n = _usagelib.normalize(o, _local_day)
+    if n["kind"] == "ignore":
+        return
+    if n["kind"] == "malformed":
+        out.mal += 1
+        return
+    if n["id"] is None:
+        out.unp += 1
+        out.unpp.append(start)
+        return
+    out.facts.append((n["id"], n["alias"], n["fact"]))
+    if kind == "p":
+        t = n["fact"]["t"]
+        if t is not None and (out.t0 is None or t < out.t0):
+            out.t0 = t
+    else:
+        model = o["message"].get("model")
+        if isinstance(model, str) and model.strip() and model not in out.models:
+            out.models.append(model.strip())
+
+
+# --------------------------------------------------------------------------- one render
+def _children_dir(tx):
+    return os.path.join(os.path.dirname(tx), os.path.splitext(os.path.basename(tx))[0],
+                        "subagents")
+
+
+def _discover(rec, tx):
+    """{source id: (path, stat key, mtime)} for the parent and up to
+    DISCOVERY_BOUND children, plus whether listing failed / hit the bound."""
+    found, failed, bounded = {}, False, False
+    try:
+        st = os.stat(tx)
+        found["p"] = (tx, _stat_key(st), st.st_mtime)
+    except OSError:
+        pass
+    sub = _children_dir(tx)
+    count = 0
+    try:
+        with os.scandir(sub) as it:
+            for entry in it:
+                if not entry.name.endswith(".jsonl"):
+                    continue
+                if count >= DISCOVERY_BOUND:
+                    bounded = True
+                    break
+                count += 1
+                try:
+                    st = entry.stat()
+                except OSError:
+                    continue
+                found["c:" + entry.name] = (entry.path, _stat_key(st), st.st_mtime)
+    except FileNotFoundError:
+        pass
+    except OSError:
+        failed = True
+    return found, failed, bounded
+
+
+def _needs_work(s, stat_key):
+    """A source needs scanning when it changed since it was last caught up. A
+    source with deferred work (budget backlog, or an oversized line in progress)
+    never records a caught-up stat, so it always compares unequal."""
+    return s["stat"] != stat_key
+
+
+def _account(store, rec, tx):
+    """Scan changed sources within budgets and fold them into the summary."""
+    flags = {"list_failed": False, "bound": False, "catching": False}
+    if rec["reg"] != _usagelib.REGISTRY_VERSION:
+        _reprice(store, rec)
+    found, flags["list_failed"], flags["bound"] = _discover(rec, tx)
+    for sid_, (path, st_key, mtime) in found.items():
+        if sid_ not in rec["src"]:
+            rec["src"][sid_] = _new_source("p" if sid_ == "p" else "c",
+                                           path if sid_ == "p" else sid_[2:])
+        s = rec["src"][sid_]
+        s["life"] = "live"
+        s["mt"] = mtime
+    if not flags["list_failed"]:
+        for sid_, s in rec["src"].items():
+            if sid_ not in found:
+                s["life"] = "gone"
+    elif "p" not in found and "p" in rec["src"]:
+        rec["src"]["p"]["life"] = "gone"
+    work = [k for k, (_p, st_key, _m) in found.items() if _needs_work(rec["src"][k], st_key)]
+    children = [k for k in work if k != "p"]
+    ordered = _order_sources(children)
+    if rec.get("cursor") and ordered:
+        after = [k for k in ordered if k > rec["cursor"]]
+        ordered = after + [k for k in ordered if k <= rec["cursor"]] if after else ordered
+    plan = (["p"] if "p" in work else []) + ordered
+    bytes_left, records_left = ACCT_BYTE_BUDGET, ACCT_RECORD_BUDGET
+    opened = 0
+    for sid_ in plan:
+        if opened >= ACCT_SOURCE_BUDGET or bytes_left <= 0 or records_left <= 0:
+            break
+        path, st_key, _m = found[sid_]
+        s = rec["src"][sid_]
+        share_b, share_r = bytes_left, records_left
+        if sid_ == "p" and children:
+            share_b, share_r = max(1, bytes_left // 2), max(1, records_left // 2)
+        opened += 1
+        try:
+            with open(path, "rb") as f:          # one handle: verify, then scan
+                if not _verify(f, s, st_key):
+                    _drop_source(store, rec, sid_)
+                    _reset_source(s)
+                result = _scan(s, f, share_b, share_r, s["k"])
+        except OSError:
+            continue
+        bytes_left -= result.bytes
+        records_left -= result.records
+        for key, alias, fact in result.facts:
+            _ingest(store, rec, sid_, key, alias, fact)
+            store.evict()
+        s["unp"] += result.unp
+        s["unpp"] = (s["unpp"] + result.unpp)[-UNPROVEN_KEEP:]
+        s["mal"] += result.mal
+        s["ovr"] += result.ovr
+        for m in result.models:
+            if m not in s["models"] and len(s["models"]) < 3:
+                s["models"].append(m)
+        if result.t0 is not None and (rec.get("t0") is None or result.t0 < rec["t0"]):
+            rec["t0"] = result.t0
+        s["size"] = st_key[0]
+        s["seen"] = st_key
+        caught_up = s["skip"] is None and (result.stop in ("eof", "partial")
+                                           or s["off"] >= st_key[0])
+        s["stat"] = st_key if caught_up else None
+        if sid_ != "p":
+            rec["cursor"] = sid_
+    for sid_, (_p, st_key, _m) in found.items():
+        if _needs_work(rec["src"][sid_], st_key):
+            flags["catching"] = True
+    return flags
+
+
+def _session_reasons(rec, flags):
+    reasons = set(rec["rc"])
+    srcs = rec["src"].values()
+    if any(s["unp"] for s in srcs):
+        reasons.add("unproven_identity")
+    if any(s["mal"] for s in srcs):
+        reasons.add("malformed_record")
+    if any(s["ovr"] for s in srcs):
+        reasons.add("oversized_record")
+    if flags.get("bound"):
+        reasons.add("discovery_bound")
+    if any(s["life"] == "gone" and (s["stat"] is None or s["skip"] is not None)
+           for s in srcs):
+        reasons.add("source_vanished_with_backlog")
+    return reasons
+
+
+def _session_state(rec, flags, reasons, has_parent):
+    if not has_parent and not rec["src"]:
+        return "unavailable"
+    if flags.get("catching") or flags.get("list_failed"):
+        return "catching_up"
+    return "partial" if reasons else "complete"
+
+
+def _update_host(rec, data):
+    host = rec["host"]
+    v = get(data, "cost", "total_cost_usd") if isinstance(data, dict) else None
+    valid = (isinstance(v, (int, float)) and not isinstance(v, bool)
+             and math.isfinite(v) and v >= 0)
+    if valid:
+        v = float(v)
+        host["latest"] = v
+        host["max"] = v if host["max"] is None else max(host["max"], v)
+        host["anom"] = v < host["max"]
+        host["missing"] = False
+        host["seen"] = True
+    elif host["seen"]:
+        host["missing"] = True
+
+
+def _usd(pd):
+    return pd / 1e12
+
+
+def _scope(totals, state, reasons, stale):
+    return {"in": float(totals["in"]), "out": float(totals["out"]), "pd": int(totals["pd"]),
+            "cost": _usd(totals["pd"]), "state": state, "reasons": sorted(reasons),
+            "stale": stale}
+
+
+def _unavailable(stale=False):
+    out = _scope({"in": 0, "out": 0, "pd": 0}, "unavailable", (), stale)
+    out.update(host=None, host_delta=None)
+    return out
+
+
+def _session_output(rec, stale):
+    cov = rec.get("cov") or {}
+    out = _scope(rec["tot"], cov.get("state", "unavailable"), cov.get("reasons", []), stale)
+    out["host"] = rec["host"].get("max")
+    out["host_delta"] = None
+    if out["state"] == "complete" and out["host"] is not None:
+        out["host_delta"] = out["host"] - out["cost"]
+    return out
+
+
+def _today_output(path, sid, rec, stale, prune):
+    """Today across every live session's COMPACT summary (never its evidence)."""
+    today = _today()
+    now = time.time()
+    totals = {"in": 0, "out": 0, "pd": 0}
+    reasons, catching, any_data = set(), False, False
+    own_key = _session_key(sid)
+    summaries = []
+    if rec is not None:
+        summaries.append(rec)
     directory = _session_dir(path)
     try:
         names = os.listdir(directory)
     except OSError:
         names = []
+    acct_keys = {n[:-10] for n in names if n.endswith(".acct.json")}
     for name in names:
-        if not name.endswith(".json") or name.endswith(".start.json"):
-            continue
-        enumerated = os.path.join(directory, name)
-        item = _read_json(enumerated)
-        if not isinstance(item, dict) or not isinstance(item.get("rec"), dict):
+        full = os.path.join(directory, name)
+        if name.endswith(".acct.json"):
+            if name[:-10] == own_key:
+                continue
+            payload = _read_json(full)
+            other = payload.get("rec") if isinstance(payload, dict) else None
+            if not (isinstance(other, dict) and _summary_valid(other, payload.get("sid"))):
+                if prune:
+                    _remove(full)
+                continue
+            if now - num(other.get("last_ts")) > SESSION_TTL:
+                if prune:
+                    _prune_session(path, name[:-10])
+                continue
+            summaries.append(other)
+        elif _LEGACY_SHARD.match(name) and name[:-5] != own_key:
             try:
-                os.remove(enumerated)
+                mtime = os.stat(full).st_mtime
             except OSError:
-                pass
-            continue
-        sid = str(item.get("sid"))
-        if os.path.basename(_session_file(path, sid)) != name:
-            try:
-                os.remove(enumerated)
-            except OSError:
-                pass
-            continue
-        rec = item["rec"]
-        if time.time() - num(rec.get("last_ts")) > SESSION_TTL:
-            for stale in (enumerated, _start_file(path, sid)):
-                try:
-                    os.remove(stale)
-                except OSError:
-                    pass
-            sessions.pop(sid, None)
-            continue
-        sessions[sid] = rec
-    for name in names:
-        if not name.endswith(".start.json"):
-            continue
-        enumerated = os.path.join(directory, name)
-        item = _read_json(enumerated)
-        if not isinstance(item, dict):
-            try:
-                os.remove(enumerated)
-            except OSError:
-                pass
-            continue
-        sid = str(item.get("sid"))
-        start = num(item.get("sess_start"), None)
-        valid_name = os.path.basename(_start_file(path, sid)) == name
-        if valid_name and sid in sessions and start is not None:
-            sessions[sid]["sess_start"] = float(start)
-        else:
-            try:
-                os.remove(enumerated)
-            except OSError:
-                pass
-    now = time.time()
-    sessions = {sid: rec for sid, rec in sessions.items()
-                if isinstance(rec, dict)
-                and now - num(rec.get("last_ts")) <= SESSION_TTL}
-    return sessions, legacy
+                continue
+            if now - mtime > SESSION_TTL:
+                if prune:
+                    _remove(full)
+                    if name[:-5] not in acct_keys:
+                        _remove(os.path.join(directory, name[:-5] + ".start.json"))
+            elif now - mtime <= 86400 and name[:-5] not in acct_keys:
+                reasons.add("unmigrated_session")
+    for s in summaries:
+        bucket = s["days"].get(today)
+        cov = s.get("cov") or {}
+        active = bucket is not None or s.get("last_day") == today
+        if bucket:
+            any_data = True
+            totals["in"] += bucket["in"]
+            totals["out"] += bucket["out"]
+            totals["pd"] += bucket["pd"]
+            reasons.update(bucket["rc"])
+        if active:
+            if s.get("unk_time"):
+                reasons.add("unknown_event_time")
+            reasons.update(cov.get("src_reasons", []))
+            if cov.get("state") == "catching_up":
+                catching = True
+    if catching:
+        state = "catching_up"
+    elif reasons:
+        state = "partial"
+    elif rec is None and not any_data:
+        state = "unavailable"
+    else:
+        state = "complete"
+    return _scope(totals, state, reasons, stale)
 
 
-def _load_sessions(path):
-    """The merged live-session map only (see _merge_sessions for the baseline)."""
-    return _merge_sessions(path)[0]
+def _prune_session(path, key):
+    directory = _session_dir(path)
+    for suffix in (".acct.json", ".hot.json", ".start.json", ".json"):
+        _remove(os.path.join(directory, key + suffix))
+    shutil.rmtree(os.path.join(directory, key + ".ev"), ignore_errors=True)
 
 
-def _write_snapshot(path, sessions):
-    return _atomic_json(path, {"sessions": sessions})
+def _load_summary(path, sid):
+    payload = _read_json(_acct_file(path, sid))
+    if (isinstance(payload, dict) and payload.get("schema") == ACCT_SCHEMA
+            and payload.get("sid") == sid and isinstance(payload.get("rec"), dict)
+            and _summary_valid(payload["rec"], sid)):
+        return payload["rec"]
+    return None
 
 
-def _msg_date(ts):
-    """Local calendar date (YYYY-MM-DD) of a transcript message's timestamp, so
-    tokens are attributed to the day they were actually burned (a session that
-    crosses midnight splits correctly across days)."""
-    e = parse_iso(ts) if isinstance(ts, str) else None
-    if e is None:
-        return datetime.now().strftime("%Y-%m-%d")
-    try:
-        return datetime.fromtimestamp(e).strftime("%Y-%m-%d")
-    except (OSError, OverflowError, ValueError):
-        return datetime.now().strftime("%Y-%m-%d")
+def _seed_summary(path, sid, now, keep=None):
+    """A fresh summary; carries session metadata over from a discarded v2 summary
+    (`keep`) or, once, from the legacy v1 shard — never its cost (spec D-16)."""
+    rec = _fresh_summary(sid, now)
+    if keep:
+        for k in ("first_ts", "sess_start", "t0"):
+            if keep.get(k) is not None:
+                rec[k] = keep[k]
+        if isinstance(keep.get("host"), dict):
+            rec["host"] = keep["host"]
+        return rec
+    legacy = _read_json(_session_file(path, sid))
+    old = legacy.get("rec") if isinstance(legacy, dict) else None
+    if isinstance(old, dict):
+        first = num(old.get("first_ts"), None)
+        if first is not None and math.isfinite(first) and 0 < first <= now:
+            rec["first_ts"] = first
+        hc = old.get("host_cost")
+        if isinstance(hc, (int, float)) and not isinstance(hc, bool) and math.isfinite(hc) and hc > 0:
+            rec["host"].update(max=float(hc), seen=True)
+    return rec
 
 
-def _tx_accumulate(rec, tx_path):
-    """Tail the session transcript JSONL from the stored byte offset, UPSERTING each
-    assistant message's usage into a per-requestId dedup map (the transcript logs a
-    single API call several times via streaming/replay; counting each request once
-    is what keeps tokens AND cost honest) and pushing a per-call burn sample. Append-
-    only -> O(new lines)/render. Returns True if the offset advanced."""
-    if not tx_path or not os.path.isfile(tx_path):
-        return False
-    try:
-        size = os.path.getsize(tx_path)
-    except OSError:
-        return False
-    if not isinstance(rec.get("reqs"), dict):
-        rec["reqs"] = {}          # fresh record, or migrating from an earlier schema
-        rec["tx_off"] = 0
-        rec.pop("days", None)
-        rec.pop("tok", None)
-    if not isinstance(rec.get("burn"), list):
-        rec["burn"] = []
-    off = int(num(rec.get("tx_off")))
-    # New transcript for this session, or truncation/rotation -> reparse from start.
-    if rec.get("tx_path") != tx_path or off > size:
-        off, rec["reqs"], rec["burn"], rec["tx_path"] = 0, {}, [], tx_path
-    if off >= size:
-        return False
-    try:
-        with open(tx_path, "rb") as f:
-            f.seek(off)
-            chunk = f.read()
-    except OSError:
-        return False
-    new_off = size
-    # A writer may flush mid-line; keep a trailing partial line for next render.
-    if chunk and not chunk.endswith(b"\n"):
-        cut = chunk.rfind(b"\n")
-        if cut < 0:
-            return False                 # no complete line yet
-        new_off = off + cut + 1
-        chunk = chunk[:cut]
-    parsed = 0
-    for raw in chunk.split(b"\n"):
-        if not raw.strip():
-            continue
-        parsed += 1
-        if parsed > TX_MAX_NEW_LINES:
-            break
-        try:
-            o = json.loads(raw.decode("utf-8", "replace"))
-        except ValueError:
-            continue
-        if not isinstance(o, dict) or o.get("type") != "assistant":
-            continue
-        m = o.get("message")
-        u = m.get("usage") if isinstance(m, dict) else None
-        if not isinstance(u, dict):
-            continue
-        model = m.get("model") or "?"
-        i = num(u.get("input_tokens"))
-        cr = num(u.get("cache_read_input_tokens"))
-        cc = u.get("cache_creation")
-        if isinstance(cc, dict):
-            c5 = num(cc.get("ephemeral_5m_input_tokens"))
-            c1 = num(cc.get("ephemeral_1h_input_tokens"))
-        else:
-            c5 = c1 = 0.0
-        cw = num(u.get("cache_creation_input_tokens"))
-        if cw and not (c5 or c1):        # 5m/1h split absent -> treat all as 5m
-            c5 = cw
-        out = num(u.get("output_tokens"))
-        ts = o.get("timestamp")
-        e = parse_iso(ts) if isinstance(ts, str) else None
-        if e is not None:                       # earliest message ts = true session start
-            t0 = rec.get("t0")
-            if not isinstance(t0, (int, float)) or e < t0:
-                rec["t0"] = e
-        # Dedupe by requestId: the transcript logs each API call multiple times
-        # (streaming/replay), so UPSERT each request's final usage exactly once
-        # instead of summing every line, which 2-3x over-counts BOTH tokens and cost.
-        key = o.get("requestId") or m.get("id") or f"_p{int(off) + parsed}"
-        is_new = key not in rec["reqs"]
-        rec["reqs"][key] = {"d": _msg_date(ts), "m": model,
-                            "in": i, "cr": cr, "c5": c5, "c1": c1, "out": out}
-        if is_new:
-            rec["burn"].append(i + c5 + c1 + out)   # fresh input + output (cache reads excluded)
-    if len(rec["burn"]) > BURN_RING:
-        rec["burn"] = rec["burn"][-BURN_RING:]
-    rec["tx_off"] = new_off
-    return True
-
-
-def _agg_reqs(reqs, only=None):
-    """Aggregate the per-request dedup map into {model: tokens}; if `only` is a
-    date, include just that local-calendar-day's requests (for the Today totals)."""
-    out = {}
-    for r in (reqs or {}).values():
-        if not isinstance(r, dict):
-            continue
-        if only is not None and r.get("d") != only:
-            continue
-        o = out.setdefault(r.get("m") or "?",
-                           {"in": 0.0, "cr": 0.0, "c5": 0.0, "c1": 0.0, "out": 0.0})
-        for k in o:
-            o[k] += num(r.get(k))
-    return out
-
-
-def _totals(models):
-    """Display totals + API-equivalent cost for a model map. The displayed "in" is
-    FRESH input (uncached input + cache writes) — cache READS are excluded from the
-    token count (they re-serve already-sent context every turn and would inflate it
-    30-100x), but they ARE still priced into the cost via api_cost()."""
-    tin = tout = 0.0
-    for t in (models or {}).values():
-        if isinstance(t, dict):
-            tin += num(t.get("in")) + num(t.get("c5")) + num(t.get("c1"))
-            tout += num(t.get("out"))
-    return {"in": tin, "out": tout, "cost": api_cost(models)}
+def _discard_evidence(path, sid):
+    _remove(_hot_file(path, sid))
+    shutil.rmtree(_ev_dir(path, sid), ignore_errors=True)
 
 
 def ledger_update(data, sid):
-    blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
+    """One render's accounting: returns (summary, session, today). Session/today
+    carry in/out tokens, exact picodollars (`pd`), display `cost`, a coverage
+    `state` (complete | catching_up | partial | unavailable), `reasons`, and
+    `stale` (True when this render could not take the lock and is showing the
+    last committed snapshot instead — never fabricated zeros)."""
     if not sid:
-        return {}, dict(blank), dict(blank)
+        return {}, _unavailable(), _unavailable()
     path = ledger_path()
-    lock = _acquire_lock(path)
+    lock = _acquire_lock(path, UI_LOCK_WAIT)
     if lock is None:
-        return {}, dict(blank), dict(blank)
+        return _stale_view(path, sid)
     try:
         return _ledger_update_unlocked(data, sid, path)
     finally:
         _release_lock(lock)
 
 
+def _stale_view(path, sid):
+    rec = _load_summary(path, sid)
+    if rec is None:
+        return {}, _unavailable(stale=True), _unavailable(stale=True)
+    return rec, _session_output(rec, True), _today_output(path, sid, rec, True, prune=False)
+
+
 def _ledger_update_unlocked(data, sid, path):
-    """Read-modify-write the per-session ledger. Accumulate the session's TRUE token
-    COUNTS by tailing its transcript (deduped per requestId), take the COST from the
-    host's cost.total_cost_usd, and return (session record, this-session totals,
-    today's totals across sessions). Best-effort; safe blanks on any failure.
-
-    The statusline re-renders in a fresh process on every refresh, so this is the
-    product's hottest filesystem path: each write below is skipped unless it would
-    actually change bytes on disk (#392). The on-disk FORMAT is unchanged — the
-    per-session shard and the whole-ledger compatibility snapshot are both still
-    written exactly as before, just no longer unconditionally."""
-    blank = {"in": 0.0, "out": 0.0, "cost": 0.0}
     now = time.time()
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    sessions, legacy = _merge_sessions(path)
-
-    rec = sessions.get(sid)
-    dirty = not isinstance(rec, dict)
-    if dirty:
-        rec = {}
-    stored_ts = num(rec.get("last_ts"))
-    if "first_ts" not in rec:
-        rec["first_ts"] = now
-        dirty = True
-    if rec.get("last_day") != today:
-        rec["last_day"] = today
-        dirty = True
-    host_cost = num(get(data, "cost", "total_cost_usd"))
-    if rec.get("host_cost") != host_cost:
-        rec["host_cost"] = host_cost
-        dirty = True
-
     tx = data.get("transcript_path") if isinstance(data, dict) else None
-    if safe(_tx_accumulate, rec, tx):
-        dirty = True
-    sess = _totals(_agg_reqs(rec.get("reqs")))             # tokens: this session, all requests (deduped)
-    # Cost = Claude Code's authoritative cost.total_cost_usd — it already prices every
-    # call (including subagents in separate transcripts) exactly as your bill does, so
-    # it is far more accurate than recomputing tokens*price. api_cost is fallback only.
-    if rec["host_cost"] > 0:
-        sess["cost"] = rec["host_cost"]
-    bucket = dict(_totals(_agg_reqs(rec.get("reqs"), only=today)), date=today)
-    if rec.get("today") != bucket:
-        rec["today"] = bucket
-        dirty = True
-    if "tot" in rec:                        # retire the batch-1 whole-session cache key
-        del rec["tot"]
-        dirty = True
-    # Heartbeat: `last_ts` is pure liveness for the TTL sweep, so it rides along
-    # with a write we are already making rather than forcing one of its own.
-    if dirty or now - stored_ts >= LEDGER_HEARTBEAT:
+    tx = tx if isinstance(tx, str) and tx else None
+    rec = _load_summary(path, sid)
+    on_disk = json.dumps(rec, sort_keys=True) if rec is not None else None
+    if rec is None:
+        stale_disk = os.path.exists(_acct_file(path, sid))
+        _discard_evidence(path, sid)
+        if stale_disk:
+            _remove(_acct_file(path, sid))
+        rec = _seed_summary(path, sid, now)
+    if "sess_start" not in rec:
+        start = _read_json(_start_file(path, sid))
+        value = num(start.get("sess_start"), None) if isinstance(start, dict) else None
+        if value is not None and math.isfinite(value):
+            rec["sess_start"] = float(value)
+    if tx and rec.get("ppath") not in (None, tx):
+        _discard_evidence(path, sid)
+        rec = _seed_summary(path, sid, now, keep=rec)
+    _update_host(rec, data)
+    flags = {"catching": False, "list_failed": False, "bound": False}
+    store = _Store(path, sid, rec)
+    if tx:
+        rec["ppath"] = tx
+        try:
+            flags = _account(store, rec, tx)
+        except _Inconsistent:
+            _discard_evidence(path, sid)
+            rec = _seed_summary(path, sid, now, keep=rec)
+            rec["ppath"] = tx
+            store = _Store(path, sid, rec)
+            flags = _account(store, rec, tx)
+    reasons = _session_reasons(rec, flags)
+    state = _session_state(rec, flags, reasons, tx is not None)
+    src_reasons = sorted(r for r in reasons if r not in rec["rc"])
+    rec["cov"] = {"state": state, "reasons": sorted(reasons), "src_reasons": src_reasons}
+    if rec["days"].get(_today()) is not None or rec.get("last_day") is None:
+        rec["last_day"] = _today()
+    changed = on_disk is None or json.dumps(rec, sort_keys=True) != on_disk
+    if changed or now - num(rec.get("last_ts")) >= LEDGER_HEARTBEAT:
         rec["last_ts"] = now
-        dirty = True
-    sessions[sid] = rec
-
-    for k in list(sessions.keys()):
-        v = sessions[k]
-        if not isinstance(v, dict) or now - num(v.get("last_ts")) > SESSION_TTL:
-            del sessions[k]
-    # Each session owns one independently replaced shard. A writer for another
-    # session therefore cannot replace this record with an older snapshot. The
-    # merged map above already reflects every shard read under this same lock, so
-    # there is nothing a re-read could learn — no concurrent writer can have run.
-    if dirty:
-        _atomic_json(_session_file(path, sid), {"sid": sid, "rec": rec})
-    if sessions != legacy:
-        # Compatibility/readability cache; shards are truth. Rewritten only when
-        # it has drifted from the merged truth — which still covers TTL pruning,
-        # a new session, and a legacy-only record that a shard has superseded.
-        _write_snapshot(path, sessions)
-
-    # Today = each session's TODAY bucket (tokens whose transcript timestamp falls
-    # on the current local day), summed across sessions — not whole-session totals.
-    day = dict(blank)
-    for v in sessions.values():
-        if not isinstance(v, dict):
-            continue
-        t = v.get("today") if isinstance(v.get("today"), dict) else None
-        if t and t.get("date") == today:            # tokens: true per-calendar-day buckets
-            day["in"] += num(t.get("in"))
-            day["out"] += num(t.get("out"))
-        if v.get("last_day") == today:              # cost: host per-session total, day-attributed
-            day["cost"] += num(v.get("host_cost"))
-    return rec, sess, day
+        seq = rec["seq"] + 1
+        if store.flush(seq):
+            rec["seq"] = seq
+            if _atomic_json(_acct_file(path, sid), {"schema": ACCT_SCHEMA, "sid": sid,
+                                                    "seq": seq, "rec": rec}):
+                for obsolete in store.obsolete:
+                    _remove(obsolete)
+    return rec, _session_output(rec, False), _today_output(path, sid, rec, False, prune=True)
 
 
 def persist_sess_start(sid, value):
-    """Write a resolved wall-clock session-start epoch into the ledger record for
-    `sid` so later renders read it from the ledger instead of re-scanning the host's
-    session-metadata directory (the statusline fast path). Best-effort and idempotent:
-    a no-op if already stored, and a silent skip on any I/O error — it must never
-    break a render. Returns True iff the ledger was written."""
+    """Write a resolved wall-clock session-start epoch beside the session's ledger
+    summary so later renders read it instead of re-scanning the host's session
+    metadata directory. Best-effort and idempotent; never breaks a render.
+    Returns True iff the start file was written."""
     if not sid or not value:
         return False
     path = ledger_path()
@@ -550,23 +1220,16 @@ def persist_sess_start(sid, value):
 
 
 def _persist_sess_start_unlocked(sid, value, path):
-    sessions, legacy = _merge_sessions(path)
-    rec = sessions.get(sid)
-    if not isinstance(rec, dict):
+    rec = _load_summary(path, sid)
+    if rec is None:
         return False
     if num(rec.get("sess_start"), None) == float(value):
-        return False                     # already cached — nothing to do
-    # Cache metadata has its own file, so it cannot overwrite a concurrently
-    # refreshed token/cost shard for the same session.
-    if not _atomic_json(_start_file(path, sid),
-                        {"sid": sid, "sess_start": float(value)}):
         return False
-    # Applying the value we just persisted is exactly what a re-merge would
-    # produce — the start-file overlay in _merge_sessions — without the reread.
-    rec["sess_start"] = float(value)
-    if sessions != legacy:
-        _write_snapshot(path, sessions)
-    return True
+    current = _read_json(_start_file(path, sid))
+    if isinstance(current, dict) and num(current.get("sess_start"), None) == float(value):
+        return False
+    # Its own file, so it can never overwrite a concurrently refreshed summary.
+    return _atomic_json(_start_file(path, sid), {"sid": sid, "sess_start": float(value)})
 
 
 # --------------------------------------------------------------------------- Pi usage ledger
@@ -1027,9 +1690,13 @@ def _pi_ledger_update_unlocked(path, session_key, scan_start, scan_end, facts):
 
 
 def burn_samples(rec):
-    """Recent per-message token-burn values (most-recent window) for the sparkline —
-    real per-API-call totals accumulated from the transcript, not a time-extrapolated
-    estimate. Returns [] when there is too little data to draw a line. The statusline
-    turns this list into a colored sparkline; this lib stays render-free."""
-    b = [num(x) for x in (rec.get("burn") or []) if isinstance(x, (int, float))]
-    return b[-24:] if len(b) >= 2 else []
+    """Recent per-request token-burn values (most-recent window) for the sparkline:
+    one sample per accepted PARENT request (spec AC-24), not a time-extrapolated
+    estimate. Returns [] when there is too little data to draw a line. The
+    statusline turns this list into a colored sparkline; this lib stays render-free."""
+    out = []
+    for item in (rec.get("burn") or []) if isinstance(rec, dict) else []:
+        v = item[1] if isinstance(item, list) and len(item) == 2 else item
+        if isinstance(v, (int, float)) and not isinstance(v, bool):
+            out.append(float(v))
+    return out[-24:] if len(out) >= 2 else []

@@ -24,6 +24,22 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Preserve explicit gaps and account for retries, changed inputs and actor delivery
   without inventing current evidence or workflow authority.
 
+## [0.14.8] - 2026-09-27
+
+### Fixed
+
+- The statusline's git dirty-state probe no longer takes `.git/index.lock`. It is killed at a
+  100 ms budget, and a plain `git status` killed while rewriting a stale index could leave a
+  stale lock that blocked the next commit (reproduced: 5 of 200 renders at that timing, 0 of 200
+  with the fix).
+
+## [0.14.7] - 2026-09-27
+
+### Changed
+
+- Synchronize the shared hook core with the Claude statusline accounting rewrite (ca 2.23.0).
+  Codex and Pi behavior is unchanged.
+
 ## [0.14.6] - 2026-09-27
 
 ### Fixed

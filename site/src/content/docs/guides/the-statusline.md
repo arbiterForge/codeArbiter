@@ -156,10 +156,33 @@ These render in every Claude Code session, regardless of whether the open repo i
 | 4 | **model** | Model display name and effort level as a colored pill |
 | 3 | **rate limits** | 5-hour and 7-day API usage percentages, with reset countdowns when the host supplies them |
 | 9 | **context** | Context window usage bar, used percentage, and remaining headroom before auto-compaction |
-| 6 | **tokens** | Session and daily in/out token counts, deduplicated by request ID across transcript entries |
-| 7 | **cost** | Cumulative API-equivalent cost from Claude Code's authoritative session total, persisted across sessions in `~/.codearbiter/ledger.json` |
-| 8 | **burn** | Per-message token sparkline built from recent transcript calls |
+| 6 | **tokens** | Session and daily in/out token counts from the session transcript and its subagent transcripts, each request counted once |
+| 7 | **cost** | Session and daily API-equivalent cost reconstructed from those transcripts at list API rates, with a provenance label (see [Reading the cost figure](#reading-the-cost-figure)) |
+| 8 | **burn** | Per-request token sparkline for the parent session's own calls; subagent usage counts toward totals, not burn |
 | not shown | **subagents** | Recent tasks with liveness, selected model, input/output tokens, and age; mixed or missing model metadata is explicit |
+
+### Reading the Cost Figure
+
+The cost is an estimate of what the same tokens would cost at pay-as-you-go list API rates. It is
+not a bill, and it is not what a subscription charges. codeArbiter prices every request it finds in
+the parent transcript and every subagent transcript under it, using rates shipped with the plugin.
+Each request is counted once, even when streaming snapshots or forked subagents repeat it. The
+label tells you how far to trust the number:
+
+| Label | Meaning |
+|-------|---------|
+| `api≈$N` | Complete: every observed request was priced |
+| `api≥$N` | A lower bound. Some usage could not be priced (an unknown model, tool, or price modifier), or a large transcript is still being read. The figure only rises as coverage improves |
+| `api≈?` | No dollar figure codeArbiter can defend: nothing has been reconstructed yet (shown grey), or usage exists but none of it could be priced (shown amber) |
+| `host≈$N` | Session only, when reconstruction is unavailable: Claude Code's own session estimate. It is never mixed with `api` figures and never used for Today |
+| trailing `*` | Stale: that redraw could not take the ledger lock, so it shows the last saved totals |
+
+In a narrow box the words drop and the symbol stays (`≈$N`, `≥$N`, `h≈$N`).
+
+The statusline updates only when Claude Code redraws it, and codeArbiter adds no timer of its own.
+Each redraw reads a bounded amount of new transcript. Work that does not fit is never lost: it
+resumes on the next redraw, and the figure reads `api≥` until it catches up. Per-session accounting
+state lives under `~/.codearbiter/ledger.json.sessions/`.
 
 ### Arbiter Segments
 

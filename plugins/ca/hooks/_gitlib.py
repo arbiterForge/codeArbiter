@@ -99,9 +99,15 @@ def head_branch(root):
 
 
 def git_dirty(root):
-    """Return dirty state, suppressing the marker when Git fails or times out."""
+    """Return dirty state, suppressing the marker when Git fails or times out.
+
+    --no-optional-locks: the probe is killed at DIRTY_CHECK_TIMEOUT_SECONDS, and a
+    plain `git status` opportunistically rewrites a stale index under
+    .git/index.lock; a kill inside that write strands the lock and blocks the
+    user's next commit. A read-only probe must never take it."""
     try:
-        out = subprocess.run([git_executable(), "-C", root, "status", "--porcelain"],
+        out = subprocess.run([git_executable(), "--no-optional-locks", "-C", root,
+                              "status", "--porcelain"],
                              capture_output=True, text=True,
                              timeout=DIRTY_CHECK_TIMEOUT_SECONDS,
                              encoding="utf-8", errors="replace")

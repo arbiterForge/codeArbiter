@@ -31,7 +31,7 @@ granularity only — not a file listing. Kept in sync via `.provenance/code-map.
 
 ## Plugin implementations (four sibling plugins)
 
-- `plugins/ca/` (v2.23.0) — the Claude Code plugin; `.claude-plugin/plugin.json` manifest, `hooks/*.py` (vendored from `core/pysrc`), `skills/`/`commands/`/`agents/`/`generated/` (generated from `core/surface`+`core/hosts.json`)
+- `plugins/ca/` (v2.24.0) — the Claude Code plugin; `.claude-plugin/plugin.json` manifest, `hooks/*.py` (vendored from `core/pysrc`), `skills/`/`commands/`/`agents/`/`generated/` (generated from `core/surface`+`core/hosts.json`)
 - `plugins/ca-codex/` (v0.15.0) — the Codex CLI plugin; `.codex-plugin/plugin.json` manifest; commands render as `skills/ca-codex/SKILL.md`-style dispatch entries (no native slash commands)
 - `plugins/ca-pi/` (v0.16.0, npm-published as `@arbiterforge/ca-pi`) — the Pi governance plugin; `package.json` manifest declares JS `extensions/codearbiter.js` (bundled) plus `skills/`; skills carry a `ca-` name prefix
 - `plugins/ca-sandbox/` (v0.1.6) — infrastructure/testing plugin; Docker-based untrusted-code isolation, ephemeral containers, no persistent `.codearbiter/` inside the container

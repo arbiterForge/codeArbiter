@@ -1,0 +1,471 @@
+{
+  "captured": "2026-09-27T02:24:44",
+  "checkout_rev": "6238881f93302314993ab57bdc2d9f4cde6031c6",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.6",
+  "scenarios": {
+    "p10k_c0": {
+      "first": {
+        "median_ms": 348.66160003002733,
+        "p95_ms": 348.66160003002733,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 12287544,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 1706045,
+          "ledger_replacements": 2,
+          "listdirs": 2,
+          "opens": 6,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 18462230
+        }
+      },
+      "host_only": {
+        "median_ms": 258.79039999563247,
+        "p95_ms": 333.01900001242757,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 8540333,
+          "ledger_bytes_read": 8530220,
+          "ledger_bytes_written": 8530220,
+          "ledger_replacements": 10,
+          "listdirs": 10,
+          "opens": 35,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "median_ms": 269.0572499996051,
+        "p95_ms": 337.8153999801725,
+        "renders": 10,
+        "totals": {
+          "json_decoded_bytes": 17170550,
+          "ledger_bytes_read": 17095000,
+          "ledger_bytes_written": 17102680,
+          "ledger_replacements": 20,
+          "listdirs": 20,
+          "opens": 80,
+          "other_bytes_read": 15100,
+          "transcript_bytes_read": 55410
+        }
+      },
+      "no_change": {
+        "median_ms": 169.58200000226498,
+        "p95_ms": 204.4424000196159,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 25620990,
+          "ledger_bytes_read": 25590660,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 30,
+          "opens": 75,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "median_ms": 179.5997999724932,
+        "p95_ms": 179.5997999724932,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1708066,
+          "ledger_bytes_read": 1706044,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 2,
+          "opens": 5,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 0
+        }
+      }
+    },
+    "p1k_c0": {
+      "first": {
+        "median_ms": 184.5999999786727,
+        "p95_ms": 184.5999999786727,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1838249,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 255283,
+          "ledger_replacements": 2,
+          "listdirs": 2,
+          "opens": 6,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 1839230
+        }
+      },
+      "host_only": {
+        "median_ms": 173.53630001889542,
+        "p95_ms": 181.76399997901171,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 1286512,
+          "ledger_bytes_read": 1276414,
+          "ledger_bytes_written": 1276414,
+          "ledger_replacements": 10,
+          "listdirs": 10,
+          "opens": 35,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 0
+        }
+      },
+      "incremental": {
+        "median_ms": 180.73809999623336,
+        "p95_ms": 213.32030004123226,
+        "renders": 10,
+        "totals": {
+          "json_decoded_bytes": 2662940,
+          "ledger_bytes_read": 2587420,
+          "ledger_bytes_written": 2595104,
+          "ledger_replacements": 20,
+          "listdirs": 20,
+          "opens": 80,
+          "other_bytes_read": 15100,
+          "transcript_bytes_read": 55410
+        }
+      },
+      "no_change": {
+        "median_ms": 151.434600003995,
+        "p95_ms": 157.54290000768378,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 3859515,
+          "ledger_bytes_read": 3829230,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 30,
+          "opens": 75,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 0
+        }
+      },
+      "warmup": {
+        "median_ms": 165.90620001079515,
+        "p95_ms": 165.90620001079515,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 257301,
+          "ledger_bytes_read": 255282,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 2,
+          "opens": 5,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 0
+        }
+      }
+    },
+    "p1k_c1": {
+      "first": {
+        "median_ms": 237.0572999934666,
+        "p95_ms": 237.0572999934666,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1911859,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 255283,
+          "ledger_replacements": 2,
+          "listdirs": 3,
+          "opens": 7,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 1912960
+        }
+      },
+      "host_only": {
+        "median_ms": 172.30460001155734,
+        "p95_ms": 173.8545999978669,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 1654562,
+          "ledger_bytes_read": 1276414,
+          "ledger_bytes_written": 1276416,
+          "ledger_replacements": 10,
+          "listdirs": 15,
+          "opens": 40,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 368650
+        }
+      },
+      "incremental": {
+        "median_ms": 181.74725002609193,
+        "p95_ms": 215.77239996986464,
+        "renders": 10,
+        "totals": {
+          "json_decoded_bytes": 3509566,
+          "ledger_bytes_read": 2587426,
+          "ledger_bytes_written": 2595108,
+          "ledger_replacements": 20,
+          "listdirs": 30,
+          "opens": 90,
+          "other_bytes_read": 15100,
+          "transcript_bytes_read": 903410
+        }
+      },
+      "no_change": {
+        "median_ms": 157.26700000232086,
+        "p95_ms": 195.52210002439097,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 4963665,
+          "ledger_bytes_read": 3829230,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 45,
+          "opens": 90,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 1105950
+        }
+      },
+      "warmup": {
+        "median_ms": 209.49919999111444,
+        "p95_ms": 209.49919999111444,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 330911,
+          "ledger_bytes_read": 255282,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 3,
+          "opens": 6,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 73730
+        }
+      }
+    },
+    "p1k_c12": {
+      "first": {
+        "median_ms": 245.78569998266175,
+        "p95_ms": 245.78569998266175,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 2722132,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 255281,
+          "ledger_replacements": 2,
+          "listdirs": 3,
+          "opens": 18,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 2724550
+        }
+      },
+      "host_only": {
+        "median_ms": 179.2591999983415,
+        "p95_ms": 181.1265000142157,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 5705921,
+          "ledger_bytes_read": 1276408,
+          "ledger_bytes_written": 1276412,
+          "ledger_replacements": 10,
+          "listdirs": 15,
+          "opens": 95,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 4426600
+        }
+      },
+      "incremental": {
+        "median_ms": 188.9443499967456,
+        "p95_ms": 221.35250002611428,
+        "renders": 10,
+        "totals": {
+          "json_decoded_bytes": 11612294,
+          "ledger_bytes_read": 2587424,
+          "ledger_bytes_written": 2595106,
+          "ledger_replacements": 20,
+          "listdirs": 30,
+          "opens": 200,
+          "other_bytes_read": 15100,
+          "transcript_bytes_read": 9019310
+        }
+      },
+      "no_change": {
+        "median_ms": 155.42730002198368,
+        "p95_ms": 166.44999996060506,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 17117730,
+          "ledger_bytes_read": 3829200,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 45,
+          "opens": 255,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 13279800
+        }
+      },
+      "warmup": {
+        "median_ms": 164.75549997994676,
+        "p95_ms": 164.75549997994676,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1141182,
+          "ledger_bytes_read": 255280,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 3,
+          "opens": 17,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 885320
+        }
+      }
+    },
+    "p1k_c13": {
+      "first": {
+        "median_ms": 243.38210001587868,
+        "p95_ms": 243.38210001587868,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 2722412,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 255285,
+          "ledger_replacements": 2,
+          "listdirs": 3,
+          "opens": 18,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 2724830
+        }
+      },
+      "host_only": {
+        "median_ms": 192.6342000369914,
+        "p95_ms": 225.6395000149496,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 5707337,
+          "ledger_bytes_read": 1276424,
+          "ledger_bytes_written": 1276426,
+          "ledger_replacements": 10,
+          "listdirs": 15,
+          "opens": 95,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 4428000
+        }
+      },
+      "incremental": {
+        "median_ms": 192.7883500175085,
+        "p95_ms": 213.8103999895975,
+        "renders": 10,
+        "totals": {
+          "json_decoded_bytes": 11615112,
+          "ledger_bytes_read": 2587442,
+          "ledger_bytes_written": 2595124,
+          "ledger_replacements": 20,
+          "listdirs": 30,
+          "opens": 200,
+          "other_bytes_read": 15100,
+          "transcript_bytes_read": 9022110
+        }
+      },
+      "no_change": {
+        "median_ms": 163.61180000239983,
+        "p95_ms": 192.402399959974,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 17121990,
+          "ledger_bytes_read": 3829260,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 45,
+          "opens": 255,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 13284000
+        }
+      },
+      "warmup": {
+        "median_ms": 159.2714000144042,
+        "p95_ms": 159.2714000144042,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1141466,
+          "ledger_bytes_read": 255284,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 3,
+          "opens": 17,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 885600
+        }
+      }
+    },
+    "p1k_c64": {
+      "first": {
+        "median_ms": 252.93120002606884,
+        "p95_ms": 252.93120002606884,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 2724932,
+          "ledger_bytes_read": 0,
+          "ledger_bytes_written": 255281,
+          "ledger_replacements": 2,
+          "listdirs": 3,
+          "opens": 18,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 2727350
+        }
+      },
+      "host_only": {
+        "median_ms": 190.12619997374713,
+        "p95_ms": 191.7325000395067,
+        "renders": 5,
+        "totals": {
+          "json_decoded_bytes": 5719925,
+          "ledger_bytes_read": 1276412,
+          "ledger_bytes_written": 1276416,
+          "ledger_replacements": 10,
+          "listdirs": 15,
+          "opens": 95,
+          "other_bytes_read": 7550,
+          "transcript_bytes_read": 4440600
+        }
+      },
+      "incremental": {
+        "median_ms": 200.01429997500964,
+        "p95_ms": 240.64520001411438,
+        "renders": 10,
+        "totals": {
+          "json_decoded_bytes": 11637494,
+          "ledger_bytes_read": 2587424,
+          "ledger_bytes_written": 2595106,
+          "ledger_replacements": 20,
+          "listdirs": 30,
+          "opens": 200,
+          "other_bytes_read": 15100,
+          "transcript_bytes_read": 9044510
+        }
+      },
+      "no_change": {
+        "median_ms": 162.52770001301542,
+        "p95_ms": 200.98130003316328,
+        "renders": 15,
+        "totals": {
+          "json_decoded_bytes": 17159730,
+          "ledger_bytes_read": 3829200,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 45,
+          "opens": 255,
+          "other_bytes_read": 22650,
+          "transcript_bytes_read": 13321800
+        }
+      },
+      "warmup": {
+        "median_ms": 178.27010003384203,
+        "p95_ms": 178.27010003384203,
+        "renders": 1,
+        "totals": {
+          "json_decoded_bytes": 1143982,
+          "ledger_bytes_read": 255280,
+          "ledger_bytes_written": 0,
+          "ledger_replacements": 0,
+          "listdirs": 3,
+          "opens": 17,
+          "other_bytes_read": 1510,
+          "transcript_bytes_read": 888120
+        }
+      }
+    }
+  },
+  "schema": "codearbiter.statusline-bench/v1"
+}
