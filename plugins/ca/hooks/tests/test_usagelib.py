@@ -203,6 +203,24 @@ class TestPriceFact(unittest.TestCase):
         self.assertEqual(p["pd"], 0)
         self.assertIn("unpriced_modifier", p["reasons"])
 
+    def test_absent_modifier_is_no_vote_across_representations(self):
+        # A streaming snapshot that omits a modifier must not conflict with a
+        # later representation that states it (in either arrival order).
+        cases = [({}, {"speed": "fast"}, "claude-opus-5-5", 8),
+                 ({}, {"inference_geo": "not_available"}, "claude-sonnet-5", 2),
+                 ({"inference_geo": "global"}, {"inference_geo": "not_available"},
+                  "claude-sonnet-5", 2),
+                 ({}, {"inference_geo": "us"}, "claude-sonnet-5", Fraction("2.2")),
+                 ({"speed": None}, {"speed": "fast"}, "claude-opus-5-5", 8),
+                 ({"speed": "  "}, {"speed": "fast"}, "claude-opus-5-5", 8)]
+        for first, second, model, want in cases:
+            for order in ((first, second), (second, first)):
+                with self.subTest(order=order):
+                    p = U.price(accept(rec(model, input_tokens=10**6, **order[0]),
+                                       rec(model, input_tokens=10**6, **order[1])))
+                    self.assertEqual(p["reasons"], set())
+                    self.assertEqual(usd(p["pd"]), want)
+
     def test_synthetic_zero_record_is_non_billable(self):
         for r in load("synthetic.jsonl"):
             with self.subTest(r=r.get("requestId")):

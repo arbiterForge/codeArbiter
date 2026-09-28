@@ -255,12 +255,19 @@ def _model_key(model):
     return "?" + model.strip().lower() if isinstance(model, str) and model.strip() else "?"
 
 
-def _modifier(value, default):
+_MODIFIER_ALIASES = {"geo": {"not_available": "global"}}   # D-27: standard pricing
+
+
+def _modifier(value, kind):
+    """One representation's vote for a price modifier. An absent or empty field
+    casts NO vote (a streaming snapshot that omits it must not conflict with one
+    that states it); defaults are applied only when pricing the merged fact."""
     if value is None:
-        return default
+        return []
     if isinstance(value, str):
-        return value.strip().lower() or default
-    return "invalid"
+        v = value.strip().lower()
+        return [_MODIFIER_ALIASES.get(kind, {}).get(v, v)] if v else []
+    return ["invalid"]
 
 
 def _trusted_ts(ts):
@@ -342,9 +349,9 @@ def _fact(record, msg, usage, day_fn):
         "d": [day] if day else [],
         "c": comps,
         "tl": tools,
-        "md": {"speed": [_modifier(usage.get("speed"), "standard")],
-               "geo": [_modifier(usage.get("inference_geo"), "global")],
-               "tier": [_modifier(usage.get("service_tier"), "standard")]},
+        "md": {"speed": _modifier(usage.get("speed"), "speed"),
+               "geo": _modifier(usage.get("inference_geo"), "geo"),
+               "tier": _modifier(usage.get("service_tier"), "tier")},
     }
 
 
@@ -408,8 +415,9 @@ def price(fact):
     total = tin = tout = tcr = 0
     comps = fact["c"]
     mods = fact.get("md", {})
-    speeds, geos, tiers = mods.get("speed", ["standard"]), mods.get("geo", ["global"]), \
-        mods.get("tier", ["standard"])
+    speeds = mods.get("speed") or [_STANDARD_SPEED]
+    geos = mods.get("geo") or ["global"]
+    tiers = mods.get("tier") or [_STANDARD_TIER]
     modifiers_ok = len(speeds) == 1 and len(geos) == 1 and tiers == [_STANDARD_TIER]
 
     top_keys = sorted(k for k in comps if k.startswith("m|"))
