@@ -12,6 +12,15 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.23.1] - 2026-09-27
+
+### Fixed
+
+- The statusline's git dirty-state probe no longer takes `.git/index.lock`. It is killed at a
+  100 ms budget, and a plain `git status` killed while rewriting a stale index could leave a
+  stale lock that blocked the next commit (reproduced: 5 of 200 renders at that timing, 0 of 200
+  with the fix).
+
 ## [2.23.0] - 2026-09-27
 
 ### Changed

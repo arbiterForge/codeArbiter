@@ -190,6 +190,43 @@ class GitDirtyTests(unittest.TestCase):
                 self.assertTrue(_gitlib.git_dirty(root))
 
 
+class GitDirtyTakesNoIndexLockTests(unittest.TestCase):
+    """The statusline kills `git status` at a 100 ms budget. Without
+    --no-optional-locks, status opportunistically rewrites a stale index under
+    .git/index.lock, and a kill inside that write strands the lock, blocking the
+    user's next commit. The probe must never write the index at all."""
+
+    def test_stale_index_is_not_rewritten_by_the_dirty_probe(self):
+        with tempfile.TemporaryDirectory() as root:
+            subprocess = _gitlib.subprocess
+            subprocess.run(["git", "init", "-q", root], check=True)
+            tracked = os.path.join(root, "tracked.txt")
+            with open(tracked, "w", encoding="utf-8") as f:
+                f.write("same\n")
+            subprocess.run(["git", "-C", root, "add", "tracked.txt"], check=True)
+            index = os.path.join(root, ".git", "index")
+            # Make the index stat-stale without changing content: a refresh
+            # finds the entry clean and wants to rewrite the index.
+            later = os.stat(tracked).st_mtime + 120
+            os.utime(tracked, (later, later))
+            with open(index, "rb") as f:
+                before = (os.stat(index).st_mtime_ns, f.read())
+            with mock.patch.object(_gitlib, "DIRTY_CHECK_TIMEOUT_SECONDS", 5.0):
+                self.assertTrue(_gitlib.git_dirty(root))      # staged, uncommitted
+            with open(index, "rb") as f:
+                after = (os.stat(index).st_mtime_ns, f.read())
+            self.assertEqual(before, after, "the dirty probe rewrote .git/index")
+            self.assertFalse(os.path.exists(index + ".lock"))
+
+    def test_probe_argv_disables_optional_locks(self):
+        done = _gitlib.subprocess.CompletedProcess(["git"], 0, "", "")
+        with mock.patch.object(_gitlib.subprocess, "run", return_value=done) as run:
+            _gitlib.git_dirty("repo")
+        argv = run.call_args.args[0]
+        self.assertIn("--no-optional-locks", argv)
+        self.assertLess(argv.index("--no-optional-locks"), argv.index("status"))
+
+
 class StatuslineLinkedWorktreeTests(unittest.TestCase):
     def test_render_reports_linked_worktree_branch_instead_of_no_git(self):
         with tempfile.TemporaryDirectory() as parent:

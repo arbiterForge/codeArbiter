@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.8] - 2026-09-27
+
+### Fixed
+
+- The statusline's git dirty-state probe no longer takes `.git/index.lock`. It is killed at a
+  100 ms budget, and a plain `git status` killed while rewriting a stale index could leave a
+  stale lock that blocked the next commit (reproduced: 5 of 200 renders at that timing, 0 of 200
+  with the fix).
+
 ## [0.15.7] - 2026-09-27
 
 ### Changed
