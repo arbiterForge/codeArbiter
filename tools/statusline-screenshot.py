@@ -13,9 +13,11 @@ Maintenance tool, not part of the shipped plugin. Usage:
     SHOT_OUT=docs/foo.png python tools/statusline-screenshot.py
 
 The bar reads the REAL repo for the git branch and `.codearbiter/` state, so run it
-from a clean tree for a tidy shot. Token counts come from the mock transcript below;
-the cost is the mock `cost.total_cost_usd`; session age falls back to the mock
-transcript's first timestamp (no session metadata exists for the mock id).
+from a clean tree for a tidy shot. Token counts AND the `api≈` cost are reconstructed
+from the mock transcripts below by the real ledger (the mock `cost.total_cost_usd`
+is Claude Code's separate estimate and is not what the bar shows while
+reconstruction is available); session age falls back to the mock transcript's first
+timestamp (no session metadata exists for the mock id).
 """
 import datetime
 import html
@@ -38,31 +40,35 @@ def iso(ts):
 
 
 scratch = tempfile.mkdtemp(prefix="ca-shot-")
+
+
+def write_tx(path, turns, prefix):
+    """A mock transcript: one assistant usage record per turn, no conversation."""
+    with open(path, "w", encoding="utf-8") as f:
+        for k, (off, i, cw, cr, out) in enumerate(turns):
+            f.write(json.dumps({
+                "type": "assistant", "timestamp": iso(now - off * 60), "requestId": f"{prefix}{k}",
+                "message": {"model": "claude-opus-4-8", "usage": {
+                    "input_tokens": i, "cache_read_input_tokens": cr,
+                    "cache_creation_input_tokens": cw,
+                    "cache_creation": {"ephemeral_5m_input_tokens": cw, "ephemeral_1h_input_tokens": 0},
+                    "output_tokens": out}}}) + "\n")
+
+
 tx = os.path.join(scratch, "tx.jsonl")
-turns = [  # (offset_min, input, cache_write_5m, cache_read, output)
+write_tx(tx, [  # (offset_min, input, cache_write_5m, cache_read, output)
     (62, 800, 6000, 20000, 1800),
     (44, 1500, 10000, 35000, 2800),
     (20, 2000, 16000, 48000, 4200),
     (3, 1200, 13000, 60000, 4400),
-]
-with open(tx, "w", encoding="utf-8") as f:
-    for k, (off, i, cw, cr, out) in enumerate(turns):
-        f.write(json.dumps({
-            "type": "assistant", "timestamp": iso(now - off * 60), "requestId": f"r{k}",
-            "message": {"model": "claude-opus-4-8", "usage": {
-                "input_tokens": i, "cache_read_input_tokens": cr,
-                "cache_creation_input_tokens": cw,
-                "cache_creation": {"ephemeral_5m_input_tokens": cw, "ephemeral_1h_input_tokens": 0},
-                "output_tokens": out}}}) + "\n")
+], "r")
 
-# Pre-seed the ledger with an earlier session today so "Today" > "Session".
-today = datetime.datetime.now().strftime("%Y-%m-%d")
+# An earlier session today, rendered once through the real ledger first, so
+# "Today" > "Session" from genuine reconstructed state (never a hand-built ledger).
+earlier = os.path.join(scratch, "earlier.jsonl")
+write_tx(earlier, [(300, 4000, 40000, 90000, 9000), (240, 3000, 30000, 150000, 8000),
+                   (90, 5000, 50000, 200000, 8000)], "e")
 ledp = os.path.join(scratch, "ledger.json")
-with open(ledp, "w", encoding="utf-8") as f:
-    json.dump({"sessions": {"earlier-am": {
-        "first_ts": now - 6 * 3600, "last_ts": now - 3600, "last_day": today,
-        "host_cost": 7.60, "today": {"date": today, "in": 165000, "out": 25000, "cost": 7.60},
-        "reqs": {}, "burn": []}}}, f)
 
 payload = {
     "session_id": "demo-shot", "transcript_path": tx,
@@ -76,6 +82,8 @@ payload = {
                     "seven_day": {"used_percentage": 31, "resets_at": int((now + 3.2 * 86400) * 1000)}},
 }
 env = dict(os.environ, CODEARBITER_LEDGER=ledp, CODEARBITER_WIDTH="118", PYTHONUTF8="1")
+subprocess.run([sys.executable, SL], capture_output=True, env=env, input=json.dumps(
+    {"session_id": "earlier-am", "transcript_path": earlier}).encode())
 ansi = subprocess.run([sys.executable, SL], input=json.dumps(payload).encode(),
                       capture_output=True, env=env).stdout.decode("utf-8", "replace")
 

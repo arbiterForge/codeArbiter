@@ -1,13 +1,14 @@
 """Tests for _ledgerlib — the cost/token ledger subsystem extracted from
 statusline.py (T-12). Stdlib unittest only; no subprocess, no real ~/.codearbiter.
 
-Covers the three concerns the extraction exists to make independently testable:
-pricing (price_for / api_cost), transcript accumulation (_tx_accumulate / _agg_reqs
-/ _totals / ledger_update dedup + day attribution), and JSON persistence
-(ledger_update write + TTL prune, persist_sess_start fast-path cache).
+Covers the ledger's filesystem layer: v2 summary persistence, TTL pruning,
+locking, write amplification and persist_sess_start, plus the separate Pi usage
+ledger. Pricing is tested in test_usagelib.py and transcript accounting in
+test_ledger_accounting.py.
 """
 import json
 import glob
+import shutil
 import inspect
 import os
 import sys
@@ -32,134 +33,10 @@ from _helpers import redirect_home, restore_home
 CONCURRENCY_TEST_WAIT = 5.0
 
 
-# =========================================================================== pricing
-class TestPricing(unittest.TestCase):
-
-    def test_price_for_known_families(self):
-        self.assertEqual(L.price_for("claude-opus-4-8"), L.API_PRICES["opus"])
-        self.assertEqual(L.price_for("claude-sonnet-4-6"), L.API_PRICES["sonnet"])
-        self.assertEqual(L.price_for("claude-haiku-x"), L.API_PRICES["haiku"])
-        self.assertEqual(L.price_for("fable-1"), L.API_PRICES["fable"])
-
-    def test_price_for_unknown_defaults_to_sonnet(self):
-        self.assertEqual(L.price_for("some-unknown-model"), L.API_PRICES["sonnet"])
-
-    def test_price_for_non_string_coerced(self):
-        # str(model) coercion: a None model must not crash, falls to default.
-        self.assertEqual(L.price_for(None), L.API_PRICES["sonnet"])
-
-    def test_api_cost_input_output(self):
-        # opus: input 5.0, output 25.0 per 1M.
-        tok = {"opus": {"in": 1_000_000, "out": 1_000_000,
-                        "c5": 0, "c1": 0, "cr": 0}}
-        # 1M * 5.0/1e6 + 1M * 25.0/1e6 = 5 + 25 = 30
-        self.assertAlmostEqual(L.api_cost(tok), 30.0)
-
-    def test_api_cost_includes_cache_reads(self):
-        # cache reads (cr) are priced even though they're excluded from token counts.
-        tok = {"sonnet": {"in": 0, "out": 0, "c5": 0, "c1": 0, "cr": 1_000_000}}
-        # sonnet cache_read = 0.30 per 1M
-        self.assertAlmostEqual(L.api_cost(tok), 0.30)
-
-    def test_api_cost_empty_is_zero(self):
-        self.assertEqual(L.api_cost({}), 0.0)
-        self.assertEqual(L.api_cost(None), 0.0)
-
-    def test_api_cost_skips_non_dict_values(self):
-        self.assertEqual(L.api_cost({"opus": "not-a-dict"}), 0.0)
-
-
-# =========================================================================== accumulation
-class TestAccumulation(unittest.TestCase):
-
-    def _line(self, req, model="claude-sonnet", inp=100, out=50,
-              ts="2026-01-01T00:00:00Z"):
-        return {"type": "assistant", "requestId": req, "timestamp": ts,
-                "message": {"id": f"m_{req}", "model": model,
-                            "usage": {"input_tokens": inp, "output_tokens": out}}}
-
-    def _write(self, entries, td):
-        path = os.path.join(td, "tx.jsonl")
-        with open(path, "w", encoding="utf-8") as f:
-            for o in entries:
-                f.write(json.dumps(o) + "\n")
-        return path
-
-    def test_basic_two_requests(self):
-        with tempfile.TemporaryDirectory() as td:
-            path = self._write([self._line("r1"), self._line("r2")], td)
-            rec = {}
-            self.assertTrue(L._tx_accumulate(rec, path))
-            self.assertEqual(len(rec["reqs"]), 2)
-
-    def test_dedup_by_request_id_upsert(self):
-        with tempfile.TemporaryDirectory() as td:
-            path = self._write(
-                [self._line("dup", inp=100, out=50),
-                 self._line("dup", inp=150, out=70)], td)
-            rec = {}
-            L._tx_accumulate(rec, path)
-            self.assertEqual(len(rec["reqs"]), 1)
-            self.assertEqual(rec["reqs"]["dup"]["in"], 150.0)
-            self.assertEqual(rec["reqs"]["dup"]["out"], 70.0)
-
-    def test_nonexistent_file_returns_false(self):
-        self.assertFalse(L._tx_accumulate({}, os.path.join(tempfile.gettempdir(),
-                                                            "nope_ledger_xyz.jsonl")))
-
-    def test_incremental_offset(self):
-        with tempfile.TemporaryDirectory() as td:
-            path = self._write([self._line("r1")], td)
-            rec = {}
-            L._tx_accumulate(rec, path)
-            off1 = rec["tx_off"]
-            with open(path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(self._line("r2")) + "\n")
-            L._tx_accumulate(rec, path)
-            self.assertEqual(len(rec["reqs"]), 2)
-            self.assertGreater(rec["tx_off"], off1)
-
-    def test_agg_reqs_groups_by_model(self):
-        reqs = {
-            "a": {"d": "2026-01-01", "m": "opus", "in": 10, "out": 5,
-                  "c5": 0, "c1": 0, "cr": 0},
-            "b": {"d": "2026-01-01", "m": "opus", "in": 20, "out": 8,
-                  "c5": 0, "c1": 0, "cr": 0},
-            "c": {"d": "2026-01-02", "m": "sonnet", "in": 30, "out": 9,
-                  "c5": 0, "c1": 0, "cr": 0},
-        }
-        agg = L._agg_reqs(reqs)
-        self.assertEqual(agg["opus"]["in"], 30.0)
-        self.assertEqual(agg["opus"]["out"], 13.0)
-        self.assertEqual(agg["sonnet"]["in"], 30.0)
-
-    def test_agg_reqs_only_filters_by_day(self):
-        reqs = {
-            "a": {"d": "2026-01-01", "m": "opus", "in": 10, "out": 5,
-                  "c5": 0, "c1": 0, "cr": 0},
-            "c": {"d": "2026-01-02", "m": "opus", "in": 30, "out": 9,
-                  "c5": 0, "c1": 0, "cr": 0},
-        }
-        agg = L._agg_reqs(reqs, only="2026-01-02")
-        self.assertEqual(agg["opus"]["in"], 30.0)
-        self.assertEqual(agg["opus"]["out"], 9.0)
-
-    def test_totals_excludes_cache_reads_from_count(self):
-        # cr (cache reads) must NOT inflate the displayed "in"; c5/c1 (writes) do.
-        models = {"opus": {"in": 100, "c5": 20, "c1": 10, "cr": 9999, "out": 40}}
-        t = L._totals(models)
-        self.assertEqual(t["in"], 130.0)   # 100 + 20 + 10, cr excluded
-        self.assertEqual(t["out"], 40.0)
-
-    def test_burn_samples_window(self):
-        rec = {"burn": list(range(50))}
-        s = L.burn_samples(rec)
-        self.assertEqual(len(s), 24)          # last-24 window
-        self.assertEqual(s[-1], 49.0)
-
-    def test_burn_samples_too_few(self):
-        self.assertEqual(L.burn_samples({"burn": [5]}), [])
-        self.assertEqual(L.burn_samples({}), [])
+# Pricing now lives in test_usagelib.py, and transcript accumulation (bounded
+# streaming, identity, reconciliation, coverage) in test_ledger_accounting.py.
+# This file keeps the persistence, pruning, locking and write-amplification
+# contracts of the ledger's filesystem layer.
 
 
 # =========================================================================== persistence
@@ -179,8 +56,8 @@ class TestPersistence(unittest.TestCase):
         else:
             os.environ["CODEARBITER_LEDGER"] = self._orig
 
-    def _write_tx(self, entries):
-        tx = os.path.join(self.tmp, "transcript.jsonl")
+    def _write_tx(self, entries, name="transcript.jsonl"):
+        tx = os.path.join(self.tmp, name)
         with open(tx, "w", encoding="utf-8") as f:
             for o in entries:
                 f.write(json.dumps(o) + "\n")
@@ -192,6 +69,10 @@ class TestPersistence(unittest.TestCase):
                 "message": {"model": "claude-sonnet-4-6",
                             "usage": {"input_tokens": inp, "output_tokens": out}}}
 
+    def _summary(self, sid):
+        with open(L._acct_file(self.ledger, sid), encoding="utf-8") as f:
+            return json.load(f)["rec"]
+
     def _serialize_transactions(self, first, second, while_first_holds=None):
         """Prove the second writer cannot acquire until the first releases."""
         real_acquire = L._acquire_lock
@@ -201,10 +82,12 @@ class TestPersistence(unittest.TestCase):
         release_first = threading.Event()
         outputs = {}
 
-        def coordinated_acquire(path):
+        def coordinated_acquire(path, wait_seconds=None):
             if threading.current_thread().name == "ledger-second":
                 second_attempted.set()
-            token = real_acquire(path)
+            # Serialization tests need scheduler headroom, not the render's
+            # 20 ms try-lock; production's bounded wait is asserted separately.
+            token = real_acquire(path, CONCURRENCY_TEST_WAIT)
             if token is not None and threading.current_thread().name == "ledger-first":
                 first_acquired.set()
                 self.assertTrue(release_first.wait(CONCURRENCY_TEST_WAIT))
@@ -216,26 +99,15 @@ class TestPersistence(unittest.TestCase):
                                name="ledger-first")
         two = threading.Thread(target=lambda: outputs.setdefault("second", second()),
                                name="ledger-second")
-        # NB: acquire_lock's retry deadline (core/pysrc/_hooklib.py) reads its
-        # OWN module global `LOCK_WAIT` at call time, not `_ledgerlib.LOCK_WAIT`
-        # (a same-named but distinct binding imported for back-compat re-export
-        # only — see _ledgerlib.py's header comment). Patching `L.LOCK_WAIT`
-        # alone is inert; patch `_hooklib.LOCK_WAIT`, the name the real retry
-        # loop actually consults, so this harness's headroom is real.
-        with mock.patch.object(_hooklib, "LOCK_WAIT", CONCURRENCY_TEST_WAIT), \
-                mock.patch.object(L, "_acquire_lock", side_effect=coordinated_acquire):
+        with mock.patch.object(L, "_acquire_lock", side_effect=coordinated_acquire):
             one.start()
             self.assertTrue(first_acquired.wait(CONCURRENCY_TEST_WAIT))
             if while_first_holds:
                 while_first_holds()
             two.start()
             self.assertTrue(second_attempted.wait(CONCURRENCY_TEST_WAIT))
-            # Time-bounded negative wait (E-4): waiting for second_attempted
-            # only proves the second thread got scheduled and reached the
-            # lock call — it says nothing about whether the lock actually
-            # excluded it. Give the second thread a real window to sneak an
-            # acquisition through before the first releases; if serialization
-            # were broken, this wait would very likely observe it fire.
+            # Time-bounded negative wait (E-4): the second thread gets a real
+            # window to sneak an acquisition through before the first releases.
             self.assertFalse(second_acquired.wait(0.2))
             release_first.set()
             self.assertTrue(second_acquired.wait(CONCURRENCY_TEST_WAIT))
@@ -251,18 +123,17 @@ class TestPersistence(unittest.TestCase):
         self.assertIsInstance(out, tuple)
         self.assertEqual(len(out), 3)
 
-    def test_ledger_update_no_sid_blanks(self):
+    def test_ledger_update_no_sid_is_unavailable_not_zero_claim(self):
         _rec, sess, day = L.ledger_update({}, None)
         self.assertEqual(sess["in"], 0.0)
-        self.assertEqual(day["in"], 0.0)
+        self.assertEqual(sess["state"], "unavailable")
+        self.assertEqual(day["state"], "unavailable")
 
-    def test_ledger_update_writes_file(self):
+    def test_ledger_update_writes_v2_summary_not_the_legacy_snapshot(self):
         tx = self._write_tx([self._assistant("r1")])
         L.ledger_update({"transcript_path": tx}, "sid-write")
-        self.assertTrue(os.path.isfile(self.ledger))
-        with open(self.ledger, encoding="utf-8") as f:
-            led = json.load(f)
-        self.assertIn("sid-write", led["sessions"])
+        self.assertEqual(self._summary("sid-write")["sid"], "sid-write")
+        self.assertFalse(os.path.exists(self.ledger))
 
     def test_ledger_update_dedup(self):
         tx = self._write_tx([self._assistant("r1", inp=100, out=50),
@@ -271,42 +142,45 @@ class TestPersistence(unittest.TestCase):
         self.assertEqual(sess["in"], 100.0)
         self.assertEqual(sess["out"], 50.0)
 
-    def test_ledger_update_ttl_prunes_stale_session(self):
-        # Seed a ledger with a session older than the TTL; it must be pruned.
-        os.makedirs(os.path.dirname(self.ledger), exist_ok=True)
-        stale_ts = time.time() - (L.SESSION_TTL + 100)
-        with open(self.ledger, "w", encoding="utf-8") as f:
-            json.dump({"sessions": {"old": {"last_ts": stale_ts}}}, f)
+    def test_ttl_prunes_stale_v2_session_files(self):
+        L.ledger_update({}, "old")
+        acct = L._acct_file(self.ledger, "old")
+        with open(acct, encoding="utf-8") as f:
+            payload = json.load(f)
+        payload["rec"]["last_ts"] = time.time() - (L.SESSION_TTL + 100)
+        with open(acct, "w", encoding="utf-8") as f:
+            json.dump(payload, f)
+        L._atomic_json(L._start_file(self.ledger, "old"), {"sid": "old", "sess_start": 1.0})
+        os.makedirs(L._ev_dir(self.ledger, "old"), exist_ok=True)
         tx = self._write_tx([self._assistant("r1")])
         L.ledger_update({"transcript_path": tx}, "sid-fresh")
-        with open(self.ledger, encoding="utf-8") as f:
-            led = json.load(f)
-        self.assertNotIn("old", led["sessions"])
-        self.assertIn("sid-fresh", led["sessions"])
+        self.assertFalse(os.path.exists(acct))
+        self.assertFalse(os.path.exists(L._start_file(self.ledger, "old")))
+        self.assertFalse(os.path.exists(L._ev_dir(self.ledger, "old")))
+        self.assertTrue(os.path.exists(L._acct_file(self.ledger, "sid-fresh")))
 
-    def test_host_cost_overrides_estimate(self):
-        tx = self._write_tx([self._assistant("r1")])
+    def test_host_cost_is_kept_separate_from_reconstructed_cost(self):
+        tx = self._write_tx([self._assistant("r1", inp=10**6, out=0)])
         data = {"transcript_path": tx, "cost": {"total_cost_usd": 4.20}}
         _rec, sess, _day = L.ledger_update(data, "sid-cost")
-        self.assertEqual(sess["cost"], 4.20)
+        self.assertAlmostEqual(sess["cost"], 3.0)       # 1M input @ Sonnet 4.6 $3
+        self.assertEqual(sess["host"], 4.20)
 
     def test_persist_sess_start_seeds_cache(self):
         tx = self._write_tx([self._assistant("r1")])
         L.ledger_update({"transcript_path": tx}, "sid-ss")
         self.assertTrue(L.persist_sess_start("sid-ss", 1700000000.0))
-        with open(self.ledger, encoding="utf-8") as f:
-            led = json.load(f)
-        self.assertEqual(led["sessions"]["sid-ss"]["sess_start"], 1700000000.0)
+        rec, _s, _d = L.ledger_update({"transcript_path": tx}, "sid-ss")
+        self.assertEqual(rec["sess_start"], 1700000000.0)
+        self.assertEqual(self._summary("sid-ss")["sess_start"], 1700000000.0)
 
     def test_persist_sess_start_idempotent(self):
         tx = self._write_tx([self._assistant("r1")])
         L.ledger_update({"transcript_path": tx}, "sid-ss2")
         self.assertTrue(L.persist_sess_start("sid-ss2", 123.0))
-        # Second call with the same value is a no-op (returns False).
         self.assertFalse(L.persist_sess_start("sid-ss2", 123.0))
 
     def test_persist_sess_start_unknown_session(self):
-        # No ledger yet / unknown sid -> no write, no crash.
         self.assertFalse(L.persist_sess_start("nope", 5.0))
 
     def test_persist_sess_start_blank_args(self):
@@ -314,15 +188,17 @@ class TestPersistence(unittest.TestCase):
         self.assertFalse(L.persist_sess_start("sid", 0))
 
     def test_concurrent_distinct_session_updates_both_survive(self):
-        outputs = self._serialize_transactions(
-            lambda: L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "sid-a"),
-            lambda: L.ledger_update({"cost": {"total_cost_usd": 2.0}}, "sid-b"))
-        with open(self.ledger, encoding="utf-8") as f:
-            sessions = json.load(f)["sessions"]
-        self.assertEqual(set(sessions), {"sid-a", "sid-b"})
-        self.assertEqual(sessions["sid-a"]["host_cost"], 1.0)
-        self.assertEqual(sessions["sid-b"]["host_cost"], 2.0)
-        self.assertEqual(outputs["second"][2]["cost"], 3.0)
+        tx_a = self._write_tx([self._assistant("a1", inp=10, out=1)], "a.jsonl")
+        tx_b = self._write_tx([self._assistant("b1", inp=20, out=2)], "b.jsonl")
+        with mock.patch.object(L, "_today", lambda: "2026-01-01"):
+            outputs = self._serialize_transactions(
+                lambda: L.ledger_update({"transcript_path": tx_a,
+                                         "cost": {"total_cost_usd": 1.0}}, "sid-a"),
+                lambda: L.ledger_update({"transcript_path": tx_b,
+                                         "cost": {"total_cost_usd": 2.0}}, "sid-b"))
+        self.assertEqual(self._summary("sid-a")["host"]["max"], 1.0)
+        self.assertEqual(self._summary("sid-b")["host"]["max"], 2.0)
+        self.assertEqual(outputs["second"][2]["in"], 30.0)
 
     def test_persist_sess_start_cannot_discard_concurrent_cost_update(self):
         """The session-start cache write must not replace fresher accounting."""
@@ -331,15 +207,13 @@ class TestPersistence(unittest.TestCase):
             lambda: L.persist_sess_start("sid-race", 123.0),
             lambda: L.ledger_update({"cost": {"total_cost_usd": 9.0}}, "sid-race"))
         self.assertTrue(outputs["first"])
-        with open(self.ledger, encoding="utf-8") as f:
-            rec = json.load(f)["sessions"]["sid-race"]
+        rec = self._summary("sid-race")
         self.assertEqual(rec["sess_start"], 123.0)
-        self.assertEqual(rec["host_cost"], 9.0)
+        self.assertEqual(rec["host"]["max"], 9.0)
 
     def test_same_session_concurrent_updates_do_not_regress_accounting(self):
         tx = self._write_tx([self._assistant("r1", inp=100, out=50)])
-        L.ledger_update({"transcript_path": tx,
-                         "cost": {"total_cost_usd": 1.0}}, "sid-same")
+        L.ledger_update({"transcript_path": tx, "cost": {"total_cost_usd": 1.0}}, "sid-same")
         with open(tx, "a", encoding="utf-8") as f:
             f.write(json.dumps(self._assistant("r2", inp=200, out=80)) + "\n")
 
@@ -353,11 +227,9 @@ class TestPersistence(unittest.TestCase):
             lambda: L.ledger_update({"transcript_path": tx,
                                      "cost": {"total_cost_usd": 3.0}}, "sid-same"),
             append_newer_request)
-        with open(self.ledger, encoding="utf-8") as f:
-            rec = json.load(f)["sessions"]["sid-same"]
-        self.assertEqual(rec["host_cost"], 3.0)
-        self.assertEqual(set(rec["reqs"]), {"r1", "r2", "r3"})
-        self.assertEqual(rec["tx_off"], os.path.getsize(tx))
+        rec = self._summary("sid-same")
+        self.assertEqual(rec["host"]["max"], 3.0)
+        self.assertEqual(rec["src"]["p"]["off"], os.path.getsize(tx))
         self.assertEqual(outputs["second"][1]["in"], 600.0)
         self.assertEqual(outputs["second"][1]["out"], 220.0)
 
@@ -371,15 +243,25 @@ class TestPersistence(unittest.TestCase):
             self.assertEqual(json.load(f), {"valid": True})
         self.assertEqual(glob.glob(f"{self.ledger}.*.tmp"), [])
 
-    def test_expired_session_and_start_shards_are_deleted(self):
-        stale = {"last_ts": time.time() - L.SESSION_TTL - 1}
-        self.assertTrue(L._atomic_json(L._session_file(self.ledger, "expired"),
-                                       {"sid": "expired", "rec": stale}))
-        self.assertTrue(L._atomic_json(L._start_file(self.ledger, "expired"),
-                                       {"sid": "expired", "sess_start": 123.0}))
-        L.ledger_update({}, "fresh")
-        self.assertFalse(os.path.exists(L._session_file(self.ledger, "expired")))
-        self.assertFalse(os.path.exists(L._start_file(self.ledger, "expired")))
+    def test_expired_legacy_shards_are_deleted_by_mtime_without_being_read(self):
+        stale = {"last_ts": time.time()}            # content says live; mtime says expired
+        legacy = L._session_file(self.ledger, "expired")
+        start = L._start_file(self.ledger, "expired")
+        self.assertTrue(L._atomic_json(legacy, {"sid": "expired", "rec": stale}))
+        self.assertTrue(L._atomic_json(start, {"sid": "expired", "sess_start": 123.0}))
+        old = time.time() - L.SESSION_TTL - 60
+        os.utime(legacy, (old, old))
+        reads = []
+        real = L._read_json
+
+        def spy(path, default=None):
+            reads.append(path)
+            return real(path, default)
+        with mock.patch.object(L, "_read_json", spy):
+            L.ledger_update({}, "fresh")
+        self.assertFalse(os.path.exists(legacy))
+        self.assertFalse(os.path.exists(start))
+        self.assertNotIn(legacy, reads)
 
     def test_bare_filename_ledger_path_works(self):
         old_cwd = os.getcwd()
@@ -387,38 +269,31 @@ class TestPersistence(unittest.TestCase):
             os.chdir(self.tmp)
             os.environ["CODEARBITER_LEDGER"] = "ledger.json"
             L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "bare")
-            with open("ledger.json", encoding="utf-8") as f:
-                self.assertIn("bare", json.load(f)["sessions"])
+            self.assertTrue(os.path.exists(L._acct_file("ledger.json", "bare")))
         finally:
             os.chdir(old_cwd)
 
-    def test_lock_contention_times_out_fail_soft_within_latency_bound(self):
+    def test_render_lock_contention_uses_bounded_try_lock_and_stale_view(self):
+        L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "contended")
         owner = L._acquire_lock(self.ledger)
         self.assertIsNotNone(owner)
         try:
-            # A wall-clock ceiling cannot distinguish a broken retry deadline
-            # from a correctly sleeping test process that the CI scheduler did
-            # not resume promptly. Drive the real lock's deadline clock
-            # deterministically instead: each contended operation gets its
-            # configured LOCK_WAIT budget exactly, then must fail soft without
-            # another retry sleep.
-            self.assertEqual(_hooklib.LOCK_WAIT, 0.2)
+            # Drive the real lock's deadline clock deterministically: the render
+            # gets exactly its UI_LOCK_WAIT budget, then must fall back to the
+            # committed summary without another retry sleep.
+            wait = L.UI_LOCK_WAIT
+            with mock.patch.object(_hooklib, "time") as clock:
+                clock.monotonic.side_effect = (100.0, 100.0 + wait - 0.001, 100.0 + wait)
+                rec, sess, day = L.ledger_update({}, "contended")
+            self.assertEqual(clock.monotonic.call_count, 3)
+            self.assertEqual(clock.sleep.call_args_list, [mock.call(0.005)])
+            self.assertTrue(sess["stale"])
+            self.assertEqual(sess["host"], 1.0)
+            self.assertEqual(rec["sid"], "contended")
             wait = _hooklib.LOCK_WAIT
             with mock.patch.object(_hooklib, "time") as clock:
-                clock.monotonic.side_effect = (
-                    100.0, 100.0 + wait - 0.001, 100.0 + wait,
-                    200.0, 200.0 + wait - 0.001, 200.0 + wait,
-                )
-                rec, sess, day = L.ledger_update({}, "contended")
-                persisted = L.persist_sess_start("contended", 123.0)
-            self.assertEqual((rec, sess, day), ({}, {"in": 0.0, "out": 0.0,
-                                                     "cost": 0.0},
-                                                    {"in": 0.0, "out": 0.0,
-                                                     "cost": 0.0}))
-            self.assertFalse(persisted)
-            self.assertEqual(clock.monotonic.call_count, 6)
-            self.assertEqual(clock.sleep.call_args_list,
-                             [mock.call(0.005), mock.call(0.005)])
+                clock.monotonic.side_effect = (200.0, 200.0 + wait - 0.001, 200.0 + wait)
+                self.assertFalse(L.persist_sess_start("contended", 123.0))
         finally:
             L._release_lock(owner)
 
@@ -446,39 +321,38 @@ class TestPersistence(unittest.TestCase):
         finally:
             L._release_lock(owner)
 
-    def test_malformed_session_and_start_shards_are_deleted(self):
+    def test_malformed_other_summary_is_deleted_and_own_bad_start_ignored(self):
         directory = L._session_dir(self.ledger)
         os.makedirs(directory, exist_ok=True)
-        bad_session = os.path.join(directory, "bad.json")
-        bad_start = os.path.join(directory, "bad.start.json")
-        with open(bad_session, "w", encoding="utf-8") as f:
+        bad_summary = os.path.join(directory, "b" * 64 + ".acct.json")
+        with open(bad_summary, "w", encoding="utf-8") as f:
             f.write("not json")
-        with open(bad_start, "w", encoding="utf-8") as f:
+        with open(L._start_file(self.ledger, "fresh"), "w", encoding="utf-8") as f:
             f.write("[]")
-        L.ledger_update({}, "fresh")
-        self.assertFalse(os.path.exists(bad_session))
-        self.assertFalse(os.path.exists(bad_start))
+        rec, _s, _d = L.ledger_update({}, "fresh")
+        self.assertFalse(os.path.exists(bad_summary))
+        self.assertNotIn("sess_start", rec)
 
-    def test_nonnumeric_live_session_start_metadata_is_deleted(self):
+    def test_nonnumeric_session_start_metadata_is_ignored(self):
         L.ledger_update({}, "live")
-        start = L._start_file(self.ledger, "live")
-        self.assertTrue(L._atomic_json(start,
+        self.assertTrue(L._atomic_json(L._start_file(self.ledger, "live"),
                                        {"sid": "live", "sess_start": "invalid"}))
-        L.ledger_update({}, "other")
-        self.assertFalse(os.path.exists(start))
+        rec, _s, _d = L.ledger_update({}, "live")
+        self.assertNotIn("sess_start", rec)
 
-    def test_misnamed_stale_shard_cannot_delete_embedded_sid_files(self):
+    def test_misnamed_stale_summary_cannot_delete_embedded_sid_files(self):
         L.ledger_update({}, "victim")
         self.assertTrue(L.persist_sess_start("victim", 123.0))
-        victim_shard = L._session_file(self.ledger, "victim")
+        victim_summary = L._acct_file(self.ledger, "victim")
         victim_start = L._start_file(self.ledger, "victim")
-        misnamed = os.path.join(L._session_dir(self.ledger), "misnamed.json")
-        stale = {"last_ts": time.time() - L.SESSION_TTL - 1}
-        self.assertTrue(L._atomic_json(misnamed,
-                                       {"sid": "victim", "rec": stale}))
+        with open(victim_summary, encoding="utf-8") as f:
+            payload = json.load(f)
+        payload["rec"]["last_ts"] = time.time() - L.SESSION_TTL - 1
+        misnamed = os.path.join(L._session_dir(self.ledger), "c" * 64 + ".acct.json")
+        self.assertTrue(L._atomic_json(misnamed, payload))
         L.ledger_update({}, "other")
         self.assertFalse(os.path.exists(misnamed))
-        self.assertTrue(os.path.exists(victim_shard))
+        self.assertTrue(os.path.exists(victim_summary))
         self.assertTrue(os.path.exists(victim_start))
 
 
@@ -1124,9 +998,8 @@ class TestPiUsageLedger(unittest.TestCase):
 # =========================================================================== render write amplification
 class TestRenderWriteAmplification(unittest.TestCase):
     """#392 — the statusline renders in a fresh process on every refresh, so a
-    render that changed nothing must not rewrite the session shard AND the whole
-    compatibility snapshot, and a render that DID change something must read the
-    snapshot plus the live shards exactly once."""
+    render that changed nothing must not replace any file, and a render that DID
+    change something must parse each file it reads exactly once."""
 
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
@@ -1134,6 +1007,7 @@ class TestRenderWriteAmplification(unittest.TestCase):
         self._orig = os.environ.get("CODEARBITER_LEDGER")
         self.ledger = os.path.join(self.tmp, ".codearbiter", "ledger.json")
         os.environ["CODEARBITER_LEDGER"] = self.ledger
+        self.today = datetime.now().strftime("%Y-%m-%d")
 
     def tearDown(self):
         restore_home(self._home)
@@ -1144,15 +1018,14 @@ class TestRenderWriteAmplification(unittest.TestCase):
 
     # ------------------------------------------------------------------ helpers
     def _assistant(self, req, inp=200, out=100):
-        # A local-offset "now" timestamp so _msg_date buckets these tokens into
-        # the CURRENT calendar day (the today-totals path under test).
+        # A local-offset "now" timestamp so these tokens land in the CURRENT day.
         return {"type": "assistant", "requestId": req,
                 "timestamp": datetime.now().astimezone().isoformat(),
                 "message": {"model": "claude-sonnet-4-6",
                             "usage": {"input_tokens": inp, "output_tokens": out}}}
 
-    def _write_tx(self, entries):
-        tx = os.path.join(self.tmp, "transcript.jsonl")
+    def _write_tx(self, entries, name="transcript.jsonl"):
+        tx = os.path.join(self.tmp, name)
         with open(tx, "w", encoding="utf-8") as f:
             for o in entries:
                 f.write(json.dumps(o) + "\n")
@@ -1163,7 +1036,6 @@ class TestRenderWriteAmplification(unittest.TestCase):
             return json.load(f)
 
     def _record_writes(self):
-        """Wrap _atomic_json so every replaced pathname is recorded in order."""
         writes = []
         real = L._atomic_json
 
@@ -1183,142 +1055,116 @@ class TestRenderWriteAmplification(unittest.TestCase):
 
         return reads, mock.patch.object(L, "_read_json", side_effect=spy)
 
-    def _seed_shard(self, sid, today, tokens_in, cost):
-        rec = {"first_ts": time.time(), "last_ts": time.time(), "last_day": today,
-               "host_cost": cost, "reqs": {}, "burn": [], "tx_off": 0,
-               "today": {"in": float(tokens_in), "out": 0.0, "cost": cost,
-                         "date": today}}
-        self.assertTrue(L._atomic_json(L._session_file(self.ledger, sid),
-                                       {"sid": sid, "rec": rec}))
+    def _seed_peer(self, sid, tokens_in, pd):
+        rec = L._fresh_summary(sid, time.time())
+        rec["days"][self.today] = {"in": tokens_in, "out": 0, "pd": pd, "rc": {}}
+        rec["tot"] = {"in": tokens_in, "out": 0, "pd": pd}
+        rec["last_day"] = self.today
+        rec["cov"] = {"state": "complete", "reasons": [], "src_reasons": []}
+        self.assertTrue(L._atomic_json(L._acct_file(self.ledger, sid),
+                                       {"schema": L.ACCT_SCHEMA, "sid": sid, "seq": 0,
+                                        "rec": rec}))
 
     # ------------------------------------------------------------------ tests
     def test_unchanged_render_replaces_no_file(self):
         tx = self._write_tx([self._assistant("r1")])
         data = {"transcript_path": tx, "cost": {"total_cost_usd": 1.25}}
-        L.ledger_update(data, "quiet")                 # seed
+        L.ledger_update(data, "quiet")
         writes, patcher = self._record_writes()
         with patcher:
-            L.ledger_update(data, "quiet")             # identical render
+            L.ledger_update(data, "quiet")
         self.assertEqual(writes, [])
 
-    def test_unchanged_render_preserves_shard_and_snapshot_bytes(self):
+    def test_unchanged_render_preserves_summary_bytes(self):
         tx = self._write_tx([self._assistant("r1")])
         data = {"transcript_path": tx, "cost": {"total_cost_usd": 1.25}}
         L.ledger_update(data, "quiet")
-        shard = L._session_file(self.ledger, "quiet")
-        before_shard = self._read(shard)
-        before_snap = self._read(self.ledger)
+        acct = L._acct_file(self.ledger, "quiet")
+        before = self._read(acct)
         L.ledger_update(data, "quiet")
-        self.assertEqual(self._read(shard), before_shard)
-        self.assertEqual(self._read(self.ledger), before_snap)
+        self.assertEqual(self._read(acct), before)
 
-    def test_changed_render_reads_snapshot_and_shards_once(self):
+    def test_changed_render_reads_each_file_once(self):
         tx = self._write_tx([self._assistant("r1")])
-        data = {"transcript_path": tx, "cost": {"total_cost_usd": 1.0}}
-        L.ledger_update(data, "hot")
+        L.ledger_update({"transcript_path": tx, "cost": {"total_cost_usd": 1.0}}, "hot")
         for other in ("a", "b", "c"):
-            self._seed_shard(other, datetime.now().strftime("%Y-%m-%d"), 10, 0.5)
+            self._seed_peer(other, 10, 5)
         tx = self._write_tx([self._assistant("r1"), self._assistant("r2")])
-        data = {"transcript_path": tx, "cost": {"total_cost_usd": 2.0}}
         reads, patcher = self._record_reads()
         with patcher:
-            L.ledger_update(data, "hot")
-        self.assertEqual(reads.count(self.ledger), 1)
+            L.ledger_update({"transcript_path": tx, "cost": {"total_cost_usd": 2.0}}, "hot")
         for path in set(reads):
             self.assertEqual(reads.count(path), 1, f"{path} was parsed twice")
+        self.assertNotIn(self.ledger, reads)
 
     def test_last_ts_heartbeat_is_throttled_then_refreshed(self):
         L.ledger_update({}, "beat")
-        shard = L._session_file(self.ledger, "beat")
-        stamped = self._read(shard)["rec"]["last_ts"]
+        acct = L._acct_file(self.ledger, "beat")
+        stamped = self._read(acct)["rec"]["last_ts"]
         L.ledger_update({}, "beat")
-        self.assertEqual(self._read(shard)["rec"]["last_ts"], stamped)
-        payload = self._read(shard)
+        self.assertEqual(self._read(acct)["rec"]["last_ts"], stamped)
+        payload = self._read(acct)
         payload["rec"]["last_ts"] = time.time() - L.LEDGER_HEARTBEAT - 5
-        self.assertTrue(L._atomic_json(shard, payload))
+        self.assertTrue(L._atomic_json(acct, payload))
         L.ledger_update({}, "beat")
-        refreshed = self._read(shard)["rec"]["last_ts"]
-        self.assertGreater(refreshed, time.time() - L.LEDGER_HEARTBEAT)
+        self.assertGreater(self._read(acct)["rec"]["last_ts"], time.time() - L.LEDGER_HEARTBEAT)
 
     def test_heartbeat_throttle_stays_far_inside_the_ttl(self):
-        # The throttle only exists to stop per-render writes; it must never let a
-        # live session drift out of the 36-hour TTL contract.
         self.assertLess(L.LEDGER_HEARTBEAT, L.SESSION_TTL / 10)
 
-    def test_quiet_render_still_prunes_expired_snapshot_entry(self):
+    def test_quiet_render_still_prunes_expired_peer(self):
         tx = self._write_tx([self._assistant("r1")])
         data = {"transcript_path": tx}
         L.ledger_update(data, "live")
-        snapshot = self._read(self.ledger)
-        snapshot["sessions"]["ghost"] = {"last_ts": time.time() - L.SESSION_TTL - 1}
-        self.assertTrue(L._atomic_json(self.ledger, snapshot))
-        L.ledger_update(data, "live")                  # nothing changed for "live"
-        self.assertNotIn("ghost", self._read(self.ledger)["sessions"])
-        self.assertIn("live", self._read(self.ledger)["sessions"])
+        self._seed_peer("ghost", 1, 1)
+        ghost = L._acct_file(self.ledger, "ghost")
+        payload = self._read(ghost)
+        payload["rec"]["last_ts"] = time.time() - L.SESSION_TTL - 1
+        self.assertTrue(L._atomic_json(ghost, payload))
+        L.ledger_update(data, "live")
+        self.assertFalse(os.path.exists(ghost))
+        self.assertTrue(os.path.exists(L._acct_file(self.ledger, "live")))
 
-    def test_cost_change_alone_is_persisted(self):
+    def test_host_change_alone_is_persisted(self):
         L.ledger_update({"cost": {"total_cost_usd": 1.0}}, "cost")
-        shard = L._session_file(self.ledger, "cost")
         L.ledger_update({"cost": {"total_cost_usd": 3.5}}, "cost")
-        self.assertEqual(self._read(shard)["rec"]["host_cost"], 3.5)
-        self.assertEqual(self._read(self.ledger)["sessions"]["cost"]["host_cost"],
-                         3.5)
+        host = self._read(L._acct_file(self.ledger, "cost"))["rec"]["host"]
+        self.assertEqual((host["latest"], host["max"]), (3.5, 3.5))
 
-    def test_retired_tot_key_is_removed_even_when_null(self):
-        # The batch-1 "tot" cache key is retired on read. A JSON null value must
-        # still count as a change, or the in-memory record silently diverges from
-        # the shard on disk with no write to reconcile it.
-        L.ledger_update({}, "legacy")
-        shard = L._session_file(self.ledger, "legacy")
-        payload = self._read(shard)
-        payload["rec"]["tot"] = None
-        self.assertTrue(L._atomic_json(shard, payload))
-        L.ledger_update({}, "legacy")
-        self.assertNotIn("tot", self._read(shard)["rec"])
-
-    def test_daily_totals_exact_across_shard_counts(self):
-        today = datetime.now().strftime("%Y-%m-%d")
+    def test_daily_totals_exact_across_session_counts(self):
         for count in (1, 10, 100):
-            with self.subTest(shards=count):
+            with self.subTest(sessions=count):
                 directory = L._session_dir(self.ledger)
-                for name in (os.listdir(directory)
-                             if os.path.isdir(directory) else []):
-                    os.remove(os.path.join(directory, name))
+                shutil.rmtree(directory, ignore_errors=True)
                 for index in range(count):
-                    self._seed_shard(f"peer-{index}", today, 7, 0.25)
+                    self._seed_peer(f"peer-{index}", 7, 250)
                 _rec, _sess, day = L.ledger_update({}, "current")
                 self.assertEqual(day["in"], 7.0 * count)
-                self.assertAlmostEqual(day["cost"], 0.25 * count)
-                self.assertEqual(
-                    len(self._read(self.ledger)["sessions"]), count + 1)
+                self.assertEqual(day["pd"], 250 * count)
 
-    def test_expired_shards_still_pruned_with_many_live_shards(self):
-        today = datetime.now().strftime("%Y-%m-%d")
+    def test_expired_peers_still_pruned_with_many_live_peers(self):
         for index in range(10):
-            self._seed_shard(f"peer-{index}", today, 1, 0.0)
-        expired = L._session_file(self.ledger, "gone")
-        self.assertTrue(L._atomic_json(
-            expired, {"sid": "gone",
-                      "rec": {"last_ts": time.time() - L.SESSION_TTL - 1}}))
+            self._seed_peer(f"peer-{index}", 1, 0)
+        self._seed_peer("gone", 1, 0)
+        gone = L._acct_file(self.ledger, "gone")
+        payload = self._read(gone)
+        payload["rec"]["last_ts"] = time.time() - L.SESSION_TTL - 1
+        self.assertTrue(L._atomic_json(gone, payload))
         L.ledger_update({}, "current")
-        self.assertFalse(os.path.exists(expired))
-        self.assertNotIn("gone", self._read(self.ledger)["sessions"])
+        self.assertFalse(os.path.exists(gone))
+        for index in range(10):
+            self.assertTrue(os.path.exists(L._acct_file(self.ledger, f"peer-{index}")))
 
     def test_concurrent_sessions_keep_their_own_totals(self):
-        first = self._write_tx([self._assistant("a1", inp=100, out=10)])
-        second = os.path.join(self.tmp, "second.jsonl")
-        with open(second, "w", encoding="utf-8") as f:
-            f.write(json.dumps(self._assistant("b1", inp=300, out=20)) + "\n")
+        first = self._write_tx([self._assistant("a1", inp=100, out=10)], "a.jsonl")
+        second = self._write_tx([self._assistant("b1", inp=300, out=20)], "b.jsonl")
         _r, sess_a, _d = L.ledger_update({"transcript_path": first}, "sid-a")
         _r, sess_b, day = L.ledger_update({"transcript_path": second}, "sid-b")
         self.assertEqual(sess_a["in"], 100.0)
         self.assertEqual(sess_b["in"], 300.0)
-        snapshot = self._read(self.ledger)["sessions"]
-        self.assertEqual(snapshot["sid-a"]["today"]["in"], 100.0)
-        self.assertEqual(snapshot["sid-b"]["today"]["in"], 300.0)
-        # A quiet re-render of sid-a must not drop sid-b from the snapshot.
-        L.ledger_update({"transcript_path": first}, "sid-a")
-        self.assertIn("sid-b", self._read(self.ledger)["sessions"])
+        self.assertEqual(day["in"], 400.0)
+        _r, _s, day = L.ledger_update({"transcript_path": first}, "sid-a")
+        self.assertEqual(day["in"], 400.0)
 
 
 # =========================================================================== clone hoists
@@ -1343,7 +1189,7 @@ class TestNoImportSideEffects(unittest.TestCase):
         import importlib
         mod = importlib.reload(L)
         self.assertTrue(hasattr(mod, "ledger_update"))
-        self.assertTrue(hasattr(mod, "price_for"))
+        self.assertTrue(hasattr(mod, "burn_samples"))
 
 
 if __name__ == "__main__":

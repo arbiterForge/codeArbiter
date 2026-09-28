@@ -12,6 +12,28 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.23.0] - 2026-09-27
+
+### Changed
+
+- The statusline's Session and Today cost is now reconstructed from the parent transcript and
+  every subagent transcript, with each request counted once across streaming snapshots and
+  forked-subagent replays. Advisor iterations are priced at their own model. Cache writes,
+  server tools, fast mode and US-only inference are priced at pinned list rates.
+- Each figure carries a coverage label: `api≈` complete, `api≥` a lower bound, `api≈?` no
+  defensible figure, and `host≈` (Session only) for Claude Code's own estimate when
+  reconstruction is unavailable. A trailing `*` marks a stale snapshot, shown when a redraw
+  loses the ledger lock; the bar never falls back to zeros.
+- Accounting state moved to bounded per-session files under `~/.codearbiter/ledger.json.sessions/`.
+  A redraw reads a fixed byte budget, so steady-state cost no longer grows with history.
+  Deferred work resumes on the next redraw.
+- The subagent panel renders from ledger summaries and no longer parses child transcripts.
+
+### Fixed
+
+- Streaming snapshots and fork replays no longer double-count tokens or cost.
+- Subagent usage is no longer missing from Session and Today totals.
+
 ## [2.22.6] - 2026-09-27
 
 ### Fixed

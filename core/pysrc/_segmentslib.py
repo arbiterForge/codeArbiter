@@ -205,14 +205,74 @@ def model_pill(model, effort=""):
 
 
 def usage_row(label, tin, tout, cost, trail=""):
-    """One row of the Session/Today mini-table: label │ ↓in ↑out │ $cost. in/out are
-    fresh (sent) tokens; `cost` is Claude Code's real session cost (cost.total_cost_usd),
-    not an estimate. `trail` carries extras (session age, burn sparkline)."""
+    """One row of the Session/Today mini-table: label | down-in up-out | cost.
+    in/out are fresh (sent) tokens. `cost` is a pre-rendered cell from
+    cost_cell(), whose label carries the figure's provenance; a bare number is
+    still accepted for callers outside the usage block. `trail` carries extras
+    (the burn sparkline)."""
+    money = cost if isinstance(cost, str) else f"{OK}{usd_fine(cost)}{RESET}"
     base = (f"{GREY}{label:<7}{RESET} {V0}{_VBAR}{RESET} "
             f"{V2}{DN}{RESET} {WHITE}{fmt_tok(tin):>6}{RESET} "
             f"{V2}{UP}{RESET} {WHITE}{fmt_tok(tout):>6}{RESET} {V0}{_VBAR}{RESET} "
-            f"{OK}{usd_fine(cost)}{RESET}")
+            f"{money}")
     return base + (f"  {trail}" if trail else "")
+
+
+# Visible columns of usage_row() before the cost cell: label(7) + separators and
+# two right-aligned 6-column token counts.
+USAGE_ROW_FIXED = 30
+# Coverage reasons that mean observed usage could not be priced at all.
+PRICING_REASONS = frozenset({"unknown_model", "unpriced_modifier", "unknown_cache_ttl",
+                             "unknown_charge", "unknown_iteration", "model_conflict"})
+
+
+def cost_label(scope, allow_host=False, compact=False):
+    """(text, tone) for one Session/Today dollar figure, from the ledger's
+    structured coverage (spec AC-01/02, D-19). The renderer never infers
+    completeness from a number:
+      api≈$N   complete reconstruction at pinned list rates
+      api≥$N   a true lower bound: partial coverage, or still catching up
+      api≈?    no defensible dollar figure: grey when nothing is reconstructed
+               yet (neutral, not a warning), amber when usage exists but
+               none of it could be priced
+      host≈$N  Session only: Claude Code's own estimate, when reconstruction
+               is unavailable (never Today, never mixed with api figures)
+    A trailing `*` marks a stale snapshot, shown because this render lost the
+    ledger lock. `compact` drops the api/host words and keeps the provenance
+    symbol, for narrow boxes."""
+    scope = scope if isinstance(scope, dict) else {}
+    state = scope.get("state") or "unavailable"
+    api = "" if compact else "api"
+    host = scope.get("host") if allow_host else None
+    if state == "unavailable":
+        if isinstance(host, (int, float)) and not isinstance(host, bool) and host >= 0:
+            text, tone = ("h" if compact else "host") + "≈" + usd_fine(host), "host"
+        else:
+            text, tone = api + "≈?", "none"
+    elif state == "complete":
+        text, tone = api + "≈" + usd_fine(scope.get("cost")), "ok"
+    else:
+        reasons = set(scope.get("reasons") or ())
+        used = num(scope.get("in")) + num(scope.get("out")) > 0
+        if num(scope.get("pd")) <= 0 and used and reasons & PRICING_REASONS:
+            text, tone = api + "≈?", "unknown"
+        else:
+            text, tone = api + "≥" + usd_fine(scope.get("cost")), "partial"
+    if scope.get("stale"):
+        text += "*"
+    return text, tone
+
+
+def cost_cell(scope, width, allow_host=False):
+    """The colored cost cell: the full label when it fits `width` visible
+    columns, else the compact form, so a figure is never clipped mid-number."""
+    text, tone = cost_label(scope, allow_host)
+    if len(text) > width:
+        text, tone = cost_label(scope, allow_host, compact=True)
+    # Amber only where coverage genuinely needs attention; "none" (nothing
+    # reconstructed) stays neutral, since amber is a status signal.
+    color = {"ok": OK, "partial": WARN, "unknown": WARN, "host": GREY, "none": GREY}.get(tone, GREY)
+    return f"{color}{text}{RESET}"
 
 
 def seg_lines(data):
