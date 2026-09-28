@@ -232,7 +232,9 @@ def cost_label(scope, allow_host=False, compact=False):
     completeness from a number:
       api≈$N   complete reconstruction at pinned list rates
       api≥$N   a true lower bound: partial coverage, or still catching up
-      api≈?    usage exists but no defensible dollar figure does
+      api≈?    no defensible dollar figure: grey when nothing is reconstructed
+               yet (neutral, not a warning), amber when usage exists but
+               none of it could be priced
       host≈$N  Session only: Claude Code's own estimate, when reconstruction
                is unavailable (never Today, never mixed with api figures)
     A trailing `*` marks a stale snapshot, shown because this render lost the
@@ -246,7 +248,7 @@ def cost_label(scope, allow_host=False, compact=False):
         if isinstance(host, (int, float)) and not isinstance(host, bool) and host >= 0:
             text, tone = ("h" if compact else "host") + "≈" + usd_fine(host), "host"
         else:
-            text, tone = api + "≈?", "unknown"
+            text, tone = api + "≈?", "none"
     elif state == "complete":
         text, tone = api + "≈" + usd_fine(scope.get("cost")), "ok"
     else:
@@ -267,7 +269,9 @@ def cost_cell(scope, width, allow_host=False):
     text, tone = cost_label(scope, allow_host)
     if len(text) > width:
         text, tone = cost_label(scope, allow_host, compact=True)
-    color = {"ok": OK, "partial": WARN, "unknown": WARN, "host": GREY}.get(tone, GREY)
+    # Amber only where coverage genuinely needs attention; "none" (nothing
+    # reconstructed) stays neutral, since amber is a status signal.
+    color = {"ok": OK, "partial": WARN, "unknown": WARN, "host": GREY, "none": GREY}.get(tone, GREY)
     return f"{color}{text}{RESET}"
 
 

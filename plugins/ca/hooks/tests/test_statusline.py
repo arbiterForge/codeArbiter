@@ -422,6 +422,21 @@ class TestCostLabels(unittest.TestCase):
         trow = next(r for r in rows if "Today" in r)
         return srow, trow
 
+    def test_tones_reserve_amber_for_coverage_that_needs_attention(self):
+        import _segmentslib as S
+        self.assertTrue(S.WARN and S.GREY and S.OK and len({S.WARN, S.GREY, S.OK}) == 3)
+        cases = [
+            (self._scope(state="unavailable", cost=0.0, tin=0, tout=0), False, S.GREY),
+            (self._scope(state="unavailable", cost=0.0, host=3.0), True, S.GREY),
+            (self._scope(state="complete", cost=2.0), False, S.OK),
+            (self._scope(state="partial", cost=2.0, reasons=["unknown_model"]), False, S.WARN),
+            (self._scope(state="partial", cost=0.0, reasons=["unknown_model"]), False, S.WARN),
+        ]
+        for scope, allow_host, want in cases:
+            with self.subTest(state=scope["state"], cost=scope["cost"], host=scope["host"]):
+                cell = S.cost_cell(scope, 40, allow_host=allow_host)
+                self.assertTrue(cell.startswith(want), repr(cell))
+
     def test_complete_is_api_approx(self):
         s, t = self._render(self._scope(cost=2.0), self._scope(cost=1.5))
         self.assertIn("api≈$2.00", s)
