@@ -5,6 +5,7 @@ No subprocess calls are exercised here.  All tests use stdlib unittest only.
 import importlib
 import json
 import os
+import shutil
 import sys
 import tempfile
 import time
@@ -341,6 +342,7 @@ class TestSubagentsFromLedgerSummaries(unittest.TestCase):
             os.environ.pop("CODEARBITER_LEDGER", None)
         else:
             os.environ["CODEARBITER_LEDGER"] = self._orig
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
     @staticmethod
     def _a(rid, model, inp, out, cw=0):
@@ -532,9 +534,12 @@ class TestAccountingFailSoftThroughRender(unittest.TestCase):
             "CODEARBITER_LEDGER": os.path.join(self.tmp, "ledger.json"), "NO_COLOR": "1",
             "CODEARBITER_WIDTH": "120"}, clear=False)
         self._env.start()
+        self._home = redirect_home(self.tmp)
 
     def tearDown(self):
+        restore_home(self._home)
         self._env.stop()
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
     def _line(self, rid, model="claude-sonnet-5", **usage):
         u = {"input_tokens": 5, "output_tokens": 5}

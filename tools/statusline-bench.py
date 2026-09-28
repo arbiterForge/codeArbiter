@@ -186,9 +186,7 @@ def _child(entry):
     sys.argv = [entry]
     import runpy
     try:
-        runpy.run_path(entry, run_name="__main__")
-    except SystemExit:
-        pass
+        runpy.run_path(entry, run_name="__main__")   # a nonzero SystemExit propagates
     finally:
         builtins.open = real_open
         with real_open(os.environ["BENCH_COUNTERS"], "w", encoding="utf-8") as f:
@@ -420,6 +418,10 @@ def cmd_compare(args):
             continue
         for phase in GATED_PHASES:
             b, h = bs[phase], hs[phase]
+            if b["renders"] != h["renders"]:
+                failures.append(f"{name}/{phase}: render count differs (base {b['renders']}, "
+                                f"head {h['renders']}); reports from different harnesses")
+                continue
             for c in GATED_COUNTERS:
                 bv, hv = b["totals"].get(c, 0), h["totals"].get(c, 0)
                 rows.append((name, phase, c, bv, hv))

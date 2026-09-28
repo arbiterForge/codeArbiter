@@ -26,8 +26,9 @@ figure carries its own label:
 - `api≥$N` — a lower bound. Some usage could not be priced (an unknown model, tool, or price
   modifier), or the scanner is still catching up on a large transcript. The number only rises as
   coverage improves.
-- `api≈?` — usage exists but no defensible dollar figure does. The renderer never shows a precise
-  number it cannot stand behind.
+- `api≈?` — no defensible dollar figure: nothing has been reconstructed yet (grey), or usage exists
+  but none of it could be priced (amber). The renderer never shows a precise number it cannot stand
+  behind.
 - `host≈$N` — Session only, and only when reconstruction is unavailable: Claude Code's own session
   estimate, the highest value it has reported. It is never mixed with `api` figures and never
   used for Today.

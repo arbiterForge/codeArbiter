@@ -521,6 +521,8 @@ Each source persists a generation fingerprint:
 - a hash of the file's first ≤4 KiB, the head;
 - a hash of the ≤4 KiB immediately preceding the stored offset, the tail of the consumed region.
 
+4 KiB is the ceiling. The implementation uses 512 B windows (`FP_WINDOW` in `_ledgerlib`); D-20's fingerprint allowance is stated against the 4 KiB ceiling, so the benchmark bound is conservative.
+
 The source is re-verified whenever its `stat` (size, mtime, and inode/file-id where available) differs from the stored value. Re-verification costs at most two bounded reads.
 
 A size below the offset, or a head or tail mismatch, means **replacement**. The source's derived requests are discarded and it is rebuilt from byte 0 as a new generation. This applies to truncations and same-size replacements alike, and to larger replacements (e.g. 4 MiB → 6 MiB).

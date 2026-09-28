@@ -173,7 +173,7 @@ label tells you how far to trust the number:
 |-------|---------|
 | `api≈$N` | Complete: every observed request was priced |
 | `api≥$N` | A lower bound. Some usage could not be priced (an unknown model, tool, or price modifier), or a large transcript is still being read. The figure only rises as coverage improves |
-| `api≈?` | Usage exists, but there is no dollar figure codeArbiter can defend |
+| `api≈?` | No dollar figure codeArbiter can defend: nothing has been reconstructed yet (shown grey), or usage exists but none of it could be priced (shown amber) |
 | `host≈$N` | Session only, when reconstruction is unavailable: Claude Code's own session estimate. It is never mixed with `api` figures and never used for Today |
 | trailing `*` | Stale: that redraw could not take the ledger lock, so it shows the last saved totals |
 
