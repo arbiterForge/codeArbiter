@@ -7,7 +7,44 @@
    <head> output is preserved. */
 import Default from '@astrojs/starlight/components/Head.astro';
 import { ClientRouter } from 'astro:transitions';
+
+const basePath = import.meta.env.BASE_URL.replace(/\/+$/, '') || '/';
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isHomepage = currentPath === basePath;
+const searchIdentity = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://codearbiter.dev/#website",
+      url: "https://codearbiter.dev/",
+      name: "codeArbiter",
+      alternateName: ["Code Arbiter", "codearbiter.dev"],
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://codearbiter.dev/#software",
+      url: "https://codearbiter.dev/",
+      name: "codeArbiter",
+      description:
+        "Open-source governance layer for AI coding agents with repository-owned guardrails, reviews, audit trails, and durable project context for Claude Code, Codex, and Pi.",
+      applicationCategory: "DeveloperApplication",
+      isAccessibleForFree: true,
+      license: "https://spdx.org/licenses/AGPL-3.0-only.html",
+      sameAs: ["https://github.com/arbiterForge/codeArbiter"],
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+    },
+  ],
+};
 ---
 
 <Default><slot /></Default>
+<meta property="og:site_name" content="codeArbiter" />
+{isHomepage && (
+  <script type="application/ld+json" set:html={JSON.stringify(searchIdentity)} is:inline></script>
+)}
 <ClientRouter />
