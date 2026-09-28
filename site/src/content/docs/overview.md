@@ -1,6 +1,6 @@
 ---
 title: What Is codeArbiter
-description: How codeArbiter orchestrates shared gated workflows in Claude Code, Codex, and Pi.
+description: What codeArbiter is, how its agentic coding governance works, and how it coordinates repository-owned gates across Claude Code, Codex, and Pi.
 journey:
   level: "Foundation"
   time: "6 minutes"
@@ -9,9 +9,10 @@ journey:
   proof: "You can identify who routes, who implements, who reviews, and who resolves a gate."
 ---
 
-codeArbiter coordinates governed development inside Claude Code, Codex, and Pi. You describe the
-work; the owning lane brings in the context, authoring, tests, reviews and decision boundaries
-that work needs. Project records live in your repository rather than depending on one chat.
+codeArbiter is an open-source governance layer for AI coding agents. It coordinates governed
+development inside Claude Code, Codex, and Pi. You describe the work; the owning lane brings in the
+context, authoring, tests, reviews and decision boundaries that work needs. Project records live in
+your repository rather than depending on one chat.
 
 ## What you receive
 
