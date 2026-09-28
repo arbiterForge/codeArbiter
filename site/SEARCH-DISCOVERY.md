@@ -4,7 +4,7 @@ This file owns the search-discovery contract for codeArbiter. It is not a promis
 must not become a keyword-stuffing checklist. Product accuracy, source-backed claims, and a useful
 reader journey remain higher priority than search wording.
 
-## Baseline — 2026-09-27
+## Baseline: 2026-09-27
 
 The public site is crawlable and indexed at `https://codearbiter.dev/`. The legacy GitHub Pages
 URLs under `https://arbiterforge.github.io/codeArbiter/` currently redirect to the custom domain.
@@ -16,9 +16,10 @@ The remaining first-pass problem is authority and identity clarity:
 - there was no explicit `WebSite` site-name structured data or `og:site_name`;
 - Starlight sitemap generation was enabled through Astro's `site` setting, but no public
   `robots.txt` advertised the sitemap;
-- the documentation is technically deep, but common search vocabulary such as "AI coding agent
-  guardrails", "agentic coding governance", and "audit trail" was not consistently present on the
-  pages that already own those concepts.
+- the documentation is technically deep, but external searches use terms such as "guardrails"
+  alongside "agentic coding governance" and "audit trail"; those intents need clear mapping to
+  codeArbiter's canonical gates and evidence concepts without turning search language into product
+  terminology.
 
 This change addresses those signals without manufacturing new claims or publishing thin landing
 pages.
@@ -30,22 +31,25 @@ problems rather than product-internal vocabulary:
 
 - OpenAI, "Running Codex safely at OpenAI":
   https://openai.com/index/running-codex-safely/
-  — controls, technical boundaries, approvals, and telemetry.
+ : controls, technical boundaries, approvals, and telemetry.
 - Anthropic, "Steering Claude Code: when to use CLAUDE.md, skills, hooks, and subagents":
   https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more
-  — deterministic hooks and permissions as guardrails.
+ : deterministic hooks and permissions as guardrails.
 - Anthropic, "How to configure hooks":
   https://claude.com/blog/how-to-configure-hooks
-  — enforcing project rules and blocking actions before execution.
+ : enforcing project rules and blocking actions before execution.
 - Google Cloud, "What is agentic coding?":
   https://cloud.google.com/discover/what-is-agentic-coding
-  — governance, scope control, guardrails, audit trails, and human checks.
+ : governance, scope control, guardrails, audit trails, and human checks.
 - AI Governance Institute, "How do we govern agentic coding assistants and AI developer tools?":
   https://aigovernance.com/playbook/governing-agentic-developer-tools
-  — governance of developer agents as a distinct operational risk category.
+ : governance of developer agents as a distinct operational risk category.
 
 These sources do not define codeArbiter's claims. They establish the language people use when
 searching for the class of problem codeArbiter addresses.
+
+External query vocabulary does not override `site/VOICE.md`. In reader-facing codeArbiter copy,
+**gate** remains the canonical term; "guardrails" appears in this file only as a search-intent label.
 
 ## Query map
 

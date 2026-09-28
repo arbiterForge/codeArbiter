@@ -11,6 +11,7 @@ describe("search discovery foundation", () => {
   it("makes the homepage the explicit codeArbiter category/entity page", () => {
     const homepage = readSite("src/content/docs/index.mdx");
     expect(homepage).toContain("title: Agentic Coding Governance for Claude Code, Codex, and Pi");
+    expect(homepage).toContain('content: "codeArbiter: Agentic Coding Governance for Claude Code, Codex & Pi"');
     expect(homepage).toContain("codeArbiter: hard gates for agentic coding.");
     expect(homepage).toContain("codeArbiter is an open-source governance layer for AI coding agents.");
     expect(homepage).toContain('href="./overview/">What is codeArbiter?</a>');
@@ -47,7 +48,7 @@ describe("search discovery foundation", () => {
 
   it("maps common sector vocabulary onto existing authoritative pages", () => {
     expect(readSite("src/content/docs/enforcement.md")).toContain(
-      "deterministic AI coding agent guardrails",
+      "deterministic AI coding agent gates",
     );
     expect(readSite("src/content/docs/concepts/auditability.mdx")).toContain(
       "AI coding agent audit trail",
