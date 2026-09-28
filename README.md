@@ -2,7 +2,7 @@
 
 <img src="docs/readme-hero.webp" alt="codeArbiter. Hard gates for agentic coding." width="100%">
 
-**Open-source governance and hard guardrails for AI coding agents across Claude Code, Codex CLI, and Pi.**
+**Open-source governance and hard gates for AI coding agents across Claude Code, Codex CLI, and Pi.**
 
 codeArbiter is a repository-owned governance layer for tests, reviews, security checks, decisions,
 and durable project context. You decide. codeArbiter enforces.

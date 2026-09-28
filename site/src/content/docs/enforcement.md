@@ -1,6 +1,6 @@
 ---
 title: Enforcement & Security
-description: "How codeArbiter implements deterministic AI coding agent guardrails at the tool-call boundary: activation, blocking gates, advisory reminders, and fail-loud behavior."
+description: "How codeArbiter implements deterministic AI coding agent gates at the tool-call boundary: activation, blocking gates, advisory reminders, and fail-loud behavior."
 journey:
   level: "Power user"
   time: "12 minutes"
@@ -10,7 +10,7 @@ journey:
   proof: "Given a blocked action, you can name its hook flank, gate id, and sanctioned remediation."
 ---
 
-codeArbiter's AI coding agent guardrails are not advice the model can talk past. The hard gates run
+codeArbiter's AI coding agent gates are not advice the model can talk past. The hard gates run
 at each host's tool-call boundary with no third-party Python dependencies. All three governance adapters consume the same
 guard core. Claude Code receives its exit-2 verdict directly; Codex's `pre-tool-adapter.py`
 converts the same verdict to a structured deny response so Windows shell exit handling cannot
