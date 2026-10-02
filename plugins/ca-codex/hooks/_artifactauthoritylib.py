@@ -64,6 +64,9 @@ ID_RE = re.compile(r"[A-Z][A-Z0-9_-]{0,127}")
 REQUEST_RE = re.compile(r"[0-9a-f]{64}")
 TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 HOST_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}")
+# Claude Code 2.1.286 reports a context-window variant as a model tag:
+# "claude-opus-5-5[1m]". Only resolvedModel may carry one such suffix.
+MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}(?:\[[0-9a-z]{1,16}\])?")
 MAX_STATE = 1 << 20
 # Only terminal abandonment can read a legacy inline-context review this large.
 MAX_RECOVERY_STATE = 2 << 20
@@ -73,6 +76,9 @@ MAX_DECISION = 65536
 REGISTRY_PARENT = Path(tempfile.gettempdir())
 HOSTS = frozenset({"codex", "claude"})
 CLAUDE_REVIEWER = "ca:authority-reviewer"
+# Claude Code 2.1.286 children report through this tool; their SubagentStop
+# then carries no last_assistant_message.
+CLAUDE_HANDBACK_TOOL = "SubagentHandback"
 CLAUDE_REVIEWER_MODELS = frozenset({"opus", "sonnet", "haiku"})
 CLAUDE_REVIEW_PROFILE = "claude-review/0.1.0"
 CODEX_REVIEW_PROFILE = "codex-review/0.1.0"
@@ -398,6 +404,7 @@ def _load(
         "authority_source", "dispatch_prompt", "review_contract_sha256",
         "required_coverage", "wrapper", "command_bindings", "recovery",
         "launch_envelope", "workspace_roots", "host", "codex_review_profile",
+        "handback",
     }
     if (
         not isinstance(value, dict)
@@ -425,6 +432,10 @@ def _load(
     ):
         raise AuthorityError("INVALID_AUTHORITY_STATE", "Codex review profile is unsupported")
     if len(raw) > MAX_STATE:
+        if recover_armed_review and value["state"] == "ABANDONED":
+            # Only an abandonment can have retained this; recovering it again is
+            # a no-op request, not a damaged binding.
+            raise AuthorityError("INVALID_RECOVERY", "request was already abandoned")
         try:
             _validate_legacy_review_recovery(root, value)
         except (AuthorityError, KeyError, TypeError, ValueError) as exc:
@@ -1916,6 +1927,12 @@ def _host_id(value: Any, field: str) -> str:
     return value
 
 
+def _model_id(value: Any, field: str) -> str:
+    if not isinstance(value, str) or MODEL_ID_RE.fullmatch(value) is None:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", f"{field} is malformed")
+    return value
+
+
 def _verification_selector(event: dict[str, Any]) -> tuple[str, Path, str] | None:
     """Recognize only the closed wrapper selector, never caller-authored child argv."""
     if event.get("tool_name") not in {
@@ -2716,7 +2733,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
             if not isinstance(response, dict):
                 raise AuthorityError("UNSUPPORTED_HOST_SEAM", "agent result is malformed")
             agent_id = _host_id(response.get("agentId"), "agentId")
-            resolved = _host_id(response.get("resolvedModel"), "resolvedModel")
+            resolved = _model_id(response.get("resolvedModel"), "resolvedModel")
         except AuthorityError:
             _reject(root, request, "uncorrelated-launch-result")
             raise
@@ -2767,6 +2784,44 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
                     return _claude_bind_child(candidate_root, candidate)
         return None
 
+    if name == "PostToolUse" and tool == CLAUDE_HANDBACK_TOOL:
+        # Every child's handback lands here; only the bound reviewer's counts.
+        agent_id = event.get("agent_id")
+        if not isinstance(agent_id, str):
+            return None
+        matches = [
+            (candidate_root, candidate)
+            for candidate_root, candidate in _claude_requests({"LAUNCHING", "RUNNING"})
+            if (candidate.get("launch") or {}).get("agent_id") == agent_id
+            and candidate["launch"].get("parent_session_id") == event.get("session_id")
+        ]
+        if not matches:
+            return None
+        if len(matches) != 1:
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "handback correlation is ambiguous")
+        root, request = matches[0]
+        if request.get("handback") is not None:
+            # One report per review: a second could replace the first.
+            _reject(root, request, "repeated-handback")
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer reported more than once")
+        tool_input = event.get("tool_input")
+        message = tool_input.get("message") if isinstance(tool_input, dict) else None
+        if (
+            request["state"] != "RUNNING"
+            or event.get("agent_type") != CLAUDE_REVIEWER
+            or not isinstance(message, str)
+            or len(message.encode("utf-8")) > MAX_DECISION
+        ):
+            _reject(root, request, "rejected-handback")
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "handback is not a bounded report from the running reviewer")
+        response = event.get("tool_response")
+        if not isinstance(response, dict) or response.get("success") is not True:
+            # Undelivered: the caller never received it, so it is not the report.
+            return None
+        request["handback"] = message
+        _save(root, request)
+        return None
+
     if name == "SubagentStop":
         agent_id = event.get("agent_id")
         matches = [
@@ -2805,7 +2860,12 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
             ):
                 raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer stop is not a first clean stop")
             _refuse_shadowed_reviewer(root, _real_root(session_root))
-            decision = _parse_decision(event.get("last_assistant_message"), request)
+            # 2.1.281 carries the report as the final message; 2.1.286 as a
+            # handback. When both exist they must be the same report.
+            final, reported = event.get("last_assistant_message"), request.get("handback")
+            if final is not None and reported is not None and final != reported:
+                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer handback and final message differ")
+            decision = _parse_decision(final if reported is None else reported, request)
         except AuthorityError:
             _reject(root, request, "rejected-first-stop")
             raise

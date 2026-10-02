@@ -12,6 +12,21 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.23.2] - 2026-10-02
+
+### Fixed
+
+- Claude Code reviews completed again on Claude Code 2.1.286. That host reports a 1M-context
+  reviewer model as `claude-opus-5-5[1m]`, which the launch correlation refused, so every
+  spec and quality review was rejected without a receipt. `resolvedModel` now admits one
+  trailing context tag; every other host identifier keeps the strict form.
+- The reviewer's report is now read from its `SubagentHandback` call, which 2.1.286 uses in
+  place of `last_assistant_message` on `SubagentStop`. Only the bound reviewer's delivered
+  handback in the launching session counts, a second handback rejects the review, and when a
+  host supplies both forms they must match.
+- Recovering an already-abandoned oversized review now reports `request was already abandoned`
+  instead of a misleading binding failure.
+
 ## [2.23.1] - 2026-09-27
 
 ### Fixed

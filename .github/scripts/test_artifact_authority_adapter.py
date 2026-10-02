@@ -2021,6 +2021,143 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         armed, agent_id = self._running("claude-review-whitespace")
         self.assertEqual(self._stop(agent_id, "\n" + self._decision(armed) + "\n")["state"], "COMPLETED")
 
+    # -- Claude Code 2.1.286 seams ------------------------------------------
+    def _launch_2286(self, nonce, agent_id):
+        armed = self._arm_claude_review(nonce)
+        pre = claude_fixture("2.1.286/agent-pretooluse.json", tool_input=dict(armed["launch_envelope"]))
+        self.adapter.observe_claude_hook(self.root, pre)
+        post = claude_fixture("2.1.286/agent-posttooluse.json", tool_input=pre["tool_input"])
+        post["tool_response"]["agentId"] = agent_id
+        return armed, pre, post
+
+    def _running_2286(self, nonce):
+        agent_id = "agent-" + nonce
+        armed, _pre, post = self._launch_2286(nonce, agent_id)
+        self.adapter.observe_claude_hook(self.root, post)
+        self.adapter.observe_claude_hook(
+            self.root, claude_fixture("2.1.286/subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        return armed, agent_id
+
+    def _handback(self, agent_id, message, **overrides):
+        event = claude_fixture("2.1.286/handback-posttooluse.json", agent_id=agent_id, agent_type=REVIEWER)
+        event["tool_input"] = {"message": message}
+        event.update(overrides)
+        return self.adapter.observe_claude_hook(self.root, event)
+
+    def _stop_2286(self, agent_id, **overrides):
+        event = claude_fixture("2.1.286/subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER)
+        event["background_tasks"] = [{**task, "id": agent_id} for task in event["background_tasks"]]
+        event.update(overrides)
+        return self.adapter.observe_claude_hook(self.root, event)
+
+    def test_2286_context_tagged_resolved_model_correlates(self):
+        armed, _pre, post = self._launch_2286("claude-2286-model", "agent-2286-model")
+        self.assertEqual(post["tool_response"]["resolvedModel"], "claude-opus-5-5[1m]")
+        self.adapter.observe_claude_hook(self.root, post)
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(state["state"], "LAUNCHING")
+        self.assertIs(state["launch"]["post_confirmed"], True)
+        # Recorded exactly as the host reported it, never normalized.
+        self.assertEqual(state["launch"]["resolved_model"], "claude-opus-5-5[1m]")
+
+    def test_context_tag_is_admitted_only_on_resolved_model(self):
+        for label, field, value in (
+            ("bare-tag", "resolvedModel", "[1m]"),
+            ("two-tags", "resolvedModel", "claude-opus-5-5[1m][1m]"),
+            ("open-tag", "resolvedModel", "claude-opus-5-5[1m"),
+            ("spaced-tag", "resolvedModel", "claude-opus-5-5[1 m]"),
+            ("inner-tag", "resolvedModel", "claude[1m]-opus"),
+            ("agent-id", "agentId", "agent[1m]"),
+        ):
+            with self.subTest(case=label):
+                armed, _pre, post = self._launch_2286("claude-2286-tag-" + label, "agent-2286-tag")
+                post["tool_response"][field] = value
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                    self.adapter.observe_claude_hook(self.root, post)
+                state = self.adapter._load(self.root, armed["request_id"])
+                self.assertEqual((state["state"], state["recovery"]["mode"]),
+                                 ("REJECTED", "uncorrelated-launch-result"))
+        armed = self._arm_claude_review("claude-2286-tag-prompt-id")
+        pre = claude_fixture("2.1.286/agent-pretooluse.json", tool_input=dict(armed["launch_envelope"]),
+                             prompt_id="prompt[1m]")
+        with self.assertRaisesRegex(RuntimeError, "prompt_id is malformed"):
+            self.adapter.observe_claude_hook(self.root, pre)
+
+    def test_2286_handback_completes_review(self):
+        armed, agent_id = self._running_2286("claude-2286-handback")
+        self.assertIsNone(self._handback(agent_id, self._decision(armed)))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        stop = claude_fixture("2.1.286/subagentstop-first.json")
+        self.assertNotIn("last_assistant_message", stop)
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+        published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        source = json.loads((self.root / published["authority_source"]).read_text("utf-8"))
+        observation = json.loads((self.root / source["observation_ref"]).read_text("utf-8"))
+        self.assertEqual(observation["producer_result"]["decision"], json.loads(self._decision(armed)))
+        self.assertEqual(observation["producer_result"]["launch"]["resolved_model"], "claude-opus-5-5[1m]")
+
+    def test_2286_stop_without_any_report_is_rejected(self):
+        armed, agent_id = self._running_2286("claude-2286-silent")
+        with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION"):
+            self._stop_2286(agent_id)
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["recovery"]["mode"]), ("REJECTED", "rejected-first-stop"))
+
+    def test_2286_second_handback_rejects_review(self):
+        armed, agent_id = self._running_2286("claude-2286-twice")
+        self._handback(agent_id, self._decision(armed))
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, self._decision(armed, assessment="Changed my mind."))
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["recovery"]["mode"]), ("REJECTED", "repeated-handback"))
+
+    def test_2286_handback_binding(self):
+        # Another agent's or another session's handback never touches the review.
+        for label, overrides in (
+            ("other-agent", {"agent_id": "agent-someone-else"}),
+            ("parent", {"agent_id": None, "agent_type": None}),
+            ("other-session", {"session_id": "session-other"}),
+        ):
+            with self.subTest(case=label):
+                armed, agent_id = self._running_2286("claude-2286-bind-" + label)
+                before = self.adapter._load(self.root, armed["request_id"])
+                hook = claude_fixture("2.1.286/handback-posttooluse.json", agent_id=agent_id, agent_type=REVIEWER)
+                hook["tool_input"] = {"message": self._decision(armed)}
+                for key, value in overrides.items():
+                    if value is None:
+                        hook.pop(key, None)
+                    else:
+                        hook[key] = value
+                self.assertIsNone(self.adapter.observe_claude_hook(self.root, hook))
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"]), before)
+        # The bound reviewer's id under another agent type fails closed.
+        armed, agent_id = self._running_2286("claude-2286-bind-type")
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, self._decision(armed), agent_type="general-purpose")
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+        # An undelivered handback records nothing; the stop then has no report.
+        armed, agent_id = self._running_2286("claude-2286-undelivered")
+        self._handback(agent_id, self._decision(armed), tool_response={"success": False, "message": "x"})
+        with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION"):
+            self._stop_2286(agent_id)
+
+    def test_handback_and_final_message_must_agree(self):
+        armed, agent_id = self._running_2286("claude-2286-agree")
+        self._handback(agent_id, self._decision(armed))
+        self.assertEqual(self._stop_2286(agent_id, last_assistant_message=self._decision(armed))["state"], "COMPLETED")
+        armed, agent_id = self._running_2286("claude-2286-disagree")
+        self._handback(agent_id, self._decision(armed))
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._stop_2286(agent_id, last_assistant_message=self._decision(armed, assessment="Other."))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+
+    def test_ordinary_handback_is_never_refused(self):
+        self.assertIsNone(self.adapter.observe_claude_hook(
+            self.root, claude_fixture("2.1.286/handback-posttooluse.json")))
+        self.assertIsNone(self.adapter.observe_claude_hook(
+            self.root, claude_fixture("2.1.286/handback-pretooluse.json")))
+
     def test_codex_arm_is_unchanged_by_default(self):
         self.client.context["activity"] = "spec_review"
         self.client.context.pop("commands", None)
@@ -2306,8 +2443,10 @@ class NativeReviewTransportTest(unittest.TestCase):
             self.adapter.publish_request(self.root, self.client, armed["request_id"])
         with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
             self._launch(host, armed)
-        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE|INVALID_RECOVERY"):
+        # A retried abandonment names the real state, not a binding failure.
+        with self.assertRaisesRegex(RuntimeError, "INVALID_RECOVERY: request was already abandoned"):
             self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+        self.assertEqual(json.loads(path.read_bytes()), retained)
         self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
 
         mutations = {
@@ -2820,17 +2959,20 @@ class ClaudeEndToEndTest(unittest.TestCase):
     def _state(self, request_id):
         return self.adapter._load(self.root, request_id)
 
+    host_fixtures = ""
+
     def _review(self, record_id, activity, agent_id, tool_use_id, *model):
         armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
                                      "--record-id", record_id, "--activity", activity, *model))
         self.assertEqual(armed["launch_envelope"]["model"], model[1] if model else "opus")
-        pre = self._event("agent-pretooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
+        fixtures = self.host_fixtures
+        pre = self._event(fixtures + "agent-pretooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
         self._hook(pre)
         self.assertEqual(self._state(armed["request_id"])["state"], "LAUNCHING")
-        post = self._event("agent-posttooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
+        post = self._event(fixtures + "agent-posttooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
         post["tool_response"]["agentId"] = agent_id
         self._hook(post)
-        self._hook(claude_fixture("subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
+        self._hook(claude_fixture(fixtures + "subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
         self.assertEqual(self._state(armed["request_id"])["state"], "RUNNING")
         context = self._state(armed["request_id"])["context"]
         decision = json.dumps({
@@ -2839,12 +2981,21 @@ class ClaudeEndToEndTest(unittest.TestCase):
             "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
             "assessment": "Independent Claude review of the frozen target.",
         })
-        stop = claude_fixture("subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER,
-                              prompt_id="e2e-later-prompt", last_assistant_message=decision)
+        if fixtures:
+            # Claude Code 2.1.286: the report arrives as the child's handback.
+            handback = self._event(fixtures + "handback-posttooluse.json", agent_id=agent_id, agent_type=REVIEWER)
+            handback["tool_input"] = {"message": decision}
+            self._hook(handback)
+            stop = claude_fixture(fixtures + "subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER,
+                                  session_id="e2e-session", prompt_id="e2e-later-prompt")
+        else:
+            stop = claude_fixture("subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER,
+                                  prompt_id="e2e-later-prompt", last_assistant_message=decision)
         stop["background_tasks"] = [{**stop["background_tasks"][0], "id": agent_id, "agent_type": REVIEWER}]
         self._hook(stop)
         self.assertEqual(self._state(armed["request_id"])["state"], "COMPLETED")
-        self._hook(claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER))
+        if not fixtures:
+            self._hook(claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER))
         return json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
 
     @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")
@@ -2886,6 +3037,11 @@ class ClaudeEndToEndTest(unittest.TestCase):
         self._hook(post)
         published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
         self.assertTrue((self.root / published["receipt"]).is_file())
+
+    def test_end_to_end_claude_2_1_286(self):
+        """The same flow on Claude Code 2.1.286's tagged model and handback report."""
+        self.host_fixtures = "2.1.286/"
+        self.test_end_to_end_claude()
 
     def test_end_to_end_claude(self):
         """Arm, verify and publish through the shipped CLI; observe through the shipped hook."""
@@ -3824,6 +3980,7 @@ class ClaudeHookRegistrationTest(unittest.TestCase):
         for event, matcher in (
             ("PreToolUse", "Agent"), ("PreToolUse", "Bash"), ("PreToolUse", "SendMessage"),
             ("PostToolUse", "Agent"), ("PostToolUse", "Bash"), ("PostToolUseFailure", "Bash"),
+            ("PostToolUse", "SubagentHandback"),
             ("SubagentStart", None), ("SubagentStop", None),
         ):
             with self.subTest(event=event, matcher=matcher):
@@ -3840,7 +3997,7 @@ class ClaudeHookRegistrationTest(unittest.TestCase):
 
     def test_empty_registry_is_silent_for_every_event(self):
         with tempfile.TemporaryDirectory() as temp:
-            for name in sorted(p.name for p in CLAUDE_FIXTURES.glob("*.json")):
+            for name in sorted(p.relative_to(CLAUDE_FIXTURES).as_posix() for p in CLAUDE_FIXTURES.rglob("*.json")):
                 with self.subTest(name=name):
                     result = self._run_hook(claude_fixture(name), Path(temp))
                     self.assertEqual(result.returncode, 0, result.stderr)
