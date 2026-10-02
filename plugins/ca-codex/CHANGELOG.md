@@ -6,6 +6,15 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.14.9] - 2026-10-02
+
+### Fixed
+
+- Shared authority library: recovering an already-abandoned oversized review now reports
+  `request was already abandoned` instead of a misleading binding failure. Carries the Claude
+  Code 2.1.286 review-correlation fix (tagged `resolvedModel`, `SubagentHandback` reports),
+  which applies only to the Claude host.
+
 ## [0.14.8] - 2026-09-27
 
 ### Fixed
