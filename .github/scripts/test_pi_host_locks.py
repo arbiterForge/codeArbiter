@@ -21,7 +21,6 @@ from types import SimpleNamespace
 REPO = Path(__file__).resolve().parents[2]
 HELPER = REPO / ".github" / "scripts" / "pi_host_locks.py"
 LOCK_ROOT = REPO / ".github" / "fixtures" / "pi-hosts"
-SUPPORTED_VERSION = "0.84.1"
 
 
 def load_helper():
@@ -35,6 +34,10 @@ def load_helper():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+# The one rolling reviewed version; promotion advances it in pi_host_locks.
+SUPPORTED_VERSION = load_helper().SUPPORTED[0]
 
 
 class PiHostLocksTest(unittest.TestCase):
