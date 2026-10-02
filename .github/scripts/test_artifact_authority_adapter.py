@@ -2142,6 +2142,71 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION"):
             self._stop_2286(agent_id)
 
+    def test_2286_same_handback_delivered_twice_is_one_report(self):
+        armed, agent_id = self._running_2286("claude-2286-duplicate")
+        self._handback(agent_id, self._decision(armed))
+        before = self.adapter._load(self.root, armed["request_id"])
+        self.assertIsNone(self._handback(agent_id, self._decision(armed)))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"]), before)
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+        # A different call carrying the same text is still a second report.
+        armed, agent_id = self._running_2286("claude-2286-second-call")
+        self._handback(agent_id, self._decision(armed))
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, self._decision(armed), tool_use_id="toolu-other")
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["recovery"]["mode"], "repeated-handback")
+
+    def test_2286_handback_late_binds_a_start_that_lost_the_race(self):
+        # SubagentStart fired first but rescanned before the launch result
+        # saved agent_id, so the marker is left for the next event to join.
+        agent_id = "agent-claude-2286-race"
+        armed, _pre, post = self._launch_2286("claude-2286-race", agent_id)
+        self.adapter.observe_claude_hook(self.root, post)
+        marker = self.adapter._claude_start_marker(agent_id)
+        marker.write_bytes(self.adapter._canonical({"agent_id": agent_id, "agent_type": REVIEWER}))
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["launch"]["post_confirmed"]), ("LAUNCHING", True))
+        self.assertIsNone(self._handback(agent_id, self._decision(armed)))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+
+    def test_2286_handback_cannot_push_state_past_its_bound(self):
+        armed, agent_id = self._running_2286("claude-2286-bound")
+        size = len(Path(armed["request_path"]).read_bytes())
+        # Quotes double when the state is serialized, though the UTF-8 cap allows them.
+        message = '"' * 40000
+        original = self.adapter.MAX_STATE
+        self.adapter.MAX_STATE = size + 100000
+        self.addCleanup(setattr, self.adapter, "MAX_STATE", original)
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, message)
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["recovery"]["mode"]), ("REJECTED", "rejected-handback"))
+
+    def test_save_refuses_state_past_its_bound(self):
+        armed = self._arm_claude_review("claude-save-bound")
+        path = Path(armed["request_path"])
+        before = path.read_bytes()
+        request = self.adapter._load(self.root, armed["request_id"])
+        request["dispatch_prompt"] = "x" * (self.adapter.MAX_STATE + 1)
+        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+            self.adapter._save(self.root, request)
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_load_refuses_a_malformed_handback(self):
+        for label, value in (
+            ("string", "{}"),
+            ("extra-key", {"tool_use_id": "toolu-1", "message": "{}", "x": 1}),
+            ("oversized", {"tool_use_id": "toolu-1", "message": "x" * 65537}),
+        ):
+            with self.subTest(case=label):
+                armed, _agent = self._running_2286("claude-2286-load-" + label)
+                request = self.adapter._load(self.root, armed["request_id"])
+                request["handback"] = value
+                self.adapter._save(self.root, request)
+                with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+                    self.adapter._load(self.root, armed["request_id"])
+
     def test_handback_and_final_message_must_agree(self):
         armed, agent_id = self._running_2286("claude-2286-agree")
         self._handback(agent_id, self._decision(armed))
@@ -2405,7 +2470,9 @@ class NativeReviewTransportTest(unittest.TestCase):
         request["dispatch_prompt"] = prompt
         key = "prompt" if host == "claude" else "message"
         request["launch_envelope"][key] = prompt
-        self.adapter._save(self.root, request)
+        # The adapters that wrote these states had no write bound.
+        with mock.patch.object(self.adapter, "MAX_STATE", self.adapter.MAX_RECOVERY_STATE):
+            self.adapter._save(self.root, request)
         return armed, request
 
     def test_oversized_legacy_review_can_only_be_abandoned_after_full_validation(self):

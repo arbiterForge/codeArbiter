@@ -347,6 +347,16 @@ def _save(root: Path, value: dict[str, Any]) -> None:
     expected = value.get("integrity_sha256")
     updated = dict(value)
     updated["integrity_sha256"] = _integrity(updated)
+    legacy_abandonment = (
+        value["state"] == "ABANDONED"
+        and value["activity"] in REVIEW_ACTIVITIES
+        and value.get("recovery") == {
+            "disposition": "abandoned", "previous_attempt": None, "rerun_permitted": False,
+        }
+    )
+    if len(_canonical(updated)) > MAX_STATE and not legacy_abandonment:
+        # A state past its bound would be unreadable to every later load.
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "request state would exceed its bound")
     try:
         spool = _spool_root(root)
         relative = _request_path(value["request_id"])
@@ -359,13 +369,6 @@ def _save(root: Path, value: dict[str, Any]) -> None:
             else:
                 if expected is None:
                     raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state already exists")
-                legacy_abandonment = (
-                    value["state"] == "ABANDONED"
-                    and value["activity"] in REVIEW_ACTIVITIES
-                    and value.get("recovery") == {
-                        "disposition": "abandoned", "previous_attempt": None, "rerun_permitted": False,
-                    }
-                )
                 current = _load(root, value["request_id"], recover_armed_review=legacy_abandonment)
                 if current["integrity_sha256"] != expected:
                     raise AuthorityError("STALE_AUTHORITY_REQUEST", "request state changed since it was loaded")
@@ -423,6 +426,7 @@ def _load(
         or value.get("integrity_sha256") != _integrity(value)
         or not isinstance(value.get("context_ref"), str)
         or SHA256_RE.fullmatch(value.get("context_sha256", "")) is None
+        or not _valid_handback(value)
     ):
         raise AuthorityError("INVALID_AUTHORITY_STATE", "request state failed validation")
     if "codex_review_profile" in value and (
@@ -441,6 +445,18 @@ def _load(
         except (AuthorityError, KeyError, TypeError, ValueError) as exc:
             raise AuthorityError("INVALID_AUTHORITY_STATE", "legacy review recovery binding failed") from exc
     return value
+
+
+def _valid_handback(request: dict[str, Any]) -> bool:
+    if "handback" not in request:
+        return True
+    record = request["handback"]
+    return (
+        request.get("host") == "claude" and request.get("activity") in REVIEW_ACTIVITIES
+        and isinstance(record, dict) and set(record) == {"tool_use_id", "message"}
+        and isinstance(record["tool_use_id"], str) and HOST_ID_RE.fullmatch(record["tool_use_id"]) is not None
+        and isinstance(record["message"], str) and len(record["message"].encode("utf-8")) <= MAX_DECISION
+    )
 
 
 def _validate_hash(value: Any, field: str) -> str:
@@ -2800,17 +2816,30 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         if len(matches) != 1:
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "handback correlation is ambiguous")
         root, request = matches[0]
-        if request.get("handback") is not None:
+        tool_input = event.get("tool_input")
+        record = {
+            "tool_use_id": event.get("tool_use_id"),
+            "message": tool_input.get("message") if isinstance(tool_input, dict) else None,
+        }
+        if "handback" in request:
+            if request["handback"] == record:
+                # The same delivery observed twice (a retried or doubled hook).
+                return None
             # One report per review: a second could replace the first.
             _reject(root, request, "repeated-handback")
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer reported more than once")
-        tool_input = event.get("tool_input")
-        message = tool_input.get("message") if isinstance(tool_input, dict) else None
+        if request["state"] == "LAUNCHING" and request["launch"].get("post_confirmed") is True:
+            # A start marker written late in the launch/start race.
+            _claude_bind_child(root, request)
+            request = _load(root, request["request_id"])
+        candidate = {**request, "handback": record}
         if (
             request["state"] != "RUNNING"
             or event.get("agent_type") != CLAUDE_REVIEWER
-            or not isinstance(message, str)
-            or len(message.encode("utf-8")) > MAX_DECISION
+            or not _valid_handback(candidate)
+            # Serialization escapes the report, and completion still adds its
+            # payload; keep room for both under the bound every load enforces.
+            or len(_canonical(candidate)) + 2 * MAX_DECISION > MAX_STATE
         ):
             _reject(root, request, "rejected-handback")
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "handback is not a bounded report from the running reviewer")
@@ -2818,7 +2847,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         if not isinstance(response, dict) or response.get("success") is not True:
             # Undelivered: the caller never received it, so it is not the report.
             return None
-        request["handback"] = message
+        request["handback"] = record
         _save(root, request)
         return None
 
@@ -2862,7 +2891,8 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
             _refuse_shadowed_reviewer(root, _real_root(session_root))
             # 2.1.281 carries the report as the final message; 2.1.286 as a
             # handback. When both exist they must be the same report.
-            final, reported = event.get("last_assistant_message"), request.get("handback")
+            final = event.get("last_assistant_message")
+            reported = request["handback"]["message"] if "handback" in request else None
             if final is not None and reported is not None and final != reported:
                 raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer handback and final message differ")
             decision = _parse_decision(final if reported is None else reported, request)
