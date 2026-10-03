@@ -21,6 +21,17 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _supported_pi_hosts() -> tuple[str, ...]:
+    """The reviewed Pi host window, so the CI matrix pin follows each promotion."""
+    spec = importlib.util.spec_from_file_location(
+        "pi_host_locks_for_ci_impact", REPO_ROOT / ".github" / "scripts" / "pi_host_locks.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return tuple(module.SUPPORTED)
+
+
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
@@ -1286,7 +1297,7 @@ class WorkflowContractTest(unittest.TestCase):
         # version or the host OS stays in the supported-host matrix.
         for token in (
             "os: [ubuntu-latest, windows-latest, macos-latest]",
-            "pi-version: [\"0.84.1\"]",
+            f"pi-version: {json.dumps(list(_supported_pi_hosts()))}",
             "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "run: npm test -- test/package.test.ts",
             "run: python .github/scripts/test_pi_package.py --rpc-commands",
