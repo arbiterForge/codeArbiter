@@ -113,7 +113,7 @@ func TestCompletionWorkspaceRawMatchesPython(t *testing.T) {
 func TestCompletionWorkspaceRequiresExplicitGit(t *testing.T) {
 	f := completionFixture(t)
 	t.Setenv("CODEARBITER_GIT_EXECUTABLE", "")
-	if _, err := completionGitText(f.Root, "rev-parse", "HEAD"); err == nil {
+	if _, err := completionGitText(f.Root, completionGitHead); err == nil {
 		t.Fatal("completion silently searched ambient PATH for Git instead of requiring the bridge-selected absolute executable")
 	}
 }

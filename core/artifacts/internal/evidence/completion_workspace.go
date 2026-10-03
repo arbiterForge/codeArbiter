@@ -114,16 +114,56 @@ func (b *completionOutput) Write(p []byte) (int, error) {
 	return b.Buffer.Write(p)
 }
 
-func completionGitText(root string, args ...string) (string, error) {
+type completionGitProbe uint8
+
+const (
+	completionGitCommon completionGitProbe = iota
+	completionGitTop
+	completionGitStatus
+	completionGitIndex
+	completionGitUntracked
+	completionGitHead
+	completionGitSubmoduleStatus
+)
+
+// completionGitText is the sole reviewed native process boundary. Probe values
+// choose fixed read-only argv; no document command or caller argv can reach it.
+func completionGitText(root string, probe completionGitProbe) (string, error) {
 	executable := os.Getenv("CODEARBITER_GIT_EXECUTABLE")
 	if executable == "" || !filepath.IsAbs(executable) {
 		return "", fault.New("WORKSPACE_DRIFT", "completion requires the bridge-selected absolute Git executable")
 	}
+	if !filepath.IsAbs(root) {
+		return "", fault.New("WORKSPACE_DRIFT", "Git probe root must be absolute")
+	}
+	args := []string{"--no-lazy-fetch", "--no-optional-locks", "-C", root, "-c", "core.fsmonitor=false", "-c", "protocol.allow=never"}
+	nul := false
+	switch probe {
+	case completionGitCommon:
+		args = append(args, "rev-parse", "--path-format=absolute", "--git-common-dir")
+	case completionGitTop:
+		args = append(args, "rev-parse", "--show-toplevel")
+	case completionGitStatus:
+		args = append(args, "status", "--porcelain=v2", "-z", "--untracked-files=all")
+		nul = true
+	case completionGitIndex:
+		args = append(args, "ls-files", "--stage", "-z")
+		nul = true
+	case completionGitUntracked:
+		args = append(args, "ls-files", "--others", "--exclude-standard", "-z")
+		nul = true
+	case completionGitHead:
+		args = append(args, "rev-parse", "HEAD")
+	case completionGitSubmoduleStatus:
+		args = append(args, "status", "--porcelain", "--untracked-files=all")
+	default:
+		return "", fault.New("WORKSPACE_DRIFT", "unknown fixed Git probe")
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	// Disable fsmonitor execution for these read-only probes. Preserve protected
-	// Git configuration (including safe.directory), removing only root selectors.
-	cmd := exec.CommandContext(ctx, executable, append([]string{"-C", root, "-c", "core.fsmonitor=false"}, args...)...)
+	// Fixed read-only probes disable lazy fetch, transport, fsmonitor and
+	// optional writes. Preserve Git safe.directory policy and remove root selectors.
+	cmd := exec.CommandContext(ctx, executable, args...)
 	blocked := map[string]bool{}
 	for _, name := range strings.Fields("GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_OBJECT_DIRECTORY GIT_DIR GIT_WORK_TREE GIT_IMPLICIT_WORK_TREE GIT_GRAFT_FILE GIT_INDEX_FILE GIT_NO_REPLACE_OBJECTS GIT_REPLACE_REF_BASE GIT_PREFIX GIT_SHALLOW_FILE GIT_COMMON_DIR GIT_CEILING_DIRECTORIES GIT_DISCOVERY_ACROSS_FILESYSTEM") {
 		blocked[name] = true
@@ -143,10 +183,8 @@ func completionGitText(root string, args ...string) (string, error) {
 		return "", fault.New("WORKSPACE_DRIFT", "Git workspace paths are not UTF-8")
 	}
 	value := out.String()
-	for _, arg := range args {
-		if arg == "-z" {
-			return value, nil
-		}
+	if nul {
+		return value, nil
 	}
 	return strings.TrimSpace(value), nil
 }
@@ -181,8 +219,8 @@ func completionIdentityMatches(path, expected string) bool {
 	return err == nil && after == current
 }
 
-func completionResolvedGitPath(root string, args ...string) (string, error) {
-	path, err := completionGitText(root, args...)
+func completionResolvedGitPath(root string, probe completionGitProbe) (string, error) {
+	path, err := completionGitText(root, probe)
 	if err != nil {
 		return "", err
 	}
@@ -193,7 +231,7 @@ func completionResolvedGitPath(root string, args ...string) (string, error) {
 }
 
 func completionWorkspacesOnce(f *store.FS, bindings []any, normalize bool) ([]any, error) {
-	artifactCommon, err := completionResolvedGitPath(f.Root, "rev-parse", "--path-format=absolute", "--git-common-dir")
+	artifactCommon, err := completionResolvedGitPath(f.Root, completionGitCommon)
 	if err != nil {
 		return nil, err
 	}
@@ -206,11 +244,11 @@ func completionWorkspacesOnce(f *store.FS, bindings []any, normalize bool) ([]an
 				return nil, err
 			}
 		}
-		top, err := completionResolvedGitPath(cwd, "rev-parse", "--show-toplevel")
+		top, err := completionResolvedGitPath(cwd, completionGitTop)
 		if err != nil || !completionSamePath(top, root) {
 			return nil, fault.New("WORKSPACE_DRIFT", "command cwd no longer belongs to its mapped worktree")
 		}
-		actualCommon, err := completionResolvedGitPath(root, "rev-parse", "--path-format=absolute", "--git-common-dir")
+		actualCommon, err := completionResolvedGitPath(root, completionGitCommon)
 		if err != nil || !completionSamePath(actualCommon, common) || !completionSamePath(common, artifactCommon) {
 			return nil, fault.New("WORKSPACE_DRIFT", "mapped workspace Git common directory changed")
 		}
@@ -282,15 +320,15 @@ func completionWorkspace(f *store.FS, binding map[string]any, normalize bool) (m
 			norms[entry.Path] = entry.Doc.NormHash()
 		}
 	}
-	status, err := completionGitText(root, "status", "--porcelain=v2", "-z", "--untracked-files=all")
+	status, err := completionGitText(root, completionGitStatus)
 	if err != nil {
 		return nil, err
 	}
-	index, err := completionGitText(root, "ls-files", "--stage", "-z")
+	index, err := completionGitText(root, completionGitIndex)
 	if err != nil {
 		return nil, err
 	}
-	untracked, err := completionGitText(root, "ls-files", "--others", "--exclude-standard", "-z")
+	untracked, err := completionGitText(root, completionGitUntracked)
 	if err != nil {
 		return nil, err
 	}
@@ -357,7 +395,7 @@ func completionWorkspace(f *store.FS, binding map[string]any, normalize bool) (m
 			return nil, err
 		}
 	}
-	head, err := completionGitText(root, "rev-parse", "HEAD")
+	head, err := completionGitText(root, completionGitHead)
 	if err != nil {
 		return nil, err
 	}
@@ -486,7 +524,7 @@ func completionMember(f *store.FS, relative, mode string) (string, []byte, error
 		return kind, data, err
 	}
 	if info.IsDir() && mode == "160000" {
-		top, err := completionResolvedGitPath(candidate, "rev-parse", "--show-toplevel")
+		top, err := completionResolvedGitPath(candidate, completionGitTop)
 		if err != nil {
 			return bad()
 		}
@@ -497,11 +535,11 @@ func completionMember(f *store.FS, relative, mode string) (string, []byte, error
 			}
 			return "uninitialized-gitlink", []byte{}, nil
 		}
-		status, err := completionGitText(candidate, "status", "--porcelain", "--untracked-files=all")
+		status, err := completionGitText(candidate, completionGitSubmoduleStatus)
 		if err != nil || status != "" {
 			return bad()
 		}
-		head, err := completionGitText(candidate, "rev-parse", "HEAD")
+		head, err := completionGitText(candidate, completionGitHead)
 		if err != nil {
 			return bad()
 		}

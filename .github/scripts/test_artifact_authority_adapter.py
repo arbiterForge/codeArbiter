@@ -3295,7 +3295,7 @@ class ClaudeEndToEndTest(unittest.TestCase):
         self._hook(post)
         verification = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
 
-        native_package = Path(self.registry.name) / "codex-plugin"
+        native_package = Path(self.registry.name).resolve() / "codex-plugin"
         shutil.copytree(REPO / "plugins/ca-codex", native_package,
                         ignore=shutil.ignore_patterns("node_modules", "helpers", "__pycache__"))
         shutil.copytree(self.installation, native_package / "helpers/artifacts")
@@ -3307,7 +3307,7 @@ class ClaudeEndToEndTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             return json.loads(result.stdout)
 
-        matrix = Path(self.registry.name) / "selected-completion.txt"
+        matrix = Path(self.registry.name).resolve() / "selected-completion.txt"
         matrix.write_text("Synthetic fixture: tests/test_config.py:5 provides the named pass.\n", encoding="utf-8")
         review_args = ("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW", "--record-id", "T-001",
                        "--activity", "spec_review", "--codex-review-profile", "native-v1",
@@ -4311,7 +4311,7 @@ class CompletionReviewTransportTest(unittest.TestCase):
         self.addCleanup(self.external.cleanup)
         roots = {}
         for label in ("candidate", "evidence"):
-            path = Path(self.external.name) / label
+            path = Path(self.external.name).resolve() / label
             git_run(["git", "-C", str(self.root), "worktree", "add", "--quiet", "--detach", str(path)], check=True)
             self.addCleanup(lambda selected=path: git_run(
                 ["git", "-C", str(self.root), "worktree", "remove", "--force", str(selected)], check=False))
@@ -4323,7 +4323,7 @@ class CompletionReviewTransportTest(unittest.TestCase):
                              "definition": definition})
         self.client.context["commands"] = commands
         bindings = self.adapter._bind_commands(self.root, self.client.context, roots)
-        material = Path(self.external.name) / "completion-matrix.txt"
+        material = Path(self.external.name).resolve() / "completion-matrix.txt"
         material.write_bytes(b"T-001 done_when: fixture.txt has verified content.\n")
         self.material = material
         self.review_roots = roots
