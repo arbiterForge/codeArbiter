@@ -23,6 +23,7 @@ REPO = HERE.parent.parent
 CORE_PYSRC = REPO / "core" / "pysrc"
 sys.path.insert(0, str(CORE_PYSRC))
 from _gitexec import root_bound_git_env  # noqa: E402
+from test_artifact_git_excludes import CompletionGitExcludesTest  # noqa: E402,F401
 from test_artifact_npm_nested_launch import (  # noqa: E402
     NestedNpmPrefixContextTest, WindowsNestedNpmLaunchTest,
 )  # Keep focused launch regressions in the existing required authority suite.
@@ -4255,7 +4256,8 @@ class CompletionBridgeEnvironmentTest(unittest.TestCase):
     def _environment(self, values, root=None):
         process = mock.Mock(returncode=0, stdin=io.BytesIO(), stdout=io.BytesIO(), stderr=io.BytesIO())
         with mock.patch.dict(os.environ, values, clear=True), mock.patch.object(
-                self.bridge.subprocess, "Popen", return_value=process) as launch:
+                self.bridge.subprocess, "Popen", return_value=process) as launch, mock.patch.object(
+                self.bridge, "_native_git_excludes", return_value={}):
             self.bridge._bounded_child(["pinned-engine", "evidence-context", "--root", str(root or self.root), "--request", "-"],
                                        b"{}", 0, 2)
         return launch.call_args.kwargs["env"]
@@ -4288,12 +4290,38 @@ class CompletionBridgeEnvironmentTest(unittest.TestCase):
         with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git)}, clear=True):
             self.assertTrue(host.native_environment_allowed({}))
             self.assertTrue(host.native_environment_allowed({"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve())}))
+            selected = {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve()),
+                        "GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "core.excludesFile",
+                        "GIT_CONFIG_VALUE_0": str(self.root / "host-ignore")}
+            self.assertTrue(host.native_environment_allowed(selected))
+            self.assertFalse(host.native_environment_allowed(dict(selected, GIT_CONFIG_KEY_0="alias.escape")))
+            self.assertFalse(host.native_environment_allowed(dict(selected, GIT_CONFIG_VALUE_0="relative")))
             for environment in ({"PATH": str(self.bin)},
                                 {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve()), "TOKEN": "secret"},
                                 {"CODEARBITER_GIT_EXECUTABLE": "git"},
                                 {"CODEARBITER_GIT_EXECUTABLE": str(Path(sys.executable).resolve())}):
                 with self.subTest(environment=environment):
                     self.assertFalse(host.native_environment_allowed(environment))
+
+    def test_installed_host_audit_only_admits_fixed_git_ignore_query(self):
+        host = importlib.import_module("test_artifact_installed_host")
+        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git)}, clear=True), mock.patch.object(
+                self.bridge, "_bounded_child", return_value=(0, b"", b"")) as query:
+            self.bridge._native_git_excludes(self.git.resolve(), self.root.resolve())
+            argv = query.call_args.args[0]
+            environment = query.call_args.kwargs["environment"]
+            cwd = query.call_args.kwargs["cwd"]
+            binary = Path(sys.executable).resolve()
+            for executable, arguments in ((str(self.git.resolve()), argv),
+                                          (None, subprocess.list2cmdline(argv))):
+                if executable is None and os.name != "nt":
+                    continue
+                host.enforce_runtime_event("subprocess.Popen", (executable, arguments, cwd, environment),
+                                           binary=binary, binary_sha256="", permit_verifier_children=False)
+            for arguments in (argv[:-1] + ["alias.escape"], argv + ["--show-origin"]):
+                with self.assertRaisesRegex(RuntimeError, "unreviewed process"):
+                    host.enforce_runtime_event("subprocess.Popen", (str(self.git.resolve()), arguments, cwd, environment),
+                                               binary=binary, binary_sha256="", permit_verifier_children=False)
 
 
 class CompletionReviewTransportTest(unittest.TestCase):

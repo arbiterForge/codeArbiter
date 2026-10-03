@@ -20,6 +20,7 @@ import tempfile
 
 
 _BRIDGE_IMPORTS = frozenset({
+    "_gitexec",
     "__future__", "ctypes", "hashlib", "json", "msvcrt", "os", "pathlib",
     "platform", "re", "stat", "subprocess", "tempfile", "threading", "typing",
 })
@@ -60,6 +61,8 @@ def assert_offline_bridge(source: bytes) -> None:
             imports.update(alias.name.split(".", 1)[0] for alias in node.names)
         elif isinstance(node, ast.ImportFrom):
             imported = (node.module or "").split(".", 1)[0]
+            if imported == "_gitexec" and [alias.name for alias in node.names] != ["root_bound_git_env"]:
+                raise AssertionError("installed bridge imports unreviewed Git capability")
             if imported in {"ctypes", "msvcrt", "os", "subprocess"}:
                 raise AssertionError("installed bridge imports an unreviewed capability directly")
             imports.add(imported)
@@ -163,10 +166,20 @@ def expected_binary(installation: Path, expected_sha256: str) -> Path:
 
 
 def native_environment_allowed(environment: object) -> bool:
-    """The engine receives no ambient state beyond an exact host Git identity."""
+    """The engine receives selected Git and only its resolved ignore setting."""
     if environment == {}:
         return True
-    if not isinstance(environment, dict) or set(environment) != {"CODEARBITER_GIT_EXECUTABLE"}:
+    if not isinstance(environment, dict):
+        return False
+    git_only = {"CODEARBITER_GIT_EXECUTABLE"}
+    ignore_keys = {"GIT_CONFIG_COUNT", "GIT_CONFIG_KEY_0", "GIT_CONFIG_VALUE_0"}
+    if set(environment) == git_only | ignore_keys:
+        ignore = environment["GIT_CONFIG_VALUE_0"]
+        if (environment["GIT_CONFIG_COUNT"] != "1" or environment["GIT_CONFIG_KEY_0"] != "core.excludesFile"
+                or not isinstance(ignore, str) or not ignore or len(ignore) > 4096
+                or "\0" in ignore or not Path(ignore).is_absolute()):
+            return False
+    elif set(environment) != git_only:
         return False
     raw = environment["CODEARBITER_GIT_EXECUTABLE"]
     if not isinstance(raw, str) or not Path(raw).is_absolute():
@@ -186,6 +199,42 @@ def native_environment_allowed(environment: object) -> bool:
             if candidate.is_file() and candidate.resolve(strict=True) == selected:
                 return True
     except (OSError, RuntimeError):
+        return False
+    return False
+
+
+def native_git_probe_allowed(executable, argv, cwd, environment) -> bool:
+    """Admit only the bridge's fixed, read-only effective-ignore query."""
+    from _gitexec import root_bound_git_env
+
+    if environment != root_bound_git_env() or cwd is None:
+        return False
+    try:
+        root = Path(cwd)
+        if not root.is_absolute() or root.resolve(strict=True) != root:
+            return False
+        configured = os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+        name = "git.exe" if os.name == "nt" else "git"
+        candidates = [Path(configured)] if configured else [
+            Path(directory) / name for directory in os.environ.get("PATH", "").split(os.pathsep)
+            if directory and Path(directory).is_absolute()]
+        default = os.environ.get("XDG_CONFIG_HOME")
+        default = str(Path(default) / "git" / "ignore") if default else "~/.config/git/ignore"
+        for candidate in candidates:
+            try:
+                git = candidate.resolve(strict=True)
+            except (OSError, RuntimeError):
+                continue
+            if not native_environment_allowed({"CODEARBITER_GIT_EXECUTABLE": str(git)}):
+                continue
+            expected = [str(git), "--no-lazy-fetch", "--no-optional-locks", "-C", str(root),
+                        "-c", "core.fsmonitor=false", "-c", "protocol.allow=never", "config",
+                        "--null", "--path", "--default", default, "--get", "core.excludesFile"]
+            if executable is None and os.name == "nt" and argv == subprocess.list2cmdline(expected):
+                return True
+            if executable is not None and Path(executable).resolve(strict=True) == git and argv == expected:
+                return True
+    except (OSError, RuntimeError, TypeError, ValueError):
         return False
     return False
 
@@ -212,6 +261,8 @@ def enforce_runtime_event(
     if event != "subprocess.Popen":
         return
     executable, argv, _cwd, environment = details
+    if native_git_probe_allowed(executable, argv, _cwd, environment):
+        return
     verifier = Path(__file__).resolve(strict=True)
     python = Path(sys.executable).resolve(strict=True)
     if executable is None and os.name == "nt" and isinstance(argv, str):
