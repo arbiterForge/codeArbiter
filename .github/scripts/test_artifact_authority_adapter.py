@@ -978,7 +978,7 @@ class AuthorityAdapterTest(unittest.TestCase):
         armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
         binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
         self.assertEqual(binding["collector_profile"], "vitest-verbose/0.1.0")
-        manifests = {Path(item["path"]).relative_to(self.root).as_posix()
+        manifests = {Path(item["path"]).relative_to(self.root.resolve()).as_posix()
                      for item in binding["launch_files"] if item["role"] in {"npm-manifest", "npm-workspace-manifest"}}
         self.assertEqual(manifests, {"package.json", "client/package.json", "shared/package.json"})
         launches = []
