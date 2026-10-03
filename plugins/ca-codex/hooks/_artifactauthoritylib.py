@@ -1257,8 +1257,16 @@ def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) ->
     completion = ""
     if "completion" in context:
         completion = (
-            "This explicit completion review assesses performed work against every task's criteria, "
-            "steps and done_when. Definitions alone, an adequate proposed plan, or absence of a code diff "
+            "This explicit completion review assesses performed work against every selected task's "
+            "criteria, steps and done_when. For each referenced criterion, assess the selected task's "
+            "contribution as defined by its steps and done_when, while enforcing every criterion "
+            "constraint applicable to that work. Shared spec criteria do not require "
+            "this task to complete dependent tasks, downstream implementation tests, or delivery gates "
+            "that are explicitly assigned to later tasks by the frozen approved plan. Substantiating "
+            "this task's contribution does not claim the "
+            "whole criterion is complete; all downstream checks and final scope acceptance remain "
+            "mandatory for the tasks or scope that own them. Definitions alone, an adequate proposed "
+            "plan, or absence of a code diff "
             "cannot substantiate completion. Read context.completion.verifications: these exact published "
             "receipts retain their source, event, observation and verification-context identities. Inspect "
             "the command_bindings and workspace_after to locate the selected mapped worktrees; do not "
