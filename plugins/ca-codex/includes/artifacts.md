@@ -262,13 +262,27 @@ the filename, not a leaf-name alias. Named unittest commands require `-v` or
 Plain exit checks cannot attest named tests.
 
 Named npm commands support inspectable single-runner scripts, a contained
-repository-relative `--prefix`, and arguments forwarded after `--`. Compound
+repository-relative `--prefix`, and arguments forwarded after `--`. A root script
+may delegate once through `npm -w <name> run <script>` or
+`npm --workspace <name> run <script>` when the name resolves uniquely in an array
+of at most 32 explicit, contained workspace directories. The runner binds the root
+manifest and every inspected workspace manifest. Globs, linked directories,
+multiple workspace selectors and recursive npm delegation are unsupported.
+Workspace delegation uses the declared cwd; a non-dot `--prefix` is unsupported
+for this shape.
+Preserve both npm argument boundaries when adding a reporter: for a root
+`test:client` script containing `npm -w @example/client run test`, declare
+`npm run test:client -- -- --reporter=verbose` to forward the reporter to Vitest.
+The original root command still executes the full script. Compound
 scripts and pre/post lifecycle scripts require separately declared direct-runner
 commands; retain every check from the original suite when splitting commands.
 On Windows, only the qualified standard `npm.cmd` layout is adapted: the runner
 pins the wrapper, sibling `node.exe`, sibling `node_modules/npm/bin/npm-cli.js`,
 and script manifest. It deliberately selects that sibling CLI rather than the
 shim's optional global-prefix redirection. Unknown batch wrappers fail closed.
+For workspace delegation, it also pins `npm-prefix.js` and checks that the nested
+wrapper uses the same CLI, the default script shell, and no configured Node
+options. Local executables shadowing nested npm are rejected.
 Direct Node script entrypoints are also pinned. These launch-file bindings do
 not establish transitive dependency closure for deliberately excluded inputs.
 

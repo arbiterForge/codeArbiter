@@ -1,6 +1,7 @@
 package observation
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -83,6 +84,12 @@ func TestQualifiedRunnerContractRejectsBindingMutations(t *testing.T) {
 		"wrong manifest": func(b map[string]any) {
 			model.M(model.A(b["launch_files"])[3])["path"] = filepath.Join(model.S(b["cwd"]), "different.json")
 		},
+		"unexpected npm prefix": func(b map[string]any) {
+			b["launch_files"] = append(model.A(b["launch_files"]), map[string]any{
+				"role": "npm-prefix", "path": filepath.Join(model.S(b["cwd"]), "node_modules", "npm", "bin", "npm-prefix.js"),
+				"sha256": testDigest("npm-prefix"), "filesystem_id": "1:npm-prefix",
+			})
+		},
 		"mutated argument":         func(b map[string]any) { model.A(b["argv"])[2] = "--different" },
 		"extra argument":           func(b map[string]any) { b["argv"] = append(model.A(b["argv"]), "extra") },
 		"unknown field":            func(b map[string]any) { b["permit"] = true },
@@ -155,5 +162,154 @@ func TestDirectNodeEntrypointIsRequiredAndExactlyBound(t *testing.T) {
 				t.Fatal("unbound node entrypoint accepted")
 			}
 		})
+	}
+}
+
+// Workspace fixtures attest the inspected manifest closure, not host identity.
+func workspaceRunnerObservation(nativeNPM bool, count int) (map[string]any, map[string]any, map[string]any, string) {
+	observed, event, context, _ := runnerObservation(nativeNPM)
+	binding := model.M(model.A(model.M(observed["producer_result"])["command_bindings"])[0])
+	definition := model.M(model.M(model.A(context["commands"])[0])["definition"])
+	root := model.S(binding["cwd"])
+	definition["argv"] = []any{"npm", "run", "test:client", "--", "--", "--reporter=verbose"}
+	files := model.A(binding["launch_files"])
+	if nativeNPM {
+		binding["argv"] = append(model.A(binding["argv"])[:2], model.A(definition["argv"])[1:]...)
+		files = files[:3]
+	} else {
+		executable := filepath.Join(root, "npm")
+		binding["argv"] = append([]any{executable}, model.A(definition["argv"])[1:]...)
+		model.M(files[0])["path"] = executable
+	}
+	files = append(files, map[string]any{
+		"role": "npm-manifest", "path": filepath.Join(root, "package.json"),
+		"sha256": testDigest("root-package"), "filesystem_id": "1:root-package",
+	})
+	for i := range count {
+		name := fmt.Sprintf("workspace-%d", i)
+		files = append(files, map[string]any{
+			"role": "npm-workspace-manifest", "path": filepath.Join(root, name, "package.json"),
+			"sha256": testDigest(name), "filesystem_id": "1:" + name,
+		})
+	}
+	if nativeNPM {
+		files = append(files, map[string]any{
+			"role": "npm-prefix", "path": filepath.Join(root, "node_modules", "npm", "bin", "npm-prefix.js"),
+			"sha256": testDigest("npm-prefix"), "filesystem_id": "1:npm-prefix",
+		})
+	}
+	binding["launch_files"] = files
+	binding["collector_profile"] = "vitest-verbose/0.1.0"
+	contextHash, _ := canonical.Hash(context)
+	observed["context_ref"], observed["context_sha256"] = ContextRef(contextHash), contextHash
+	return observed, event, context, contextHash
+}
+
+func TestQualifiedRunnerContractAcceptsWorkspaceManifestClosure(t *testing.T) {
+	for _, native := range []bool{false, true} {
+		for _, count := range []int{1, 2, 32} {
+			t.Run(fmt.Sprintf("native-%v-manifests-%d", native, count), func(t *testing.T) {
+				observed, event, context, contextHash := workspaceRunnerObservation(native, count)
+				if !runnerAccepted(observed, event, context, contextHash) {
+					t.Fatalf("named root npm workspace invocation with complete manifest closure rejected: %v", schema.ValidateWith(Schema(), observed))
+				}
+			})
+		}
+	}
+}
+
+func TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure(t *testing.T) {
+	mutations := map[string]func(map[string]any){
+		"duplicate workspace": func(b map[string]any) {
+			files := model.A(b["launch_files"])
+			b["launch_files"] = append(files, files[4])
+		},
+		"missing root": func(b map[string]any) {
+			files := model.A(b["launch_files"])
+			b["launch_files"] = append(files[:3], files[4:]...)
+		},
+		"root as workspace": func(b map[string]any) {
+			model.M(model.A(b["launch_files"])[4])["path"] = filepath.Join(model.S(b["cwd"]), "package.json")
+		},
+		"outside root": func(b map[string]any) {
+			model.M(model.A(b["launch_files"])[4])["path"] = filepath.Join(filepath.Dir(model.S(b["cwd"])), "outside", "package.json")
+		},
+		"unclean workspace": func(b map[string]any) {
+			model.M(model.A(b["launch_files"])[4])["path"] = model.S(b["cwd"]) + string(filepath.Separator) + "child" + string(filepath.Separator) + ".." + string(filepath.Separator) + "workspace-0" + string(filepath.Separator) + "package.json"
+		},
+		"not a package manifest": func(b map[string]any) {
+			model.M(model.A(b["launch_files"])[4])["path"] = filepath.Join(model.S(b["cwd"]), "workspace-0", "other.json")
+		},
+		"relative workspace": func(b map[string]any) {
+			model.M(model.A(b["launch_files"])[4])["path"] = filepath.Join("workspace-0", "package.json")
+		},
+		"duplicate executable role": func(b map[string]any) {
+			model.M(model.A(b["launch_files"])[4])["role"] = "node-runtime"
+		},
+		"missing npm prefix": func(b map[string]any) {
+			files := model.A(b["launch_files"])
+			b["launch_files"] = files[:len(files)-1]
+		},
+		"wrong npm prefix": func(b map[string]any) {
+			files := model.A(b["launch_files"])
+			model.M(files[len(files)-1])["path"] = filepath.Join(model.S(b["cwd"]), "other-prefix.js")
+		},
+	}
+	for name, mutate := range mutations {
+		t.Run(name, func(t *testing.T) {
+			observed, event, context, contextHash := workspaceRunnerObservation(true, 2)
+			if !runnerAccepted(observed, event, context, contextHash) {
+				t.Fatal("valid workspace closure must be accepted before checking its mutation")
+			}
+			mutate(model.M(model.A(model.M(observed["producer_result"])["command_bindings"])[0]))
+			if runnerAccepted(observed, event, context, contextHash) {
+				t.Fatal("invalid workspace manifest closure accepted")
+			}
+		})
+	}
+	observed, event, context, contextHash := workspaceRunnerObservation(false, 33)
+	if runnerAccepted(observed, event, context, contextHash) {
+		t.Fatal("more than 32 inspected workspace manifests accepted")
+	}
+}
+
+func TestQualifiedRunnerContractRejectsExitOnlyWorkspaceManifestClosure(t *testing.T) {
+	observed, event, context, _ := workspaceRunnerObservation(true, 2)
+	definitionRow := model.M(model.A(context["commands"])[0])
+	definition := model.M(definitionRow["definition"])
+	definition["required_tests"] = []any{}
+	definitionHash, _ := canonical.Hash(definition)
+	definitionRow["definition_sha256"] = definitionHash
+	result := model.M(observed["producer_result"])
+	binding := model.M(model.A(result["command_bindings"])[0])
+	binding["definition_sha256"] = definitionHash
+	binding["collector_profile"] = "exit-only/0.1.0"
+	command := model.M(model.A(result["commands"])[0])
+	command["definition_sha256"] = definitionHash
+	command["tests"] = []any{}
+	payload := model.M(event["payload"])
+	payload["commands"] = result["commands"]
+	observed["payload_sha256"], _ = canonical.Hash(payload)
+	contextHash, _ := canonical.Hash(context)
+	observed["context_ref"], observed["context_sha256"] = ContextRef(contextHash), contextHash
+	if runnerAccepted(observed, event, context, contextHash) {
+		t.Fatal("exit-only collector accepted workspace manifest closure")
+	}
+	// Prove the rejection is specific to workspace inspection for a named collector.
+	binding["launch_files"] = model.A(binding["launch_files"])[:4]
+	if !runnerAccepted(observed, event, context, contextHash) {
+		t.Fatal("otherwise valid exit-only npm binding rejected")
+	}
+}
+
+func TestQualifiedRunnerContractRejectsPrefixHelperWithoutNativeNPM(t *testing.T) {
+	observed, event, context, contextHash := workspaceRunnerObservation(false, 1)
+	binding := model.M(model.A(model.M(observed["producer_result"])["command_bindings"])[0])
+	binding["launch_files"] = append(model.A(binding["launch_files"]), map[string]any{
+		"role": "npm-prefix", "path": filepath.Join(model.S(binding["cwd"]), "npm-prefix.js"),
+		"sha256": testDigest("npm-prefix"), "filesystem_id": "1:npm-prefix",
+	})
+	if runnerAccepted(observed, event, context, contextHash) {
+		t.Fatal("non-native npm binding accepted a prefix helper")
 	}
 }
