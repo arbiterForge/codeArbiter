@@ -331,10 +331,12 @@ acceptance. Scope review uses validated task completion bindings. If verificatio
 is rerun, obtain and record its completed task review before selecting that run
 for scope review; do not infer equivalence between receipts.
 
-Creating the first completion context proves the selected verifier's raw worktree closure.
-Later freshness checks detect source changes while allowing native artifact
-state updates through the exact canonical artifact's normative identity. This
-does not exclude arbitrary HTML or governance directories. The closure covers
+Creating the first completion context recomputes the current raw worktree
+fingerprint and requires it to match the selected verifier's recorded fingerprint.
+Later freshness checks allow native task-status and execution bookkeeping updates
+in validated canonical artifacts while retaining their normative content hashes.
+Changes to task definitions, other HTML or other governance files still affect
+freshness under the normal snapshot policy. The closure covers
 tracked working-tree bytes and non-ignored untracked files, not ignored
 dependencies or outputs. The completion assessment is still an independent
 reviewer's judgment; schema validation does not prove that every file was read
