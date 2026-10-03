@@ -1,0 +1,14 @@
+{
+  "schema": "codearbiter-npm-audit-exceptions-v1",
+  "exceptions": [
+    {
+      "ghsa": "GHSA-ch52-4w7c-c8xp",
+      "package": "http-cache-semantics",
+      "severity": "high",
+      "reason": "No patched release exists (<=4.2.0, latest 4.2.0). Reached only through astro at static-site build time; the published site is static files with no server-side shared cache, so cross-user cached-response disclosure cannot occur. Re-review at the backstop or remove once a fixed release ships.",
+      "approved_by": "SUaDtL@users.noreply.github.com",
+      "approved_on": "2026-10-03",
+      "backstop": "2026-11-02"
+    }
+  ]
+}

@@ -380,6 +380,23 @@ runs in the detached refresh child).
 registries, `git+` URLs, `file:` references, or `http:` (non-TLS) sources are
 permitted in `package-lock.json` or any manifest.
 
+### Accepted dependency advisories (docs site)
+
+Every npm graph is audited at one threshold, `--audit-level=high`. The docs site
+graph (`site/`) is judged by `.github/scripts/npm_audit_gate.py`, which fails on
+every HIGH+ finding except an advisory recorded in `site/audit-exceptions.json`.
+A record names one GHSA and one package, the maximum accepted severity, a
+reason, the approving maintainer, and a backstop no more than 30 days after
+approval. A record past its backstop fails the gate. Only the maintainer approves
+records; an agent may not add one on its own judgment.
+
+- `GHSA-ch52-4w7c-c8xp` in `http-cache-semantics` (high), approved 2026-10-03 by
+  `SUaDtL@users.noreply.github.com`, backstop 2026-11-02. No patched release
+  exists (`<=4.2.0`; 4.2.0 is the latest). It reaches the site only through
+  astro at static build time; the published site is static files with no
+  server-side shared cache, so the cross-user cached-response disclosure it
+  describes cannot occur in this deploy.
+
 ---
 
 ## Approved licenses (dependencies)

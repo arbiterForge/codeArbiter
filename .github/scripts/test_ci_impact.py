@@ -46,6 +46,13 @@ NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 # toolchain that actually exists - the dev dependencies that produce farm.js,
 # sandbox.js, and the ca-pi extension bundles. Same threshold, by contract.
 NPM_AUDIT_DEV_GATE = "npm audit --audit-level=high"
+# The site graph's form of NPM_AUDIT_GATE: same scope and threshold, but the JSON
+# report is judged by npm_audit_gate.py, which admits only a GHSA recorded in
+# site/audit-exceptions.json with a dated backstop. Every other HIGH+ still fails.
+SITE_AUDIT_GATE = (
+    "npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py "
+    "--exceptions audit-exceptions.json --audit-level=high"
+)
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
 PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
@@ -274,6 +281,8 @@ def unaudited_npm_graphs(workflow: str) -> list[str]:
         directory
         for job_id, directory in installs.items()
         if f"run: {NPM_AUDIT_GATE}" in jobs[job_id]
+        # The accepted-advisory form is the site graph's alone.
+        or (directory == "site" and f"run: {SITE_AUDIT_GATE}" in jobs[job_id])
     }
     return [
         f"{job_id} installs {directory}, which nothing audits"
@@ -1650,7 +1659,7 @@ class WorkflowContractTest(unittest.TestCase):
                 + [f"run: {NPM_AUDIT_DEV_GATE}"] * 3
                 # site: the graph with production dependencies, audited by
                 # docs.yml and independently by the artifact browser job.
-                + [f"run: {NPM_AUDIT_GATE}"] * 2
+                + [f"run: {SITE_AUDIT_GATE}"] * 2
             ),
             "expected production and dev-inclusive audits on each tools graph, "
             "plus production audits in both site jobs",
@@ -1767,7 +1776,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("site-check", sorted(jobs))
         site_check = jobs["site-check"]
         self.assertIn("run: npm ci", site_check)
-        self.assertIn("run: npm audit --omit=dev --audit-level=high", site_check)
+        self.assertIn(f"run: {SITE_AUDIT_GATE}", site_check)
         # The audit is only a gate if the publish step waits on the job that
         # runs it.  `deploy` needs BOTH build and site-check today; assert the
         # site-check edge specifically so dropping it is caught.
@@ -3574,7 +3583,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "tools/create-artifact-examples.py",
             "ca-artifact-linux-amd64",
             "npm ci",
-            "npm audit --omit=dev --audit-level=high",
+            SITE_AUDIT_GATE,
             "google-chrome --version",
             'ARTIFACT_BROWSER_ONLY: "true"',
             "ARTIFACT_REVIEW_ROOT:",

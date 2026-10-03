@@ -295,6 +295,10 @@ jobs:
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
+              # The site CVE gate's accepted-advisory judge and its only guard.
+              - '.github/scripts/npm_audit_gate.py'
+              - '.github/scripts/test_npm_audit_gate.py'
+              - 'site/audit-exceptions.json'
               # Issue #435: payload_scope.py owns what the version gates count as
               # a shipped change, and test_payload_scope.py is its only guard. A
               # PR that ONLY widened the exclusion - the exact shape of a gate
@@ -383,6 +387,8 @@ jobs:
               - '.codearbiter/reports/agent-lane-proof.json'
               - 'site/package.json'
               - 'site/package-lock.json'
+              - 'site/audit-exceptions.json'
+              - '.github/scripts/npm_audit_gate.py'
               - 'site/playwright.config.ts'
               - 'site/test/browser/artifact-review.spec.ts'
               - 'site/src/content/docs/**'
@@ -653,7 +659,8 @@ jobs:
       - name: Install the reviewed browser-test graph
         run: npm ci
       - name: Audit the browser-test dependency graph
-        run: npm audit --omit=dev --audit-level=high
+        # Same accepted-advisory gate as docs.yml's site-check (site graph).
+        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Record runner Chrome version
@@ -1055,6 +1062,8 @@ jobs:
           python-version: "3.x"
       - name: Validate impact-map fallback, receipt, and name contracts
         run: python .github/scripts/test_ci_impact.py
+      - name: Validate the site CVE gate's accepted-advisory judge
+        run: python .github/scripts/test_npm_audit_gate.py
       - name: Validate the version gates' shipped-payload scope
         # Issue #435. The version gates decide "did anything an installed user
         # can observe change?", and they answer it with a git pathspec - the
