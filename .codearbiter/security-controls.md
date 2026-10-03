@@ -395,6 +395,9 @@ npm dependencies; the docs site under `site/` is not part of that payload):
 - BSD-3-Clause
 - BlueOak-1.0.0 — permissive, OSI-approved "better-MIT"; imposes no obligations
 - CC0-1.0 — public-domain dedication; imposes no obligations
+- Unlicense — public-domain dedication equivalent to CC0-1.0; imposes no obligations.
+  Approved 2026-10-02 by `SUaDtL@users.noreply.github.com` (first seen as
+  `fast-sha256@1.3.0`, transitive via `@anthropic-ai/sdk` in the Pi 1.0.0 host graph).
 - MPL-2.0 (development/build-time only): weak, file-level copyleft. The obligation
   attaches only to the MPL-licensed source files themselves and edits made to
   them; it never reaches files that merely consume the library. Approved for
