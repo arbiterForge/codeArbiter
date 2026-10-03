@@ -205,9 +205,7 @@ def native_environment_allowed(environment: object) -> bool:
 
 def native_git_probe_allowed(executable, argv, cwd, environment) -> bool:
     """Admit only the bridge's fixed, read-only effective-ignore query."""
-    from _gitexec import root_bound_git_env
-
-    if environment != root_bound_git_env() or cwd is None:
+    if cwd is None:
         return False
     try:
         root = Path(cwd)
@@ -230,10 +228,12 @@ def native_git_probe_allowed(executable, argv, cwd, environment) -> bool:
             expected = [str(git), "--no-lazy-fetch", "--no-optional-locks", "-C", str(root),
                         "-c", "core.fsmonitor=false", "-c", "protocol.allow=never", "config",
                         "--null", "--path", "--default", default, "--get", "core.excludesFile"]
-            if executable is None and os.name == "nt" and argv == subprocess.list2cmdline(expected):
-                return True
-            if executable is not None and Path(executable).resolve(strict=True) == git and argv == expected:
-                return True
+            windows_match = executable is None and os.name == "nt" and argv == subprocess.list2cmdline(expected)
+            argv_match = executable is not None and Path(executable).resolve(strict=True) == git and argv == expected
+            if windows_match or argv_match:
+                from _gitexec import root_bound_git_env
+
+                return environment == root_bound_git_env()
     except (OSError, RuntimeError, TypeError, ValueError):
         return False
     return False
