@@ -14,7 +14,7 @@ const QualifiedCommandProfile = "declared-command/0.2.0"
 func launchFileSchema() map[string]any {
 	return closed(map[string]any{
 		"path": text(), "sha256": hash(), "filesystem_id": text(),
-		"role": map[string]any{"enum": model.List("declared-executable", "node-runtime", "npm-cli", "npm-manifest", "runner-entrypoint")},
+		"role": map[string]any{"enum": model.List("declared-executable", "node-runtime", "npm-cli", "npm-prefix", "npm-manifest", "npm-workspace-manifest", "runner-entrypoint")},
 	}, "path", "sha256", "filesystem_id", "role")
 }
 
@@ -29,13 +29,19 @@ func validateQualifiedBinding(binding, definition map[string]any) bool {
 	}
 	files := map[string]map[string]any{}
 	paths := map[string]bool{}
+	workspaceManifests := []map[string]any{}
 	for _, value := range model.A(binding["launch_files"]) {
 		file := model.M(value)
 		role, path := model.S(file["role"]), model.S(file["path"])
 		if files[role] != nil || paths[path] || !filepath.IsAbs(path) {
 			return false
 		}
-		files[role], paths[path] = file, true
+		paths[path] = true
+		if role == "npm-workspace-manifest" {
+			workspaceManifests = append(workspaceManifests, file)
+		} else {
+			files[role] = file
+		}
 	}
 	wrapper := files["declared-executable"]
 	if wrapper == nil {
@@ -50,7 +56,24 @@ func validateQualifiedBinding(binding, definition map[string]any) bool {
 	} else if isNPM && collector != "exit-only/0.1.0" {
 		return false
 	}
+	if len(workspaceManifests) > 0 {
+		manifest := files["npm-manifest"]
+		if !isNPM || manifest == nil || collector == "exit-only/0.1.0" || len(workspaceManifests) > 32 {
+			return false
+		}
+		root := filepath.Dir(model.S(manifest["path"]))
+		for _, file := range workspaceManifests {
+			path := model.S(file["path"])
+			relative, err := filepath.Rel(root, filepath.Dir(path))
+			if err != nil || filepath.Clean(path) != path || filepath.Base(path) != "package.json" || relative == "." || relative == ".." || filepath.IsAbs(relative) || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+				return false
+			}
+		}
+	}
 	if files["node-runtime"] == nil && files["npm-cli"] == nil {
+		if files["npm-prefix"] != nil {
+			return false
+		}
 		entrypoint := files["runner-entrypoint"]
 		needsEntrypoint := false
 		if (npm == "node" || npm == "node.exe") && len(declared) > 1 {
@@ -83,6 +106,10 @@ func validateQualifiedBinding(binding, definition map[string]any) bool {
 		return false
 	}
 	install := filepath.Dir(wrapperPath)
+	prefix := files["npm-prefix"]
+	if (len(workspaceManifests) > 0) != (prefix != nil) || (prefix != nil && model.S(prefix["path"]) != filepath.Join(install, "node_modules", "npm", "bin", "npm-prefix.js")) {
+		return false
+	}
 	node := model.S(files["node-runtime"]["path"])
 	cli := model.S(files["npm-cli"]["path"])
 	return node == filepath.Join(install, "node.exe") && cli == filepath.Join(install, "node_modules", "npm", "bin", "npm-cli.js") && argv[0] == node && argv[1] == cli && model.S(files["node-runtime"]["sha256"]) == model.S(binding["executable_sha256"])

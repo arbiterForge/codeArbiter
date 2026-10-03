@@ -19,6 +19,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.9] - 2026-10-03
+
+### Fixed
+
+- Named verification now supports a root npm script delegating once to a uniquely
+  selected workspace runner. The declared root command remains intact, both npm
+  argument boundaries are honored, and every inspected manifest is retained in
+  launch provenance. Unsupported or ambiguous delegation fails before execution.
+
 ## [0.15.8] - 2026-09-27
 
 ### Fixed
