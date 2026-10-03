@@ -13,7 +13,7 @@ collects evidence that supports a later, conservative selection policy.
 ## Current state
 
 `ci.yml` uses path filters to select plugin lanes, but `core/**` conservatively
-fans out to multiple hosts. The Pi adapter lane runs exact Pi 0.84.1 across a
+fans out to multiple hosts. The Pi adapter lane runs exact Pi 1.0.0 across a
 three-operating-system matrix. The upstream Pi latest canary is advisory and
 currently runs on Pi changes. A separate GitHub default CodeQL configuration
 also scans repository languages, while the in-workflow Pi CodeQL job runs the

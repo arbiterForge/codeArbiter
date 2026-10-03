@@ -198,7 +198,7 @@ keeps mutation blocked, delegates native reads through fresh untrusted settings,
 operator to Pi's trust workflow and a new session. Project-local install remains supported under
 Pi's own load-time trust rules and the same adapter authorization check.
 
-- Supported Pi: exact `0.84.1` (the prior source-derived `0.80.5` capability floor is retired).
+- Supported Pi: exact `1.0.0` (promoted from `0.84.1` under ADR-0041; the prior source-derived `0.80.5` capability floor is retired).
 - Last live-verified Pi: `1.0.0`.
 - Latest-canary lane: current npm `latest`, non-blocking until explicitly promoted to last-verified.
 - Minimum Node: `22.19.0` for Pi surfaces; existing Node-20 tools remain unchanged.
