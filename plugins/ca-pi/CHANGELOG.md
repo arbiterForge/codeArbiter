@@ -2,7 +2,9 @@
 
 All notable changes to `ca-pi` are documented in this file.
 
-## [0.15.9] - 2026-10-02
+## [Unreleased]
+
+## [0.15.10] - 2026-10-03
 
 ### Changed
 
@@ -15,9 +17,6 @@ All notable changes to `ca-pi` are documented in this file.
 - Child dispatch no longer degrades on Pi 1.0.0: the runner accepts the 1.0.0 JSON
   wire (`message_update` usage, named `toolcall_start`, `deferred` completion).
 - `/ca-doctor` validates the Pi 1.0.0 CLI at its declared `dist/bundle/cli.js` bin.
-
-
-## [Unreleased]
 
 ## [0.15.9] - 2026-10-03
 
