@@ -960,8 +960,11 @@ def _bind_commands(
                 raise AuthorityError("UNSUPPORTED_EXECUTABLE", "declared Node runner entrypoint is unavailable") from exc
             launch_files.append(_launch_file(script, "runner-entrypoint"))
         if definition["required_tests"] and _command_name(definition["argv"][0]) in {"npm", "npm.cmd"}:
-            _runner, manifest = _npm_runner(definition["argv"], cwd)
-            launch_files.append(_launch_file(manifest, "npm-manifest"))
+            _runner, manifests = _npm_runner(definition["argv"], cwd)
+            if len(manifests) > 1:
+                launch_files.extend(_validate_nested_npm_launch(executable, manifests[0].parent))
+            launch_files.extend(_launch_file(manifest, "npm-manifest" if index == 0 else "npm-workspace-manifest")
+                                for index, manifest in enumerate(manifests))
         bindings.append({
             "definition_sha256": command["definition_sha256"],
             "argv": argv,
@@ -1460,7 +1463,147 @@ def _command_tokens(command: str) -> list[str]:
     return list(lexer)
 
 
-def _npm_runner(argv: list[str], cwd: Path | None) -> tuple[list[str], Path]:
+def _npm_package(manifest: Path) -> dict[str, Any]:
+    _path_identity(manifest)
+    with manifest.open("rb") as stream:
+        raw = stream.read(MAX_STATE + 1)
+    if len(raw) > MAX_STATE:
+        raise ValueError("oversized manifest")
+    package = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_json_pairs,
+                         parse_constant=_invalid_json_constant)
+    if not isinstance(package, dict):
+        raise ValueError("manifest is not an object")
+    return package
+
+
+def _npm_script(package: dict[str, Any], name: str) -> list[str]:
+    scripts = package["scripts"]
+    script = scripts[name]
+    if not isinstance(script, str) or any(marker in script for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$")):
+        raise ValueError("compound script")
+    if os.name == "nt" and any(marker in script for marker in ("^", "%", "!", "'")):
+        raise ValueError("unsupported cmd.exe expansion or quoting")
+    if scripts.get("pre" + name) or scripts.get("post" + name):
+        raise ValueError("lifecycle scripts")
+    tokens = _command_tokens(script)
+    if not tokens:
+        raise ValueError("empty script")
+    return tokens
+
+
+def _npm_workspace_runner(tokens: list[str], package: dict[str, Any], manifest: Path) -> tuple[list[str], list[Path]]:
+    # Exactly one explicit workspace selector and one delegation level. These
+    # tokens select a collector; they never replace the declared root invocation.
+    if (tokens[0] not in {"npm", "npm.cmd"} or (tokens[0] == "npm.cmd" and os.name != "nt")
+            or len(tokens) < 5 or tokens[1] not in {"-w", "--workspace"}
+            or tokens[3] not in {"run", "run-script"}
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9:._-]*", tokens[4])):
+        raise ValueError("unsupported workspace delegation")
+    selector = tokens[2]
+    name_pattern = r"(?:@[a-z0-9._-]+/)?[a-z0-9][a-z0-9._-]*"
+    if not re.fullmatch(name_pattern, selector):
+        raise ValueError("workspace selector must be an exact package name")
+    forwarded = tokens[5:]
+    if forwarded:
+        if forwarded[0] != "--":
+            raise ValueError("workspace runner arguments must follow --")
+        forwarded = forwarded[1:]
+    workspaces = package.get("workspaces")
+    if not isinstance(workspaces, list) or not 1 <= len(workspaces) <= 32:
+        raise ValueError("workspaces must be a bounded array of explicit directories")
+    inspected, names, paths, selected = [], set(), set(), None
+    root = manifest.parent
+    selector_path = root / selector
+    for value in workspaces:
+        if (not isinstance(value, str) or not value or any(c in value for c in "\\!*?[]{}()")
+                or Path(value).anchor or PureWindowsPath(value).anchor
+                or any(part in {"", ".", ".."} for part in value.split("/"))):
+            raise ValueError("workspace path is not an explicit contained directory")
+        directory = root
+        for part in value.split("/"):
+            directory /= part
+            _path_identity(directory)
+        directory.resolve(strict=True).relative_to(root.resolve(strict=True))
+        workspace_manifest = directory / "package.json"
+        identity = _path_identity(workspace_manifest)
+        if identity in paths:
+            raise ValueError("duplicate workspace directory")
+        paths.add(identity)
+        workspace = _npm_package(workspace_manifest)
+        name = workspace.get("name")
+        if not isinstance(name, str) or not re.fullmatch(name_pattern, name) or name in names:
+            raise ValueError("missing or duplicate workspace name")
+        names.add(name)
+        inspected.append(workspace_manifest)
+        # npm also treats selectors as directory filters. Refuse a name that
+        # could select an additional workspace by its path or parent directory.
+        if name != selector and (directory == selector_path or selector_path in directory.parents):
+            raise ValueError("ambiguous workspace name and directory selector")
+        if name == selector:
+            selected = workspace
+    if selected is None:
+        raise ValueError("workspace name was not found")
+    runner = _npm_script(selected, tokens[4])
+    if _command_name(runner[0]) in {"npm", "npm.cmd"}:
+        raise ValueError("recursive npm delegation")
+    return [*runner, *forwarded], inspected
+
+
+def _validate_nested_npm_launch(executable: Path, cwd: Path) -> list[dict[str, str]]:
+    # npm prepends every ancestor's node_modules/.bin to its script PATH.
+    # A nested npm must resolve to the same qualified executable as its parent.
+    names = ("npm", "npm.cmd", "npm.bat", "npm.exe", "npm.com") if os.name == "nt" else ("npm",)
+    directories = [parent / "node_modules" / ".bin" for parent in (cwd, *cwd.parents)]
+    if os.name == "nt":
+        directories.insert(0, cwd)  # cmd.exe searches its working directory first.
+    if any(os.path.lexists(directory / name) for directory in directories for name in names):
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm is shadowed by a local executable")
+    if _resolve_executable("npm", cwd) != executable:
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm resolves to a different executable")
+    if os.name != "nt":
+        return []
+    # The outer launch pins npm-cli.js directly, but a script's npm.cmd consults
+    # npm-prefix.js and may redirect to another installation. Qualify that same
+    # helper in the manifest directory, and retain its identity with the CLI.
+    node = executable.parent / "node.exe"
+    cli = executable.parent / "node_modules" / "npm" / "bin" / "npm-cli.js"
+    helper = cli.with_name("npm-prefix.js")
+    try:
+        helper_binding = _launch_file(helper, "npm-prefix")
+    except (OSError, AuthorityError) as exc:
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm prefix helper is unavailable") from exc
+    environment, _environment_digest = _minimal_environment()
+
+    def probe(arguments: list[str]) -> list[str]:
+        try:
+            result = _run_contained([str(node), *arguments], cwd=str(cwd), env=environment,
+                                    timeout_seconds=15)
+            if result.returncode or result.stderr or len(result.stdout) > 32768:
+                raise ValueError("unsuccessful or oversized qualification output")
+            return result.stdout.decode("utf-8", errors="strict").splitlines()
+        except (OSError, ValueError, subprocess.SubprocessError, AuthorityError) as exc:
+            raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm launch qualification failed") from exc
+
+    config = probe([str(cli), "config", "get", "script-shell", "node-options"])
+    if config != ["script-shell=null", "node-options=null"]:
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm requires default script-shell and node-options")
+    prefixes = probe([str(helper)])
+    if (len(prefixes) != 1 or not Path(prefixes[0]).is_absolute()
+            or any(ord(character) < 32 or character in '\"<>|?*' for character in prefixes[0])):
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm prefix qualification returned an invalid path")
+    redirected_cli = Path(prefixes[0]) / "node_modules" / "npm" / "bin" / "npm-cli.js"
+    if (os.path.lexists(redirected_cli)
+            and os.path.normcase(os.path.normpath(redirected_cli)) != os.path.normcase(os.path.normpath(cli))):
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm prefix would redirect to a different CLI")
+    try:
+        if _launch_file(helper, "npm-prefix") != helper_binding:
+            raise OSError("prefix helper changed during qualification")
+    except (OSError, AuthorityError) as exc:
+        raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm prefix helper changed during qualification") from exc
+    return [helper_binding]
+
+
+def _npm_runner(argv: list[str], cwd: Path | None) -> tuple[list[str], list[Path]]:
     message = "declare a direct test runner with an explicit supported reporter; npm scripts must be a single runner command"
     if cwd is None:
         raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm runner requires an inspectable package.json; " + message)
@@ -1495,25 +1638,22 @@ def _npm_runner(argv: list[str], cwd: Path | None) -> tuple[list[str], Path]:
             directory /= part
             _path_identity(directory)
         manifest.parent.resolve(strict=True).relative_to(cwd.resolve(strict=True))
-        _path_identity(manifest)
-        with manifest.open("rb") as stream:
-            raw = stream.read(MAX_STATE + 1)
-        if len(raw) > MAX_STATE:
-            raise ValueError("oversized manifest")
-        package = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_json_pairs,
-                             parse_constant=_invalid_json_constant)
-        scripts = package["scripts"]
-        script = scripts[script_name]
-        if not isinstance(script, str) or any(marker in script for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$")):
-            raise ValueError("compound script")
-        if scripts.get("pre" + script_name) or scripts.get("post" + script_name):
-            raise ValueError("lifecycle scripts")
-        tokens = _command_tokens(script)
-        if not tokens or _command_name(tokens[0]) in {"npm", "npm.cmd"}:
-            raise ValueError("nested npm script")
+        package = _npm_package(manifest)
+        tokens = _npm_script(package, script_name)
+        manifests = [manifest]
     except (OSError, ValueError, KeyError, TypeError, RecursionError, AuthorityError) as exc:
         raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm package script is unavailable or compound; " + message) from exc
-    return [*tokens, *forwarded], manifest
+    if _command_name(tokens[0]) in {"npm", "npm.cmd"}:
+        # --prefix changes npm's config lookup and the environment inherited by
+        # its script. Until those contexts are bound, qualify root delegation only.
+        if relative != Path("."):
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "nested npm workspace delegation requires --prefix .")
+        try:
+            runner, inspected = _npm_workspace_runner([*tokens, *forwarded], package, manifest)
+            return runner, [manifest, *inspected]
+        except (OSError, ValueError, KeyError, TypeError, RecursionError, AuthorityError) as exc:
+            raise AuthorityError("UNSUPPORTED_COLLECTOR", "npm package script is unavailable or compound; " + message) from exc
+    return [*tokens, *forwarded], manifests
 
 
 def validate_command_definition(definition: dict[str, Any], *, cwd: Path | None = None) -> str:

@@ -2,7 +2,7 @@
  * sidebar-probe-live.test.ts — AC-7's live leg: the compositor's hook probe
  * exercised against the INSTALLED Pi runtime's own `@earendil-works/pi-tui`,
  * with no hand-written double for the Pi-owned parts. The hosted matrix runs
- * this cell at the promoted supported version (0.84.1), so a Pi
+ * this cell at the promoted supported version (1.0.0), so a Pi
  * release that renames the screen classes, removes the undocumented
  * `doRender` method, or changes the text-metrics exports fails here before it
  * can strand the sidebar.
@@ -61,7 +61,7 @@ describe("sidebar probe against the installed Pi host (AC-7 live)", () => {
     // The version is the axis this matrix exists to cover — assert it before
     // branching so an unreadable manifest fails by name, not by wrong-class
     // assertions from the fallthrough branch.
-    expect(piVersion, "installed Pi version outside the promoted window").toMatch(/^0\.(80|84)\./u);
+    expect(piVersion, "installed Pi version outside the promoted window").toMatch(/^(0\.(80|84)|1\.0)\./u);
     expect(typeof module.visibleWidth, `pi ${piVersion}`).toBe("function");
     expect(typeof module.truncateToWidth, `pi ${piVersion}`).toBe("function");
 

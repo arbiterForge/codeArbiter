@@ -16,12 +16,13 @@ import tempfile
 import unittest
 from unittest import mock
 from types import SimpleNamespace
+from datetime import date, timedelta
 
 
 REPO = Path(__file__).resolve().parents[2]
 HELPER = REPO / ".github" / "scripts" / "pi_host_locks.py"
 LOCK_ROOT = REPO / ".github" / "fixtures" / "pi-hosts"
-SUPPORTED_VERSION = "0.84.1"
+PACKAGE = "@earendil-works/pi-coding-agent"
 
 
 def load_helper():
@@ -35,6 +36,10 @@ def load_helper():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+# The one rolling reviewed version; promotion advances it in pi_host_locks.
+SUPPORTED_VERSION = load_helper().SUPPORTED[0]
 
 
 class PiHostLocksTest(unittest.TestCase):
@@ -280,7 +285,8 @@ class PiHostLocksTest(unittest.TestCase):
             "licenses", "audits", "lifecycle_scripts", "signatures", "provenance", "result",
         }
         review = json.loads(review_source.read_text(encoding="utf-8"))
-        self.assertEqual(set(review), required)
+        # ADR-0041: a host retaining baseline advisories records them; the field is otherwise absent.
+        self.assertEqual(set(review) - {"accepted_advisories"}, required)
         self.assertEqual(review["result"], "PASS")
 
         for label, mutate in {
@@ -294,21 +300,191 @@ class PiHostLocksTest(unittest.TestCase):
             "invalid-review-date": lambda value: value.__setitem__("reviewed_at", "not-a-date"),
             "wrong-reviewer": lambda value: value.__setitem__("reviewer", "untrusted-reviewer"),
             "failed-license": lambda value: value["licenses"].__setitem__("result", "FAIL"),
-            "nonzero-audit": lambda value: value["audits"]["all"].__setitem__("high", 1),
-            "nonzero-production-audit": lambda value: value["audits"]["production"].__setitem__("high", 1),
+            "extra-audit-finding": lambda value: value["audits"]["all"].update(
+                critical=value["audits"]["all"]["critical"] + 1, total=value["audits"]["all"]["total"] + 1),
+            "extra-production-audit-finding": lambda value: value["audits"]["production"].update(
+                critical=value["audits"]["production"]["critical"] + 1,
+                total=value["audits"]["production"]["total"] + 1),
             "wrong-lifecycle-policy": lambda value: value["lifecycle_scripts"].__setitem__("policy", "allow"),
             "failed-signatures": lambda value: value["signatures"].__setitem__("verified", 0),
             "failed-provenance": lambda value: value["provenance"].__setitem__("attestations_verified", 0),
         }.items():
             with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-review-") as raw:
                 root = Path(raw)
+                # Copy every reviewed host so an accepted advisory's baseline lock resolves.
+                shutil.copytree(LOCK_ROOT, root / ".github" / "fixtures" / "pi-hosts")
                 target = root / ".github" / "fixtures" / "pi-hosts" / SUPPORTED_VERSION
-                shutil.copytree(LOCK_ROOT / SUPPORTED_VERSION, target)
                 candidate = json.loads(json.dumps(review))
                 mutate(candidate)
                 (target / "review.json").write_text(json.dumps(candidate), encoding="utf-8")
                 with self.assertRaisesRegex(ValueError, "review|audit|source"):
                     helper.validate_host_lock(root, SUPPORTED_VERSION)
+
+    # -- ADR-0041: a strictly-safer host with recorded, dated advisories ----------
+    BRACE_ADVISORIES = (
+        ("GHSA-q2hr-2g5m-vwhr", "moderate"),
+        ("GHSA-qhr7-859c-m2p7", "high"),
+        ("GHSA-6j4f-fj2g-mc7p", "high"),
+    )
+
+    def _accepted_root(self, raw, version="1.0.0", baseline="0.84.1"):
+        root = Path(raw)
+        for name in (version, baseline):
+            shutil.copytree(LOCK_ROOT / name, root / ".github" / "fixtures" / "pi-hosts" / name)
+        target = root / ".github" / "fixtures" / "pi-hosts" / version
+        pending = json.loads((target / "review.json").read_text(encoding="utf-8"))
+        review = {
+            "schema": "codearbiter-pi-host-lock-review-v2",
+            "package": pending["package"], "version": version, "registry": pending["registry"],
+            "root_integrity": pending["root_integrity"], "lock_sha256": pending["lock_sha256"],
+            "config_sha256": pending["config_sha256"],
+            "source_repository": pending["source_repository"], "source_tag": f"v{version}",
+            "source_commit": pending["source_commit"],
+            "reviewed_at": date.today().isoformat(), "reviewer": "ca-add-dep:C019-DEPENDENCY",
+            "licenses": {"result": "PASS", "observed": ["MIT"]},
+            "audits": {
+                "production": {"info": 0, "low": 0, "moderate": 0, "high": 1, "critical": 0, "total": 1},
+                "all": {"info": 0, "low": 0, "moderate": 0, "high": 1, "critical": 0, "total": 1},
+            },
+            "lifecycle_scripts": {"result": "PASS", "policy": "ignore-scripts", "transitive_hooks_present": True},
+            "signatures": {"result": "PASS", "verified": 1},
+            "provenance": {"result": "PASS", "attestations_verified": 1},
+            "result": "PASS",
+            "accepted_advisories": [{
+                "ghsa": ghsa, "package": "brace-expansion", "version": "5.0.9", "severity": severity,
+                "reason": "Pinned by Pi's shrinkwrap; already present in the baseline; fixed upstream (pi#10288).",
+                "baseline_version": baseline,
+                "backstop": (date.today() + timedelta(days=14)).isoformat(),
+            } for ghsa, severity in self.BRACE_ADVISORIES],
+        }
+        return root, target, review
+
+    def _write_review(self, target, review):
+        (target / "review.json").write_text(json.dumps(review), encoding="utf-8")
+
+    def test_accepted_advisories_admit_a_strictly_safer_host(self):
+        helper = load_helper()
+        if "1.0.0" not in helper.SUPPORTED:
+            self.skipTest("Pi 1.0.0 is not the supported host in this tree")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-accepted-") as raw:
+            root, target, review = self._accepted_root(raw)
+            self._write_review(target, review)
+            validated = helper.validate_host_lock(root, "1.0.0")
+            self.assertEqual(
+                {(item["ghsa"], item["package"]) for item in validated["accepted_advisories"]},
+                {(ghsa, "brace-expansion") for ghsa, _ in self.BRACE_ADVISORIES},
+            )
+            # The install plan carries each record's version through to the audit check.
+            plan = helper.install_plan(root, "1.0.0", root / "prefix")
+            self.assertEqual(
+                {(item["ghsa"], item["package"], item["version"]) for item in plan["accepted_advisories"]},
+                {(item["ghsa"], item["package"], item["version"]) for item in review["accepted_advisories"]},
+            )
+
+    def test_accepted_advisories_fail_closed(self):
+        helper = load_helper()
+        if "1.0.0" not in helper.SUPPORTED:
+            self.skipTest("Pi 1.0.0 is not the supported host in this tree")
+        today = date.today()
+        mutations = {
+            "empty-list": lambda r: r.__setitem__("accepted_advisories", []),
+            "unknown-advisory-field": lambda r: r["accepted_advisories"][0].__setitem__("note", "x"),
+            "malformed-ghsa": lambda r: r["accepted_advisories"][0].__setitem__("ghsa", "CVE-2026-0001"),
+            "duplicate": lambda r: r["accepted_advisories"].append(dict(r["accepted_advisories"][0])),
+            "bad-severity": lambda r: r["accepted_advisories"][0].__setitem__("severity", "urgent"),
+            "empty-reason": lambda r: r["accepted_advisories"][0].__setitem__("reason", " "),
+            "version-not-in-lock": lambda r: r["accepted_advisories"][0].__setitem__("version", "5.0.8"),
+            "package-not-in-lock": lambda r: r["accepted_advisories"][0].__setitem__("package", "left-pad"),
+            "baseline-is-candidate": lambda r: [a.__setitem__("baseline_version", "1.0.0") for a in r["accepted_advisories"]],
+            "baseline-lacks-finding": lambda r: [a.__setitem__("baseline_version", "0.80.5") for a in r["accepted_advisories"]],
+            "backstop-passed": lambda r: (
+                r.__setitem__("reviewed_at", (today - timedelta(days=20)).isoformat()),
+                [a.__setitem__("backstop", (today - timedelta(days=1)).isoformat()) for a in r["accepted_advisories"]],
+            ),
+            "backstop-too-far": lambda r: [a.__setitem__("backstop", (today + timedelta(days=31)).isoformat()) for a in r["accepted_advisories"]],
+            "backstop-before-review": lambda r: [a.__setitem__("backstop", (today - timedelta(days=1)).isoformat()) for a in r["accepted_advisories"]],
+            "audit-exceeds-accepted": lambda r: r["audits"]["all"].update(critical=1, total=2),
+            "production-audit-exceeds-accepted": lambda r: r["audits"]["production"].update(moderate=1, total=2),
+            "audit-zero-with-accepted": lambda r: r["audits"].update(
+                production=dict(helper.ZERO_AUDIT), all=dict(helper.ZERO_AUDIT)),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-accepted-") as raw:
+                root, target, review = self._accepted_root(raw)
+                mutate(review)
+                self._write_review(target, review)
+                with self.assertRaisesRegex(ValueError, "advisor|audit|review"):
+                    helper.validate_host_lock(root, "1.0.0")
+
+    BRACE_NODE = "node_modules/@earendil-works/pi-coding-agent/node_modules/brace-expansion"
+
+    def _audit_report(self, advisories, nodes=None):
+        return json.dumps({
+            "auditReportVersion": 2,
+            "vulnerabilities": {"brace-expansion": {
+                "name": "brace-expansion", "severity": "high",
+                "nodes": [self.BRACE_NODE] if nodes is None else nodes,
+                "via": [{"source": 1, "name": "brace-expansion", "dependency": "brace-expansion",
+                         "url": f"https://github.com/advisories/{ghsa}", "severity": severity, "range": "<5.0.12"}
+                        for ghsa, severity in advisories],
+            }},
+            "metadata": {"vulnerabilities": {"high": 1, "total": 1}},
+        })
+
+    def _fake_npm(self, version, audit_stdout, audit_code=1):
+        inventory = json.dumps({"dependencies": {PACKAGE: {"version": version}}})
+
+        def run(command, **_kwargs):
+            if command[1] == "audit" and "--json" in command:
+                return SimpleNamespace(stdout=audit_stdout, returncode=audit_code)
+            if command[1:3] == ["ls", "--all"]:
+                return SimpleNamespace(stdout=inventory, returncode=0)
+            return SimpleNamespace(stdout="", returncode=0)
+        return run
+
+    def test_install_audit_admits_only_accepted_findings(self):
+        helper = load_helper()
+        accepted = [{"ghsa": ghsa, "package": "brace-expansion", "version": "5.0.9"} for ghsa, _ in self.BRACE_ADVISORIES]
+        report = self._audit_report(self.BRACE_ADVISORIES)
+        clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})
+        cases = {
+            # label: (stdout, npm exit, accepted, installed brace-expansion version or None, expected error)
+            "accepted": (report, 1, accepted, "5.0.9", None),
+            "clean": (clean, 0, [], None, None),
+            "unaccepted": (report, 1, accepted[:2], "5.0.9", "unaccepted"),
+            "nothing-accepted": (report, 1, [], "5.0.9", "unaccepted"),
+            # CodeRabbit #898: the receipt binds a version; another installed copy is not accepted.
+            "installed-version-not-accepted": (report, 1, accepted, "5.0.8", "unaccepted"),
+            "accepted-for-other-version": (
+                report, 1, [dict(item, version="5.0.8") for item in accepted], "5.0.9", "unaccepted"),
+            "node-not-installed": (report, 1, accepted, None, "unreadable"),
+            "installed-name-mismatch": (report, 1, accepted, "evil", "does not match"),
+            "advisory-names-another-package": (
+                report.replace('"name": "brace-expansion", "dependency"', '"name": "minimatch", "dependency"'),
+                1, accepted, "5.0.9", "unaccepted"),
+            "no-nodes": (self._audit_report(self.BRACE_ADVISORIES, nodes=[]), 1, accepted, "5.0.9", "node"),
+            "node-escapes-install": (
+                self._audit_report(self.BRACE_ADVISORIES, nodes=["node_modules/../../outside"]), 1, accepted, "5.0.9",
+                "escapes"),
+            "npm-failure": (report, 2, accepted, "5.0.9", "audit"),
+            "malformed-report": ("not json", 1, accepted, "5.0.9", "audit"),
+            "report-without-vulnerabilities": (json.dumps({"auditReportVersion": 2}), 1, accepted, "5.0.9", "audit"),
+        }
+        for label, (stdout, code, allowed, installed, error) in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-audit-") as raw, \
+                    mock.patch.object(helper.subprocess, "run", side_effect=self._fake_npm(SUPPORTED_VERSION, stdout, code)):
+                root = Path(raw)
+                if installed is not None:
+                    node = root / self.BRACE_NODE
+                    node.mkdir(parents=True)
+                    manifest = ({"name": "other-package", "version": "5.0.9"} if installed == "evil"
+                                else {"name": "brace-expansion", "version": installed})
+                    (node / "package.json").write_text(json.dumps(manifest), encoding="utf-8")
+                if error is None:
+                    helper._audit_install(root, root, SUPPORTED_VERSION, allowed)
+                else:
+                    with self.assertRaisesRegex(ValueError, error):
+                        helper._audit_install(root, root, SUPPORTED_VERSION, allowed)
 
     def test_capture_preflights_registry_metadata_before_lock_resolution_and_disables_scripts(self):
         helper = load_helper()
@@ -1182,10 +1358,9 @@ class PiHostLocksTest(unittest.TestCase):
 
     def test_install_audit_rejects_wrong_installed_pi_version(self):
         helper = load_helper()
-        wrong = json.dumps({"dependencies": {helper.PACKAGE: {"version": "0.84.2"}}})
-        completed = SimpleNamespace(stdout=wrong)
+        clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})
         with tempfile.TemporaryDirectory(prefix="ca-pi-audit-") as raw, mock.patch.object(
-            helper.subprocess, "run", return_value=completed,
+            helper.subprocess, "run", side_effect=self._fake_npm("0.84.2", clean, 0),
         ):
             root = Path(raw)
             with self.assertRaisesRegex(ValueError, "exact reviewed version"):

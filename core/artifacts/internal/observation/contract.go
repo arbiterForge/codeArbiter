@@ -93,7 +93,9 @@ func commandBindingSchema(qualified bool) map[string]any {
 	if qualified {
 		properties := model.M(contract["properties"])
 		properties["collector_profile"] = map[string]any{"enum": model.List("python-unittest-text/0.1.0", "codearbiter-named-lines/0.1.0", "vitest-verbose/0.1.0", "playwright-json/0.1.0", "exit-only/0.1.0")}
-		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(4), "items": launchFileSchema()}
+		// Nested native npm has four launch files, one root manifest, and at most
+		// 32 inspected workspace manifests. Role-specific limits remain below.
+		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(37), "items": launchFileSchema()}
 		contract["required"] = append(model.A(contract["required"]), "collector_profile", "launch_files")
 	}
 	return contract

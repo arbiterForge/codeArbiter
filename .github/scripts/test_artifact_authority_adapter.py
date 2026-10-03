@@ -23,6 +23,9 @@ REPO = HERE.parent.parent
 CORE_PYSRC = REPO / "core" / "pysrc"
 sys.path.insert(0, str(CORE_PYSRC))
 from _gitexec import root_bound_git_env  # noqa: E402
+from test_artifact_npm_nested_launch import (  # noqa: E402
+    NestedNpmPrefixContextTest, WindowsNestedNpmLaunchTest,
+)  # Keep focused launch regressions in the existing required authority suite.
 
 
 def git_run(argv, **kwargs):
@@ -943,6 +946,196 @@ class AuthorityAdapterTest(unittest.TestCase):
         result, _base = self._run(armed, lambda argv, **_kwargs: subprocess.CompletedProcess(
             argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b""))
         self.assertEqual(result["commands"][0]["tests"], [{"name": "suite > exact test", "status": "pass"}])
+
+    def _npm_workspace_definition(self):
+        packages = {
+            "package.json": {"private": True, "workspaces": ["client", "shared"],
+                             "scripts": {"test:client": "npm -w @singedterra/client run test"}},
+            "client/package.json": {"name": "@singedterra/client", "scripts": {"test": "vitest run"}},
+            "shared/package.json": {"name": "@singedterra/shared"},
+        }
+        for relative, package in packages.items():
+            manifest = self.root / relative
+            manifest.parent.mkdir(exist_ok=True)
+            manifest.write_text(json.dumps(package), encoding="utf-8")
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["npm", "run", "test:client", "--", "--", "--reporter=verbose"],
+                          required_tests=["suite > exact test"])
+        return definition
+
+    def _workspace_runner(self, runner):
+        actual = self.adapter._run_contained
+        def dispatch(argv, **kwargs):
+            if os.name == "nt" and len(argv) > 1 and (
+                    Path(argv[1]).name == "npm-prefix.js"
+                    or (Path(argv[1]).name == "npm-cli.js" and argv[2:3] == ["config"])):
+                return actual(argv, **kwargs)
+            return runner(argv, **kwargs)
+        return dispatch
+
+    def test_npm_workspace_delegation_preserves_root_launch_and_binds_every_manifest(self):
+        definition = self._npm_workspace_definition()
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
+        self.assertEqual(binding["collector_profile"], "vitest-verbose/0.1.0")
+        manifests = {Path(item["path"]).relative_to(self.root.resolve()).as_posix()
+                     for item in binding["launch_files"] if item["role"] in {"npm-manifest", "npm-workspace-manifest"}}
+        self.assertEqual(manifests, {"package.json", "client/package.json", "shared/package.json"})
+        launches = []
+        def runner(argv, **kwargs):
+            launches.append((argv, kwargs))
+            return subprocess.CompletedProcess(argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b"")
+        result, _base = self._run(armed, self._workspace_runner(runner))
+        expected = definition["argv"][1:]
+        self.assertEqual(launches[0][0][2:] if os.name == "nt" else launches[0][0][1:], expected)
+        self.assertEqual(launches[0][1]["cwd"], str(self.root.resolve()))
+        self.assertEqual(result["commands"][0]["tests"], [{"name": "suite > exact test", "status": "pass"}])
+        if os.name == "nt":
+            self.assertEqual({item["role"] for item in binding["launch_files"]},
+                             {"declared-executable", "node-runtime", "npm-cli", "npm-prefix", "npm-manifest", "npm-workspace-manifest"})
+
+    def test_npm_workspace_manifest_drift_rejects_before_and_after_execution(self):
+        self._npm_workspace_definition()
+        (self.root / ".gitignore").write_text("package.json\nclient/\nshared/\n", encoding="utf-8")
+        for phase in ("before", "after"):
+            for relative in ("package.json", "client/package.json", "shared/package.json"):
+                target = self.root / relative
+                original = target.read_bytes()
+                with self.subTest(phase=phase, manifest=relative):
+                    armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                    if phase == "before":
+                        target.write_bytes(original + b"\n")
+                        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                            self._authorize(armed)
+                    else:
+                        def changed_manifest(argv, **_kwargs):
+                            target.write_bytes(original + b"\n")
+                            return subprocess.CompletedProcess(argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b"")
+                        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                            self._run(armed, self._workspace_runner(changed_manifest))
+                    self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+                    target.write_bytes(original)
+
+    def test_npm_workspace_delegation_rejects_ambiguous_or_unbounded_grammar(self):
+        cases = (
+            ("root compound", "package.json", "script", "npm -w @singedterra/client run test && echo done"),
+            ("recursive", "client/package.json", "script", "npm run other"),
+            ("leaf compound", "client/package.json", "script", "vitest run && echo done"),
+            ("path executable", "package.json", "script", "./npm -w @singedterra/client run test"),
+            ("fanout", "package.json", "script", "npm --workspaces run test"),
+            ("second selector", "package.json", "script", "npm -w @singedterra/client -w @singedterra/shared run test"),
+            ("path selector", "package.json", "script", "npm -w ./client run test"),
+            ("unknown name", "package.json", "script", "npm -w @unknown/client run test"),
+            ("root pre", "package.json", "pre", "echo before"),
+            ("root post", "package.json", "post", "echo after"),
+            ("leaf pre", "client/package.json", "pre", "echo before"),
+            ("leaf post", "client/package.json", "post", "echo after"),
+            ("workspace object", "package.json", "workspaces", {"packages": ["client", "shared"]}),
+            ("glob", "package.json", "workspaces", ["*"]),
+            ("parent", "package.json", "workspaces", ["../client"]),
+            ("root path", "package.json", "workspaces", ["."]),
+            ("empty path", "package.json", "workspaces", [""]),
+            ("alias", "package.json", "workspaces", ["./client"]),
+            ("duplicate path", "package.json", "workspaces", ["client", "client"]),
+            ("oversized array", "package.json", "workspaces", ["client"] * 33),
+            ("missing array", "package.json", "workspaces", None),
+            ("duplicate name", "shared/package.json", "name", "@singedterra/client"),
+            ("missing name", "shared/package.json", "name", None),
+        )
+        for label, relative, field, value in cases:
+            with self.subTest(case=label):
+                definition = self._npm_workspace_definition()
+                self.assertEqual(self.adapter.validate_command_definition(definition, cwd=self.root),
+                                 "vitest-verbose/0.1.0")
+                path = self.root / relative
+                package = json.loads(path.read_text(encoding="utf-8"))
+                script_name = "test:client" if relative == "package.json" else "test"
+                if field in {"script", "pre", "post"}:
+                    package.setdefault("scripts", {})[("" if field == "script" else field) + script_name] = value
+                else:
+                    package[field] = value
+                path.write_text(json.dumps(package), encoding="utf-8")
+                with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                    self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_reporter_requires_both_argument_boundaries(self):
+        definition = self._npm_workspace_definition()
+        definition["argv"] = ["npm", "run", "test:client", "--", "--reporter=verbose"]
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    @unittest.skipUnless(os.name == "nt", "cmd.exe quoting and expansion differ from POSIX tokenization")
+    def test_npm_workspace_rejects_cmd_expansion_and_single_quotes(self):
+        for script_name, inspected_name, executed_name in (("te^st", "te^st", "test"), ("'test'", "test", "'test'")):
+            with self.subTest(script_name=script_name):
+                definition = self._npm_workspace_definition()
+                root = self.root / "package.json"
+                package = json.loads(root.read_text(encoding="utf-8"))
+                package["scripts"]["test:client"] = "npm -w @singedterra/client run " + script_name
+                root.write_text(json.dumps(package), encoding="utf-8")
+                client = self.root / "client/package.json"
+                package = json.loads(client.read_text(encoding="utf-8"))
+                package["scripts"] = {inspected_name: "vitest run", executed_name: "node other.js"}
+                client.write_text(json.dumps(package), encoding="utf-8")
+                with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                    self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_name_cannot_also_select_another_directory(self):
+        definition = self._npm_workspace_definition()
+        root = self.root / "package.json"
+        package = json.loads(root.read_text(encoding="utf-8"))
+        package["scripts"]["test:client"] = "npm --workspace shared run test"
+        root.write_text(json.dumps(package), encoding="utf-8")
+        client = self.root / "client/package.json"
+        package = json.loads(client.read_text(encoding="utf-8"))
+        package["name"] = "shared"
+        client.write_text(json.dumps(package), encoding="utf-8")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_rejects_shell_sensitive_script_names(self):
+        definition = self._npm_workspace_definition()
+        root = self.root / "package.json"
+        package = json.loads(root.read_text(encoding="utf-8"))
+        package["scripts"]["test:client"] = r"npm -w @singedterra/client run te\st"
+        root.write_text(json.dumps(package), encoding="utf-8")
+        client = self.root / "client/package.json"
+        package = json.loads(client.read_text(encoding="utf-8"))
+        package["scripts"] = {r"te\st": "vitest run", "test": "node other.js"}
+        client.write_text(json.dumps(package), encoding="utf-8")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_admits_32_explicit_manifests(self):
+        definition = self._npm_workspace_definition()
+        root = self.root / "package.json"
+        package = json.loads(root.read_text(encoding="utf-8"))
+        for index in range(30):
+            name = f"extra-{index}"
+            directory = self.root / name
+            directory.mkdir()
+            (directory / "package.json").write_text(json.dumps({"name": name}), encoding="utf-8")
+            package["workspaces"].append(name)
+        root.write_text(json.dumps(package), encoding="utf-8")
+        self.assertEqual(self.adapter.validate_command_definition(definition, cwd=self.root), "vitest-verbose/0.1.0")
+        _runner, manifests = self.adapter._npm_runner(definition["argv"], self.root)
+        self.assertEqual(len(manifests), 33)
+
+    def test_npm_workspace_rejects_nested_executable_shadowing_before_arm(self):
+        self._npm_workspace_definition()
+        locations = [self.root / "node_modules/.bin/npm"]
+        if os.name == "nt":
+            locations.extend([self.root / "npm.cmd", self.root / "node_modules/.bin/npm.cmd"])
+        for shadow in locations:
+            with self.subTest(path=shadow):
+                shadow.parent.mkdir(parents=True, exist_ok=True)
+                shadow.write_text("untrusted executable, never run", encoding="utf-8")
+                try:
+                    with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_EXECUTABLE.*shadowed"):
+                        self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                    self.assertEqual(self.adapter._registered_requests(), [])
+                finally:
+                    shadow.unlink()
 
     def test_npm_compound_or_missing_reporter_is_rejected_before_arm(self):
         for script, forwarded in (("playwright test", []), ("vitest run", []),
@@ -3109,6 +3302,88 @@ class ClaudeEndToEndTest(unittest.TestCase):
         """The same flow on Claude Code 2.1.286's tagged model and handback report."""
         self.host_fixtures = "2.1.286/"
         self.test_end_to_end_claude()
+
+    @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")
+    def test_native_npm_workspace_verification_is_accepted_by_real_engine(self):
+        """Real npm delegation and named results reach the current Go receipt validator."""
+        workspace = self.root / "client"
+        shutil.copytree(self.root / "tests", workspace / "tests")
+        root_manifest = self.root / "package.json"
+        workspace_manifest = workspace / "package.json"
+        root_manifest.write_text(json.dumps({
+            "name": "workspace-integration-fixture", "private": True,
+            "workspaces": ["client"],
+            "scripts": {"test:client": "npm --workspace @fixture/client run test"},
+        }), encoding="utf-8")
+        workspace_manifest.write_text(json.dumps({
+            "name": "@fixture/client", "version": "1.0.0", "private": True,
+            "scripts": {"test": "python -m unittest -v tests.test_config"},
+        }), encoding="utf-8")
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation,
+                                      "npm-workspace-e2e", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {
+            "operation_id": "npm-workspace-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+            "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec,
+        })
+        workflow.approve("SPEC-FLOW")
+        spec_hash = client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"]
+        plan = self.host.plan_normative(spec_hash)
+        declared_argv = ["npm", "run", "test:client"]
+        plan["tasks"][0]["verification"][0].update(
+            argv=declared_argv,
+            assertion="The root npm command delegates to the workspace and runs the named unittest.",
+        )
+        client.call("create", {
+            "operation_id": "npm-workspace-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+            "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+            "spec_id": "SPEC-FLOW", "normative": plan,
+        })
+        # Real unittest imports write bytecode; retain every source and manifest as an input.
+        workflow.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {
+            "verification_inputs": {"roots": ["."], "exclude_directories": ["client/tests/__pycache__"]},
+        }}])
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        armed = json.loads(self._cli(
+            "arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+            "--record-id", "T-001", "--activity", "verification",
+        ))
+        pre = self._event("bash-pretooluse.json", tool_use_id="npm-workspace-verify",
+                          tool_input={"command": armed["verify_command"], "description": "verify npm workspace"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        verified = json.loads(stdout)
+        self.assertEqual(verified["commands"][0]["tests"], [
+            {"name": "test_environment_overrides", "status": "pass"},
+        ])
+        state = self._state(armed["request_id"])
+        self.assertEqual(state["context"]["commands"][0]["definition"]["argv"], declared_argv)
+        binding = state["command_bindings"][0]
+        self.assertEqual(binding["argv"][-2:], declared_argv[1:])
+        self.assertEqual(binding["collector_profile"], "python-unittest-text/0.1.0")
+        expected_roles = ["declared-executable", "npm-manifest", "npm-workspace-manifest"]
+        if sys.platform == "win32":
+            expected_roles.extend(["node-runtime", "npm-cli", "npm-prefix"])
+        self.assertCountEqual([item["role"] for item in binding["launch_files"]], expected_roles)
+        manifests = {item["role"]: item["path"] for item in binding["launch_files"]
+                     if item["role"] in {"npm-manifest", "npm-workspace-manifest"}}
+        self.assertEqual(manifests, {
+            "npm-manifest": str(root_manifest),
+            "npm-workspace-manifest": str(workspace_manifest),
+        })
+        post = self._event("bash-posttooluse.json", tool_use_id="npm-workspace-verify",
+                           tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        published = json.loads(self._cli(
+            "publish", "--root", str(self.root), "--request-id", armed["request_id"],
+        ))
+        self.assertTrue((self.root / published["receipt"]).is_file())
 
     def test_end_to_end_claude(self):
         """Arm, verify and publish through the shipped CLI; observe through the shipped hook."""

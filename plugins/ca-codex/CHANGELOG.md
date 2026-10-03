@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.14.9] - 2026-10-02
+## [0.14.10] - 2026-10-03
 
 ### Fixed
 
@@ -14,6 +14,15 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   `request was already abandoned` instead of a misleading binding failure. Carries the Claude
   Code 2.1.286 review-correlation fix (tagged `resolvedModel`, `SubagentHandback` reports),
   which applies only to the Claude host.
+
+## [0.14.9] - 2026-10-03
+
+### Fixed
+
+- Named verification now supports a root npm script delegating once to a uniquely
+  selected workspace runner. The declared root command remains intact, both npm
+  argument boundaries are honored, and every inspected manifest is retained in
+  launch provenance. Unsupported or ambiguous delegation fails before execution.
 
 ## [0.14.8] - 2026-09-27
 
