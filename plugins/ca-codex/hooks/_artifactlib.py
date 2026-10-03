@@ -753,12 +753,14 @@ def _native_git_excludes(git: Path, root: Path) -> dict[str, str]:
 
     default = os.environ.get("XDG_CONFIG_HOME")
     default = str(Path(default) / "git" / "ignore") if default else "~/.config/git/ignore"
+    environment = root_bound_git_env()
+    environment.pop("GIT_CONFIG", None)  # git-config-only override; inventory commands ignore it.
     try:
         code, raw, _ = _bounded_child(
             [str(git), "--no-lazy-fetch", "--no-optional-locks", "-C", str(root),
              "-c", "core.fsmonitor=false", "-c", "protocol.allow=never", "config",
              "--null", "--path", "--default", default, "--get", "core.excludesFile"],
-            b"", None, 5, environment=root_bound_git_env(), cwd=root)
+            b"", None, 5, environment=environment, cwd=root)
         if code != 0 or not raw.endswith(b"\0") or b"\0" in raw[:-1] or len(raw) > 4096:
             return {}
         value = raw[:-1].decode("utf-8", "strict")

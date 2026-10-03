@@ -4305,7 +4305,8 @@ class CompletionBridgeEnvironmentTest(unittest.TestCase):
 
     def test_installed_host_audit_only_admits_fixed_git_ignore_query(self):
         host = importlib.import_module("test_artifact_installed_host")
-        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git)}, clear=True), mock.patch.object(
+        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git),
+                                         "GIT_CONFIG": "must-not-reach-query"}, clear=True), mock.patch.object(
                 self.bridge, "_bounded_child", return_value=(0, b"", b"")) as query:
             self.bridge._native_git_excludes(self.git.resolve(), self.root.resolve())
             argv = query.call_args.args[0]

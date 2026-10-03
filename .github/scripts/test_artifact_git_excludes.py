@@ -28,8 +28,10 @@ class CompletionGitExcludesTest(unittest.TestCase):
             root = base / "repository"
             root.mkdir()
             config_home = base / "user-config"
-            excludes = config_home / "git" / "ignore"
-            excludes.parent.mkdir(parents=True)
+            default_excludes = config_home / "git" / "ignore"
+            default_excludes.parent.mkdir(parents=True)
+            default_excludes.write_text("different-default.txt\n", encoding="utf-8")
+            excludes = base / "explicit-ignore" if explicit else default_excludes
             excludes.write_text("ignored-by-host.txt\n", encoding="utf-8")
             config = base / "host.gitconfig"
             config.write_text('[core]\n\texcludesFile = "' + excludes.as_posix() + '"\n' if explicit else "", encoding="utf-8")
@@ -38,11 +40,19 @@ class CompletionGitExcludesTest(unittest.TestCase):
                                XDG_CONFIG_HOME=str(config_home),
                                GIT_CONFIG_COUNT="1", GIT_CONFIG_KEY_0="alias.unrelated",
                                GIT_CONFIG_VALUE_0="!echo do-not-forward", USER_TOKEN="secret-fixture")
+            if explicit:
+                override_ignore = base / "override-ignore"
+                override_ignore.write_text("producer-visible.txt\n", encoding="utf-8")
+                override_config = base / "override.gitconfig"
+                override_config.write_text('[core]\n\texcludesFile = "' + override_ignore.as_posix() + '"\n', encoding="utf-8")
+                environment["GIT_CONFIG"] = str(override_config)
             subprocess.run([git, "init", "--quiet", str(root)], env=environment, check=True, timeout=15)
             (root / "ignored-by-host.txt").write_text("ordinary ignored local output", encoding="utf-8")
+            if explicit:
+                (root / "producer-visible.txt").write_text("must remain in inventory", encoding="utf-8")
             command = [git, "-C", str(root), "status", "--porcelain=v2", "-z", "--untracked-files=all"]
             expected = subprocess.run(command, env=environment, capture_output=True, check=True, timeout=15).stdout
-            self.assertEqual(expected, b"")
+            self.assertEqual(expected, b"? producer-visible.txt\0" if explicit else b"")
             with mock.patch.dict(os.environ, environment, clear=True):
                 native = bridge._native_child_environment(["pinned-engine", "evidence-context", "--root", str(root), "--request", "-"])
             actual = subprocess.run(command, env=native, capture_output=True, check=True, timeout=15).stdout

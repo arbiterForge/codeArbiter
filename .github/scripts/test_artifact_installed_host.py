@@ -233,7 +233,9 @@ def native_git_probe_allowed(executable, argv, cwd, environment) -> bool:
             if windows_match or argv_match:
                 from _gitexec import root_bound_git_env
 
-                return environment == root_bound_git_env()
+                expected_environment = root_bound_git_env()
+                expected_environment.pop("GIT_CONFIG", None)
+                return environment == expected_environment
     except (OSError, RuntimeError, TypeError, ValueError):
         return False
     return False
