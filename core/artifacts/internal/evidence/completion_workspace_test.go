@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
@@ -388,6 +389,52 @@ func TestCompletionWorkspaceSymlinkParityAndEscape(t *testing.T) {
 	}
 	if _, err := CompletionWorkspaces(f, bindings, false); err == nil {
 		t.Fatal("escaping workspace symlink was accepted")
+	}
+}
+
+func TestCompletionWorkspaceLaunchFileLinkedParent(t *testing.T) {
+	f := completionFixture(t)
+	bindings, want := completionPython(t, f.Root)
+	target, replacement := testutil.Root(t), testutil.Root(t)
+	data := []byte("// fixture entrypoint, never executed\n")
+	for _, root := range []string{target, replacement} {
+		completionWrite(t, root, "cli.js", data)
+	}
+	link := filepath.Join(testutil.Root(t), "runner")
+	pointAt := func(root string) {
+		t.Helper()
+		if runtime.GOOS == "windows" {
+			if out, err := exec.Command("cmd", "/d", "/c", "mklink", "/J", link, root).CombinedOutput(); err != nil {
+				t.Fatalf("create runner junction: %v: %s", err, out)
+			}
+		} else if err := os.Symlink(root, link); err != nil {
+			t.Fatal(err)
+		}
+	}
+	pointAt(target)
+	path := filepath.Join(link, "cli.js")
+	identity, err := CompletionPathIdentity(filepath.Join(target, "cli.js"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry := map[string]any{"path": path, "filesystem_id": identity, "sha256": canonical.BytesHash(data), "role": "runner-entrypoint"}
+	binding := model.M(bindings[0])
+	binding["launch_files"] = append(model.A(binding["launch_files"]), entry)
+	got, err := CompletionWorkspaces(f, bindings, false)
+	if err != nil {
+		resolved, resolveErr := completionLaunchPath(path)
+		actual, identityErr := CompletionPathIdentity(resolved)
+		t.Fatalf("producer-supported linked runner parent was rejected: %v; resolved=%q (%v), identity=%q want=%q (%v)", err, resolved, resolveErr, actual, identity, identityErr)
+	}
+	if !reflect.DeepEqual(got, want) || entry["path"] != path {
+		t.Fatal("linked runner changed the raw workspace closure or lexical launch binding")
+	}
+	if err := os.Remove(link); err != nil {
+		t.Fatal(err)
+	}
+	pointAt(replacement)
+	if _, err := CompletionWorkspaces(f, bindings, false); err == nil {
+		t.Fatal("runner parent retarget with identical bytes was accepted")
 	}
 }
 

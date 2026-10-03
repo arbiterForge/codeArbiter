@@ -105,6 +105,52 @@ func CompletionReadFile(path string, max int) ([]byte, error) {
 	return data, nil
 }
 
+// The producer permits linked runner parents, while retaining the lexical
+// launch path and rejecting a linked final file. Resolve only that parent.
+func completionLaunchPath(path string) (string, error) {
+	if !filepath.IsAbs(path) || strings.IndexByte(path, 0) >= 0 {
+		return "", fault.New("WORKSPACE_DRIFT", "command launch file path must be absolute")
+	}
+	parent, err := completionLaunchParent(filepath.Dir(path), 0)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(parent, filepath.Base(path)), nil
+}
+
+func completionLaunchParent(path string, depth int) (string, error) {
+	if depth > 128 {
+		return "", fault.New("WORKSPACE_DRIFT", "command launch parent resolution exceeds bound")
+	}
+	parent := filepath.Dir(path)
+	if parent == path {
+		return path, nil
+	}
+	resolved, err := completionLaunchParent(parent, depth+1)
+	if err != nil {
+		return "", err
+	}
+	candidate := filepath.Join(resolved, filepath.Base(path))
+	info, err := os.Lstat(candidate)
+	if err != nil {
+		return "", err
+	}
+	if info.Mode()&os.ModeSymlink != 0 || completionReparse(info) {
+		target, err := os.Readlink(candidate)
+		if err != nil {
+			return "", err
+		}
+		if !filepath.IsAbs(target) {
+			target = filepath.Join(resolved, target)
+		}
+		return completionLaunchParent(filepath.Clean(target), depth+1)
+	}
+	if !info.IsDir() {
+		return "", fault.New("WORKSPACE_DRIFT", "command launch parent is not a directory")
+	}
+	return candidate, nil
+}
+
 type completionOutput struct{ bytes.Buffer }
 
 func (b *completionOutput) Write(p []byte) (int, error) {
@@ -266,13 +312,18 @@ func completionWorkspacesOnce(f *store.FS, bindings []any, normalize bool) ([]an
 		}
 		for _, v := range launchFiles {
 			item := model.M(v)
-			path := model.S(item["path"])
-			if !completionIdentityMatches(path, model.S(item["filesystem_id"])) {
+			original := model.S(item["path"])
+			path, err := completionLaunchPath(original)
+			if err != nil || !completionIdentityMatches(path, model.S(item["filesystem_id"])) {
 				return nil, fault.New("WORKSPACE_DRIFT", "command launch file identity changed")
 			}
 			data, err := CompletionReadFile(path, 512<<20)
 			if err != nil || canonical.BytesHash(data) != model.S(item["sha256"]) {
 				return nil, fault.New("WORKSPACE_DRIFT", "command launch file bytes changed")
+			}
+			after, err := completionLaunchPath(original)
+			if err != nil || !completionSamePath(path, after) || !completionIdentityMatches(after, model.S(item["filesystem_id"])) {
+				return nil, fault.New("WORKSPACE_DRIFT", "command launch file identity changed while reading")
 			}
 		}
 		key := filepath.Clean(root)
