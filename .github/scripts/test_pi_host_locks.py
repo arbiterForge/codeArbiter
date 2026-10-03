@@ -374,6 +374,12 @@ class PiHostLocksTest(unittest.TestCase):
                 {(item["ghsa"], item["package"]) for item in validated["accepted_advisories"]},
                 {(ghsa, "brace-expansion") for ghsa, _ in self.BRACE_ADVISORIES},
             )
+            # The install plan carries each record's version through to the audit check.
+            plan = helper.install_plan(root, "1.0.0", root / "prefix")
+            self.assertEqual(
+                {(item["ghsa"], item["package"], item["version"]) for item in plan["accepted_advisories"]},
+                {(item["ghsa"], item["package"], item["version"]) for item in review["accepted_advisories"]},
+            )
 
     def test_accepted_advisories_fail_closed(self):
         helper = load_helper()
@@ -410,12 +416,14 @@ class PiHostLocksTest(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "advisor|audit|review"):
                     helper.validate_host_lock(root, "1.0.0")
 
-    def _audit_report(self, advisories):
+    BRACE_NODE = "node_modules/@earendil-works/pi-coding-agent/node_modules/brace-expansion"
+
+    def _audit_report(self, advisories, nodes=None):
         return json.dumps({
             "auditReportVersion": 2,
             "vulnerabilities": {"brace-expansion": {
                 "name": "brace-expansion", "severity": "high",
-                "nodes": ["node_modules/@earendil-works/pi-coding-agent/node_modules/brace-expansion"],
+                "nodes": [self.BRACE_NODE] if nodes is None else nodes,
                 "via": [{"source": 1, "name": "brace-expansion", "dependency": "brace-expansion",
                          "url": f"https://github.com/advisories/{ghsa}", "severity": severity, "range": "<5.0.12"}
                         for ghsa, severity in advisories],
@@ -436,20 +444,42 @@ class PiHostLocksTest(unittest.TestCase):
 
     def test_install_audit_admits_only_accepted_findings(self):
         helper = load_helper()
-        accepted = [{"ghsa": ghsa, "package": "brace-expansion"} for ghsa, _ in self.BRACE_ADVISORIES]
+        accepted = [{"ghsa": ghsa, "package": "brace-expansion", "version": "5.0.9"} for ghsa, _ in self.BRACE_ADVISORIES]
+        report = self._audit_report(self.BRACE_ADVISORIES)
+        clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})
         cases = {
-            "accepted": (self._audit_report(self.BRACE_ADVISORIES), 1, accepted, None),
-            "clean": (json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}}), 0, [], None),
-            "unaccepted": (self._audit_report(self.BRACE_ADVISORIES), 1, accepted[:2], "unaccepted"),
-            "nothing-accepted": (self._audit_report(self.BRACE_ADVISORIES), 1, [], "unaccepted"),
-            "npm-failure": (self._audit_report(self.BRACE_ADVISORIES), 2, accepted, "audit"),
-            "malformed-report": ("not json", 1, accepted, "audit"),
-            "report-without-vulnerabilities": (json.dumps({"auditReportVersion": 2}), 1, accepted, "audit"),
+            # label: (stdout, npm exit, accepted, installed brace-expansion version or None, expected error)
+            "accepted": (report, 1, accepted, "5.0.9", None),
+            "clean": (clean, 0, [], None, None),
+            "unaccepted": (report, 1, accepted[:2], "5.0.9", "unaccepted"),
+            "nothing-accepted": (report, 1, [], "5.0.9", "unaccepted"),
+            # CodeRabbit #898: the receipt binds a version; another installed copy is not accepted.
+            "installed-version-not-accepted": (report, 1, accepted, "5.0.8", "unaccepted"),
+            "accepted-for-other-version": (
+                report, 1, [dict(item, version="5.0.8") for item in accepted], "5.0.9", "unaccepted"),
+            "node-not-installed": (report, 1, accepted, None, "unreadable"),
+            "installed-name-mismatch": (report, 1, accepted, "evil", "does not match"),
+            "advisory-names-another-package": (
+                report.replace('"name": "brace-expansion", "dependency"', '"name": "minimatch", "dependency"'),
+                1, accepted, "5.0.9", "unaccepted"),
+            "no-nodes": (self._audit_report(self.BRACE_ADVISORIES, nodes=[]), 1, accepted, "5.0.9", "node"),
+            "node-escapes-install": (
+                self._audit_report(self.BRACE_ADVISORIES, nodes=["node_modules/../../outside"]), 1, accepted, "5.0.9",
+                "escapes"),
+            "npm-failure": (report, 2, accepted, "5.0.9", "audit"),
+            "malformed-report": ("not json", 1, accepted, "5.0.9", "audit"),
+            "report-without-vulnerabilities": (json.dumps({"auditReportVersion": 2}), 1, accepted, "5.0.9", "audit"),
         }
-        for label, (stdout, code, allowed, error) in cases.items():
+        for label, (stdout, code, allowed, installed, error) in cases.items():
             with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-audit-") as raw, \
                     mock.patch.object(helper.subprocess, "run", side_effect=self._fake_npm(SUPPORTED_VERSION, stdout, code)):
                 root = Path(raw)
+                if installed is not None:
+                    node = root / self.BRACE_NODE
+                    node.mkdir(parents=True)
+                    manifest = ({"name": "other-package", "version": "5.0.9"} if installed == "evil"
+                                else {"name": "brace-expansion", "version": installed})
+                    (node / "package.json").write_text(json.dumps(manifest), encoding="utf-8")
                 if error is None:
                     helper._audit_install(root, root, SUPPORTED_VERSION, allowed)
                 else:

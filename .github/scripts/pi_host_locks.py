@@ -783,7 +783,8 @@ def install_plan(root: Path, version: str, prefix: Path) -> dict[str, Any]:
         "prefix": str(destination),
         "path_entry": str(destination / "node_modules" / ".bin"),
         "accepted_advisories": [
-            {"ghsa": item["ghsa"], "package": item["package"]} for item in validated["accepted_advisories"]
+            {"ghsa": item["ghsa"], "package": item["package"], "version": item["version"]}
+            for item in validated["accepted_advisories"]
         ],
         "command": [
             shutil.which("npm") or "npm", "ci", "--ignore-scripts", *REGISTRY_ARGS,
@@ -814,8 +815,30 @@ def install(root: Path, version: str, prefix: Path) -> dict[str, Any]:
     return plan
 
 
-def _check_audit_findings(stdout: str, accepted: set[tuple[str, str]]) -> None:
-    """ADR-0041: an installed finding passes only when its GHSA and package are accepted."""
+def _installed_versions(destination: Path, nodes: object, name: str) -> set[str]:
+    """Versions actually installed at an audit entry's node paths; fail closed on any gap."""
+    if not isinstance(nodes, list) or not nodes:
+        raise ValueError(f"npm audit report names no installed node for {name}")
+    root = destination.resolve()
+    versions = set()
+    for node in nodes:
+        if not isinstance(node, str) or not node.startswith("node_modules/"):
+            raise ValueError(f"npm audit report node is malformed for {name}")
+        manifest = (destination / node / "package.json").resolve()
+        if not manifest.is_relative_to(root):
+            raise ValueError(f"npm audit report node escapes the install for {name}")
+        try:
+            installed = json.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise ValueError(f"installed package is unreadable at {node}") from error
+        if not isinstance(installed, dict) or installed.get("name") != name or not isinstance(installed.get("version"), str):
+            raise ValueError(f"installed package does not match the audit entry at {node}")
+        versions.add(installed["version"])
+    return versions
+
+
+def _check_audit_findings(stdout: str, accepted: set[tuple[str, str, str]], destination: Path) -> None:
+    """ADR-0041: an installed finding passes only when its GHSA, package and installed version are accepted."""
     try:
         report = json.loads(stdout)
     except ValueError as error:
@@ -832,8 +855,13 @@ def _check_audit_findings(stdout: str, accepted: set[tuple[str, str]]) -> None:
                 continue  # A transitive pointer to another inventory entry.
             url = source.get("url") if isinstance(source, dict) else None
             ghsa = url.rsplit("/", 1)[-1] if isinstance(url, str) else ""
-            if (ghsa, source.get("name")) not in accepted:
-                raise ValueError(f"unaccepted audit finding {ghsa or '<unknown>'} in {source.get('name', name)}")
+            package = source.get("name") if isinstance(source, dict) else None
+            if package != name:
+                raise ValueError(f"unaccepted audit finding {ghsa or '<unknown>'} in {package or name}")
+            # The record binds a version: every installed copy the advisory hits must be it.
+            for installed in _installed_versions(destination, entry.get("nodes"), name):
+                if (ghsa, name, installed) not in accepted:
+                    raise ValueError(f"unaccepted audit finding {ghsa} in {name}@{installed}")
 
 
 def _audit_install(
@@ -842,7 +870,7 @@ def _audit_install(
     npm = shutil.which("npm") or "npm"
     cache_args = [*REGISTRY_ARGS, "--cache", str(destination / ".npm-cache")]
     npm_environment = _npm_environment(destination)
-    allowed = {(item["ghsa"], item["package"]) for item in accepted}
+    allowed = {(item["ghsa"], item["package"], item["version"]) for item in accepted}
     for scope in (["--omit=dev"], []):
         # npm audit exits 1 whenever it reports findings; anything else is a failure.
         completed = subprocess.run(
@@ -851,7 +879,7 @@ def _audit_install(
         )
         if getattr(completed, "returncode", 0) not in (0, 1):
             raise ValueError("npm audit did not complete")
-        _check_audit_findings(completed.stdout, allowed)
+        _check_audit_findings(completed.stdout, allowed, destination)
     checks = [
         [npm, "audit", "signatures", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
         [npm, "ls", "--all", "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
