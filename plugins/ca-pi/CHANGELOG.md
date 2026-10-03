@@ -4,6 +4,20 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.10] - 2026-10-03
+
+### Changed
+
+- Promote the verified Pi host window through exact Pi 1.0.0. Pi 1.0.0 closes the
+  undici advisories present in 0.84.1; the brace-expansion advisories it still pins
+  were already present in 0.84.1 and are recorded as accepted under ADR-0041.
+
+### Fixed
+
+- Child dispatch no longer degrades on Pi 1.0.0: the runner accepts the 1.0.0 JSON
+  wire (`message_update` usage, named `toolcall_start`, `deferred` completion).
+- `/ca-doctor` validates the Pi 1.0.0 CLI at its declared `dist/bundle/cli.js` bin.
+
 ## [0.15.9] - 2026-10-03
 
 ### Fixed

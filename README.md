@@ -183,7 +183,7 @@ Replace `<version>` with the numeric suffix from the chosen tag while retaining 
 it is a partial install that cannot author typed HTML specs and plans; use the npm channel for
 that.
 
-Pi 0.84.1 is the supported host for this release line. Generated aliases use `/ca-*`;
+Pi 1.0.0 is the supported host for this release line. Generated aliases use `/ca-*`;
 `/skill:ca-*` is the host-native fallback. Every `ca-pi-v*` tag is also published to npm as
 `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible
 install. The [Pi runbook](./docs/pi-parity-testing.md) covers isolated install, trust, verification,

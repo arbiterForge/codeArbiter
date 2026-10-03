@@ -64,3 +64,13 @@ export async function findPiPackageRoot(): Promise<string> {
   }
   throw new Error("live Pi package root was not discoverable from PATH without npm/user config");
 }
+
+/** The installed Pi's declared `pi` bin, which moved to dist/bundle/cli.js in Pi 1.0.0. */
+export async function findPiCliEntry(packageRoot: string): Promise<string> {
+  const manifest = JSON.parse(await readFile(resolve(packageRoot, "package.json"), "utf8")) as { bin?: unknown };
+  const bin = typeof manifest.bin === "string"
+    ? manifest.bin
+    : (manifest.bin as Record<string, unknown> | undefined)?.pi;
+  if (typeof bin !== "string") throw new Error("live Pi manifest declares no pi bin");
+  return await realpath(resolve(packageRoot, bin));
+}
