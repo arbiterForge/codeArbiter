@@ -524,8 +524,13 @@ function validAssistantEvent(value: unknown): boolean {
       return exactWithOptionalPartial(["type"]);
     case "text_start":
     case "thinking_start":
-    case "toolcall_start":
       return exactWithOptionalPartial(["type", "contentIndex"]) && contentIndex();
+    case "toolcall_start":
+      // Pi 1.0.0's JSON wire names the call (`id` + `toolName`) in place of the partial.
+      return ("id" in value || "toolName" in value
+        ? exactKeys(value, ["type", "contentIndex", "id", "toolName"])
+          && boundedString(value.id) && boundedString(value.toolName)
+        : exactWithOptionalPartial(["type", "contentIndex"])) && contentIndex();
     case "text_delta":
     case "thinking_delta":
     case "toolcall_delta":
@@ -540,7 +545,8 @@ function validAssistantEvent(value: unknown): boolean {
         && contentIndex() && validContentBlock(value.toolCall, "assistant");
     case "done":
       return exactKeys(value, ["type", "reason", "message"])
-        && ["stop", "length", "toolUse"].includes(value.reason as string)
+        // `deferred` entered the done reasons in Pi 1.0.0.
+        && ["stop", "length", "toolUse", "deferred"].includes(value.reason as string)
         && validMessage(value.message) && (value.message as Record<string, unknown>).role === "assistant";
     case "error":
       return exactKeys(value, ["type", "reason", "error"])
@@ -596,13 +602,17 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
       break;
     case "message_update":
       // Pi ≤0.80.10 carries the full accumulating `message`; Pi ≥0.84.0 sends
-      // the assistant event alone (delta-only RPC, pi#7290). Both key sets are
-      // exact; nothing else passes.
+      // the assistant event alone (delta-only RPC, pi#7290); Pi 1.0.0 adds the
+      // cumulative `usage` (modes/json-event.ts). Each key set is exact; nothing
+      // else passes.
       if ("message" in record
         ? (!exactKeys(record, ["type", "message", "assistantMessageEvent"])
           || !validPartialAssistantMessage(record.message) || !validAssistantEvent(record.assistantMessageEvent))
-        : (!exactKeys(record, ["type", "assistantMessageEvent"])
-          || !validAssistantEvent(record.assistantMessageEvent))) invalidProtocol();
+        : "usage" in record
+          ? (!exactKeys(record, ["type", "usage", "assistantMessageEvent"])
+            || !validUsage(record.usage) || !validAssistantEvent(record.assistantMessageEvent))
+          : (!exactKeys(record, ["type", "assistantMessageEvent"])
+            || !validAssistantEvent(record.assistantMessageEvent))) invalidProtocol();
       break;
     case "tool_execution_start":
       // Pi 1.0.0 tags codemode-nested executions with their parent call.

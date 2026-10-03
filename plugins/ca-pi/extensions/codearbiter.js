@@ -2,7 +2,7 @@
 var define_CODEARBITER_PI_PERMISSION_POLICY_SURFACES_default = { "ca-plan": "planning-write", codearbiter_background_bash: "background-launch" };
 
 // <define:__CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS__>
-var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "0.84.1": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
+var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "1.0.0": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
 
 // <define:__CODEARBITER_PI_TOOL_CLASSES__>
 var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", codearbiter_background_bash: "EXEC", codearbiter_dispatch: "EXEC", codearbiter_farm_preview: "EXEC", write: "WRITE", edit: "EDIT", read: "READ" };
@@ -16,7 +16,7 @@ import { fileURLToPath as fileURLToPath5, pathToFileURL as pathToFileURL2 } from
 import { types as utilTypes9 } from "node:util";
 
 // src/compatibility.ts
-var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.84.1"]);
+var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["1.0.0"]);
 var MINIMUM_NODE = [22, 19, 0];
 var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
@@ -31,7 +31,7 @@ function atLeast(version, minimum) {
 }
 function compatibilityDirection(input) {
   if (!SUPPORTED_PI_VERSIONS.has(input.piVersion)) {
-    return "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.";
+    return "codeArbiter requires Pi 1.0.0; install a supported Pi version and run /ca-doctor.";
   }
   if (!atLeast(input.nodeVersion, MINIMUM_NODE)) {
     return "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.";
@@ -6881,10 +6881,10 @@ async function collectPiDoctorInput(dependencies) {
 var REMEDIATION = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 0.84.1 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 1.0.0 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 0.84.1, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 1.0.0, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
@@ -6913,7 +6913,7 @@ function diagnosePi(input) {
   const packageHealthy = input.package.declared && input.package.name === "@arbiterforge/ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && canonicallyInside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
-  const versionHealthy = input.runtime.piVersion === "0.84.1" && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
+  const versionHealthy = input.runtime.piVersion === "1.0.0" && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
   const piBelowMinimum = !atLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
   const expectedDoctorSkill = resolve9(input.package.root, "skills", "ca-doctor", "SKILL.md");
@@ -6924,7 +6924,7 @@ function diagnosePi(input) {
     resolve9(input.package.root, "extensions", "codearbiter-child.js")
   ) && canonicallyInside(input.child.path, input.package.root) && existsSync(input.child.path);
   const coreHealthy = input.core.present && existsSync(input.core.bridgeScript) && samePath2(input.core.bridgeScript, resolve9(input.package.root, "hooks", "pi-bridge.py")) && canonicallyInside(input.core.bridgeScript, input.package.root);
-  const runtimeIdentityHealthy = existsSync(input.runtime.cliEntry) && existsSync(input.runtime.moduleEntry) && canonicallyInside(input.runtime.cliEntry, input.runtime.packageRoot) && canonicallyInside(input.runtime.moduleEntry, input.runtime.packageRoot) && samePath2(input.runtime.cliEntry, resolve9(input.runtime.packageRoot, "dist", "cli.js")) && samePath2(input.runtime.moduleEntry, resolve9(input.runtime.packageRoot, "dist", "index.js"));
+  const runtimeIdentityHealthy = existsSync(input.runtime.cliEntry) && existsSync(input.runtime.moduleEntry) && canonicallyInside(input.runtime.cliEntry, input.runtime.packageRoot) && canonicallyInside(input.runtime.moduleEntry, input.runtime.packageRoot) && samePath2(input.runtime.cliEntry, resolve9(input.runtime.packageRoot, "dist", "bundle", "cli.js")) && samePath2(input.runtime.moduleEntry, resolve9(input.runtime.packageRoot, "dist", "index.js"));
   const mutators = ["bash", "write", "edit"];
   const wrapperHealthy = input.finalArguments.wrapperSourcePath !== void 0 && existsSync(input.finalArguments.wrapperSourcePath) && samePath2(input.finalArguments.wrapperSourcePath, expectedExtension) && mutators.every((name) => input.finalArguments.activeTools?.includes(name) === true) && mutators.every((name) => {
     const path = input.finalArguments.toolSources?.[name];
@@ -7034,7 +7034,7 @@ function diagnosePi(input) {
     {
       id: "active-dispatch",
       state: "degraded",
-      message: "Supported Pi 0.84.1 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
+      message: "Supported Pi 1.0.0 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
       remediation: REMEDIATION["active-dispatch"]
     }
   ];
@@ -8296,17 +8296,17 @@ function validContentBlock(value, kind) {
     case "text":
       return exactKeys4(value, ["type", "text", "textSignature"], ["type", "text"]) && boundedString2(value.text) && (value.textSignature === void 0 || boundedString2(value.textSignature));
     case "image":
-      return kind !== "assistant" && exactKeys4(value, ["type", "data", "mimeType"]) && boundedString2(value.data) && boundedString2(value.mimeType);
+      return (kind === "user" || kind === "toolResult") && exactKeys4(value, ["type", "data", "mimeType"]) && boundedString2(value.data) && boundedString2(value.mimeType);
     case "thinking":
       return kind === "assistant" && exactKeys4(value, ["type", "thinking", "thinkingSignature", "redacted"], ["type", "thinking"]) && boundedString2(value.thinking) && (value.thinkingSignature === void 0 || boundedString2(value.thinkingSignature)) && (value.redacted === void 0 || typeof value.redacted === "boolean");
     case "toolCall":
-      return kind === "assistant" && exactKeys4(value, ["type", "id", "name", "arguments", "thoughtSignature"], ["type", "id", "name", "arguments"]) && boundedString2(value.id) && boundedString2(value.name) && validOpaqueJson(value.arguments) && (value.thoughtSignature === void 0 || boundedString2(value.thoughtSignature));
+      return kind === "assistant" && exactKeys4(value, ["type", "id", "name", "arguments", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"]) && boundedString2(value.id) && boundedString2(value.name) && validOpaqueJson(value.arguments) && (value.thoughtSignature === void 0 || boundedString2(value.thoughtSignature)) && (value.namespace === void 0 || boundedString2(value.namespace));
     default:
       return false;
   }
 }
 function validContent(value, kind) {
-  if (kind === "user" && typeof value === "string") return boundedString2(value);
+  if ((kind === "user" || kind === "system") && typeof value === "string") return boundedString2(value);
   return Array.isArray(value) && value.length <= MAX_JSON_ARRAY && value.every((block) => validContentBlock(block, kind));
 }
 function validUsage(value) {
@@ -8335,24 +8335,32 @@ function validDeferredHandle(value) {
     ["provider", "modelId", "api", "id"]
   ) && ["provider", "modelId", "api", "id"].every((key) => boundedString2(value[key])) && (value.expiresAt === void 0 || typeof value.expiresAt === "number" && Number.isFinite(value.expiresAt)) && (value.pollAfterMs === void 0 || typeof value.pollAfterMs === "number" && Number.isFinite(value.pollAfterMs)) && (value.data === void 0 || validOpaqueJson(value.data));
 }
+function validNestedCalls(value) {
+  return isRecord(value) && exactKeys4(value, ["calls", "complete"]) && typeof value.complete === "boolean" && Array.isArray(value.calls) && value.calls.length <= MAX_JSON_ARRAY && value.calls.every((call) => isRecord(call) && exactKeys4(call, ["id", "name", "arguments", "argumentsBytes", "status", "durationMs", "error"], ["id", "name", "status"]) && boundedString2(call.id) && boundedString2(call.name) && (call.status === "ok" || call.status === "error" || call.status === "unfinished") && (call.arguments === void 0 || isRecord(call.arguments) && validOpaqueJson(call.arguments)) && (call.argumentsBytes === void 0 || typeof call.argumentsBytes === "number" && Number.isFinite(call.argumentsBytes)) && (call.durationMs === void 0 || typeof call.durationMs === "number" && Number.isFinite(call.durationMs)) && (call.error === void 0 || boundedString2(call.error)));
+}
+function validSystemMessage(value) {
+  const sections = value.sections;
+  return exactKeys4(value, ["role", "content", "sections", "toolsAdded", "toolsRemoved", "timestamp"], ["role", "content", "timestamp"]) && validContent(value.content, "system") && (sections === void 0 || isRecord(sections) && Object.keys(sections).length <= MAX_JSON_KEYS && Object.keys(sections).every((key) => boundedString2(key) && (sections[key] === null || boundedString2(sections[key])))) && (value.toolsAdded === void 0 || Array.isArray(value.toolsAdded) && value.toolsAdded.length <= MAX_JSON_ARRAY && value.toolsAdded.every((tool) => isRecord(tool) && boundedString2(tool.name) && validOpaqueJson(tool))) && (value.toolsRemoved === void 0 || Array.isArray(value.toolsRemoved) && value.toolsRemoved.length <= MAX_JSON_ARRAY && value.toolsRemoved.every((tool) => isRecord(tool) && exactKeys4(tool, ["name"]) && boundedString2(tool.name))) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+}
 function validMessage(value) {
   if (!isRecord(value) || typeof value.role !== "string") return false;
+  if (value.role === "system") return validSystemMessage(value);
   if (value.role === "user") {
     return exactKeys4(value, ["role", "content", "timestamp"]) && validContent(value.content, "user") && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "assistant") {
     return exactKeys4(
       value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"]
-    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.providerThinkingLevel === void 0 || boundedString2(value.providerThinkingLevel)) && (value.thinkingLevel === void 0 || boundedString2(value.thinkingLevel)) && (value.endTurn === void 0 || typeof value.endTurn === "boolean") && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
     return exactKeys4(
       value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"]
-    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && (value.usage === void 0 || validUsage(value.usage)) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && (value.usage === void 0 || validUsage(value.usage)) && (value.nestedCalls === void 0 || validNestedCalls(value.nestedCalls)) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   return false;
 }
@@ -8401,8 +8409,9 @@ function validAssistantEvent(value) {
       return exactWithOptionalPartial(["type"]);
     case "text_start":
     case "thinking_start":
-    case "toolcall_start":
       return exactWithOptionalPartial(["type", "contentIndex"]) && contentIndex();
+    case "toolcall_start":
+      return ("id" in value || "toolName" in value ? exactKeys4(value, ["type", "contentIndex", "id", "toolName"]) && boundedString2(value.id) && boundedString2(value.toolName) : exactWithOptionalPartial(["type", "contentIndex"])) && contentIndex();
     case "text_delta":
     case "thinking_delta":
     case "toolcall_delta":
@@ -8413,7 +8422,7 @@ function validAssistantEvent(value) {
     case "toolcall_end":
       return exactWithOptionalPartial(["type", "contentIndex", "toolCall"]) && contentIndex() && validContentBlock(value.toolCall, "assistant");
     case "done":
-      return exactKeys4(value, ["type", "reason", "message"]) && ["stop", "length", "toolUse"].includes(value.reason) && validMessage(value.message) && value.message.role === "assistant";
+      return exactKeys4(value, ["type", "reason", "message"]) && ["stop", "length", "toolUse", "deferred"].includes(value.reason) && validMessage(value.message) && value.message.role === "assistant";
     case "error":
       return exactKeys4(value, ["type", "reason", "error"]) && ["aborted", "error"].includes(value.reason) && validMessage(value.error) && value.error.role === "assistant";
     default:
@@ -8435,7 +8444,8 @@ function parseChildJsonLine(line) {
     case "response":
       if (typeof record2.id !== "string" || record2.command !== "prompt" || typeof record2.success !== "boolean") invalidProtocol();
       if (record2.success === true) {
-        if (!exactKeys4(record2, ["type", "id", "command", "success"])) invalidProtocol();
+        const data = record2.data;
+        if (!exactKeys4(record2, ["type", "id", "command", "success", "data"], ["type", "id", "command", "success"]) || data !== void 0 && !(isRecord(data) && exactKeys4(data, ["disposition"]) && (data.disposition === "started" || data.disposition === "handled" || data.disposition === "queued"))) invalidProtocol();
       } else if (!exactKeys4(record2, ["type", "id", "command", "success", "error"]) || typeof record2.error !== "string") invalidProtocol();
       break;
     case "agent_start":
@@ -8454,16 +8464,16 @@ function parseChildJsonLine(line) {
       if (!exactKeys4(record2, ["type", "message"]) || !validMessage(record2.message) && !validPartialAssistantMessage(record2.message)) invalidProtocol();
       break;
     case "message_update":
-      if ("message" in record2 ? !exactKeys4(record2, ["type", "message", "assistantMessageEvent"]) || !validPartialAssistantMessage(record2.message) || !validAssistantEvent(record2.assistantMessageEvent) : !exactKeys4(record2, ["type", "assistantMessageEvent"]) || !validAssistantEvent(record2.assistantMessageEvent)) invalidProtocol();
+      if ("message" in record2 ? !exactKeys4(record2, ["type", "message", "assistantMessageEvent"]) || !validPartialAssistantMessage(record2.message) || !validAssistantEvent(record2.assistantMessageEvent) : "usage" in record2 ? !exactKeys4(record2, ["type", "usage", "assistantMessageEvent"]) || !validUsage(record2.usage) || !validAssistantEvent(record2.assistantMessageEvent) : !exactKeys4(record2, ["type", "assistantMessageEvent"]) || !validAssistantEvent(record2.assistantMessageEvent)) invalidProtocol();
       break;
     case "tool_execution_start":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args"]) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args)) invalidProtocol();
+      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args", "parentToolCallId"], ["type", "toolCallId", "toolName", "args"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args)) invalidProtocol();
       break;
     case "tool_execution_update":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args", "partialResult"]) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args) || !validOpaqueJson(record2.partialResult)) invalidProtocol();
+      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args", "partialResult", "parentToolCallId"], ["type", "toolCallId", "toolName", "args", "partialResult"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args) || !validOpaqueJson(record2.partialResult)) invalidProtocol();
       break;
     case "tool_execution_end":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "result", "isError"]) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
+      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId"], ["type", "toolCallId", "toolName", "result", "isError"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
       break;
     case "extension_error":
       if (!exactKeys4(record2, ["type", "extensionPath", "event", "error"]) || typeof record2.extensionPath !== "string" || typeof record2.event !== "string" || typeof record2.error !== "string") invalidProtocol();
@@ -10588,7 +10598,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "22e5231b36a0af4a4202ced48a20e7dc9de435b6c6af985c6007bff96c5e04d1"
+        childFingerprint: "86a08a0d5c29aa6693a07065f4ab2d6ad1d43293c65277cee944389886363d67"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

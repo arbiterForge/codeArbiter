@@ -455,6 +455,31 @@ describe("Task 6 exact Pi child launch", () => {
     ]) {
       expect(() => parseChildJsonLine(JSON.stringify(stillInvalid))).toThrow("schema");
     }
+    // Pi 1.0.0's JSON wire projection (modes/json-event.ts at v1.0.0) adds the
+    // cumulative assistant `usage` to every message_update and names the call on
+    // toolcall_start (`id` + `toolName`); `done` may also end on `deferred`.
+    const wireUsage = assistantMessage.usage;
+    for (const jsonEvent of [
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "start" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: "call-1", toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "text_delta", contentIndex: 0, delta: "hi" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "done", reason: "deferred", message: assistantMessage } },
+    ]) {
+      expect(parseChildJsonLine(JSON.stringify(jsonEvent))).toEqual(jsonEvent);
+    }
+    for (const jsonInvalid of [
+      { type: "message_update", usage: { input: "ten" }, assistantMessageEvent: { type: "start" } },
+      { type: "message_update", usage: wireUsage, message: assistantMessage, assistantMessageEvent: { type: "start" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "start" }, extra: 1 },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: "call-1", toolName: "bash", extra: 1 } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: "call-1" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: 1, toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "text_start", contentIndex: 0, id: "call-1", toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "done", reason: "paused", message: assistantMessage } },
+    ]) {
+      expect(() => parseChildJsonLine(JSON.stringify(jsonInvalid))).toThrow("schema");
+    }
     for (const scratch of [
       { partialArgs: '{"command":"' },
       { partialJson: '{"command":"' },

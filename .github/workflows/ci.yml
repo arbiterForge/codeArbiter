@@ -1346,7 +1346,7 @@ jobs:
         # any way a second cell would reveal. Pinned to the upper bound of the
         # supported window.
         working-directory: .
-        run: python .github/scripts/pi_host_locks.py install --version 0.84.1 --prefix "$RUNNER_TEMP/pi-host-0.84.1"
+        run: python .github/scripts/pi_host_locks.py install --version 1.0.0 --prefix "$RUNNER_TEMP/pi-host-0.84.1"
       - name: Install (locked)
         # --ignore-scripts for the same reason every sibling job uses it: this
         # graph's output is a committed artifact. The graph itself is audited by
@@ -1806,7 +1806,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        pi-version: ["0.84.1"]
+        pi-version: ["1.0.0"]
     runs-on: ${{ matrix.os }}
     # Issue #399. Worst observed cell before this split was 452s (windows-latest,
     # run 30123976665); the Windows cold `npm install --global` dominates and is

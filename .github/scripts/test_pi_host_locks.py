@@ -285,7 +285,8 @@ class PiHostLocksTest(unittest.TestCase):
             "licenses", "audits", "lifecycle_scripts", "signatures", "provenance", "result",
         }
         review = json.loads(review_source.read_text(encoding="utf-8"))
-        self.assertEqual(set(review), required)
+        # ADR-0041: a host retaining baseline advisories records them; the field is otherwise absent.
+        self.assertEqual(set(review) - {"accepted_advisories"}, required)
         self.assertEqual(review["result"], "PASS")
 
         for label, mutate in {
@@ -299,16 +300,20 @@ class PiHostLocksTest(unittest.TestCase):
             "invalid-review-date": lambda value: value.__setitem__("reviewed_at", "not-a-date"),
             "wrong-reviewer": lambda value: value.__setitem__("reviewer", "untrusted-reviewer"),
             "failed-license": lambda value: value["licenses"].__setitem__("result", "FAIL"),
-            "nonzero-audit": lambda value: value["audits"]["all"].__setitem__("high", 1),
-            "nonzero-production-audit": lambda value: value["audits"]["production"].__setitem__("high", 1),
+            "extra-audit-finding": lambda value: value["audits"]["all"].update(
+                critical=value["audits"]["all"]["critical"] + 1, total=value["audits"]["all"]["total"] + 1),
+            "extra-production-audit-finding": lambda value: value["audits"]["production"].update(
+                critical=value["audits"]["production"]["critical"] + 1,
+                total=value["audits"]["production"]["total"] + 1),
             "wrong-lifecycle-policy": lambda value: value["lifecycle_scripts"].__setitem__("policy", "allow"),
             "failed-signatures": lambda value: value["signatures"].__setitem__("verified", 0),
             "failed-provenance": lambda value: value["provenance"].__setitem__("attestations_verified", 0),
         }.items():
             with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-review-") as raw:
                 root = Path(raw)
+                # Copy every reviewed host so an accepted advisory's baseline lock resolves.
+                shutil.copytree(LOCK_ROOT, root / ".github" / "fixtures" / "pi-hosts")
                 target = root / ".github" / "fixtures" / "pi-hosts" / SUPPORTED_VERSION
-                shutil.copytree(LOCK_ROOT / SUPPORTED_VERSION, target)
                 candidate = json.loads(json.dumps(review))
                 mutate(candidate)
                 (target / "review.json").write_text(json.dumps(candidate), encoding="utf-8")

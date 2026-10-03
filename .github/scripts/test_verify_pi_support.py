@@ -36,7 +36,7 @@ def digest_tree(root: Path) -> str:
 
 def evidence(mode: str = "preclosure") -> dict:
     rows = []
-    for version in ("0.84.1",):
+    for version in ("1.0.0",):
         rows.append({"version": version, "platform": "windows-local", "architecture": "x64", "resultCode": "PI-LOCAL-SUPPORTED", "passed": True, "timingMs": 10, "diagnosticCode": "NONE"})
         for platform in ("windows", "linux", "macos"):
             rows.append({"version": version, "platform": platform, "architecture": "pending", "resultCode": "PI-HOSTED-PENDING", "passed": False, "timingMs": 0, "diagnosticCode": "HOSTED_PENDING"})
@@ -136,7 +136,7 @@ class VerifyPiSupportTest(unittest.TestCase):
         final = evidence("final")
         final["commit"] = "a" * 40
         for row in final["rows"]:
-            if row["version"] == "0.84.1" and row["platform"] in {"windows", "linux", "macos"}:
+            if row["version"] == "1.0.0" and row["platform"] in {"windows", "linux", "macos"}:
                 row.update(resultCode="PI-HOSTED-SUPPORTED", passed=True, timingMs=10, diagnosticCode="NONE")
             elif row["version"] == "codeql":
                 row.update(resultCode="PI-CODEQL-HIGH", passed=True, timingMs=10, diagnosticCode="NONE")
@@ -324,7 +324,7 @@ class VerifyPiSupportTest(unittest.TestCase):
             document = evidence("final")
             document["commit"] = "a" * 40
             for row in document["rows"]:
-                if row["version"] == "0.84.1" and row["platform"] in {"windows", "linux", "macos"}:
+                if row["version"] == "1.0.0" and row["platform"] in {"windows", "linux", "macos"}:
                     row.update(architecture="x64", resultCode="PI-HOSTED-SUPPORTED", passed=True, timingMs=10, diagnosticCode="NONE")
                 elif row["version"] == "codeql":
                     row.update(architecture="x64", resultCode="PI-CODEQL-HIGH", passed=True, timingMs=10, diagnosticCode="NONE")
