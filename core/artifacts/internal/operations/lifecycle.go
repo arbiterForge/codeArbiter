@@ -383,10 +383,23 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 					return nil, err
 				}
 			}
+			priorCompletion, err := evidence.LatestTaskCompletion(e.FS, d, id)
+			if err != nil {
+				return nil, err
+			}
+			if priorCompletion != nil && rr.Payload()["completion_sha256"] == nil {
+				return nil, fault.New("COMPLETION_REQUIRED", "task review cannot downgrade an explicit completion review")
+			}
+			if err = evidence.CompletionReview(e.FS, rr, d, spec, model.S(r["completion_sha256"]), vr.Path); err != nil {
+				return nil, err
+			}
 			s := state(next, id)
 			s["state"] = "REVIEW"
 			s["reason"] = nil
 			appendRefs(s, vr.Path, rr.Path)
+			if rr.Payload()["completion_sha256"] != nil {
+				s["completion_review_receipt"], s["completion_sha256"] = rr.Path, rr.Payload()["completion_sha256"]
+			}
 		case "task-reconcile":
 			id := model.S(r["task"])
 			task, ok := d.Symbols.ByID[id]
@@ -452,6 +465,9 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 				return nil, err
 			}
 			if err = evidence.Quality(receipt, d, spec, scope, input); err != nil {
+				return nil, err
+			}
+			if err = evidence.QualityCompletion(e.FS, receipt, d, spec, scope, model.S(r["completion_sha256"])); err != nil {
 				return nil, err
 			}
 			for _, id := range model.Strings(cp.Value["tasks"]) {

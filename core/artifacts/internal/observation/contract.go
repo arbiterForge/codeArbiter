@@ -51,6 +51,8 @@ func ContextSchema() map[string]any {
 	for k, v := range common {
 		taskProps[k] = v
 	}
+	taskProps["completion"] = CompletionSchema()
+	taskProps["completion_sha256"] = hash()
 	taskProps["activity"] = map[string]any{"enum": model.List("verification", "spec_review")}
 	taskProps["task_sha256"] = hash()
 	taskProps["task"] = map[string]any{"type": "object"}
@@ -60,6 +62,8 @@ func ContextSchema() map[string]any {
 	for k, v := range common {
 		scopeProps[k] = v
 	}
+	scopeProps["completion"] = CompletionSchema()
+	scopeProps["completion_sha256"] = hash()
 	scopeProps["activity"] = map[string]any{"const": "quality_review"}
 	scopeProps["base_input_sha256"] = hash()
 	scopeProps["task_hashes"] = map[string]any{"type": "object", "additionalProperties": hash()}
@@ -134,6 +138,7 @@ func reviewDecisionSchema() map[string]any {
 		"format": map[string]any{"const": "codearbiter.review-decision/0.1.0"}, "request_id": hash(), "target_sha256": hash(), "contract_sha256": hash(),
 		"decision": map[string]any{"const": "pass"}, "coverage": map[string]any{"type": "array", "items": text(), "minItems": int64(1)},
 		"findings": map[string]any{"type": "array", "items": finding}, "assessment": text(),
+		"completion_sha256": hash(), "completion_assessment": CompletionAssessmentSchema(),
 	}, "format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")
 }
 func claudeReviewResultSchema() map[string]any {
@@ -164,6 +169,7 @@ func reviewResultSchema() map[string]any {
 		"format": map[string]any{"const": "codearbiter.review-decision/0.1.0"}, "request_id": hash(), "target_sha256": hash(), "contract_sha256": hash(),
 		"decision": map[string]any{"const": "pass"}, "coverage": map[string]any{"type": "array", "items": text(), "minItems": int64(1)},
 		"findings": map[string]any{"type": "array", "items": finding}, "assessment": text(),
+		"completion_sha256": hash(), "completion_assessment": CompletionAssessmentSchema(),
 	}, "format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")
 	return closed(map[string]any{"launch": launch, "decision": decision}, "launch", "decision")
 }
@@ -424,8 +430,11 @@ func reviewCoverage(context map[string]any) []string {
 	sort.Strings(out)
 	return out
 }
-func reviewContractHash() string {
+func reviewContractHash(completion ...bool) string {
 	contract := map[string]any{"format": "codearbiter.review-decision/0.1.0", "decision": model.List("pass", "changes_requested"), "finding_severity": model.List("BLOCK", "WARN", "INFO"), "required_fields": model.List("format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")}
+	if len(completion) > 0 && completion[0] {
+		contract["required_fields"] = append(model.A(contract["required_fields"]), "completion_sha256", "completion_assessment")
+	}
 	h, _ := canonical.Hash(contract)
 	return h
 }
@@ -453,7 +462,10 @@ func validateReview(observed, event, context map[string]any) bool {
 	default:
 		return false
 	}
-	if model.S(observed["producer_run_id"]) != model.S(launch["agent_id"]) || model.S(decision["target_sha256"]) != model.S(context["input_sha256"]) || model.S(decision["contract_sha256"]) != reviewContractHash() || model.S(decision["assessment"]) != model.S(payload["assessment"]) {
+	if model.S(observed["producer_run_id"]) != model.S(launch["agent_id"]) || model.S(decision["target_sha256"]) != model.S(context["input_sha256"]) || model.S(decision["contract_sha256"]) != reviewContractHash(context["completion"] != nil) || model.S(decision["assessment"]) != model.S(payload["assessment"]) {
+		return false
+	}
+	if !validateCompletionDecision(context, decision, payload) {
 		return false
 	}
 	want, got := reviewCoverage(context), model.Strings(decision["coverage"])

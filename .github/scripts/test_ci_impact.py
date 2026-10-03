@@ -3256,12 +3256,12 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertFalse(selected.fallback, path)
             self.assertIn("artifact-engine", {check.id for check in selected.selected})
 
-    def test_native_qualification_has_a_bounded_thirty_minute_job_budget(self):
-        # PR859's Intel macOS cell exhausted 15 minutes during conformance after
-        # passing the preceding suites. Preserve the complete qualification path.
+    def test_native_qualification_has_a_bounded_platform_job_budget(self):
+        # Windows ARM twice exhausted 30m during final conformance with earlier
+        # suites passing. Preserve all checks and the other platforms' 30m limit.
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         job = jobs["artifact-engine"]
-        self.assertEqual(_JOB_TIMEOUT.findall(job), ["30"])
+        self.assertIn("    timeout-minutes: ${{ matrix.expected_platform == 'windows/arm64' && 45 || 30 }}\n", job)
         self.assertIn("fail-fast: false", job)
         self.assertNotIn("continue-on-error:", job)
         for required in ("test_artifact_conformance.py", "test_artifact_package.py",
@@ -3298,7 +3298,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         self.assertIn("needs: changes", job)
         self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
-        self.assertRegex(job, r"(?m)^    timeout-minutes: 30$")
+        self.assertIn("    timeout-minutes: ${{ matrix.expected_platform == 'windows/arm64' && 45 || 30 }}\n", job)
         for runner in (
             "ubuntu-24.04", "ubuntu-24.04-arm", "windows-2025", "windows-11-arm",
             "macos-15-intel", "macos-26",
@@ -3733,10 +3733,9 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         source = CI_WORKFLOW.read_text(encoding="utf-8")
         block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
-        # The inspected macOS cell passed product suites but was cancelled at
-        # the old 15-minute job deadline during final conformance. Retain every
-        # qualification layer and the bounded job rather than skipping a proof.
-        self.assertRegex(block, r"(?m)^    timeout-minutes: 30$")
+        # Only Windows ARM needs 45m after repeated final-conformance job
+        # cancellations; every other platform retains the 30m job budget.
+        self.assertIn("    timeout-minutes: ${{ matrix.expected_platform == 'windows/arm64' && 45 || 30 }}\n", block)
         for script in ("test_artifact_native.py", "test_artifact_bridge.py",
                        "test_artifact_approval_adapter.py", "test_artifact_authority_adapter.py",
                        "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",

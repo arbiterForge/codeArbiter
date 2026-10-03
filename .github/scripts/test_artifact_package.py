@@ -1100,7 +1100,7 @@ class PackageTests(unittest.TestCase):
         dependencies = dict(line.rsplit("|", 1)
                             for line in completed.stdout.splitlines() if line)
         forbidden = sorted(package for package in dependencies
-                           if package in {"net", "os/exec"}
+                           if package == "net"
                            or package.startswith(("net/http", "net/rpc", "net/smtp",
                                                   "crypto/tls", "golang.org/x/net")))
         self.assertEqual([], forbidden, "network-capable Go dependency entered the binary")
@@ -1115,9 +1115,12 @@ class PackageTests(unittest.TestCase):
             package main
 
             import (
+                "bytes"
+                "crypto/sha256"
                 "encoding/json"
                 "fmt"
                 "go/ast"
+                "go/format"
                 "go/parser"
                 "go/token"
                 "io/fs"
@@ -1134,17 +1137,36 @@ class PackageTests(unittest.TestCase):
                 err := filepath.WalkDir(os.Args[1], func(path string, entry fs.DirEntry, walkErr error) error {
                     if walkErr != nil { return walkErr }
                     if entry.IsDir() || !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") { return nil }
-                    parsed, err := parser.ParseFile(token.NewFileSet(), path, nil, 0)
+                    positions := token.NewFileSet()
+                    parsed, err := parser.ParseFile(positions, path, nil, 0)
                     if err != nil { return err }
+                    // The process exception pins one reviewed fixed-probe function,
+                    // never a file/package. Any edit requires explicit re-review.
+                    var reviewedGit *ast.FuncDecl
+                    relative, err := filepath.Rel(os.Args[1], path)
+                    if err != nil { return err }
+                    if filepath.ToSlash(relative) == "internal/evidence/completion_workspace.go" {
+                        for _, declaration := range parsed.Decls {
+                            fn, ok := declaration.(*ast.FuncDecl)
+                            if !ok || fn.Name.Name != "completionGitText" { continue }
+                            var normalized bytes.Buffer
+                            if err := format.Node(&normalized, positions, fn); err != nil { return err }
+                            digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
+                            if digest == "bda95669da96ff24e4c7560bea7cf8b147b7bc320775a1267fb7d51f930b9ab5" { reviewedGit = fn
+                            } else { findings = append(findings, path+" has unreviewed Git probe "+digest) }
+                        }
+                    }
                     sensitive := map[string]map[string]bool{}
+                    processImports := map[string]bool{}
                     for _, imported := range parsed.Imports {
                         importPath, err := strconv.Unquote(imported.Path.Value)
                         if err != nil { return err }
                         alias := filepath.Base(importPath)
                         if imported.Name != nil { alias = imported.Name.Name }
-                        if importPath == "C" || importPath == "os/exec" {
+                        if importPath == "C" || importPath == "os/exec" && (reviewedGit == nil || alias != "exec") {
                             findings = append(findings, fmt.Sprintf("%s imports %s", path, importPath))
                         }
+                        if importPath == "os/exec" { processImports[alias] = true }
                         if importPath == "syscall" {
                             if alias == "." { findings = append(findings, path+" dot-imports syscall") }
                             sensitive[alias] = map[string]bool{
@@ -1166,11 +1188,16 @@ class PackageTests(unittest.TestCase):
                             selector, ok := call.Fun.(*ast.SelectorExpr)
                             if !ok { return true }
                             qualifier, ok := selector.X.(*ast.Ident)
+                            if ok && processImports[qualifier.Name] {
+                                if reviewedGit != nil && qualifier.Name == "exec" && selector.Sel.Name == "CommandContext" && call.Pos() >= reviewedGit.Pos() && call.End() <= reviewedGit.End() { return false }
+                                findings = append(findings, fmt.Sprintf("%s calls unreviewed process %s.%s", path, qualifier.Name, selector.Sel.Name))
+                                return false
+                            }
                             if selector.Sel.Name == "NewProc" {
                                 if len(call.Args) == 1 {
                                     if literal, ok := call.Args[0].(*ast.BasicLit); ok {
                                         name, err := strconv.Unquote(literal.Value)
-                                        if err == nil && (name == "LockFileEx" || name == "UnlockFileEx") { return false }
+                                        if err == nil && (name == "LockFileEx" || name == "UnlockFileEx" || name == "GetFileInformationByHandleEx") { return false }
                                     }
                                 }
                                 findings = append(findings, fmt.Sprintf("%s resolves a non-locking Windows procedure", path))
@@ -1201,7 +1228,7 @@ class PackageTests(unittest.TestCase):
                             findings = append(findings, fmt.Sprintf("%s references NewProc outside a validated literal call", path))
                             return true
                         }
-                        if ok && sensitive[qualifier.Name][selector.Sel.Name] {
+                        if ok && (sensitive[qualifier.Name][selector.Sel.Name] || processImports[qualifier.Name]) {
                             findings = append(findings, fmt.Sprintf("%s references %s.%s", path, qualifier.Name, selector.Sel.Name))
                         }
                         return true
@@ -1247,6 +1274,19 @@ class PackageTests(unittest.TestCase):
         self.assertTrue(any("calls sx.NewLazyDLL" in item for item in negative_findings))
         self.assertTrue(any("non-locking Windows procedure" in item for item in negative_findings))
         self.assertTrue(any("NewProc outside a validated literal call" in item for item in negative_findings))
+
+        # An approved helper does not exempt another process call in its file,
+        # and changing even its fixed transport flags invalidates the exception.
+        probe = REPO / "core/artifacts/internal/evidence/completion_workspace.go"
+        bounded = self.base / "probe-negative-control"
+        target = bounded / "internal/evidence/completion_workspace.go"
+        target.parent.mkdir(parents=True)
+        target.write_text(probe.read_text(encoding="utf-8") +
+                          '\nfunc escape() { _ = exec.Command("downloader") }\n', encoding="utf-8")
+        self.assertTrue(any("unreviewed process" in item for item in run_guard(bounded)))
+        target.write_text(probe.read_text(encoding="utf-8").replace(
+            '"protocol.allow=never"', '"protocol.allow=always"'), encoding="utf-8")
+        self.assertTrue(any("unreviewed Git probe" in item for item in run_guard(bounded)))
 
     def test_release_packaging_rejects_missing_duplicate_and_mismatched_candidates(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))

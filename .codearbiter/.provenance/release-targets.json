@@ -4,27 +4,27 @@
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "860ab6d0c3ed3ac9a1a8667fc233bf58c5a48be4",
+      "hash": "ea27682b66971db461daa006f9cdc3d130185132",
       "path": "CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "26c015db1d12ca2b26b90c5d03f9d18ea415a884",
+      "hash": "b79b2934230edccbdafdb7bdaa6495b0757fafdd",
       "path": "package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "adab8bf7ca2cfc8373d603b14b13d8a06e85b7f3",
+      "hash": "46d07be4a2b8b91892a6883b91a6d63e7ee29ead",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "232ef36ff343cf2bd3597cd18d73c4e524fc5d85",
+      "hash": "68c675eb545bbc0f33947f866b800a43b8c82b33",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "cb9c3a7f4078b3630d51efa7c2979fa22b289493",
+      "hash": "be86821ce8a67df969817a8f73882bd5e0957021",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -39,7 +39,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "fd57b10077cba61c3dde42855e12dc2a6fad7602",
+      "hash": "8083604b9644afa88c5071b73fd7a21e0fdd1d94",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -64,7 +64,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "5f3597d986df8e4e276de7c84cf3f96b179148e9",
+      "hash": "1e3107031f3727a404f4ac995067b7c9c2726898",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {

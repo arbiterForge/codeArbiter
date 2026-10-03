@@ -38,6 +38,10 @@ def main(argv=None) -> int:
         choices=("verification", "spec_review", "quality_review"),
     )
     arm.add_argument("--workspace", action="append", default=[], metavar="LABEL=PATH")
+    arm.add_argument("--completion-receipt", action="append", metavar="RECEIPT_REF",
+                     help="exact published verification receipt selected for completion review; repeat per task")
+    arm.add_argument("--supporting-file", action="append", metavar="ABSOLUTE_PATH",
+                     help="explicit bounded regular file retained as completion review data")
     arm.add_argument(
         "--host", choices=sorted(_artifactauthoritylib.HOSTS), default=None,
         help="observing host; defaults to the host this package was built for",
@@ -83,6 +87,7 @@ def main(argv=None) -> int:
             workspace_roots=workspaces or None, host=host,
             reviewer_model=args.reviewer_model,
             codex_review_profile=args.codex_review_profile,
+            completion_receipts=args.completion_receipt, supporting_files=args.supporting_file,
         )
         if host == "claude" and args.activity == "verification":
             # The Claude verifier hook pins this exact shipped script and
