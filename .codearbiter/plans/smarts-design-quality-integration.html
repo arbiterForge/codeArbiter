@@ -1,0 +1,2164 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>SMARTS design-quality integration — implementation plan · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-SMARTS-DESIGN-QUALITY-INTEGRATION</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/smarts-design-quality-integration.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">APPROVED · authority must be verified at use</span><h1>SMARTS design-quality integration — implementation plan</h1><p class="deck">Twenty-four tasks in three checkpoints: engine and canonical core first, then proportional triggers, then hosts, docs, CI, versions and regression.</p><div class="meta"><span>PLAN-SMARTS-DESIGN-QUALITY-INTEGRATION</span><span>Revision 6 · schema 0.3.1</span><span>38 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION</div><div class="field"><span class="label">Binding mode</span>approved_source</div><div class="field"><span class="label">Normative sha256</span>f0f99cc6462a27f82167a77e3f0f1120de1a72fcaa93c6230889c6d7b07c8b13</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-02 -->
+<article class="record" id="T-02" data-ca-symbol="T-02" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-02">T-02</a><h3>Implement DecisionSchema 0.2.0 and the new ValidateDecision rules</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-04">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-06">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-06</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-15">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-15</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>TestSMARTSDecision passes.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>core/artifacts/internal/observation/sprint_test.go</code></td></tr><tr><td>create</td><td><code>.github/scripts/test_smarts_engine_contract.py</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/sprint.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-03">SRC-03</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: Add Go tests TestSMARTSDecisionUnknownRequiresFields, TestSMARTSDecisionUnknownFieldsForbiddenElsewhere, TestSMARTSDecisionIndifferentIsUniform, TestSMARTSDecisionCriticalUnknownBlocksSelection, TestSMARTSDecisionStrongRefusedWithCriticalUnknown and TestSMARTSDecisionUnknownCannotShieldDominatedChoice.</li><li>Red first: Create the unittest wrapper test_smarts_engine_contract.py with one method per Go test (test_unknown_requires_fields, test_unknown_fields_forbidden_elsewhere, test_indifferent_is_uniform, test_critical_unknown_blocks_selection, test_strong_refused_with_critical_unknown, test_unknown_cannot_shield_dominated_choice). Each wrapper test runs its Go test by exact name through go test -json and passes only on a named &#39;pass&#39; event, following test_artifact_native.py.</li><li>Red first: Run them against the unchanged validator and record that each fails.</li><li>Add the Unknown verdict with required missing_observation and decision_critical fields.</li><li>Enforce Indifferent uniformity, the critical-Unknown selection and strength rules, and the Unknown dominance rule.</li><li>Add SMARTSProfile smarts-plan-method/0.2.0 and keep a legacy 0.1.0 constant; add no counts, weights or sums.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_engine_contract&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Every validator-rule Go test passes by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_unknown_requires_fields</li><li>test_unknown_fields_forbidden_elsewhere</li><li>test_indifferent_is_uniform</li><li>test_critical_unknown_blocks_selection</li><li>test_strong_refused_with_critical_unknown</li><li>test_unknown_cannot_shield_dominated_choice</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-02 -->
+
+<!-- CA:BEGIN:T-03 -->
+<article class="record" id="T-03" data-ca-symbol="T-03" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-03">T-03</a><h3>Accept both SMARTS profile versions in the observation contract</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-15">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-15</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-02">T-02</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>A historical 0.1.0 record validates; a 0.1.0 record carrying Unknown is rejected.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_engine_contract.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-03">SRC-03</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add the 0.2.0 profile to the producer-profile enum and approval-kind check.</li><li>Validate 0.1.0 records with the four-state schema and 0.2.0 records with the new schema.</li><li>Add Go tests TestSMARTSProfileLegacyAccepted and TestSMARTSProfileLegacyRejectsUnknown and their wrapper methods test_legacy_profile_accepted, test_legacy_profile_rejects_unknown.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_engine_contract&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Both profile Go tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_legacy_profile_accepted</li><li>test_legacy_profile_rejects_unknown</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-03 -->
+
+<!-- CA:BEGIN:T-04 -->
+<article class="record" id="T-04" data-ca-symbol="T-04" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-04">T-04</a><h3>Record smarts-apply under 0.2.0 and refuse critical-Unknown selections</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-14">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-14</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-15">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-15</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-03">T-03</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Existing and new operations SMARTS tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/operations/sprint.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/sprint_authority_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_engine_contract.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-03">SRC-03</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write the SMARTS observation with the 0.2.0 profile.</li><li>Add Go tests TestSMARTSRefusesDecisionCriticalUnknownSelection and TestSMARTSRecordsProfile020 and their wrapper methods test_smarts_apply_refuses_critical_unknown_selection, test_smarts_apply_records_profile_020.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_engine_contract&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Both new operations Go tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_smarts_apply_refuses_critical_unknown_selection</li><li>test_smarts_apply_records_profile_020</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-04 -->
+
+<!-- CA:BEGIN:T-05 -->
+<article class="record" id="T-05" data-ca-symbol="T-05" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-05">T-05</a><h3>Engine module regression</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-14">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-14</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-24">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-04">T-04</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The named module-regression test passes.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_smarts_engine_contract.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>No change to roll back.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add wrapper method test_engine_module_passes, which runs go test -json ./... in core/artifacts and fails on any fail event or nonzero exit.</li><li>Do not use -race locally: this Windows host has CGO_ENABLED=0 and no C compiler; CI&#39;s existing -race job still covers the race detector.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_engine_contract&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The whole engine module passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_engine_module_passes</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-05 -->
+
+<!-- CA:BEGIN:T-07 -->
+<article class="record" id="T-07" data-ca-symbol="T-07" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-07">T-07</a><h3>Rewrite the canonical SMARTS core</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-01">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-01</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-03">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-03</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-04">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-05">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-05</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-06">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-06</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-19">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All eight tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr><tr><td>modify</td><td><code>core/surface/includes/smarts/core.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: Create the suite with tests: test_core_defines_design_quality_role, test_core_keeps_six_lenses_exactly, test_core_vocabulary_has_unknown_with_fields, test_core_defines_single_option_indifferent, test_core_context_envelope_is_conditional, test_core_priority_order_and_tie, test_core_names_three_depths, test_core_has_no_aggregate_scoring.</li><li>Red first: Assert order and required text, not the mere presence of the word SMARTS; run against the current core.md and record the failures.</li><li>Reframe the role as the design-quality rubric; keep the six lenses.</li><li>Add Unknown with missing_observation and decision_critical, single-option Indifferent, the conditional context envelope, the priority order with ties staying tied, and the three depths.</li><li>Keep ADR-0025 Step 0 wording and scope intact; keep the file concise.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Every canonical-semantics test passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_core_defines_design_quality_role</li><li>test_core_keeps_six_lenses_exactly</li><li>test_core_vocabulary_has_unknown_with_fields</li><li>test_core_defines_single_option_indifferent</li><li>test_core_context_envelope_is_conditional</li><li>test_core_priority_order_and_tie</li><li>test_core_names_three_depths</li><li>test_core_has_no_aggregate_scoring</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-07 -->
+
+<!-- CA:BEGIN:T-08 -->
+<article class="record" id="T-08" data-ca-symbol="T-08" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-08">T-08</a><h3>Add the lazy SMARTS lens reference</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-18">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-18</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-22">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-22</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The three tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>create</td><td><code>core/surface/includes/smarts/lenses.md</code></td></tr><tr><td>modify</td><td><code>core/surface/includes/smarts/core.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Port the per-lens considerations and traps from the original framework, modernized.</li><li>Reference lenses.md from core.md only under a stated condition.</li><li>Add the three tests.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The lazy-reference tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_lens_reference_carries_historical_detail</li><li>test_lens_reference_is_loaded_only_on_condition</li><li>test_no_startup_surface_references_lens_reference</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-08 -->
+
+<!-- CA:BEGIN:T-10 -->
+<article class="record" id="T-10" data-ca-symbol="T-10" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-10">T-10</a><h3>Wire SMARTS into brainstorming Phase 2</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-07">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-07</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-08">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-08</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-09">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-09</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-22">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-22</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-19">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The four tests pass; moving the SMARTS step after selection makes the order test fail.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/brainstorming/SKILL.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: Add test_brainstorming_orders_smarts_before_selection, test_brainstorming_allows_single_option_scan, test_full_read_changes_presentation_only, test_brainstorming_smarts_step_dispatches_nothing.</li><li>Red first: Run against the current brainstorming SKILL.md and record the failures.</li><li>Order Phase 2: bounded context, SMARTS scan or comparison, non-SMARTS constraints, selection under existing authority, rationale in running notes.</li><li>Permit a one-option fitness scan with a stated reason; keep the no-manufactured-alternatives rule.</li><li>State that a full-read request changes presentation only; forbid grader/scout dispatch and bulk reads in the step.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Every brainstorming trigger test passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_brainstorming_orders_smarts_before_selection</li><li>test_brainstorming_allows_single_option_scan</li><li>test_full_read_changes_presentation_only</li><li>test_brainstorming_smarts_step_dispatches_nothing</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-10 -->
+
+<!-- CA:BEGIN:T-11 -->
+<article class="record" id="T-11" data-ca-symbol="T-11" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-11">T-11</a><h3>Document the rationale storage convention</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-07">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-07</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-16">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-16</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-10">T-10</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/includes/smarts/core.md</code></td></tr><tr><td>modify</td><td><code>core/surface/includes/artifacts.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Document approach + bound decisions + SEC-SMARTS for typed specs and the &#39;## SMARTS design rationale&#39; Markdown section.</li><li>Add the two tests.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The convention tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_rationale_convention_documented_once</li><li>test_markdown_rationale_section_documented</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-11 -->
+
+<!-- CA:BEGIN:T-12 -->
+<article class="record" id="T-12" data-ca-symbol="T-12" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-12">T-12</a><h3>Engine fixture for typed rationale persistence</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-16">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-16</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-11">T-11</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The fixture passes with no spec-schema change.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_artifact_authoring.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Create a spec with approach, a bound DEC and SEC-SMARTS through existing mutations; validate at ready; read the rationale back.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_artifact_authoring&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The persistence fixture passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_smarts_rationale_round_trips_through_existing_records</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-12 -->
+
+<!-- CA:BEGIN:T-13 -->
+<article class="record" id="T-13" data-ca-symbol="T-13" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-13">T-13</a><h3>Small-lane proportional trigger</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-10">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-10</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-19">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-22">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-22</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/commands/feature.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write the two tests first and confirm they fail.</li><li>Add the conditional scan, the &#39;SMARTS: no material solution choice&#39; statement and the route-to-full-lane rule.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The small-lane tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_small_lane_scans_only_material_choice</li><li>test_small_lane_no_choice_adds_no_table</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-13 -->
+
+<!-- CA:BEGIN:T-14 -->
+<article class="record" id="T-14" data-ca-symbol="T-14" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-14">T-14</a><h3>Debug/fix boundary</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-11">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-11</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-19">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/skills/debug/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/commands/fix.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write the two tests first and confirm the fix test fails.</li><li>Add the post-root-cause SMARTS rule to fix.md; keep debug evidence-led.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The debug/fix tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_debug_has_no_smarts_in_diagnosis</li><li>test_fix_applies_smarts_after_root_cause_only</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-14 -->
+
+<!-- CA:BEGIN:T-15 -->
+<article class="record" id="T-15" data-ca-symbol="T-15" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-15">T-15</a><h3>Refactor trigger</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-12">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-12</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-19">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/skills/refactor/SKILL.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write the tests first and confirm the strategy test fails.</li><li>Add the conditional SMARTS step after surface/parity are known.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The refactor tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_refactor_smarts_only_for_distinct_strategies</li><li>test_refactor_parity_gate_text_unchanged</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-15 -->
+
+<!-- CA:BEGIN:T-16 -->
+<article class="record" id="T-16" data-ca-symbol="T-16" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-16">T-16</a><h3>Writing-plans drift guard</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-13">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-13</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-19">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/skills/writing-plans/SKILL.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write the tests first and confirm the guard test fails.</li><li>Add the design-drift routing guard.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The planning-boundary tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_writing_plans_has_no_smarts_scoring</li><li>test_writing_plans_drift_guard_routes_back</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-16 -->
+
+<!-- CA:BEGIN:T-17 -->
+<article class="record" id="T-17" data-ca-symbol="T-17" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-17">T-17</a><h3>ADR-0025 preservation tests</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-21">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-21</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-13">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-13</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li><li><a href="#T-16">T-16</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The recorded-intent suite passes.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_recorded_intent_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add a test that Step 0 scope and exemptions are unchanged and writing-plans has no recorded-intent rescore.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_recorded_intent_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The recorded-intent suite passes including the new test.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_step_zero_scope_unchanged_after_core_rewrite</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-17 -->
+
+<!-- CA:BEGIN:T-19 -->
+<article class="record" id="T-19" data-ca-symbol="T-19" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-19">T-19</a><h3>Implementation-drift check in spec-compliance review</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-17">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-17</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-02">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-02</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-11">T-11</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests pass; no new agent file exists.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>core/artifacts/internal/operations</code></td></tr><tr><td>inspect</td><td><code>core/pysrc/_artifactauthoritylib.py</code></td></tr><tr><td>modify</td><td><code>core/surface/skills/subagent-driven-development/SKILL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/agents/authority-reviewer.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: Trace how contract_sha256 is computed and which fixtures pin it.</li><li>Red first: Record the finding in the task log.</li><li>Write the tests first and confirm they fail.</li><li>Add the material-invalidation check and route-back to Phase 3 and an instruction-only change to authority-reviewer.md.</li><li>Update any contract-hash fixture T-18 identified; change no envelope or launch shape.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The drift-check tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_spec_compliance_checks_material_invalidation_only</li><li>test_authority_reviewer_reads_smarts_rationale</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-19 -->
+
+<!-- CA:BEGIN:T-20 -->
+<article class="record" id="T-20" data-ca-symbol="T-20" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-20">T-20</a><h3>Arbitration vocabulary in decision-variance and grader</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-04">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-24">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The test passes.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/skills/decision-variance/references/analysis.md</code></td></tr><tr><td>modify</td><td><code>core/surface/agents/grader.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Adopt the five-state vocabulary and missing-observation rule in both files.</li><li>Add the test.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The arbitration vocabulary test passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_arbitration_surfaces_use_five_state_vocabulary</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-20 -->
+
+<!-- CA:BEGIN:T-21 -->
+<article class="record" id="T-21" data-ca-symbol="T-21" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-21">T-21</a><h3>Teach sprint the structured Unknown fields</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-14">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-14</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-04">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-04">T-04</a></li><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests and the approval-adapter suite pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/surface/SPRINT.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Describe missing_observation and decision_critical for smarts-apply requests.</li><li>State that Unknown cannot bypass a hard gate or manufacture authority.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The sprint tests pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_sprint_teaches_unknown_fields</li><li>test_sprint_unknown_cannot_bypass_hard_gate</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_artifact_approval_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The approval-adapter suite passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-21 -->
+
+<!-- CA:BEGIN:T-22 -->
+<article class="record" id="T-22" data-ca-symbol="T-22" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-22">T-22</a><h3>Regenerate host surfaces and pin parity</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-03">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-03</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-20">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-20</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-08">T-08</a></li><li><a href="#T-10">T-10</a></li><li><a href="#T-11">T-11</a></li><li><a href="#T-13">T-13</a></li><li><a href="#T-14">T-14</a></li><li><a href="#T-15">T-15</a></li><li><a href="#T-16">T-16</a></li><li><a href="#T-19">T-19</a></li><li><a href="#T-20">T-20</a></li><li><a href="#T-21">T-21</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The check, the parity test and the build-surface suite pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>plugins/ca</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the regenerated files with the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Run python tools/build-surface.py.</li><li>Add the host-parity test.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-surface.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Generated surfaces match canonical source.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Every host copy carries the trigger and vocabulary text.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_all_hosts_carry_trigger_and_vocabulary</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_build_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The build-surface suite passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-22 -->
+
+<!-- CA:BEGIN:T-23 -->
+<article class="record" id="T-23" data-ca-symbol="T-23" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-23">T-23</a><h3>Prove no new public SMARTS surface</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-02">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-02</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-22">T-22</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_smarts_integration_surface.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add the name-scan test over generated catalogs.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_integration_surface&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>No generated command, skill or agent name contains smarts.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_no_public_smarts_surface</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_command_catalog.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The command catalog suite passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-23 -->
+
+<!-- CA:BEGIN:T-24 -->
+<article class="record" id="T-24" data-ca-symbol="T-24" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-24">T-24</a><h3>Site verdict vocabulary</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-25">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-25</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Typecheck and the test pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>site/scripts/decision-evidence.ts</code></td></tr><tr><td>modify</td><td><code>site/test/content/concepts-decisions.test.ts</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add Unknown to CellVerdict.</li><li>Add the rendering test.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;typecheck&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The site typechecks.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;--reporter=verbose&#34;,&#34;test/content/concepts-decisions.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The Unknown cell test passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>renders an Unknown SMARTS cell</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-24 -->
+
+<!-- CA:BEGIN:T-25 -->
+<article class="record" id="T-25" data-ca-symbol="T-25" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-25">T-25</a><h3>SMARTS concept page</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-23">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-23</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-25">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-25</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-24">T-24</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All four checks pass.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>site/src/content/docs/concepts/smarts.mdx</code></td></tr><tr><td>modify</td><td><code>site/test/content/concepts-decisions.test.ts</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Teach scan/comparison/delegated depths, Unknown vs Indifferent, context, non-SMARTS factors, feature shaping, sprint and reconciliation authority, and that SMARTS grants no approval.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;--reporter=verbose&#34;,&#34;test/content/concepts-decisions.test.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The concept content test passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>explains SMARTS depths, Unknown and authority</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;build&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The site builds.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;exec&#34;,&#34;--&#34;,&#34;node&#34;,&#34;scripts/test-academy-non-root-base.mjs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The academy non-root base check (site test:academy-base) passes; exit-only because the script emits no named outcomes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;tsx&#34;,&#34;test/release-applicability/rendered.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The rendered release-applicability check (site test:release-applicability-rendered, after the build) passes; exit-only because it emits no named outcomes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;run&#34;,&#34;link-audit&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The link audit passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-25 -->
+
+<!-- CA:BEGIN:T-26 -->
+<article class="record" id="T-26" data-ca-symbol="T-26" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-26">T-26</a><h3>Wire the new suite into CI</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-19">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19</a></li><li><a href="../specs/smarts-design-quality-integration.html#AC-24">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-02">T-02</a></li><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both suites are in their jobs and filters; test_ci_impact passes.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/workflows/ci.yml</code></td></tr><tr><td>modify</td><td><code>.codearbiter/tech-stack.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add test_smarts_integration_surface.py and test_smarts_engine_contract.py to the jobs that own .github/scripts and engine tests, and to those jobs&#39; impact path filters.</li><li>List both in tech-stack.md.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_ci_impact.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The CI impact suite passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-26 -->
+
+<!-- CA:BEGIN:T-27 -->
+<article class="record" id="T-27" data-ca-symbol="T-27" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-27">T-27</a><h3>Advance ca, ca-codex and ca-pi versions</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-26">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-26</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-22">T-22</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All three checks pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>plugins/ca/.claude-plugin/plugin.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/.codex-plugin/plugin.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/package.json</code></td></tr><tr><td>modify</td><td><code>package.json</code></td></tr><tr><td>modify</td><td><code>CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>README.md</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s commit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Bump each manifest, CHANGELOG top entry, README badge and ships-line; move the ca-pi root package.json with its plugin.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_badge_consistency.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Badge surfaces are consistent.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_release_lib.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The release library suite passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-host-packages.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Host packages are current.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-27 -->
+
+<!-- CA:BEGIN:T-28 -->
+<article class="record" id="T-28" data-ca-symbol="T-28" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-28">T-28</a><h3>Regression closure</h3><span class="badge">PENDING</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/smarts-design-quality-integration.html#AC-24">SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-05">T-05</a></li><li><a href="#T-12">T-12</a></li><li><a href="#T-17">T-17</a></li><li><a href="#T-22">T-22</a></li><li><a href="#T-23">T-23</a></li><li><a href="#T-25">T-25</a></li><li><a href="#T-26">T-26</a></li><li><a href="#T-27">T-27</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Every listed command exits 0.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>inspect</td><td><code>core/artifacts</code></td></tr><tr><td>inspect</td><td><code>.github/scripts</code></td></tr><tr><td>inspect</td><td><code>site</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>No change to roll back.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Run every listed suite with NO_COLOR unset.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_smarts_engine_contract&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Every named engine test and the module regression pass.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_unknown_requires_fields</li><li>test_unknown_fields_forbidden_elsewhere</li><li>test_indifferent_is_uniform</li><li>test_critical_unknown_blocks_selection</li><li>test_strong_refused_with_critical_unknown</li><li>test_unknown_cannot_shield_dominated_choice</li><li>test_legacy_profile_accepted</li><li>test_legacy_profile_rejects_unknown</li><li>test_smarts_apply_refuses_critical_unknown_selection</li><li>test_smarts_apply_records_profile_020</li><li>test_engine_module_passes</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_smarts_integration_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The SMARTS surface suite passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_recorded_intent_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Recorded-intent passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_artifact_approval_adapter.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Approval adapter passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_artifact_authoring.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Artifact authoring passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_artifact_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Artifact surface passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_routing_and_cleanup_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Routing surface passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;test_ux_conversion.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>UX conversion passes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;vitest&#34;,&#34;run&#34;,&#34;--reporter=verbose&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The whole site Vitest suite passes, including both new SMARTS cases.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>renders an Unknown SMARTS cell</li><li>explains SMARTS depths, Unknown and authority</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;astro&#34;,&#34;build&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The site builds before the rendered check.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npm&#34;,&#34;exec&#34;,&#34;--&#34;,&#34;node&#34;,&#34;scripts/test-academy-non-root-base.mjs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The academy non-root base check (site test:academy-base) passes; exit-only because the script emits no named outcomes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;npx&#34;,&#34;tsx&#34;,&#34;test/release-applicability/rendered.ts&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The rendered release-applicability check (site test:release-applicability-rendered, after the build) passes; exit-only because it emits no named outcomes.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>site</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>PENDING</div></div></details></article>
+<!-- CA:END:T-28 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-01 -->
+<article class="record" id="CP-01" data-ca-symbol="CP-01" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-01">CP-01</a><h3>MVP: engine vocabulary, canonical core, brainstorming trigger, rationale persistence</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>All CP-01 tasks accepted: the dominance gap is closed, the core is rewritten, brainstorming runs SMARTS before selection, and rationale persists.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-02">T-02</a></li><li><a href="#T-03">T-03</a></li><li><a href="#T-04">T-04</a></li><li><a href="#T-05">T-05</a></li><li><a href="#T-07">T-07</a></li><li><a href="#T-08">T-08</a></li><li><a href="#T-10">T-10</a></li><li><a href="#T-11">T-11</a></li><li><a href="#T-12">T-12</a></li></ul></div></article>
+<!-- CA:END:CP-01 -->
+
+<!-- CA:BEGIN:CP-02 -->
+<article class="record" id="CP-02" data-ca-symbol="CP-02" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-02">CP-02</a><h3>Proportional triggers, planning guard and review-path check</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-01">CP-01</a></li></ul></div><div class="field"><span class="label">Exit</span>All CP-02 tasks accepted: every trigger and boundary is pinned by a mutant-proven structural test.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-13">T-13</a></li><li><a href="#T-14">T-14</a></li><li><a href="#T-15">T-15</a></li><li><a href="#T-16">T-16</a></li><li><a href="#T-17">T-17</a></li><li><a href="#T-19">T-19</a></li><li><a href="#T-20">T-20</a></li><li><a href="#T-21">T-21</a></li></ul></div></article>
+<!-- CA:END:CP-02 -->
+
+<!-- CA:BEGIN:CP-03 -->
+<article class="record" id="CP-03" data-ca-symbol="CP-03" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-03">CP-03</a><h3>Host surfaces, docs, CI wiring, versions and regression</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-02">CP-02</a></li></ul></div><div class="field"><span class="label">Exit</span>All CP-03 tasks accepted: hosts regenerated, docs and site pass, versions advanced, all regression suites green.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-22">T-22</a></li><li><a href="#T-23">T-23</a></li><li><a href="#T-24">T-24</a></li><li><a href="#T-25">T-25</a></li><li><a href="#T-26">T-26</a></li><li><a href="#T-27">T-27</a></li><li><a href="#T-28">T-28</a></li></ul></div></article>
+<!-- CA:END:CP-03 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-NEGATIVE -->
+<article class="record" id="SEC-NEGATIVE" data-ca-symbol="SEC-NEGATIVE" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-NEGATIVE">SEC-NEGATIVE</a><h3>Negative-judgment check</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>If every criterion passed and nothing else changed, what would still be broken? SPRINT.md teaches the orchestrator the smarts-apply request format; without the new missing_observation and decision_critical fields there, every sprint decision with an Unknown would fail engine validation. T-21 covers it under AC-04 and AC-14; no criterion is missing.</p><div class="refs">References: <a href="#SRC-01">SRC-01</a> </div></div></div></article>
+<!-- CA:END:SEC-NEGATIVE -->
+
+<!-- CA:BEGIN:SEC-PROOF -->
+<article class="record" id="SEC-PROOF" data-ca-symbol="SEC-PROOF" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-PROOF">SEC-PROOF</a><h3>Proof limits of this plan</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><ul class="items"><li>The installed collector cannot name Go tests, so Go rules are attested through the unittest wrapper test_smarts_engine_contract.py, which passes each method only on a named Go &#39;pass&#39; event (the test_artifact_native.py pattern).</li><li>Structural tests prove what workflow instructions require, not what a model does; the spec&#39;s proof boundary applies.</li><li>The installed engine (ca 2.21.17) has no plan-verification preflight; command and input checks happen at execution.</li></ul><div class="refs">References: <a href="#SRC-01">SRC-01</a> </div></div></div></article>
+<!-- CA:END:SEC-PROOF -->
+
+<!-- CA:BEGIN:SEC-COORD -->
+<article class="record" id="SEC-COORD" data-ca-symbol="SEC-COORD" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-COORD">SEC-COORD</a><h3>Coordination</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>T-18 and T-19 touch authority-reviewer.md, which feat/pi-authority-adapter also changes. Whichever branch lands second rebases onto the other; this plan changes no envelope or launch shape.</p><div class="refs">References: <a href="#SRC-01">SRC-01</a> </div></div></div></article>
+<!-- CA:END:SEC-COORD -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-01 -->
+<article class="record" id="SRC-01" data-ca-symbol="SRC-01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-01">SRC-01</a><h3>Approved SMARTS spec</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/specs/smarts-design-quality-integration.html</div><div class="field"><span class="label">Note</span>Approved at revision 3; criterion IDs are consumed as-is.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-01 -->
+
+<!-- CA:BEGIN:SRC-02 -->
+<article class="record" id="SRC-02" data-ca-symbol="SRC-02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-02">SRC-02</a><h3>Tech stack commands</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/tech-stack.md</div><div class="field"><span class="label">Note</span>Source for the Python suite, build-surface and site commands.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-02 -->
+
+<!-- CA:BEGIN:SRC-03 -->
+<article class="record" id="SRC-03" data-ca-symbol="SRC-03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-03">SRC-03</a><h3>Typed SMARTS validator</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/observation/sprint.go</div><div class="field"><span class="label">Note</span>DecisionSchema and ValidateDecision dominance loop.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/8e88bce938ebf7dc8cfd934307b8d6859092d86e/core/artifacts/internal/observation/sprint.go</div></article>
+<!-- CA:END:SRC-03 -->
+
+<!-- CA:BEGIN:SRC-04 -->
+<article class="record" id="SRC-04" data-ca-symbol="SRC-04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-04">SRC-04</a><h3>Original SMARTS framework</h3></div><div class="field"><span class="label">Locator</span>c365852a:.agents/skills/arbiter/references/smarts-framework.md</div><div class="field"><span class="label">Note</span>Historical per-lens detail for lenses.md.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/c365852ac68db060fb50a9c3e3b9b2360309ce7d/.agents/skills/arbiter/references/smarts-framework.md</div></article>
+<!-- CA:END:SRC-04 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>8e88bce938ebf7dc8cfd934307b8d6859092d86e</div><div class="field"><span class="label">Observed date</span>2026-09-30</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2>
+<!-- CA:BEGIN:T-01 -->
+<article class="record retired" id="T-01" data-ca-symbol="T-01" data-ca-kind="retired_symbols"><div class="record-head"><a class="id" href="#T-01">T-01</a><h3>Retired symbols</h3><span class="badge">Retired</span></div><div class="field"><span class="label">Reason</span>Red-test-only task folded into T-02 so each task can pass its own spec review.</div><div class="field"><span class="label">Replacement ref</span><a href="#T-02">T-02</a></div><div class="field"><span class="label">Retired in revision</span>4</div></article>
+<!-- CA:END:T-01 -->
+
+<!-- CA:BEGIN:T-06 -->
+<article class="record retired" id="T-06" data-ca-symbol="T-06" data-ca-kind="retired_symbols"><div class="record-head"><a class="id" href="#T-06">T-06</a><h3>Retired symbols</h3><span class="badge">Retired</span></div><div class="field"><span class="label">Reason</span>Red-test-only task folded into T-07 so each task can pass its own spec review.</div><div class="field"><span class="label">Replacement ref</span><a href="#T-07">T-07</a></div><div class="field"><span class="label">Retired in revision</span>4</div></article>
+<!-- CA:END:T-06 -->
+
+<!-- CA:BEGIN:T-09 -->
+<article class="record retired" id="T-09" data-ca-symbol="T-09" data-ca-kind="retired_symbols"><div class="record-head"><a class="id" href="#T-09">T-09</a><h3>Retired symbols</h3><span class="badge">Retired</span></div><div class="field"><span class="label">Reason</span>Red-test-only task folded into T-10 so each task can pass its own spec review.</div><div class="field"><span class="label">Replacement ref</span><a href="#T-10">T-10</a></div><div class="field"><span class="label">Retired in revision</span>4</div></article>
+<!-- CA:END:T-09 -->
+
+<!-- CA:BEGIN:T-18 -->
+<article class="record retired" id="T-18" data-ca-symbol="T-18" data-ca-kind="retired_symbols"><div class="record-head"><a class="id" href="#T-18">T-18</a><h3>Retired symbols</h3><span class="badge">Retired</span></div><div class="field"><span class="label">Reason</span>Red-test-only task folded into T-19 so each task can pass its own spec review.</div><div class="field"><span class="label">Replacement ref</span><a href="#T-19">T-19</a></div><div class="field"><span class="label">Retired in revision</span>4</div></article>
+<!-- CA:END:T-18 -->
+</section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group" id="group-verification_inputs"><a class="back" href="#main-content">Top</a><h2>Verification inputs</h2><div class="fields"><div class="field"><span class="label">Exclude directories</span><ul class="items"><li>site/node_modules</li><li>site/dist</li><li>site/.astro</li><li>tmp</li><li>.github/scripts/__pycache__</li><li>core/pysrc/__pycache__</li><li>plugins/ca/hooks/__pycache__</li><li>plugins/ca/hooks/tests/__pycache__</li><li>plugins/ca-codex/hooks/__pycache__</li><li>plugins/ca-pi/hooks/__pycache__</li><li>tools/__pycache__</li></ul></div><div class="field"><span class="label">Roots</span><ul class="items"><li>.</li></ul></div></div></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Execution must verify current receipt sources and binding.</p><div class="fields"><div class="field"><span class="label">Approvals</span><div class="fields"><div class="field"><span class="label">Artifact id</span>PLAN-SMARTS-DESIGN-QUALITY-INTEGRATION</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>d9fd70e792b97c6b9ff49873d0aeee38d384c351834f462098e6fdc15053fec2</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/5d310a452d55e12f188eb3b61480c3e3c971b62e88b0f73920a5e57cedca6362.json</div><div class="field"><span class="label">Source sha256</span>5d310a452d55e12f188eb3b61480c3e3c971b62e88b0f73920a5e57cedca6362</div></div></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>approved</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: d9fd70e792b97c6b9ff49873d0aeee38d384c351834f462098e6fdc15053fec2<br>Model SHA-256: 574d4fc3ad25865444ed07cd4f6f51cdabe0c9349f44a97ce804be1d4a5d6c48</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-SMARTS-DESIGN-QUALITY-INTEGRATION",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {},
+    "tasks": {
+      "T-02": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-03": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-04": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-05": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-07": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-08": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-10": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-11": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-12": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-13": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-14": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-15": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-16": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-17": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-19": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-20": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-21": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-22": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-23": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-24": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-25": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-26": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-27": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-28": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [
+      {
+        "artifact_id": "PLAN-SMARTS-DESIGN-QUALITY-INTEGRATION",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "d9fd70e792b97c6b9ff49873d0aeee38d384c351834f462098e6fdc15053fec2",
+        "source_ref": ".codearbiter/.artifacts/receipts/5d310a452d55e12f188eb3b61480c3e3c971b62e88b0f73920a5e57cedca6362.json",
+        "source_sha256": "5d310a452d55e12f188eb3b61480c3e3c971b62e88b0f73920a5e57cedca6362"
+      }
+    ],
+    "review_notes": [],
+    "state": "approved"
+  },
+  "integrity": {
+    "model_sha256": "574d4fc3ad25865444ed07cd4f6f51cdabe0c9349f44a97ce804be1d4a5d6c48",
+    "normative_sha256": "d9fd70e792b97c6b9ff49873d0aeee38d384c351834f462098e6fdc15053fec2",
+    "symbol_count": 38
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "8e88bce938ebf7dc8cfd934307b8d6859092d86e",
+      "observed_date": "2026-09-30",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "All CP-01 tasks accepted: the dominance gap is closed, the core is rewritten, brainstorming runs SMARTS before selection, and rationale persists.",
+        "id": "CP-01",
+        "tasks": [
+          "T-02",
+          "T-03",
+          "T-04",
+          "T-05",
+          "T-07",
+          "T-08",
+          "T-10",
+          "T-11",
+          "T-12"
+        ],
+        "title": "MVP: engine vocabulary, canonical core, brainstorming trigger, rationale persistence"
+      },
+      {
+        "depends_on": [
+          "CP-01"
+        ],
+        "exit": "All CP-02 tasks accepted: every trigger and boundary is pinned by a mutant-proven structural test.",
+        "id": "CP-02",
+        "tasks": [
+          "T-13",
+          "T-14",
+          "T-15",
+          "T-16",
+          "T-17",
+          "T-19",
+          "T-20",
+          "T-21"
+        ],
+        "title": "Proportional triggers, planning guard and review-path check"
+      },
+      {
+        "depends_on": [
+          "CP-02"
+        ],
+        "exit": "All CP-03 tasks accepted: hosts regenerated, docs and site pass, versions advanced, all regression suites green.",
+        "id": "CP-03",
+        "tasks": [
+          "T-22",
+          "T-23",
+          "T-24",
+          "T-25",
+          "T-26",
+          "T-27",
+          "T-28"
+        ],
+        "title": "Host surfaces, docs, CI wiring, versions and regression"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [
+      {
+        "id": "T-01",
+        "reason": "Red-test-only task folded into T-02 so each task can pass its own spec review.",
+        "replacement_ref": "T-02",
+        "retired_in_revision": 4
+      },
+      {
+        "id": "T-06",
+        "reason": "Red-test-only task folded into T-07 so each task can pass its own spec review.",
+        "replacement_ref": "T-07",
+        "retired_in_revision": 4
+      },
+      {
+        "id": "T-09",
+        "reason": "Red-test-only task folded into T-10 so each task can pass its own spec review.",
+        "replacement_ref": "T-10",
+        "retired_in_revision": 4
+      },
+      {
+        "id": "T-18",
+        "reason": "Red-test-only task folded into T-19 so each task can pass its own spec review.",
+        "replacement_ref": "T-19",
+        "retired_in_revision": 4
+      }
+    ],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-01"
+            ],
+            "text": "If every criterion passed and nothing else changed, what would still be broken? SPRINT.md teaches the orchestrator the smarts-apply request format; without the new missing_observation and decision_critical fields there, every sprint decision with an Unknown would fail engine validation. T-21 covers it under AC-04 and AC-14; no criterion is missing.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-NEGATIVE",
+        "title": "Negative-judgment check"
+      },
+      {
+        "blocks": [
+          {
+            "items": [
+              "The installed collector cannot name Go tests, so Go rules are attested through the unittest wrapper test_smarts_engine_contract.py, which passes each method only on a named Go 'pass' event (the test_artifact_native.py pattern).",
+              "Structural tests prove what workflow instructions require, not what a model does; the spec's proof boundary applies.",
+              "The installed engine (ca 2.21.17) has no plan-verification preflight; command and input checks happen at execution."
+            ],
+            "refs": [
+              "SRC-01"
+            ],
+            "type": "list"
+          }
+        ],
+        "id": "SEC-PROOF",
+        "title": "Proof limits of this plan"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-01"
+            ],
+            "text": "T-18 and T-19 touch authority-reviewer.md, which feat/pi-authority-adapter also changes. Whichever branch lands second rebases onto the other; this plan changes no envelope or launch shape.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-COORD",
+        "title": "Coordination"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-01",
+        "locator": ".codearbiter/specs/smarts-design-quality-integration.html",
+        "note": "Approved at revision 3; criterion IDs are consumed as-is.",
+        "title": "Approved SMARTS spec",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-02",
+        "locator": ".codearbiter/tech-stack.md",
+        "note": "Source for the Python suite, build-surface and site commands.",
+        "title": "Tech stack commands",
+        "type": "repository",
+        "url": null
+      },
+      {
+        "id": "SRC-03",
+        "locator": "core/artifacts/internal/observation/sprint.go",
+        "note": "DecisionSchema and ValidateDecision dominance loop.",
+        "title": "Typed SMARTS validator",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/8e88bce938ebf7dc8cfd934307b8d6859092d86e/core/artifacts/internal/observation/sprint.go"
+      },
+      {
+        "id": "SRC-04",
+        "locator": "c365852a:.agents/skills/arbiter/references/smarts-framework.md",
+        "note": "Historical per-lens detail for lenses.md.",
+        "title": "Original SMARTS framework",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/c365852ac68db060fb50a9c3e3b9b2360309ce7d/.agents/skills/arbiter/references/smarts-framework.md"
+      }
+    ],
+    "spec_ref": {
+      "artifact_id": "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION",
+      "binding_mode": "approved_source",
+      "normative_sha256": "f0f99cc6462a27f82167a77e3f0f1120de1a72fcaa93c6230889c6d7b07c8b13"
+    },
+    "summary": "Twenty-four tasks in three checkpoints: engine and canonical core first, then proportional triggers, then hosts, docs, CI, versions and regression.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-06",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-15"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "TestSMARTSDecision passes.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-02",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/observation/sprint_test.go"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_smarts_engine_contract.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/sprint.go"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-03"
+        ],
+        "steps": [
+          "Red first: Add Go tests TestSMARTSDecisionUnknownRequiresFields, TestSMARTSDecisionUnknownFieldsForbiddenElsewhere, TestSMARTSDecisionIndifferentIsUniform, TestSMARTSDecisionCriticalUnknownBlocksSelection, TestSMARTSDecisionStrongRefusedWithCriticalUnknown and TestSMARTSDecisionUnknownCannotShieldDominatedChoice.",
+          "Red first: Create the unittest wrapper test_smarts_engine_contract.py with one method per Go test (test_unknown_requires_fields, test_unknown_fields_forbidden_elsewhere, test_indifferent_is_uniform, test_critical_unknown_blocks_selection, test_strong_refused_with_critical_unknown, test_unknown_cannot_shield_dominated_choice). Each wrapper test runs its Go test by exact name through go test -json and passes only on a named 'pass' event, following test_artifact_native.py.",
+          "Red first: Run them against the unchanged validator and record that each fails.",
+          "Add the Unknown verdict with required missing_observation and decision_critical fields.",
+          "Enforce Indifferent uniformity, the critical-Unknown selection and strength rules, and the Unknown dominance rule.",
+          "Add SMARTSProfile smarts-plan-method/0.2.0 and keep a legacy 0.1.0 constant; add no counts, weights or sums."
+        ],
+        "title": "Implement DecisionSchema 0.2.0 and the new ValidateDecision rules",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_engine_contract"
+            ],
+            "assertion": "Every validator-rule Go test passes by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_unknown_requires_fields",
+              "test_unknown_fields_forbidden_elsewhere",
+              "test_indifferent_is_uniform",
+              "test_critical_unknown_blocks_selection",
+              "test_strong_refused_with_critical_unknown",
+              "test_unknown_cannot_shield_dominated_choice"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-15"
+        ],
+        "depends_on": [
+          "T-02"
+        ],
+        "done_when": [
+          "A historical 0.1.0 record validates; a 0.1.0 record carrying Unknown is rejected.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-03",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_engine_contract.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-03"
+        ],
+        "steps": [
+          "Add the 0.2.0 profile to the producer-profile enum and approval-kind check.",
+          "Validate 0.1.0 records with the four-state schema and 0.2.0 records with the new schema.",
+          "Add Go tests TestSMARTSProfileLegacyAccepted and TestSMARTSProfileLegacyRejectsUnknown and their wrapper methods test_legacy_profile_accepted, test_legacy_profile_rejects_unknown."
+        ],
+        "title": "Accept both SMARTS profile versions in the observation contract",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_engine_contract"
+            ],
+            "assertion": "Both profile Go tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_legacy_profile_accepted",
+              "test_legacy_profile_rejects_unknown"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-14",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-15"
+        ],
+        "depends_on": [
+          "T-03"
+        ],
+        "done_when": [
+          "Existing and new operations SMARTS tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-04",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/sprint.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/sprint_authority_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_engine_contract.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-03"
+        ],
+        "steps": [
+          "Write the SMARTS observation with the 0.2.0 profile.",
+          "Add Go tests TestSMARTSRefusesDecisionCriticalUnknownSelection and TestSMARTSRecordsProfile020 and their wrapper methods test_smarts_apply_refuses_critical_unknown_selection, test_smarts_apply_records_profile_020."
+        ],
+        "title": "Record smarts-apply under 0.2.0 and refuse critical-Unknown selections",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_engine_contract"
+            ],
+            "assertion": "Both new operations Go tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_smarts_apply_refuses_critical_unknown_selection",
+              "test_smarts_apply_records_profile_020"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-14",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24"
+        ],
+        "depends_on": [
+          "T-04"
+        ],
+        "done_when": [
+          "The named module-regression test passes."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-05",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_engine_contract.py"
+          }
+        ],
+        "rollback": "No change to roll back.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Add wrapper method test_engine_module_passes, which runs go test -json ./... in core/artifacts and fails on any fail event or nonzero exit.",
+          "Do not use -race locally: this Windows host has CGO_ENABLED=0 and no C compiler; CI's existing -race job still covers the race detector."
+        ],
+        "title": "Engine module regression",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_engine_contract"
+            ],
+            "assertion": "The whole engine module passes.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_engine_module_passes"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-01",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-03",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-05",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-06",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "All eight tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-07",
+        "paths": [
+          {
+            "action": "create",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/includes/smarts/core.md"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-02"
+        ],
+        "steps": [
+          "Red first: Create the suite with tests: test_core_defines_design_quality_role, test_core_keeps_six_lenses_exactly, test_core_vocabulary_has_unknown_with_fields, test_core_defines_single_option_indifferent, test_core_context_envelope_is_conditional, test_core_priority_order_and_tie, test_core_names_three_depths, test_core_has_no_aggregate_scoring.",
+          "Red first: Assert order and required text, not the mere presence of the word SMARTS; run against the current core.md and record the failures.",
+          "Reframe the role as the design-quality rubric; keep the six lenses.",
+          "Add Unknown with missing_observation and decision_critical, single-option Indifferent, the conditional context envelope, the priority order with ties staying tied, and the three depths.",
+          "Keep ADR-0025 Step 0 wording and scope intact; keep the file concise."
+        ],
+        "title": "Rewrite the canonical SMARTS core",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "Every canonical-semantics test passes.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_core_defines_design_quality_role",
+              "test_core_keeps_six_lenses_exactly",
+              "test_core_vocabulary_has_unknown_with_fields",
+              "test_core_defines_single_option_indifferent",
+              "test_core_context_envelope_is_conditional",
+              "test_core_priority_order_and_tie",
+              "test_core_names_three_depths",
+              "test_core_has_no_aggregate_scoring"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-18",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-22"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "The three tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-08",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/surface/includes/smarts/lenses.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/includes/smarts/core.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-04"
+        ],
+        "steps": [
+          "Port the per-lens considerations and traps from the original framework, modernized.",
+          "Reference lenses.md from core.md only under a stated condition.",
+          "Add the three tests."
+        ],
+        "title": "Add the lazy SMARTS lens reference",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The lazy-reference tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_lens_reference_carries_historical_detail",
+              "test_lens_reference_is_loaded_only_on_condition",
+              "test_no_startup_surface_references_lens_reference"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-07",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-08",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-09",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-22",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "The four tests pass; moving the SMARTS step after selection makes the order test fail."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-10",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/brainstorming/SKILL.md"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Red first: Add test_brainstorming_orders_smarts_before_selection, test_brainstorming_allows_single_option_scan, test_full_read_changes_presentation_only, test_brainstorming_smarts_step_dispatches_nothing.",
+          "Red first: Run against the current brainstorming SKILL.md and record the failures.",
+          "Order Phase 2: bounded context, SMARTS scan or comparison, non-SMARTS constraints, selection under existing authority, rationale in running notes.",
+          "Permit a one-option fitness scan with a stated reason; keep the no-manufactured-alternatives rule.",
+          "State that a full-read request changes presentation only; forbid grader/scout dispatch and bulk reads in the step."
+        ],
+        "title": "Wire SMARTS into brainstorming Phase 2",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "Every brainstorming trigger test passes.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_brainstorming_orders_smarts_before_selection",
+              "test_brainstorming_allows_single_option_scan",
+              "test_full_read_changes_presentation_only",
+              "test_brainstorming_smarts_step_dispatches_nothing"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-07",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-16"
+        ],
+        "depends_on": [
+          "T-10"
+        ],
+        "done_when": [
+          "Both tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-11",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/includes/smarts/core.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/includes/artifacts.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Document approach + bound decisions + SEC-SMARTS for typed specs and the '## SMARTS design rationale' Markdown section.",
+          "Add the two tests."
+        ],
+        "title": "Document the rationale storage convention",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The convention tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_rationale_convention_documented_once",
+              "test_markdown_rationale_section_documented"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-16"
+        ],
+        "depends_on": [
+          "T-11"
+        ],
+        "done_when": [
+          "The fixture passes with no spec-schema change.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-12",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_authoring.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Create a spec with approach, a bound DEC and SEC-SMARTS through existing mutations; validate at ready; read the rationale back."
+        ],
+        "title": "Engine fixture for typed rationale persistence",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_artifact_authoring"
+            ],
+            "assertion": "The persistence fixture passes.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_smarts_rationale_round_trips_through_existing_records"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-10",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-22"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "Both tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-13",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/commands/feature.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Write the two tests first and confirm they fail.",
+          "Add the conditional scan, the 'SMARTS: no material solution choice' statement and the route-to-full-lane rule."
+        ],
+        "title": "Small-lane proportional trigger",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The small-lane tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_small_lane_scans_only_material_choice",
+              "test_small_lane_no_choice_adds_no_table"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-11",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "Both tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-14",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/skills/debug/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/commands/fix.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Write the two tests first and confirm the fix test fails.",
+          "Add the post-root-cause SMARTS rule to fix.md; keep debug evidence-led."
+        ],
+        "title": "Debug/fix boundary",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The debug/fix tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_debug_has_no_smarts_in_diagnosis",
+              "test_fix_applies_smarts_after_root_cause_only"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-12",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "Both tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-15",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/skills/refactor/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Write the tests first and confirm the strategy test fails.",
+          "Add the conditional SMARTS step after surface/parity are known."
+        ],
+        "title": "Refactor trigger",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The refactor tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_refactor_smarts_only_for_distinct_strategies",
+              "test_refactor_parity_gate_text_unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-13",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "Both tests pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-16",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/skills/writing-plans/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Write the tests first and confirm the guard test fails.",
+          "Add the design-drift routing guard."
+        ],
+        "title": "Writing-plans drift guard",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The planning-boundary tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_writing_plans_has_no_smarts_scoring",
+              "test_writing_plans_drift_guard_routes_back"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-21",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-13"
+        ],
+        "depends_on": [
+          "T-07",
+          "T-16"
+        ],
+        "done_when": [
+          "The recorded-intent suite passes.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-17",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_recorded_intent_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Add a test that Step 0 scope and exemptions are unchanged and writing-plans has no recorded-intent rescore."
+        ],
+        "title": "ADR-0025 preservation tests",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_recorded_intent_surface"
+            ],
+            "assertion": "The recorded-intent suite passes including the new test.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_step_zero_scope_unchanged_after_core_rewrite"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-17",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-02"
+        ],
+        "depends_on": [
+          "T-11"
+        ],
+        "done_when": [
+          "Both tests pass; no new agent file exists.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-19",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "core/artifacts/internal/operations"
+          },
+          {
+            "action": "inspect",
+            "path": "core/pysrc/_artifactauthoritylib.py"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/subagent-driven-development/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/agents/authority-reviewer.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Red first: Trace how contract_sha256 is computed and which fixtures pin it.",
+          "Red first: Record the finding in the task log.",
+          "Write the tests first and confirm they fail.",
+          "Add the material-invalidation check and route-back to Phase 3 and an instruction-only change to authority-reviewer.md.",
+          "Update any contract-hash fixture T-18 identified; change no envelope or launch shape."
+        ],
+        "title": "Implementation-drift check in spec-compliance review",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The drift-check tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_spec_compliance_checks_material_invalidation_only",
+              "test_authority_reviewer_reads_smarts_rationale"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "The test passes.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-20",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/skills/decision-variance/references/analysis.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/agents/grader.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Adopt the five-state vocabulary and missing-observation rule in both files.",
+          "Add the test."
+        ],
+        "title": "Arbitration vocabulary in decision-variance and grader",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The arbitration vocabulary test passes.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_arbitration_surfaces_use_five_state_vocabulary"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-14",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-04"
+        ],
+        "depends_on": [
+          "T-04",
+          "T-07"
+        ],
+        "done_when": [
+          "Both tests and the approval-adapter suite pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-21",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/SPRINT.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Describe missing_observation and decision_critical for smarts-apply requests.",
+          "State that Unknown cannot bypass a hard gate or manufacture authority."
+        ],
+        "title": "Teach sprint the structured Unknown fields",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "The sprint tests pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_sprint_teaches_unknown_fields",
+              "test_sprint_unknown_cannot_bypass_hard_gate"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              "test_artifact_approval_adapter.py"
+            ],
+            "assertion": "The approval-adapter suite passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-03",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-20"
+        ],
+        "depends_on": [
+          "T-08",
+          "T-10",
+          "T-11",
+          "T-13",
+          "T-14",
+          "T-15",
+          "T-16",
+          "T-19",
+          "T-20",
+          "T-21"
+        ],
+        "done_when": [
+          "The check, the parity test and the build-surface suite pass."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-22",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "plugins/ca"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the regenerated files with the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Run python tools/build-surface.py.",
+          "Add the host-parity test."
+        ],
+        "title": "Regenerate host surfaces and pin parity",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "tools/build-surface.py",
+              "--check"
+            ],
+            "assertion": "Generated surfaces match canonical source.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "Every host copy carries the trigger and vocabulary text.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_all_hosts_carry_trigger_and_vocabulary"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              "test_build_surface.py"
+            ],
+            "assertion": "The build-surface suite passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-02"
+        ],
+        "depends_on": [
+          "T-22"
+        ],
+        "done_when": [
+          "Both pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-23",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_smarts_integration_surface.py"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Add the name-scan test over generated catalogs."
+        ],
+        "title": "Prove no new public SMARTS surface",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_integration_surface"
+            ],
+            "assertion": "No generated command, skill or agent name contains smarts.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_no_public_smarts_surface"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              "test_command_catalog.py"
+            ],
+            "assertion": "The command catalog suite passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-25"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "Typecheck and the test pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-24",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "site/scripts/decision-evidence.ts"
+          },
+          {
+            "action": "modify",
+            "path": "site/test/content/concepts-decisions.test.ts"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Add Unknown to CellVerdict.",
+          "Add the rendering test."
+        ],
+        "title": "Site verdict vocabulary",
+        "verification": [
+          {
+            "argv": [
+              "npm",
+              "run",
+              "typecheck"
+            ],
+            "assertion": "The site typechecks.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "--reporter=verbose",
+              "test/content/concepts-decisions.test.ts"
+            ],
+            "assertion": "The Unknown cell test passes.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "renders an Unknown SMARTS cell"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-23",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-25"
+        ],
+        "depends_on": [
+          "T-24"
+        ],
+        "done_when": [
+          "All four checks pass.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-25",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "site/src/content/docs/concepts/smarts.mdx"
+          },
+          {
+            "action": "modify",
+            "path": "site/test/content/concepts-decisions.test.ts"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Teach scan/comparison/delegated depths, Unknown vs Indifferent, context, non-SMARTS factors, feature shaping, sprint and reconciliation authority, and that SMARTS grants no approval."
+        ],
+        "title": "SMARTS concept page",
+        "verification": [
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "--reporter=verbose",
+              "test/content/concepts-decisions.test.ts"
+            ],
+            "assertion": "The concept content test passes.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "explains SMARTS depths, Unknown and authority"
+            ]
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "build"
+            ],
+            "assertion": "The site builds.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "exec",
+              "--",
+              "node",
+              "scripts/test-academy-non-root-base.mjs"
+            ],
+            "assertion": "The academy non-root base check (site test:academy-base) passes; exit-only because the script emits no named outcomes.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npx",
+              "tsx",
+              "test/release-applicability/rendered.ts"
+            ],
+            "assertion": "The rendered release-applicability check (site test:release-applicability-rendered, after the build) passes; exit-only because it emits no named outcomes.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "run",
+              "link-audit"
+            ],
+            "assertion": "The link audit passes.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-19",
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24"
+        ],
+        "depends_on": [
+          "T-02",
+          "T-07"
+        ],
+        "done_when": [
+          "Both suites are in their jobs and filters; test_ci_impact passes."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-26",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/workflows/ci.yml"
+          },
+          {
+            "action": "modify",
+            "path": ".codearbiter/tech-stack.md"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-02"
+        ],
+        "steps": [
+          "Add test_smarts_integration_surface.py and test_smarts_engine_contract.py to the jobs that own .github/scripts and engine tests, and to those jobs' impact path filters.",
+          "List both in tech-stack.md."
+        ],
+        "title": "Wire the new suite into CI",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "test_ci_impact.py"
+            ],
+            "assertion": "The CI impact suite passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-26"
+        ],
+        "depends_on": [
+          "T-22"
+        ],
+        "done_when": [
+          "All three checks pass."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-27",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "plugins/ca/.claude-plugin/plugin.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/.codex-plugin/plugin.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/package.json"
+          },
+          {
+            "action": "modify",
+            "path": "package.json"
+          },
+          {
+            "action": "modify",
+            "path": "CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "README.md"
+          }
+        ],
+        "rollback": "Revert the task's commit.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Bump each manifest, CHANGELOG top entry, README badge and ships-line; move the ca-pi root package.json with its plugin."
+        ],
+        "title": "Advance ca, ca-codex and ca-pi versions",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "test_badge_consistency.py"
+            ],
+            "assertion": "Badge surfaces are consistent.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "test_release_lib.py"
+            ],
+            "assertion": "The release library suite passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "tools/build-host-packages.py",
+              "--check"
+            ],
+            "assertion": "Host packages are current.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SMARTS-DESIGN-QUALITY-INTEGRATION#AC-24"
+        ],
+        "depends_on": [
+          "T-05",
+          "T-12",
+          "T-17",
+          "T-22",
+          "T-23",
+          "T-25",
+          "T-26",
+          "T-27"
+        ],
+        "done_when": [
+          "Every listed command exits 0."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-28",
+        "paths": [
+          {
+            "action": "inspect",
+            "path": "core/artifacts"
+          },
+          {
+            "action": "inspect",
+            "path": ".github/scripts"
+          },
+          {
+            "action": "inspect",
+            "path": "site"
+          }
+        ],
+        "rollback": "No change to roll back.",
+        "source_refs": [
+          "SRC-01"
+        ],
+        "steps": [
+          "Run every listed suite with NO_COLOR unset."
+        ],
+        "title": "Regression closure",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_smarts_engine_contract"
+            ],
+            "assertion": "Every named engine test and the module regression pass.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_unknown_requires_fields",
+              "test_unknown_fields_forbidden_elsewhere",
+              "test_indifferent_is_uniform",
+              "test_critical_unknown_blocks_selection",
+              "test_strong_refused_with_critical_unknown",
+              "test_unknown_cannot_shield_dominated_choice",
+              "test_legacy_profile_accepted",
+              "test_legacy_profile_rejects_unknown",
+              "test_smarts_apply_refuses_critical_unknown_selection",
+              "test_smarts_apply_records_profile_020",
+              "test_engine_module_passes"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              "test_smarts_integration_surface.py"
+            ],
+            "assertion": "The SMARTS surface suite passes.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "test_recorded_intent_surface.py"
+            ],
+            "assertion": "Recorded-intent passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "test_artifact_approval_adapter.py"
+            ],
+            "assertion": "Approval adapter passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "test_artifact_authoring.py"
+            ],
+            "assertion": "Artifact authoring passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "test_artifact_surface.py"
+            ],
+            "assertion": "Artifact surface passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "test_routing_and_cleanup_surface.py"
+            ],
+            "assertion": "Routing surface passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "test_ux_conversion.py"
+            ],
+            "assertion": "UX conversion passes.",
+            "availability": "existing",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "--reporter=verbose"
+            ],
+            "assertion": "The whole site Vitest suite passes, including both new SMARTS cases.",
+            "availability": "proposed",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": [
+              "renders an Unknown SMARTS cell",
+              "explains SMARTS depths, Unknown and authority"
+            ]
+          },
+          {
+            "argv": [
+              "npx",
+              "astro",
+              "build"
+            ],
+            "assertion": "The site builds before the rendered check.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npm",
+              "exec",
+              "--",
+              "node",
+              "scripts/test-academy-non-root-base.mjs"
+            ],
+            "assertion": "The academy non-root base check (site test:academy-base) passes; exit-only because the script emits no named outcomes.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "npx",
+              "tsx",
+              "test/release-applicability/rendered.ts"
+            ],
+            "assertion": "The rendered release-applicability check (site test:release-applicability-rendered, after the build) passes; exit-only because it emits no named outcomes.",
+            "availability": "existing",
+            "cwd": "site",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      }
+    ],
+    "title": "SMARTS design-quality integration — implementation plan",
+    "verification_inputs": {
+      "exclude_directories": [
+        "site/node_modules",
+        "site/dist",
+        "site/.astro",
+        "tmp",
+        ".github/scripts/__pycache__",
+        "core/pysrc/__pycache__",
+        "plugins/ca/hooks/__pycache__",
+        "plugins/ca/hooks/tests/__pycache__",
+        "plugins/ca-codex/hooks/__pycache__",
+        "plugins/ca-pi/hooks/__pycache__",
+        "tools/__pycache__"
+      ],
+      "roots": [
+        "."
+      ]
+    }
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/smarts-design-quality-integration.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 6,
+  "schema_version": "0.3.1",
+  "slug": "smarts-design-quality-integration"
+}
+</script>
+</body></html>
