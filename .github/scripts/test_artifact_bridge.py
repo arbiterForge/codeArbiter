@@ -265,7 +265,9 @@ class BridgeTests(unittest.TestCase):
             calls.append(kwargs.copy())
             return real_popen(*args, **kwargs)
 
-        with mock.patch.object(subprocess, "Popen", side_effect=recording_popen):
+        with mock.patch.dict(os.environ, {"PATH": "", "CODEARBITER_GIT_EXECUTABLE": "",
+                                          "ARTIFACT_SECRET_FIXTURE": "must-not-cross"}), \
+                mock.patch.object(subprocess, "Popen", side_effect=recording_popen):
             self.client.call("capabilities")
         self.assertEqual(calls[-1].get("env"), {})
 

@@ -162,6 +162,34 @@ def expected_binary(installation: Path, expected_sha256: str) -> Path:
     return binary
 
 
+def native_environment_allowed(environment: object) -> bool:
+    """The engine receives no ambient state beyond an exact host Git identity."""
+    if environment == {}:
+        return True
+    if not isinstance(environment, dict) or set(environment) != {"CODEARBITER_GIT_EXECUTABLE"}:
+        return False
+    raw = environment["CODEARBITER_GIT_EXECUTABLE"]
+    if not isinstance(raw, str) or not Path(raw).is_absolute():
+        return False
+    try:
+        selected = Path(raw).resolve(strict=True)
+        if str(selected) != raw or not selected.is_file() or not os.access(selected, os.X_OK):
+            return False
+        configured = os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+        if configured:
+            return Path(configured).is_absolute() and Path(configured).resolve(strict=True) == selected
+        name = "git.exe" if os.name == "nt" else "git"
+        for directory in os.environ.get("PATH", "").split(os.pathsep):
+            if not directory or not Path(directory).is_absolute():
+                continue
+            candidate = Path(directory) / name
+            if candidate.is_file() and candidate.resolve(strict=True) == selected:
+                return True
+    except (OSError, RuntimeError):
+        return False
+    return False
+
+
 def enforce_runtime_event(
     event: str,
     details: tuple,
@@ -190,8 +218,8 @@ def enforce_runtime_event(
         binary_prefix = subprocess.list2cmdline([str(binary)])
         python_prefix = subprocess.list2cmdline([str(python)])
         if argv == binary_prefix or argv.startswith(binary_prefix + " "):
-            if environment != {}:
-                raise RuntimeError("native binary launch escaped its pinned empty environment")
+            if not native_environment_allowed(environment):
+                raise RuntimeError("native binary launch escaped its bounded host Git environment")
             return
         if permit_verifier_children and (
             argv == python_prefix or argv.startswith(python_prefix + " ")
@@ -209,10 +237,10 @@ def enforce_runtime_event(
     launched = Path(executable).resolve(strict=True)
     arguments = [str(value) for value in argv]
     if launched == binary:
-        if not arguments or Path(arguments[0]).resolve(strict=True) != binary or environment != {}:
-            raise RuntimeError("native binary launch escaped its pinned empty environment")
+        if not arguments or Path(arguments[0]).resolve(strict=True) != binary or not native_environment_allowed(environment):
+            raise RuntimeError("native binary launch escaped its bounded host Git environment")
         return
-    if platform.system() == "Darwin" and environment == {}:
+    if platform.system() == "Darwin" and native_environment_allowed(environment):
         requested = Path(executable).absolute()
         info = requested.lstat()
         temp_root = Path(tempfile.gettempdir()).resolve(strict=True)

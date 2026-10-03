@@ -6,6 +6,15 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.14.10] - 2026-10-03
+
+### Fixed
+
+- Native completion reviews receive the exact selected verification receipt,
+  mapped worktrees and immutable supporting evidence. Task and scope acceptance
+  reject missing, stale or mismatched completion bindings. Genuine native V1
+  reviewer capture and existing pre-verification review ordering are preserved.
+
 ## [0.14.9] - 2026-10-03
 
 ### Fixed

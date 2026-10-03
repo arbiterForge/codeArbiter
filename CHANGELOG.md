@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.23.3] - 2026-10-03
+
+### Fixed
+
+- Completion reviews explicitly bind the selected verification run, its linked
+  worktrees and immutable supporting evidence. The native engine checks that
+  binding through task and scope acceptance, and the reviewer must assess
+  performed work rather than only the plan. Existing pre-verification review
+  ordering remains supported.
+
 ## [2.23.2] - 2026-10-03
 
 ### Fixed

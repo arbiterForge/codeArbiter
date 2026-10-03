@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.11] - 2026-10-03
+
+### Changed
+
+- Synchronize the shared kernel's explicit completion-review evidence contract.
+  This does not enable the unsupported Pi native review-authority path.
+
 ## [0.15.10] - 2026-10-03
 
 ### Changed

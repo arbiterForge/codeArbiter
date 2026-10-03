@@ -75,6 +75,9 @@ func RequestSchema(op string) (object, error) {
 		add("activity", enum("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization"), true)
 		add("record_id", idType(), true)
 		add("prompt_sha256", digestType(), false)
+		add("completion_selection", closed(object{"verification_receipts": object{"type": "array", "items": text(), "minItems": int64(1), "maxItems": int64(128)}, "supporting_files": object{"type": "array", "items": text(), "maxItems": int64(16)}}, "verification_receipts", "supporting_files"), false)
+		add("completion_context_ref", text(), false)
+		add("completion_context_sha256", digestType(), false)
 	case "migration-preview", "migration-apply":
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")
@@ -179,6 +182,7 @@ func RequestSchema(op string) (object, error) {
 		add("task", idType(), true)
 		add("verification_receipt", text(), true)
 		add("review_receipt", text(), true)
+		add("completion_sha256", digestType(), false)
 	case "task-block":
 		cas()
 		add("task", idType(), true)
@@ -197,6 +201,7 @@ func RequestSchema(op string) (object, error) {
 		cas()
 		add("scope", idType(), true)
 		add("receipt", text(), true)
+		add("completion_sha256", digestType(), false)
 	case "prerequisite":
 		cas()
 		add("prerequisite", idType(), true)

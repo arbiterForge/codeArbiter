@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Bounded stdlib bridge to an installation-pinned ca-artifact executable.
 
-No imports perform I/O. No PATH search, environment-selected executable, schema
-parser duplication, command execution from a document, or new host registration.
+No imports perform I/O. No native-binary PATH search, environment-selected
+engine, schema parser duplication, document command execution, or host registration.
 The caller supplies a trusted installation directory, never a repository setting.
 """
 from __future__ import annotations
@@ -742,9 +742,43 @@ def _preflight_current_acceptance(
     }
 
 
+def _native_child_environment(argv: list[str]) -> dict[str, str]:
+    """Transport one host Git identity for fixed native workspace probes only.
+
+    CODEARBITER_GIT_EXECUTABLE is the shared _gitexec host override. Resolve the
+    ordinary host PATH in this bridge, excluding CWD/relative entries and the
+    governed checkout; the native engine never receives PATH or ambient state.
+    Cold ordinary operations remain usable when no safe Git is available.
+    """
+    try:
+        root = Path(argv[argv.index("--root") + 1]).resolve(strict=True)
+        boundaries = [root, *(parent for parent in root.parents if (parent / ".git").exists())]
+    except (ValueError, IndexError, OSError):
+        return {}
+    configured = os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+    if configured:
+        candidates = [Path(configured)]
+    else:
+        name = "git.exe" if os.name == "nt" else "git"
+        candidates = [Path(directory) / name for directory in os.environ.get("PATH", "").split(os.pathsep)
+                      if directory and Path(directory).is_absolute()]
+    for candidate in candidates:
+        try:
+            if not candidate.is_absolute() or any(candidate.is_relative_to(boundary) for boundary in boundaries):
+                continue
+            resolved = candidate.resolve(strict=True)
+            if (any(resolved.is_relative_to(boundary) for boundary in boundaries)
+                    or not stat.S_ISREG(resolved.stat().st_mode) or not os.access(resolved, os.X_OK)):
+                continue
+        except (OSError, RuntimeError):
+            continue
+        return {"CODEARBITER_GIT_EXECUTABLE": str(resolved)}
+    return {}
+
+
 def _bounded_child(argv: list[str], request: bytes, fd: int, timeout: float) -> tuple[int, bytes, bytes]:
     options = dict(stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                   close_fds=True, start_new_session=True, env={})
+                   close_fds=True, start_new_session=True, env=_native_child_environment(argv))
     if os.name != "nt":
         options["pass_fds"] = (fd,)
     process = subprocess.Popen(argv, **options)

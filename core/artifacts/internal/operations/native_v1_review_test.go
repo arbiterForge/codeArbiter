@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 )
 
 // Native-v1 fixtures prove engine admission/publication only. They never claim
@@ -12,6 +13,11 @@ import (
 func nativeV1ReviewSource(t *testing.T, h *farmHarness, record, kind string) (object, object) {
 	t.Helper()
 	contextResult := h.run("evidence-context", object{"artifact_id": "PLAN-EXAMPLE", "activity": kind, "record_id": record})
+	return nativeV1ReviewSourceForContext(t, h, record, kind, contextResult)
+}
+
+func nativeV1ReviewSourceForContext(t *testing.T, h *farmHarness, record, kind string, contextResult object) (object, object) {
+	t.Helper()
 	context := h.derived(model.S(contextResult["context_ref"]))
 	payload := object{"input_sha256": context["input_sha256"], "spec_sha256": context["spec_sha256"], "assessment": "Synthetic native-v1 engine fixture; not live review authority."}
 	records := model.A(context["tasks"])
@@ -40,6 +46,35 @@ func nativeV1ReviewSource(t *testing.T, h *farmHarness, record, kind string) (ob
 	}
 	contract := object{"format": "codearbiter.review-decision/0.1.0", "decision": model.List("pass", "changes_requested"), "finding_severity": model.List("BLOCK", "WARN", "INFO"), "required_fields": model.List("format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")}
 	decision := object{"format": "codearbiter.review-decision/0.1.0", "request_id": mustHashFixture(t, "synthetic native-v1 request"), "target_sha256": context["input_sha256"], "contract_sha256": mustHashFixture(t, contract), "decision": "pass", "coverage": model.List(coverage...), "findings": []any{}, "assessment": payload["assessment"]}
+	if context["completion"] != nil {
+		packet := model.M(context["completion"])
+		refs := map[string]string{}
+		for _, value := range model.A(packet["verifications"]) {
+			row := model.M(value)
+			refs[model.S(row["task_id"])] = model.S(row["receipt_ref"])
+		}
+		rows := []any{}
+		obligations := observation.CompletionObligations(context)
+		ids := []string{}
+		for id := range obligations {
+			ids = append(ids, id)
+		}
+		sort.Strings(ids)
+		for _, id := range ids {
+			names := []string{}
+			for name := range obligations[id] {
+				names = append(names, name)
+			}
+			sort.Strings(names)
+			for _, name := range names {
+				rows = append(rows, object{"task_id": id, "obligation": name, "status": "substantiated", "assessment": "Synthetic completion obligation; fixture source location src/stage1.go:1.", "evidence_refs": model.List(refs[id])})
+			}
+		}
+		contract["required_fields"] = append(model.A(contract["required_fields"]), "completion_sha256", "completion_assessment")
+		decision["contract_sha256"] = mustHashFixture(t, contract)
+		decision["completion_sha256"], payload["completion_sha256"] = context["completion_sha256"], context["completion_sha256"]
+		decision["completion_assessment"], payload["completion_assessment"] = rows, rows
+	}
 	producer := object{"launch": launch, "decision": decision}
 	observed := object{
 		"format": "codearbiter.observation/0.2.0", "kind": kind, "subject": context["subject"],
