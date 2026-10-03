@@ -134,12 +134,14 @@ func LatestTaskCompletion(f *store.FS, plan *model.Document, id string) (*author
 		return r, nil
 	}
 	for i := len(refs) - 1; i >= 0; i-- {
-		r, err := authority.Load(f, refs[i])
+		// Historical evidence is inventory here, not authority. A pre-upgrade
+		// ordinary receipt must not prevent recording its fresh replacement.
+		r, err := authority.Inspect(f, refs[i])
 		if err != nil {
 			return nil, err
 		}
 		if model.S(r.Data["kind"]) == "spec_review" && r.Payload()["completion_sha256"] != nil {
-			return r, nil
+			return authority.Load(f, refs[i])
 		}
 	}
 	return nil, nil

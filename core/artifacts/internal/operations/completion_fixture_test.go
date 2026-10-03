@@ -18,7 +18,6 @@ import (
 func completionGit(t *testing.T, root string, args ...string) string {
 	t.Helper()
 	command := exec.Command("git", append([]string{"-C", root}, args...)...)
-	command.Env = append(os.Environ(), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL="+os.DevNull)
 	b, err := command.CombinedOutput()
 	if err != nil {
 		t.Fatalf("git %v: %v %s", args, err, b)
@@ -28,6 +27,12 @@ func completionGit(t *testing.T, root string, args ...string) string {
 
 func completionHarness(t *testing.T) (*farmHarness, string) {
 	t.Helper()
+	config := filepath.Join(testutil.Root(t), "gitconfig")
+	if err := os.WriteFile(config, nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
+	t.Setenv("GIT_CONFIG_GLOBAL", config)
 	git, gitErr := exec.LookPath("git")
 	if gitErr != nil {
 		t.Fatal(gitErr)
@@ -61,17 +66,17 @@ func completionVerification(t *testing.T, h *farmHarness, id, workspace string) 
 		}
 		return v
 	}
-	executable, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
-	executableBytes, err := os.ReadFile(executable)
-	if err != nil {
+	// These producers are synthetic and execute no command. Bind an isolated
+	// regular file rather than the running test binary, whose temporary path
+	// or read-sharing behavior depends on the hosted platform.
+	executable := filepath.Join(testutil.Root(t), "synthetic-verifier")
+	executableBytes := []byte("Synthetic verifier fixture; never executed.\n")
+	if err := os.WriteFile(executable, executableBytes, 0700); err != nil {
 		t.Fatal(err)
 	}
 	executableHash := canonical.BytesHash(executableBytes)
 	common := completionGit(t, workspace, "rev-parse", "--path-format=absolute", "--git-common-dir")
-	common, err = filepath.EvalSymlinks(common)
+	common, err := filepath.EvalSymlinks(common)
 	if err != nil {
 		t.Fatal(err)
 	}

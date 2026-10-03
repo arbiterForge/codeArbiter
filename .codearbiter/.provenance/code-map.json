@@ -137,7 +137,7 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.23.2)",
+          "claim": "Claude Code plugin manifest for ca (v2.23.3)",
           "confidence": "strong",
           "lines": "1-end"
         }
@@ -149,7 +149,7 @@
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.14.9), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.14.10), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
