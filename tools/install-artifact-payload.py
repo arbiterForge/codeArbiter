@@ -22,6 +22,11 @@ NATIVE_TESTS = [
     'artifact-bridge', 'artifact-conformance', 'artifact-native', 'artifact-package',
     'go-test', 'go-vet',
 ]
+CONTEXT_NATIVE_CASES = [
+    'TestContextBoundedRender', 'TestContextDocumentContract',
+    'TestContextMarkdownPreservation', 'TestContextMutationAdmission',
+    'TestContextRecoveryAndPaths', 'TestContextRepresentationBoundary',
+]
 
 
 class VerifiedPromotionPayload(NamedTuple):
@@ -69,7 +74,8 @@ def load_payload(source: Path):
     manifest_bytes = read_regular(source/'release.json', 65536)
     manifest = json.loads(manifest_bytes, object_pairs_hook=_pairs)
     if (not isinstance(manifest,dict)
-            or set(manifest) != {'format','version','protocol','schema_version','binaries'}
+            or set(manifest) not in ({'format','version','protocol','schema_version','binaries'},
+                                    {'format','version','protocol','schema_version','binaries','context_qualification'})
             or manifest['format'] != 'codearbiter.artifact-release/0.1.0'
             or manifest['protocol'] != PROTOCOL or manifest['schema_version'] != SCHEMA_VERSION
             or not isinstance(manifest['version'],str)):
@@ -89,6 +95,24 @@ def load_payload(source: Path):
         if not data.startswith(magic) or hashlib.sha256(data).hexdigest()!=entry['sha256']:
             raise ValueError('payload bytes mismatch or unexpected native executable')
         payload[entry['file']]=data
+    context = manifest.get('context_qualification', {})
+    if not isinstance(context, dict) or not set(context).issubset(entries):
+        raise ValueError('context qualification platform set is invalid')
+    for key, record in context.items():
+        if (not isinstance(record, dict) or set(record) != {
+                'source_commit', 'workflow', 'run_id', 'binary_sha256',
+                'observation_sha256', 'module_sha256', 'native_cases'}
+                or not all(isinstance(record[field], str) for field in (
+                    'source_commit', 'workflow', 'run_id', 'binary_sha256',
+                    'observation_sha256', 'module_sha256'))
+                or re.fullmatch(r'[0-9a-f]{40}', record['source_commit']) is None
+                or record['workflow'] != '.github/workflows/ci.yml'
+                or re.fullmatch(r'[1-9][0-9]*', record['run_id']) is None
+                or record['binary_sha256'] != entries[key]['sha256']
+                or any(re.fullmatch(r'[0-9a-f]{64}', record[field]) is None
+                       for field in ('observation_sha256', 'module_sha256'))
+                or record['native_cases'] != CONTEXT_NATIVE_CASES):
+            raise ValueError('context qualification binding is invalid')
     return manifest_bytes,payload
 
 
@@ -162,14 +186,22 @@ def load_promotion_receipt(source: Path, receipt_path: Path, *, host: str,
     for platform_name, entry in manifest['binaries'].items():
         qualification = qualifications[platform_name]
         if (not isinstance(qualification, dict)
-                or set(qualification) != {
-                    'receipt_sha256', 'job', 'binary_sha256', 'native_tests'}
+                or set(qualification) not in ({
+                    'receipt_sha256', 'job', 'binary_sha256', 'native_tests'},
+                    {'receipt_sha256', 'job', 'binary_sha256', 'native_tests',
+                     'context_observation_sha256'})
                 or qualification['job'] != 'artifact-engine'
                 or qualification['binary_sha256'] != entry['sha256']
                 or not isinstance(qualification['receipt_sha256'], str)
                 or re.fullmatch(r'[0-9a-f]{64}', qualification['receipt_sha256']) is None
                 or qualification['native_tests'] != NATIVE_TESTS):
             raise ValueError('promotion receipt qualification binding is invalid')
+        context_record = manifest.get('context_qualification', {}).get(platform_name)
+        if context_record is None:
+            if 'context_observation_sha256' in qualification:
+                raise ValueError('promotion receipt claims missing context qualification')
+        elif qualification.get('context_observation_sha256') != context_record['observation_sha256']:
+            raise ValueError('promotion receipt context observation binding is invalid')
     return VerifiedPromotionPayload(
         receipt_bytes=receipt_bytes,
         manifest_bytes=manifest_bytes,

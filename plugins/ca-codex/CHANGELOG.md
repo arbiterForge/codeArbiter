@@ -6,6 +6,185 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-10-03
+
+### Added
+
+- Add bounded repository-context writing, recovery, selective refresh and task-scoped
+  delivery to feature, fix, test and review actors. Preserve human-owned project records.
+- Require per-platform native receipts and cold installed candidate checks for context
+  writes. Source builds stay disabled; live host contribution readiness is unverified.
+
+### Fixed
+
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
+- Resolve nested source membership through anchored paths and synchronize the
+  packaged adapter version with its release manifests.
+- Preserve explicit gaps and account for retries, changed inputs and actor delivery
+  without inventing current evidence or workflow authority.
+- Validate diagnostic handoffs before repair or task follow-ups, preserving
+  the caller's authority and checking that the evidence is current.
+- Keep diagnostic outcomes, regression reuse and helper invocation consistent
+  across the generated host packages.
+
+## [0.14.10] - 2026-10-03
+
+### Fixed
+
+- Native completion reviews receive the exact selected verification receipt,
+  mapped worktrees and immutable supporting evidence. Task and scope acceptance
+  reject missing, stale or mismatched completion bindings. Genuine native V1
+  reviewer capture and existing pre-verification review ordering are preserved.
+
+## [0.14.9] - 2026-10-03
+
+### Fixed
+
+- Named verification now supports a root npm script delegating once to a uniquely
+  selected workspace runner. The declared root command remains intact, both npm
+  argument boundaries are honored, and every inspected manifest is retained in
+  launch provenance. Unsupported or ambiguous delegation fails before execution.
+
+## [0.14.8] - 2026-09-27
+
+### Fixed
+
+- The statusline's git dirty-state probe no longer takes `.git/index.lock`. It is killed at a
+  100 ms budget, and a plain `git status` killed while rewriting a stale index could leave a
+  stale lock that blocked the next commit (reproduced: 5 of 200 renders at that timing, 0 of 200
+  with the fix).
+
+## [0.14.7] - 2026-09-27
+
+### Changed
+
+- Synchronize the shared hook core with the Claude statusline accounting rewrite (ca 2.23.0).
+  Codex and Pi behavior is unchanged.
+
+## [0.14.6] - 2026-09-27
+
+### Fixed
+
+- Keep reconciliation bookkeeping outside verification inputs so an unchanged
+  workspace can be reconciled without locked-file failures or stale approvals.
+
+## [0.14.5] - 2026-09-26
+
+### Fixed
+
+- Explain input-manifest entry kinds to independent reviewers so normative artifact
+  identities are not compared with raw HTML hashes.
+
+## [0.14.4] - 2026-09-26
+
+### Fixed
+
+- Count measured partial token usage toward proven budget overruns while keeping
+  incomplete totals unknown; retain exact source identities without storing blobs.
+
+- Retain strict HTML intent-response identity checks and per-document source healing.
+- Bound oversized UTF-8 code-map diagnostics without rewriting human content.
+
+### Added
+
+- Internal closed scout-report decoding and test-owned observation accounting;
+  onboarding dispatch and context-writing integration are not enabled by these helpers.
+
+## [0.14.3] - 2026-09-26
+
+### Removed
+
+- Retire the `new-skill` command, `skill-author` workflow and bundled template,
+  including generated host entries. This maintainer-approved compatibility break
+  has no replacement alias; resource edits use the existing change workflows.
+
+### Fixed
+
+- Restore Codex CLI 0.145 review capture through an explicitly qualified native
+  V1 interface, binding the child UUID and first result while rejecting steering,
+  reused evidence and unsupported V2 launches.
+- Recover pristine, never-launched Codex 0.13.11 review requests using their
+  exact historical prompt, preserving all retained evidence and integrity checks.
+- Select the exact Codex marketplace entry during installation checks, rejecting
+  ambiguous, disabled or mismatched entries.
+- Complete context-creation, decomposition and release entry ownership while
+  preserving initialization aliases, operational procedures and dry-run limits.
+- Redact complete multiline secret spans before formatting mutation diagnostics
+  or truncating gate output for worker feedback.
+
+- Consolidate `reconcile` under `decision-variance` with shorter discovery metadata
+  and a private analysis card. Report-only and scoped requests avoid an unnecessary
+  decision interview; prior choices and sprint method authority are retained.
+- Preserve append-only history when reaffirming a stale architectural decision,
+  and require ADR marker cleanup on controlled failure as well as success.
+- Resolve ADR authoring markers through the same host project-root function as
+  the ADR guards, retain that path for cleanup, and distinguish first-record
+  directory creation from unreadable storage.
+
+- Consolidate ADR authoring and read-only status under one concise owner; load
+  authoring and acceptance details only on demand, preserving explicit entries
+  and full-stem identity without creating records during a status request.
+
+- Consolidate tribunal, threat modeling, manual drift, post-merge cleanup and PR
+  entry procedures under concise skill owners. Retain explicit entries and mode
+  authority; select PR watch/cleanup before creation preflight and avoid wrapper
+  reloads or repeated branch-fate questions for an explicit open-PR request.
+
+- Generate debug and refactor entries from their owning skills, retaining all
+  investigation and parity gates while removing duplicate routing policies.
+- Clarify rendered farm context budgets and neutral rejection feedback in the shared
+  private card; no new Codex backend or HTML farm support is introduced.
+- Recover farm merge conflicts against a verified integration commit, retaining
+  prior output and rechecking the current protected-test baseline.
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
+- Document bounded farm transport retries and task-local cooldown handling in
+  the shared private card without enabling a new backend or HTML farm support.
+- Clarify reported-versus-complete farm usage and rejected-response recovery in
+  the shared private card; no Codex farm backend or HTML farm support is added.
+- Keep built-in mutation nonzero exits as unclassified rejection evidence, not
+  measured kills; preserve adverse bounds, diagnostics and autonomous review.
+- Match whole, same-kind farm literals rather than substrings or conventional comments;
+  retain existing rejection thresholds and name the actual small-file risk evidence.
+
+- Document bounded built-in mutation screening and incomplete-evidence handling
+  in the shared private farm procedure, without enabling HTML farm.
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
+- Clarify retained-candidate farm qualification in the shared private procedure;
+  no Codex farm backend is added.
+- Synchronize shared runtime identity with the current candidate cohort and
+  document the isolated farm evaluation contract in the private resource. This
+  does not add a packaged Codex farm backend or enable HTML farm execution.
+
+## [0.14.2] - 2026-09-26
+
+### Fixed
+
+- Native artifact reviews use a bounded prompt pointing to the full frozen
+  evidence context. The adapter checks its canonical bytes and digest before
+  launch and publication, so large source manifests no longer fill the prompt.
+- Never-launched ARMED reviews can be abandoned without producing authority or
+  losing their history, including bounded oversized requests from older adapters.
+- Concurrent authority operations reject stale request writes, so a stale
+  abandonment cannot erase a newer launch or receipt, and a stale launch cannot
+  revive an abandoned request.
+
+## [0.14.1] - 2026-09-26
+
+### Fixed
+
+- Reject unsupported plan verification commands and invalid input snapshots before
+  ordinary or paired approval, with diagnostics for every affected task.
+- Support exact Playwright JSON results and qualified simple npm scripts while
+  rejecting duplicate, skipped, retried and ambiguous named results.
+- Preserve literal Windows npm arguments through a pinned native Node/npm launch;
+  bind collector and launch-file identities into engine-validated evidence.
+- Handle single-quoted verifier paths explicitly and retain actionable input-size
+  and exclusion errors.
+
 ## [0.14.0] - 2026-09-26
 
 ### Added

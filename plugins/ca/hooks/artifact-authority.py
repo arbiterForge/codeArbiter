@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _artifactauthoritylib  # noqa: E402
 import _artifactlib  # noqa: E402
+import _artifactpromptlib  # noqa: E402
 import hostapi  # noqa: E402
 
 
@@ -38,6 +39,10 @@ def main(argv=None) -> int:
         choices=("verification", "spec_review", "quality_review"),
     )
     arm.add_argument("--workspace", action="append", default=[], metavar="LABEL=PATH")
+    arm.add_argument("--completion-receipt", action="append", metavar="RECEIPT_REF",
+                     help="exact published verification receipt selected for completion review; repeat per task")
+    arm.add_argument("--supporting-file", action="append", metavar="ABSOLUTE_PATH",
+                     help="explicit bounded regular file retained as completion review data")
     arm.add_argument(
         "--host", choices=sorted(_artifactauthoritylib.HOSTS), default=None,
         help="observing host; defaults to the host this package was built for",
@@ -46,6 +51,19 @@ def main(argv=None) -> int:
         "--reviewer-model", choices=sorted(_artifactauthoritylib.CLAUDE_REVIEWER_MODELS),
         default="opus", help="Claude reviewer model pinned into the launch envelope",
     )
+    arm.add_argument(
+        "--codex-review-profile", choices=("native-v1",), default=None,
+        help="select only after qualifying the actual registered native V1 UUID interface",
+    )
+    context_arm = sub.add_parser("arm-context")
+    context_arm.add_argument("--root", required=True)
+    context_arm.add_argument("--request-file", required=True)
+    context_cancel = sub.add_parser("cancel-context")
+    context_cancel.add_argument("--root", required=True)
+    context_cancel.add_argument("--document-id", required=True)
+    context_apply = sub.add_parser("apply-context")
+    context_apply.add_argument("--root", required=True)
+    context_apply.add_argument("--receipt", required=True)
     verify = sub.add_parser("verify")
     verify.add_argument("--root", required=True)
     verify.add_argument("--request-id", required=True)
@@ -58,6 +76,9 @@ def main(argv=None) -> int:
     recover.add_argument("--disposition", required=True, choices=("failed", "abandoned"))
     args = parser.parse_args(argv)
     root = Path(args.root).resolve(strict=True)
+    if args.command == "cancel-context":
+        print(json.dumps(_artifactauthoritylib.cancel_context_preview(root, args.document_id), sort_keys=True))
+        return 0
     client = _artifactlib.ArtifactClient(
         root, _artifactlib.helper_installation(__file__)
     )
@@ -68,10 +89,18 @@ def main(argv=None) -> int:
             raise _artifactauthoritylib.AuthorityError(
                 "UNSUPPORTED_HOST_SEAM", f"host {host} has no verification or review authority"
             )
+        if (host == "codex" and args.activity in _artifactauthoritylib.REVIEW_ACTIVITIES
+                and args.codex_review_profile is None):
+            raise _artifactauthoritylib.AuthorityError(
+                "UNSUPPORTED_HOST_SEAM",
+                "Codex review requires explicit --codex-review-profile native-v1 after live interface qualification",
+            )
         result = _artifactauthoritylib.arm_request(
             root, client, args.artifact_id, args.record_id, args.activity,
             workspace_roots=workspaces or None, host=host,
             reviewer_model=args.reviewer_model,
+            codex_review_profile=args.codex_review_profile,
+            completion_receipts=args.completion_receipt, supporting_files=args.supporting_file,
         )
         if host == "claude" and args.activity == "verification":
             # The Claude verifier hook pins this exact shipped script and
@@ -80,6 +109,11 @@ def main(argv=None) -> int:
             result["verify_command"] = (
                 f'python "{script}" verify --root "{root}" --request-id {result["request_id"]}'
             )
+    elif args.command == "arm-context":
+        preview = _artifactlib.read_context_preview_request(root, args.request_file)
+        result = _artifactauthoritylib.arm_context_preview(root, client, preview)
+    elif args.command == "apply-context":
+        result = client.call("context-apply", {"receipt": args.receipt})
     elif args.command == "verify":
         result = _artifactauthoritylib.run_verification(
             root, client, args.request_id,
@@ -97,6 +131,7 @@ def main(argv=None) -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (_artifactauthoritylib.AuthorityError, _artifactlib.ArtifactError) as exc:
+    except (_artifactauthoritylib.AuthorityError, _artifactlib.ArtifactError,
+            _artifactpromptlib.PromptRouteError) as exc:
         sys.stderr.write(str(exc) + "\n")
         raise SystemExit(1)

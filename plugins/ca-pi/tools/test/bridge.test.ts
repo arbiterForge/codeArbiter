@@ -1,9 +1,9 @@
 import { access, chmod, copyFile, mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
-import { mkdtempSync, realpathSync } from "node:fs";
+import { mkdtempSync, realpathSync, writeFileSync } from "node:fs";
 import { EventEmitter } from "node:events";
 import { tmpdir } from "node:os";
 import { delimiter, isAbsolute, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync, type SpawnOptions } from "node:child_process";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
@@ -267,6 +267,77 @@ async function assertNoLeakedMutation(sentinel: string, windowMs: number, pollMs
     if (remaining <= 0) return;
     await new Promise<void>((resolveWait) => setTimeout(resolveWait, Math.min(pollMs, remaining)));
   }
+}
+
+// Observe post-cancellation liveness, not a race between two unrelated clocks.
+// The real grandchild reports readiness before BridgeClient arms its deadline;
+// only after the call settles does the test permit its one-way marker write.
+async function cancellationFixture(timeoutMs: number, options: {
+  cancel?: AbortController;
+  weakenedCleanup?: "none" | "root-only";
+} = {}) {
+  const root = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-cancellation-")));
+  roots.push(root);
+  const ready = resolve(root, "ready");
+  const release = resolve(root, "release");
+  const sentinel = resolve(root, "leak");
+  const writer = [
+    "import os,pathlib,sys,time",
+    "ready,release,sentinel = map(pathlib.Path, sys.argv[1:])",
+    "ready.write_text(str(os.getpid()))",
+    "deadline = time.monotonic() + 30",
+    "while not release.exists() and time.monotonic() < deadline: time.sleep(0.01)",
+    "if release.exists(): sentinel.write_text('leak')",
+  ].join("\n");
+  const source = [
+    "import subprocess,sys",
+    `child = subprocess.Popen([sys.executable, '-c', ${JSON.stringify(writer)}, ${JSON.stringify(ready)}, ${JSON.stringify(release)}, ${JSON.stringify(sentinel)}])`,
+    "child.wait()",
+  ].join("\n");
+  const bridge = await clientFor(source, { timeoutMs });
+  let childClosed: Promise<void> = Promise.resolve();
+  let primed = false;
+  __setBridgeSpawnForTests(((command: string, args: readonly string[] = [], spawnOptions: SpawnOptions = {}) => {
+    const child = spawn(command, args, spawnOptions);
+    childClosed = new Promise<void>((done) => child.once("close", () => done()));
+    // Test-only priming occurs before spawn returns, therefore before the
+    // unchanged 100ms deadline. No extra runtime hook or timeout is needed.
+    const probe = spawnSync(command, ["-c", [
+      "import pathlib,sys,time",
+      "ready = pathlib.Path(sys.argv[1]); deadline = time.monotonic() + 3",
+      "while not ready.exists() and time.monotonic() < deadline: time.sleep(0.01)",
+      "sys.exit(0 if ready.exists() else 1)",
+    ].join("\n"), ready], {
+      env: spawnOptions.env, encoding: "utf8", shell: false,
+      windowsHide: true, timeout: 4_000,
+    });
+    primed = probe.status === 0;
+    if (!primed) {
+      writeFileSync(release, "release", "utf8");
+      throw new Error("real cancellation fixture did not report readiness");
+    }
+    if (options.weakenedCleanup === "root-only") child.kill("SIGKILL");
+    if (options.weakenedCleanup !== undefined) Object.defineProperty(child, "pid", { value: undefined });
+    if (options.cancel !== undefined) setTimeout(() => options.cancel!.abort(), 100);
+    return child;
+  }) as unknown as BridgeSpawnImpl);
+  return {
+    bridge, sentinel,
+    async releaseWriter() {
+      expect(primed, "the real grandchild must exist before cancellation").toBe(true);
+      await writeFile(release, "release", "utf8");
+    },
+    async cleanup() {
+      __setBridgeSpawnForTests(undefined);
+      await writeFile(release, "release", "utf8");
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        await Promise.race([childClosed, new Promise<never>((_done, reject) => {
+          timer = setTimeout(() => reject(new Error("cancellation fixture child did not close")), 4_000);
+        })]);
+      } finally { if (timer !== undefined) clearTimeout(timer); }
+    },
+  };
 }
 
 async function executeWrappedRead(bridge: BridgePort, cwd: string): Promise<Record<string, unknown>> {
@@ -603,32 +674,14 @@ describe("BridgeClient", () => {
   });
 
   test("cancels a hung bridge tree and fails mutation closed", async () => {
-    const sentinel = resolve(tmpdir(), `ca-pi-bridge-leak-${process.pid}-${Date.now()}`);
-    // Issue #580: this used to be time.sleep(0.8) with a fixed 1,200ms wait
-    // afterward. The hostile grandchild's own launch overhead (two nested
-    // Python interpreter starts) competes with the same process-creation
-    // machinery the bridge's teardown depends on, so on a loaded box that
-    // 0.8s/1.2s pairing left near-zero margin - a leak was observed 8/8 times
-    // in a controlled trial that delayed the kill trigger past ~900ms, while
-    // the kill mechanism itself (once triggered) reliably completed inside
-    // 100-300ms. Widening the hostile delay and polling for an early failure
-    // (rather than trusting a fixed wait to have covered the real deadline)
-    // removes that false-flake margin without weakening what is asserted.
-    const hostileDelayMs = 4_000;
-    const source = [
-      "import subprocess, sys, time",
-      `subprocess.Popen([sys.executable, '-c', \"import pathlib,sys,time; time.sleep(${hostileDelayMs / 1000}); pathlib.Path(sys.argv[1]).write_text('leak')\", ${JSON.stringify(sentinel)}])`,
-      "time.sleep(30)",
-    ].join("\n");
+    const fixture = await cancellationFixture(100);
     try {
-      const bridge = await clientFor(source, { timeoutMs: 100 });
-      const response = await bridge.call(request("edit", { path: "x", edits: [] }), new AbortController().signal);
+      const response = await fixture.bridge.call(request("edit", { path: "x", edits: [] }), new AbortController().signal);
       expect(response).toMatchObject({ outcome: "block", ruleId: "PI-BRIDGE" });
       expect(response.message).toContain("timed out");
-      await assertNoLeakedMutation(sentinel, hostileDelayMs + 2_000);
-    } finally {
-      await rm(sentinel, { force: true });
-    }
+      await fixture.releaseWriter();
+      await assertNoLeakedMutation(fixture.sentinel, 6_000);
+    } finally { await fixture.cleanup(); }
   }, 15_000);
 
   test("rejects a bridge script outside the installed package", async () => {
@@ -708,27 +761,25 @@ describe("BridgeClient", () => {
   });
 
   test("cancellation terminates the bridge tree and blocks mutation", async () => {
-    const sentinel = resolve(tmpdir(), `ca-pi-bridge-cancel-leak-${process.pid}-${Date.now()}`);
-    // Issue #580: see the sibling "cancels a hung bridge tree" test for why
-    // the hostile delay was widened from 0.8s and the fixed post-wait
-    // replaced with assertNoLeakedMutation's fail-fast poll.
-    const hostileDelayMs = 4_000;
-    const source = [
-      "import subprocess, sys, time",
-      `subprocess.Popen([sys.executable, '-c', \"import pathlib,sys,time; time.sleep(${hostileDelayMs / 1000}); pathlib.Path(sys.argv[1]).write_text('leak')\", ${JSON.stringify(sentinel)}])`,
-      "time.sleep(30)",
-    ].join("\n");
+    const controller = new AbortController();
+    const fixture = await cancellationFixture(10_000, { cancel: controller });
     try {
-      const bridge = await clientFor(source, { timeoutMs: 10_000 });
-      const controller = new AbortController();
-      setTimeout(() => controller.abort(), 100);
-      const response = await bridge.call(request("bash", { command: "true" }), controller.signal);
+      const response = await fixture.bridge.call(request("bash", { command: "true" }), controller.signal);
       expect(response).toMatchObject({ outcome: "block", ruleId: "PI-BRIDGE" });
       expect(response.message).toContain("cancelled");
-      await assertNoLeakedMutation(sentinel, hostileDelayMs + 2_000);
-    } finally {
-      await rm(sentinel, { force: true });
-    }
+      await fixture.releaseWriter();
+      await assertNoLeakedMutation(fixture.sentinel, 6_000);
+    } finally { await fixture.cleanup(); }
+  }, 15_000);
+
+  test.each(["none", "root-only"] as const)("cancellation probe detects a surviving writer after %s cleanup", async (weakenedCleanup) => {
+    const fixture = await cancellationFixture(100, { weakenedCleanup });
+    try {
+      const response = await fixture.bridge.call(request("edit", { path: "x", edits: [] }), new AbortController().signal);
+      expect(response).toMatchObject({ outcome: "block", ruleId: "PI-BRIDGE" });
+      await fixture.releaseWriter();
+      await expect(assertNoLeakedMutation(fixture.sentinel, 6_000)).rejects.toThrow("cancellation did not prevent the mutation");
+    } finally { await fixture.cleanup(); }
   }, 15_000);
 
   test("force-settles a call whose child never emits close after a failed kill", async () => {

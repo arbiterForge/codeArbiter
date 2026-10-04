@@ -12,19 +12,25 @@ describe('investigation and repair guidance', () => {
     expect(read('src/content/docs/guides/troubleshooting.md')).toContain('For a defect in **your application**');
     expect(read('src/content/docs/guides/return-to-a-project.md')).toContain('/guides/investigate-and-fix/');
   });
-  it('preserves the owning debug skill evidence floor and board-write exception', () => {
+  it('preserves the owning debug skill evidence floor and no-default-board-write rule', () => {
     const skill = read('../core/surface/skills/debug/SKILL.md');
-    expect(skill).toContain('at least three distinct candidate causes');
+    expect(skill).toContain('A cited failure with an unknown trigger can enter scoped investigation');
+    expect(skill).toContain('There is no fixed minimum or maximum count of hypotheses');
     expect(skill).toContain('CONFIRMED, REFUTED, or INCONCLUSIVE');
-    expect(skill).toContain('queued entry **through the board helper');
-    expect(guide).toContain('at least three distinct mechanisms');
+    for (const result of ['confirmed_code_defect', 'confirmed_noncode_cause', 'design_question', 'no_action', 'unresolved']) {
+      expect(skill).toContain(result);
+      expect(guide).toContain(result);
+    }
+    expect(skill).toContain('Make no default board write');
+    expect(skill).toContain('If a separately authorized concrete follow-up is needed');
+    expect(guide).toContain('There is no fixed hypothesis count');
     expect(guide).toContain('INCONCLUSIVE remains INCONCLUSIVE');
-    expect(guide).toContain('queued board note through the task');
-    expect(guide).toContain('not a\nzero-write operation');
+    expect(guide).toContain('Close without a default board write');
+    expect(guide).toContain('A separately authorized concrete task follow-up');
     expect(guide).toContain('contract does not promise a new, fixed-path');
     const curated = read('src/curated/commands/debug.md');
     expect(curated).not.toContain('every phase is read-only');
-    expect(curated).toContain('not universally zero-write');
+    expect(curated).toMatch(/makes no default board\s+write/);
   });
   it('teaches unchanged behavioral assertions and does not invent a fixed repro from an import error', () => {
     expect(read('../core/surface/skills/tdd/SKILL.md')).toContain("assertions MUST be unchanged between red and green");
@@ -44,7 +50,8 @@ describe('investigation and repair guidance', () => {
   it('does not create a public command, permission bypass or destructive cleanup instruction', () => {
     for (const shortcut of ['/ca:investigate', 'git reset --hard', 'git clean -fd', '--no-verify']) expect(guide).not.toContain(shortcut);
     expect(guide).toContain('Do not dump all environment variables');
-    expect(guide).toContain('Authorship requires your attribution');
+    expect(guide).toContain('An ADR is optional and needs its own attributed owner');
+    expect(guide).toContain('cannot convert a diagnosis-only request into repair authority');
     expect(guide).toContain('/guides/review-and-ship/');
   });
 });

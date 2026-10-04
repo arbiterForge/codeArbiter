@@ -2,7 +2,7 @@
 
 This runbook covers the `ca-pi` distribution — the pinned Git tag plus the
 CI-published npm package (ADR-0029) — and the evidence needed
-to promote a commit. Exact Pi 0.84.1 is the sole supported and latest verified
+to promote a commit. Exact Pi 1.0.0 is the sole supported and latest verified
 host in this release line. Node 22.19 or newer and Python 3
 on `PATH` are required.
 
@@ -39,9 +39,9 @@ verifies against.
 
 The generated public catalog counts are:
 
-- `ca: 38` Claude Code commands
-- `ca-codex: 36` Codex CLI entry skills
-- `ca-pi: 37` Pi entry skills
+- `ca: 37` Claude Code commands
+- `ca-codex: 35` Codex CLI entry skills
+- `ca-pi: 36` Pi entry skills
 
 The source catalogs are [Claude](../plugins/ca/COMMANDS.md),
 [Codex](../plugins/ca-codex/COMMANDS.md), and
@@ -80,7 +80,7 @@ For a supported-version run, install the exact external Pi version with install
 scripts disabled in the isolated environment, then run one of:
 
 ```sh
-python .github/scripts/test_pi_platform_contract.py --pi-version 0.84.1
+python .github/scripts/test_pi_platform_contract.py --pi-version 1.0.0
 ```
 
 A supported-version run additionally executes the real-host final-argument

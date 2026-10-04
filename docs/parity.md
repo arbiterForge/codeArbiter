@@ -23,7 +23,7 @@ Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the
 H-03 structured block. A fresh Codex CLI 0.145.0 process later selected `ca-codex` 0.9.4,
 completed `ca-doctor` with 10 OK, 2 WARN, and 0 FAIL, and received the expected H-03 denial on
 its single staging probe. Pi's implementation and local supported-version
-contracts target exact Pi 0.84.1. The completed hosted
+contracts target exact Pi 1.0.0. The completed hosted
 Windows/macOS/Linux promotion report records x64 Windows/Linux and arm64 macOS evidence without
 presenting the deliberately nonblocking unsupported-latest canary as supported.
 
@@ -31,18 +31,40 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 
 | Surface | Claude Code (`ca`) | Codex CLI (`ca-codex`) | Pi (`ca-pi`) | Evidence |
 |---|---|---|---|---|
-| Public entries | 38 `/ca:*` commands | 36 `$ca-*` entry skills | 37 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
-| Orchestrator routines | 23 generated skills | 23 generated routines | 23 generated routines | `python tools/build-surface.py --check` |
+| Public entries | 37 `/ca:*` commands | 35 `$ca-*` entry skills | 36 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
+| Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
 | Role charters | 19 current plugin agents | published releases from 0.7.5 contain the complete packaged resource charter set for their release; current source and 0.9.4 contain 19 | 19 current generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
-Catalog counts are derived from generated outputs: `ca: 38`, `ca-codex: 36`,
-and `ca-pi: 37`. They differ from the 38-entry shared source catalog under
+Catalog counts are derived from generated outputs: `ca: 37`, `ca-codex: 35`,
+and `ca-pi: 36`. They differ from the 37-entry shared source catalog under
 `core/surface/commands/` because each host excludes entries it cannot serve
 (`core/hosts.json`), so a source count is never a host count. Pinned by
 `.github/scripts/test_pi_parity.py` — nothing else compares this table to the
 surface it describes, and an uncompared count drifts silently.
+
+## Debug and fix source contract
+
+The shared [debug skill](../core/surface/skills/debug/SKILL.md) accepts a cited failure with an
+unknown trigger, checks as many distinct hypotheses as the evidence warrants, and returns one
+of five dispositions: `confirmed_code_defect`, `confirmed_noncode_cause`, `design_question`,
+`no_action`, or `unresolved`. A code-defect finding carries a concrete regression obligation;
+the [fix entry](../core/surface/commands/fix.md) still requires the original caller's repair
+authority and an observed target-red regression before code changes. An active authorized fix
+may use one bounded internal diagnostic return. No public recursive route or new entry is
+needed. A no-action result requires positive closure evidence and makes no default board write.
+A separately authorized follow-up remains with the existing task owner and installed writer.
+
+The private debug handoff validator is resolved from the loaded installed package. It receives
+one packet of at most 65,536 UTF-8 bytes on stdin, followed by EOF, and validates structure.
+It does not prove evidence truth, freshness, or authority. A missing or rejecting helper blocks
+validated transfer. Source and generated-surface checks can establish route and resource closure,
+while actual host
+execution and model behavior need their own observations. A successful site generation or
+build is not a live-host qualification. The historical Pi promotion evidence above remains
+pinned to its recorded candidate; this source description does not update that receipt or
+claim a new cross-host qualification.
 
 ## Enforcement and lifecycle
 
@@ -110,8 +132,8 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex packaged agents | SUPPORTED | Published releases from 0.7.5 contain the complete generated charter set for their release; current source and 0.9.4 contain 19. Hosted static-package, resource-closure, and route-closure evidence is paired with one bounded exact-0.9.4 host-thread dispatch receipt. That sample does not claim enforced read-only isolation, every route, or process cleanup. | `plugins/ca-codex/agents/`, `.codearbiter/decisions/0032-hosted-static-codex-release-evidence.md`, `docs/reports/evidence/codex-agent-dispatch/ca-codex-0.9.4-architecture-drift-reviewer.json` |
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
-| Pi active-dispatch doctor self-test | DEGRADED | Public 0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
-| Pi interactive artifact approval | HOST-IMPOSSIBLE | Pi 0.84.1 exposes no pre-model event carrying the user's exact prompt, so approval remains blocked rather than accepting synthetic host authority. | `core/surface/includes/artifacts.md`, `plugins/ca-pi/tools/src/extension.ts` |
+| Pi active-dispatch doctor self-test | DEGRADED | Public 1.0.0 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
+| Pi interactive artifact approval | DEGRADED | No Pi-native approval adapter is implemented yet, so approval remains blocked rather than accepting synthetic host authority. Pi 1.0.0's `input` event carries the user's exact prompt before the model and is the seam that adapter will use. | `core/surface/includes/artifacts.md`, `plugins/ca-pi/tools/src/extension.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits the fresh multi-repository, cross-host promotion evidence defined in `includes/farm.md`; historical runs receive no qualification credit. | `plugins/ca-pi/tools/src/farm.ts` |
 | Pi npm package | SUPPORTED | Every `ca-pi-v*` tag publishes `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible install. | `.github/workflows/release.yml` |
 <!-- PI-EXCEPTIONS:END -->
@@ -120,5 +142,5 @@ Every exception has a status and a source-visible evidence pointer.
 
 The deterministic and trusted-live procedure is
 [`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion row is
-added only after the committed Windows/macOS/Linux by Pi 0.84.1 matrix
+added only after the committed Windows/macOS/Linux by Pi 1.0.0 matrix
 and the separately reported nonblocking latest canary complete.

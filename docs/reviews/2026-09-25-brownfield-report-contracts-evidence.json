@@ -1,0 +1,560 @@
+{
+  "format": "brownfield-report-contracts-evidence/0.1.0",
+  "recorded_at": "2026-09-26T00:22:11.697580+00:00",
+  "repository": "arbiterForge/codeArbiter",
+  "parent_commit": "9e213b8feb3b3f28fe5d96182eef872dc83b6c41",
+  "incorporated_main": "3bc62943be35b1593017016c3ecb4bbb2bc2fb88",
+  "expected_commit_parents": [
+    "9e213b8feb3b3f28fe5d96182eef872dc83b6c41",
+    "3bc62943be35b1593017016c3ecb4bbb2bc2fb88"
+  ],
+  "campaign_commit": "4decde20df14cf4dfcd1e2762723772d1d5c8b53",
+  "scope": "T-003 test-owned observation/accounting and T-005 closed report-decoder source units; no live dispatcher/writer or native task acceptance",
+  "prior_head_checks": {
+    "success": 78,
+    "skipped": 1,
+    "failure": 0,
+    "pending": 0
+  },
+  "current_source_versions": {
+    "plugins/ca/.claude-plugin/plugin.json": {
+      "base": "2.21.17",
+      "candidate": "2.21.18"
+    },
+    "plugins/ca-codex/.codex-plugin/plugin.json": {
+      "base": "0.13.18",
+      "candidate": "0.13.19"
+    },
+    "plugins/ca-pi/package.json": {
+      "base": "0.14.17",
+      "candidate": "0.14.18"
+    }
+  },
+  "authoring_package": {
+    "tag": "v2.21.16",
+    "sha256": "32588a10eb5070b408443e5a0ef23453128725d33574c49a93f5edf5edf22fb8",
+    "resources_available": true,
+    "live_host_verified": false,
+    "purpose": "Exact native campaign reads and disposable native integration fixtures, not authority fabrication or a cold marketplace installation"
+  },
+  "environment": {
+    "platform": "Windows/AMD64",
+    "python": "3.14.6"
+  },
+  "linux_same_bytes": {
+    "platform": "Linux/x86_64",
+    "python": "3.13.5",
+    "report_methods": 32,
+    "observation_methods": 19,
+    "report_exit": 0,
+    "observation_exit": 0,
+    "files": [
+      {
+        "path": "core/pysrc/_contextreportlib.py",
+        "sha256": "e4ef83648e913426bb9c8f3e1bf68e230a9118d76766c43d1441978972473740"
+      },
+      {
+        "path": ".github/scripts/test_context_contracts.py",
+        "sha256": "a356b53bd1dc84509a448755208acc994ff569b22884eceaaf6e91b60558d1e9"
+      },
+      {
+        "path": ".github/scripts/test_context_evaluation.py",
+        "sha256": "a30d9761e8612e57f2d8af5bae704de6f0b7cae04384b9a628dad64357ab78f6"
+      },
+      {
+        "path": ".github/fixtures/context-onboarding/observation.schema.json",
+        "sha256": "71960197af2f36eecc231bd032ed3efcc22aa42d578072e57148fe6b2a685ed0"
+      }
+    ]
+  },
+  "disposable_mutations": [
+    {
+      "name": "assignment-binding",
+      "test_methods": 32,
+      "assertion_failures": 2,
+      "collection_errors": 0,
+      "exit": 1
+    },
+    {
+      "name": "closed-keys",
+      "test_methods": 32,
+      "assertion_failures": 6,
+      "collection_errors": 0,
+      "exit": 1
+    },
+    {
+      "name": "confidence-map",
+      "test_methods": 32,
+      "assertion_failures": 1,
+      "collection_errors": 0,
+      "exit": 1
+    },
+    {
+      "name": "cache-double-count",
+      "test_methods": 19,
+      "assertion_failures": 3,
+      "collection_errors": 0,
+      "exit": 1
+    }
+  ],
+  "review_corrections": {
+    "first_absence_control": "28 explicit missing-feature assertions; not a prior product regression",
+    "mixed_source_identity": "Three assertion failures against the initial implementation; corrected 32-method suite passes",
+    "main_integration": "Both parents tests retained; synthetic response fixtures aligned to actual protocol; main diagnostic wording preserved"
+  },
+  "ci_inventory": {
+    "previous_steps": 60,
+    "current_steps": 62,
+    "previous_order_preserved": true,
+    "digest": "8810c830142eee81ab5d6fffa5da369ba5ebcd475550fe9b44057ffbb7e7a959",
+    "limits_unchanged": true
+  },
+  "overlap854": {
+    "commit": "13b52e4bfce95fc75dd65ec45f3bb6f6469690dd",
+    "report_methods": 32,
+    "observation_methods": 19,
+    "partition_methods": 18,
+    "farm_inventory_to_preserve": 13,
+    "full_merge_qualification": false
+  },
+  "overlap871": "2b6e5a5bcfdb5d4713ba6d8f655d9cc99bfd4827",
+  "native_inventory": {
+    "test_artifact_bridge.py": 12,
+    "test_artifact_authoring.py": 47,
+    "test_artifact_workflow.py": 35,
+    "test_artifact_farm.py": 7,
+    "test_artifact_package.py": 35
+  },
+  "provenance_revalidated": [
+    {
+      "record": ".codearbiter/.provenance/code-map.json",
+      "source": "plugins/ca/.claude-plugin/plugin.json",
+      "hash": "a04b59a6ee854ae62fda3ac79f1b9e7b0e749e9f"
+    },
+    {
+      "record": ".codearbiter/.provenance/code-map.json",
+      "source": "plugins/ca-codex/.codex-plugin/plugin.json",
+      "hash": "552252aed88b614ab366d322a70b7a9a8da21f61"
+    },
+    {
+      "record": ".codearbiter/.provenance/code-map.json",
+      "source": "plugins/ca-pi/package.json",
+      "hash": "735603428a4a3a14a85909fba493386669e4b43a"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "CHANGELOG.md",
+      "hash": "812059ff1850658fec5f5a77f5c9b2dc7576a23e"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "package.json",
+      "hash": "f838cd58938feced348a92c1e72db8842aff7c96"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-codex/.codex-plugin/plugin.json",
+      "hash": "552252aed88b614ab366d322a70b7a9a8da21f61"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-codex/CHANGELOG.md",
+      "hash": "8c17c45fd2bf8333253da043ba4383ef6219635e"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-pi/CHANGELOG.md",
+      "hash": "6fdf47383011bc5d6bf81397bb7ea60e13531797"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca-pi/package.json",
+      "hash": "735603428a4a3a14a85909fba493386669e4b43a"
+    },
+    {
+      "record": ".codearbiter/.provenance/release-targets.json",
+      "source": "plugins/ca/.claude-plugin/plugin.json",
+      "hash": "a04b59a6ee854ae62fda3ac79f1b9e7b0e749e9f"
+    }
+  ],
+  "checks": [
+    {
+      "label": "merged-intent-complete",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "plugins/ca/hooks/tests/test_intentlib.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "......................................\r\n----------------------------------------------------------------------\r\nRan 38 tests in 0.090s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "mixed-report-identity-green",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_context_contracts.py",
+        "TestReportEnvelope"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "ope.test_scope_rejects_duplicates_collisions_and_overlapping_roots) ... ok\r\ntest_uninspected_or_failed_category_cannot_assert_facts (__main__.TestReportEnvelope.test_uninspected_or_failed_category_cannot_assert_facts) ... ok\r\ntest_unknown_keys_reject_at_every_object_boundary (__main__.TestReportEnvelope.test_unknown_keys_reject_at_every_object_boundary) ... ok\r\ntest_version_and_enums_reject_without_coercion (__main__.TestReportEnvelope.test_version_and_enums_reject_without_coercion) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 32 tests in 0.113s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "observation-accounting-complete",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_context_evaluation.py",
+        "TestObservationAccounting"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "ference_but_is_not_approval (__main__.TestObservationAccounting.test_reported_behavior_needs_evaluator_reference_but_is_not_approval) ... ok\r\ntest_unknown_fields_invalid_types_and_nonfinite_numbers_reject (__main__.TestObservationAccounting.test_unknown_fields_invalid_types_and_nonfinite_numbers_reject) ... ok\r\ntest_untrusted_or_empty_launch_inventory_is_not_complete_measurement (__main__.TestObservationAccounting.test_untrusted_or_empty_launch_inventory_is_not_complete_measurement) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 19 tests in 0.010s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "reports-registered-partition",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_hook_ci_partition.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "Hook partition contract validated: {'contracts': 60, 'functional': 1, 'isolation': 1, 'guard': 1, 'setup': 2}\r\n",
+      "stderr_tail": ".PartitionContractTests.test_timeout_ceiling_cannot_expand) ... ok\r\ntest_unassigned_contract_fails (__main__.PartitionContractTests.test_unassigned_contract_fails) ... ok\r\ntest_valid_five_cell_contract (__main__.PartitionContractTests.test_valid_five_cell_contract) ... ok\r\ntest_wrong_functional_route_fails (__main__.PartitionContractTests.test_wrong_functional_route_fails) ... ok\r\ntest_wrong_windows_exclusion_fails (__main__.PartitionContractTests.test_wrong_windows_exclusion_fails) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 18 tests in 0.001s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "existing-fixture-foundation",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_context_fixtures.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "rking/index content disagreement. ... ok\r\ntest_task_and_dirty_recipe_are_bound_beyond_initial_snapshot (__main__.TestFixtureMaterialization.test_task_and_dirty_recipe_are_bound_beyond_initial_snapshot)\r\nEqual initial files cannot hide a changed task or index/working recipe. ... ok\r\ntest_unborn_and_ignored_inputs_are_not_promoted (__main__.TestFixtureMaterialization.test_unborn_and_ignored_inputs_are_not_promoted)\r\nNo HEAD and ignored data remain distinct from ordinary tracked files. ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 19 tests in 5.757s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "native-merged-authoring",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_artifact_authoring.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": " ok\ntest_fixture_copy_excludes_stale_payload_before_building_artifacts (__main__.InstalledFixtureCopyTest.test_fixture_copy_excludes_stale_payload_before_building_artifacts) ... ok\ntest_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts (__main__.InstalledFixtureCopyTest.test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts) ... ok\ntest_resolves_a_test_owned_linked_ancestor (__main__.PhysicalTestDirectoryTest.test_resolves_a_test_owned_linked_ancestor) ... ok\n\n----------------------------------------------------------------------\nRan 47 tests in 46.428s\n\nOK\n"
+    },
+    {
+      "label": "native-bridge",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_artifact_bridge.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "ble_capability_error_before_writing (__main__.BridgeTests.test_new_html_route_reports_actionable_capability_error_before_writing) ... ok\ntest_real_cli_draft_and_index (__main__.BridgeTests.test_real_cli_draft_and_index) ... ok\ntest_symlink_binary_rejected (__main__.BridgeTests.test_symlink_binary_rejected) ... ok\ntest_tampered_view_is_not_readable (__main__.BridgeTests.test_tampered_view_is_not_readable) ... ok\ntest_unknown_request_fields (__main__.BridgeTests.test_unknown_request_fields) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 1.312s\n\nOK\n"
+    },
+    {
+      "label": "ci-impact",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_ci_impact.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": ".....................................................................................\n----------------------------------------------------------------------\nRan 85 tests in 105.293s\n\nOK\n"
+    },
+    {
+      "label": "provenance-complete",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_provenancelib.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "............................................................................................................................................\r\n----------------------------------------------------------------------\r\nRan 140 tests in 0.710s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "read-injection-complete",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_readinjectlib.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "..........................................................................................................................................................................................................\r\n----------------------------------------------------------------------\r\nRan 202 tests in 0.446s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "host-descriptors-complete",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_host_descriptors.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "matter_and_metadata) ... ok\r\ntest_pi_notices_match_owning_bytes_and_are_not_exemptions (__main__.GenerationContractTest.test_pi_notices_match_owning_bytes_and_are_not_exemptions) ... ok\r\ntest_plugin_reference_checker_follows_custom_pi_catalog_descriptor_path (__main__.GenerationContractTest.test_plugin_reference_checker_follows_custom_pi_catalog_descriptor_path) ... ok\r\ntest_explicit_owner_quotes_are_preserved (__main__.QuotedOwnerOracleTest.test_explicit_owner_quotes_are_preserved) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 21 tests in 2.570s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "artifact-consumer-closure",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_artifact_consumers.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "t_narrowed_search_scope_is_rejected) ... ok\r\ntest_pi_native_plan_is_enforced_as_legacy_pair_only (__main__.ArtifactConsumerClosureTest.test_pi_native_plan_is_enforced_as_legacy_pair_only) ... ok\r\ntest_t017_status_deviation_remains_open_and_machine_readable (__main__.ArtifactConsumerClosureTest.test_t017_status_deviation_remains_open_and_machine_readable) ... ok\r\ntest_unknown_live_reader_negative_control (__main__.ArtifactConsumerClosureTest.test_unknown_live_reader_negative_control) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 16 tests in 1.050s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "badge-current",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_badge_consistency.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": " ... ok\r\ntest_catalog_slugs_from_table (__main__.ParsersTest.test_catalog_slugs_from_table) ... ok\r\ntest_core_lane_slugs_are_scoped_to_the_marked_chooser (__main__.ParsersTest.test_core_lane_slugs_are_scoped_to_the_marked_chooser) ... ok\r\ntest_count_badges (__main__.ParsersTest.test_count_badges) ... ok\r\ntest_raw_command_count_marketing_is_detected (__main__.ParsersTest.test_raw_command_count_marketing_is_detected) ... ok\r\ntest_version_badge (__main__.ParsersTest.test_version_badge) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 12 tests in 0.002s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "provenance-wiring-current",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_provenance_wiring.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "PASS  test_commit_gate_heal_phase\r\nPASS  test_context_creation_provenance\r\nPASS  test_context_creation_scout_isolation\r\nPASS  test_decompose_provenance_stub\r\nPASS  test_code_map_read_on_demand\r\nPASS  test_context_check_command\r\nPASS  test_code_map_installable_manifest_claims_are_current\r\nPASS  test_code_map_manifest_claim_rejects_version_prefix_collision\r\n\r\nOK: 8 check(s) green\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "context-capture-current",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "site/scripts/capture-context-examples.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "Context helper capture matches exact sources and all disposable observations.\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "report-core-parity",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "tools/sync-core.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "sync-core --check: OK (79 core file(s) x 3 plugin(s), all byte-identical)\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "host-surface-parity",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "build-surface --check: OK (claude, codex, pi in sync)\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "host-package-parity",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "tools/build-host-packages.py",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout_tail": "package.json matches plugins/ca-pi/package.json and the Pi descriptor\r\n",
+      "stderr_tail": ""
+    },
+    {
+      "label": "overlap854-report-tests",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_context_contracts.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "ope.test_scope_rejects_duplicates_collisions_and_overlapping_roots) ... ok\r\ntest_uninspected_or_failed_category_cannot_assert_facts (__main__.TestReportEnvelope.test_uninspected_or_failed_category_cannot_assert_facts) ... ok\r\ntest_unknown_keys_reject_at_every_object_boundary (__main__.TestReportEnvelope.test_unknown_keys_reject_at_every_object_boundary) ... ok\r\ntest_version_and_enums_reject_without_coercion (__main__.TestReportEnvelope.test_version_and_enums_reject_without_coercion) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 32 tests in 0.168s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "overlap854-observation-tests",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_context_evaluation.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "",
+      "stderr_tail": "ference_but_is_not_approval (__main__.TestObservationAccounting.test_reported_behavior_needs_evaluator_reference_but_is_not_approval) ... ok\r\ntest_unknown_fields_invalid_types_and_nonfinite_numbers_reject (__main__.TestObservationAccounting.test_unknown_fields_invalid_types_and_nonfinite_numbers_reject) ... ok\r\ntest_untrusted_or_empty_launch_inventory_is_not_complete_measurement (__main__.TestObservationAccounting.test_untrusted_or_empty_launch_inventory_is_not_complete_measurement) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 19 tests in 0.008s\r\n\r\nOK\r\n"
+    },
+    {
+      "label": "overlap854-CI-partition",
+      "argv": [
+        "C:\\Python314\\python.exe",
+        ".github/scripts/test_hook_ci_partition.py"
+      ],
+      "exit": 0,
+      "stdout_tail": "Hook partition contract validated: {'contracts': 60, 'functional': 1, 'isolation': 1, 'guard': 1, 'setup': 2}\r\n",
+      "stderr_tail": ".PartitionContractTests.test_timeout_ceiling_cannot_expand) ... ok\r\ntest_unassigned_contract_fails (__main__.PartitionContractTests.test_unassigned_contract_fails) ... ok\r\ntest_valid_five_cell_contract (__main__.PartitionContractTests.test_valid_five_cell_contract) ... ok\r\ntest_wrong_functional_route_fails (__main__.PartitionContractTests.test_wrong_functional_route_fails) ... ok\r\ntest_wrong_windows_exclusion_fails (__main__.PartitionContractTests.test_wrong_windows_exclusion_fails) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 18 tests in 0.001s\r\n\r\nOK\r\n"
+    }
+  ],
+  "known_limits": [
+    "Codec equality against expected snapshot is not trusted source acquisition.",
+    "Per-report 48 KiB bound is not aggregate synthesis admission.",
+    "Retrospective budget accounting does not enforce launches.",
+    "Bounded evidence strings are not proof of truth, secret absence or approval.",
+    "Full new-candidate package and installed-host/model qualification remain separate.",
+    "The canonical campaign artifacts remain native drafts; no receipt/accepted state was synthesized."
+  ],
+  "non_evidence_failures": [
+    "An initial terminal quoting error produced no source writes.",
+    "A compound inspection was blocked before execution; no result is attributed to it."
+  ],
+  "file_sha256": [
+    {
+      "path": ".codearbiter/.provenance/code-map.json",
+      "sha256": "1435e4fe9cd94440cb0064741b4956b2830b55f2f23829348faa38d9e04473f0"
+    },
+    {
+      "path": ".codearbiter/.provenance/release-targets.json",
+      "sha256": "d99b78ff9de108ba92b614efe12a77a986207e4f98414098e699478400db0119"
+    },
+    {
+      "path": ".codearbiter/code-map.md",
+      "sha256": "cdd3ba5ced63622913bd6c69b1795bea96045f510736f51c00bf5cf2f67312bf"
+    },
+    {
+      "path": ".github/fixtures/context-onboarding/observation.schema.json",
+      "sha256": "71960197af2f36eecc231bd032ed3efcc22aa42d578072e57148fe6b2a685ed0"
+    },
+    {
+      "path": ".github/scripts/test_artifact_authoring.py",
+      "sha256": "c35a09afd1f3db507613cbb86efcbce2d26bf5ea7b6ed1e6953ca601f4d3ee75"
+    },
+    {
+      "path": ".github/scripts/test_artifact_conformance.py",
+      "sha256": "b2488442d4af87f5064728d1f53944ac64397e7562d4cf06ffa837ca04642741"
+    },
+    {
+      "path": ".github/scripts/test_context_contracts.py",
+      "sha256": "a356b53bd1dc84509a448755208acc994ff569b22884eceaaf6e91b60558d1e9"
+    },
+    {
+      "path": ".github/scripts/test_context_evaluation.py",
+      "sha256": "a30d9761e8612e57f2d8af5bae704de6f0b7cae04384b9a628dad64357ab78f6"
+    },
+    {
+      "path": ".github/scripts/test_hook_ci_partition.py",
+      "sha256": "4b5b4e16950a1aed52d6b8e2e5eb1517a786c711ca1d4099f21184f4e3b0394e"
+    },
+    {
+      "path": ".github/scripts/test_host_descriptors.py",
+      "sha256": "c30b8418c95010e5bd42797ce2a239497f4ffe6da1d1b40404d1ca84bf65dc12"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "dfa02d22cbe8eedc42e66544c0300d7e3d939ec8dfc6b158a0c0a3ee3b1f83a9"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "ab66803eac7e2288d773f3d7593f043ab5062014a4f35ae2f740e2f631cca8dd"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a4f0421ebe06c5ce9fc176b33345a12582b54e45c671ad1ebb199d853479533a"
+    },
+    {
+      "path": "core/pysrc/_contextreportlib.py",
+      "sha256": "e4ef83648e913426bb9c8f3e1bf68e230a9118d76766c43d1441978972473740"
+    },
+    {
+      "path": "core/pysrc/_intentlib.py",
+      "sha256": "ba27c2bc9a2e3e9424c1ee90711d5102208405ce19a0d4303a6610079b909168"
+    },
+    {
+      "path": "core/pysrc/hostapi.py",
+      "sha256": "9677c1bd4b5833db6121ede8de31add319ed51892ae202b8854755c137e69e1f"
+    },
+    {
+      "path": "docs/reviews/2026-09-25-brownfield-report-contracts.md",
+      "sha256": "f7456c2d3ea13d546a0867ac4854deccb53370e56f41356d495199fbe016c305"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e4fa281ddb1195e3205af1440c1653f35c8bf7626469ff44b5a24bf420960700"
+    },
+    {
+      "path": "plugins/ca-codex/.codex-plugin/plugin.json",
+      "sha256": "915af978882df31a46517a4245936b15aca1e4f5cd0725cb5e3a18653a5a0b50"
+    },
+    {
+      "path": "plugins/ca-codex/CHANGELOG.md",
+      "sha256": "a80989404e90d46342c9cd32cabe871b2ad36a51d2ed56db22b64d366aea8ba6"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/_contextreportlib.py",
+      "sha256": "e4ef83648e913426bb9c8f3e1bf68e230a9118d76766c43d1441978972473740"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/_host.py",
+      "sha256": "3f83aefb14be03ca51c18ddd82cbe4ee63b047fd1c08ddd4057d6dfadc5f4231"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/_intentlib.py",
+      "sha256": "ba27c2bc9a2e3e9424c1ee90711d5102208405ce19a0d4303a6610079b909168"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/hostapi.py",
+      "sha256": "9677c1bd4b5833db6121ede8de31add319ed51892ae202b8854755c137e69e1f"
+    },
+    {
+      "path": "plugins/ca-codex/package.json",
+      "sha256": "e4688f290a51a6141189bb9a01c7523e29db97ceb7c54aa0e02dd277f3ae0b49"
+    },
+    {
+      "path": "plugins/ca-pi/CHANGELOG.md",
+      "sha256": "3bd9185f3267573172a046feb2a7479f2370901fb8ba2b519484fdbd07ec2601"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_contextreportlib.py",
+      "sha256": "e4ef83648e913426bb9c8f3e1bf68e230a9118d76766c43d1441978972473740"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_host.py",
+      "sha256": "e4022509dc2c4815dfaa12be9db351385f01470743bf829bde8e33a65b3aed85"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_intentlib.py",
+      "sha256": "ba27c2bc9a2e3e9424c1ee90711d5102208405ce19a0d4303a6610079b909168"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/hostapi.py",
+      "sha256": "9677c1bd4b5833db6121ede8de31add319ed51892ae202b8854755c137e69e1f"
+    },
+    {
+      "path": "plugins/ca-pi/package.json",
+      "sha256": "50b91735fb63d7d789f349875e23f9eebe62ba13e9812078015ffaff99e21ccd"
+    },
+    {
+      "path": "plugins/ca/.claude-plugin/plugin.json",
+      "sha256": "453acfb70feb6d9a19c2922edd0adebcaa505807d5358b8979093e07cd2e3ac8"
+    },
+    {
+      "path": "plugins/ca/hooks/_contextreportlib.py",
+      "sha256": "e4ef83648e913426bb9c8f3e1bf68e230a9118d76766c43d1441978972473740"
+    },
+    {
+      "path": "plugins/ca/hooks/_host.py",
+      "sha256": "e4d0da7e9fb168abf0618e1e4c9f6736e1a419b0d5a62131e9173dc8b524d1a9"
+    },
+    {
+      "path": "plugins/ca/hooks/_intentlib.py",
+      "sha256": "ba27c2bc9a2e3e9424c1ee90711d5102208405ce19a0d4303a6610079b909168"
+    },
+    {
+      "path": "plugins/ca/hooks/hostapi.py",
+      "sha256": "9677c1bd4b5833db6121ede8de31add319ed51892ae202b8854755c137e69e1f"
+    },
+    {
+      "path": "plugins/ca/hooks/tests/test_intentlib.py",
+      "sha256": "38699de2594864dff6d0505bb2478757c496aa3ac90b0114d81c31a328ae5d78"
+    }
+  ]
+}

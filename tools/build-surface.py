@@ -491,7 +491,7 @@ def _validate_compatibility_policy(value, descriptors, where):
             )
 
 
-def _load_command_registry(repo, command_names, descriptors):
+def _load_command_registry(repo, command_names, descriptors, templates):
     rel = "command-routes.json"
     where = "core/surface/command-routes.json"
     path = os.path.join(repo, "core", "surface", rel)
@@ -665,11 +665,11 @@ def _load_command_registry(repo, command_names, descriptors):
                 f"{where}: commands.{name}: modes must exactly close replacement modes; "
                 f"declared={list(metadata.get('modes', ()))!r}, actual={list(actual_modes)!r}"
             )
-        command_path = os.path.join(
-            repo, "core", "surface", "commands", name + ".md"
-        )
         command_where = f"core/surface/commands/{name}.md"
-        command_text = _read_template(command_path, command_where)
+        # Validate the same fully composed template that rendering consumes.
+        # A multi-mode owner carries the markers; an empty wrapper cannot
+        # bypass missing, duplicate or extra mode checks by moving them there.
+        command_text = templates[f"commands/{name}.md"]
         markers = [
             (match.group("mode"), match.group("route"))
             for match in _COMMAND_MODE_MARKER.finditer(command_text)
@@ -974,7 +974,6 @@ def render_all(repo, host, descriptors=None):
     surface = os.path.join(repo, "core", "surface")
     rels = _surface_files(repo, descriptors)
     cmd_names = _command_names(rels)
-    registry = _load_command_registry(repo, cmd_names, descriptors)
     # Validate/expand the entire canonical source set before rendering or writing
     # any host. An excluded entry still cannot conceal a bad/duplicate owner.
     owners = {}
@@ -987,6 +986,7 @@ def render_all(repo, host, descriptors=None):
             text, where, surface, owners,
             suppress_model=rule is not None and not rule.add_skill_frontmatter,
         )
+    registry = _load_command_registry(repo, cmd_names, descriptors, templates)
     resource_paths = set()
     for rel in rels:
         dst, _rule = _output_rel(rel, descriptor)

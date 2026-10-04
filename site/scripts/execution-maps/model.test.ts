@@ -21,7 +21,7 @@ describe('source-traced execution map', () => {
   it('binds every handoff to an existing canonical source and reviewed excerpt', () => {
     for (const source of Object.values(featureMap.sources)) {
       expect(source.path).toMatch(/^core\/surface\//);
-      expect(readFileSync(new URL(source.path, root), 'utf8')).toContain(source.quote);
+      expect(readFileSync(new URL(source.currentPath ?? source.path, root), 'utf8')).toContain(source.currentQuote ?? source.quote);
     }
     for (const chapter of featureMap.chapters) {
       for (const node of chapter.nodes) expect(featureMap.sources[node.source]).toBeDefined();

@@ -1,9 +1,16 @@
 ---
 name: decompose
-description: The greenfield decomposition interview. Routed to at startup when .codearbiter/CONTEXT.md lacks the <!--INITIALIZED--> body marker and no source code exists, or when the user invokes /decompose. A senior-architect persona drives a six-layer interview, persists every layer to disk so a context reset loses nothing, then populates .codearbiter/ and locks it initialized. No project-state doc is written before the layers are solid; orchestration does not resume until the lock is set.
+description: Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates.
+argument-hint: (none)
 ---
 
 # decompose
+
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `/ca:init --greenfield` for new usage. This installed route remains
+> functional under the command-route compatibility policy at ${CLAUDE_PLUGIN_ROOT}/includes/command-compatibility.md;
+> continue with the unchanged greenfield workflow below.
+<!-- catalog-compatibility-notice:end -->
 
 Spec the project before a line of code exists. Routed to at greenfield startup, or by `/decompose`.
 
@@ -139,6 +146,19 @@ Then write the surviving project-state docs. Every file holds actual content der
 (All under `${CLAUDE_PROJECT_DIR}/.codearbiter/`.) Set the `stage:` frontmatter value in `CONTEXT.md` to the maturity number for the MVP phase of the build plan (a single number — there is no promotion ladder).
 
 **Provenance stubs and code-map stub:** once the project-state docs above are on disk, write a provenance stub per derived doc to `.codearbiter/.provenance/<doc>.json` via `_provenancelib.write_stub` (`interview_derived: true`, empty `entries`) — one stub for each scout/source-derived doc (`CONTEXT`, `tech-stack`, `coding-standards`, `security-controls`). Also write a `.codearbiter/code-map.md` stub — a placeholder empty coarse map. WHY: greenfield has no source code yet, so real provenance entries and code-map contents populate on the first commit-gate auto-heal (or `/ca:context-check`) once code exists.
+
+After initialization, the first real package manifest is acquired through the
+normal `/ca:context-check` route, not another decomposition interview. An
+empty interview-derived `tech-stack` stub is intended context only. At task
+time, use a source/target snapshot with root `manifests` membership and call
+`_provenancelib.assess_context_provenance` for the selected document. Its
+`first_input_pending` state names the newly observed manifest paths and only
+`tech-stack` as a bounded refresh candidate. Inspect those real files through
+the selected refresh, reconcile facts with the intended architecture, and use
+the existing owner preview and receipt before any update. An empty membership
+or an uninspected boundary supplies no package command, dependency, database
+claim, or nested guidance. Preserve the initialized marker and interview
+history; the first input is not authority to rewrite them.
 
 Gate: every project-state doc written with real content; no `status: draft` ADRs remain in `decisions/`; `[CONFIRM-NN]` items are acceptable in `open-questions.md` for genuinely unresolved items; provenance stubs and code-map stub written.
 

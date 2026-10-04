@@ -16,6 +16,7 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
+# Historical teaching baseline, not the identity of the current helpers.
 SOURCE_REVISION = "aebee1bb753d29e34030ee22c98c9eb8fabb1752"
 SOURCES = ["core/pysrc/_readinjectlib.py", "core/pysrc/_provenancelib.py",
            "core/pysrc/pre-read.py", "core/pysrc/_hooklib.py"]
@@ -92,6 +93,10 @@ def capture() -> dict:
                 "evidence_kind": "disposable-helper-observation",
                 "boundary": "Actual Python helper output over fixed local fixtures, not an installed-host run, approval, or validation of your repository.",
                 "source_sha256": {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in SOURCES},
+                "source_blobs": {path: subprocess.run(
+                    ["git", "hash-object", "--no-filters", "--stdin"],
+                    input=(ROOT / path).read_bytes(), cwd=ROOT, capture_output=True,
+                    check=True, timeout=10).stdout.decode("ascii").strip() for path in SOURCES},
                 "fixture_files": files, "provenance_records": records,
                 "cases": cases, "changed_source_hashes": current, "drift_after_change": drift,
                 "self_read": {"emitted": self_read, "hash_calls": len(calls)},

@@ -138,18 +138,18 @@ async function materializedRequest(task = "task-secret-sentinel") {
   await mkdir(request.cwd, { recursive: true });
   await mkdir(dirname(request.piCliPath), { recursive: true });
   await writeFile(request.piCliPath, "// Task 6 Pi CLI fixture\n", "utf8");
-  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.84.1","bin":{"pi":"dist/cli.js"}}\n', "utf8");
+  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"1.0.0","bin":{"pi":"dist/cli.js"}}\n', "utf8");
   runnerMocks.resolveRuntimeIdentity.mockImplementation(async (candidate: string) => ({
     cliEntry: candidate,
     packageRoot: resolve(dirname(candidate), ".."),
-    version: "0.84.1",
+    version: "1.0.0",
   }));
   testValidation.set(request, {
     activeNodePath: process.execPath,
     packageRoot,
     resolveRuntimeIdentity: async (candidate: string) => {
       if (candidate !== request.piCliPath) throw new Error("counterfeit Pi CLI");
-      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "0.84.1" };
+      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "1.0.0" };
     },
   });
   return request;
@@ -382,6 +382,56 @@ describe("Task 6 exact Pi child launch", () => {
     ]) {
       expect(() => parseChildJsonLine(JSON.stringify(widenedInvalid))).toThrow("schema");
     }
+    // Pi 1.0.0 widened the wire again (rpc-types.ts, pi-ai types.ts and
+    // agent-session.ts at v1.0.0): prompt success carries
+    // data.disposition; transcripts carry system messages; assistant messages
+    // add providerThinkingLevel, thinkingLevel and endTurn; tool calls add a
+    // namespace; tool results add nestedCalls; tool execution events add
+    // parentToolCallId. Each validates strictly when present.
+    const systemMessage = {
+      role: "system", content: [{ type: "text", text: "Base prompt." }], sections: { rules: "<rules/>", old: null },
+      toolsAdded: [{ name: "bash", description: "Run", parameters: { type: "object" } }], toolsRemoved: [{ name: "edit" }], timestamp: 1,
+    };
+    const widenedAssistant = {
+      ...assistantMessage,
+      content: [{ type: "toolCall", id: "call-ns", name: "search", arguments: {}, namespace: "mcp_docs" }],
+      providerThinkingLevel: "high", thinkingLevel: "medium", endTurn: true,
+    };
+    const nestedToolResult = {
+      role: "toolResult", toolCallId: "call", toolName: "codemode", content: [], isError: false, timestamp: 1,
+      nestedCalls: { calls: [{ id: "n1", name: "read", arguments: { path: "a" }, argumentsBytes: 12, status: "ok", durationMs: 3 }, { id: "n2", name: "bash", status: "error", error: "boom" }], complete: true },
+    };
+    for (const widened of [
+      { id: "prompt-1", type: "response", command: "prompt", success: true, data: { disposition: "started" } },
+      { type: "message_start", message: systemMessage },
+      { type: "message_end", message: { role: "system", content: "Additional instructions.", timestamp: 2 } },
+      { type: "message_end", message: widenedAssistant },
+      { type: "turn_end", message: widenedAssistant, toolResults: [nestedToolResult] },
+      { type: "tool_execution_start", toolCallId: "n1", toolName: "read", args: {}, parentToolCallId: "call" },
+      { type: "tool_execution_update", toolCallId: "n1", toolName: "read", args: {}, partialResult: {}, parentToolCallId: "call" },
+      { type: "tool_execution_end", toolCallId: "n1", toolName: "read", result: {}, isError: false, parentToolCallId: "call" },
+    ]) {
+      expect(parseChildJsonLine(JSON.stringify(widened))).toEqual(widened);
+    }
+    for (const widenedInvalid of [
+      { id: "prompt-1", type: "response", command: "prompt", success: true, data: {} },
+      { id: "prompt-1", type: "response", command: "prompt", success: true, data: { disposition: 1 } },
+      { id: "prompt-1", type: "response", command: "prompt", success: true, data: { disposition: "started", extra: 1 } },
+      { id: "prompt-1", type: "response", command: "prompt", success: false, error: "no", data: { disposition: "started" } },
+      { type: "message_end", message: { ...systemMessage, injected: true } },
+      { type: "message_end", message: { ...systemMessage, content: [{ type: "image", data: "x", mimeType: "image/png" }] } },
+      { type: "message_end", message: { ...systemMessage, sections: { rules: 3 } } },
+      { type: "message_end", message: { ...systemMessage, toolsRemoved: [{ name: "edit", extra: 1 }] } },
+      { type: "message_end", message: { ...widenedAssistant, providerThinkingLevel: 1 } },
+      { type: "message_end", message: { ...widenedAssistant, endTurn: "yes" } },
+      { type: "message_end", message: { ...widenedAssistant, content: [{ type: "toolCall", id: "c", name: "n", arguments: {}, namespace: 5 }] } },
+      { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [], complete: "yes" } }] },
+      { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [{ id: "n", name: "r", status: "maybe" }], complete: true } }] },
+      { type: "turn_end", message: assistantMessage, toolResults: [{ ...nestedToolResult, nestedCalls: { calls: [{ id: "n", name: "r", status: "ok", extra: 1 }], complete: true } }] },
+      { type: "tool_execution_start", toolCallId: "n1", toolName: "read", args: {}, parentToolCallId: 7 },
+    ]) {
+      expect(() => parseChildJsonLine(JSON.stringify(widenedInvalid))).toThrow("schema");
+    }
     // Pi 0.84.0 made RPC message_update delta-only (pi#7290): the wire event
     // drops the full `message` record and strips `partial` from the assistant
     // event. Both window shapes are accepted strictly; hybrids of known keys
@@ -404,6 +454,31 @@ describe("Task 6 exact Pi child launch", () => {
       { type: "message_update", assistantMessageEvent: { type: "unknown_event" } },
     ]) {
       expect(() => parseChildJsonLine(JSON.stringify(stillInvalid))).toThrow("schema");
+    }
+    // Pi 1.0.0's JSON wire projection (modes/json-event.ts at v1.0.0) adds the
+    // cumulative assistant `usage` to every message_update and names the call on
+    // toolcall_start (`id` + `toolName`); `done` may also end on `deferred`.
+    const wireUsage = assistantMessage.usage;
+    for (const jsonEvent of [
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "start" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: "call-1", toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "text_delta", contentIndex: 0, delta: "hi" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "done", reason: "deferred", message: assistantMessage } },
+    ]) {
+      expect(parseChildJsonLine(JSON.stringify(jsonEvent))).toEqual(jsonEvent);
+    }
+    for (const jsonInvalid of [
+      { type: "message_update", usage: { input: "ten" }, assistantMessageEvent: { type: "start" } },
+      { type: "message_update", usage: wireUsage, message: assistantMessage, assistantMessageEvent: { type: "start" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "start" }, extra: 1 },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: "call-1", toolName: "bash", extra: 1 } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: "call-1" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "toolcall_start", contentIndex: 0, id: 1, toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "text_start", contentIndex: 0, id: "call-1", toolName: "bash" } },
+      { type: "message_update", usage: wireUsage, assistantMessageEvent: { type: "done", reason: "paused", message: assistantMessage } },
+    ]) {
+      expect(() => parseChildJsonLine(JSON.stringify(jsonInvalid))).toThrow("schema");
     }
     for (const scratch of [
       { partialArgs: '{"command":"' },
@@ -872,7 +947,11 @@ describe("Task 6 exact Pi child launch", () => {
     expect(replayInput.trimEnd().split("\n")).toHaveLength(2);
   });
 
-  test("returns the same fixed degraded result for every isolated-runner failure branch", async () => {
+  // These are separate lifecycles, not one five-second aggregate. The old
+  // grouped case outlived its test deadline on Windows, so its still-running
+  // cleanup could touch the following test's reset mocks. Keep every scenario
+  // and assertion, but let each settle before afterEach resets shared state.
+  test("returns the fixed degraded result before spawn for an invalid launch identity", async () => {
     const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
     const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
     const request = await materializedRequest();
@@ -880,14 +959,23 @@ describe("Task 6 exact Pi child launch", () => {
     runnerMocks.spawn.mockImplementation(() => { spawnCalls += 1; throw new Error("must not spawn"); });
     expect(await runPiChild({ ...request, nodePath: "node" } as never, new AbortController().signal)).toEqual(expected);
     expect(spawnCalls).toBe(0);
+  });
 
+  test("returns the fixed degraded result without spawning a pre-cancelled request", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
+    let spawnCalls = 0;
     const preAborted = new AbortController();
     preAborted.abort();
     const abortedRequest = await materializedRequest();
     runnerMocks.spawn.mockImplementation(() => { spawnCalls += 1; return new FakeChild(true); });
     expect(await runPiChild({ ...abortedRequest, timeoutMs: 5 } as never, preAborted.signal)).toEqual(expected);
     expect(spawnCalls).toBe(0);
+  });
 
+  test("returns the fixed degraded result and removes private auth after spawn throws", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
     const spawnRequest = await materializedRequest();
     const spawnOperatorHome = resolve(dirname(spawnRequest.cwd), "spawn-operator-home");
     const spawnOperatorAgent = resolve(spawnOperatorHome, ".pi", "agent");
@@ -906,47 +994,47 @@ describe("Task 6 exact Pi child launch", () => {
     expect(rejectedSpawnAgent).not.toBe(spawnOperatorAgent);
     expect(existsSync(rejectedSpawnAgent!)).toBe(false);
     expect(existsSync(resolve(spawnOperatorAgent, "auth.json"))).toBe(true);
+  });
 
-    const runEventFailure = async (
-      trigger: (child: FakeChild, controller: AbortController) => void,
-      timeoutMs = 5_000,
-    ) => {
-      const child = new FakeChild(true);
-      const controller = new AbortController();
-      const baseRequest = await materializedRequest();
-      const operatorHome = resolve(dirname(baseRequest.cwd), "failure-operator-home");
-      const operatorAgent = resolve(operatorHome, ".pi", "agent");
-      await mkdir(operatorAgent, { recursive: true });
-      await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify({
-        openai: { type: "api_key", key: "failure-selected-provider-secret" },
-        anthropic: { type: "api_key", key: "failure-foreign-provider-secret" },
-      }), "utf8");
-      baseRequest.parentEnv.HOME = operatorHome;
-      baseRequest.parentEnv.USERPROFILE = operatorHome;
-      baseRequest.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
-      const failureRequest = { ...baseRequest, timeoutMs };
-      let childAgentDir: string | undefined;
-      runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
-        childAgentDir = (options.env as NodeJS.ProcessEnv).PI_CODING_AGENT_DIR;
-        setImmediate(() => trigger(child, controller));
-        return child;
-      });
-      const result = await runPiChild(failureRequest as never, controller.signal);
-      expect(result).toEqual(expected);
-      expect(JSON.stringify(result)).not.toContain("raw-secret-sentinel");
-      expect(childAgentDir).toBeDefined();
-      expect(childAgentDir).not.toBe(operatorAgent);
-      expect(existsSync(childAgentDir!)).toBe(false);
-      expect(existsSync(resolve(operatorAgent, "auth.json"))).toBe(true);
-    };
-    await runEventFailure((child) => child.emit("error", new Error("raw-secret-sentinel")));
-    await runEventFailure((_child, controller) => controller.abort());
-    await runEventFailure((child) => child.stdout.write("{malformed raw-secret-sentinel}\n"));
-    await runEventFailure((child) => child.stdout.write("x".repeat(65_537)));
-    await runEventFailure((child) => child.stdout.write("x".repeat(1_048_577)));
-    await runEventFailure((child) => child.stderr.write("raw-secret-sentinel" + "x".repeat(16_385)));
-    await runEventFailure((child) => child.close(7));
-    await runEventFailure(() => { /* timeout is the trigger */ }, 1);
+  test.each([
+    { label: "error event", trigger: (child: FakeChild) => child.emit("error", new Error("raw-secret-sentinel")) },
+    { label: "cancellation", trigger: (_child: FakeChild, controller: AbortController) => controller.abort() },
+    { label: "malformed protocol", trigger: (child: FakeChild) => child.stdout.write("{malformed raw-secret-sentinel}\n") },
+    { label: "line overflow", trigger: (child: FakeChild) => child.stdout.write("x".repeat(65_537)) },
+    { label: "stream overflow", trigger: (child: FakeChild) => child.stdout.write("x".repeat(1_048_577)) },
+    { label: "stderr overflow", trigger: (child: FakeChild) => child.stderr.write("raw-secret-sentinel" + "x".repeat(16_385)) },
+    { label: "early close", trigger: (child: FakeChild) => child.close(7) },
+    { label: "timeout", trigger: (_child: FakeChild) => {}, timeoutMs: 1 },
+  ])("returns fixed degraded and preserves operator auth for $label", async ({ trigger, timeoutMs = 5_000 }) => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const expected = { terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." };
+    const child = new FakeChild(true);
+    const controller = new AbortController();
+    const baseRequest = await materializedRequest();
+    const operatorHome = resolve(dirname(baseRequest.cwd), "failure-operator-home");
+    const operatorAgent = resolve(operatorHome, ".pi", "agent");
+    await mkdir(operatorAgent, { recursive: true });
+    await writeFile(resolve(operatorAgent, "auth.json"), JSON.stringify({
+      openai: { type: "api_key", key: "failure-selected-provider-secret" },
+      anthropic: { type: "api_key", key: "failure-foreign-provider-secret" },
+    }), "utf8");
+    baseRequest.parentEnv.HOME = operatorHome;
+    baseRequest.parentEnv.USERPROFILE = operatorHome;
+    baseRequest.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
+    const failureRequest = { ...baseRequest, timeoutMs };
+    let childAgentDir: string | undefined;
+    runnerMocks.spawn.mockImplementation((_command: string, _args: readonly string[], options: Record<string, unknown>) => {
+      childAgentDir = (options.env as NodeJS.ProcessEnv).PI_CODING_AGENT_DIR;
+      setImmediate(() => trigger(child, controller));
+      return child;
+    });
+    const result = await runPiChild(failureRequest as never, controller.signal);
+    expect(result).toEqual(expected);
+    expect(JSON.stringify(result)).not.toContain("raw-secret-sentinel");
+    expect(childAgentDir).toBeDefined();
+    expect(childAgentDir).not.toBe(operatorAgent);
+    expect(existsSync(childAgentDir!)).toBe(false);
+    expect(existsSync(resolve(operatorAgent, "auth.json"))).toBe(true);
   });
 
   test.each([
@@ -1106,7 +1194,7 @@ describe("Task 6 exact Pi child launch", () => {
     const request = await materializedRequest();
     runnerMocks.resolveRuntimeIdentity.mockImplementationOnce(async (candidate: string) => {
       controller.abort();
-      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "0.84.1" };
+      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "1.0.0" };
     });
     expect(await runPiChild(request as never, controller.signal)).toEqual({
       terminal: "degraded",

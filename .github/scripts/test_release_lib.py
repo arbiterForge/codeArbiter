@@ -10779,13 +10779,15 @@ class ContextCreationBackfillTest(unittest.TestCase):
         self.assertEqual(row["payload"], ".")
 
     def test_context_creation_defers_to_confirm_nn_when_ambiguous(self):
-        # Never scaffolded from an ambiguous scan -- the same "no signal, or
-        # conflicting signals -> [CONFIRM-NN]" rule the rest of Phase 3
-        # already applies, extended (not special-cased) to this doc.
-        idx = self.text.index("HIGH-confidence only when")
-        window = self.text[idx:idx + 900]
-        self.assertIn("[CONFIRM-NN]", window)
-        self.assertIn("never scaffolded from an ambiguous scan", window.lower())
+        # Ambiguous release evidence cannot become a guessed target row.
+        # Ask for a user-owned choice only when the target is needed now;
+        # otherwise preserve the gap and leave the conditional file absent.
+        phase3 = self.text[self.text.index("## Phase 3"):self.text.index("## Phase 4")]
+        self.assertIn("Use `[CONFIRM-NN]` only for a material user-owned decision", phase3)
+        self.assertIn("exactly one candidate manifest and exactly one candidate changelog", phase3)
+        self.assertIn("Zero, or more than one, candidate manifest or changelog cannot produce a guessed row", phase3)
+        self.assertIn("ask about a release target only when that choice is needed now", phase3)
+        self.assertIn("Otherwise leave this conditional draft absent", phase3)
 
 
 class DecisionZeroZeroThreeSixTest(unittest.TestCase):
@@ -11144,7 +11146,7 @@ class ReleaseSurfaceTest(unittest.TestCase):
                 return fh.read()
 
         cls.skill = read("core", "surface", "skills", "release", "SKILL.md")
-        cls.command = read("core", "surface", "commands", "release.md")
+        cls.command = build_surface.render_all(REPO_ROOT, "claude")["commands/release.md"].decode()
         cls.releaselib_source = read("core", "pysrc", "_releaselib.py")
         cls.index = read("core", "surface", "skills", "INDEX.md")
         cls.security = read(".codearbiter", "security-controls.md")
@@ -11526,8 +11528,9 @@ test -z "$TAG_SHA"
         self.assertIn("If no POSIX-compatible shell is available, STOP", normalized)
 
     def test_command_index_and_security_boundary_describe_the_capability(self):
-        self.assertIn("declared version policy", self.command)
-        self.assertIn("exact release-asset inventory", self.command)
+        self.assertIn("version-policy", self.command)
+        self.assertIn("release-assets", self.command)
+        self.assertIn("verify-release-assets", self.command)
         self.assertIn("version-policy", self.index)
         self.assertIn("release-build", self.index)
         self.assertIn("`release-build`", self.security)

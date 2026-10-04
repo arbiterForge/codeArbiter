@@ -72,6 +72,7 @@ on:
       # required native-host contract even when a change touches no plugin.
       - "docs/artifacts/**"
       - "tools/build-artifacts.py"
+      - "tools/artifact-coverage.py"
       - "tools/install-artifact-payload.py"
       - "tools/generate-artifact-types.py"
       - "tools/create-artifact-examples.py"
@@ -107,6 +108,7 @@ on:
       # test_pi_promotion.py guards the promotion workflow itself. A workflow-
       # only edit must start the hooks job that executes that contract suite.
       - ".github/workflows/pi-promotion.yml"
+      - ".github/fixtures/context-onboarding/**"
       - ".github/fixtures/codex-skill-resources/**"
       - ".github/scripts/check_codex_skill_resources.py"
       - ".github/scripts/check_codex_static_package.py"
@@ -233,6 +235,8 @@ jobs:
               - '.github/scripts/test_host_descriptors.py'
               - '.github/workflows/ci.yml'
             hooks:
+              - '.github/fixtures/context-onboarding/**'
+              - '.github/fixtures/debug/**'
               - 'plugins/ca/hooks/**'
               - 'plugins/ca-codex/hooks/**'
               - 'plugins/ca-pi/hooks/**'
@@ -292,6 +296,10 @@ jobs:
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
+              # The site CVE gate's accepted-advisory judge and its only guard.
+              - '.github/scripts/npm_audit_gate.py'
+              - '.github/scripts/test_npm_audit_gate.py'
+              - 'site/audit-exceptions.json'
               # Issue #435: payload_scope.py owns what the version gates count as
               # a shipped change, and test_payload_scope.py is its only guard. A
               # PR that ONLY widened the exclusion - the exact shape of a gate
@@ -363,6 +371,12 @@ jobs:
               - 'core/artifacts/**'
               - 'core/pysrc/**'
               - 'core/surface/**'
+              - '.github/fixtures/debug/**'
+              - '.github/scripts/test_debug_handoff.py'
+              - 'tools/build-debug-handoff.py'
+              - 'plugins/ca/hooks/*debug*'
+              - 'plugins/ca-codex/hooks/*debug*'
+              - 'plugins/ca-pi/hooks/*debug*'
               - 'plugins/ca/hooks/_artifactlib.py'
               - 'plugins/ca-codex/hooks/_artifactlib.py'
               - 'plugins/ca-pi/hooks/_artifactlib.py'
@@ -380,11 +394,14 @@ jobs:
               - '.codearbiter/reports/agent-lane-proof.json'
               - 'site/package.json'
               - 'site/package-lock.json'
+              - 'site/audit-exceptions.json'
+              - '.github/scripts/npm_audit_gate.py'
               - 'site/playwright.config.ts'
               - 'site/test/browser/artifact-review.spec.ts'
               - 'site/src/content/docs/**'
               - 'site/src/curated/**'
               - 'tools/build-artifacts.py'
+              - 'tools/artifact-coverage.py'
               - 'tools/build-host-packages.py'
               - 'tools/install-artifact-payload.py'
               - 'tools/generate-artifact-types.py'
@@ -403,9 +420,15 @@ jobs:
               - '.github/scripts/test_artifact_conformance.py'
               - '.github/scripts/test_artifact_farm.py'
               - '.github/scripts/test_artifact_native.py'
+              - '.github/scripts/test_artifact_cli.py'
+              - '.github/scripts/test_artifact_coverage.py'
               - '.github/scripts/test_artifact_package.py'
               - '.github/scripts/test_artifact_surface.py'
               - '.github/scripts/test_artifact_workflow.py'
+              - '.github/scripts/_contextverificationlib.py'
+              - '.github/scripts/test_context_verification.py'
+              - '.github/scripts/test_context_native.py'
+              - '.github/scripts/test_context_workflow.py'
               - '.github/requirements/artifact-conformance.in'
               - '.github/requirements/artifact-conformance-py314.lock'
               # Auto-release consumes this exact-head package cohort. A
@@ -442,11 +465,10 @@ jobs:
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    # Run 36079069513: Intel macOS passed its 42 authoring and 35 package
-    # cases, then hit the former 15-minute job ceiling during the full
-    # conformance replay. Windows ARM took 12m07s. Retain every required
-    # suite and bound the entire cold-toolchain/native population at 30m.
-    timeout-minutes: 30
+    # Intel macOS run 36321825183 and Windows ARM runs 37148496781
+    # and 37150510062 exhausted 30m after earlier suites passed.
+    # Preserve all suites and per-test timeouts; allow those hosts 45m.
+    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}
     permissions:
       contents: read
     env:
@@ -505,8 +527,42 @@ jobs:
       - name: Vet artifact engine
         working-directory: core/artifacts
         run: go vet -buildvcs=false ./...
+      - name: Exercise the actual CLI with native statement instrumentation
+        run: >-
+          python .github/scripts/test_artifact_cli.py --coverage-output
+          "${{ runner.temp }}/artifact-cli-statements.out"
+      - name: Collect native unit and executable statement coverage
+        run: >-
+          python tools/artifact-coverage.py collect
+          --module-root core/artifacts
+          --output "${{ runner.temp }}/artifact-statements"
+          --expect-platform "${{ matrix.expected_platform }}"
+          --extra-profile "${{ runner.temp }}/artifact-cli-statements.out"
+      - name: Preserve the native statement profiles
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: artifact-statements-${{ matrix.os }}
+          path: ${{ runner.temp }}/artifact-statements
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
       - name: Verify named native storage and recovery contract
         run: python .github/scripts/test_artifact_native.py
+      - name: Verify the finite context Go test bridge
+        run: python .github/scripts/test_context_verification.py
+      - name: Verify named context document Go cases
+        env:
+          CONTEXT_NATIVE_OBSERVATION_OUTPUT: ${{ runner.temp }}/context-native-observation.json
+        run: python .github/scripts/test_context_native.py
+      - name: Reject missing and nonisolated installed context candidates
+        run: >-
+          python .github/scripts/test_context_installed.py
+          InstalledContextQualification.test_t044_rejects_missing_candidate_identity
+          InstalledContextQualification.test_t044_rejects_nonisolated_environment
+          -v
+      - name: Verify context workflow with the pinned Go toolchain
+        run: python .github/scripts/test_context_workflow.py
       - name: Build native qualified candidate
         run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
       - name: Generate review examples with the native candidate
@@ -569,6 +625,8 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_artifact_conformance.py'], check=True)"
+      - name: Test debug handoff model against the locked reference interpreter
+        run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)"
       - name: Bind the candidate to this exact-host native result
         env:
           EXPECTED_ARTIFACT_PLATFORM: ${{ matrix.expected_platform }}
@@ -576,6 +634,7 @@ jobs:
           python tools/build-artifacts.py
           --qualify-existing "${{ runner.temp }}/artifact-candidate"
           --qualification-output "${{ runner.temp }}/artifact-qualification.json"
+          --context-native-observation "${{ runner.temp }}/context-native-observation.json"
       - name: Preserve the exact native candidate and qualification receipt
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -627,7 +686,8 @@ jobs:
       - name: Install the reviewed browser-test graph
         run: npm ci
       - name: Audit the browser-test dependency graph
-        run: npm audit --omit=dev --audit-level=high
+        # Same accepted-advisory gate as docs.yml's site-check (site graph).
+        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Record runner Chrome version
@@ -646,6 +706,81 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: true
+          overwrite: false
+
+  artifact-coverage:
+    name: "[CHECK] | [CORE] | Native Go statement coverage"
+    needs: [changes, artifact-engine]
+    if: ${{ !cancelled() && needs.changes.outputs.artifacts == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+    env:
+      GOTOOLCHAIN: local
+    steps:
+      - name: Require successful native execution on every platform
+        env:
+          ENGINE_RESULT: ${{ needs.artifact-engine.result }}
+        run: |
+          if [ "$ENGINE_RESULT" != success ]; then
+            echo "::error::native coverage requires every engine platform to succeed: $ENGINE_RESULT"
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Verify statement collector rejection and merge behavior
+        run: python .github/scripts/test_artifact_coverage.py
+      - name: Download this run's native statement profiles
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: artifact-statements-*
+          path: ${{ runner.temp }}/artifact-statement-inputs
+          merge-multiple: false
+      - name: Require the complete six-platform statement union
+        env:
+          COVERAGE_INPUTS: ${{ runner.temp }}/artifact-statement-inputs
+          COVERAGE_REPORT: ${{ runner.temp }}/artifact-statement-summary.json
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          arguments = [
+              sys.executable, "tools/artifact-coverage.py", "summarize",
+              "--module-root", "core/artifacts", "--minimum-statements", "70",
+              "--require-integration",
+          ]
+          for folder in sorted(Path(os.environ["COVERAGE_INPUTS"]).glob("artifact-statements-*")):
+              arguments.extend(("--input", str(folder)))
+          result = subprocess.run(arguments, capture_output=True, text=True)
+          Path(os.environ["COVERAGE_REPORT"]).write_text(result.stdout, encoding="utf-8")
+          print(result.stdout, end="")
+          print(result.stderr, end="", file=sys.stderr)
+          raise SystemExit(result.returncode)
+          PY
+      - name: Preserve the statement coverage verdict
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: artifact-statement-summary
+          path: ${{ runner.temp }}/artifact-statement-summary.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
           overwrite: false
 
   artifact-package-assembly:
@@ -954,6 +1089,8 @@ jobs:
           python-version: "3.x"
       - name: Validate impact-map fallback, receipt, and name contracts
         run: python .github/scripts/test_ci_impact.py
+      - name: Validate the site CVE gate's accepted-advisory judge
+        run: python .github/scripts/test_npm_audit_gate.py
       - name: Validate the version gates' shipped-payload scope
         # Issue #435. The version gates decide "did anything an installed user
         # can observe change?", and they answer it with a git pathspec - the
@@ -1245,7 +1382,7 @@ jobs:
         # any way a second cell would reveal. Pinned to the upper bound of the
         # supported window.
         working-directory: .
-        run: python .github/scripts/pi_host_locks.py install --version 0.84.1 --prefix "$RUNNER_TEMP/pi-host-0.84.1"
+        run: python .github/scripts/pi_host_locks.py install --version 1.0.0 --prefix "$RUNNER_TEMP/pi-host-0.84.1"
       - name: Install (locked)
         # --ignore-scripts for the same reason every sibling job uses it: this
         # graph's output is a committed artifact. The graph itself is audited by
@@ -1705,7 +1842,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        pi-version: ["0.84.1"]
+        pi-version: ["1.0.0"]
     runs-on: ${{ matrix.os }}
     # Issue #399. Worst observed cell before this split was 452s (windows-latest,
     # run 30123976665); the Windows cold `npm install --global` dominates and is
@@ -1860,7 +1997,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Initialize scoped Pi CodeQL database
-        uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           languages: javascript-typescript
           build-mode: none
@@ -1874,7 +2011,7 @@ jobs:
             paths-ignore:
               - plugins/ca-pi/tools/node_modules
       - name: Analyze Pi without duplicating default code-scanning uploads
-        uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           category: "/language:javascript-typescript"
           output: codeql-results
@@ -2067,7 +2204,7 @@ jobs:
         # includes/routing-table.md are the orchestrator's routing surface,
         # not passive docs -- a stale row can send it to a skill that no
         # longer exists, or leave a real one unreachable. This was an
-        # authoring discipline (skill-author Phase 5 prose) with nothing
+        # authoring discipline (formerly maintained as prose) with nothing
         # mechanical behind it; check_routing_index_parity.py makes it a
         # CI-checked invariant: every skill/routine/agent/ca-codex
         # command-wrapper skill has exactly one INDEX row pointing at a
@@ -2257,6 +2394,36 @@ jobs:
         # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
         # with schema/doc/created/interview_derived/entries[] (_provenancelib).
         run: python .github/scripts/test_provenancelib.py
+      - name: Validate deterministic brownfield fixtures
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_fixtures.py
+      - name: Validate closed brownfield reports
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_contracts.py
+      - name: Validate brownfield observation accounting
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_evaluation.py
+      - name: Validate named brownfield test outcomes
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_named_output.py
+      - name: Validate context host containment controls
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_host.py
+      - name: Validate scoped context consumers
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_consumers.py
+      - name: Test debug workflow contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py
+      - name: Test debug helper invocation contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_helper_invocation.py
+      - name: Test debug package contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_package.py
+      - name: Test debug qualification record correspondence
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_qualification.py
       - name: Run shipped-skill portability guard
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # A-6.1: a skill under core/surface/skills/** renders into every
@@ -3073,6 +3240,7 @@ jobs:
       - changes
       - artifact-engine
       - artifact-browser
+      - artifact-coverage
       - artifact-package-assembly
       - artifact-package-cold
       - host-descriptors
@@ -3108,11 +3276,17 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"
+          artifact_coverage_result="${{ needs['artifact-coverage'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           release_candidate_result="${{ needs['auto-release-candidate'].result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"
+          if [ "$artifact_coverage_required" = true ] && [ "$artifact_coverage_result" != success ]; then
+            echo "::error::required native statement coverage did not succeed: $artifact_coverage_result"
+            exit 1
+          fi
           if [ "$release_candidate_result" != success ]; then
             echo "::error::release candidate readiness did not succeed: $release_candidate_result"
             exit 1

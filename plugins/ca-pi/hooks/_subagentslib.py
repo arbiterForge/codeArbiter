@@ -2,10 +2,12 @@
 # codeArbiter — statusline subagent-rows helpers (extracted from statusline.py,
 # architecture-004).
 #
-# Owns resolving the current session's subagents directory, reading its recent
-# `.jsonl` transcripts (deduped per requestId, same rule as the Session/Today
-# rows), and labeling each subagent from its first user message. Carries no
-# rendering concern — the statusline turns the returned dicts into rows.
+# Owns resolving the current session's subagents directory and turning the
+# accounting scanner's per-child presentation summaries (from the ledger record)
+# into rows, plus labeling a subagent from its first user message (sub_label is
+# called BY that scanner). It never parses a child transcript itself: the render
+# path has one JSONL parser (_ledgerlib). No rendering concern — the statusline
+# turns the returned dicts into rows.
 #
 # Design principles (mirroring _ledgerlib.py):
 #   - Stdlib only; no third-party imports ever.
@@ -14,11 +16,10 @@
 #
 # Public API:
 #   subagent_dir(data, root, sid) -> str|None
-#   read_subagents(sdir) -> (active, recent, shown, (tot_in, tot_out))
+#   read_subagents(sdir, rec=None) -> (active, recent, shown, (tot_in, tot_out))
 #   sub_label(content) -> str
 #   display_model(model_id) -> str
 
-import json
 import os
 import re
 import time
@@ -35,8 +36,7 @@ except Exception:  # pragma: no cover — never let an import break the statusli
 ACTIVE_WINDOW = 150       # secs: a subagent file touched this recently is "active"
 SHOW_WINDOW = 600         # secs: still display recently-finished subagents
 MAX_SUB_ROWS = 4
-MAX_SUB_FILES = 12        # hot-path bound: parse at most this many files / render
-MAX_SUB_LINES = 2500      # per-file line cap
+MAX_SUB_FILES = 12        # rows considered per render (presentation bound, not accounting)
 
 
 def display_model(model_id):
@@ -88,17 +88,24 @@ def subagent_dir(data, root, sid):
     return None
 
 
-def read_subagents(sdir):
-    """Return (active, recent, shown[{label,inp,out,age,active}], (tot_in, tot_out)).
+def read_subagents(sdir, rec=None):
+    """Return (active, recent, shown[{label,model,inp,out,age,active}], (tot_in, tot_out)).
     `active` = files touched within ACTIVE_WINDOW (a liveness proxy); `recent` =
     all files within SHOW_WINDOW (active + recently finished).
+
+    Rows come from the accounting scanner's per-source PRESENTATION SUMMARIES in
+    the ledger record `rec` (spec D-7): label, observed models and owner-attributed
+    tokens, with fork-replayed parent requests excluded. This reader only lists
+    the directory and stats files for liveness. It never opens or parses a child
+    transcript, so the render path has exactly one JSONL parser. A child the
+    scanner has not reached yet shows its fallback name and zero tokens until it
+    has.
 
     ONE result shape on EVERY path (#413). The element types are stable — int,
     int, list, (int|float, int|float) — so a caller may unpack four names
     unconditionally. statusline.py does exactly that, OUTSIDE its safe()
-    wrapper, so an error branch returning a shorter tuple was a hard ValueError
-    that erased the entire subagent section on a routine directory race. An
-    unreadable/absent directory is an EMPTY result, not a different result."""
+    wrapper, so an error branch returning a shorter tuple would be a hard
+    ValueError. An unreadable/absent directory is an EMPTY result."""
     empty = (0, 0, [], (0, 0))
     now = time.time()
     files = []
@@ -117,61 +124,20 @@ def read_subagents(sdir):
         return empty
     files.sort(reverse=True)   # most-recently-touched first
 
+    sources = rec.get("src") if isinstance(rec, dict) else None
+    sources = sources if isinstance(sources, dict) else {}
     active = sum(1 for mtime, _, _, _ in files if now - mtime <= ACTIVE_WINDOW)
     shown, tot_in, tot_out = [], 0, 0
-    for mtime, size, fp, nm in files[:MAX_SUB_FILES]:
+    for mtime, size, _fp, nm in files[:MAX_SUB_FILES]:
         if size > 16 * 1024 * 1024:
             continue
-        reqs = {}
-        models = []
-        label = None
-        try:
-            with open(fp, encoding="utf-8", errors="replace") as f:
-                for i, ln in enumerate(f):
-                    if i > MAX_SUB_LINES:
-                        break
-                    ln = ln.strip()
-                    if not ln:
-                        continue
-                    try:
-                        d = json.loads(ln)
-                    except ValueError:
-                        continue
-                    if not isinstance(d, dict):
-                        # A transcript line may be ANY valid JSON value; only an
-                        # object carries an event. `[]`/`null`/`3`/`"s"` used to
-                        # reach .get() below inside a try that caught OSError
-                        # only, so one such line raised AttributeError out of
-                        # read_subagents and blanked every subagent row (#413).
-                        continue
-                    msg = d.get("message")
-                    if not isinstance(msg, dict):
-                        continue
-                    if label is None and msg.get("role") == "user":
-                        label = sub_label(msg.get("content"))
-                    if msg.get("role") == "assistant":
-                        raw_model = msg.get("model")
-                        if isinstance(raw_model, str) and raw_model.strip():
-                            raw_model = raw_model.strip()
-                            if raw_model not in models:
-                                models.append(raw_model)
-                    u = msg.get("usage")
-                    if isinstance(u, dict):
-                        # dedupe by requestId; fresh input only (cache reads excluded)
-                        # — same definition as the Session/Today rows.
-                        reqs[d.get("requestId") or msg.get("id") or i] = (
-                            num(u.get("input_tokens")) + num(u.get("cache_creation_input_tokens")),
-                            num(u.get("output_tokens")))
-        except Exception:  # noqa: BLE001 — #413: the error boundary is PER FILE
-            # One unreadable or structurally surprising transcript must cost
-            # only its own row, never the rest of the directory. Widened from
-            # OSError so a shape the reader has not anticipated degrades the
-            # same way malformed JSON already does (the module's standing
-            # "never raise on malformed input" contract) instead of escaping
-            # into the statusline and blanking every subagent row.
-            continue
-        inp = sum(v[0] for v in reqs.values())
-        out = sum(v[1] for v in reqs.values())
+        summary = sources.get("c:" + nm)
+        summary = summary if isinstance(summary, dict) else {}
+        tok = summary.get("tok")
+        inp, out = ((num(tok[0]), num(tok[1])) if isinstance(tok, list) and len(tok) == 2
+                    else (0, 0))
+        models = [m for m in (summary.get("models") or []) if isinstance(m, str)]
+        label = summary.get("label") if isinstance(summary.get("label"), str) else None
         tot_in += inp
         tot_out += out
         if len(shown) < MAX_SUB_ROWS:

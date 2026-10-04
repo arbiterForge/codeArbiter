@@ -25,15 +25,16 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "finish": {
           "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
-          "quote": "**execute those steps here; do not re-invoke `{{CMD:pr}}`**"
+          "quote": "**execute those steps here; do not re-invoke `{{CMD:pr}}`**",
+          "currentQuote": "execute the **Open-PR procedure** below in this owner. Do not load or re-invoke the PR command wrapper."
         },
         "pair": {
           "path": "core/surface/SPRINT.md",
           "quote": "commits approval plus plan binding in one recoverable native transaction."
         },
         "pr": {
-          "path": "core/surface/commands/pr.md",
-          "quote": "Confirm the commit gate cleared"
+          "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+          "quote": "`commit-gate` MUST have cleared on the current HEAD."
         },
         "sprint": {
           "path": "core/surface/SPRINT.md",
@@ -591,19 +592,23 @@ export const workflows: readonly WorkflowDefinition[] = [
       "outcome": "The decision, decision-log append and exact acceptance binding are retained. Accepted/Planned does not prove implementation, verification or a merged PR.",
       "sources": {
         "adr": {
-          "path": "core/surface/commands/adr.md",
-          "quote": "Status transitions require\nexplicit user instruction"
+          "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
+          "quote": "Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction"
         },
         "adrAccept": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "### Accepted/Planned binding"
         },
         "adrCommit": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "its `source_commit` cannot truthfully name a commit that does\n   not exist yet."
         },
         "adrWrite": {
           "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "currentPath": "core/surface/skills/decision-lifecycle/references/authoring.md",
           "quote": "Author it with `status: proposed`."
         }
       },
@@ -800,16 +805,19 @@ export const workflows: readonly WorkflowDefinition[] = [
       "outcome": "An exact published tag and declared asset inventory after authorization and read-back. When provenance is declared, retain the original receipt and merge its separate closeout PR; publication alone does not finish that record.",
       "sources": {
         "pr": {
-          "path": "core/surface/commands/pr.md",
-          "quote": "Confirm the commit gate cleared"
+          "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+          "quote": "`commit-gate` MUST have cleared on the current HEAD."
         },
         "release": {
           "path": "core/surface/commands/release.md",
+          "currentPath": "core/surface/skills/release/SKILL.md",
           "quote": "## Dry run"
         },
         "releaseAssets": {
           "path": "core/surface/commands/release.md",
-          "quote": "declared assets are qualified in the protected publisher before any tag push"
+          "currentPath": "core/surface/skills/release/SKILL.md",
+          "quote": "declared assets are qualified in the protected publisher before any tag push",
+          "currentQuote": "The qualifying hosted publisher MUST declare and enforce one reviewed asset path before the release PR merges"
         },
         "releaseAuth": {
           "path": "core/surface/skills/release/SKILL.md",
@@ -833,7 +841,9 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "releaseVersion": {
           "path": "core/surface/commands/release.md",
-          "quote": "The base accounts for both the last compatible tag and every declared manifest."
+          "currentPath": "core/surface/skills/release/SKILL.md",
+          "quote": "The base accounts for both the last compatible tag and every declared manifest.",
+          "currentQuote": "**`$BASE_VERSION`"
         }
       },
       "chapters": [
@@ -1423,15 +1433,15 @@ export const workflows: readonly WorkflowDefinition[] = [
   {
     "id": "brownfield",
     "title": "Initialize existing code from evidence",
-    "summary": "Scaffold → isolated scouts → resolve gaps → initialize",
-    "endpoint": "Source-backed context; no synthetic greenfield roadmap.",
+    "summary": "Scaffold → qualify scouts → collect reports → initialize",
+    "endpoint": "Qualified full run: source-backed context; otherwise stop before dispatch.",
     "guide": "/guides/understand-an-existing-project/",
     "asset": "lane-init-brownfield.svg",
     "map": {
       "id": "brownfield",
       "title": "Initialize existing code from evidence",
       "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
-      "boundary": "Choose this route when meaningful source exists. Six isolated scout reports are required; the orchestrator synthesizes their reports rather than loading raw source. Missing isolation is a capability stop.",
+      "boundary": "Choose this route when meaningful source exists. Initial or full runs require six logical scout categories through an observed, read-only host boundary; scoped refreshes cover only declared affected categories. Current generated host surfaces lack that qualified context profile and must stop before dispatch.",
       "outcome": "Populated source-backed project state, provenance and a code map, with each gap resolved or explicitly deferred before initialization. It does not invent the three greenfield planning documents.",
       "sources": {
         "brownLock": {
@@ -1452,7 +1462,8 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "scouts": {
           "path": "core/surface/skills/context-creation/SKILL.md",
-          "quote": "Dispatch six isolated `scout` subagents simultaneously."
+          "quote": "Dispatch six isolated `scout` subagents simultaneously.",
+          "currentQuote": "When the profile is actually qualified, create one full run with six root"
         },
         "synthesis": {
           "path": "core/surface/skills/context-creation/SKILL.md",
@@ -1466,9 +1477,9 @@ export const workflows: readonly WorkflowDefinition[] = [
       "chapters": [
         {
           "id": "inspect-code",
-          "title": "Collect six bounded reports",
+          "title": "Qualify and collect bounded reports",
           "question": "Who reads the code, and what crosses the context boundary?",
-          "output": "All six reports returned, including explicit not-found results. A missing report is not empty evidence and blocks synthesis.",
+          "output": "On a qualified initial/full run, all six logical reports return. A scoped refresh returns its declared affected reports. Missing transport blocks synthesis.",
           "nodes": [
             {
               "id": "brown-init",
@@ -1505,21 +1516,21 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: confirm the source",
               "href": "/reference/skills/context-creation/",
               "source": "context",
-              "detail": "Confirm meaningful code and identify its primary source directories. The general inline fallback cannot replace this route’s required isolated scouts.",
+              "detail": "Confirm meaningful code and identify its primary source directories. Block before dispatch unless the host proves a context-specific read-only child profile.",
               "output": "A bounded source surface to inspect."
             },
             {
               "id": "brown-scouts",
               "role": "agent",
               "label": [
-                "Six isolated",
+                "Qualified",
                 "scouts"
               ],
-              "title": "scout: six separate source slices",
-              "href": "/reference/agents/scout/",
+              "title": "context scouts: assigned source slices",
+              "href": "/reference/skills/context-creation/",
               "source": "scouts",
-              "detail": "Inspect stack, infrastructure, architecture, security, testing and data model in parallel. Return paths, lines, named values and content hashes, never secret values or raw code excerpts.",
-              "output": "Six restricted evidence reports for synthesis."
+              "detail": "A qualified initial/full run covers stack, infrastructure, architecture, security, testing and data model. A scoped refresh covers only affected categories. Queue within host limits; return bounded reports and trusted hashes, never raw code or secrets.",
+              "output": "Bounded reports for the declared scope, if host containment is qualified."
             }
           ],
           "edges": [
@@ -1542,9 +1553,9 @@ export const workflows: readonly WorkflowDefinition[] = [
             {
               "to": "brown-scouts",
               "kind": "dispatch",
-              "label": "isolated slices",
+              "label": "qualified slices",
               "source": "scouts",
-              "detail": "Dispatch every required scout before synthesis.",
+              "detail": "Block on unqualified host containment; otherwise dispatch every declared assignment.",
               "from": "brown-preflight"
             }
           ]
@@ -1660,9 +1671,9 @@ export const workflows: readonly WorkflowDefinition[] = [
         {
           "to": "brown-synthesis",
           "kind": "return",
-          "label": "all six reports",
+          "label": "declared reports",
           "source": "scouts",
-          "detail": "A scout that finds nothing returns not-found; silence is a missing report.",
+          "detail": "Join six complete logical categories for initial/full runs, or exactly the affected categories for scoped refresh. Missing transport blocks.",
           "from": "brown-scouts"
         },
         {
@@ -1670,7 +1681,7 @@ export const workflows: readonly WorkflowDefinition[] = [
           "kind": "repeat",
           "label": "Missing or failed report",
           "source": "scouts",
-          "detail": "Re-dispatch the failed scout before synthesis rather than accepting an incomplete picture.",
+          "detail": "Retry only through the qualified profile and bounded run ledger after understanding the failure.",
           "from": "brown-scouts"
         },
         {
@@ -1690,8 +1701,8 @@ export const workflows: readonly WorkflowDefinition[] = [
         "source": "context"
       },
       {
-        "title": "Isolation is a real prerequisite",
-        "detail": "A host without isolated subagents must stop this route. The general role fallback does not erase the report-only synthesis boundary.",
+        "title": "Containment is a real prerequisite",
+        "detail": "Current generated host surfaces cannot qualify context scout dispatch. The shared scout role is not a substitute for host-enforced read-only containment.",
         "source": "scouts"
       },
       {

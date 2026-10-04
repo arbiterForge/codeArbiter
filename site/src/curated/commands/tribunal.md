@@ -64,8 +64,10 @@ resume anyway or start fresh, since the codebase may have drifted under the reco
 /ca:tribunal "[scope-path] [--tag <label>]"
 ```
 
-An optional `scope-path` narrows which subtree gets scrutiny (the full eleven-lens roster still
-runs); `--tag <label>` records a freeform label if you opt in to KPI telemetry at the end.
+An optional `scope-path` narrows the subtree. The full roster is considered, but only
+applicable lenses run; launched and skipped lenses are recorded. `--tag <label>` supplies
+a freeform label, not permission to send telemetry. Requesting the deep audit in ordinary
+language selects the same procedure; cost acknowledgment still precedes dispatch.
 
 ## Example
 

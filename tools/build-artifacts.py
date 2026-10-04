@@ -8,7 +8,9 @@ import os
 from pathlib import Path
 import platform
 import re
+import shutil
 import subprocess
+import sys
 
 QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
 QUALIFICATION_WORKFLOW = ".github/workflows/ci.yml"
@@ -23,7 +25,73 @@ NATIVE_TESTS = [
 ]
 
 
-def write_qualification(candidate: Path, destination: Path) -> None:
+def _unique_object(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate context observation field")
+        value[key] = item
+    return value
+
+
+def load_context_observation(path: Path) -> dict:
+    """Bind six real finite Go outcomes to this checkout and pinned Go tool."""
+    if not path.is_absolute() or path.is_symlink() or not path.is_file():
+        raise ValueError("context native observation must be an independent real file")
+    raw = path.read_bytes()
+    if len(raw) > 65_536:
+        raise ValueError("context native observation exceeds its bound")
+    record = json.loads(raw, object_pairs_hook=_unique_object)
+    scripts = Path(__file__).resolve().parents[1] / ".github" / "scripts"
+    sys.path.insert(0, str(scripts))
+    try:
+        import _contextverificationlib as bridge
+        import test_context_native as context_tests
+    finally:
+        sys.path.remove(str(scripts))
+    module = Path(__file__).resolve().parents[1] / "core" / "artifacts"
+    go_name = shutil.which("go")
+    if go_name is None:
+        raise ValueError("pinned Go executable is unavailable")
+    go_digest = hashlib.sha256(Path(go_name).resolve(strict=True).read_bytes()).hexdigest()
+    expected = {
+        "TestContextRepresentationBoundary": (context_tests.SOURCE, context_tests.SUBTESTS),
+        "TestContextDocumentContract": (context_tests.DOCUMENT_SOURCE, context_tests.DOCUMENT_SUBTESTS),
+        "TestContextMarkdownPreservation": (context_tests.MARKDOWN_SOURCE, context_tests.MARKDOWN_SUBTESTS),
+        "TestContextBoundedRender": (context_tests.RENDER_SOURCE, context_tests.RENDER_SUBTESTS),
+        "TestContextMutationAdmission": (context_tests.MUTATION_SOURCE, context_tests.MUTATION_SUBTESTS),
+        "TestContextRecoveryAndPaths": (context_tests.RECOVERY_SOURCE, context_tests.RECOVERY_SUBTESTS),
+    }
+    if (not isinstance(record, dict) or set(record) != {"format", "module_sha256", "go_sha256", "cases"}
+            or record["format"] != "codearbiter.context-native-observation/0.1.0"
+            or record["module_sha256"] != bridge.hash_go_module(module)
+            or record["go_sha256"] != go_digest
+            or not isinstance(record["cases"], list)
+            or len(record["cases"]) != len(expected)):
+        raise ValueError("context native observation lacks exact source/tool identity")
+    seen = set()
+    for case in record["cases"]:
+        if not isinstance(case, dict) or set(case) != {
+                "name", "subtests", "source_sha256", "stdout_sha256",
+                "stderr_sha256", "exit_code"}:
+            raise ValueError("context native observation has an invalid case")
+        name = case["name"]
+        if name not in expected or name in seen or case["exit_code"] != 0:
+            raise ValueError("context native observation has a missing or failed case")
+        source, subtests = expected[name]
+        if (case["subtests"] != list(subtests)
+                or case["source_sha256"] != hashlib.sha256(source.read_bytes()).hexdigest()
+                or any(not isinstance(case[field], str) or re.fullmatch(r"[0-9a-f]{64}", case[field]) is None
+                       for field in ("stdout_sha256", "stderr_sha256"))):
+            raise ValueError("context native observation case drifted")
+        seen.add(name)
+    if seen != set(expected):
+        raise ValueError("context native observation omitted required cases")
+    return record
+
+
+def write_qualification(candidate: Path, destination: Path,
+                        context_observation: Path | None = None) -> None:
     """Emit the exact-host receipt only inside the protected CI matrix job."""
     source_commit = os.environ.get("GITHUB_SHA", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
@@ -77,6 +145,8 @@ def write_qualification(candidate: Path, destination: Path) -> None:
         "schema_version": manifest["schema_version"],
         "native_tests": NATIVE_TESTS,
     }
+    if context_observation is not None:
+        receipt["context_native"] = load_context_observation(context_observation)
     with destination.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(receipt, stream, indent=2)
         stream.write("\n")
@@ -87,16 +157,21 @@ def main():
     parser.add_argument("--skip-tests", action="store_true", help="development only; marks binary unqualified")
     parser.add_argument("--qualify-existing", type=Path)
     parser.add_argument("--qualification-output", type=Path)
+    parser.add_argument("--context-native-observation", type=Path)
     args = parser.parse_args()
     if args.qualify_existing is not None or args.qualification_output is not None:
         if args.output is not None or args.skip_tests or args.qualify_existing is None or args.qualification_output is None:
             parser.error("qualification mode requires --qualify-existing and --qualification-output only")
         write_qualification(args.qualify_existing.resolve(strict=True),
-                            args.qualification_output.absolute())
+                            args.qualification_output.absolute(),
+                            args.context_native_observation.absolute()
+                            if args.context_native_observation is not None else None)
         print(json.dumps({"qualification": str(args.qualification_output.absolute())}, indent=2))
         return
     if args.output is None:
         parser.error("--output is required when building a candidate")
+    if args.context_native_observation is not None:
+        parser.error("--context-native-observation requires qualification mode")
     repo = Path(__file__).resolve().parents[1]
     module = repo / "core/artifacts"
     output = args.output.resolve()

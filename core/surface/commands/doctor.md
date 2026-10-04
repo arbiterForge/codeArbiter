@@ -44,7 +44,7 @@ repository binary, mutate an artifact, or silently fall back to Markdown.
    Pi bash wrapper. The exact shared-core `[H-03]` block is healthy and cannot stage files; execution
    or a different block is unhealthy. This self-test does not traverse Pi's active dispatcher. Do not
    rerun or respell it.
-4. Its `active-dispatch` row remains degraded because supported Pi 0.84.1 public extension
+4. Its `active-dispatch` row remains degraded because supported Pi 1.0.0 public extension
    APIs cannot submit that deterministic call through the active dispatcher. PI-AC-28 remains blocked
    until supported-version real-host promotion/CI evidence closes the gap.
 5. Resolve Python once, run `{{PLUGIN_ROOT}}/hooks/doctor.py`, and present its mechanical report

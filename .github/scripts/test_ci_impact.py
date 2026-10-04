@@ -17,10 +17,22 @@ import sys
 import tempfile
 import tomllib
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _supported_pi_hosts() -> tuple[str, ...]:
+    """The reviewed Pi host window, so the CI matrix pin follows each promotion."""
+    spec = importlib.util.spec_from_file_location(
+        "pi_host_locks_for_ci_impact", REPO_ROOT / ".github" / "scripts" / "pi_host_locks.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return tuple(module.SUPPORTED)
+
+
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
@@ -35,6 +47,13 @@ NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 # toolchain that actually exists - the dev dependencies that produce farm.js,
 # sandbox.js, and the ca-pi extension bundles. Same threshold, by contract.
 NPM_AUDIT_DEV_GATE = "npm audit --audit-level=high"
+# The site graph's form of NPM_AUDIT_GATE: same scope and threshold, but the JSON
+# report is judged by npm_audit_gate.py, which admits only a GHSA recorded in
+# site/audit-exceptions.json with a dated backstop. Every other HIGH+ still fails.
+SITE_AUDIT_GATE = (
+    "npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py "
+    "--exceptions audit-exceptions.json --audit-level=high"
+)
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
 PI_PLATFORM_CONTRACT = REPO_ROOT / ".github" / "scripts" / "test_pi_platform_contract.py"
@@ -263,6 +282,8 @@ def unaudited_npm_graphs(workflow: str) -> list[str]:
         directory
         for job_id, directory in installs.items()
         if f"run: {NPM_AUDIT_GATE}" in jobs[job_id]
+        # The accepted-advisory form is the site graph's alone.
+        or (directory == "site" and f"run: {SITE_AUDIT_GATE}" in jobs[job_id])
     }
     return [
         f"{job_id} installs {directory}, which nothing audits"
@@ -346,7 +367,8 @@ def gitleaks_allowlist_regexes(config: str) -> list[str]:
 
 # The characters that would let an anchored waiver match more than the single
 # fixed value it spells out.  `\` is in the set because an escape sequence is a
-# pattern, and this contract admits no patterns at all.
+# pattern. The only exception, below, is one complete literal quote; active
+# patterns and early quote exits remain forbidden.
 _REGEX_METACHARACTERS = frozenset(".*+?()[]{}|^$\\")
 # `\A<body>\z` - Go RE2's spelling of "the WHOLE target is exactly <body>".
 _ANCHORED_WAIVER = re.compile(r"(?s)\A\\A(?P<body>.*)\\z\Z")
@@ -463,7 +485,12 @@ def gitleaks_waiver_violations(config: str) -> list[str]:
                     "regexes as substrings, so it waives anything merely containing it"
                 )
                 continue
-            stray = sorted(set(anchored.group("body")) & _REGEX_METACHARACTERS)
+            body = anchored.group("body")
+            # A whole RE2 quote is still ONE exact value, including punctuation.
+            # Refuse any earlier quote terminator: no regex may follow it.
+            if body.startswith(r"\Q") and body.endswith(r"\E") and r"\E" not in body[2:-2]:
+                continue
+            stray = sorted(set(body) & _REGEX_METACHARACTERS)
             if stray:
                 problems.append(
                     f"{literal!r} carries regex metacharacter(s) {''.join(stray)!r}; "
@@ -1280,7 +1307,7 @@ class WorkflowContractTest(unittest.TestCase):
         # version or the host OS stays in the supported-host matrix.
         for token in (
             "os: [ubuntu-latest, windows-latest, macos-latest]",
-            "pi-version: [\"0.84.1\"]",
+            f"pi-version: {json.dumps(list(_supported_pi_hosts()))}",
             "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "run: npm test -- test/package.test.ts",
             "run: python .github/scripts/test_pi_package.py --rpc-commands",
@@ -1633,7 +1660,7 @@ class WorkflowContractTest(unittest.TestCase):
                 + [f"run: {NPM_AUDIT_DEV_GATE}"] * 3
                 # site: the graph with production dependencies, audited by
                 # docs.yml and independently by the artifact browser job.
-                + [f"run: {NPM_AUDIT_GATE}"] * 2
+                + [f"run: {SITE_AUDIT_GATE}"] * 2
             ),
             "expected production and dev-inclusive audits on each tools graph, "
             "plus production audits in both site jobs",
@@ -1750,7 +1777,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("site-check", sorted(jobs))
         site_check = jobs["site-check"]
         self.assertIn("run: npm ci", site_check)
-        self.assertIn("run: npm audit --omit=dev --audit-level=high", site_check)
+        self.assertIn(f"run: {SITE_AUDIT_GATE}", site_check)
         # The audit is only a gate if the publish step waits on the job that
         # runs it.  `deploy` needs BOTH build and site-check today; assert the
         # site-check edge specifically so dropping it is caught.
@@ -1945,6 +1972,45 @@ class WorkflowContractTest(unittest.TestCase):
             "the .env.example placeholder is not the waived value, so the file is waived by "
             "something broader",
         )
+
+    def test_exact_quoted_secret_waivers_remain_single_values(self):
+        for value in ["fixture.with(punctuation)", "line one\nline two", ".*[]{}|^$", r"literal\Qtext"]:
+            with self.subTest(value=value):
+                pattern = r"\A\Q" + value + r"\E\z"
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''" + pattern + "''']\n"
+                self.assertEqual(gitleaks_waiver_violations(config), [])
+
+    def test_quoted_secret_waivers_cannot_leave_the_literal_scope(self):
+        patterns = [r"\Qfixture\E", r"\A\Qfixture\E", r"\Qfixture\E\z",
+                    r"\A\Qfixture\E.*\z", r"\A\Qfixture\E.*\Qother\E\z",
+                    r"\A\Qfixture\E|other\Qx\E\z", r"\A\Qfixture\E(?i)\Qx\E\z",
+                    r"\A\Qfixture\E\z.*", r"(?i)\A\Qfixture\E\z",
+                    r"\A\Qfixture\E[\s\S]*\Q\E\z", r"\Afixture.*\z", r"\A\Qfixture\z"]
+        for pattern in patterns:
+            with self.subTest(pattern=pattern):
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''" + pattern + "''']\n"
+                self.assertTrue(gitleaks_waiver_violations(config))
+
+    def test_quoted_literal_does_not_allow_path_or_target_waivers(self):
+        for field in ["paths = ['fixtures/']", "commits = ['abc']", "stopwords = ['fixture']",
+                      "regexTarget = 'match'", "regexTarget = 'line'", "condition = 'OR'"]:
+            with self.subTest(field=field):
+                config = "[[allowlists]]\ndescription = 'test-only literal'\nregexes = ['''\\A\\Qfixture(x)\\E\\z''']\n" + field
+                self.assertTrue(gitleaks_waiver_violations(config))
+
+    def test_historical_redaction_fixture_waiver_is_exact_source_text(self):
+        import hashlib
+        config = GITLEAKS_CONFIG.read_text(encoding="utf-8")
+        patterns = [p for p in gitleaks_allowlist_regexes(config) if p.startswith(r"\A\Q")]
+        self.assertEqual(len(patterns), 1)
+        pattern = patterns[0]
+        self.assertTrue(pattern.endswith(r"\E\z"))
+        value = pattern[4:-4]
+        self.assertNotIn(r"\E", value)
+        self.assertEqual(len(value.encode("utf-8")), 103)
+        self.assertEqual(hashlib.sha256(value.encode("utf-8")).hexdigest(),
+                         "0636fae38f63fc5e488ed81d916994bd086c5aea4f323ed1b912fa0f0697c1df")
+        self.assertIn("c4280147cffa1a7a8ba73ebe1b8b1bbf5f2a1e44", config)
 
     def test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract(self):
         # A contract only means something if it FAILS on the diffs it exists to
@@ -2475,18 +2541,20 @@ class ReceiptCommandTest(unittest.TestCase):
                 # issue #390.  A Pi payload edit now predicts all three Pi
                 # contracts plus artifact surface closure; omitting either
                 # class under-reports the required jobs a reviewer must wait on.
-                ["artifact-engine", "pi-adapter", "pi-checks", "pi-latest"],
+                ["artifact-engine", "artifact-package-cold", "pi-adapter",
+                 "pi-checks", "pi-latest"],
             )
             self.assertEqual(
                 receipt["predicted_not_selected"],
-                ["ca-surface", "codex-surface", "pi-surface", "artifact-browser"],
-            )
-            self.assertEqual(
-                receipt["selected"][1]["reproduce"],
-                "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10",
+                ["ca-surface", "codex-surface", "pi-surface", "artifact-browser",
+                 "hooks"],
             )
             self.assertEqual(
                 receipt["selected"][2]["reproduce"],
+                "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10",
+            )
+            self.assertEqual(
+                receipt["selected"][3]["reproduce"],
                 "npm --prefix plugins/ca-pi/tools test",
             )
             self.assertEqual(
@@ -2623,6 +2691,153 @@ class NoOrphanedSuiteTest(unittest.TestCase):
             orphans, [],
             "these suites are invoked by no workflow and no sibling script, so "
             "they never run: " + ", ".join(orphans))
+
+
+class DebugSuiteRegistrationTest(unittest.TestCase):
+    """T-032: each debug suite has a selected, fail-closed CI execution."""
+
+    def test_debug_suites_run_in_selected_jobs(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        assignments = {
+            "test_debug_handoff.py": "artifact-engine",
+            "test_debug_workflow.py": "hooks",
+            "test_debug_helper_invocation.py": "hooks",
+            "test_debug_package.py": "hooks",
+            "test_debug_qualification.py": "hooks",
+        }
+        for suite, job_id in assignments.items():
+            with self.subTest(suite=suite):
+                self.assertTrue((REPO_ROOT / ".github/scripts" / suite).is_file())
+                command = f".github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/{suite}'" if job_id == "artifact-engine" else f"python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/{suite}"
+                self.assertEqual(jobs[job_id].count(command), 1)
+                self.assertNotIn("continue-on-error: true", jobs[job_id])
+        self.assertIn("[os.environ['ARTIFACT_CONFORMANCE_PYTHON'], "
+                      "'.github/scripts/test_ci_impact.py', '--run-debug-suite', "
+                      "'.github/scripts/test_debug_handoff.py']", jobs["artifact-engine"])
+        self.assertIn("matrix.partition == 'all' || matrix.partition == 'contracts'", jobs["hooks"])
+        self.assertIn('python-version: "3.x"', jobs["hooks"])
+
+    def test_debug_inputs_reach_the_jobs_that_execute_them(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        hooks = paths_filter(ci, "hooks")
+        artifacts = paths_filter(ci, "artifacts")
+        for path in ("core/pysrc/_debughandofflib.py",
+                     "core/surface/skills/debug/SKILL.md",
+                     ".github/fixtures/debug/cases.json",
+                     "plugins/ca/hooks/_debughandofflib.py",
+                     "plugins/ca-codex/hooks/_debughandofflib.py",
+                     "plugins/ca-pi/hooks/_debughandofflib.py"):
+            with self.subTest(path=path):
+                self.assertTrue(any(fnmatch.fnmatch(path, pattern) for pattern in hooks), path)
+                self.assertTrue(any(fnmatch.fnmatch(path, pattern) for pattern in artifacts), path)
+        for path in (".github/scripts/test_debug_workflow.py",
+                     ".github/scripts/test_debug_helper_invocation.py",
+                     ".github/scripts/test_debug_package.py",
+                     ".github/scripts/test_debug_qualification.py"):
+            with self.subTest(path=path):
+                self.assertTrue(any(fnmatch.fnmatch(path, pattern) for pattern in hooks), path)
+        self.assertTrue(any(fnmatch.fnmatch(".github/scripts/test_debug_handoff.py", pattern)
+                            for pattern in artifacts))
+        self.assertTrue(any(fnmatch.fnmatch("tools/build-debug-handoff.py", pattern)
+                            for pattern in artifacts))
+        docs_only = "docs/proposals/debug-correctness/PLAN.md"
+        self.assertFalse(any(fnmatch.fnmatch(docs_only, pattern)
+                             for pattern in hooks + artifacts))
+
+    def test_debug_impact_receipt_keeps_broad_and_native_checks(self):
+        impact_map = module.load_map(REPO_ROOT / ".github/ci-impact-map.json")
+        debug_paths = (
+            ".github/fixtures/debug/cases.json",
+            ".github/scripts/test_debug_handoff.py",
+            "tools/build-debug-handoff.py",
+            "plugins/ca/hooks/_debughandofflib.py",
+            "plugins/ca-codex/hooks/_debughandofflib.py",
+            "plugins/ca-pi/hooks/_debughandofflib.py",
+        )
+        for path in debug_paths:
+            with self.subTest(path=path):
+                result = module.evaluate(impact_map, [path], hosts=())
+                selected = {check.id for check in result.selected}
+                self.assertFalse(result.fallback, path)
+                self.assertTrue({"broad-lane", "artifact-engine"} <= selected, path)
+                if path.startswith("plugins/ca-pi/"):
+                    self.assertTrue({"pi-adapter", "pi-checks", "pi-latest"} <= selected)
+        ordinary_pi = module.evaluate(
+            impact_map, ["plugins/ca-pi/tools/src/extension.ts"], hosts=())
+        self.assertEqual({check.id for check in ordinary_pi.selected},
+                         {"pi-adapter", "pi-checks", "pi-latest", "artifact-engine",
+                          "artifact-package-cold"})
+        docs_only = module.evaluate(
+            impact_map, ["docs/proposals/debug-correctness/PLAN.md"], hosts=())
+        self.assertEqual({check.id for check in docs_only.selected}, {"broad-lane"})
+
+    def test_debug_suite_runner_rejects_missing_zero_and_failed_suites(self):
+        path = Path("test_debug_sample.py")
+        with mock.patch.object(Path, "is_file", return_value=False):
+            self.assertNotEqual(run_debug_suite(path), 0)
+        with mock.patch.object(Path, "is_file", return_value=True):
+            with mock.patch.object(unittest.defaultTestLoader, "discover",
+                                   return_value=unittest.TestSuite()):
+                self.assertNotEqual(run_debug_suite(path), 0)
+            failed = unittest.TestSuite([unittest.FunctionTestCase(
+                lambda: self.fail("expected runner failure"))])
+            with mock.patch.object(unittest.defaultTestLoader, "discover", return_value=failed):
+                self.assertNotEqual(run_debug_suite(path), 0)
+            passed = unittest.TestSuite([unittest.FunctionTestCase(lambda: None)])
+            with mock.patch.object(unittest.defaultTestLoader, "discover", return_value=passed):
+                self.assertEqual(run_debug_suite(path), 0)
+
+    def test_debug_suite_runner_requires_a_real_pass_when_cases_are_skipped(self):
+        class Skipped(unittest.TestCase):
+            @unittest.skip("platform unavailable")
+            def test_skip(self):
+                self.fail("unreachable")
+
+        class Passed(unittest.TestCase):
+            def test_pass(self):
+                self.assertTrue(True)
+
+        class ExpectedFailure(unittest.TestCase):
+            @unittest.expectedFailure
+            def test_expected_failure(self):
+                self.fail("known failure")
+
+        path = Path("test_debug_sample.py")
+        cases = (
+            ([Skipped], 2),
+            ([ExpectedFailure], 2),
+            ([Skipped, Passed], 0),
+        )
+        with mock.patch.object(Path, "is_file", return_value=True):
+            for classes, expected in cases:
+                with self.subTest(classes=classes):
+                    suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromTestCase(
+                        test_class) for test_class in classes)
+                    with mock.patch.object(unittest.defaultTestLoader, "discover",
+                                           return_value=suite):
+                        self.assertEqual(run_debug_suite(path), expected)
+
+
+def run_debug_suite(path: Path) -> int:
+    """Run an entire named suite, rejecting missing and empty collections."""
+    if not path.is_file():
+        print(f"missing debug suite: {path}", file=sys.stderr)
+        return 2
+    suite = unittest.defaultTestLoader.discover(str(path.parent), pattern=path.name)
+    if suite.countTestCases() == 0:
+        print(f"zero debug tests collected: {path}", file=sys.stderr)
+        return 2
+    result = unittest.TextTestRunner(verbosity=2).run(suite)
+    if not result.wasSuccessful():
+        return 1
+    passed = (result.testsRun - len(result.skipped) - len(result.failures)
+              - len(result.errors) - len(result.expectedFailures)
+              - len(result.unexpectedSuccesses))
+    if passed <= 0:
+        print(f"no passing debug tests: {path}", file=sys.stderr)
+        return 2
+    return 0
 
 class GateCommandTest(unittest.TestCase):
     """A gate that reads its command from tech-stack.md needs that command to exist.
@@ -3145,12 +3360,61 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 class ArtifactEngineCIContractTest(unittest.TestCase):
     """The structured-artifact engine is a required six-platform package gate."""
 
-    def test_native_qualification_has_a_bounded_thirty_minute_job_budget(self):
-        # PR859's Intel macOS cell exhausted 15 minutes during conformance after
-        # passing the preceding suites. Preserve the complete qualification path.
+    def test_native_statement_collector_alone_starts_push_ci(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("tools/artifact-coverage.py", push_trigger_paths(ci))
+
+    def test_native_statement_coverage_is_complete_and_merge_required(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        engine = jobs["artifact-engine"]
+        for command in (
+            "python .github/scripts/test_artifact_cli.py --coverage-output",
+            "python tools/artifact-coverage.py collect",
+            "--expect-platform \"${{ matrix.expected_platform }}\"",
+            "--extra-profile",
+            "name: artifact-statements-${{ matrix.os }}",
+        ):
+            self.assertIn(command, engine)
+        self.assertIn("artifact-coverage", jobs)
+        coverage = jobs["artifact-coverage"]
+        for control in (
+            "needs: [changes, artifact-engine]", "!cancelled()",
+            "needs.changes.outputs.artifacts == 'true'",
+            "runs-on: ubuntu-24.04", "pattern: artifact-statements-*",
+            "merge-multiple: false", "artifact-coverage.py", "summarize",
+            "--minimum-statements", '"70"', "--require-integration",
+            "python .github/scripts/test_artifact_coverage.py",
+            "needs.artifact-engine.result", '!= success',
+        ):
+            self.assertIn(control, coverage)
+        self.assertNotIn("self-hosted", coverage)
+        self.assertNotIn("continue-on-error:", coverage)
+        aggregate = jobs["ci-passed"]
+        self.assertRegex(aggregate, r"(?m)^      - artifact-coverage$")
+        self.assertIn("${{ needs['artifact-coverage'].result }}", aggregate)
+        self.assertIn('artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"', aggregate)
+        self.assertIn('artifact_coverage_result="${{ needs[\'artifact-coverage\'].result }}"', aggregate)
+        self.assertIn('[ "$artifact_coverage_required" = true ] && [ "$artifact_coverage_result" != success ]', aggregate)
+        changes = jobs["changes"]
+        impact = module.load_map(REPO_ROOT / ".github" / "ci-impact-map.json")
+        for path in (
+            "tools/artifact-coverage.py", ".github/scripts/test_artifact_cli.py",
+            ".github/scripts/test_artifact_coverage.py",
+        ):
+            self.assertIn(f"- '{path}'", changes)
+            selected = module.evaluate(impact, [path], hosts())
+            self.assertFalse(selected.fallback, path)
+            self.assertIn("artifact-engine", {check.id for check in selected.selected})
+
+    def test_native_qualification_has_a_bounded_platform_job_budget(self):
+        # Retain the measured 45m Intel macOS and Windows ARM budgets;
+        # all other platforms keep 30m and every suite remains required.
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         job = jobs["artifact-engine"]
-        self.assertEqual(_JOB_TIMEOUT.findall(job), ["30"])
+        self.assertEqual(
+            re.findall(r"(?m)^    timeout-minutes: (.+)$", job),
+            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}"],
+        )
         self.assertIn("fail-fast: false", job)
         self.assertNotIn("continue-on-error:", job)
         for required in ("test_artifact_conformance.py", "test_artifact_package.py",
@@ -3187,7 +3451,12 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         self.assertIn("needs: changes", job)
         self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
-        self.assertRegex(job, r"(?m)^    timeout-minutes: 30$")
+        # Retain the measured 45m Intel macOS and Windows ARM budgets;
+        # all other platforms keep 30m and every suite remains required.
+        self.assertIn(
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}",
+            job,
+        )
         for runner in (
             "ubuntu-24.04", "ubuntu-24.04-arm", "windows-2025", "windows-11-arm",
             "macos-15-intel", "macos-26",
@@ -3472,7 +3741,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "tools/create-artifact-examples.py",
             "ca-artifact-linux-amd64",
             "npm ci",
-            "npm audit --omit=dev --audit-level=high",
+            SITE_AUDIT_GATE,
             "google-chrome --version",
             'ARTIFACT_BROWSER_ONLY: "true"',
             "ARTIFACT_REVIEW_ROOT:",
@@ -3618,5 +3887,114 @@ class SiteBrowserBehaviorContractTest(unittest.TestCase):
                                 "check geometry both before and during visible search results")
 
 
+class ContextImpactClosureTest(unittest.TestCase):
+    """The context producer, consumer and schema changes reach their real runners."""
+
+    def shortDescription(self):
+        return None
+
+    def _assert_context_closure(self, ci, impact):
+        jobs = workflow_jobs(ci)
+        hooks = jobs["hooks"]
+        engine = jobs["artifact-engine"]
+        cold = jobs["artifact-package-cold"]
+        aggregate = jobs["ci-passed"]
+        for script in (
+            "test_context_fixtures.py", "test_context_contracts.py",
+            "test_context_evaluation.py", "test_context_named_output.py",
+            "test_context_host.py", "test_context_consumers.py",
+        ):
+            command = f"python .github/scripts/{script}"
+            self.assertEqual(run_step_index(hooks, command) >= 0, True, command)
+        for script in ("test_context_verification.py", "test_context_native.py",
+                       "test_context_workflow.py"):
+            command = f"python .github/scripts/{script}"
+            index = run_step_index(engine, command)
+            self.assertGreater(index, run_step_index(engine, "go test -buildvcs=false ./..."), command)
+            self.assertLess(index, engine.splitlines().index(
+                '          --qualify-existing "${{ runner.temp }}/artifact-candidate"'), command)
+        self.assertIn('go-version: "1.27.1"', engine)
+        self.assertIn("needs: [changes, artifact-package-assembly]", cold)
+        self.assertIn("needs.artifact-package-assembly.result == 'success'", cold)
+        self.assertIn('name: artifact-release-packages-${{ github.sha }}', cold)
+        self.assertIn('--cold-package-root "${{ runner.temp }}/artifact-release-packages"', cold)
+        self.assertIn("${{ needs['artifact-package-cold'].result }}", aggregate)
+        for path, required in (
+            ("core/pysrc/_contextreportlib.py", {"hooks", "artifact-engine", "artifact-package-cold"}),
+            ("core/surface/skills/context-creation/SKILL.md", {"hooks", "artifact-engine", "artifact-package-cold"}),
+            ("core/artifacts/schemas/context.schema.json", {"artifact-engine", "artifact-package-cold"}),
+            (".github/fixtures/context-onboarding/observation.schema.json", {"hooks"}),
+            (".github/scripts/_contextverificationlib.py", {"artifact-engine"}),
+            (".github/scripts/test_context_native.py", {"artifact-engine"}),
+            (".github/scripts/test_context_workflow.py", {"artifact-engine"}),
+            (".github/scripts/test_context_host.py", {"hooks"}),
+            (".github/scripts/test_context_consumers.py", {"hooks"}),
+        ):
+            selected = module.evaluate(impact, [path], hosts())
+            self.assertFalse(selected.fallback, path)
+            self.assertTrue(required <= {check.id for check in selected.selected}, path)
+        for path in (".github/scripts/_contextverificationlib.py",
+                     ".github/scripts/test_context_native.py",
+                     ".github/scripts/test_context_verification.py",
+                     ".github/scripts/test_context_workflow.py"):
+            self.assertIn(path, paths_filter(ci, "artifacts"))
+        self.assertIn(".github/fixtures/context-onboarding/**", paths_filter(ci, "hooks"))
+
+    def test_t043_context_impact_closure_positive_controls(self):
+        self._assert_context_closure(
+            CI_WORKFLOW.read_text(encoding="utf-8"),
+            module.load_map(REPO_ROOT / ".github/ci-impact-map.json"),
+        )
+
+    def test_t043_context_impact_closure_negative_controls(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        impact = module.load_map(REPO_ROOT / ".github/ci-impact-map.json")
+        for before, after in (
+            ("run: python .github/scripts/test_context_native.py", "run: python absent.py"),
+            ('go-version: "1.27.1"', 'go-version: "1.22"'),
+            ("needs: [changes, artifact-package-assembly]", "needs: changes"),
+            ('--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
+             '--cold-package-root "${{ runner.temp }}/source-checkout"'),
+            ("${{ needs['artifact-package-cold'].result }}", "${{ needs.changes.result }}"),
+        ):
+            with self.subTest(removed=before):
+                self.assertIn(before, ci)
+                with self.assertRaises(AssertionError):
+                    self._assert_context_closure(ci.replace(before, after, 1), impact)
+        missing_host_edge = module.ImpactMap(
+            checks=impact.checks,
+            edges=tuple(edge for edge in impact.edges
+                        if edge.glob != ".github/scripts/test_context_host.py"),
+        )
+        with self.assertRaises(AssertionError):
+            self._assert_context_closure(ci, missing_host_edge)
+
+
+class NativeQualificationTimeBudgetTest(unittest.TestCase):
+    def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
+        source = CI_WORKFLOW.read_text(encoding="utf-8")
+        block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
+        # Retain the measured 45m Intel macOS and Windows ARM budgets;
+        # all other platforms keep 30m and every suite remains required.
+        self.assertIn(
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}",
+            block,
+        )
+        for script in ("test_artifact_native.py", "test_artifact_bridge.py",
+                       "test_artifact_approval_adapter.py", "test_artifact_authority_adapter.py",
+                       "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",
+                       "test_artifact_authoring.py", "test_artifact_workflow.py",
+                       "test_artifact_farm.py", "test_artifact_package.py",
+                       "test_artifact_conformance.py"):
+            self.assertIn(script, block)
+        self.assertNotIn("continue-on-error:", block)
+        self.assertIn("fail-fast: false", block)
+        for platform in ("linux/amd64", "linux/arm64", "windows/amd64",
+                         "windows/arm64", "darwin/amd64", "darwin/arm64"):
+            self.assertIn("expected_platform: " + platform, block)
+
+
 if __name__ == "__main__":
+    if len(sys.argv) == 3 and sys.argv[1] == "--run-debug-suite":
+        raise SystemExit(run_debug_suite(Path(sys.argv[2])))
     unittest.main()

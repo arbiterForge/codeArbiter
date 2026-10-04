@@ -307,7 +307,7 @@ function validOpaqueJson(value: unknown, depth = 0, budget = { nodes: 0 }): bool
     && keys.every((key) => boundedString(key) && validOpaqueJson(value[key], depth + 1, budget));
 }
 
-type ContentKind = "user" | "assistant" | "toolResult";
+type ContentKind = "system" | "user" | "assistant" | "toolResult";
 
 function validContentBlock(value: unknown, kind: ContentKind): boolean {
   if (!isRecord(value) || typeof value.type !== "string") return false;
@@ -317,7 +317,7 @@ function validContentBlock(value: unknown, kind: ContentKind): boolean {
         && boundedString(value.text)
         && (value.textSignature === undefined || boundedString(value.textSignature));
     case "image":
-      return kind !== "assistant"
+      return (kind === "user" || kind === "toolResult")
         && exactKeys(value, ["type", "data", "mimeType"])
         && boundedString(value.data) && boundedString(value.mimeType);
     case "thinking":
@@ -328,17 +328,18 @@ function validContentBlock(value: unknown, kind: ContentKind): boolean {
         && (value.redacted === undefined || typeof value.redacted === "boolean");
     case "toolCall":
       return kind === "assistant"
-        && exactKeys(value, ["type", "id", "name", "arguments", "thoughtSignature"], ["type", "id", "name", "arguments"])
+        && exactKeys(value, ["type", "id", "name", "arguments", "thoughtSignature", "namespace"], ["type", "id", "name", "arguments"])
         && boundedString(value.id) && boundedString(value.name)
         && validOpaqueJson(value.arguments)
-        && (value.thoughtSignature === undefined || boundedString(value.thoughtSignature));
+        && (value.thoughtSignature === undefined || boundedString(value.thoughtSignature))
+        && (value.namespace === undefined || boundedString(value.namespace));
     default:
       return false;
   }
 }
 
 function validContent(value: unknown, kind: ContentKind): boolean {
-  if (kind === "user" && typeof value === "string") return boundedString(value);
+  if ((kind === "user" || kind === "system") && typeof value === "string") return boundedString(value);
   return Array.isArray(value)
     && value.length <= MAX_JSON_ARRAY
     && value.every((block) => validContentBlock(block, kind));
@@ -383,8 +384,40 @@ function validDeferredHandle(value: unknown): boolean {
     && (value.data === undefined || validOpaqueJson(value.data));
 }
 
+/** Pi 1.0.0 records codemode's nested tool calls on the enclosing tool result. */
+function validNestedCalls(value: unknown): boolean {
+  return isRecord(value)
+    && exactKeys(value, ["calls", "complete"])
+    && typeof value.complete === "boolean"
+    && Array.isArray(value.calls) && value.calls.length <= MAX_JSON_ARRAY
+    && value.calls.every((call) => isRecord(call)
+      && exactKeys(call, ["id", "name", "arguments", "argumentsBytes", "status", "durationMs", "error"], ["id", "name", "status"])
+      && boundedString(call.id) && boundedString(call.name)
+      && (call.status === "ok" || call.status === "error" || call.status === "unfinished")
+      && (call.arguments === undefined || (isRecord(call.arguments) && validOpaqueJson(call.arguments)))
+      && (call.argumentsBytes === undefined || (typeof call.argumentsBytes === "number" && Number.isFinite(call.argumentsBytes)))
+      && (call.durationMs === undefined || (typeof call.durationMs === "number" && Number.isFinite(call.durationMs)))
+      && (call.error === undefined || boundedString(call.error)));
+}
+
+/** Pi 1.0.0 transcripts carry system messages (base prompt, later section and
+ * tool updates). Tool definitions stay opaque JSON; the runner never reads them. */
+function validSystemMessage(value: Record<string, unknown>): boolean {
+  const sections = value.sections;
+  return exactKeys(value, ["role", "content", "sections", "toolsAdded", "toolsRemoved", "timestamp"], ["role", "content", "timestamp"])
+    && validContent(value.content, "system")
+    && (sections === undefined || (isRecord(sections) && Object.keys(sections).length <= MAX_JSON_KEYS
+      && Object.keys(sections).every((key) => boundedString(key) && (sections[key] === null || boundedString(sections[key])))))
+    && (value.toolsAdded === undefined || (Array.isArray(value.toolsAdded) && value.toolsAdded.length <= MAX_JSON_ARRAY
+      && value.toolsAdded.every((tool) => isRecord(tool) && boundedString(tool.name) && validOpaqueJson(tool))))
+    && (value.toolsRemoved === undefined || (Array.isArray(value.toolsRemoved) && value.toolsRemoved.length <= MAX_JSON_ARRAY
+      && value.toolsRemoved.every((tool) => isRecord(tool) && exactKeys(tool, ["name"]) && boundedString(tool.name))))
+    && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+}
+
 function validMessage(value: unknown): boolean {
   if (!isRecord(value) || typeof value.role !== "string") return false;
+  if (value.role === "system") return validSystemMessage(value);
   if (value.role === "user") {
     return exactKeys(value, ["role", "content", "timestamp"])
       && validContent(value.content, "user")
@@ -394,8 +427,9 @@ function validMessage(value: unknown): boolean {
     // `rawStopReason` and `deferred` entered the schema in Pi 0.84.x
     // (rawStopReason observed on the live RPC wire; promotion run
     // 31352831520 degraded every 0.84 child dispatch on it).
+    // `providerThinkingLevel`, `thinkingLevel` and `endTurn` entered in Pi 1.0.0.
     return exactKeys(value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"])
       && validContent(value.content, "assistant")
       && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string")
@@ -403,21 +437,26 @@ function validMessage(value: unknown): boolean {
       && (value.responseId === undefined || boundedString(value.responseId))
       && (value.errorMessage === undefined || boundedString(value.errorMessage))
       && (value.rawStopReason === undefined || boundedString(value.rawStopReason))
+      && (value.providerThinkingLevel === undefined || boundedString(value.providerThinkingLevel))
+      && (value.thinkingLevel === undefined || boundedString(value.thinkingLevel))
+      && (value.endTurn === undefined || typeof value.endTurn === "boolean")
       && (value.deferred === undefined || validDeferredHandle(value.deferred))
       && (value.diagnostics === undefined || (Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)))
       && validUsage(value.usage)
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
-    // `usage` (tool-execution usage) entered the toolResult schema in Pi 0.84.x.
+    // `usage` (tool-execution usage) entered the toolResult schema in Pi 0.84.x;
+    // `nestedCalls` (codemode's nested tool calls) in Pi 1.0.0.
     return exactKeys(value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"])
       && typeof value.toolCallId === "string"
       && typeof value.toolName === "string"
       && validContent(value.content, "toolResult")
       && (value.details === undefined || validOpaqueJson(value.details))
       && (value.usage === undefined || validUsage(value.usage))
+      && (value.nestedCalls === undefined || validNestedCalls(value.nestedCalls))
       && typeof value.isError === "boolean"
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
@@ -485,8 +524,13 @@ function validAssistantEvent(value: unknown): boolean {
       return exactWithOptionalPartial(["type"]);
     case "text_start":
     case "thinking_start":
-    case "toolcall_start":
       return exactWithOptionalPartial(["type", "contentIndex"]) && contentIndex();
+    case "toolcall_start":
+      // Pi 1.0.0's JSON wire names the call (`id` + `toolName`) in place of the partial.
+      return ("id" in value || "toolName" in value
+        ? exactKeys(value, ["type", "contentIndex", "id", "toolName"])
+          && boundedString(value.id) && boundedString(value.toolName)
+        : exactWithOptionalPartial(["type", "contentIndex"])) && contentIndex();
     case "text_delta":
     case "thinking_delta":
     case "toolcall_delta":
@@ -501,7 +545,8 @@ function validAssistantEvent(value: unknown): boolean {
         && contentIndex() && validContentBlock(value.toolCall, "assistant");
     case "done":
       return exactKeys(value, ["type", "reason", "message"])
-        && ["stop", "length", "toolUse"].includes(value.reason as string)
+        // `deferred` entered the done reasons in Pi 1.0.0.
+        && ["stop", "length", "toolUse", "deferred"].includes(value.reason as string)
         && validMessage(value.message) && (value.message as Record<string, unknown>).role === "assistant";
     case "error":
       return exactKeys(value, ["type", "reason", "error"])
@@ -524,7 +569,11 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
     case "response":
       if (typeof record.id !== "string" || record.command !== "prompt" || typeof record.success !== "boolean") invalidProtocol();
       if (record.success === true) {
-        if (!exactKeys(record, ["type", "id", "command", "success"])) invalidProtocol();
+        // Pi 1.0.0 reports how the prompt was taken: started, handled, or queued.
+        const data = record.data;
+        if (!exactKeys(record, ["type", "id", "command", "success", "data"], ["type", "id", "command", "success"])
+          || (data !== undefined && !(isRecord(data) && exactKeys(data, ["disposition"])
+            && (data.disposition === "started" || data.disposition === "handled" || data.disposition === "queued")))) invalidProtocol();
       } else if (!exactKeys(record, ["type", "id", "command", "success", "error"])
         || typeof record.error !== "string") invalidProtocol();
       break;
@@ -553,26 +602,36 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
       break;
     case "message_update":
       // Pi ≤0.80.10 carries the full accumulating `message`; Pi ≥0.84.0 sends
-      // the assistant event alone (delta-only RPC, pi#7290). Both key sets are
-      // exact; nothing else passes.
+      // the assistant event alone (delta-only RPC, pi#7290); Pi 1.0.0 adds the
+      // cumulative `usage` (modes/json-event.ts). Each key set is exact; nothing
+      // else passes.
       if ("message" in record
         ? (!exactKeys(record, ["type", "message", "assistantMessageEvent"])
           || !validPartialAssistantMessage(record.message) || !validAssistantEvent(record.assistantMessageEvent))
-        : (!exactKeys(record, ["type", "assistantMessageEvent"])
-          || !validAssistantEvent(record.assistantMessageEvent))) invalidProtocol();
+        : "usage" in record
+          ? (!exactKeys(record, ["type", "usage", "assistantMessageEvent"])
+            || !validUsage(record.usage) || !validAssistantEvent(record.assistantMessageEvent))
+          : (!exactKeys(record, ["type", "assistantMessageEvent"])
+            || !validAssistantEvent(record.assistantMessageEvent))) invalidProtocol();
       break;
     case "tool_execution_start":
-      if (!exactKeys(record, ["type", "toolCallId", "toolName", "args"])
+      // Pi 1.0.0 tags codemode-nested executions with their parent call.
+      if (!exactKeys(record, ["type", "toolCallId", "toolName", "args", "parentToolCallId"], ["type", "toolCallId", "toolName", "args"])
+        || (record.parentToolCallId !== undefined && !boundedString(record.parentToolCallId))
         || typeof record.toolCallId !== "string" || typeof record.toolName !== "string"
         || !validOpaqueJson(record.args)) invalidProtocol();
       break;
     case "tool_execution_update":
-      if (!exactKeys(record, ["type", "toolCallId", "toolName", "args", "partialResult"])
+      // Pi 1.0.0 tags codemode-nested executions with their parent call.
+      if (!exactKeys(record, ["type", "toolCallId", "toolName", "args", "partialResult", "parentToolCallId"], ["type", "toolCallId", "toolName", "args", "partialResult"])
+        || (record.parentToolCallId !== undefined && !boundedString(record.parentToolCallId))
         || typeof record.toolCallId !== "string" || typeof record.toolName !== "string"
         || !validOpaqueJson(record.args) || !validOpaqueJson(record.partialResult)) invalidProtocol();
       break;
     case "tool_execution_end":
-      if (!exactKeys(record, ["type", "toolCallId", "toolName", "result", "isError"])
+      // Pi 1.0.0 tags codemode-nested executions with their parent call.
+      if (!exactKeys(record, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId"], ["type", "toolCallId", "toolName", "result", "isError"])
+        || (record.parentToolCallId !== undefined && !boundedString(record.parentToolCallId))
         || typeof record.toolCallId !== "string" || typeof record.toolName !== "string"
         || !validOpaqueJson(record.result) || typeof record.isError !== "boolean") invalidProtocol();
       break;

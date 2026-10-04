@@ -22,6 +22,9 @@ populating before normal operation.
 
 <!-- command-mode:--brownfield legacy-route:create-context -->
 `--brownfield` selects the exact `${CLAUDE_PLUGIN_ROOT}/commands/create-context.md` workflow.
+An initialized refresh is routed through `/ca:status drift` and the existing
+`context-check` owner after an explicit scoped or full selection; `--brownfield`
+keeps its initial-population lock.
 
 The two flags are mutually exclusive and neither may combine with `--check`. `--stage N` may
 accompany one only while `.codearbiter/CONTEXT.md` is absent: scaffold at that stage, then enter the
@@ -32,6 +35,22 @@ procedure below.
 <!-- catalog-command-modes:end -->
 
 ## Procedure
+
+Before opening an active host session in an unfamiliar repository, a trusted
+external process may inspect an explicit directory with
+`python "${CLAUDE_PLUGIN_ROOT}/hooks/init-codearbiter.py" --check --passive --root PATH`.
+This bounded read checks only that directory's `.codearbiter/CONTEXT.md` activation
+marker and prints a JSON inventory for Git hooks/exclusions, background Git fetch,
+update refresh, and inference transport. Every effect is `performed: false`, with
+capability `unverified` and authorization `not_established`. The root is caller
+supplied and unverified; no Git command, repository script, network request,
+global setting edit, or model source read occurs. Sensitive/excluded source paths
+must be inventoried separately before any model read. If an active host session
+has already started, this inspection cannot undo its earlier startup effects.
+
+Activation is a separate step under the applicable host, network, repository-write,
+and inference permissions. The normal scaffold and active SessionStart behavior
+below remain in force for repositories that already opted in.
 
 1. Run the scaffolder against the repo's git toplevel (resolved by the script):
 

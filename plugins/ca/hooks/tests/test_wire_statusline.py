@@ -258,6 +258,19 @@ class TestUninstall(_WireStatuslineTest):
                  "--plugin-root", self.root])
         self.assertEqual(_read(spath)["statusLine"], prior)
 
+    def test_prior_refresh_interval_round_trips_and_ours_adds_none(self):
+        # Spec D-13 / AC-28: accounting correctness adds no periodic refresh; a
+        # user's own refreshInterval survives install/uninstall byte-for-byte.
+        self.assertNotIn("refreshInterval", ws.owned_statusline("x"))
+        prior = {"type": "command", "command": "third-party --tick", "refreshInterval": 7}
+        spath = _make_settings(self.tmp.name, {"statusLine": prior})
+        ws.main(["install", "--settings", spath,
+                 "--plugin-root", self.root, "--interp", "python"])
+        self.assertNotIn("refreshInterval", _read(spath)["statusLine"])
+        ws.main(["uninstall", "--settings", spath,
+                 "--plugin-root", self.root])
+        self.assertEqual(_read(spath)["statusLine"], prior)
+
     def test_source_reinstall_preserves_original_backup_through_uninstall(self):
         prior = {"type": "command", "command": "third-party --exact", "padding": 6}
         spath = _make_settings(self.tmp.name, {"statusLine": prior})

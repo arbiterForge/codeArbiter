@@ -1,5 +1,21 @@
 # Debug correctness: implementation plan input
 
+Reading boundary added 2026-09-28: the status and task rows below preserve the
+2026-09-25 source plan input. Draft/unapproved wording, pending task labels and
+adoption blockers describe that preparation checkpoint. Current authority,
+approved-source binding and execution state must be read through the qualified
+installed ArtifactClient's identity, approved-gate validation and eligible
+results. This proposal is not an active task ledger.
+
+For a resumed native T-006, its explicit resume rule and PLAN-GATES-001 govern
+use of the retained path inventory. Verify the existing pair and fulfill the
+remaining review obligations. The original create/modify entries for the native
+pair do not authorize recreating or overwriting approved artifacts. A required
+change to an approved definition needs the supported revision, binding and
+approval workflow; this source clarification does not perform or authorize one.
+
+## Historical plan input, 2026-09-25
+
 Status: Historical plan input; T01-T04 SOURCE_COMPLETE, T05 DRAFT_READY, T06 BLOCKED, T07-T40 PENDING. The [native plan](../../../.codearbiter/plans/debug-correctness.html) is now the canonical review draft; it remains unapproved and blocked from execution. D1 remains incomplete until T06 review, prerequisite-scope resolution and actual approval. See [D1.md](D1.md). No runtime implementation, product verification or release qualification is asserted.
 Specification: [SPEC.md](SPEC.md), CA-DEBUG-CORRECTNESS-01 D1 review revision 3  
 Contract: [CONTRACT.md](CONTRACT.md)  

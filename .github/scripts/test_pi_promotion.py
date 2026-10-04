@@ -282,6 +282,55 @@ class PromotionPatchTests(unittest.TestCase):
                 renderer.render_package(host, "0.1.1"),
             )
 
+    def _host_adapter_fixture(self, root: Path, adapter_version: str) -> Path:
+        self.fixture_repo(root)
+        (root / "plugins" / "ca-pi" / "package.json").write_text('{"name":"ca-pi","version":"0.1.0"}\n', encoding="utf-8")
+        (root / "plugins" / "ca-pi" / "CHANGELOG.md").write_text(
+            "# Changelog\n\nAll notable changes to `ca-pi` are documented in this file.\n", encoding="utf-8")
+        host = root / "plugins" / "ca-pi" / "hooks" / "_host.py"
+        host.parent.mkdir(parents=True, exist_ok=True)
+        host.write_text(f'class PiHost:\n    adapter_version = "{adapter_version}"\n', encoding="utf-8")
+        document = json.loads(self.targets(root).read_text(encoding="utf-8"))
+        document["release"] = {
+            "package_path": "plugins/ca-pi/package.json",
+            "changelog_path": "plugins/ca-pi/CHANGELOG.md",
+            "host_adapter_path": "plugins/ca-pi/hooks/_host.py",
+        }
+        target_path = root / "targets-with-host.json"
+        target_path.write_text(json.dumps(document), encoding="utf-8")
+        return target_path
+
+    def test_release_metadata_advances_the_host_adapter_version_in_lockstep(self):
+        """Regression: the packaged-adapter identity test pins the ca-pi hook
+        adapter_version to the manifest, so a promotion that bumps only the
+        manifests fails test_host_descriptors and the platform contract."""
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            target_path = self._host_adapter_fixture(root, "0.1.0")
+            changed = module.apply_promotion(
+                root, module.load_targets(target_path), module.Candidate("0.80.10"), date="2026-08-09",
+            )
+            self.assertIn(Path("plugins/ca-pi/hooks/_host.py"), set(changed))
+            self.assertEqual(
+                (root / "plugins" / "ca-pi" / "hooks" / "_host.py").read_text(encoding="utf-8"),
+                'class PiHost:\n    adapter_version = "0.1.1"\n',
+            )
+
+    def test_release_metadata_writes_nothing_when_host_adapter_disagrees(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            target_path = self._host_adapter_fixture(root, "0.0.9")
+            paths = [root / "plugins" / "ca-pi" / name for name in ("package.json", "CHANGELOG.md", "hooks/_host.py")]
+            before = {path: path.read_bytes() for path in paths}
+            with self.assertRaises(module.PromotionError):
+                module.apply_promotion(
+                    root, module.load_targets(target_path), module.Candidate("0.80.10"), date="2026-08-09",
+                )
+            for path, expected in before.items():
+                self.assertEqual(path.read_bytes(), expected, f"{path.name} was written despite the aborted bump")
+
     def test_release_metadata_writes_nothing_when_root_manifest_disagrees(self):
         """A stale root manifest must abort the whole release bump before any
         file is written — not after the nested manifest already advanced."""
@@ -772,7 +821,7 @@ class DocumentationContractTests(unittest.TestCase):
         promotion = load_module()
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
-            document = root / "plugins" / "ca-codex" / "routines" / "skill-author" / "SKILL.md"
+            document = root / "plugins" / "ca-codex" / "routines" / "catalog-reader" / "SKILL.md"
             document.parent.mkdir(parents=True)
             document.write_text(
                 "[reviewer](../../agents/<name>.md)\n"
@@ -784,7 +833,7 @@ class DocumentationContractTests(unittest.TestCase):
                 root,
                 docs.load_contract(self.broad_current_contract(root)),
                 promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
-                paths=(Path("plugins/ca-codex/routines/skill-author/SKILL.md"),),
+                paths=(Path("plugins/ca-codex/routines/catalog-reader/SKILL.md"),),
             )
         self.assertEqual(findings, [])
 
@@ -803,7 +852,7 @@ class DocumentationContractTests(unittest.TestCase):
                 root = Path(raw)
                 document = (
                     root / "plugins" / "ca-codex" / "routines" /
-                    "skill-author" / "SKILL.md"
+                    "catalog-reader" / "SKILL.md"
                 )
                 document.parent.mkdir(parents=True)
                 document.write_text(f"[resource]({target})\n", encoding="utf-8")
@@ -812,7 +861,7 @@ class DocumentationContractTests(unittest.TestCase):
                     docs.load_contract(self.broad_current_contract(root)),
                     promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
                     paths=(
-                        Path("plugins/ca-codex/routines/skill-author/SKILL.md"),
+                        Path("plugins/ca-codex/routines/catalog-reader/SKILL.md"),
                     ),
                 )
             self.assertEqual(
@@ -1585,6 +1634,11 @@ class OfficialWriteScopeTests(unittest.TestCase):
         promotion = load_module()
         targets = promotion.load_targets(REPO / ".github" / "pi-promotion-targets.json")
         promotion._enforce_official_write_scope(promotion.REPOSITORY, targets)
+
+    def test_checked_in_recipe_bumps_the_packaged_host_adapter(self):
+        promotion = load_module()
+        targets = promotion.load_targets(REPO / ".github" / "pi-promotion-targets.json")
+        self.assertEqual(targets.release.host_adapter_path, Path("plugins/ca-pi/hooks/_host.py"))
 
 
 class HelpProbeResolutionTests(unittest.TestCase):

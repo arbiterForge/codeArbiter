@@ -2,7 +2,8 @@
 
 Coarse concern → path → role orientation, synthesized from Scout C (architecture)
 evidence per `context-creation` Phase 5, against the tree as of the
-`fix/mode-write-clobber` merge with `origin/main` (2026-09-15). Module/concern
+`fix/mode-write-clobber` merge with `origin/main` (2026-09-15), with plugin version
+metadata refreshed on 2026-09-26. Module/concern
 granularity only — not a file listing. Kept in sync via `.provenance/code-map.json`.
 
 ## Shared hook library (core/pysrc)
@@ -30,9 +31,9 @@ granularity only — not a file listing. Kept in sync via `.provenance/code-map.
 
 ## Plugin implementations (four sibling plugins)
 
-- `plugins/ca/` (v2.22.0) — the Claude Code plugin; `.claude-plugin/plugin.json` manifest, `hooks/*.py` (vendored from `core/pysrc`), `skills/`/`commands/`/`agents/`/`generated/` (generated from `core/surface`+`core/hosts.json`)
-- `plugins/ca-codex/` (v0.14.0) — the Codex CLI plugin; `.codex-plugin/plugin.json` manifest; commands render as `skills/ca-codex/SKILL.md`-style dispatch entries (no native slash commands)
-- `plugins/ca-pi/` (v0.15.0, npm-published as `@arbiterforge/ca-pi`) — the Pi governance plugin; `package.json` manifest declares JS `extensions/codearbiter.js` (bundled) plus `skills/`; skills carry a `ca-` name prefix
+- `plugins/ca/` (v2.24.0) — the Claude Code plugin; `.claude-plugin/plugin.json` manifest, `hooks/*.py` (vendored from `core/pysrc`), `skills/`/`commands/`/`agents/`/`generated/` (generated from `core/surface`+`core/hosts.json`)
+- `plugins/ca-codex/` (v0.15.0) — the Codex CLI plugin; `.codex-plugin/plugin.json` manifest; commands render as `skills/ca-codex/SKILL.md`-style dispatch entries (no native slash commands)
+- `plugins/ca-pi/` (v0.16.0, npm-published as `@arbiterforge/ca-pi`) — the Pi governance plugin; `package.json` manifest declares JS `extensions/codearbiter.js` (bundled) plus `skills/`; skills carry a `ca-` name prefix
 - `plugins/ca-sandbox/` (v0.1.6) — infrastructure/testing plugin; Docker-based untrusted-code isolation, ephemeral containers, no persistent `.codearbiter/` inside the container
 
 ## Release provenance and tag immutability (ADR-0029, ADR-0032, ADR-0034)

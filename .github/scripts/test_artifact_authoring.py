@@ -308,6 +308,22 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
             with self.subTest(event=event):
                 self.refused(client)
 
+    def test_admission_requires_native_codex_refusal_and_steering_seams(self):
+        client = self.client()
+        original = self.registry()
+        for event in ("PreToolUse", "PostToolUse"):
+            for tool in ("collaborationspawn_agent", "multi_agent_v1send_input",
+                         "multi_agent_v1resume_agent", "multi_agent_v1close_agent"):
+                with self.subTest(event=event, tool=tool):
+                    value = json.loads(json.dumps(original))
+                    for group in value["hooks"][event]:
+                        if any("artifact-authority-hook.py" in entry.get("command", "")
+                               for entry in group["hooks"]):
+                            group["matcher"] = "|".join(
+                                name for name in group.get("matcher", "").split("|") if name != tool)
+                    self.save_registry(value)
+                    self.refused(client)
+
     def test_admission_requires_claude_failure_event_and_reviewer_charter(self):
         client = self.client("ca")
         original = self.registry()
@@ -753,7 +769,7 @@ def plan_normative(spec_id: str, spec_hash: str) -> dict:
     verification = {
         "availability": "proposed",
         "cwd": ".",
-        "argv": ["python", "-m", "unittest", "tests.test_config"],
+        "argv": ["python", "-m", "unittest", "-v", "tests.test_config"],
         "expected_exit": 0,
         "assertion": "The named test runs and passes.",
         "required_tests": ["test_environment_overrides"],
@@ -1143,6 +1159,45 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.assertEqual(code, 0, err.getvalue())
         self.assertEqual(out.getvalue(), "")
         self.assertEqual(err.getvalue(), "")
+        self.assertEqual(spec.read_bytes(), before)
+
+    def test_installed_intent_cli_accepts_native_empty_diagnostics(self) -> None:
+        self.harness.create_spec()
+        ready = self.harness.client.call(
+            "validate", {"artifact_id": "SPEC-FLOW", "gate": "ready"}, permit_invalid=True
+        )
+        self.assertTrue(ready["valid"], ready)
+        self.assertIn(ready.get("diagnostics"), (None, []))
+        spec = self.root / ".codearbiter/specs/flow.html"
+        before = spec.read_bytes()
+        helper = self.installation.parent.parent / "hooks/_intentlib.py"
+        result = subprocess.run(
+            [sys.executable, str(helper), "uncovered-intent", str(spec)],
+            cwd=self.root, capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual(spec.read_bytes(), before)
+        identity = self.harness.client.call("identity", {"artifact_id": "SPEC-FLOW"})
+        self.assertEqual(identity["authority"]["state"], "draft")
+        self.assertFalse(identity["authority"]["authority_verified"])
+
+    def test_installed_intent_cli_reports_incomplete_native_draft(self) -> None:
+        self.harness.client.call(
+            "create",
+            {"operation_id": "fixture-intent-incomplete", "artifact_id": "SPEC-INCOMPLETE",
+             "kind": "spec", "slug": "incomplete", "title": "Incomplete fixture",
+             "summary": "No criterion is fabricated for this negative control."},
+        )
+        spec = self.root / ".codearbiter/specs/incomplete.html"
+        before = spec.read_bytes()
+        helper = self.installation.parent.parent / "hooks/_intentlib.py"
+        result = subprocess.run(
+            [sys.executable, str(helper), "uncovered-intent", str(spec)],
+            cwd=self.root, capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("[INVALID-HTML-SPEC]", result.stdout)
         self.assertEqual(spec.read_bytes(), before)
 
     def test_producers_create_and_read_canonical_html_pair(self) -> None:

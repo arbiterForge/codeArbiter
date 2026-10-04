@@ -38,11 +38,13 @@ initialization marker to force a fresh extraction.
 
 ## Let the scouts establish facts
 
-The owning context-creation skill uses six isolated, read-only scout roles: stack,
-infrastructure, architecture, security posture, testing and data model. They return scoped
-findings with paths and evidence rather than handing raw source to the synthesizing orchestrator.
-This route requires the host's isolated scout capability. An unavailable capability is a stop,
-not permission to run an unrestricted substitute inline.
+For initial or explicitly full work, the owning context-creation skill requires six logical
+scout categories: stack, infrastructure, architecture, security posture, testing and data model.
+A scoped refresh covers only the affected categories and preserves prior coverage separately.
+Each scout must run under a qualified, host-enforced read-only context profile and return a
+bounded report with paths and evidence rather than handing raw source to the synthesizing
+orchestrator. The current generated host surfaces do not provide that qualified profile, so the
+route stops before dispatch. The shared scout role and inline work cannot substitute for it.
 
 Review the returned boundaries. “No migration tool found” is a useful finding; silently assuming
 one is not. Security findings should identify relevant sites without exposing secret values.

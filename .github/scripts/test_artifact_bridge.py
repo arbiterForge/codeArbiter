@@ -95,7 +95,12 @@ class BridgeTests(unittest.TestCase):
         (self.root / ".codearbiter" / "plans").mkdir(parents=True)
 
         def corrupt_binary(destination, release):
-            entry = next(iter(release["binaries"].values()))
+            # A released payload can contain several platforms. Corrupt the
+            # binary this host will execute, not the manifest's first entry.
+            system = {"Linux": "linux", "Darwin": "darwin", "Windows": "windows"}[platform.system()]
+            architecture = {"x86_64": "amd64", "amd64": "amd64",
+                            "aarch64": "arm64", "arm64": "arm64"}[platform.machine().lower()]
+            entry = release["binaries"][f"{system}/{architecture}"]
             binary = destination / entry["file"]
             binary.write_bytes(binary.read_bytes() + b"corrupt")
 
@@ -260,7 +265,9 @@ class BridgeTests(unittest.TestCase):
             calls.append(kwargs.copy())
             return real_popen(*args, **kwargs)
 
-        with mock.patch.object(subprocess, "Popen", side_effect=recording_popen):
+        with mock.patch.dict(os.environ, {"PATH": "", "CODEARBITER_GIT_EXECUTABLE": "",
+                                          "ARTIFACT_SECRET_FIXTURE": "must-not-cross"}), \
+                mock.patch.object(subprocess, "Popen", side_effect=recording_popen):
             self.client.call("capabilities")
         self.assertEqual(calls[-1].get("env"), {})
 

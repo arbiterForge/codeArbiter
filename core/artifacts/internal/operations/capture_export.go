@@ -83,6 +83,9 @@ func (e *Engine) capture(r object, observedRequired bool) (any, error) {
 			fresh, contextErr = e.buildPromptContext(d, kind, sid, model.S(context["prompt_sha256"]))
 		} else {
 			fresh, contextErr = e.buildEvidenceContext(d, kind, sid)
+			if contextErr == nil && context["completion"] != nil {
+				fresh, contextErr = e.selectCompletion(d, fresh, object{"completion_context_ref": contextRef, "completion_context_sha256": contextHash})
+			}
 		}
 		if contextErr != nil {
 			return nil, contextErr

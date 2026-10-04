@@ -57,6 +57,15 @@ class StaticCandidateProvenanceTest(unittest.TestCase):
             "plugins/ca-codex/.codex-plugin/plugin.json",
             json.dumps({"name": "ca-codex", "version": "0.7.5"}) + "\n",
         )
+        # The copied hooks contain the current task-context helpers. Keep their
+        # packaged Markdown consumers and linked resources in the candidate too.
+        for directory in ("agents", "includes", "routines", "skills"):
+            shutil.copytree(
+                REPO_ROOT / "plugins" / "ca-codex" / directory,
+                repo / "plugins" / "ca-codex" / directory,
+            )
+        for resource in (REPO_ROOT / "plugins" / "ca-codex").glob("*.md"):
+            shutil.copy2(resource, repo / "plugins" / "ca-codex" / resource.name)
         write(
             repo,
             "plugins/ca-codex/skills/ca-probe/SKILL.md",

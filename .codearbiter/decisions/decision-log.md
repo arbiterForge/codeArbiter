@@ -2105,3 +2105,28 @@ Securable: the acceptance stays bound to its exact sealed bytes instead of being
 Merge this change with a merge commit. A squash would drop the second parent again.
 
 ---
+
+## DECISION-0073 — adr-0041-pi-strict-reduction — Admit a Pi host that strictly reduces audit findings; promote Pi 1.0.0
+
+**Date:** 2026-10-02
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — "Go ahead and update the package is objectively the correct decision. It closes a high."; accepted ADR-0041's content as recorded.
+**Decision category:** supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0035 admits a supported Pi host only with zero production and complete-graph audit findings.
+- **Scaffold position:** The supported baseline Pi 0.84.1 now carries six high advisories (undici and brace-expansion). Every published Pi through 1.0.0 still carries the three brace-expansion ones, so no release can pass, and every pull request's Pi CI fails.
+- **Status type:** divergent
+
+### Decision
+Admit a Pi host whose audit findings are a strict subset of the current baseline's, with each retained advisory recorded by GHSA in the review receipt and a dated backstop. Promote Pi 1.0.0 now: it closes the three undici advisories and retains only the brace-expansion ones 0.84.1 already has. ADR-0041 supersedes only ADR-0035's zero-findings clause.
+
+### SMARTS rationale
+Securable: the upgrade strictly reduces known high-severity exposure, while waiting keeps a fixed high running. Reliable: recorded GHSA matching and the backstop keep anything new fail-closed.
+
+### Implementation implication
+pi_host_locks review validation and the install-time audit compare findings to the receipt's accepted advisories. The Pi 1.0.0 promotion lands on the same branch.
+
+---

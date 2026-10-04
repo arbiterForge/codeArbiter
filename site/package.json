@@ -42,10 +42,10 @@
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.63.0",
     "@types/node": "^22.10.2",
-    "@vitest/coverage-v8": "4.1.9",
+    "@vitest/coverage-v8": "4.1.11",
     "pagefind": "1.5.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "vitest": "4.1.9"
+    "vitest": "4.1.11"
   }
 }

@@ -133,6 +133,9 @@ func (d *Document) TypedNormative() (any, error) {
 		e = json.Unmarshal(b, &v)
 		return v, e
 	}
+	if d.Kind() != "plan" {
+		return nil, fault.New("UNSUPPORTED_REPRESENTATION", "typed artifact model is available only for spec and plan")
+	}
 	var v Plan
 	e = json.Unmarshal(b, &v)
 	return v, e

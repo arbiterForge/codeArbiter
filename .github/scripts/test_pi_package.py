@@ -853,7 +853,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["0.84.1"]',
+        'pi-version: ["1.0.0"]',
         "pi_host_locks.py install --version ${{ matrix.pi-version }}",
         "npm ci --ignore-scripts",
     ):
@@ -983,20 +983,31 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 
 class PiPackageTests(unittest.TestCase):
-    def test_local_prefix_pi_cli_resolves_package_above_dot_bin(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            prefix = Path(directory) / "prefix"
-            executable = prefix / "node_modules" / ".bin" / "pi.cmd"
-            cli = (
-                prefix / "node_modules" / "@earendil-works"
-                / "pi-coding-agent" / "dist" / "cli.js"
-            )
-            executable.parent.mkdir(parents=True)
-            cli.parent.mkdir(parents=True)
-            executable.write_text("@echo off\n", encoding="utf-8")
-            cli.write_text("// fixture\n", encoding="utf-8")
+    def test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin(self) -> None:
+        # Pi 1.0.0 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
+        for label, declared, expected in (
+            ("string-bin", "dist/bundle/cli.js", "dist/bundle/cli.js"),
+            ("map-bin", {"pi": "dist/bundle/cli.js"}, "dist/bundle/cli.js"),
+            ("escaping-bin", {"pi": "../outside.js"}, None),
+            ("missing-bin", {"pi-ai": "dist/cli.js"}, None),
+        ):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
+                prefix = Path(directory) / "prefix"
+                executable = prefix / "node_modules" / ".bin" / "pi.cmd"
+                package = prefix / "node_modules" / "@earendil-works" / "pi-coding-agent"
+                executable.parent.mkdir(parents=True)
+                (package / "dist" / "bundle").mkdir(parents=True)
+                executable.write_text("@echo off\n", encoding="utf-8")
+                for relative in ("dist/cli.js", "dist/bundle/cli.js", "../outside.js"):
+                    (package / relative).write_text("// fixture\n", encoding="utf-8")
+                (package / "package.json").write_text(json.dumps(
+                    {"name": "@earendil-works/pi-coding-agent", "bin": declared}), encoding="utf-8")
 
-            self.assertEqual(_resolve_pi_cli_path(executable), cli.resolve())
+                if expected is None:
+                    with self.assertRaises(AssertionError):
+                        _resolve_pi_cli_path(executable)
+                else:
+                    self.assertEqual(_resolve_pi_cli_path(executable), (package / expected).resolve())
 
     def test_parent_embeds_exact_generated_hardened_child_fingerprint(self):
         child = (PLUGIN / "extensions" / "codearbiter-child.js").read_bytes()
@@ -1254,7 +1265,7 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["0.84.1"]',
+            'pi-version: ["1.0.0"]',
             "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
@@ -1661,7 +1672,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 0.84.1 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 1.0.0 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,

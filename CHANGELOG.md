@@ -12,6 +12,209 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.0] - 2026-10-03
+
+### Added
+
+- Add bounded repository-context writing, recovery, selective refresh and task-scoped
+  context delivery while preserving human-owned records and initialization state.
+- Require exact native qualification receipts and cold installed context checks before
+  assembled Claude and Codex candidates admit context writes. Source-only builds remain
+  disabled; live host containment and contribution qualification remain separate.
+
+### Fixed
+
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
+- Resolve nested source membership through anchored paths and synchronize adapter
+  version identities with the release manifests.
+- Account for failed attempts, new source membership, actor changes and compaction
+  without treating unknown evidence as current or granting action authority.
+- Validate diagnostic handoffs before repair or task follow-ups, preserving
+  the caller's authority and checking that the evidence is current.
+- Keep diagnostic outcomes, regression reuse and helper invocation consistent
+  across the generated host packages.
+
+## [2.23.3] - 2026-10-03
+
+### Fixed
+
+- Completion reviews explicitly bind the selected verification run, its linked
+  worktrees and immutable supporting evidence. The native engine checks that
+  binding through task and scope acceptance, and the reviewer must assess
+  performed work rather than only the plan. Existing pre-verification review
+  ordering remains supported.
+
+## [2.23.2] - 2026-10-03
+
+### Fixed
+
+- Named verification now supports a root npm script delegating once to a uniquely
+  selected workspace runner. The declared root command remains intact, both npm
+  argument boundaries are honored, and every inspected manifest is retained in
+  launch provenance. Unsupported or ambiguous delegation fails before execution.
+
+## [2.23.1] - 2026-09-27
+
+### Fixed
+
+- The statusline's git dirty-state probe no longer takes `.git/index.lock`. It is killed at a
+  100 ms budget, and a plain `git status` killed while rewriting a stale index could leave a
+  stale lock that blocked the next commit (reproduced: 5 of 200 renders at that timing, 0 of 200
+  with the fix).
+
+## [2.23.0] - 2026-09-27
+
+### Changed
+
+- The statusline's Session and Today cost is now reconstructed from the parent transcript and
+  every subagent transcript, with each request counted once across streaming snapshots and
+  forked-subagent replays. Advisor iterations are priced at their own model. Cache writes,
+  server tools, fast mode and US-only inference are priced at pinned list rates.
+- Each figure carries a coverage label: `api≈` complete, `api≥` a lower bound, `api≈?` no
+  defensible figure, and `host≈` (Session only) for Claude Code's own estimate when
+  reconstruction is unavailable. A trailing `*` marks a stale snapshot, shown when a redraw
+  loses the ledger lock; the bar never falls back to zeros.
+- Accounting state moved to bounded per-session files under `~/.codearbiter/ledger.json.sessions/`.
+  A redraw reads a fixed byte budget, so steady-state cost no longer grows with history.
+  Deferred work resumes on the next redraw.
+- The subagent panel renders from ledger summaries and no longer parses child transcripts.
+
+### Fixed
+
+- Streaming snapshots and fork replays no longer double-count tokens or cost.
+- Subagent usage is no longer missing from Session and Today totals.
+
+## [2.22.6] - 2026-09-27
+
+### Fixed
+
+- Keep reconciliation bookkeeping outside verification inputs so an unchanged
+  workspace can be reconciled without locked-file failures or stale approvals.
+
+## [2.22.5] - 2026-09-26
+
+### Fixed
+
+- Explain input-manifest entry kinds to independent reviewers so normative artifact
+  identities are not compared with raw HTML hashes.
+
+## [2.22.4] - 2026-09-26
+
+### Fixed
+
+- Count measured partial token usage toward proven budget overruns while keeping
+  incomplete totals unknown; retain exact source identities without storing blobs.
+
+- Retain strict HTML intent-response identity checks and per-document source healing.
+- Bound oversized UTF-8 code-map diagnostics without rewriting human content.
+
+### Added
+
+- Internal closed scout-report decoding and test-owned observation accounting;
+  onboarding dispatch and context-writing integration are not enabled by these helpers.
+
+## [2.22.3] - 2026-09-26
+
+### Removed
+
+- Retire the `new-skill` command, `skill-author` workflow and bundled template,
+  including generated host entries. This maintainer-approved compatibility break
+  has no replacement alias; resource edits use the existing change workflows.
+
+### Fixed
+
+- Restore Codex CLI 0.145 review capture through an explicitly qualified native
+  V1 interface, binding the child UUID and first result while rejecting steering,
+  reused evidence and unsupported V2 launches.
+- Recover pristine, never-launched Codex 0.13.11 review requests using their
+  exact historical prompt, preserving all retained evidence and integrity checks.
+- Preserve native specification, plan and retained evidence bytes across Git
+  checkouts and staging on hosts with automatic line-ending conversion.
+- Select the exact Codex marketplace entry during installation checks, rejecting
+  ambiguous, disabled or mismatched entries.
+- Complete context-creation, decomposition and release entry ownership while
+  preserving initialization aliases, operational procedures and dry-run limits.
+- Redact complete multiline secret spans before formatting mutation diagnostics
+  or truncating gate output for worker feedback.
+
+- Consolidate `reconcile` under `decision-variance` with shorter discovery metadata
+  and a private analysis card. Report-only and scoped requests avoid an unnecessary
+  decision interview; prior choices and sprint method authority are retained.
+- Preserve append-only history when reaffirming a stale architectural decision,
+  and require ADR marker cleanup on controlled failure as well as success.
+- Resolve ADR authoring markers through the same host project-root function as
+  the ADR guards, retain that path for cleanup, and distinguish first-record
+  directory creation from unreadable storage.
+
+- Consolidate ADR authoring and read-only status under one concise owner; load
+  authoring and acceptance details only on demand, preserving explicit entries
+  and full-stem identity without creating records during a status request.
+
+- Consolidate tribunal, threat modeling, manual drift, post-merge cleanup and PR
+  entry procedures under concise skill owners. Retain explicit entries and mode
+  authority; select PR watch/cleanup before creation preflight and avoid wrapper
+  reloads or repeated branch-fate questions for an explicit open-PR request.
+
+- Generate debug and refactor entries from their owning skills, retaining all
+  investigation and parity gates while removing duplicate routing policies.
+- Bound rendered farm enrichment, including labels and notices; preserve UTF-8
+  boundaries and actual retry failure context without extra authoring calls.
+- Recover farm merge conflicts against a verified integration commit, retaining
+  prior output and rechecking the current protected-test baseline.
+- Cover connection and response-body failure lifecycles; clarify that unavailable
+  mutation measurements warn independently of the measured-score threshold.
+- Bound farm provider-directed retry waits and close discarded responses before
+  backoff; preserve independent progress without regenerating against a cooldown.
+- Preserve valid provider-reported tokens when worker output is rejected; validate
+  response shapes and counters without coercion, extra requests or weaker gates.
+- Keep built-in mutation nonzero exits as unclassified rejection evidence, not
+  measured kills; preserve adverse bounds, diagnostics and autonomous review.
+- Match whole, same-kind farm literals rather than substrings or conventional comments;
+  retain existing rejection thresholds and name the actual small-file risk evidence.
+
+- Bound built-in farm mutation trials by their remaining budget; retain timeout
+  diagnostics and completed adverse evidence without crediting an interrupted score.
+- Credit external farm mutation scores only from successful normalized stdout;
+  preserve adverse failed-hook evidence and stop on unverified process cleanup.
+- Isolate farm regression Git and subprocess environments from the invoking shell.
+- Qualify retained farm candidates before discarding alternatives or retrying.
+  Preserve complete native CI qualification within a bounded 30-minute job budget.
+- Resolve farm dependencies before overlapping-file arbitration, so an unready
+  lower-ID task cannot block its own prerequisite. Preserve ready-sibling ordering.
+- Evaluate canary models and samples on one frozen commit in isolated detached
+  worktrees, without changing integration or existing task branches. Report the
+  effective candidate model and incomplete cleanup instead of hiding it.
+- Keep worker/test/verification gates and the separate HTML farm restriction intact.
+
+## [2.22.2] - 2026-09-26
+
+### Fixed
+
+- Native artifact reviews use a bounded prompt pointing to the full frozen
+  evidence context. The adapter checks its canonical bytes and digest before
+  launch and publication, so large source manifests no longer fill the prompt.
+- Never-launched ARMED reviews can be abandoned without producing authority or
+  losing their history, including bounded oversized requests from older adapters.
+- Concurrent authority operations reject stale request writes, so a stale
+  abandonment cannot erase a newer launch or receipt, and a stale launch cannot
+  revive an abandoned request.
+
+## [2.22.1] - 2026-09-26
+
+### Fixed
+
+- Check all plan verification commands and input snapshots before requesting
+  approval, including paired approvals; report unsupported runners and ineffective
+  repository-relative exclusions together.
+- Collect exact Playwright JSON results and supported simple npm scripts; reject
+  ambiguous, skipped, duplicate and retried named results.
+- Launch Windows npm through pinned native Node and npm CLI files, preserving
+  literal arguments and rejecting runtime drift. Retain the qualified launch
+  contract in verification evidence.
+- Recognize both supported quote styles in verifier calls and preserve actionable
+  oversized-input diagnostics without allowing explicit roots to bypass exclusions.
+
 ## [2.22.0] - 2026-09-26
 
 ### Added

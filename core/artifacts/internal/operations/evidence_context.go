@@ -16,6 +16,9 @@ import (
 func (e *Engine) evidenceContext(r object, entry repository.Entry) (any, error) {
 	plan := entry.Doc
 	activity, recordID := model.S(r["activity"]), model.S(r["record_id"])
+	if (r["completion_selection"] != nil || r["completion_context_ref"] != nil || r["completion_context_sha256"] != nil) && activity != "spec_review" && activity != "quality_review" {
+		return nil, fault.New("INVALID_COMPLETION_SELECTION", "completion evidence applies only to reviews")
+	}
 	var context object
 	var err error
 	if activity == "approval" || activity == "prerequisite" || activity == "reconciliation" || activity == "farm_authorization" {
@@ -25,6 +28,9 @@ func (e *Engine) evidenceContext(r object, entry repository.Entry) (any, error) 
 			return nil, fault.New("WRONG_KIND", "verification/review evidence context requires a plan")
 		}
 		context, err = e.buildEvidenceContext(plan, activity, recordID)
+		if err == nil {
+			context, err = e.selectCompletion(plan, context, r)
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -37,7 +43,11 @@ func (e *Engine) evidenceContext(r object, entry repository.Entry) (any, error) 
 	if err = e.FS.PutDerived("evidence-contexts", h, b); err != nil {
 		return nil, err
 	}
-	return object{"context_ref": observation.ContextRef(h), "context_sha256": h, "activity": activity, "subject": context["subject"], "input_sha256": context["input_sha256"]}, nil
+	result := object{"context_ref": observation.ContextRef(h), "context_sha256": h, "activity": activity, "subject": context["subject"], "input_sha256": context["input_sha256"]}
+	if context["completion_sha256"] != nil {
+		result["completion_sha256"] = context["completion_sha256"]
+	}
+	return result, nil
 }
 
 func (e *Engine) buildPromptContext(d *model.Document, activity, recordID, promptHash string) (object, error) {
@@ -152,6 +162,56 @@ func (e *Engine) buildEvidenceContext(plan *model.Document, activity, recordID s
 		}
 		context["base_input_sha256"] = baselineCopy["base_input_sha256"]
 		context["task_hashes"], context["scope_baseline"], context["tasks"] = hashes, baselineCopy, tasks
+	}
+	if es := schema.ValidateWith(observation.ContextSchema(), context); len(es) > 0 {
+		return nil, &es[0]
+	}
+	return context, nil
+}
+
+func (e *Engine) selectCompletion(plan *model.Document, context, r object) (object, error) {
+	selection := model.M(r["completion_selection"])
+	ref, sha := model.S(r["completion_context_ref"]), model.S(r["completion_context_sha256"])
+	if selection == nil && ref == "" && sha == "" {
+		return context, nil
+	}
+	if model.S(context["activity"]) != "spec_review" && model.S(context["activity"]) != "quality_review" || (ref == "") != (sha == "") || selection != nil && ref != "" {
+		return nil, fault.New("INVALID_COMPLETION_SELECTION", "select completion evidence or resume one exact review context")
+	}
+	spec, err := e.guards(plan)
+	if err != nil {
+		return nil, err
+	}
+	if ref != "" {
+		frozen, _, err := observation.LoadContext(e.FS, ref, sha)
+		if err != nil {
+			return nil, err
+		}
+		completion, completionHash := frozen["completion"], frozen["completion_sha256"]
+		if completion == nil {
+			return nil, fault.New("COMPLETION_REQUIRED", "resumed context has no completed evidence")
+		}
+		delete(frozen, "completion")
+		delete(frozen, "completion_sha256")
+		a, _ := canonical.Hash(frozen)
+		b, _ := canonical.Hash(context)
+		if a != b {
+			return nil, fault.New("STALE_EVIDENCE", "resumed completion context no longer matches its original inputs")
+		}
+		context["completion"], context["completion_sha256"] = completion, completionHash
+	} else {
+		completion, err := evidence.BuildCompletion(e.FS, plan, spec, context, selection)
+		if err != nil {
+			return nil, err
+		}
+		context["completion"] = completion
+		context["completion_sha256"], err = canonical.Hash(completion)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err = evidence.ValidateCompletion(e.FS, plan, spec, context); err != nil {
+		return nil, err
 	}
 	if es := schema.ValidateWith(observation.ContextSchema(), context); len(es) > 0 {
 		return nil, &es[0]
