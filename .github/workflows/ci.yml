@@ -456,9 +456,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     # Run 36079069513: Intel macOS passed its 42 authoring and 35 package
     # cases, then hit the former 15-minute job ceiling during the full
-    # conformance replay. Windows ARM took 12m07s. Retain every required
-    # suite and bound the entire cold-toolchain/native population at 30m.
-    timeout-minutes: 30
+    # conformance replay, establishing the general 30m qualification budget.
+    # Runs 37148496781 and 37150510062 cancelled Windows ARM at that
+    # ceiling during final conformance after all preceding suites passed.
+    # Give only that platform 45m; retain every suite and per-test timeout.
+    timeout-minutes: ${{ matrix.expected_platform == 'windows/arm64' && 45 || 30 }}
     permissions:
       contents: read
     env:

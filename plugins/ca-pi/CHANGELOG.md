@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.15.11] - 2026-10-03
+## [0.15.12] - 2026-10-03
 
 ### Fixed
 
@@ -15,6 +15,13 @@ All notable changes to `ca-pi` are documented in this file.
 - The crypto/secret commit gate (H-09b/H-10b) no longer expires a recorded pass after 30 minutes.
   A pass now stays valid for exactly the lines it reviewed, like the migration gate; any new or
   changed sensitive line still blocks until the gate reviews it.
+
+## [0.15.11] - 2026-10-03
+
+### Changed
+
+- Synchronize the shared kernel's explicit completion-review evidence contract.
+  This does not enable the unsupported Pi native review-authority path.
 
 ## [0.15.10] - 2026-10-03
 

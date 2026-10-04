@@ -145,6 +145,16 @@ The reviewed design originally used schema 0.2.0. It is retained as a re-rendere
 
 Readiness now requires every declared task path to fall within its verification-input roots and outside explicit exclusions. This proves declared-path coverage only, not transitive build dependencies. Explicitly excluded symlinks are not followed or inspected; an included symlink still blocks a snapshot. Known test-runner spellings (including absolute Go paths, Python module invocation, Node and npm) require named tests. Custom wrappers still need reviewer-declared `required_tests`; the engine does not claim universal command intent detection.
 
+## Completion workspace Git probes
+
+Completion evidence checks use the bridge-selected absolute Git executable for a
+closed set of read-only identity, status and index probes. Their arguments are
+compiled into the engine; artifact text cannot supply a command or Git option.
+The probes disable lazy fetching and filesystem-monitor commands, retain bounded
+output and a timeout, and do not invoke a shell. The package guard permits this
+reviewed boundary while continuing to reject other process launches, network
+packages and direct network syscalls.
+
 ## Durable replay results
 
 Journal 0.2.0 records the bounded original completion result. Identical retries preserve that result even after later artifact edits. Journal 0.1.0 remains readable and explicitly requests a fresh identity where original metadata is absent. Rolled-back operations return `OPERATION_ROLLED_BACK`, never a successful mutation result. Export responses use `companion_links` for the disposition of companion links.

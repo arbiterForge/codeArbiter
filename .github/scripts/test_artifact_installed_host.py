@@ -20,6 +20,7 @@ import tempfile
 
 
 _BRIDGE_IMPORTS = frozenset({
+    "_gitexec",
     "__future__", "ctypes", "hashlib", "json", "msvcrt", "os", "pathlib",
     "platform", "re", "stat", "subprocess", "tempfile", "threading", "typing",
 })
@@ -60,6 +61,8 @@ def assert_offline_bridge(source: bytes) -> None:
             imports.update(alias.name.split(".", 1)[0] for alias in node.names)
         elif isinstance(node, ast.ImportFrom):
             imported = (node.module or "").split(".", 1)[0]
+            if imported == "_gitexec" and [alias.name for alias in node.names] != ["root_bound_git_env"]:
+                raise AssertionError("installed bridge imports unreviewed Git capability")
             if imported in {"ctypes", "msvcrt", "os", "subprocess"}:
                 raise AssertionError("installed bridge imports an unreviewed capability directly")
             imports.add(imported)
@@ -162,6 +165,82 @@ def expected_binary(installation: Path, expected_sha256: str) -> Path:
     return binary
 
 
+def native_environment_allowed(environment: object) -> bool:
+    """The engine receives selected Git and only its resolved ignore setting."""
+    if environment == {}:
+        return True
+    if not isinstance(environment, dict):
+        return False
+    git_only = {"CODEARBITER_GIT_EXECUTABLE"}
+    ignore_keys = {"GIT_CONFIG_COUNT", "GIT_CONFIG_KEY_0", "GIT_CONFIG_VALUE_0"}
+    if set(environment) == git_only | ignore_keys:
+        ignore = environment["GIT_CONFIG_VALUE_0"]
+        if (environment["GIT_CONFIG_COUNT"] != "1" or environment["GIT_CONFIG_KEY_0"] != "core.excludesFile"
+                or not isinstance(ignore, str) or not ignore or len(ignore) > 4096
+                or "\0" in ignore or not Path(ignore).is_absolute()):
+            return False
+    elif set(environment) != git_only:
+        return False
+    raw = environment["CODEARBITER_GIT_EXECUTABLE"]
+    if not isinstance(raw, str) or not Path(raw).is_absolute():
+        return False
+    try:
+        selected = Path(raw).resolve(strict=True)
+        if str(selected) != raw or not selected.is_file() or not os.access(selected, os.X_OK):
+            return False
+        configured = os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+        if configured:
+            return Path(configured).is_absolute() and Path(configured).resolve(strict=True) == selected
+        name = "git.exe" if os.name == "nt" else "git"
+        for directory in os.environ.get("PATH", "").split(os.pathsep):
+            if not directory or not Path(directory).is_absolute():
+                continue
+            candidate = Path(directory) / name
+            if candidate.is_file() and candidate.resolve(strict=True) == selected:
+                return True
+    except (OSError, RuntimeError):
+        return False
+    return False
+
+
+def native_git_probe_allowed(executable, argv, cwd, environment) -> bool:
+    """Admit only the bridge's fixed, read-only effective-ignore query."""
+    if cwd is None:
+        return False
+    try:
+        root = Path(cwd)
+        if not root.is_absolute() or root.resolve(strict=True) != root:
+            return False
+        configured = os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+        name = "git.exe" if os.name == "nt" else "git"
+        candidates = [Path(configured)] if configured else [
+            Path(directory) / name for directory in os.environ.get("PATH", "").split(os.pathsep)
+            if directory and Path(directory).is_absolute()]
+        default = os.environ.get("XDG_CONFIG_HOME")
+        default = str(Path(default) / "git" / "ignore") if default else "~/.config/git/ignore"
+        for candidate in candidates:
+            try:
+                git = candidate.resolve(strict=True)
+            except (OSError, RuntimeError):
+                continue
+            if not native_environment_allowed({"CODEARBITER_GIT_EXECUTABLE": str(git)}):
+                continue
+            expected = [str(git), "--no-lazy-fetch", "--no-optional-locks", "-C", str(root),
+                        "-c", "core.fsmonitor=false", "-c", "protocol.allow=never", "config",
+                        "--null", "--path", "--default", default, "--get", "core.excludesFile"]
+            windows_match = executable is None and os.name == "nt" and argv == subprocess.list2cmdline(expected)
+            argv_match = executable is not None and Path(executable).resolve(strict=True) == git and argv == expected
+            if windows_match or argv_match:
+                from _gitexec import root_bound_git_env
+
+                expected_environment = root_bound_git_env()
+                expected_environment.pop("GIT_CONFIG", None)
+                return environment == expected_environment
+    except (OSError, RuntimeError, TypeError, ValueError):
+        return False
+    return False
+
+
 def enforce_runtime_event(
     event: str,
     details: tuple,
@@ -184,14 +263,16 @@ def enforce_runtime_event(
     if event != "subprocess.Popen":
         return
     executable, argv, _cwd, environment = details
+    if native_git_probe_allowed(executable, argv, _cwd, environment):
+        return
     verifier = Path(__file__).resolve(strict=True)
     python = Path(sys.executable).resolve(strict=True)
     if executable is None and os.name == "nt" and isinstance(argv, str):
         binary_prefix = subprocess.list2cmdline([str(binary)])
         python_prefix = subprocess.list2cmdline([str(python)])
         if argv == binary_prefix or argv.startswith(binary_prefix + " "):
-            if environment != {}:
-                raise RuntimeError("native binary launch escaped its pinned empty environment")
+            if not native_environment_allowed(environment):
+                raise RuntimeError("native binary launch escaped its bounded host Git environment")
             return
         if permit_verifier_children and (
             argv == python_prefix or argv.startswith(python_prefix + " ")
@@ -209,10 +290,10 @@ def enforce_runtime_event(
     launched = Path(executable).resolve(strict=True)
     arguments = [str(value) for value in argv]
     if launched == binary:
-        if not arguments or Path(arguments[0]).resolve(strict=True) != binary or environment != {}:
-            raise RuntimeError("native binary launch escaped its pinned empty environment")
+        if not arguments or Path(arguments[0]).resolve(strict=True) != binary or not native_environment_allowed(environment):
+            raise RuntimeError("native binary launch escaped its bounded host Git environment")
         return
-    if platform.system() == "Darwin" and environment == {}:
+    if platform.system() == "Darwin" and native_environment_allowed(environment):
         requested = Path(executable).absolute()
         info = requested.lstat()
         temp_root = Path(tempfile.gettempdir()).resolve(strict=True)

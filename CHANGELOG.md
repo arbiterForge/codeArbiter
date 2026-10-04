@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.23.3] - 2026-10-03
+## [2.23.4] - 2026-10-03
 
 ### Fixed
 
@@ -29,6 +29,16 @@ predate the plugin rewrite and are grouped by date.
 - The crypto/secret commit gate (H-09b/H-10b) no longer expires a recorded pass after 30 minutes.
   A pass now stays valid for exactly the lines it reviewed, like the migration gate; any new or
   changed sensitive line still blocks until the gate reviews it.
+
+## [2.23.3] - 2026-10-03
+
+### Fixed
+
+- Completion reviews explicitly bind the selected verification run, its linked
+  worktrees and immutable supporting evidence. The native engine checks that
+  binding through task and scope acceptance, and the reviewer must assess
+  performed work rather than only the plan. Existing pre-verification review
+  ordering remains supported.
 
 ## [2.23.2] - 2026-10-03
 

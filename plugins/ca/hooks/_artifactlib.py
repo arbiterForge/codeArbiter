@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Bounded stdlib bridge to an installation-pinned ca-artifact executable.
 
-No imports perform I/O. No PATH search, environment-selected executable, schema
-parser duplication, command execution from a document, or new host registration.
+No imports perform I/O. No native-binary PATH search, environment-selected
+engine, schema parser duplication, document command execution, or host registration.
 The caller supplies a trusted installation directory, never a repository setting.
 """
 from __future__ import annotations
@@ -742,10 +742,83 @@ def _preflight_current_acceptance(
     }
 
 
-def _bounded_child(argv: list[str], request: bytes, fd: int, timeout: float) -> tuple[int, bytes, bytes]:
+def _native_git_excludes(git: Path, root: Path) -> dict[str, str]:
+    """Resolve only the governed root's ignore policy with the producer's Git.
+
+    Git expands the explicit setting or its documented XDG/home default. No
+    general configuration or host environment crosses the native boundary.
+    Mapped roots with different policies still must pass exact closure equality.
+    """
+    from _gitexec import root_bound_git_env
+
+    default = os.environ.get("XDG_CONFIG_HOME")
+    default = str(Path(default) / "git" / "ignore") if default else "~/.config/git/ignore"
+    environment = root_bound_git_env()
+    environment.pop("GIT_CONFIG", None)  # git-config-only override; inventory commands ignore it.
+    try:
+        code, raw, _ = _bounded_child(
+            [str(git), "--no-lazy-fetch", "--no-optional-locks", "-C", str(root),
+             "-c", "core.fsmonitor=false", "-c", "protocol.allow=never", "config",
+             "--null", "--path", "--default", default, "--get", "core.excludesFile"],
+            b"", None, 5, environment=environment, cwd=root)
+        if code != 0 or not raw.endswith(b"\0") or b"\0" in raw[:-1] or len(raw) > 4096:
+            return {}
+        value = raw[:-1].decode("utf-8", "strict")
+        if not value:
+            return {}
+        path = Path(value)
+        path = (path if path.is_absolute() else root / path).resolve()
+    except (ArtifactError, OSError, RuntimeError, UnicodeError, ValueError):
+        return {}
+    return {"GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "core.excludesFile",
+            "GIT_CONFIG_VALUE_0": str(path)}
+
+
+def _native_child_environment(argv: list[str]) -> dict[str, str]:
+    """Transport one host Git identity for fixed native workspace probes only.
+
+    CODEARBITER_GIT_EXECUTABLE is the shared _gitexec host override. Resolve the
+    ordinary host PATH in this bridge, excluding CWD/relative entries and the
+    governed checkout; the native engine receives only that identity and the
+    resolved core.excludesFile setting, never PATH or general ambient state.
+    Cold ordinary operations remain usable when no safe Git is available.
+    """
+    try:
+        root = Path(argv[argv.index("--root") + 1]).resolve(strict=True)
+        boundaries = [root, *(parent for parent in root.parents if (parent / ".git").exists())]
+    except (ValueError, IndexError, OSError):
+        return {}
+    configured = os.environ.get("CODEARBITER_GIT_EXECUTABLE")
+    if configured:
+        candidates = [Path(configured)]
+    else:
+        name = "git.exe" if os.name == "nt" else "git"
+        candidates = [Path(directory) / name for directory in os.environ.get("PATH", "").split(os.pathsep)
+                      if directory and Path(directory).is_absolute()]
+    for candidate in candidates:
+        try:
+            if not candidate.is_absolute() or any(candidate.is_relative_to(boundary) for boundary in boundaries):
+                continue
+            resolved = candidate.resolve(strict=True)
+            if (any(resolved.is_relative_to(boundary) for boundary in boundaries)
+                    or not stat.S_ISREG(resolved.stat().st_mode) or not os.access(resolved, os.X_OK)):
+                continue
+        except (OSError, RuntimeError):
+            continue
+        return {"CODEARBITER_GIT_EXECUTABLE": str(resolved),
+                **_native_git_excludes(resolved, root)}
+    return {}
+
+
+def _bounded_child(argv: list[str], request: bytes, fd: int | None, timeout: float,
+                   *, environment: dict[str, str] | None = None,
+                   cwd: Path | None = None) -> tuple[int, bytes, bytes]:
     options = dict(stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                   close_fds=True, start_new_session=True, env={})
-    if os.name != "nt":
+                   close_fds=True, start_new_session=True,
+                   env=_native_child_environment(argv) if environment is None else environment)
+    if cwd is not None:
+        options["cwd"] = cwd
+    if os.name != "nt" and fd is not None:
         options["pass_fds"] = (fd,)
     process = subprocess.Popen(argv, **options)
     buffers = [bytearray(), bytearray()]

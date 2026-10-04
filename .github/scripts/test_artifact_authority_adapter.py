@@ -23,6 +23,7 @@ REPO = HERE.parent.parent
 CORE_PYSRC = REPO / "core" / "pysrc"
 sys.path.insert(0, str(CORE_PYSRC))
 from _gitexec import root_bound_git_env  # noqa: E402
+from test_artifact_git_excludes import CompletionGitExcludesTest  # noqa: E402,F401
 from test_artifact_npm_nested_launch import (  # noqa: E402
     NestedNpmPrefixContextTest, WindowsNestedNpmLaunchTest,
 )  # Keep focused launch regressions in the existing required authority suite.
@@ -3481,6 +3482,108 @@ class ClaudeEndToEndTest(unittest.TestCase):
         with mock.patch.object(self, "_review", side_effect=self._native_codex_review):
             self.test_end_to_end_claude()
 
+    def test_completion_native_hook_allows_canonical_bookkeeping_and_rejects_source_drift(self):
+        """Actual native validation; host hook events remain labeled synthetic fixtures."""
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation, "completion", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {"operation_id": "completion-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+                               "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
+        workflow.approve("SPEC-FLOW")
+        plan = self.host.plan_normative(client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"])
+        other_task = copy.deepcopy(plan["tasks"][0])
+        other_task.update(id="T-002", title="Unrelated task bookkeeping fixture")
+        plan["tasks"].append(other_task)
+        plan["checkpoints"][0]["tasks"].append("T-002")
+        client.call("create", {"operation_id": "completion-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+                               "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+                               "spec_id": "SPEC-FLOW", "normative": plan})
+        workflow.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {
+            "verification_inputs": {"roots": ["."], "exclude_directories": ["tests/__pycache__"]}}}])
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        plan_path = self.root / ".codearbiter/plans/flow.html"
+        git_run(["git", "-C", str(self.root), "add", "--force", str(plan_path)], check=True)
+
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        pre = self._event("bash-pretooluse.json", tool_use_id="completion-verify",
+                          tool_input={"command": armed["verify_command"], "description": "fixture verifier"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        post = self._event("bash-posttooluse.json", tool_use_id="completion-verify", tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        verification = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
+
+        native_package = Path(self.registry.name).resolve() / "codex-plugin"
+        shutil.copytree(REPO / "plugins/ca-codex", native_package,
+                        ignore=shutil.ignore_patterns("node_modules", "helpers", "__pycache__"))
+        shutil.copytree(self.installation, native_package / "helpers/artifacts")
+        environment = {**self._environment(), "PLUGIN_ROOT": str(native_package)}
+
+        def native_cli(*arguments):
+            result = subprocess.run([sys.executable, str(native_package / "hooks/artifact-authority.py"), *arguments],
+                                    capture_output=True, env=environment, timeout=120)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            return json.loads(result.stdout)
+
+        matrix = Path(self.registry.name).resolve() / "selected-completion.txt"
+        matrix.write_text("Synthetic fixture: tests/test_config.py:5 provides the named pass.\n", encoding="utf-8")
+        review_args = ("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW", "--record-id", "T-001",
+                       "--activity", "spec_review", "--codex-review-profile", "native-v1",
+                       "--completion-receipt", verification, "--supporting-file", str(matrix))
+        review, drift_review = native_cli(*review_args), native_cli(*review_args)
+        frozen_plan = plan_path.read_bytes()
+        ticket = list(client.contextual_pages("PLAN-FLOW", "T-002", 65536))[-1]["context_ticket"]
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-002", context_ticket=ticket)
+        self.assertNotEqual(plan_path.read_bytes(), frozen_plan, "fixture must exercise a real canonical HTML rewrite")
+        context = self._state(review["request_id"])["context"]
+        self.assertEqual(context["completion"]["verifications"][0]["receipt_ref"], verification)
+        self.assertEqual(context["completion"]["materials"][0]["source_path"], str(matrix))
+        decision = {"format": self.adapter.DECISION_FORMAT, "request_id": review["request_id"],
+                    "target_sha256": context["input_sha256"], "contract_sha256": review["review_contract_sha256"],
+                    "decision": "pass", "coverage": review["required_coverage"], "findings": [],
+                    "assessment": "Synthetic native integration fixture, not substantive product completion proof.",
+                    "completion_sha256": review["completion_sha256"], "completion_assessment": [
+                        {"task_id": task, "obligation": obligation, "status": "substantiated",
+                         "assessment": "tests/test_config.py:5 and the selected named-test receipt are fixture evidence.",
+                         "evidence_refs": [verification, str(matrix)]}
+                        for task, obligation in sorted(self.adapter._completion_obligations(context))]}
+        parent = {"cwd": str(self.root), "session_id": "completion-native", "turn_id": "completion-parent",
+                  "tool_name": "spawn_agent", "tool_use_id": "completion-review", "tool_input": review["launch_envelope"]}
+        child = {"cwd": str(self.root), "session_id": parent["session_id"], "agent_type": "default",
+                 "agent_id": "01900000-0000-7000-8000-000000000091", "turn_id": "01900000-0000-7000-8000-000000000092"}
+
+        def hook(event):
+            return subprocess.run([sys.executable, str(native_package / "hooks/artifact-authority-hook.py")],
+                                  input=json.dumps(event).encode(), capture_output=True, env=environment, timeout=120)
+
+        review_state = self._state(review["request_id"])
+        resumed = client.call("evidence-context", {"artifact_id": "PLAN-FLOW", "record_id": "T-001",
+            "activity": "spec_review", "completion_context_ref": review_state["context_ref"],
+            "completion_context_sha256": review_state["context_sha256"]})
+        self.assertEqual(resumed["context_sha256"], review_state["context_sha256"])
+        for event in ({**parent, "hook_event_name": "PreToolUse"},
+                      {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"agent_id": child["agent_id"], "nickname": None})},
+                      {**child, "hook_event_name": "SubagentStart"},
+                      {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+                       "last_assistant_message": json.dumps(decision)}):
+            result = hook(event)
+            self.assertEqual((result.returncode, result.stdout, result.stderr), (0, b"", b""))
+        published = native_cli("publish", "--root", str(self.root), "--request-id", review["request_id"])
+        self.assertTrue((self.root / published["receipt"]).is_file())
+        (self.root / "tests/test_config.py").write_text("changed mapped source\n", encoding="utf-8")
+        denied = hook({**parent, "session_id": "completion-drift", "turn_id": "completion-drift-turn",
+                       "tool_use_id": "completion-drift-call", "tool_input": drift_review["launch_envelope"],
+                       "hook_event_name": "PreToolUse"})
+        self.assertEqual(denied.returncode, 0, denied.stderr)
+        self.assertEqual(json.loads(denied.stdout)["decision"], "block")
+        self.assertIsNone(self._state(drift_review["request_id"])["launch"])
+
     @unittest.skipUnless(shutil.which("node"), "direct Node integration requires Node")
     def test_linked_node_entrypoint_is_accepted_by_real_engine(self):
         target = self.root / ".codearbiter" / "runner-store"
@@ -4356,6 +4459,338 @@ class ClaudeHookRegistrationTest(unittest.TestCase):
             self.assertEqual(output["hookSpecificOutput"]["hookEventName"], "PreToolUse")
             self.assertEqual(output["hookSpecificOutput"]["permissionDecision"], "deny")
             self.assertNotIn("decision", output)
+
+
+class CompletionBridgeEnvironmentTest(unittest.TestCase):
+    """S1: the pinned engine receives one safe Git identity, never ambient capabilities."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "repository"
+        self.root.mkdir()
+        (self.root / ".git").mkdir()
+        self.bin = Path(self.temp.name) / "host-bin"
+        self.bin.mkdir()
+        self.git = self.bin / ("git.exe" if os.name == "nt" else "git")
+        self.git.write_bytes(b"isolated inert executable fixture")
+        self.git.chmod(0o755)
+        self.bridge = importlib.import_module("_artifactlib")
+
+    def _environment(self, values, root=None):
+        process = mock.Mock(returncode=0, stdin=io.BytesIO(), stdout=io.BytesIO(), stderr=io.BytesIO())
+        with mock.patch.dict(os.environ, values, clear=True), mock.patch.object(
+                self.bridge.subprocess, "Popen", return_value=process) as launch, mock.patch.object(
+                self.bridge, "_native_git_excludes", return_value={}):
+            self.bridge._bounded_child(["pinned-engine", "evidence-context", "--root", str(root or self.root), "--request", "-"],
+                                       b"{}", 0, 2)
+        return launch.call_args.kwargs["env"]
+
+    def test_only_absolute_host_git_identity_crosses_native_bridge(self):
+        environment = self._environment({"CODEARBITER_GIT_EXECUTABLE": str(self.git), "PATH": "untrusted",
+                                         "GIT_DIR": "foreign", "USER_TOKEN": "secret-fixture", "HOME": "foreign"})
+        self.assertEqual(environment, {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve())})
+
+    def test_git_discovery_skips_current_relative_and_repository_paths(self):
+        local = self.root / self.git.name
+        local.write_bytes(b"repository-controlled executable")
+        local.chmod(0o755)
+        environment = self._environment({"PATH": os.pathsep.join((".", "relative", str(self.root), str(self.bin)))})
+        self.assertEqual(environment, {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve())})
+
+    def test_repository_git_is_refused_even_when_artifact_root_is_nested(self):
+        local = self.root / self.git.name
+        local.write_bytes(b"repository-controlled executable")
+        local.chmod(0o755)
+        nested = self.root / "subdirectory"
+        nested.mkdir()
+        self.assertEqual(self._environment({"CODEARBITER_GIT_EXECUTABLE": str(local)}, nested), {})
+
+    def test_cold_ordinary_operation_remains_viable_without_git(self):
+        self.assertEqual(self._environment({"PATH": ""}), {})
+
+    def test_installed_host_audit_only_admits_exact_bounded_git_environment(self):
+        host = importlib.import_module("test_artifact_installed_host")
+        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git)}, clear=True):
+            self.assertTrue(host.native_environment_allowed({}))
+            self.assertTrue(host.native_environment_allowed({"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve())}))
+            selected = {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve()),
+                        "GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "core.excludesFile",
+                        "GIT_CONFIG_VALUE_0": str(self.root / "host-ignore")}
+            self.assertTrue(host.native_environment_allowed(selected))
+            self.assertFalse(host.native_environment_allowed(dict(selected, GIT_CONFIG_KEY_0="alias.escape")))
+            self.assertFalse(host.native_environment_allowed(dict(selected, GIT_CONFIG_VALUE_0="relative")))
+            for environment in ({"PATH": str(self.bin)},
+                                {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve()), "TOKEN": "secret"},
+                                {"CODEARBITER_GIT_EXECUTABLE": "git"},
+                                {"CODEARBITER_GIT_EXECUTABLE": str(Path(sys.executable).resolve())}):
+                with self.subTest(environment=environment):
+                    self.assertFalse(host.native_environment_allowed(environment))
+
+    def test_installed_host_audit_only_admits_fixed_git_ignore_query(self):
+        host = importlib.import_module("test_artifact_installed_host")
+        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git),
+                                         "GIT_CONFIG": "must-not-reach-query"}, clear=True), mock.patch.object(
+                self.bridge, "_bounded_child", return_value=(0, b"", b"")) as query:
+            self.bridge._native_git_excludes(self.git.resolve(), self.root.resolve())
+            argv = query.call_args.args[0]
+            environment = query.call_args.kwargs["environment"]
+            cwd = query.call_args.kwargs["cwd"]
+            binary = Path(sys.executable).resolve()
+            for executable, arguments in ((str(self.git.resolve()), argv),
+                                          (None, subprocess.list2cmdline(argv))):
+                if executable is None and os.name != "nt":
+                    continue
+                host.enforce_runtime_event("subprocess.Popen", (executable, arguments, cwd, environment),
+                                           binary=binary, binary_sha256="", permit_verifier_children=False)
+            for arguments in (argv[:-1] + ["alias.escape"], argv + ["--show-origin"]):
+                with self.assertRaisesRegex(RuntimeError, "unreviewed process"):
+                    host.enforce_runtime_event("subprocess.Popen", (str(self.git.resolve()), arguments, cwd, environment),
+                                               binary=binary, binary_sha256="", permit_verifier_children=False)
+
+
+class CompletionReviewTransportTest(unittest.TestCase):
+    """C1/C3/S1/S3 adapter fixture; native tests separately prove receipt authority."""
+
+    def setUp(self):
+        AuthorityAdapterTest.setUp(self)
+        self.addCleanup(AuthorityAdapterTest.tearDown, self)
+    _launch = NativeReviewTransportTest._launch
+
+    def _fixture(self):
+        import base64
+
+        self.external = tempfile.TemporaryDirectory()
+        self.addCleanup(self.external.cleanup)
+        roots = {}
+        for label in ("candidate", "evidence"):
+            path = Path(self.external.name).resolve() / label
+            git_run(["git", "-C", str(self.root), "worktree", "add", "--quiet", "--detach", str(path)], check=True)
+            self.addCleanup(lambda selected=path: git_run(
+                ["git", "-C", str(self.root), "worktree", "remove", "--force", str(selected)], check=False))
+            roots[label] = str(path.resolve())
+        commands = []
+        for label in roots:
+            definition = dict(self.client.context["commands"][0]["definition"], cwd=label)
+            commands.append({"definition_sha256": hashlib.sha256(self.adapter._canonical(definition)).hexdigest(),
+                             "definition": definition})
+        self.client.context["commands"] = commands
+        bindings = self.adapter._bind_commands(self.root, self.client.context, roots)
+        material = Path(self.external.name).resolve() / "completion-matrix.txt"
+        material.write_bytes(b"T-001 done_when: fixture.txt has verified content.\n")
+        self.material = material
+        self.review_roots = roots
+        self.receipt_ref = ".codearbiter/.artifacts/receipts/" + "a" * 64 + ".json"
+        verification = {"task_id": "T-001", "receipt_ref": self.receipt_ref, "receipt_sha256": "a" * 64,
+                        "command_bindings": bindings, "workspace_after": self.adapter._workspace_snapshots(bindings)}
+        for name, char, directory in (("source", "b", "authority-sources"), ("event", "c", "events"),
+                                      ("observation", "d", "observations"), ("context", "e", "evidence-contexts")):
+            verification[name + "_sha256"] = char * 64
+            verification[name + "_ref"] = f".codearbiter/.artifacts/{directory}/{char * 64}.json"
+        completion = {"format": "codearbiter.completion-evidence/0.1.0", "verifications": [verification],
+                      "materials": [{"source_path": str(material), "sha256": hashlib.sha256(material.read_bytes()).hexdigest(),
+                                     "size_bytes": material.stat().st_size,
+                                     "content_base64": base64.b64encode(material.read_bytes()).decode("ascii")}]}
+        self.client.context.update(activity="spec_review", completion=completion,
+                                   completion_sha256=hashlib.sha256(self.adapter._canonical(completion)).hexdigest())
+        self.client.context["task"].update(steps=["Inspect the implementation."], done_when=["The result is proved."])
+        # The real engine owns receipt admission and normalized freshness. This
+        # fixture reports the matching native failure through that same API;
+        # it is not proof of the native engine's normalization implementation.
+        original_call = self.client.call
+
+        def native_context_fixture(operation, selection=None, **kwargs):
+            if operation == "evidence-context" and (selection or {}).get("completion_context_ref"):
+                self.adapter._require_completion_materials(self.client.context)
+                if self.adapter._workspace_snapshots(bindings) != verification["workspace_after"]:
+                    raise self.adapter.AuthorityError("WORKSPACE_DRIFT", "synthetic native fixture rejects mapped drift")
+            return original_call(operation, selection, **kwargs)
+
+        self.client.call = native_context_fixture
+        current_client = mock.patch.object(self.adapter, "_completion_client", return_value=self.client, create=True)
+        current_client.start()
+        self.addCleanup(current_client.stop)
+
+    def _arm_completion(self):
+        try:
+            return self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                request_nonce="completion-review-transport", codex_review_profile="native-v1",
+                completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)],
+            )
+        except RuntimeError as exc:
+            self.fail("Explicit completion review cannot retain its selected verification/evidence: " + str(exc))
+
+    def _decision(self, armed):
+        return {"format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+                "target_sha256": self.client.context["input_sha256"],
+                "contract_sha256": armed["review_contract_sha256"], "decision": "pass",
+                "coverage": armed["required_coverage"], "findings": [], "assessment": "Completed fixture work.",
+                "completion_sha256": self.client.context["completion_sha256"],
+                "completion_assessment": [{"task_id": "T-001", "obligation": obligation,
+                    "status": "substantiated",
+                    "assessment": "fixture.txt:1 and selected matrix substantiate the performed work.",
+                    "evidence_refs": [self.receipt_ref, str(self.material)]}
+                    for obligation in ("criterion:AC-001", "criterion:AC-002", "step:1", "done_when:1")]}
+
+    def test_selected_published_verification_two_roots_and_matrix_reach_immutable_prompt(self):
+        self._fixture()
+        armed = self._arm_completion()
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(self.client.calls[0][1]["completion_selection"], {
+            "verification_receipts": [self.receipt_ref], "supporting_files": [str(self.material)]})
+        self.assertEqual(request["context"]["completion"], self.client.context["completion"])
+        self.assertEqual({v["workspace_root"] for v in request["context"]["completion"]["verifications"][0]["command_bindings"]},
+                         set(self.review_roots.values()))
+        prompt = armed["dispatch_prompt"]
+        for phrase in ("performed work", "done_when", "completion_assessment", "completion_sha256",
+                       "source locations", "changes_requested", "Definitions alone"):
+            self.assertIn(phrase, prompt)
+        self.assertEqual(armed["launch_envelope"], {"message": prompt, "fork_context": False})
+        self.assertEqual(self._launch("codex", armed)["state"], "LAUNCHING")
+
+    def test_mapped_workspace_drift_blocks_launch(self):
+        self._fixture()
+        armed = self._arm_completion()
+        (Path(self.review_roots["evidence"]) / "fixture.txt").write_text("changed after verification", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._launch("codex", armed)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["launch"])
+
+    def test_supporting_material_drift_blocks_launch(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self.material.write_bytes(b"changed supporting facts")
+        with self.assertRaisesRegex(RuntimeError, "COMPLETION_EVIDENCE_DRIFT"):
+            self._launch("codex", armed)
+
+    def test_completion_decision_requires_all_obligations_and_selected_references(self):
+        self._fixture()
+        armed = self._arm_completion()
+        request = self.adapter._load(self.root, armed["request_id"])
+        decision = self._decision(armed)
+        self.assertEqual(self.adapter._parse_decision(json.dumps(decision), request), decision)
+        for mutation in ("missing", "foreign", "duplicate", "wrong-packet", "unsubstantiated"):
+            with self.subTest(mutation=mutation):
+                invalid = json.loads(json.dumps(decision))
+                if mutation == "missing":
+                    invalid["completion_assessment"].pop()
+                elif mutation == "foreign":
+                    invalid["completion_assessment"][0]["evidence_refs"] = ["C:/unselected/proof.txt"]
+                elif mutation == "duplicate":
+                    invalid["completion_assessment"].append(invalid["completion_assessment"][0])
+                elif mutation == "wrong-packet":
+                    invalid["completion_sha256"] = "f" * 64
+                else:
+                    invalid["completion_assessment"][0]["status"] = "missing"
+                with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION|INCOMPLETE_REVIEW"):
+                    self.adapter._parse_decision(json.dumps(invalid), request)
+
+    def _complete_native(self, armed):
+        parent = {"session_id": "completion-fixture-parent", "turn_id": "completion-parent-turn",
+                  "tool_name": "spawn_agent", "tool_use_id": "completion-call", "tool_input": armed["launch_envelope"]}
+        child = {"session_id": parent["session_id"], "turn_id": "01900000-0000-7000-8000-000000000002",
+                 "agent_id": "01900000-0000-7000-8000-000000000003", "agent_type": "default"}
+        for event in (
+            {**parent, "hook_event_name": "PreToolUse"},
+            {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"agent_id": child["agent_id"], "nickname": None})},
+            {**child, "hook_event_name": "SubagentStart"},
+            {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+             "last_assistant_message": json.dumps(self._decision(armed))},
+        ):
+            result = self.adapter.observe_codex_hook(self.root, event)
+        self.assertEqual(result["state"], "COMPLETED")
+
+    def test_native_first_stop_and_publication_retain_exact_completion_assessment(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self._complete_native(armed)
+        published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        source = json.loads((self.root / published["authority_source"]).read_bytes())
+        self.assertEqual(source["payload"]["completion_sha256"], self.client.context["completion_sha256"])
+        self.assertEqual(source["payload"]["completion_assessment"], self._decision(armed)["completion_assessment"])
+        observed = json.loads((self.root / source["observation_ref"]).read_bytes())
+        self.assertEqual(observed["producer_profile"], self.adapter.CODEX_NATIVE_V1)
+        self.assertTrue(observed["producer_result"]["launch"]["first_stop"])
+        resumes = [request for operation, request in self.client.calls
+                   if operation == "evidence-context" and "completion_context_ref" in request]
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(resumes[-1]["completion_context_ref"], request["context_ref"])
+        self.assertEqual(resumes[-1]["completion_context_sha256"], request["context_sha256"])
+
+    def test_completed_native_review_cannot_publish_after_selected_material_drift(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self._complete_native(armed)
+        self.material.write_bytes(b"replacement completion claims")
+        with self.assertRaisesRegex(RuntimeError, "COMPLETION_EVIDENCE_DRIFT"):
+            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+    def test_completed_native_review_cannot_publish_after_mapped_content_drift(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self._complete_native(armed)
+        (Path(self.review_roots["candidate"]) / "fixture.txt").write_bytes(b"replacement code")
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+    def test_duplicate_or_implicit_selection_cannot_arm_completion_review(self):
+        self._fixture()
+        for receipts, paths in (([self.receipt_ref, self.receipt_ref], []),
+                                (None, [str(self.material)]),
+                                ([self.receipt_ref], [str(self.material), str(self.material)])):
+            with self.subTest(receipts=receipts, paths=paths), self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_REQUEST"):
+                self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                    completion_receipts=receipts, supporting_files=paths)
+        self.assertEqual(self.client.calls, [])
+
+    def test_native_freshness_failure_is_an_authority_denial(self):
+        self._fixture()
+        armed = self._arm_completion()
+        bridge = importlib.import_module("_artifactlib")
+        with mock.patch.object(self.client, "call", side_effect=bridge.ArtifactError(
+                "WORKSPACE_DRIFT", "native completion closure changed")):
+            try:
+                self._launch("codex", armed)
+            except self.adapter.AuthorityError as exc:
+                self.assertEqual(exc.code, "WORKSPACE_DRIFT")
+            except bridge.ArtifactError:
+                self.fail("Native completion rejection escaped the closed authority hook denial path")
+            else:
+                self.fail("Native completion rejection did not block review launch")
+
+    def test_nonstring_completion_status_is_a_closed_decision_error(self):
+        self._fixture()
+        armed = self._arm_completion()
+        decision = self._decision(armed)
+        decision["completion_assessment"][0]["status"] = {"untrusted": "value"}
+        with self.assertRaises(self.adapter.AuthorityError):
+            self.adapter._parse_decision(json.dumps(decision), self.adapter._load(self.root, armed["request_id"]))
+
+    def test_quality_assessment_cannot_use_another_tasks_selected_verification(self):
+        self._fixture()
+        context = self.client.context
+        other_task = copy.deepcopy(context["task"])
+        other_task["id"] = "T-002"
+        other_verification = copy.deepcopy(context["completion"]["verifications"][0])
+        other_verification.update(task_id="T-002", receipt_ref=self.receipt_ref.replace("a" * 64, "f" * 64),
+                                  receipt_sha256="f" * 64)
+        context["completion"]["verifications"].append(other_verification)
+        context.update(activity="quality_review", base_input_sha256="7" * 64,
+                       tasks=[context["task"], other_task], task_hashes={"T-001": "5" * 64, "T-002": "8" * 64},
+                       completion_sha256=hashlib.sha256(self.adapter._canonical(context["completion"])).hexdigest())
+        context["subject"]["record_id"] = "CP-001"
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "CP-001", "quality_review",
+            completion_receipts=[self.receipt_ref, other_verification["receipt_ref"]], supporting_files=[str(self.material)])
+        decision = self._decision(armed)
+        decision["completion_assessment"].extend([
+            dict(row, task_id="T-002", evidence_refs=[other_verification["receipt_ref"]])
+            for row in decision["completion_assessment"]])
+        decision["completion_assessment"][0]["evidence_refs"] = [other_verification["receipt_ref"]]
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_REVIEW_DECISION"):
+            self.adapter._parse_decision(json.dumps(decision), self.adapter._load(self.root, armed["request_id"]))
 
 
 if __name__ == "__main__":

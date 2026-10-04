@@ -301,6 +301,47 @@ rewrite the returned envelope yourself.
 The host hooks bind the exact launch call, child start and
 the child's first stop; a pasted or coordinator-authored decision is not review
 authority.
+
+When reviewing completed work that relies on a verification run, linked
+worktrees or supporting evidence, explicitly select the completion path. Add
+`--completion-receipt <exact-published-receipt>` once per task and
+`--supporting-file <absolute-regular-file>` for each supporting document to the
+review `arm` command. A task review selects one verification receipt; a scope
+review selects the exact receipt for every member. Supporting files require a
+receipt selection. The existing review-before-verification path remains
+available; it does not satisfy an explicitly requested completion review.
+
+The native engine validates the selected published verification chain and
+derives the worktree mappings from its qualified observation. It retains the
+selected identities, worktree closure and supporting bytes in the immutable
+context. Supporting material is data for review, not authority. Selection is
+explicit: no newest-receipt search, directory import or attachment execution.
+At most 16 regular files are admitted, each at most 64 KiB and together at most
+256 KiB; links, reparse indirection, duplicate paths and changed content fail
+closed. Read canonical spec and plan artifacts through the native artifact API;
+they cannot be imported as supporting files. The generated prompt directs the reviewer to assess performed work
+against each criterion, step and `done_when` obligation, using selected evidence
+and source references. A consistent plan or an empty diff is insufficient.
+
+Use the returned `completion_sha256` in the native `task-review` or
+`accept-scope` request. The completed review and its exact verification run must
+agree; a definition-only review or a different successful run is rejected.
+The recorded task selection remains required by downstream freshness and scope
+acceptance. Scope review uses validated task completion bindings. If verification
+is rerun, obtain and record its completed task review before selecting that run
+for scope review; do not infer equivalence between receipts.
+
+Creating the first completion context recomputes the current raw worktree
+fingerprint and requires it to match the selected verifier's recorded fingerprint.
+Later freshness checks allow native task-status and execution bookkeeping updates
+in validated canonical artifacts while retaining their normative content hashes.
+Changes to task definitions, other HTML or other governance files still affect
+freshness under the normal snapshot policy. The closure covers
+tracked working-tree bytes and non-ignored untracked files, not ignored
+dependencies or outputs. The completion assessment is still an independent
+reviewer's judgment; schema validation does not prove that every file was read
+or every conclusion is correct. Preserve the unchanged launch envelope and
+genuine host capture throughout this path.
 On Claude Code, pass the envelope's four fields as the Agent tool's entire
 input: no `run_in_background`, `isolation` or other option. It launches the
 read-only `ca:authority-reviewer`; arming refuses while a project or user agent
