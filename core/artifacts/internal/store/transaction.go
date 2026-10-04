@@ -49,6 +49,17 @@ func hash(b []byte) any {
 	return canonical.BytesHash(b)
 }
 func journalPath(id string) string { return meta + "/transactions/" + id + ".json" }
+
+// Transaction targets must remain distinct on every supported filesystem.
+// EqualFold also rejects aliases that would become the same file on Windows.
+func collidesWithTarget(seen []string, candidate string) bool {
+	for _, prior := range seen {
+		if strings.EqualFold(prior, candidate) {
+			return true
+		}
+	}
+	return false
+}
 func (f *FS) step(s string) error {
 	if f.Inject != nil {
 		return f.Inject(s)
@@ -103,14 +114,14 @@ func validJournal(id string, j map[string]any) error {
 	if len(entries) < 1 || len(entries) > 128 {
 		return bad()
 	}
-	seen := map[string]bool{}
+	seen := []string{}
 	for i, v := range entries {
 		r := model.M(v)
 		p := model.S(r["path"])
-		if len(r) != 6 || !validate.Path(p, false) || seen[p] || (strings.HasPrefix(p, meta+"/") && !derivedTransactionTarget(p, r["before_sha256"], r["after_sha256"], model.I(r["size"]))) {
+		if len(r) != 6 || !validate.Path(p, false) || collidesWithTarget(seen, p) || (strings.HasPrefix(p, meta+"/") && !derivedTransactionTarget(p, r["before_sha256"], r["after_sha256"], model.I(r["size"]))) {
 			return bad()
 		}
-		seen[p] = true
+		seen = append(seen, p)
 		expected := path.Join(path.Dir(p), fmt.Sprintf(".ca-artifact-%s-%d.new", id, i))
 		if model.S(r["stage"]) != expected || model.S(r["backup"]) != fmt.Sprintf("%s/history/%s-%d.before", meta, id, i) {
 			return bad()
@@ -224,13 +235,13 @@ func (f *FS) Commit(id, requestHash string, edits []Edit, result ...map[string]a
 	if len(edits) < 1 || len(edits) > 128 {
 		return Outcome{}, fault.New("INVALID_TRANSACTION", "transaction requires 1..128 edits")
 	}
-	seen := map[string]bool{}
+	seen := []string{}
 	for _, ed := range edits {
 		derived := derivedTransactionTarget(ed.Path, hash(ed.Before), hash(ed.After), int64(len(ed.After)))
-		if !validate.Path(ed.Path, false) || (strings.HasPrefix(ed.Path, meta+"/") && !derived) || seen[ed.Path] || ed.Before == nil && ed.After == nil || len(ed.After) > canonical.MaxBytes {
+		if !validate.Path(ed.Path, false) || (strings.HasPrefix(ed.Path, meta+"/") && !derived) || collidesWithTarget(seen, ed.Path) || ed.Before == nil && ed.After == nil || len(ed.After) > canonical.MaxBytes {
 			return Outcome{}, fault.New("INVALID_TRANSACTION", "unsafe, repeated or oversized transaction target")
 		}
-		seen[ed.Path] = true
+		seen = append(seen, ed.Path)
 		actual, e := f.current(ed.Path)
 		if e != nil {
 			return Outcome{}, e

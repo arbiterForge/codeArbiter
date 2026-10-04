@@ -10779,13 +10779,15 @@ class ContextCreationBackfillTest(unittest.TestCase):
         self.assertEqual(row["payload"], ".")
 
     def test_context_creation_defers_to_confirm_nn_when_ambiguous(self):
-        # Never scaffolded from an ambiguous scan -- the same "no signal, or
-        # conflicting signals -> [CONFIRM-NN]" rule the rest of Phase 3
-        # already applies, extended (not special-cased) to this doc.
-        idx = self.text.index("HIGH-confidence only when")
-        window = self.text[idx:idx + 900]
-        self.assertIn("[CONFIRM-NN]", window)
-        self.assertIn("never scaffolded from an ambiguous scan", window.lower())
+        # Ambiguous release evidence cannot become a guessed target row.
+        # Ask for a user-owned choice only when the target is needed now;
+        # otherwise preserve the gap and leave the conditional file absent.
+        phase3 = self.text[self.text.index("## Phase 3"):self.text.index("## Phase 4")]
+        self.assertIn("Use `[CONFIRM-NN]` only for a material user-owned decision", phase3)
+        self.assertIn("exactly one candidate manifest and exactly one candidate changelog", phase3)
+        self.assertIn("Zero, or more than one, candidate manifest or changelog cannot produce a guessed row", phase3)
+        self.assertIn("ask about a release target only when that choice is needed now", phase3)
+        self.assertIn("Otherwise leave this conditional draft absent", phase3)
 
 
 class DecisionZeroZeroThreeSixTest(unittest.TestCase):

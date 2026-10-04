@@ -1,0 +1,27 @@
+{
+  "main": "4187f1e22dc7da3cf755a2654bbf7ec268236126",
+  "pr854": {
+    "number": 854,
+    "head": "578065076e2e11a4e63f33256cb386a5cba1d7d2",
+    "state": "open",
+    "draft": true,
+    "merged": false
+  },
+  "debug_comparison": [
+    {
+      "path": "core/surface/commands/debug.md",
+      "old_ref": "35a3cd18a327fe5aa306ba452cc21ae096a24b02",
+      "current_ref": "578065076e2e11a4e63f33256cb386a5cba1d7d2",
+      "blob": "b206f9c45616068bf7ce74f4e3be762f702b739a",
+      "byte_identical": true
+    },
+    {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "old_ref": "35a3cd18a327fe5aa306ba452cc21ae096a24b02",
+      "current_ref": "578065076e2e11a4e63f33256cb386a5cba1d7d2",
+      "blob": "9ccacb1c8499690645661e1f8599091aacea80e4",
+      "byte_identical": true
+    }
+  ],
+  "p854": "pending-accepted-integration-no-extraction-authorized"
+}

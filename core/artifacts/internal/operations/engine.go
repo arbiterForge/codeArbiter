@@ -6,6 +6,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	reads "github.com/arbiterForge/codeArbiter/core/artifacts/internal/read"
@@ -38,7 +39,10 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	if op == "capabilities" {
-		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
+		_, contextContract := kind.Lookup("context")
+		contextCodec, contextCodecFound := kind.Codecs()["context"]
+		contextRegistered := contextContract && contextCodecFound && contextCodec.Optional && contextCodec.Representation == kind.Markdown
+		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": false, "qualification": "package-required", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
 	}
 	if op == "schema" {
 		switch model.S(r["name"]) {
@@ -101,7 +105,29 @@ func Run(root, op string, input object) (any, error) {
 	if op == "repair-preview" || op == "repair-apply" {
 		return engine.repair(op, r)
 	}
-	c, e := repository.Scan(f)
+	if op == "context-evidence-context" {
+		return engine.contextEvidenceContext(r)
+	}
+	if op == "context-finalize-evidence-context" {
+		return engine.contextFinalizationEvidenceContext(r)
+	}
+	if op == "context-apply" {
+		return engine.contextApply(r)
+	}
+	if op == "capture-observation" {
+		observedSource, _, sourceErr := authority.LoadSource(f, model.S(r["source_ref"]), model.S(r["source_sha256"]))
+		if sourceErr != nil {
+			return nil, sourceErr
+		}
+		if model.S(observedSource["kind"]) == "context_approval" {
+			return engine.captureContextPreview(r)
+		}
+	}
+	activeKind := model.S(r["kind"])
+	if activeKind == "" {
+		activeKind = kind.ForID(model.S(r["artifact_id"]))
+	}
+	c, e := repository.ScanFor(f, activeKind)
 	if e != nil {
 		return nil, e
 	}

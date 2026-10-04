@@ -236,6 +236,7 @@ jobs:
               - '.github/workflows/ci.yml'
             hooks:
               - '.github/fixtures/context-onboarding/**'
+              - '.github/fixtures/debug/**'
               - 'plugins/ca/hooks/**'
               - 'plugins/ca-codex/hooks/**'
               - 'plugins/ca-pi/hooks/**'
@@ -370,6 +371,12 @@ jobs:
               - 'core/artifacts/**'
               - 'core/pysrc/**'
               - 'core/surface/**'
+              - '.github/fixtures/debug/**'
+              - '.github/scripts/test_debug_handoff.py'
+              - 'tools/build-debug-handoff.py'
+              - 'plugins/ca/hooks/*debug*'
+              - 'plugins/ca-codex/hooks/*debug*'
+              - 'plugins/ca-pi/hooks/*debug*'
               - 'plugins/ca/hooks/_artifactlib.py'
               - 'plugins/ca-codex/hooks/_artifactlib.py'
               - 'plugins/ca-pi/hooks/_artifactlib.py'
@@ -418,6 +425,10 @@ jobs:
               - '.github/scripts/test_artifact_package.py'
               - '.github/scripts/test_artifact_surface.py'
               - '.github/scripts/test_artifact_workflow.py'
+              - '.github/scripts/_contextverificationlib.py'
+              - '.github/scripts/test_context_verification.py'
+              - '.github/scripts/test_context_native.py'
+              - '.github/scripts/test_context_workflow.py'
               - '.github/requirements/artifact-conformance.in'
               - '.github/requirements/artifact-conformance-py314.lock'
               # Auto-release consumes this exact-head package cohort. A
@@ -454,13 +465,11 @@ jobs:
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    # Run 36079069513: Intel macOS passed its 42 authoring and 35 package
-    # cases, then hit the former 15-minute job ceiling during the full
-    # conformance replay, establishing the general 30m qualification budget.
-    # Runs 37148496781 and 37150510062 cancelled Windows ARM at that
-    # ceiling during final conformance after all preceding suites passed.
-    # Give only that platform 45m; retain every suite and per-test timeout.
-    timeout-minutes: ${{ matrix.expected_platform == 'windows/arm64' && 45 || 30 }}
+    # Intel macOS run 36321825183 and Windows ARM runs 37148496781
+    # and 37150510062, plus Windows x64 run 37184973120, exhausted 30m
+    # after earlier suites passed.
+    # Preserve all suites and per-test timeouts; allow those hosts 45m.
+    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}
     permissions:
       contents: read
     env:
@@ -541,6 +550,20 @@ jobs:
           overwrite: false
       - name: Verify named native storage and recovery contract
         run: python .github/scripts/test_artifact_native.py
+      - name: Verify the finite context Go test bridge
+        run: python .github/scripts/test_context_verification.py
+      - name: Verify named context document Go cases
+        env:
+          CONTEXT_NATIVE_OBSERVATION_OUTPUT: ${{ runner.temp }}/context-native-observation.json
+        run: python .github/scripts/test_context_native.py
+      - name: Reject missing and nonisolated installed context candidates
+        run: >-
+          python .github/scripts/test_context_installed.py
+          InstalledContextQualification.test_t044_rejects_missing_candidate_identity
+          InstalledContextQualification.test_t044_rejects_nonisolated_environment
+          -v
+      - name: Verify context workflow with the pinned Go toolchain
+        run: python .github/scripts/test_context_workflow.py
       - name: Build native qualified candidate
         run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
       - name: Generate review examples with the native candidate
@@ -583,6 +606,8 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_artifact_conformance.py'], check=True)"
+      - name: Test debug handoff model against the locked reference interpreter
+        run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)"
       - name: Bind the candidate to this exact-host native result
         env:
           EXPECTED_ARTIFACT_PLATFORM: ${{ matrix.expected_platform }}
@@ -590,6 +615,7 @@ jobs:
           python tools/build-artifacts.py
           --qualify-existing "${{ runner.temp }}/artifact-candidate"
           --qualification-output "${{ runner.temp }}/artifact-qualification.json"
+          --context-native-observation "${{ runner.temp }}/context-native-observation.json"
       - name: Preserve the exact native candidate and qualification receipt
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -2358,6 +2384,27 @@ jobs:
       - name: Validate brownfield observation accounting
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_context_evaluation.py
+      - name: Validate named brownfield test outcomes
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_named_output.py
+      - name: Validate context host containment controls
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_host.py
+      - name: Validate scoped context consumers
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_context_consumers.py
+      - name: Test debug workflow contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py
+      - name: Test debug helper invocation contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_helper_invocation.py
+      - name: Test debug package contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_package.py
+      - name: Test debug qualification record correspondence
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_qualification.py
       - name: Run shipped-skill portability guard
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # A-6.1: a skill under core/surface/skills/** renders into every

@@ -64,6 +64,12 @@ def setUpModule():
 
 
 class PackageTests(unittest.TestCase):
+    def shortDescription(self):
+        if (self._testMethodName.startswith("test_t018_context_kind_package_admission_")
+                or self._testMethodName == "test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases"):
+            return None
+        return super().shortDescription()
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
@@ -227,6 +233,108 @@ class PackageTests(unittest.TestCase):
             required_platforms=required_platforms or [native_platform],
             repo=REPO,
         )
+
+    def test_t018_context_kind_package_admission_positive_controls(self):
+        """An installed native candidate contains the closed context kind and schema."""
+        repository = self.base / "context-kind-positive"
+        repository.mkdir()
+        client = ArtifactClient(repository, INSTALLATION)
+        capabilities = client.call("capabilities")
+        self.assertEqual(capabilities["repository_context"], {
+            "source_present": True,
+            "kind_registered": True,
+            "host_default_enabled": False,
+            "qualification": "package-required",
+            "mutation_available": True,
+        })
+        self.assertEqual(capabilities["public_registrations_added"], 0)
+        self.assertEqual(PACKAGER.ARTIFACT_PLATFORMS, BUILDER.QUALIFIED_CI_PLATFORMS)
+        for name in ("spec", "plan"):
+            with self.subTest(schema=name):
+                self.assertEqual(client.call("schema", {"name": name})["type"], "object")
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        staged = self.stage(output=self.base / "context-kind-stage",
+                            required_platforms=[native_platform])
+        self.assertEqual(staged["platforms"], [native_platform])
+        for plugin_dir in ("plugins/ca", "plugins/ca-codex", "plugins/ca-pi"):
+            with self.subTest(host=plugin_dir):
+                payload = self.base / "context-kind-stage" / plugin_dir / "helpers" / "artifacts"
+                self.assertEqual(json.loads((payload / "release.json").read_text(encoding="utf-8")),
+                                 manifest)
+                binary_name = manifest["binaries"][native_platform]["file"]
+                self.assertEqual((payload / binary_name).read_bytes(),
+                                 (INSTALLATION / binary_name).read_bytes())
+                installed = ArtifactClient(repository, payload).call("capabilities")
+                self.assertTrue(installed["repository_context"]["kind_registered"])
+                self.assertEqual(installed["repository_context"]["qualification"], "package-required")
+
+    def test_t018_context_kind_package_admission_negative_controls(self):
+        """Installed context remains unavailable; generic artifact routes cannot write it."""
+        repository = self.base / "context-kind-negative"
+        context_root = repository / ".codearbiter"
+        context_root.mkdir(parents=True)
+        targets = ("CONTEXT.md", "tech-stack.md", "coding-standards.md",
+                   "security-controls.md", "code-map.md")
+        for name in targets:
+            (context_root / name).write_bytes(("human " + name + "\n").encode("utf-8"))
+        before = {name: (context_root / name).read_bytes() for name in targets}
+        client = ArtifactClient(repository, INSTALLATION)
+        with mock.patch.object(client, "workflow_preflight", return_value={
+                "resources_available": True, "host": "codex"}):
+            with self.assertRaisesRegex(_artifactlib.ArtifactError,
+                                        "CONTEXT_WORKFLOW_UNAVAILABLE"):
+                client.call("context-evidence-context", {})
+        for operation, request in (
+                ("create", {"operation_id": "context-create-0001",
+                            "artifact_id": "CONTEXT-CONTEXT", "kind": "context",
+                            "slug": "context", "title": "context", "summary": "context"}),
+                ("index", {"kind": "context"}),
+                ("schema", {"name": "context"}),
+        ):
+            with self.subTest(operation=operation), self.assertRaises(
+                    _artifactlib.ArtifactError):
+                client.call(operation, request)
+        self.assertEqual({name: (context_root / name).read_bytes() for name in targets}, before)
+        self.assertFalse((context_root / "context.html").exists())
+
+    def test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases(self):
+        """Only exact protected named outcomes may create package context admission."""
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        unqualified = self.stage(output=self.base / "context-no-evidence",
+                                 required_platforms=[native_platform])
+        self.assertNotIn("context_qualification", json.loads((
+            self.base / "context-no-evidence" / "plugins/ca/helpers/artifacts/release.json"
+        ).read_text(encoding="utf-8")))
+        self.assertEqual(unqualified["platforms"], [native_platform])
+        receipt_path = self.qualification(destination=self.base / "context-receipt.json")
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        for name, observation in (
+            ("missing", {"format": "codearbiter.context-native-observation/0.1.0",
+                         "module_sha256": "0" * 64, "go_sha256": "0" * 64, "cases": []}),
+            ("stale", {"format": "codearbiter.context-native-observation/0.1.0",
+                       "module_sha256": "0" * 64, "go_sha256": "0" * 64,
+                       "cases": [{}] * len(PACKAGER.CONTEXT_NATIVE_CASES)}),
+        ):
+            with self.subTest(case=name):
+                receipt["context_native"] = observation
+                receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+                output = self.base / f"context-{name}-stage"
+                with self.assertRaisesRegex(ValueError, "context native qualification"):
+                    self.stage(output=output, required_platforms=[native_platform],
+                               qualification_receipts=[receipt_path])
+                self.assertFalse(output.exists())
+
+        copied = self.base / "malformed-context-payload"
+        copied.mkdir()
+        for name in ("release.json", manifest["binaries"][native_platform]["file"]):
+            shutil.copy2(INSTALLATION / name, copied / name)
+        broken = json.loads((copied / "release.json").read_text(encoding="utf-8"))
+        broken["context_qualification"] = {native_platform: {"source_commit": 42}}
+        (copied / "release.json").write_text(json.dumps(broken), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "context qualification binding"):
+            INSTALLER.load_payload(copied)
 
     def test_native_cold_install_operates_without_source_tree(self):
         consumer = self.base / "consumer"

@@ -6,14 +6,15 @@ import (
 )
 
 func TestContractsAreClosedOrderedAndKindNeutral(t *testing.T) {
-	wantNames := []string{"spec", "plan"}
+	wantNames := []string{"spec", "plan", "context"}
 	if got := Names(); !reflect.DeepEqual(got, wantNames) {
 		t.Fatalf("Names() = %v, want %v", got, wantNames)
 	}
 
 	want := map[string]Contract{
-		"spec": {Name: "spec", Directory: ".codearbiter/specs", Schema: "spec"},
-		"plan": {Name: "plan", Directory: ".codearbiter/plans", Schema: "plan"},
+		"spec":    {Name: "spec", Directory: ".codearbiter/specs", Schema: "spec"},
+		"plan":    {Name: "plan", Directory: ".codearbiter/plans", Schema: "plan"},
+		"context": {Name: "context", Directory: ".codearbiter", Schema: "context"},
 	}
 	for _, name := range wantNames {
 		got, ok := Lookup(name)

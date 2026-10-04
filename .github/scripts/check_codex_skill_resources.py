@@ -2100,9 +2100,13 @@ def _candidate_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _candidate_archive_limits() -> dict[str, int]:
-    """Return checker-owned ZIP resource limits without trusting the candidate."""
-    return dict(EXPECTED_CANDIDATE_ARCHIVE_LIMITS)
+def _candidate_archive_limits(*, verified_native_cohort: bool = False) -> dict[str, int]:
+    """Return checker-owned limits for source or receipt-verified native packages."""
+    limits = dict(EXPECTED_CANDIDATE_ARCHIVE_LIMITS)
+    if verified_native_cohort:
+        # Six receipt-bound binaries plus source exceed the 32 MiB source limit.
+        limits["max_total_uncompressed_bytes"] = 64 * 1024 * 1024
+    return limits
 
 
 def _verified_large_candidate_files(value: object) -> dict[str, dict[str, object]]:
@@ -2234,7 +2238,7 @@ def _candidate_package_files(
                 files[relative] = output.getvalue()
         return files
     if path.is_dir():
-        limits = _candidate_archive_limits()
+        limits = _candidate_archive_limits(verified_native_cohort=bool(large_files))
         package_root = path / "plugins" / "ca-codex"
         package_metadata = package_root.lstat() if package_root.exists() or package_root.is_symlink() else None
         if (
@@ -2865,14 +2869,67 @@ def candidate_resource_contract(
     *,
     files: dict[str, bytes] | None = None,
 ) -> dict[str, Any]:
-    """Derive the exact packaged Markdown resource set and contained read graph."""
+    """Derive packaged Markdown reads and required task-context resources."""
     if files is None:
         files = _candidate_package_files(path)
     return _candidate_resource_contract_from_files(files)
 
 
+_CONTEXT_PACKAGE_REQUIREMENTS = {
+    "hooks/_artifactlib.py": b"def context_writer_qualified(",
+    "hooks/_protectedstatelib.py": b"def context_writer_protection(",
+    "hooks/_contextreportlib.py": b"def resolve_scoped_command_guidance(",
+    "hooks/_contextsnapshotlib.py": b"def membership_snapshot(",
+    "hooks/_provenancelib.py": b"def assess_context_provenance(",
+    "hooks/_contextselectlib.py": b"def select_task_context(",
+    "hooks/_artifactpromptlib.py": b"def compose_feature_actor_input(",
+    "hooks/_readinjectlib.py": b"def bump_context_generation(",
+    "hooks/prompt-submit.py": b"_readinjectlib.bump_context_generation(",
+    "skills/ca-feature/SKILL.md": b"compose_feature_actor_input",
+    "skills/ca-fix/SKILL.md": b"compose_fix_or_test_actor_input",
+    "skills/ca-review/SKILL.md": b"prepare_review_input",
+    "routines/tdd/SKILL.md": b"compose_fix_or_test_actor_input",
+    "routines/subagent-driven-development/SKILL.md": b"prepare_actor_delivery",
+}
+_CONTEXT_PACKAGE_TRIGGER = (
+    b"_contextselectlib", b"compose_feature_actor_input",
+    b"compose_fix_or_test_actor_input", b"prepare_review_input",
+    b"prepare_actor_delivery",
+)
+
+
+def validate_context_consumer_resources(files: dict[str, bytes]) -> None:
+    """Close the selected context helper and consumer set in a Codex candidate.
+
+    Older packages with no task-context consumer keep their existing contract.
+    Any new consumer or selector triggers the complete local resource set, so
+    removing the selector itself cannot turn the check off.
+    """
+    active = "hooks/_contextselectlib.py" in files or any(
+        marker in files.get(path, b"")
+        for path in _CONTEXT_PACKAGE_REQUIREMENTS
+        for marker in _CONTEXT_PACKAGE_TRIGGER
+    )
+    if not active:
+        return
+    for path, marker in _CONTEXT_PACKAGE_REQUIREMENTS.items():
+        content = files.get(path)
+        if content is None:
+            raise ValueError(f"candidate context resource missing: {path}")
+        if marker not in content:
+            raise ValueError(f"candidate context consumer contract missing: {path}")
+    selector = files["hooks/_contextselectlib.py"]
+    for marker in (b"def prepare_actor_delivery(",
+                   b"def compose_fix_or_test_actor_input(",
+                   b"def prepare_review_input("):
+        if marker not in selector:
+            raise ValueError("candidate context helper contract missing: "
+                             "hooks/_contextselectlib.py")
+
+
 def _candidate_resource_contract_from_files(files: dict[str, bytes]) -> dict[str, Any]:
-    """Derive the resource graph from one already bounded immutable snapshot."""
+    """Derive resource closure from one already bounded immutable snapshot."""
+    validate_context_consumer_resources(files)
     resource_paths = sorted(
         relative
         for relative in files

@@ -44,6 +44,28 @@ and `ca-pi: 36`. They differ from the 37-entry shared source catalog under
 `.github/scripts/test_pi_parity.py` — nothing else compares this table to the
 surface it describes, and an uncompared count drifts silently.
 
+## Debug and fix source contract
+
+The shared [debug skill](../core/surface/skills/debug/SKILL.md) accepts a cited failure with an
+unknown trigger, checks as many distinct hypotheses as the evidence warrants, and returns one
+of five dispositions: `confirmed_code_defect`, `confirmed_noncode_cause`, `design_question`,
+`no_action`, or `unresolved`. A code-defect finding carries a concrete regression obligation;
+the [fix entry](../core/surface/commands/fix.md) still requires the original caller's repair
+authority and an observed target-red regression before code changes. An active authorized fix
+may use one bounded internal diagnostic return. No public recursive route or new entry is
+needed. A no-action result requires positive closure evidence and makes no default board write.
+A separately authorized follow-up remains with the existing task owner and installed writer.
+
+The private debug handoff validator is resolved from the loaded installed package. It receives
+one packet of at most 65,536 UTF-8 bytes on stdin, followed by EOF, and validates structure.
+It does not prove evidence truth, freshness, or authority. A missing or rejecting helper blocks
+validated transfer. Source and generated-surface checks can establish route and resource closure,
+while actual host
+execution and model behavior need their own observations. A successful site generation or
+build is not a live-host qualification. The historical Pi promotion evidence above remains
+pinned to its recorded candidate; this source description does not update that receipt or
+claim a new cross-host qualification.
+
 ## Enforcement and lifecycle
 
 | Capability | Claude Code | Codex CLI | Pi |

@@ -250,7 +250,8 @@ class HTMLCLITest(unittest.TestCase):
     def _run(self, *, valid=True, diagnostics=None, stale=False, issue=None):
         client = mock.Mock()
         client.call.side_effect = lambda operation, *args, **kwargs: (
-            {"artifact_id": "SPEC-TEST", "gate": "ready", "valid": valid, "diagnostics": diagnostics, "model_sha256": "a" * 64}
+            {"artifact_id": "SPEC-TEST", "gate": "ready", "valid": valid,
+             "diagnostics": diagnostics, "model_sha256": "a" * 64}
             if operation == "validate" else
             {"artifact_id": "SPEC-TEST", "model_sha256": "b" * 64 if stale else "a" * 64}
         )
@@ -347,7 +348,9 @@ class HTMLIntentResponseTest(unittest.TestCase):
             before = {name: Path(tmp, name).read_bytes()
                       for name in os.listdir(tmp)}
             out, err = io.StringIO(), io.StringIO()
-            with mock.patch.dict(sys.modules, {"_artifactlib": bridge}),                     contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            with (mock.patch.dict(sys.modules, {"_artifactlib": bridge}),
+                  contextlib.redirect_stdout(out),
+                  contextlib.redirect_stderr(err)):
                 code = I.main(argv)
             after = {name: Path(tmp, name).read_bytes()
                      for name in os.listdir(tmp)}
@@ -407,6 +410,19 @@ class HTMLIntentResponseTest(unittest.TestCase):
                 result = self.response(diagnostics=[])
                 del result[field]
                 self.assertEqual(self.invoke(result)[0], 2)
+
+    def test_malformed_model_sha256_is_an_error(self):
+        for digest in ("", "not-a-digest", "A" * 64, "g" * 64):
+            with self.subTest(digest=digest):
+                result = self.response(diagnostics=[])
+                result["model_sha256"] = digest
+                fresh = {"artifact_id": "SPEC-TEST", "model_sha256": digest}
+                self.assertEqual(self.invoke(result, fresh=fresh)[0], 2)
+
+    def test_missing_diagnostics_field_is_an_error(self):
+        result = self.response()
+        del result["diagnostics"]
+        self.assertEqual(self.invoke(result)[0], 2)
 
     def test_changed_identity_still_refuses_success(self):
         fresh = {"artifact_id": "SPEC-TEST", "model_sha256": "b" * 64}

@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codearbiter:artifact:context:0.1.0",
+  "title": "Inert bounded repository-context input 0.1.0",
+  "type": "object",
+  "properties": {
+    "format": {"const": "codearbiter.repository-context/0.1.0"},
+    "document_id": {"enum": ["CONTEXT", "tech-stack", "coding-standards", "security-controls", "code-map"]},
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string", "pattern": "^FIELD-[A-Z0-9]+(-[A-Z0-9]+)*$", "maxLength": 80},
+              "kind": {"const": "identity"},
+              "field": {"enum": ["project_name", "project_purpose", "project_scope"]},
+              "value": {"type": "string", "minLength": 1, "maxLength": 512, "pattern": "^[^\\r\\n]+$"},
+              "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}}
+            },
+            "required": ["id", "kind", "field", "value", "evidence_refs"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string", "pattern": "^CLAIM-[A-Z0-9]+(-[A-Z0-9]+)*$", "maxLength": 80},
+              "kind": {"const": "fact"},
+              "field": {"enum": ["runtime", "test_boundary", "coding_pattern", "security_observation", "project_fact"]},
+              "value": {"type": "string", "minLength": 1, "maxLength": 512, "pattern": "^[^\\r\\n]+$"},
+              "state": {"enum": ["observed", "inferred", "proposed"]},
+              "source_ref": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "consumer_ref": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}}
+            },
+            "required": ["id", "kind", "field", "value", "state", "source_ref", "consumer_ref", "evidence_refs"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string", "pattern": "^FIELD-[A-Z0-9]+(-[A-Z0-9]+)*$", "maxLength": 80},
+              "kind": {"const": "command"},
+              "invocation": {
+                "oneOf": [
+                  {"type": "object", "properties": {"kind": {"const": "literal_argv"}, "argv": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 512, "pattern": "^[^\\r\\n]+$"}}}, "required": ["kind", "argv"], "additionalProperties": false},
+                  {"type": "object", "properties": {"kind": {"const": "declaration_ref"}, "path": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"}, "selector": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"}, "text": {"type": "string", "minLength": 1, "maxLength": 512, "pattern": "^[^\\r\\n]+$"}}, "required": ["kind", "path", "selector", "text"], "additionalProperties": false}
+                ]
+              },
+              "cwd": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "prerequisites": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"}},
+              "verification": {
+                "oneOf": [
+                  {"type": "object", "properties": {"state": {"enum": ["declared", "unknown"]}, "observation_ref": {"type": "null"}, "binding": {"type": "null"}}, "required": ["state", "observation_ref", "binding"], "additionalProperties": false},
+                  {"type": "object", "properties": {
+                    "state": {"enum": ["passed", "failed"]},
+                    "observation_ref": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"},
+                    "binding": {"type": "object", "properties": {
+                      "source_snapshot_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                      "runtime_ref": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"},
+                      "lock_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                      "prerequisites_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                      "oracle_ref": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"},
+                      "argv": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 512, "pattern": "^[^\\r\\n]+$"}},
+                      "cwd": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+                      "declared_prerequisites": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"}},
+                      "environment_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+                    }, "required": ["source_snapshot_id", "runtime_ref", "lock_digest", "prerequisites_digest", "oracle_ref", "argv", "cwd", "declared_prerequisites", "environment_digest"], "additionalProperties": false}
+                  }, "required": ["state", "observation_ref", "binding"], "additionalProperties": false}
+                ]
+              },
+              "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}}
+            },
+            "required": ["id", "kind", "invocation", "cwd", "prerequisites", "verification", "evidence_refs"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string", "pattern": "^FIELD-[A-Z0-9]+(-[A-Z0-9]+)*$", "maxLength": 80},
+              "kind": {"const": "source_relationship"},
+              "subject": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"},
+              "relation": {"enum": ["derived_from", "owned_by", "consumed_by"]},
+              "object_ref": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}}
+            },
+            "required": ["id", "kind", "subject", "relation", "object_ref", "evidence_refs"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string", "pattern": "^FIELD-[A-Z0-9]+(-[A-Z0-9]+)*$", "maxLength": 80},
+              "kind": {"const": "map_entry"},
+              "concern": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[^\\r\\n]+$"},
+              "paths": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"}},
+              "role": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "consumer_ref": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}}
+            },
+            "required": ["id", "kind", "concern", "paths", "role", "consumer_ref", "evidence_refs"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string", "pattern": "^FIELD-[A-Z0-9]+(-[A-Z0-9]+)*$", "maxLength": 80},
+              "kind": {"const": "constraint_reference"},
+              "source_ref": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "scope": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$"},
+              "status": {"enum": ["existing_applicable", "observed_upstream", "proposed_adoption"]},
+              "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}}
+            },
+            "required": ["id", "kind", "source_ref", "scope", "status", "evidence_refs"],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "required": ["format", "document_id", "entries"],
+  "additionalProperties": false
+}

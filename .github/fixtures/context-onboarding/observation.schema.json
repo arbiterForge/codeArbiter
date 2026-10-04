@@ -46,8 +46,16 @@
         "platform",
         "model",
         "provider",
+        "architecture",
+        "shell",
+        "git_version",
+        "worktree_mode",
+        "permission_profile",
+        "provider_limits",
+        "network_limits",
         "package_sha256",
-        "settings_sha256"
+        "settings_sha256",
+        "executable_sha256"
       ],
       "properties": {
         "host_name": {
@@ -56,7 +64,8 @@
             "null"
           ],
           "minLength": 1,
-          "maxLength": 256
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
         },
         "host_version": {
           "type": [
@@ -64,7 +73,8 @@
             "null"
           ],
           "minLength": 1,
-          "maxLength": 256
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
         },
         "package_version": {
           "type": [
@@ -72,7 +82,8 @@
             "null"
           ],
           "minLength": 1,
-          "maxLength": 256
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
         },
         "platform": {
           "type": [
@@ -80,7 +91,8 @@
             "null"
           ],
           "minLength": 1,
-          "maxLength": 256
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
         },
         "model": {
           "type": [
@@ -88,7 +100,8 @@
             "null"
           ],
           "minLength": 1,
-          "maxLength": 256
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
         },
         "provider": {
           "type": [
@@ -96,7 +109,71 @@
             "null"
           ],
           "minLength": 1,
-          "maxLength": 256
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
+        },
+        "architecture": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
+        },
+        "shell": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
+        },
+        "git_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
+        },
+        "worktree_mode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
+        },
+        "permission_profile": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
+        },
+        "provider_limits": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
+        },
+        "network_limits": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^.*\\S.*$"
         },
         "package_sha256": {
           "type": [
@@ -108,6 +185,15 @@
           "pattern": "^[0-9a-f]{64}$"
         },
         "settings_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "executable_sha256": {
           "type": [
             "string",
             "null"

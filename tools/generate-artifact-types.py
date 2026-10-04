@@ -39,9 +39,9 @@ rendered=subprocess.check_output(['gofmt'],input=('\n'.join(lines)+'\n').encode(
 target=base/'internal/model/types_generated.go'
 if args.check:
  if target.read_bytes()!=rendered:raise SystemExit('Generated model views are stale.')
- for kind in ('common','spec','plan'):
+ for kind in ('common','spec','plan','context'):
   if (base/'schemas'/f'{kind}.schema.json').read_bytes() != (base/'internal/schema'/f'{kind}.schema.json').read_bytes():raise SystemExit('Embedded schema drift: '+kind)
  print('Generated views and embedded schema copies match.')
 else:
  target.write_bytes(rendered)
- for kind in ('common','spec','plan'):(base/'internal/schema'/f'{kind}.schema.json').write_bytes((base/'schemas'/f'{kind}.schema.json').read_bytes())
+ for kind in ('common','spec','plan','context'):(base/'internal/schema'/f'{kind}.schema.json').write_bytes((base/'schemas'/f'{kind}.schema.json').read_bytes())

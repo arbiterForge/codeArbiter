@@ -520,12 +520,10 @@ def _independent_expected_surfaces(descriptor, descriptors):
     return expected
 
 
-def _normalize_host_tokens_independently(data, descriptor):
-    text = data.decode("utf-8") if isinstance(data, bytes) else data
-    for token, value in sorted(
-        descriptor.tokens.items(), key=lambda item: len(item[1]), reverse=True
-    ):
-        text = text.replace(value, "{{" + token + "}}")
+def _materialize_host_tokens_independently(text, descriptor):
+    """Project template tokens only; literal rendered prose is left intact."""
+    for token, value in descriptor.tokens.items():
+        text = text.replace("{{" + token + "}}", value)
     return text
 
 
@@ -568,7 +566,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         rel = path.relative_to(plugin).as_posix()
         if rel in exact_exemptions:
             continue
-        actual[rel] = _normalize_host_tokens_independently(path.read_bytes(), pi_host)
+        actual[rel] = path.read_bytes().decode("utf-8")
     return actual, exact_exemptions
 
 
@@ -577,8 +575,11 @@ def _assert_pi_policy_matches_core(actual, expected):
         missing = sorted(set(expected) - set(actual))
         extra = sorted(set(actual) - set(expected))
         raise AssertionError(f"Pi policy path drift; missing={missing}, extra={extra}")
+    pi_host = _descriptors().host_descriptor("pi", str(REPO))
     for rel in sorted(expected):
-        if actual[rel] != expected[rel]:
+        rendered = (expected[rel] if rel in {"LICENSE", "THIRD_PARTY_NOTICES.md"}
+                    else _materialize_host_tokens_independently(expected[rel], pi_host))
+        if actual[rel] != rendered:
             raise AssertionError(f"Pi policy body differs from canonical source: {rel}")
 
 
@@ -857,7 +858,10 @@ class GenerationContractTest(unittest.TestCase):
             ["name", "description", "argument-hint"],
         )
 
-        mutated = dict(expected)
+        mutated = {
+            rel: (REPO / pi_host.plugin_dir / rel).read_bytes().decode("utf-8")
+            for rel in expected
+        }
         mutated_catalog = json.loads(mutated["generated/command-catalog.json"])
         mutated_catalog["commands"]["add-dep"]["visibility"] = "deprecated"
         mutated["generated/command-catalog.json"] = (
@@ -980,6 +984,37 @@ class GenerationContractTest(unittest.TestCase):
                 with self.subTest(notice=notice, mutation=mutation):
                     with self.assertRaisesRegex(AssertionError, re.escape(notice)):
                         _assert_pi_policy_matches_core(changed, expected)
+
+    def test_pi_ac_04_literal_root_prose_is_not_a_path_token(self):
+        """Raw rendered bytes keep literal root prose and reject unresolved tokens."""
+        expected = {
+            "includes/helper-invocation.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Execute {{PLUGIN_ROOT}}/hooks/taskwrite.py.\n"
+            ),
+            "includes/pi-host-notes.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Project path: {{PROJECT_DIR}}/data.\n"
+            ),
+        }
+        actual = {
+            "includes/helper-invocation.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Execute <plugin-root>/hooks/taskwrite.py.\n"
+            ),
+            "includes/pi-host-notes.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Project path: <project-root>/data.\n"
+            ),
+        }
+        _assert_pi_policy_matches_core(actual, expected)
+        unresolved = dict(actual)
+        unresolved["includes/helper-invocation.md"] = (
+            "The literal spelling <plugin-root> is explanatory.\n"
+            "Execute {{PLUGIN_ROOT}}/hooks/taskwrite.py.\n"
+        )
+        with self.assertRaisesRegex(AssertionError, "includes/helper-invocation.md"):
+            _assert_pi_policy_matches_core(unresolved, expected)
 
     def test_pi_ac_04_pi_governance_bodies_are_generated_only(self):
         module = _descriptors()

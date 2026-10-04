@@ -1,0 +1,67 @@
+{
+  "format": "codearbiter.debug-qualification-cells/1",
+  "status": "PENDING",
+  "normative_sha256": "b87fe432639d9a512981c412b2ea38ebf2a07fe8a321ee96cb89fb75cf3ad62e",
+  "case_scope": [
+    "V01/default",
+    "V07/default",
+    "V08/default",
+    "V11/default",
+    "V12/default",
+    "V15/default",
+    "V17/default",
+    "V18/default",
+    "V21/default",
+    "V23/default",
+    "V24/default",
+    "V25/setup_only_without_target_proof",
+    "V25/supported_target_plus_unrelated_red",
+    "V26/default",
+    "V31/diagnosis_only",
+    "V31/real_followup_authorized",
+    "V31/repair_authorized"
+  ],
+  "candidate_safety_scope": [
+    "V05",
+    "V06",
+    "V22"
+  ],
+  "required_repetitions_per_arm_per_configuration": 3,
+  "candidate_safety_repetitions": 3,
+  "declared_hosts": [
+    "claude",
+    "codex"
+  ],
+  "live_cells": [],
+  "transport_source_check": {
+    "scenario_ids": ["V21", "V22", "V23", "V36"],
+    "state": "PENDING",
+    "declared_layer": "D",
+    "requires": [
+      "canonical validator subprocess result; installed package is a later proof layer",
+      "current producer and consumer source assertions",
+      "separate caller authority and current evidence checks"
+    ],
+    "cannot_establish": ["model consumption", "host routing", "live repair authority"]
+  },
+  "decisions": [],
+  "observations": [],
+  "permissions": {
+    "tools": null,
+    "targets": null,
+    "network": null,
+    "spending_usd": null,
+    "timeout_seconds": null,
+    "output_bytes": null
+  },
+  "timing_ms": null,
+  "metering": {
+    "tokens": null,
+    "cost_usd": null
+  },
+  "limitations": [
+    "Fixture and tests are deterministic record checks only",
+    "No host/model/provider outcome or authority is asserted",
+    "Evaluator oracle is withheld from projected solver input; actual process/filesystem isolation requires independent host review"
+  ]
+}

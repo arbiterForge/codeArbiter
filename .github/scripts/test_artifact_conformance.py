@@ -153,6 +153,9 @@ EXPECTED_SUITES = {
         "test_dispatcher_does_not_downgrade_after_html_and_binding_deleted",
     },
     "test_artifact_package.py": {
+        "test_t018_context_kind_package_admission_positive_controls",
+        "test_t018_context_kind_package_admission_negative_controls",
+        "test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases",
         "test_package_notices_require_complete_canonical_bytes",
         "test_installed_host_plan_commands_are_preflight_qualified",
         "test_installed_bridge_offline_guard_has_negative_controls",

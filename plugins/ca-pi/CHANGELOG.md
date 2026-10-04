@@ -4,6 +4,25 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-10-03
+
+### Added
+
+- Add bounded task-context selection, per-document freshness and attempt accounting
+  to the shared governance payload, with explicit actor-delivery gaps.
+- Carry shared context resources while preserving Pi's refusal of the unqualified
+  repository-context write workflow. No live Pi qualification is claimed.
+
+### Fixed
+
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
+- Synchronize the packaged adapter version with its release manifest.
+- Validate diagnostic handoffs before repair or task follow-ups, preserving
+  the caller's authority and checking that the evidence is current.
+- Keep diagnostic outcomes, regression reuse and helper invocation consistent
+  across the generated host packages.
+
 ## [0.15.13] - 2026-10-04
 
 ### Changed

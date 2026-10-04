@@ -22,6 +22,19 @@ file maps those actions to Pi's extension API.
   silently allows classified reads. Plan mode is read-only except for the
   current canonical spec, plan, and plan-ledger files; source, configuration,
   unrelated project-state, and external mutations deny.
+- For an authorized debug validator or task-board writer call, load
+  [helper-invocation.md](helper-invocation.md) relative to this installed host
+  note. Derive the installed package
+  from the absolute path of the currently loaded `ca-debug` or `ca-task`
+  `SKILL.md`, then check the exact helper and run the card's PowerShell or POSIX
+  Python 3 selection block before invoking it. Select once by an executed
+  identity probe; preserve a failed helper's original output and exit status
+  without a second-interpreter attempt. Put task options before `--` and pass
+  user text as one literal argument. Feed validation one finite packet of at
+  most 65,536 bytes through the host tool's stdin using the card's direct
+  `validate` call. The literal `<plugin-root>` spelling
+  is not a shell path. A missing helper blocks the call; preserve the current
+  project working directory for board writes.
 - `codearbiter_background_bash` and `/ca-jobs list|tail|cancel` are bounded,
   session-only parent capabilities. Jobs and their metadata terminate at
   shutdown and are never restored from Pi session entries.

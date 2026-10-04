@@ -96,6 +96,7 @@ import _protectedstatelib  # H-22's shell flank (T-08, #564) — imported as a
                             # attribute lookup at import time, never a
                             # snapshotted name binding.
 from _protectedstatelib import ProtectedPolicy, marker_gated_write_admitted
+from _artifactlib import _CONTEXT_TARGETS  # inert candidate names; qualification is lazy
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
 # block message. "git unavailable or timed out" alone cost a session of root-
@@ -773,6 +774,12 @@ def _build_state_write_res(registry):
 # after the fact — this tuple would not see that (it is a one-time
 # import-time snapshot, by design).
 _STATE_WRITE_RES = _build_state_write_res(_protectedstatelib.REGISTRY)
+# Candidate regexes are inert at import. Actual context policy is resolved only
+# after a shell command names one of these paths; no package or repository probe
+# runs while importing a hook, and legacy registry rows retain their old path.
+_CONTEXT_STATE_WRITE_RES = _build_state_write_res({
+    path: ProtectedPolicy.HELPER_ONLY for path in _CONTEXT_TARGETS.values()
+})
 
 
 def git_cwd(cmd, root):
@@ -1485,6 +1492,13 @@ def _check_h22_state(cmd, root):
                           f"policy={policy.value}) — shell redirects and write/delete verbs "
                           f"naming it are prohibited outright; there is no marker path for "
                           f"this policy. Use the sanctioned helper.")
+    for rel_path, _policy, redirect_re, write_re, git_restore_re, interp_re in _CONTEXT_STATE_WRITE_RES:
+        if not (redirect_re.search(cmd) or write_re.search(verb_scan_cmd)
+                or git_restore_re.search(cmd) or interp_re.search(cmd)):
+            continue
+        if _protectedstatelib.lookup_policy(rel_path, root=root) == ProtectedPolicy.HELPER_ONLY:
+            block("H-22", f"'{rel_path}' is protected context state — direct shell replacement "
+                          "is prohibited; use the qualified context writer.")
 
 
 def _marker_root(root):
