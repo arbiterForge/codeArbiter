@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.15.13] - 2026-10-04
+
+### Changed
+
+- Synchronize the shared evidence-context reader with native UTF-8 canonical
+  bytes while preserving digest and frozen-context checks.
+
 ## [0.15.12] - 2026-10-03
 
 ### Fixed

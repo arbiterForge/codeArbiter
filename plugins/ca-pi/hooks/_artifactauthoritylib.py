@@ -124,6 +124,40 @@ def _canonical(value: Any) -> bytes:
         raise AuthorityError("INVALID_AUTHORITY_STATE", "state is not finite JSON") from exc
 
 
+def _native_context_canonical(value: Any) -> bytes:
+    """Match the artifact engine's safe-integer, UTF-16-key-order JSON bytes."""
+    def ordered(item: Any, depth: int) -> Any:
+        if depth > 64:
+            raise ValueError("context exceeds native depth")
+        if isinstance(item, dict):
+            if any(type(key) is not str for key in item):
+                raise ValueError("context has a non-string key")
+            return {
+                key: ordered(item[key], depth + 1)
+                for key in sorted(item, key=lambda key: key.encode("utf-16-be"))
+            }
+        if isinstance(item, list):
+            return [ordered(value, depth + 1) for value in item]
+        if type(item) is int:
+            if abs(item) > 9007199254740991:
+                raise ValueError("context integer exceeds native range")
+            return item
+        if item is None or type(item) in (str, bool):
+            return item
+        raise ValueError("context value is outside native JSON")
+
+    try:
+        raw = json.dumps(
+            ordered(value, 0), ensure_ascii=False, allow_nan=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        if len(raw) > 8 << 20:
+            raise ValueError("context exceeds native byte limit")
+        return raw
+    except (TypeError, ValueError, UnicodeError, RecursionError) as exc:
+        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context is outside native canonical JSON") from exc
+
+
 def _digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -479,7 +513,7 @@ def _read_context(root: Path, context_ref: str, context_hash: str) -> dict[str, 
         context = json.loads(raw.decode("utf-8"))
     except (OSError, UnicodeError, ValueError) as exc:
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes are unavailable") from exc
-    if not isinstance(context, dict) or _digest(raw) != context_hash or raw != _canonical(context):
+    if not isinstance(context, dict) or _digest(raw) != context_hash or raw != _native_context_canonical(context):
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes changed or are not canonical")
     return context
 
@@ -2097,7 +2131,7 @@ def capture_user_prompt(
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "prompt context is unavailable") from exc
     if (
         _digest(context_raw) != context_sha256
-        or context_raw != _canonical(context)
+        or context_raw != _native_context_canonical(context)
         or context.get("activity") != event["kind"]
         or context.get("subject") != subject
         or context.get("prompt_sha256") != prompt_sha256
