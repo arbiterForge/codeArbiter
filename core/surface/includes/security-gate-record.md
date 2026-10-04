@@ -14,9 +14,10 @@ code instead of the first's (#577) — then run:
 
 It writes `{{PROJECT_DIR}}/.codearbiter/.markers/security-gate-passed` containing a digest of
 every sensitive added line it approved. The PreToolUse commit hook (**H-09b** for crypto/TLS, **H-10b**
-for secrets) blocks any commit whose staged diff touches a guarded pattern until this marker is fresh
-(< 30 min) AND covers every sensitive line being committed — a pass recorded for one diff cannot
-launder a later, different change through the freshness window.
+for secrets) blocks any commit whose staged diff touches a guarded pattern until this marker exists
+AND covers every sensitive line being committed. There is no time window: a pass stays valid for
+exactly the lines it reviewed, and any new or changed sensitive line is uncovered and blocks, so a
+pass recorded for one diff cannot launder a later, different change.
 
 On any BLOCK, do **not** record the pass — the commit stays blocked until the finding is resolved and
 the gate genuinely passes. A premature or unconditional recording defeats the gate.

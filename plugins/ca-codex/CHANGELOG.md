@@ -14,6 +14,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   `request was already abandoned` instead of a misleading binding failure. Carries the Claude
   Code 2.1.286 review-correlation fix (tagged `resolvedModel`, `SubagentHandback` reports),
   which applies only to the Claude host.
+- The crypto/secret commit gate (H-09b/H-10b) no longer expires a recorded pass after 30 minutes.
+  A pass now stays valid for exactly the lines it reviewed, like the migration gate; any new or
+  changed sensitive line still blocks until the gate reviews it.
 
 ## [0.14.9] - 2026-10-03
 

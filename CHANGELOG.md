@@ -26,6 +26,9 @@ predate the plugin rewrite and are grouped by date.
   host supplies both forms they must match.
 - Recovering an already-abandoned oversized review now reports `request was already abandoned`
   instead of a misleading binding failure.
+- The crypto/secret commit gate (H-09b/H-10b) no longer expires a recorded pass after 30 minutes.
+  A pass now stays valid for exactly the lines it reviewed, like the migration gate; any new or
+  changed sensitive line still blocks until the gate reviews it.
 
 ## [2.23.2] - 2026-10-03
 
