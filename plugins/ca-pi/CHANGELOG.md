@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Changed
 
+- Synchronize the shared evidence-context reader with native UTF-8 canonical
+  bytes while preserving digest and frozen-context checks.
 - Synchronize the shared kernel's explicit completion-review evidence contract.
   This does not enable the unsupported Pi native review-authority path.
 

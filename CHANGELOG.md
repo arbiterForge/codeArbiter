@@ -16,6 +16,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Evidence-context validation now accepts the native engine's literal UTF-8
+  Unicode bytes while retaining canonical-byte, digest, and frozen-context checks.
+  Approved task text with Unicode can reach verification and review.
 - Completion reviews explicitly bind the selected verification run, its linked
   worktrees and immutable supporting evidence. The native engine checks that
   binding through task and scope acceptance, and the reviewer must assess
