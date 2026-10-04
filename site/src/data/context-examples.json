@@ -7,13 +7,13 @@
     "core/pysrc/_readinjectlib.py": "de10ae656bf95ce05f2b515967c265d10b0fb791818f95c237247198007e2482",
     "core/pysrc/_provenancelib.py": "4dcd871e3356b2a6007b8f4cd23ab94fc953f8cb7b7bc443d1088a9e90fb0ba1",
     "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
-    "core/pysrc/_hooklib.py": "08e5c0fe661486019b1fdb12e41f221d3bdca8fbfb462e0874e96548fc1bfabf"
+    "core/pysrc/_hooklib.py": "6bfa37eabf55258c3476f0cee4e4384d5cc0a21d0dacba0a957bd15a16a79902"
   },
   "source_blobs": {
     "core/pysrc/_readinjectlib.py": "f7d3fdd8daf76825520470e7a7ea47285e81028a",
     "core/pysrc/_provenancelib.py": "4afcef6111a4c51ae3f5779da6bc231df57815d3",
     "core/pysrc/pre-read.py": "08f4467a9895d81eff1a71b9a1c57b5682a311f8",
-    "core/pysrc/_hooklib.py": "fd41bf072bdd1864cd0466a2a3e39673fbb7c6bd"
+    "core/pysrc/_hooklib.py": "c1eb72214b74e4cace15b2abf8d9f9d3e7c4dc1f"
   },
   "fixture_files": {
     "src/auth/session.py": "def active_session():\n    return True\n",
