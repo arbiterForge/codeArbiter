@@ -7,6 +7,7 @@ The planner is intentionally stdlib-only.  These tests keep its classification
 contract deterministic and, most importantly, prove that an unrecognised file
 selects the broad validation lane instead of silently predicting a skip.
 """
+import ast
 import importlib.util
 import json
 import fnmatch
@@ -3210,6 +3211,34 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 class ArtifactEngineCIContractTest(unittest.TestCase):
     """The structured-artifact engine is a required six-platform package gate."""
 
+    def test_candidate_suites_have_one_qualified_execution(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-engine"]
+        source = (REPO_ROOT / ".github/scripts/test_artifact_conformance.py").read_text(encoding="utf-8")
+        assignment = next(
+            node for node in ast.parse(source).body
+            if isinstance(node, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "EXPECTED_SUITES"
+                    for target in node.targets)
+        )
+        suites = ast.literal_eval(assignment.value)
+        expected = {
+            "test_artifact_bridge.py", "test_artifact_authoring.py",
+            "test_artifact_workflow.py", "test_artifact_farm.py",
+            "test_artifact_package.py",
+        }
+        self.assertEqual(set(suites), expected)
+        self.assertIn("for script, expected in EXPECTED_SUITES.items():", source)
+        self.assertIn("[sys.executable, str(REPO / \".github/scripts\" / script)]", source)
+        self.assertIn("env=environment", source)
+        self.assertIn("ARTIFACT_TEST_INSTALLATION=str(INSTALLATION)", source)
+        self.assertIn("self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)", source)
+        for script in expected:
+            self.assertNotIn(f"run: python .github/scripts/{script}", job)
+        conformance = "'.github/scripts/test_artifact_conformance.py'"
+        self.assertEqual(job.count(conformance), 1)
+        self.assertLess(job.index(conformance),
+                        job.index('--qualify-existing "${{ runner.temp }}/artifact-candidate"'))
+
     def test_native_statement_collector_alone_starts_push_ci(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("tools/artifact-coverage.py", push_trigger_paths(ci))
@@ -3264,7 +3293,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("    timeout-minutes: ${{ matrix.expected_platform == 'windows/arm64' && 45 || 30 }}\n", job)
         self.assertIn("fail-fast: false", job)
         self.assertNotIn("continue-on-error:", job)
-        for required in ("test_artifact_conformance.py", "test_artifact_package.py",
+        for required in ("test_artifact_conformance.py",
                          "Bind the candidate to this exact-host native result",
                          "Preserve the exact native candidate and qualification receipt"):
             self.assertIn(required, job)
@@ -3334,16 +3363,11 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             'go test -buildvcs=false -race ./...',
             'python .github/scripts/test_artifact_native.py',
             'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
-            'python .github/scripts/test_artifact_authoring.py',
             'python .github/scripts/test_artifact_approval_adapter.py',
             'python .github/scripts/test_artifact_prerequisite_adapter.py',
-            'python .github/scripts/test_artifact_bridge.py',
             'python .github/scripts/test_artifact_consumers.py',
-            'python .github/scripts/test_artifact_farm.py',
             "'.github/scripts/test_artifact_conformance.py'",
-            'python .github/scripts/test_artifact_package.py',
             'python .github/scripts/test_artifact_surface.py',
-            'python .github/scripts/test_artifact_workflow.py',
             "ARTIFACT_CONFORMANCE_PYTHON",
             "--isolated",
             "--require-virtualenv",
@@ -3360,9 +3384,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "go test -buildvcs=false ./...",
             "go vet -buildvcs=false ./...",
             "python .github/scripts/test_artifact_native.py",
-            "python .github/scripts/test_artifact_bridge.py",
             "'.github/scripts/test_artifact_conformance.py'",
-            "python .github/scripts/test_artifact_package.py",
         ):
             self.assertLess(job.index(proving_step), qualification_position, proving_step)
         self.assertGreater(job.index("name: artifact-native-${{ matrix.os }}"),
@@ -3736,11 +3758,9 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         # Only Windows ARM needs 45m after repeated final-conformance job
         # cancellations; every other platform retains the 30m job budget.
         self.assertIn("    timeout-minutes: ${{ matrix.expected_platform == 'windows/arm64' && 45 || 30 }}\n", block)
-        for script in ("test_artifact_native.py", "test_artifact_bridge.py",
+        for script in ("test_artifact_native.py",
                        "test_artifact_approval_adapter.py", "test_artifact_authority_adapter.py",
                        "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",
-                       "test_artifact_authoring.py", "test_artifact_workflow.py",
-                       "test_artifact_farm.py", "test_artifact_package.py",
                        "test_artifact_conformance.py"):
             self.assertIn(script, block)
         self.assertNotIn("continue-on-error:", block)
