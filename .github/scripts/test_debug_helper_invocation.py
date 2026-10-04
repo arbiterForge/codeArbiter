@@ -169,10 +169,11 @@ class TestDebugHelperInvocation(unittest.TestCase):
             dirname = shutil.which("dirname")
             if dirname is None:
                 raise AssertionError("POSIX installed-resource test requires dirname")
-            shutil.copy2(dirname, bin_dir / "dirname")
+            # Preserve executable mode, not macOS system-file flags.
+            shutil.copy(dirname, bin_dir / "dirname")
             def candidate(name, behavior):
                 source = sys.executable if behavior in ("real", "minor") else ("/usr/bin/false" if behavior == "stub" else "/usr/bin/true")
-                shutil.copy2(source, bin_dir / name)
+                shutil.copy(source, bin_dir / name)
         layouts = {
             "primary": {"python3": "real", "python": "stub"},
             "alternate": {"python3": "stub", "python": "real"},
