@@ -643,6 +643,18 @@ def main():
         expect_allow(fx, "git commit -m 'add hashing'",
                      "H-09b allow: an aged pass still covers the lines it reviewed")
 
+        # 6c-ter. With no time window, the binding is the file too: the very
+        # same reviewed line staged in a DIFFERENT file is not covered.
+        moved = os.path.join(fx, "src", "moved.js")
+        shutil.copyfile(crypto_file, moved)  # byte-identical reviewed line
+        git(["add", "src/moved.js"], fx)
+        r = run_hook(fx, "git commit -m 'same line, other file'")
+        check(r.returncode == 2 and "not covered" in r.stderr, "H-09b moved-line",
+              f"a pass for src/auth.js must not admit the identical line in src/moved.js\n"
+              f"  exit={r.returncode} stderr={r.stderr.strip()[:300]!r}")
+        git(["rm", "--cached", "--quiet", "src/moved.js"], fx)
+        os.remove(moved)
+
         # 6d. THE TOCTOU CASE: with a recorded pass, stage a *different*
         # crypto line the gate never saw -> must block on coverage.
         with open(crypto_file, "a", encoding="utf-8") as f:

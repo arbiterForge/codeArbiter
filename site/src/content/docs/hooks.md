@@ -174,7 +174,7 @@ children do not receive the parent-only footer, background-job, or nested-dispat
   - **H-02:** no force-push (`--force`, `--force-with-lease`, `--force-if-includes`, `-f`, `+refspec`).
   - **H-03:** no wildcard staging (flag forms `-A`/`--all`/`-u`/`.`; argument forms globs, directories, pathspec magic).
   - **H-05:** append-only audit logs. Shell truncation/rewrite verbs aimed at `overrides.log`/`triage.log`/`sprint-log.md`/`gate-events.log` are blocked. The protected name set is centralized (`_hooklib.AUDIT_LOG_BASENAMES`) so the shell, Write, and Edit flanks cannot drift.
-  - **H-09b / H-10b:** crypto/secret commit gate. A commit introducing a sensitive line is blocked unless the `security-gate-passed` marker covers those exact lines (per-line digest coverage, with no time window). Scans the staged diff plus the worktree diff for `-a`, in-command `git add`, or a `git commit <pathspec>`.
+  - **H-09b / H-10b:** crypto/secret commit gate. A commit introducing a sensitive line is blocked unless the `security-gate-passed` marker covers those exact lines (per-line digest coverage bound to the file path, with no time window). Scans the staged diff plus the worktree diff for `-a`, in-command `git add`, or a `git commit <pathspec>`.
   - **H-11:** ADRs only via `/ca:adr`. Shell redirects/verbs into `.codearbiter/decisions/` are blocked; reads pass.
   - **H-14:** migration review. A commit staging a migration is blocked unless `migration-gate-passed` covers that file's content digest.
   - **H-18:** the activation switch is protected. A shell write that would flip `.codearbiter/CONTEXT.md` off (`arbiter: disabled` or broken frontmatter) is blocked, so the gates cannot be silenced from inside the repo they govern.
