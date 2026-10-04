@@ -76,10 +76,10 @@ COMPOSED_OWNERS = {"cleanup": "post-merge-cleanup", "context-check": "context-ch
                    "pr": "finishing-a-development-branch", "create-context": "context-creation",
                    "decompose": "decompose", "release": "release"}
 OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d', 'context-check': '06be2a22d9b9ddc28e4826fed24b9d6edad44deab2c241a5e20c02c41d343954'}
-# T-027 keeps the composed create-context owner and its initialized lock, while
-# routing explicit initialized refresh through the existing context-check owner.
+# PR #871 delivers the reviewed bounded context-creation owner, retaining its
+# initialized lock and routing refresh through the existing context-check owner.
 OWNER_OPERATIONAL_SHA256.update({
-    'create-context': 'd72fb799f98eca2a8f9c733713ee63075f94309f46d213e17298ac9c72b22c88',
+    'create-context': '8f707912aff877ba4cac2787aa1ef805721697baebb20b1b71aa5548c757b07a',
     'decompose': 'a39e4078ebfc81e6d83fe961a2570ebb04fd76b72fb6719a9baa7c8501b175d4',
 })
 

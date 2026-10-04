@@ -686,6 +686,20 @@ def native_loading_main(argv: list[str]) -> int:
 class ContextScoutContainmentSourceTest(unittest.TestCase):
     """Bound the new context path without changing the legacy scout consumer."""
 
+    def setUp(self):
+        # The fixture supplies the documented clean launch environment. Hosted
+        # setup-python may export loader paths; hostile controls inject them
+        # explicitly below and must still be rejected by the unchanged guard.
+        environment = {
+            key: value for key, value in os.environ.items()
+            if key not in {"BASH_ENV", "ENV", "BASHOPTS", "SHELLOPTS", "IFS",
+                           "GCONV_PATH", "LOCPATH", "LIBPATH", "SHLIB_PATH"}
+            and not key.startswith(("BASH_FUNC_", "LD_", "DYLD_", "GIT_TRACE"))
+        }
+        clean_environment = mock.patch.dict(os.environ, environment, clear=True)
+        clean_environment.start()
+        self.addCleanup(clean_environment.stop)
+
     def shortDescription(self):
         return None
 
@@ -724,7 +738,7 @@ class ContextScoutContainmentSourceTest(unittest.TestCase):
                 self.assertIn("## Context-creation containment profile", _text(workflow_path))
         self.assertTrue(callable(globals().get("prepare_context_scout_profile")))
         with tempfile.TemporaryDirectory() as location:
-            source = Path(location)
+            source = Path(location).resolve()
             file = source / "src" / "alpha.py"
             file.parent.mkdir()
             file.write_text("value = 1\n", encoding="utf-8")
@@ -853,7 +867,7 @@ class ContextScoutContainmentSourceTest(unittest.TestCase):
         self.assertIn("MUST NOT proceed to Phase 3", workflow)
         self.assertTrue(callable(globals().get("context_scout_tool_decision")))
         with tempfile.TemporaryDirectory() as location:
-            source = Path(location)
+            source = Path(location).resolve()
             file = source / "alpha.py"
             file.write_text("original\n", encoding="utf-8")
             subprocess.run(["git", "init", "-q", str(source)], check=True)
@@ -1145,7 +1159,7 @@ class ContextScoutContainmentSourceTest(unittest.TestCase):
             self.assertEqual(broadened["hookSpecificOutput"]["permissionDecision"],
                              "deny")
         with tempfile.TemporaryDirectory() as filtered_dir:
-            filtered = Path(filtered_dir)
+            filtered = Path(filtered_dir).resolve()
             subprocess.run(["git", "init", "-q", str(filtered)], check=True)
             (filtered / "marker.txt").write_text("marker\n", encoding="utf-8")
             (filtered / ".gitattributes").write_text(

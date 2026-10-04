@@ -111,7 +111,10 @@ class TestDebugHelperInvocation(unittest.TestCase):
                 entry = SOURCE_ROOT / entry_relative
                 rendered = entry.read_text(encoding="utf-8")
                 links = re.findall(r"\[[^]]*helper-invocation\.md\]\(([^)]+)\)", rendered)
-                self.assertEqual(len(links), 1, "emitted entry must link the installed helper card once")
+                # Pi names the path relative to its installed skill in code;
+                # that path is not a link relative to the canonical template.
+                links += re.findall(r"`([^`]+/helper-invocation\.md)`", rendered)
+                self.assertEqual(len(links), 1, "emitted entry must name the installed helper card once")
                 self.assertEqual(
                     (entry.parent / links[0]).resolve(strict=True),
                     (SOURCE_ROOT / card_relative).resolve(strict=True),
@@ -616,14 +619,14 @@ class TestDebugHelperInvocation(unittest.TestCase):
             "commands=[]\n"
             f"expected_probes={probes!r}\n"
             "started_ns=time.monotonic_ns()\n"
-            "installed=os.path.normcase(os.path.abspath(os.environ['T029_INSTALLED']))\n"
-            "instrument=os.path.normcase(os.path.abspath(os.path.dirname(__file__)))\n"
-            "observer=os.path.normcase(os.path.abspath(os.environ['T029_EFFECTS']))\n"
+            "installed=os.path.normcase(os.path.realpath(os.environ['T029_INSTALLED']))\n"
+            "instrument=os.path.normcase(os.path.realpath(os.path.dirname(__file__)))\n"
+            "observer=os.path.normcase(os.path.realpath(os.environ['T029_EFFECTS']))\n"
             "guarded=sys.argv[0]!='-c' or os.environ.get('T029_GUARD_CONTROL')=='1'\n"
-            "roots=(installed,instrument,os.path.normcase(os.path.abspath(sys.prefix)),"
-            "os.path.normcase(os.path.abspath(sys.base_prefix)))\n"
+            "roots=(installed,instrument,os.path.normcase(os.path.realpath(sys.prefix)),"
+            "os.path.normcase(os.path.realpath(sys.base_prefix)))\n"
             "def permitted(path):\n"
-            " full=os.path.normcase(os.path.abspath(os.fsdecode(path)))\n"
+            " full=os.path.normcase(os.path.realpath(os.fsdecode(path)))\n"
             " return any(full==r or full.startswith(r+os.sep) for r in roots)\n"
             "def audit(event,args):\n"
             " if event=='cpython.run_command':\n"
@@ -637,7 +640,7 @@ class TestDebugHelperInvocation(unittest.TestCase):
             "  events.append(event); raise RuntimeError('T029 forbidden effect')\n"
             " if event=='open':\n"
             "  path=args[0]; mode=args[1] if len(args)>1 else 'r'; flags=args[2] if len(args)>2 else 0\n"
-            "  if isinstance(path,(str,bytes)) and os.path.normcase(os.path.abspath(os.fsdecode(path))).startswith(observer+os.sep): return\n"
+            "  if isinstance(path,(str,bytes)) and os.path.normcase(os.path.realpath(os.fsdecode(path))).startswith(observer+os.sep): return\n"
             "  if (mode and any(c in str(mode) for c in 'wax+') or isinstance(flags,int)"
             " and flags & (os.O_WRONLY|os.O_RDWR|os.O_CREAT|os.O_TRUNC|os.O_APPEND)):\n"
             "   events.append('write'); raise RuntimeError('T029 forbidden effect')\n"

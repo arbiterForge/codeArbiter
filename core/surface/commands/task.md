@@ -14,7 +14,7 @@ pure `_taskboardlib` transforms; this command runs the thin writer
 Before an authorized board mutation, read the installed helper card:
 {{IF:claude}}[helper-invocation.md](../includes/helper-invocation.md) relative to this loaded command.{{END}}
 {{IF:codex}}`{{PLUGIN_ROOT}}/includes/helper-invocation.md` relative to this loaded skill.{{END}}
-{{IF:pi}}[helper-invocation.md](../../includes/helper-invocation.md) relative to this loaded skill.{{END}}
+{{IF:pi}}`../../includes/helper-invocation.md` relative to this loaded skill.{{END}}
 Set its loaded-resource input
 to the absolute path of this **loaded** command or skill, and select the literal
 relative helper `hooks/taskwrite.py`. Resolve and check that helper exactly once

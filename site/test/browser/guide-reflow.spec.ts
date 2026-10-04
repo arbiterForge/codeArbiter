@@ -94,7 +94,7 @@ for (const slug of targets) {
       await page.goto(`/guides/${slug}/`); await page.evaluate(() => document.fonts.ready);
       const original = await values(page);
       const code = await exampleLines(page);
-      await expect(tables(page)).toHaveCount(3);
+      await expect(tables(page)).toHaveCount(slug === 'investigate-and-fix' ? 4 : 3);
       expect(original.length).toBeGreaterThan(20);
       await page.setViewportSize({ width, height: 1000 });
       expect(await values(page)).toEqual(original);

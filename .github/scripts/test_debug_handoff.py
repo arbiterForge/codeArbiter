@@ -671,7 +671,7 @@ class PrivateDebugEntryTest(unittest.TestCase):
     def setUp(self):
         self.scratch = tempfile.TemporaryDirectory(prefix="debug T-012 ü ")
         self.addCleanup(self.scratch.cleanup)
-        self.base = Path(self.scratch.name)
+        self.base = Path(self.scratch.name).resolve()
         self.installed = self.base / "installed helper ü"
         self.installed.mkdir()
         for name in ("debug-handoff.py", "_debughandofflib.py"):
@@ -774,11 +774,11 @@ class PrivateDebugEntryTest(unittest.TestCase):
         hooks.mkdir()
         (hooks / "sitecustomize.py").write_text(
             "import os, sys\n"
-            "own=os.path.normcase(os.path.abspath(os.path.dirname(sys.argv[0])))\n"
-            "stdlib=os.path.normcase(os.path.abspath(sys.prefix))\n"
-            "base_stdlib=os.path.normcase(os.path.abspath(sys.base_prefix))\n"
-            "instrumentation=os.path.normcase(os.path.abspath(os.path.dirname(__file__)))\n"
-            "cache=os.path.normcase(os.path.abspath(os.environ['PYTHONPYCACHEPREFIX']))\n"
+            "own=os.path.normcase(os.path.realpath(os.path.dirname(sys.argv[0])))\n"
+            "stdlib=os.path.normcase(os.path.realpath(sys.prefix))\n"
+            "base_stdlib=os.path.normcase(os.path.realpath(sys.base_prefix))\n"
+            "instrumentation=os.path.normcase(os.path.realpath(os.path.dirname(__file__)))\n"
+            "cache=os.path.normcase(os.path.realpath(os.environ['PYTHONPYCACHEPREFIX']))\n"
             "roots=(own,stdlib,base_stdlib,instrumentation,cache)\n"
             "def permitted(full): return any(full==root or full.startswith(root+os.sep) for root in roots)\n"
             "def audit(event, args):\n"
@@ -790,10 +790,10 @@ class PrivateDebugEntryTest(unittest.TestCase):
             "  if mode and any(c in str(mode) for c in 'wax+'): raise RuntimeError('write effect')\n"
             "  if isinstance(flags,int) and flags & (os.O_WRONLY|os.O_RDWR|os.O_CREAT|os.O_TRUNC|os.O_APPEND): raise RuntimeError('write effect')\n"
             "  if isinstance(path,(str,bytes)):\n"
-            "   full=os.path.normcase(os.path.abspath(os.fsdecode(path)))\n"
+            "   full=os.path.normcase(os.path.realpath(os.fsdecode(path)))\n"
             "   if not permitted(full): raise RuntimeError('project read')\n"
             " if event in ('os.listdir','os.scandir'):\n"
-            "  full=os.path.normcase(os.path.abspath(os.fsdecode(args[0])))\n"
+            "  full=os.path.normcase(os.path.realpath(os.fsdecode(args[0])))\n"
             "  if not permitted(full): raise RuntimeError('project directory read')\n"
             "sys.addaudithook(audit)\n", encoding="utf-8")
         before = {str(p.relative_to(self.base)): p.read_bytes() for p in self.base.rglob("*") if p.is_file()}

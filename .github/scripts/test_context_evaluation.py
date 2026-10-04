@@ -1592,7 +1592,7 @@ class TestObservationAccounting(unittest.TestCase):
     def test_controlled_launch_rejects_relative_executable_before_capture(self):
         from _context_fixturelib import load_catalog
         catalog = load_catalog(ROOT / '.github/fixtures/context-onboarding/cases.json')
-        with tempfile.TemporaryDirectory() as root:
+        with tempfile.TemporaryDirectory(dir=Path.cwd()) as root:
             pair = prepare_qualification_pair(catalog, 'tiny-python', Path(root).resolve() / 'pair')
             delivery = prepare_qualification_delivery(pair, arm='A', selected_packet={},
                 actor='author-1', task_id='tiny-python', host_epoch='synthetic-host',
@@ -1600,7 +1600,11 @@ class TestObservationAccounting(unittest.TestCase):
             environment = {'HOME': pair['arms']['A']['home'],
                            'USERPROFILE': pair['arms']['A']['home'],
                            'XDG_CONFIG_HOME': str(Path(pair['arms']['A']['home']) / '.config')}
-            executable = str(Path(sys.executable).resolve())
+            # Keep the same executable bytes on the checkout's volume so its
+            # absolute and relative spellings also exist on Windows CI (D:/C:).
+            fixture_executable = Path(root).resolve() / Path(sys.executable).name
+            shutil.copy2(sys.executable, fixture_executable)
+            executable = str(fixture_executable)
             suffix = ['--restricted', '--settings', pair['arms']['A']['settings'],
                       '--model', 'synthetic-no-provider', '--max-budget-usd', '0.01',
                       '--max-turns', '1', '--output-format', 'stream-json',
