@@ -2393,6 +2393,32 @@ class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase
                         package, verified_large_files=receipt
                     )
 
+    def test_accepts_receipt_bound_six_platform_native_cohort(self):
+        # The assembled native cohort plus source now exceeds 32 MiB.
+        content = b"n" * (6 * 1024 * 1024)
+        declaration = {
+            "type": "file", "mode": "0755", "size": len(content),
+            "sha256": hashlib.sha256(content).hexdigest(), "origin": "promotion",
+        }
+        platforms = ("darwin-amd64", "darwin-arm64", "linux-amd64",
+                     "linux-arm64", "windows-amd64.exe", "windows-arm64.exe")
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            receipts = {}
+            for platform in platforms:
+                relative = f"helpers/artifacts/ca-artifact-{platform}"
+                target = package / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(content)
+                receipts[relative] = dict(declaration)
+            files = self.checker._candidate_package_files(
+                package, verified_large_files=receipts
+            )
+            self.assertEqual(set(files), set(receipts))
+            self.assertEqual(sum(map(len, files.values())), 36 * 1024 * 1024)
+            with self.assertRaisesRegex(ValueError, "size limit"):
+                self.checker._candidate_package_files(package)
+
     def test_verified_large_native_payload_still_obeys_total_limit(self):
         content = os.urandom(2 * 1024 * 1024 + 1)
         relative = "helpers/artifacts/ca-artifact-linux-amd64"

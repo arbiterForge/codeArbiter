@@ -2100,9 +2100,13 @@ def _candidate_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _candidate_archive_limits() -> dict[str, int]:
-    """Return checker-owned ZIP resource limits without trusting the candidate."""
-    return dict(EXPECTED_CANDIDATE_ARCHIVE_LIMITS)
+def _candidate_archive_limits(*, verified_native_cohort: bool = False) -> dict[str, int]:
+    """Return checker-owned limits for source or receipt-verified native packages."""
+    limits = dict(EXPECTED_CANDIDATE_ARCHIVE_LIMITS)
+    if verified_native_cohort:
+        # Six receipt-bound binaries plus source exceed the 32 MiB source limit.
+        limits["max_total_uncompressed_bytes"] = 64 * 1024 * 1024
+    return limits
 
 
 def _verified_large_candidate_files(value: object) -> dict[str, dict[str, object]]:
@@ -2234,7 +2238,7 @@ def _candidate_package_files(
                 files[relative] = output.getvalue()
         return files
     if path.is_dir():
-        limits = _candidate_archive_limits()
+        limits = _candidate_archive_limits(verified_native_cohort=bool(large_files))
         package_root = path / "plugins" / "ca-codex"
         package_metadata = package_root.lstat() if package_root.exists() or package_root.is_symlink() else None
         if (
