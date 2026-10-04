@@ -35,7 +35,6 @@ import unittest
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HOOKS)
 import _hooklib  # noqa: E402
-import _bashguardlib  # noqa: E402
 import _protectedstatelib  # noqa: E402
 
 PRE_WRITE = os.path.join(HOOKS, "pre-write.py")
@@ -47,6 +46,12 @@ GIT_ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 FLANK_SOURCE_PATHS = {
     "pre-write.py": PRE_WRITE,
     "pre-edit.py": PRE_EDIT,
+}
+# The crypto/secret commit gate (H-09b/H-10b) has no time window: a pass is
+# bound to the exact path-and-line digests it reviewed, as H-14 binds
+# migrations by content. Its two enforcement points must not call
+# marker_fresh at all.
+SECURITY_GATE_SOURCE_PATHS = {
     "_bashguardlib.py": os.path.join(HOOKS, "_bashguardlib.py"),
     "git-enforce.py": GIT_ENFORCE,
 }
@@ -78,17 +83,6 @@ class MarkerFreshnessSingleSourceValueTest(unittest.TestCase):
             _protectedstatelib.MARKER_FRESHNESS_MINUTES,
             _hooklib.MARKER_FRESHNESS_MINUTES)
 
-    def test_bashguardlib_module_namespace_resolves_the_same_value(self):
-        # _bashguardlib imports MARKER_FRESHNESS_MINUTES into its own module
-        # namespace (`from _hooklib import (..., MARKER_FRESHNESS_MINUTES,
-        # ...)`), so it is reachable as an attribute of the loaded module —
-        # exactly the shape a reintroduced independent declaration would
-        # also satisfy, which is why this alone is not sufficient (see the
-        # AST test below for the property this one cannot see).
-        self.assertEqual(
-            _bashguardlib.MARKER_FRESHNESS_MINUTES,
-            _hooklib.MARKER_FRESHNESS_MINUTES)
-
     def test_pre_write_module_namespace_resolves_the_same_value(self):
         mod = _load(PRE_WRITE, "marker_freshness_test_pre_write")
         self.assertEqual(
@@ -96,11 +90,6 @@ class MarkerFreshnessSingleSourceValueTest(unittest.TestCase):
 
     def test_pre_edit_module_namespace_resolves_the_same_value(self):
         mod = _load(PRE_EDIT, "marker_freshness_test_pre_edit")
-        self.assertEqual(
-            mod.MARKER_FRESHNESS_MINUTES, _hooklib.MARKER_FRESHNESS_MINUTES)
-
-    def test_git_enforce_module_namespace_resolves_the_same_value(self):
-        mod = _load(GIT_ENFORCE, "marker_freshness_test_git_enforce")
         self.assertEqual(
             mod.MARKER_FRESHNESS_MINUTES, _hooklib.MARKER_FRESHNESS_MINUTES)
 
@@ -151,6 +140,12 @@ class MarkerFreshnessNoReintroducedLiteralTest(unittest.TestCase):
                         f"{label}'s marker_fresh(...) second argument is "
                         f"the name {arg.id!r}, not MARKER_FRESHNESS_MINUTES "
                         f"— issue #567's single-source constant")
+
+    def test_security_gate_has_no_time_window(self):
+        for label, path in SECURITY_GATE_SOURCE_PATHS.items():
+            with self.subTest(flank=label):
+                self.assertEqual(_marker_fresh_second_args(path), [],
+                                 f"{label} must not expire a security-gate pass")
 
     def test_protectedstatelib_default_parameter_is_also_the_named_constant(self):
         # _protectedstatelib.marker_gated_write_admitted's `minutes=` default

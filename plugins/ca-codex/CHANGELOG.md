@@ -6,13 +6,25 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.14.11] - 2026-10-04
+## [0.14.12] - 2026-10-04
 
 ### Fixed
 
 - Evidence-context validation now accepts the native engine's literal UTF-8
   Unicode bytes while retaining canonical-byte, digest, and frozen-context checks.
   Approved task text with Unicode can reach verification and review.
+
+## [0.14.11] - 2026-10-03
+
+### Fixed
+
+- Shared authority library: recovering an already-abandoned oversized review now reports
+  `request was already abandoned` instead of a misleading binding failure. Carries the Claude
+  Code 2.1.286 review-correlation fix (tagged `resolvedModel`, `SubagentHandback` reports),
+  which applies only to the Claude host.
+- The crypto/secret commit gate (H-09b/H-10b) no longer expires a recorded pass after 30 minutes.
+  A pass now stays valid for exactly the lines it reviewed, in the files it reviewed them in,
+  like the migration gate; any new, changed, or moved sensitive line still blocks until reviewed.
 
 ## [0.14.10] - 2026-10-03
 

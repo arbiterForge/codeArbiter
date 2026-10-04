@@ -92,7 +92,11 @@ class CryptoContextHookTest(unittest.TestCase):
         # RSA-02/03: genuine producer identity, stale refusal, ordinary controls.
         self._stage("key_type = RSA\n")
         marker = self._record_context_pass()
-        self.assertIn(hashlib.sha256(b"key_type = RSA").hexdigest(), marker.splitlines())
+        # Bound to the file it was reviewed in, not the line alone.
+        reviewed = self._git("show", ":sample.py").stdout.rstrip()  # the staged line
+        bound = "path-v1:" + hashlib.sha256(json.dumps(
+            ["sample.py", reviewed], separators=(",", ":")).encode("utf-8")).hexdigest()
+        self.assertIn(bound, marker.splitlines())
         self._assert_admission(False)
         self._write("sample.py", "key_type = RSA  # changed configuration\n")
         self._git("add", "sample.py")

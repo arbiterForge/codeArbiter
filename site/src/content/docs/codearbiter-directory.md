@@ -384,9 +384,10 @@ the first marker-writing action runs. The load-bearing ones:
 - **`security-gate-passed`** — written by `security-pass.py` on a genuine crypto-compliance or
   secret-handling PASS. It contains a SHA-256 digest of every sensitive added line it approved,
   not just an empty touch. The commit-time gates (**H-09b** for crypto/TLS, **H-10b** for secrets)
-  block a commit unless this marker is **fresh** (written within the last 30 minutes) **and**
-  covers every sensitive line in the current staged diff. A pass recorded for one diff can't
-  launder a later, different change through the freshness window.
+  block a commit unless this marker exists **and** covers every sensitive line in the current
+  staged diff. There is no time window: a pass stays valid for exactly the lines it reviewed, in
+  the files it reviewed them in, so a pass recorded for one diff can't launder a later, different
+  change or a reviewed line moved to another file.
 - **`migration-gate-passed`** — the same digest-binding contract, for the H-14 migration-review
   gate, written by `migration-pass.py` against a migration file's current content.
 - **`mode`** — a gitignored file holding the session's current posture (`arbiter`, `dangerous`, or

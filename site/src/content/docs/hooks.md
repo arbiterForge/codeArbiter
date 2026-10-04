@@ -174,7 +174,7 @@ children do not receive the parent-only footer, background-job, or nested-dispat
   - **H-02:** no force-push (`--force`, `--force-with-lease`, `--force-if-includes`, `-f`, `+refspec`).
   - **H-03:** no wildcard staging (flag forms `-A`/`--all`/`-u`/`.`; argument forms globs, directories, pathspec magic).
   - **H-05:** append-only audit logs. Shell truncation/rewrite verbs aimed at `overrides.log`/`triage.log`/`sprint-log.md`/`gate-events.log` are blocked. The protected name set is centralized (`_hooklib.AUDIT_LOG_BASENAMES`) so the shell, Write, and Edit flanks cannot drift.
-  - **H-09b / H-10b:** crypto/secret commit gate. A commit introducing a sensitive line is blocked unless the `security-gate-passed` marker covers those exact lines (freshness under 30 min **and** per-line digest coverage). Scans the staged diff plus the worktree diff for `-a`, in-command `git add`, or a `git commit <pathspec>`.
+  - **H-09b / H-10b:** crypto/secret commit gate. A commit introducing a sensitive line is blocked unless the `security-gate-passed` marker covers those exact lines (per-line digest coverage bound to the file path, with no time window). Scans the staged diff plus the worktree diff for `-a`, in-command `git add`, or a `git commit <pathspec>`.
   - **H-11:** ADRs only via `/ca:adr`. Shell redirects/verbs into `.codearbiter/decisions/` are blocked; reads pass.
   - **H-14:** migration review. A commit staging a migration is blocked unless `migration-gate-passed` covers that file's content digest.
   - **H-18:** the activation switch is protected. A shell write that would flip `.codearbiter/CONTEXT.md` off (`arbiter: disabled` or broken frontmatter) is blocked, so the gates cannot be silenced from inside the repo they govern.
@@ -271,7 +271,7 @@ The `pre-commit` / `pre-push` shim installed into the repo's own `.git/hooks/` (
 
 ### security-pass.py / migration-pass.py
 
-These record the gate passes that `pre-bash.py` checks. `security-pass.py` is run on PASS by the crypto-compliance / secret-handling skills: it writes the **line digests** of every sensitive line the gate approved to `security-gate-passed`. `migration-pass.py` is run on PASS by the commit gate after `migration-reviewer`: it writes the **content digests** of every approved migration to `migration-gate-passed` (no freshness window, since a migration is immutable). Both write atomically, so a half-written marker can never read as a valid pass. Binding by digest is what lets H-09b/H-10b/H-14 close the time-of-check / time-of-use window.
+These record the gate passes that `pre-bash.py` checks. `security-pass.py` is run on PASS by the crypto-compliance / secret-handling skills: it writes the **line digests** of every sensitive line the gate approved to `security-gate-passed`. `migration-pass.py` is run on PASS by the commit gate after `migration-reviewer`: it writes the **content digests** of every approved migration to `migration-gate-passed` (likewise no time window, since a migration is immutable). Both write atomically, so a half-written marker can never read as a valid pass. Binding by digest is what lets H-09b/H-10b/H-14 close the time-of-check / time-of-use window.
 
 ### Command Utilities
 
