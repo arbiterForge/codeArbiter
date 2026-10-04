@@ -521,6 +521,9 @@ export default function registerCaptureProvider(pi: any) {
         creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
     )
     reader: threading.Thread | None = None
+    stderr_reader: threading.Thread | None = None
+    stderr_tail = ""
+    stderr_error: Exception | None = None
     try:
         if process.stdin is None or process.stdout is None or process.stderr is None:
             raise AssertionError("Pi RPC did not expose standard streams")
@@ -537,6 +540,18 @@ export default function registerCaptureProvider(pi: any) {
 
         reader = threading.Thread(target=read_stdout, name="ca-pi-rpc-stdout", daemon=True)
         reader.start()
+
+        def read_stderr() -> None:
+            nonlocal stderr_tail, stderr_error
+            assert process.stderr is not None
+            try:
+                while chunk := process.stderr.read(4096):
+                    stderr_tail = (stderr_tail + chunk)[-2000:]
+            except Exception as error:
+                stderr_error = error
+
+        stderr_reader = threading.Thread(target=read_stderr, name="ca-pi-rpc-stderr", daemon=True)
+        stderr_reader.start()
         if _on_process_started is not None:
             _on_process_started(process, reader)
 
@@ -604,10 +619,19 @@ export default function registerCaptureProvider(pi: any) {
                 break
 
         process.stdin.close()
-        returncode = process.wait(timeout=10)
+        try:
+            returncode = process.wait(timeout=10)
+        except subprocess.TimeoutExpired as error:
+            raise AssertionError(
+                f"Pi RPC did not exit after stdin EOF; received {len(records)} records; "
+                f"stderr tail={stderr_tail!r}"
+            ) from error
         reader.join(timeout=5)
         if reader.is_alive():
             raise AssertionError("Pi RPC stdout reader did not stop after process exit")
+        stderr_reader.join(timeout=5)
+        if stderr_reader.is_alive() or stderr_error is not None:
+            raise AssertionError(f"Pi RPC stderr reader failed: {stderr_error!r}")
         while True:
             try:
                 line = output.get_nowait()
@@ -615,17 +639,16 @@ export default function registerCaptureProvider(pi: any) {
                 break
             if line is not None:
                 records.append(decode(line))
-        stderr = process.stderr.read()
         if returncode != 0:
-            raise AssertionError(f"Pi RPC exited {returncode}: {stderr[-2000:]}")
+            raise AssertionError(f"Pi RPC exited {returncode}: {stderr_tail}")
         if not any(record.get("id") == "commands" for record in records):
-            raise AssertionError(f"Pi RPC did not answer get_commands: {records!r}; stderr={stderr[-2000:]}")
+            raise AssertionError(f"Pi RPC did not answer get_commands: {records!r}; stderr={stderr_tail}")
         if invoke_read_context and not any(record.get("id") == "state" for record in records):
-            raise AssertionError(f"Pi RPC did not answer get_state: {records!r}; stderr={stderr[-2000:]}")
+            raise AssertionError(f"Pi RPC did not answer get_state: {records!r}; stderr={stderr_tail}")
         if (invoke_alias or invoke_doctor or invoke_read_context) and not any(record.get("id") == "capture" for record in records):
-            raise AssertionError(f"Pi RPC did not capture the alias turn: {records!r}; stderr={stderr[-2000:]}")
+            raise AssertionError(f"Pi RPC did not capture the alias turn: {records!r}; stderr={stderr_tail}")
         if invoke_enforcement_fault and not any(record.get("type") == "agent_settled" for record in records):
-            raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr[-2000:]}")
+            raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail}")
         return records
     finally:
         cleanup_errors: list[str] = []
@@ -640,6 +663,8 @@ export default function registerCaptureProvider(pi: any) {
             cleanup_errors.append(f"process-tree termination failed: {error}")
         if reader is not None:
             reader.join(timeout=5)
+        if stderr_reader is not None:
+            stderr_reader.join(timeout=5)
         if process.stdout is not None and not process.stdout.closed:
             try:
                 process.stdout.close()
@@ -649,6 +674,8 @@ export default function registerCaptureProvider(pi: any) {
             reader.join(timeout=2)
             if reader.is_alive():
                 cleanup_errors.append("stdout reader remained alive")
+        if stderr_reader is not None and stderr_reader.is_alive():
+            cleanup_errors.append("stderr reader remained alive")
         if process.stderr is not None and not process.stderr.closed:
             try:
                 process.stderr.close()
@@ -2171,6 +2198,27 @@ class PiPackageTests(unittest.TestCase):
                             stream.close()
                 if reader is not None:
                     reader.join(timeout=2)
+
+    def test_rpc_stderr_backpressure_does_not_block_shutdown(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-stderr-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            cwd.mkdir()
+            child_code = (
+                "import json, sys; "
+                "sys.stdin.readline(); "
+                "print(json.dumps({'id':'commands','success':True,'data':{'commands':[]}}),flush=True); "
+                "sys.stderr.write('x' * 262144); sys.stderr.flush(); "
+                "sys.stdin.read()"
+            )
+            records = run_rpc_commands(
+                cwd,
+                root / "agent",
+                root / "home",
+                _rpc_command=[sys.executable, "-c", child_code],
+            )
+            self.assertEqual([record["id"] for record in records], ["commands"])
+            self.assertTrue(records[0]["success"])
 
 
 class NpmPublishContractTest(unittest.TestCase):
