@@ -79,7 +79,7 @@ OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0
 # PR #871 delivers the reviewed bounded context-creation owner, retaining its
 # initialized lock and routing refresh through the existing context-check owner.
 OWNER_OPERATIONAL_SHA256.update({
-    'create-context': '8f707912aff877ba4cac2787aa1ef805721697baebb20b1b71aa5548c757b07a',
+    'create-context': '84ae53fb9d0ee29103bffa87d8a36d83b4433ba2ca52535b72d0c73ddee13e92',
     'decompose': 'a39e4078ebfc81e6d83fe961a2570ebb04fd76b72fb6719a9baa7c8501b175d4',
 })
 

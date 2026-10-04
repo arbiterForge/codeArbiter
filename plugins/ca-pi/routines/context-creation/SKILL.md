@@ -102,9 +102,12 @@ substitute. This restriction does not change `decision-variance` dispatch.
 
 One candidate caller route is Claude Code's documented session-only `--agents`
 inline JSON defining `context-scout` with `Read`, `Grep`, `Glob`, `Bash`, an exact
-caller-selected model, and the context assignment prompt. The scoped source
-preparer in `.github/scripts/test_context_host.py` provides
+caller-selected model, and the context assignment prompt. The codeArbiter
+CI-only fixture `.github/scripts/test_context_host.py` provides
 `--prepare-context-profile` and `--guard-context-profile` for that route. The
+fixture is not shipped in installed plugins. A separately prepared caller must
+pin this repository source before using the preparation CLI below; ordinary
+consumers cannot assume that file exists in their project or installation. The
 former requires an explicit A–F assignment-to-file map, rejects `.git`, `.env`,
 other private `.env.*` paths and symlink components, then freezes each
 assignment's regular files, their raw SHA-256 values, the union source-list
@@ -160,7 +163,7 @@ are denied, and the caller retains each bound input/result/denial/report rather
 than inserting synthetic answers into the report. The CLI's guard mode is
 `python <pinned-source>/test_context_host.py --guard-context-profile
 <protected-profile.json>` with the native hook event on stdin. These source
-helpers ship as a caller preparation interface; they do not make any installed
+helpers expose a repository-only caller preparation interface; they do not make any installed
 plugin host qualified by themselves.
 
 Before treating a newly supported host profile as qualified, observe distinct
