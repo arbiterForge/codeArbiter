@@ -466,9 +466,10 @@ jobs:
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
     # Intel macOS run 36321825183 and Windows ARM runs 37148496781
-    # and 37150510062 exhausted 30m after earlier suites passed.
+    # and 37150510062, plus Windows x64 run 37184973120, exhausted 30m
+    # after earlier suites passed.
     # Preserve all suites and per-test timeouts; allow those hosts 45m.
-    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}
+    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}
     permissions:
       contents: read
     env:

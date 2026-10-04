@@ -3407,13 +3407,13 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn("artifact-engine", {check.id for check in selected.selected})
 
     def test_native_qualification_has_a_bounded_platform_job_budget(self):
-        # Retain the measured 45m Intel macOS and Windows ARM budgets;
+        # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         job = jobs["artifact-engine"]
         self.assertEqual(
             re.findall(r"(?m)^    timeout-minutes: (.+)$", job),
-            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}"],
+            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}"],
         )
         self.assertIn("fail-fast: false", job)
         self.assertNotIn("continue-on-error:", job)
@@ -3451,10 +3451,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         self.assertIn("needs: changes", job)
         self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
-        # Retain the measured 45m Intel macOS and Windows ARM budgets;
+        # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         self.assertIn(
-            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}",
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}",
             job,
         )
         for runner in (
@@ -3974,10 +3974,10 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         source = CI_WORKFLOW.read_text(encoding="utf-8")
         block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
-        # Retain the measured 45m Intel macOS and Windows ARM budgets;
+        # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         self.assertIn(
-            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64') && 45 || 30 }}",
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}",
             block,
         )
         for script in ("test_artifact_native.py", "test_artifact_bridge.py",
