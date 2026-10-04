@@ -28,6 +28,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Keep diagnostic outcomes, regression reuse and helper invocation consistent
   across the generated host packages.
 
+## [0.14.12] - 2026-10-04
+
+### Fixed
+
+- Evidence-context validation now accepts the native engine's literal UTF-8
+  Unicode bytes while retaining canonical-byte, digest, and frozen-context checks.
+  Approved task text with Unicode can reach verification and review.
+
 ## [0.14.11] - 2026-10-03
 
 ### Fixed

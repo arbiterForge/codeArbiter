@@ -83,12 +83,15 @@ class FakeClient:
                 },
             }],
         }
+        self.context_bytes = None
 
     def call(self, operation, request=None, **_kwargs):
         request = dict(request or {})
         self.calls.append((operation, request))
         if operation == "evidence-context":
-            raw = json.dumps(self.context, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode()
+            raw = self.context_bytes
+            if raw is None:
+                raw = json.dumps(self.context, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode()
             digest = hashlib.sha256(raw).hexdigest()
             relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
             target = self.root / relative
@@ -334,6 +337,44 @@ class AuthorityAdapterTest(unittest.TestCase):
         }), mock.patch.object(installed, "call", return_value={"repository_context": pending}):
             with self.assertRaisesRegex(RuntimeError, "CONTEXT_WORKFLOW_UNAVAILABLE"):
                 installed.require_context_workflow()
+
+    def test_native_utf8_context_arms_verification_without_changing_state_canonicalization(self):
+        self.client.context["task"]["rollback"] = "Restore the task’s prior state"
+        ascii_bytes = json.dumps(
+            self.client.context, ensure_ascii=True, allow_nan=False,
+            sort_keys=True, separators=(",", ":"),
+        ).encode("ascii")
+        self.client.context_bytes = ascii_bytes.replace(b"\\u2019", "’".encode("utf-8"))
+        self.assertIn("’".encode("utf-8"), self.client.context_bytes)
+        self.assertEqual(self.adapter._canonical({"text": "’"}), b'{"text":"\\u2019"}')
+
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="request-nonce-native-unicode",
+        )
+        self.assertEqual(armed["activity"], "verification")
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((self.root / request["context_ref"]).read_bytes(), self.client.context_bytes)
+
+    def test_native_context_utf16_order_and_canonical_bytes_remain_fail_closed(self):
+        context = {"text": "task’s\b\u0000", "\ue000": 1, "😀": 2}
+        native_bytes = b'{"text":"task\xe2\x80\x99s\\b\\u0000","\xf0\x9f\x98\x80":2,"\xee\x80\x80":1}'
+        self.assertEqual(json.loads(native_bytes), context)
+
+        def read(raw):
+            digest = hashlib.sha256(raw).hexdigest()
+            relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+            return self.adapter._read_context(self.root, relative.as_posix(), digest)
+
+        self.assertEqual(read(native_bytes), context)
+        escaped_bytes = native_bytes.replace("’".encode("utf-8"), b"\\u2019")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_EVIDENCE_CONTEXT"):
+            read(escaped_bytes)
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_EVIDENCE_CONTEXT"):
+            read(native_bytes + b"\n")
 
     def test_verifier_executes_engine_argv_without_shell_and_publishes_observation(self):
         armed = self.adapter.arm_request(

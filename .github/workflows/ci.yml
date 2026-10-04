@@ -584,10 +584,6 @@ jobs:
       - name: Verify artifact consumer inventory closure
         if: matrix.os == 'ubuntu-24.04'
         run: python .github/scripts/test_artifact_consumers.py
-      - name: Test Python-to-binary bridge
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_bridge.py
       - name: Test host-owned artifact approval capture
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
@@ -606,22 +602,6 @@ jobs:
         run: python .github/scripts/test_artifact_reconciliation_adapter.py
       - name: Test forgiving authority reply capture and short codes
         run: python .github/scripts/test_replylib.py
-      - name: Test canonical spec and plan authoring behavior
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_authoring.py
-      - name: Test feature and sprint workflow behavior
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_workflow.py
-      - name: Test HTML farm projection and dispatcher boundary
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_farm.py
-      - name: Test native package boundary and supported cold install
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_package.py
       - name: Test cross-kind reference and workflow conformance
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate

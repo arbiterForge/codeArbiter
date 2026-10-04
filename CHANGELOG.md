@@ -35,6 +35,14 @@ predate the plugin rewrite and are grouped by date.
 - Keep diagnostic outcomes, regression reuse and helper invocation consistent
   across the generated host packages.
 
+## [2.23.5] - 2026-10-04
+
+### Fixed
+
+- Evidence-context validation now accepts the native engine's literal UTF-8
+  Unicode bytes while retaining canonical-byte, digest, and frozen-context checks.
+  Approved task text with Unicode can reach verification and review.
+
 ## [2.23.4] - 2026-10-03
 
 ### Fixed
