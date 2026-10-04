@@ -6,13 +6,18 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.14.10] - 2026-10-03
+## [0.14.11] - 2026-10-04
 
 ### Fixed
 
 - Evidence-context validation now accepts the native engine's literal UTF-8
   Unicode bytes while retaining canonical-byte, digest, and frozen-context checks.
   Approved task text with Unicode can reach verification and review.
+
+## [0.14.10] - 2026-10-03
+
+### Fixed
+
 - Native completion reviews receive the exact selected verification receipt,
   mapped worktrees and immutable supporting evidence. Task and scope acceptance
   reject missing, stale or mismatched completion bindings. Genuine native V1
