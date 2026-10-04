@@ -1,0 +1,18 @@
+{
+ "agent_id": "agent-1",
+ "agent_type": "ca:authority-reviewer",
+ "cwd": "<cwd>",
+ "effort": {
+  "level": "medium"
+ },
+ "hook_event_name": "PreToolUse",
+ "permission_mode": "auto",
+ "prompt_id": "prompt-1",
+ "session_id": "session-1",
+ "tool_input": {
+  "message": "{\"decision\":\"pass\",\"findings\":[]}"
+ },
+ "tool_name": "SubagentHandback",
+ "tool_use_id": "toolu-2",
+ "transcript_path": "<transcript-path>"
+}

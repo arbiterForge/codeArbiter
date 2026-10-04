@@ -83,8 +83,8 @@ import sys
 from _hooklib import (
     ADR_LIFECYCLE_LOG_BASENAME, AUDIT_LOG_BASENAMES, AUDIT_LOG_FLAT_BASENAMES,
     AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_AUDIT_LOG_NAMES, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
-    GATE_MARKER_NAMES, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
-    content_digest, is_migration_path, line_digest, marker_fresh, security_scan_diff,
+    GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
+    content_digest, is_migration_path, line_digest, security_scan_diff,
 )
 from _gitexec import git_executable
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
@@ -1508,11 +1508,12 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
     """H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     a recorded security-gate pass. The crypto-compliance / secret-handling skills
     record the pass via hooks/security-pass.py — a marker holding the digest of
-    every sensitive line the gate approved. Two checks, both required:
-    freshness (< 30 min) AND coverage (every sensitive line being committed is
-    in the approved set). Coverage is what closes the TOCTOU window: a pass
-    minted for one diff can no longer launder a different diff committed inside
-    the freshness window. Scans the staged diff, plus the worktree diff when
+    every sensitive line the gate approved. Two checks, both required: a pass
+    is recorded AND it covers every sensitive line being committed. Coverage is
+    by line digest with no time window (as H-14 binds migrations by content): a
+    pass stays valid for exactly the lines it reviewed, and any new or changed
+    sensitive line is uncovered and blocks, so a pass for one diff can never
+    launder a different one. Scans the staged diff, plus the worktree diff when
     the commit uses -a/--all or the same command stages files."""
     if not commit:
         return
@@ -1541,7 +1542,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
         marker = os.path.join(_marker_root(root), ".codearbiter", ".markers", "security-gate-passed")
-        if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
+        if not os.path.isfile(marker):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (.codearbiter/.markers/security-gate-passed). Run the "
                        f"{skill} gate (it records the pass), then commit. To bypass a "
