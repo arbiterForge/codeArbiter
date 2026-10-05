@@ -12,6 +12,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - Prepare feature-author and reviewer context for existing native artifact IDs
   such as `ST-LS-LOOP-SPEC` without renaming them or weakening identity validation.
+- Restore typed record reordering while retaining identities, execution history,
+  and the approval requirement for changed plan content.
 
 ## [0.15.2] - 2026-10-04
 

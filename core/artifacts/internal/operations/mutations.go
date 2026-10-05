@@ -246,6 +246,35 @@ func Changes(d *model.Document, changes []any) (*model.Document, []string, error
 					retireReasons[old] = reason
 				}
 			}
+		case "record.reorder":
+			collection := model.S(change["collection"])
+			allowed := specCollections
+			if copy.Kind() == "plan" {
+				allowed = planCollections
+			}
+			if !allowed[collection] || collection == "criterion_dispositions" {
+				return nil, nil, fault.New("INVALID_COLLECTION", "collection is not an ordered symbol collection")
+			}
+			current := model.A(n[collection])
+			ids := model.Strings(change["ids"])
+			if len(ids) != len(current) {
+				return nil, nil, fault.New("INVALID_PERMUTATION", "reorder must name every existing record exactly once")
+			}
+			byID := map[string]any{}
+			for _, record := range current {
+				id := model.S(model.M(record)["id"])
+				byID[id] = record
+			}
+			reordered := make([]any, 0, len(ids))
+			for _, id := range ids {
+				record, ok := byID[id]
+				if !ok {
+					return nil, nil, fault.New("INVALID_PERMUTATION", "reorder names a foreign or duplicate record")
+				}
+				reordered = append(reordered, record)
+				delete(byID, id)
+			}
+			n[collection] = reordered
 		case "record.retire":
 			id := model.S(change["symbol"])
 			r, ok := idx.ByID[id]
@@ -350,6 +379,34 @@ func ChangeSummary(a, b *model.Document) []any {
 	}
 	for _, key := range canonical.Keys(fields) {
 		if collections[key] {
+			before, beforeOK := a.Norm()[key].([]any)
+			after, afterOK := b.Norm()[key].([]any)
+			if !beforeOK || !afterOK || len(before) != len(after) {
+				continue
+			}
+			beforeIDs := make([]string, len(before))
+			afterIDs := make([]string, len(after))
+			seen := map[string]bool{}
+			for i, record := range before {
+				id := model.S(model.M(record)["id"])
+				beforeIDs[i] = id
+				seen[id] = true
+			}
+			permutation := len(seen) == len(before)
+			for i, record := range after {
+				id := model.S(model.M(record)["id"])
+				afterIDs[i] = id
+				if !seen[id] {
+					permutation = false
+				}
+			}
+			if permutation {
+				x, _ := canonical.Hash(beforeIDs)
+				y, _ := canonical.Hash(afterIDs)
+				if x != y {
+					out = append(out, object{"field": "normative." + key, "change": "reordered", "before_sha256": x, "after_sha256": y})
+				}
+			}
 			continue
 		}
 		before, beforePresent := a.Norm()[key]
