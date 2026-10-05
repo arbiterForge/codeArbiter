@@ -76,6 +76,25 @@ generated package discovery, bridge/tool enforcement, child cancellation,
 process cleanup, compaction, prune parity, and the relative benchmark. It must
 finish without reading the real Pi home.
 
+RPC shutdown qualification uses two bounds, both starting when the client closes
+stdin. Additional passive observed fixtures must record EOF, a session-shutdown
+hook, and successful JavaScript process-exit entry in that order within ten
+seconds. Every raw and observed fixture must then exit naturally with code zero
+within thirty seconds total. Original raw fixtures keep their uninstrumented CLI
+arguments. Missing, malformed, late, or unsuccessful phase evidence fails the
+observed proof, and reaching exit entry does not waive the natural-exit deadline.
+Stdout and stderr drain continuously; timeout and failure still terminate and
+verify the process tree and readers. The aggregate command limit remains 180
+seconds.
+
+The separate exit allowance covers Node's synchronous persistence of an enabled
+cold compile cache after orderly runtime disposal. Windows pressure probes
+observed successful natural exits after 11–22 seconds; this small sample is not
+a guaranteed maximum. The fixtures keep compile caching enabled and isolated
+under each disposable home. They do not force a successful exit, warm a shared
+cache, or skip failed cells. The ten-second whole-process limit used by the older
+harness was a test deadline rather than a documented product shutdown guarantee.
+
 For a supported-version run, install the exact external Pi version with install
 scripts disabled in the isolated environment, then run one of:
 
