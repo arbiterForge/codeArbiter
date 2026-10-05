@@ -138,7 +138,9 @@ describe("first-class product splash", () => {
   });
 
   it("leads with the reader outcome and supported hosts", () => {
-    expect(indexMdx).toContain("Hard gates for agentic coding.");
+    expect(indexMdx).toContain("codeArbiter: hard gates for agentic coding.");
+    expect(indexMdx).toContain("open-source governance layer for AI coding agents");
+    expect(indexMdx).toContain('href="./overview/"');
     expect(indexMdx).toContain("You decide. codeArbiter enforces.");
     expect(indexMdx).toContain("Claude Code");
     expect(indexMdx).toContain("Codex");

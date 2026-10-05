@@ -67,7 +67,7 @@ export const FORGE_FEATURES: ForgeFeature[] = [
     helpGraduate:
       "use it in real repositories and report any host or workflow mismatch.",
     href:
-      "https://arbiterforge.github.io/codeArbiter/getting-started/pi/",
+      "https://codearbiter.dev/getting-started/pi/",
   },
   {
     name: "Live transcript pruning",
