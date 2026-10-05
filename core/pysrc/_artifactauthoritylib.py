@@ -29,7 +29,7 @@ than one SubagentStop; only the first is a review result.
 
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 import base64
 import errno
 import hashlib
@@ -77,6 +77,9 @@ MAX_STATE = 1 << 20
 # Only terminal abandonment can read a legacy inline-context review this large.
 MAX_RECOVERY_STATE = 2 << 20
 REQUEST_LOCK_WAIT_SECONDS = 5.0
+# The Claude join lock is per user, not per request: every SubagentStart waits
+# on it while any review is LAUNCHING, and the holder scans the registry.
+CLAUDE_JOIN_LOCK_WAIT_SECONDS = 30.0
 MAX_OUTPUT = 8 << 20
 MAX_DECISION = 65536
 MAX_COMPLETION_FILES = 16
@@ -325,7 +328,7 @@ def _spool_root(root: Path) -> Path:
 
 
 @contextmanager
-def _request_lock(spool: Path, relative: Path):
+def _request_lock(spool: Path, relative: Path, wait: float | None = None):
     """Keep one OS-owned lock inode for all writers of this request."""
     path = spool / f"{relative.name}.lock"
     fd = None
@@ -355,7 +358,7 @@ def _request_lock(spool: Path, relative: Path):
     locked = False
     try:
         check_path()
-        deadline = time.monotonic() + REQUEST_LOCK_WAIT_SECONDS
+        deadline = time.monotonic() + (REQUEST_LOCK_WAIT_SECONDS if wait is None else wait)
         if os.name == "nt":
             import msvcrt
         else:
@@ -3224,11 +3227,15 @@ def _claude_join_lock():
     separate hook processes. Each reads the request and then writes its half
     of the join; unserialized, either can read before the other writes and
     both miss, leaving the review LAUNCHING with no start marker."""
-    try:
-        with _request_lock(_registry_root(), Path("claude-join")):
-            yield
-    except OSError as exc:
-        raise AuthorityError("AUTHORITY_BUSY", "Claude review join is unavailable") from exc
+    with ExitStack() as stack:
+        try:
+            stack.enter_context(
+                _request_lock(_registry_root(), Path("claude-join"), wait=CLAUDE_JOIN_LOCK_WAIT_SECONDS)
+            )
+        except OSError as exc:
+            # Only acquisition maps here; the joined body reports its own errors.
+            raise AuthorityError("AUTHORITY_BUSY", "Claude review join is unavailable") from exc
+        yield
 
 
 def _claude_launch_result(event: dict[str, Any]) -> dict[str, Any] | None:
@@ -3394,8 +3401,12 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
             _reject(root, request, "repeated-handback")
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer reported more than once")
         if request["state"] == "LAUNCHING" and request["launch"].get("post_confirmed") is True:
-            # A start marker written late in the launch/start race.
-            _claude_bind_child(root, request)
+            # Defensive: the join lock leaves no late-marker race in this
+            # adapter, but bind any marker still waiting under the same lock.
+            with _claude_join_lock():
+                current = _load(root, request["request_id"])
+                if current["state"] == "LAUNCHING":
+                    _claude_bind_child(root, current)
             request = _load(root, request["request_id"])
         candidate = {**request, "handback": record}
         if (
@@ -3432,8 +3443,12 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         root, request = matches[0]
         launch = request["launch"]
         if request["state"] == "LAUNCHING" and launch.get("post_confirmed") is True:
-            # A start marker written late in the launch/start race.
-            _claude_bind_child(root, request)
+            # Defensive: the join lock leaves no late-marker race in this
+            # adapter, but bind any marker still waiting under the same lock.
+            with _claude_join_lock():
+                current = _load(root, request["request_id"])
+                if current["state"] == "LAUNCHING":
+                    _claude_bind_child(root, current)
             request = _load(root, request["request_id"])
             launch = request["launch"]
         try:

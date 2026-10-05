@@ -2599,7 +2599,9 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
 
         first, second = (start, post) if held == "start" else (post, start)
         names = ("start", "post") if held == "start" else ("post", "start")
-        with mock.patch.object(self.adapter, "_claude_requests", side_effect=scan_then_hold),                 mock.patch.object(self.adapter, "_save", side_effect=hold_then_save):
+        scans_held = mock.patch.object(self.adapter, "_claude_requests", side_effect=scan_then_hold)
+        saves_held = mock.patch.object(self.adapter, "_save", side_effect=hold_then_save)
+        with scans_held, saves_held:
             a = threading.Thread(target=run, args=(first,), name=names[0])
             a.start()
             self.assertTrue(paused.wait(10), "the held hook never reached its pause point")
