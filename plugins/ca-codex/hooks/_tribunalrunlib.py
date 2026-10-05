@@ -99,7 +99,8 @@ def _name(value):
 
 
 def _relative(value):
-    _require(isinstance(value, str) and "\x00" not in value and "\\" not in value and ":" not in value, "invalid-relative-path")
+    _require(isinstance(value, str) and "\x00" not in value
+             and (os.name != "nt" or ("\\" not in value and ":" not in value)), "invalid-relative-path")
     path = PurePosixPath(value)
     _require(not path.is_absolute() and ".." not in path.parts and ".git" not in path.parts, "invalid-relative-path")
     return path.as_posix()
@@ -133,8 +134,7 @@ def _root(root):
 
 def _git(root, *args, data=None):
     env = {key: value for key, value in root_bound_git_env().items() if not key.startswith("GIT_")}
-    env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
-               GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0", GIT_NO_REPLACE_OBJECTS="1")
+    env.update(GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0", GIT_NO_REPLACE_OBJECTS="1")
     try:
         executable = git_executable()
     except RuntimeError:
@@ -282,10 +282,12 @@ def _run_path(root, run_dir):
     path = Path(run_dir)
     if not path.is_absolute():
         path = root / path
-    relative = path.relative_to(root).as_posix()
-    parts = PurePosixPath(relative).parts
+    parts = path.parts[-3:]
     _require(len(parts) == 3 and "/".join(parts[:2]) == REPORTS and _name(parts[2]), "invalid-run-directory")
-    path = _contained(root, relative)
+    # Normalize only the repository prefix; leave the fixed report suffix
+    # unresolved so _contained still rejects its links and reparse points.
+    _require(_root(path.parents[2]) == root, "invalid-run-directory")
+    path = _contained(root, "/".join(parts))
     _require(path.is_dir(), "run-directory-unavailable")
     return path
 

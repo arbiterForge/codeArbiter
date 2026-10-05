@@ -18,6 +18,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -73,6 +74,23 @@ def verification(outcome="confirmed", **updates):
     }
     value.update(updates)
     return value
+
+
+class RelativePathTests(unittest.TestCase):
+    def test_relative_paths_follow_native_filename_rules(self):
+        for platform in ("posix", "nt"):
+            with mock.patch.object(run, "os", SimpleNamespace(name=platform)):
+                for value in ("notes/2026-10-05T12:00:00.txt", r"src/literal\name.py"):
+                    with self.subTest(platform=platform, value=value):
+                        if platform == "posix":
+                            self.assertEqual(run._relative(value), value)
+                        else:
+                            with self.assertRaises(run._Invalid):
+                                run._relative(value)
+                for value in ("/absolute", "../escape", ".git/config", "src/\x00bad"):
+                    with self.subTest(platform=platform, value=value):
+                        with self.assertRaises(run._Invalid):
+                            run._relative(value)
 
 
 class RepositoryTests(unittest.TestCase):
@@ -140,6 +158,21 @@ class RepositoryTests(unittest.TestCase):
         self.assertNotEqual(first["digest"], self.fingerprint(scope="src", target_digest="b" * 64)["digest"])
         self.assertFalse(run.source_fingerprint(self.root, scope="../elsewhere")["ok"])
         self.assertFalse(run.source_fingerprint(self.root, target_digest="bad")["ok"])
+
+    @unittest.skipUnless(os.name == "posix", "POSIX literal filename contract")
+    def test_posix_literal_filenames_preserve_scope_and_source_binding(self):
+        outside = "notes/2026-10-05T12:00:00.txt"
+        reviewed = r"src/literal\name.py"
+        self.write(outside, b"outside scope\n")
+        self.write(reviewed, b"reviewed literal filename\n")
+        self.git("add", "--", outside, reviewed)
+        self.git("-c", "core.hooksPath=" + os.devnull, "commit", "-qm", "literal filenames", "--no-gpg-sign")
+        folder = self.start(scope="src")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "audit")
+        self.write(outside, b"changed outside scope\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "audit")
+        self.write(reviewed, b"changed reviewed source\n")
+        self.assertEqual(run.resume_status(self.root, folder)["state"], "source-drift")
 
     def test_declared_external_evidence_is_bound_without_widening_finding_scope(self):
         folder = self.start(scope="src", evidence_paths=["outside.txt"])
@@ -338,6 +371,38 @@ class RepositoryTests(unittest.TestCase):
         self.assertEqual(old, (folder / "run.jsonl").read_bytes())
         self.assertEqual(decisions, (folder / "triage.jsonl").read_bytes())
 
+    @unittest.skipUnless(os.name == "nt", "Windows native short-path contract")
+    def test_native_short_repository_alias_preserves_legacy_history(self):
+        import ctypes
+        canonical = self.root.resolve(strict=True)
+        buffer = ctypes.create_unicode_buffer(32768)
+        count = ctypes.windll.kernel32.GetShortPathNameW(str(canonical), buffer, len(buffer))
+        self.assertGreater(count, 0, "GetShortPathNameW failed")
+        self.assertLess(count, len(buffer))
+        alias = Path(buffer.value)
+        if alias == canonical:
+            self.skipTest("fixture volume has no native short-path alias")
+        self.assertEqual(alias.resolve(strict=True), canonical)
+        self.root = alias
+        self.test_legacy_history_is_readable_without_rewriting_issue_references()
+
+    def test_run_path_refuses_linked_history_directory(self):
+        folder = self.start()
+        link = folder.with_name("linked-history")
+        try:
+            link.symlink_to(folder, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            if os.name != "nt":
+                self.skipTest("directory symlink creation unavailable")
+            result = subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(folder)],
+                                    capture_output=True, shell=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.addCleanup(lambda: link.rmdir() if link.exists() else None)
+        before = (folder / "run.jsonl").read_bytes()
+        self.assertEqual(run.read_run(self.root, link),
+                         {"ok": False, "error": "linked-path-refused"})
+        self.assertEqual((folder / "run.jsonl").read_bytes(), before)
+
     def test_triage_append_preserves_original_issue_reference_and_root_identity(self):
         folder = self.start()
         candidate = finding(root_cause_key="state:queue:lost-update", corroborates=["appsec-002"], related_lenses=["appsec"])
@@ -362,6 +427,26 @@ class RepositoryTests(unittest.TestCase):
         self.write("src/app.py", b"changed\n")
         self.success(run.source_fingerprint(self.root))
         self.assertFalse(sentinel.exists())
+
+    def test_git_preserves_protected_config_with_inert_subprocess_controls(self):
+        injected = {"GIT_DIR": str(self.root / "wrong-repository"),
+                    "GIT_CONFIG_GLOBAL": str(self.root / "injected-config"),
+                    "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_COUNT": "1",
+                    "GIT_CONFIG_KEY_0": "core.fsmonitor", "GIT_CONFIG_VALUE_0": "unused"}
+        with mock.patch.dict(os.environ, injected), \
+                mock.patch.object(run.subprocess, "run", wraps=subprocess.run) as execute:
+            actual = run._git(self.root, "rev-parse", "--show-toplevel")
+        self.assertEqual(Path(actual.decode().strip()).resolve(), self.root.resolve())
+        execute.assert_called_once()
+        args, kwargs = execute.call_args
+        self.assertEqual(args[0][1:], ["--no-pager", "--no-lazy-fetch", "-c", "core.fsmonitor=false",
+                                     "-c", "core.hooksPath=" + os.devnull, "-c", "core.untrackedCache=false",
+                                     "rev-parse", "--show-toplevel"])
+        self.assertFalse(kwargs["shell"])
+        expected = {"GIT_OPTIONAL_LOCKS": "0", "GIT_TERMINAL_PROMPT": "0", "GIT_NO_REPLACE_OBJECTS": "1"}
+        self.assertEqual({key for key in kwargs["env"] if key.startswith("GIT_")}, set(expected))
+        for key, value in expected.items():
+            self.assertEqual(kwargs["env"][key], value)
 
     def test_selected_git_identity_is_not_silently_ignored(self):
         self.assertTrue(run.source_fingerprint(self.root)["ok"])

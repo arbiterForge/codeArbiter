@@ -552,8 +552,11 @@ def canonical_inventory_json(inventory):
 def render_inventory_md(inventory):
     """Readable projection. Escape repository-controlled text as inert text."""
     def text(value):
-        escaped = html.escape(str(value), quote=True).replace("\n", " ").replace("\r", " ")
-        return re.sub(r"[\\`*_{}\[\]()#+!|~-]", lambda match: "&#%d;" % ord(match[0]), escaped)
+        plain = str(value).replace("\n", " ").replace("\r", " ")
+        # Escape original characters once, never punctuation in generated entities.
+        return re.sub(r"""[&<>"'\\`*_{}\[\]()#+!|~-]""",
+                      lambda match: html.escape(match[0], quote=True)
+                      if match[0] in "&<>\"'" else "&#%d;" % ord(match[0]), plain)
 
     lines = ["# Tribunal inventory", "", "Mechanical facts; model judgment has not been performed.", "",
              "Scope: " + text(inventory.get("scope")), "Status: " + text(inventory.get("status")), "",

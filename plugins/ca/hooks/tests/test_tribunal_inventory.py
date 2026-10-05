@@ -6,6 +6,7 @@ assertion RED, rather than a runner/import error. Once present, only canonical
 core code is loaded; failures in that code are never replaced by the baseline.
 """
 
+import html
 import importlib.util
 import json
 import os
@@ -269,6 +270,18 @@ class InventoryTests(unittest.TestCase):
         self.assertNotIn("[open](", markdown)
         self.assertNotIn("<script>", markdown)
         self.assertIn("example.invalid", markdown)
+
+    def test_ac13_readable_metadata_preserves_apostrophes_and_ampersands(self):
+        metadata = {"name": "O'Reilly & Sons",
+                    "description": "[open](https://example.invalid) <script>bad()</script>"}
+        self.write("package.json", metadata)
+        self.commit()
+        markdown = subject("render_inventory_md", self.collect())
+        projected = markdown.split("## Package metadata\n\n", 1)[1].splitlines()[0]
+        self.assertEqual(json.loads(html.unescape(projected.removeprefix("- "))),
+                         {"manifest": "package.json", **metadata})
+        self.assertNotIn("[open](", projected)
+        self.assertNotIn("<script>", projected)
 
     def test_ac13_test_name_fanout_has_a_visible_bound(self):
         for number in range(101):
