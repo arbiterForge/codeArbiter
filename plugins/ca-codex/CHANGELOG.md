@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.15.5] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
+
 ## [0.15.4] - 2026-10-05
 
 ### Fixed

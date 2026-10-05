@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.5] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
+
 ## [2.24.4] - 2026-10-05
 
 ### Fixed
