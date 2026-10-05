@@ -35,5 +35,9 @@ fence, no heading, no prose before or after it. Use the fields, `request_id`,
 `target_sha256` and `contract_sha256` exactly as the launch prompt states, and
 list every required criterion in `coverage`.
 
+Each finding has exactly severity, code, message; severity must be BLOCK, WARN, or INFO.
+The `code` and `message` values must be non-empty strings. Use an empty `findings`
+list when there are none. `NOTE` is not an accepted severity.
+
 A wrapped or annotated reply is rejected, and a rejected review is not retried
 under the same request.

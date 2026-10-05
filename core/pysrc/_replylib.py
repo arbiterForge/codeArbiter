@@ -207,7 +207,8 @@ def _write(path: Path, value: dict) -> None:
 
 
 def issue_code(root, route: str, artifact_id: str, full_reply: str, *,
-               names: list[str], short_prefix: list[str]) -> dict[str, str]:
+               names: list[str], short_prefix: list[str],
+               expires_at: int | None = None) -> dict[str, str]:
     """Issue a unique four-character code expanding to ``full_reply``."""
     if route not in ROUTES or not isinstance(full_reply, str) or canonicalize(full_reply) != full_reply:
         raise ReplyCodeError("reply code request is invalid")
@@ -223,20 +224,22 @@ def issue_code(root, route: str, artifact_id: str, full_reply: str, *,
         raise ReplyCodeError("no free reply code")
     value = {"format": FORMAT, "route": route, "artifact_id": artifact_id, "repository": repository,
              "short_reply": short, "full_reply": full_reply, "names": list(names),
-             "expires_at": int(time.time()) + CODE_TTL_SECONDS}
+             "expires_at": int(time.time()) + CODE_TTL_SECONDS if expires_at is None else expires_at}
     value["integrity_sha256"] = _digest(_canonical(value))
     _write(path, value)
     return {"code": code, "short_reply": short}
 
 
 def offer_code(root, route: str, artifact_id: str, full_reply: str, *,
-               names: list[str], short_prefix: list[str]) -> dict[str, str]:
+               names: list[str], short_prefix: list[str],
+               expires_at: int | None = None) -> dict[str, str]:
     """Arm-result fields for a short code; empty when one cannot be issued.
 
     The code is a convenience: failing to issue one never blocks arming, and
     the full reply always remains accepted."""
     try:
-        issued = issue_code(root, route, artifact_id, full_reply, names=names, short_prefix=short_prefix)
+        issued = issue_code(root, route, artifact_id, full_reply, names=names,
+                            short_prefix=short_prefix, expires_at=expires_at)
     except (ReplyCodeError, OSError):
         return {}
     return {"code": issued["code"], "short_reply": issued["short_reply"]}

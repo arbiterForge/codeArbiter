@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.15.2] - 2026-10-04
+
+### Fixed
+
+- Keep prerequisite confirmations and reply codes valid for the same 24-hour
+  window, and show the deadline when requesting approval.
+- State the accepted reviewer finding severities so informational findings do
+  not accidentally invalidate a review.
+- Correct Pi approval guidance to describe the missing authority adapter.
+
 ## [0.15.1] - 2026-10-04
 
 ### Fixed

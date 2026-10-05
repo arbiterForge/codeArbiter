@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.2] - 2026-10-04
+
+### Fixed
+
+- Refresh the shared prerequisite deadline and reviewer finding contract.
+- Correct approval guidance: Pi has an input event, but still needs a native
+  authority adapter before these workflows can run on Pi.
+
 ## [0.16.1] - 2026-10-04
 
 ### Fixed
