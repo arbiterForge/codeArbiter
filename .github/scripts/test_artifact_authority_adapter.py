@@ -97,9 +97,18 @@ class FakeClient:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(raw)
-            return {"context_ref": relative.as_posix(), "context_sha256": digest,
+            result = {"context_ref": relative.as_posix(), "context_sha256": digest,
                     "activity": self.context["activity"], "subject": self.context["subject"],
                     "input_sha256": self.context["input_sha256"]}
+            if "verification_command_bindings" in request:
+                # A fixed synthetic engine response; real normalization is
+                # exercised by ClaudeEndToEndTest with the native executable.
+                result["completion_workspace_after"] = [{
+                    "root": binding["workspace_root"], "filesystem_id": binding["workspace_filesystem_id"],
+                    "git_common_dir": binding["git_common_dir"], "git_common_filesystem_id": binding["git_common_filesystem_id"],
+                    "head": "fixture", "status_sha256": "7" * 64, "content_sha256": "8" * 64,
+                } for binding in request["verification_command_bindings"]]
+            return result
         if operation == "capture-observation":
             return {"receipt": self.receipt, "receipt_sha256": "9" * 64}
         raise AssertionError(operation)
@@ -421,7 +430,8 @@ class AuthorityAdapterTest(unittest.TestCase):
             "payload_sha256", "producer_profile", "producer_run_id",
             "producer_result", "producer_result_sha256",
         })
-        self.assertEqual(observation["producer_profile"], "declared-command/0.2.0")
+        self.assertEqual(observation["producer_profile"], "declared-command/0.3.0")
+        self.assertTrue(observation["producer_result"]["completion_workspace_after"])
         canonical_result = json.dumps(
             observation["producer_result"], ensure_ascii=True, allow_nan=False,
             sort_keys=True, separators=(",", ":"),
@@ -3763,6 +3773,9 @@ class ClaudeEndToEndTest(unittest.TestCase):
 
     def test_completion_native_hook_allows_canonical_bookkeeping_and_rejects_source_drift(self):
         """Actual native validation; host hook events remain labeled synthetic fixtures."""
+        # Native publication must remain fresh even when its complete evidence
+        # history is visible to Git, as it is in real governed workspaces.
+        (self.root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
         bridge = self.host.load_bridge(self.plugin)
         workflow = self.host.Workflow(bridge, self.root, self.installation, "completion", "claude", self.plugin)
         client = workflow.client

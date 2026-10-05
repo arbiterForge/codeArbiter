@@ -287,9 +287,11 @@ options. Local executables shadowing nested npm are rejected.
 Direct Node script entrypoints are also pinned. These launch-file bindings do
 not establish transitive dependency closure for deliberately excluded inputs.
 
-New observations use the closed `declared-command/0.2.0` producer profile to
-retain collector and launch-file identities. Historical `0.1.0` bindings remain
-separate and cannot be relabelled as qualified launch evidence.
+New observations use the closed `declared-command/0.3.0` producer profile to
+retain collector and launch-file identities plus an engine-produced normalized
+completion closure. Raw workspace fingerprints must still match before and
+after command execution. Historical `0.1.0` and `0.2.0` bindings retain their
+original contracts and cannot be relabelled as newer evidence.
 
 For `spec_review` or `quality_review`, arm the corresponding activity without
 workspace mappings and dispatch the returned `launch_envelope` unchanged to one
@@ -332,10 +334,13 @@ acceptance. Scope review uses validated task completion bindings. If verificatio
 is rerun, obtain and record its completed task review before selecting that run
 for scope review; do not infer equivalence between receipts.
 
-Creating the first completion context recomputes the current raw worktree
-fingerprint and requires it to match the selected verifier's recorded fingerprint.
-Later freshness checks allow native task-status and execution bookkeeping updates
-in validated canonical artifacts while retaining their normative content hashes.
+Creating a completion context for a `0.3.0` verification recomputes the normalized
+worktree closure bound during that verification. Only validated native outputs
+and execution bookkeeping are normalized; their publication must not invalidate
+unchanged source. Historical `0.2.0` verification retains its initial exact raw
+fingerprint comparison. Later freshness checks allow native task-status and
+execution bookkeeping updates in validated canonical artifacts while retaining
+their normative content hashes.
 Changes to task definitions, other HTML or other governance files still affect
 freshness under the normal snapshot policy. The closure covers
 tracked working-tree bytes and non-ignored untracked files, not ignored

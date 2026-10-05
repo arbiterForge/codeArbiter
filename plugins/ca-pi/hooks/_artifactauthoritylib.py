@@ -2382,6 +2382,24 @@ def run_verification(
         request["context"], request["context_ref"], request["context_sha256"],
     ):
         raise AuthorityError("WORKSPACE_DRIFT", "repository content changed after arm")
+    def normalized_workspace():
+        result = client.call("evidence-context", {
+            "artifact_id": request["context"]["subject"]["artifact_id"],
+            "record_id": request["context"]["subject"]["record_id"],
+            "activity": "verification",
+            "verification_command_bindings": request["command_bindings"],
+        })
+        if (not isinstance(result, dict)
+                or result.get("context_ref") != request["context_ref"]
+                or result.get("context_sha256") != request["context_sha256"]
+                or not isinstance(result.get("completion_workspace_after"), list)
+                or not result["completion_workspace_after"]):
+            raise AuthorityError("WORKSPACE_DRIFT", "engine completion closure is absent or changed context")
+        return result["completion_workspace_after"]
+
+    # The engine alone normalizes validated native bookkeeping. Raw snapshots
+    # still freeze every byte across the actual command execution interval.
+    completion_workspace_before = normalized_workspace()
     workspace_before = _workspace_snapshots(request["command_bindings"])
     if workspace_before != wrapper.get("workspace_before"):
         raise AuthorityError("WORKSPACE_DRIFT", "workspace changed after wrapper authorization")
@@ -2416,6 +2434,9 @@ def run_verification(
     workspace_after = _workspace_snapshots(request["command_bindings"])
     if workspace_after != workspace_before:
         raise AuthorityError("WORKSPACE_DRIFT", "verification changed the frozen workspace")
+    completion_workspace_after = normalized_workspace()
+    if completion_workspace_after != completion_workspace_before:
+        raise AuthorityError("WORKSPACE_DRIFT", "verification changed the normalized completion workspace")
     final_context, final_ref, final_hash = _context(
         root, client, request["context"]["subject"]["artifact_id"],
         request["context"]["subject"]["record_id"], "verification",
@@ -2429,6 +2450,7 @@ def run_verification(
         "command_bindings": request["command_bindings"],
         "workspace_before": workspace_before,
         "workspace_after": workspace_after,
+        "completion_workspace_after": completion_workspace_after,
         "commands": commands,
     }
     payload = {
@@ -2438,7 +2460,7 @@ def run_verification(
         "commands": commands,
     }
     observation = _closed_observation(
-        request, payload, "declared-command/0.2.0", request["attempt"],
+        request, payload, "declared-command/0.3.0", request["attempt"],
         producer_result,
     )
     _observation(root, request, observation)
