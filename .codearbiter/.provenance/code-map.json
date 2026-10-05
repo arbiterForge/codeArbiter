@@ -35,7 +35,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "ab4ed6852b736b882229451e434f7aa9666f0aab",
+      "hash": "3b100523fb773d1bac374c52ca331936f0c37bf6",
       "path": "core/hosts.json"
     },
     {
@@ -161,13 +161,13 @@
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.16.4, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.16.5, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "8a78024042424685d218f533b574edc6b9c4022d",
+      "hash": "72ed460857ac01541a95d6a7e2b0fdbd4c74ddd5",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "f5dea823fe3d55282e4af3116cafc79180c4820d",
+      "hash": "5e05e66c11b8bb272fae0792f93ea928e5363b06",
       "path": ".github/workflows/ci.yml"
     },
     {

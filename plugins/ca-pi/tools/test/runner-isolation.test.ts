@@ -138,18 +138,18 @@ async function materializedRequest(task = "task-secret-sentinel") {
   await mkdir(request.cwd, { recursive: true });
   await mkdir(dirname(request.piCliPath), { recursive: true });
   await writeFile(request.piCliPath, "// Task 6 Pi CLI fixture\n", "utf8");
-  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"1.0.0","bin":{"pi":"dist/cli.js"}}\n', "utf8");
+  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"1.0.2","bin":{"pi":"dist/cli.js"}}\n', "utf8");
   runnerMocks.resolveRuntimeIdentity.mockImplementation(async (candidate: string) => ({
     cliEntry: candidate,
     packageRoot: resolve(dirname(candidate), ".."),
-    version: "1.0.0",
+    version: "1.0.2",
   }));
   testValidation.set(request, {
     activeNodePath: process.execPath,
     packageRoot,
     resolveRuntimeIdentity: async (candidate: string) => {
       if (candidate !== request.piCliPath) throw new Error("counterfeit Pi CLI");
-      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "1.0.0" };
+      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "1.0.2" };
     },
   });
   return request;
@@ -1194,7 +1194,7 @@ describe("Task 6 exact Pi child launch", () => {
     const request = await materializedRequest();
     runnerMocks.resolveRuntimeIdentity.mockImplementationOnce(async (candidate: string) => {
       controller.abort();
-      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "1.0.0" };
+      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "1.0.2" };
     });
     expect(await runPiChild(request as never, controller.signal)).toEqual({
       terminal: "degraded",

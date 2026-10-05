@@ -105,6 +105,143 @@ def terminate_process_tree(process: subprocess.Popen[str]) -> None:
     process.wait(timeout=5)
 
 
+def write_rpc_shutdown_observer(home: Path) -> tuple[Path, Path, Path]:
+    """Observe EOF, a shutdown hook, and exit without driving them."""
+    preload = home / "ca-rpc-shutdown-observer.cjs"
+    extension = home / "ca-rpc-shutdown-observer.ts"
+    trace = home / "ca-rpc-shutdown-trace.json"
+    preload.write_text(
+        "const { writeFileSync } = require('node:fs');\n"
+        f"const tracePath = {json.dumps(str(trace))};\n"
+        "const started = performance.now();\n"
+        "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: []};\n"
+        "function observe(phase, exitCode) {\n"
+        "  if (report.phases.length >= 8) return;\n"
+        "  report.phases.push({phase, elapsedMs: Math.round(performance.now() - started),\n"
+        "    stdinEnded: process.stdin.readableEnded,\n"
+        "    resources: process.getActiveResourcesInfo().slice(0, 16).map(value => value.slice(0, 24)),\n"
+        "    ...(phase === 'process_exit' ? {exitCode} : {})});\n"
+        "  try { writeFileSync(tracePath, JSON.stringify(report), {encoding: 'utf8', mode: 0o600}); }\n"
+        "  catch { /* Diagnostics must not change the host's shutdown outcome. */ }\n"
+        "}\n"
+        "globalThis.__caPiRpcShutdownObserve = observe;\n"
+        "process.stdin.prependOnceListener('end', () => observe('stdin_end'));\n"
+        "process.once('exit', code => observe('process_exit', code));\n"
+        "observe('started');\n",
+        encoding="utf-8", newline="\n",
+    )
+    extension.write_text(
+        "export default function observeShutdown(pi: any) {\n"
+        "  pi.on('session_shutdown', () => {\n"
+        "    (globalThis as any).__caPiRpcShutdownObserve?.('session_shutdown_observer');\n"
+        "  });\n"
+        "}\n",
+        encoding="utf-8", newline="\n",
+    )
+    return preload, extension, trace
+
+
+RPC_SHUTDOWN_PHASE_SECONDS = 10
+RPC_PROCESS_EXIT_SECONDS = 30
+
+
+def rpc_shutdown_phase_complete(trace: Path, pid: int) -> bool:
+    """Accept only this process's ordered, bounded, successful exit-entry trace."""
+    try:
+        with trace.open("rb") as stream:
+            data = stream.read(8193)
+        if len(data) > 8192:
+            return False
+        report = json.loads(data.decode("utf-8", "strict"))
+        if (
+            not isinstance(report, dict)
+            or type(report.get("schemaVersion")) is not int
+            or report["schemaVersion"] != 1
+        ):
+            return False
+        if type(report.get("pid")) is not int or report["pid"] != pid:
+            return False
+        rows = report.get("phases")
+        expected = ["started", "stdin_end", "session_shutdown_observer", "process_exit"]
+        if not isinstance(rows, list) or len(rows) != len(expected):
+            return False
+        elapsed = []
+        for index, (row, phase) in enumerate(zip(rows, expected)):
+            if not isinstance(row, dict) or row.get("phase") != phase:
+                return False
+            value = row.get("elapsedMs")
+            if type(value) is not int or value < 0:
+                return False
+            if row.get("stdinEnded") is not (index > 0):
+                return False
+            elapsed.append(value)
+        return (
+            elapsed == sorted(elapsed)
+            and elapsed[-1] - elapsed[1] <= RPC_SHUTDOWN_PHASE_SECONDS * 1000
+            and type(rows[-1].get("exitCode")) is int
+            and rows[-1]["exitCode"] == 0
+        )
+    except (OSError, ValueError, UnicodeError, RecursionError):
+        # A concurrent best-effort write may be incomplete. The deadline and
+        # final process-exit check still reject a missing or malformed trace.
+        return False
+
+
+def wait_for_rpc_shutdown(
+    process: subprocess.Popen[str], trace: Path, *, observed: bool,
+) -> int:
+    """Bound EOF-to-JS exit entry separately from natural process exit.
+
+    Node persists its enabled compile cache synchronously after exit entry.
+    Original raw CLI cases prove natural exit; additional observed cases also
+    prove orderly runtime disposal reaches exit entry within the shorter bound.
+    Both bounds start at EOF, so observing phases never adds thirty more seconds.
+    """
+    started = time.monotonic()
+    if observed:
+        while True:
+            remaining = RPC_SHUTDOWN_PHASE_SECONDS - (time.monotonic() - started)
+            if remaining <= 0:
+                break
+            if rpc_shutdown_phase_complete(trace, process.pid):
+                break
+            if process.poll() is not None:
+                break
+            try:
+                process.wait(timeout=min(0.05, remaining))
+            except subprocess.TimeoutExpired:
+                pass
+        if (
+            time.monotonic() - started >= RPC_SHUTDOWN_PHASE_SECONDS
+            or not rpc_shutdown_phase_complete(trace, process.pid)
+        ):
+            raise AssertionError(
+                "Pi RPC orderly shutdown did not complete within 10 seconds of stdin EOF; "
+                f"shutdown trace={rpc_shutdown_diagnostics(trace)}"
+            )
+    remaining = RPC_PROCESS_EXIT_SECONDS - (time.monotonic() - started)
+    if remaining <= 0:
+        raise subprocess.TimeoutExpired(process.args, RPC_PROCESS_EXIT_SECONDS)
+    return process.wait(timeout=remaining)
+
+
+def rpc_shutdown_diagnostics(trace: Path) -> str:
+    try:
+        with trace.open("rb") as stream:
+            data = stream.read(8193)
+    except OSError:
+        return "unavailable"
+    try:
+        if len(data) > 8192:
+            raise ValueError("oversized trace")
+        report = json.loads(data.decode("utf-8", "strict"))
+        if not isinstance(report, dict):
+            raise ValueError("non-object trace")
+    except (ValueError, UnicodeError, RecursionError):
+        return "invalid or oversized trace"
+    return json.dumps(report, separators=(",", ":"))[:2000]
+
+
 def run_rpc_commands(
     cwd: Path,
     agent_dir: Path,
@@ -123,6 +260,7 @@ def run_rpc_commands(
     _rpc_command: list[str] | None = None,
     _on_process_started: Callable[[subprocess.Popen[str], threading.Thread], None] | None = None,
     _after_install: Callable[[], None] | None = None,
+    _observe_shutdown: bool = False,
 ) -> list[dict]:
     node, cli = live_pi_cli()
     temp_dir = home / "temp"
@@ -468,6 +606,7 @@ export default function registerCaptureProvider(pi: any) {
             newline="\n",
         )
 
+    shutdown_trace = home / "ca-rpc-shutdown-trace.json"
     command = [
         node,
         str(cli),
@@ -479,6 +618,10 @@ export default function registerCaptureProvider(pi: any) {
         "--no-themes",
         "--no-context-files",
     ]
+    if _observe_shutdown:
+        preload, shutdown_observer, shutdown_trace = write_rpc_shutdown_observer(home)
+        command[1:1] = ["--require", str(preload)]
+        command.extend(["--extension", str(shutdown_observer)])
     if not (invoke_doctor or invoke_enforcement_fault or invoke_read_context):
         command.append("--no-builtin-tools")
     if invoke_alias or invoke_doctor or invoke_enforcement_fault or invoke_read_context:
@@ -620,11 +763,12 @@ export default function registerCaptureProvider(pi: any) {
 
         process.stdin.close()
         try:
-            returncode = process.wait(timeout=10)
+            returncode = wait_for_rpc_shutdown(process, shutdown_trace, observed=_observe_shutdown)
         except subprocess.TimeoutExpired as error:
             raise AssertionError(
-                f"Pi RPC did not exit after stdin EOF; received {len(records)} records; "
-                f"stderr tail={stderr_tail!r}"
+                f"Pi RPC did not exit within 30 seconds of stdin EOF; received {len(records)} records; "
+                f"stderr tail={stderr_tail!r}; "
+                f"shutdown trace={rpc_shutdown_diagnostics(shutdown_trace)}"
             ) from error
         reader.join(timeout=5)
         if reader.is_alive():
@@ -880,7 +1024,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["1.0.0"]',
+        'pi-version: ["1.0.2"]',
         "pi_host_locks.py install --version ${{ matrix.pi-version }}",
         "npm ci --ignore-scripts",
     ):
@@ -1011,7 +1155,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 class PiPackageTests(unittest.TestCase):
     def test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin(self) -> None:
-        # Pi 1.0.0 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
+        # Pi 1.0.2 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
         for label, declared, expected in (
             ("string-bin", "dist/bundle/cli.js", "dist/bundle/cli.js"),
             ("map-bin", {"pi": "dist/bundle/cli.js"}, "dist/bundle/cli.js"),
@@ -1292,7 +1436,7 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["1.0.0"]',
+            'pi-version: ["1.0.2"]',
             "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
@@ -1699,7 +1843,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 1.0.0 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 1.0.2 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,
@@ -2198,6 +2342,297 @@ class PiPackageTests(unittest.TestCase):
                             stream.close()
                 if reader is not None:
                     reader.join(timeout=2)
+
+    def test_real_rpc_shutdown_probe_uses_the_same_untrusted_fixture(self):
+        # The original compatibility case above remains uninstrumented. This
+        # additional case observes the same fixture without turning a passing
+        # diagnostic rerun into a substitute for its original result.
+        real_run = run_rpc_commands
+        with mock.patch.object(
+            sys.modules[__name__], "run_rpc_commands",
+            side_effect=lambda *args, **kwargs: real_run(*args, **kwargs, _observe_shutdown=True),
+        ):
+            self.test_real_rpc_enabled_untrusted_global_session_stays_before_repository_boundary()
+
+    def test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture(self):
+        real_run = run_rpc_commands
+        with mock.patch.object(
+            sys.modules[__name__], "run_rpc_commands",
+            side_effect=lambda *args, **kwargs: real_run(*args, **kwargs, _observe_shutdown=True),
+        ):
+            self.test_real_isolated_rpc_command_discovery_and_keyed_status()
+
+    @staticmethod
+    def _shutdown_report(pid=731, exit_ms=2000):
+        phases = ["started", "stdin_end", "session_shutdown_observer", "process_exit"]
+        rows = [
+            {"phase": phase, "elapsedMs": elapsed, "stdinEnded": index > 0}
+            for index, (phase, elapsed) in enumerate(zip(phases, [0, 100, 101, exit_ms]))
+        ]
+        rows[-1]["exitCode"] = 0
+        return {"schemaVersion": 1, "pid": pid, "phases": rows}
+
+    def test_rpc_shutdown_phase_requires_exact_order_identity_and_success(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-phase-") as directory:
+            trace = Path(directory) / "trace.json"
+            good = self._shutdown_report()
+            trace.write_text(json.dumps(good), encoding="utf-8")
+            self.assertTrue(rpc_shutdown_phase_complete(trace, 731))
+            bad = []
+            for field, value in (("pid", 732), ("pid", True), ("schemaVersion", True),
+                                 ("schemaVersion", 2), ("phases", None)):
+                candidate = copy.deepcopy(good)
+                candidate[field] = value
+                bad.append(candidate)
+            for index in range(4):
+                candidate = copy.deepcopy(good)
+                candidate["phases"].pop(index)
+                bad.append(candidate)
+            for index, field, value in (
+                (0, "phase", "process_exit"), (1, "stdinEnded", False),
+                (2, "elapsedMs", 99), (2, "elapsedMs", -1),
+                (2, "elapsedMs", True), (3, "exitCode", 1),
+                (3, "exitCode", True), (3, "elapsedMs", 10_101),
+            ):
+                candidate = copy.deepcopy(good)
+                candidate["phases"][index][field] = value
+                bad.append(candidate)
+            bad.extend([None, [], {"phases": "x" * 9000}])
+            for candidate in bad:
+                with self.subTest(candidate=candidate):
+                    trace.write_text(json.dumps(candidate), encoding="utf-8")
+                    self.assertFalse(rpc_shutdown_phase_complete(trace, 731))
+            trace.write_bytes(b"\xff")
+            self.assertFalse(rpc_shutdown_phase_complete(trace, 731))
+            valid_bytes = json.dumps(good).encode("utf-8")
+            trace.write_bytes(valid_bytes + b" " * (8192 - len(valid_bytes)))
+            self.assertTrue(rpc_shutdown_phase_complete(trace, 731))
+            trace.write_bytes(valid_bytes + b" " * (8193 - len(valid_bytes)))
+            self.assertFalse(rpc_shutdown_phase_complete(trace, 731))
+            for malformed in (b"{not-json}", b"[" * 2000 + b"]" * 2000):
+                trace.write_bytes(malformed)
+                self.assertFalse(rpc_shutdown_phase_complete(trace, 731))
+            trace.write_bytes(valid_bytes)
+            with mock.patch.object(json, "loads", side_effect=RecursionError("test-owned decoder failure")):
+                self.assertFalse(rpc_shutdown_phase_complete(trace, 731))
+
+    def _exercise_shutdown_clock(self, *, observed, phase_at, exit_at, phase_report=None):
+        """Drive subprocess wait/trace timing without lengthening real regressions."""
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-budget-") as directory:
+            trace = Path(directory) / "trace.json"
+            clock = [0.0]
+            waits = []
+            process = mock.Mock(pid=731, args=["test-owned-process"])
+            process.poll.side_effect = lambda: 0 if clock[0] >= exit_at else None
+
+            def wait(timeout):
+                waits.append(timeout)
+                clock[0] = min(clock[0] + timeout, exit_at)
+                if phase_at is not None and clock[0] >= phase_at:
+                    trace.write_text(json.dumps(phase_report or self._shutdown_report()), encoding="utf-8")
+                if clock[0] >= exit_at:
+                    return 0
+                raise subprocess.TimeoutExpired(process.args, timeout)
+
+            process.wait.side_effect = wait
+            with mock.patch.object(time, "monotonic", side_effect=lambda: clock[0]):
+                try:
+                    result = wait_for_rpc_shutdown(process, trace, observed=observed)
+                except (AssertionError, subprocess.TimeoutExpired) as error:
+                    return error, clock[0], waits
+            return result, clock[0], waits
+
+    def test_rpc_shutdown_budget_allows_cold_persistence_without_adding_another_thirty_seconds(self):
+        result, elapsed, waits = self._exercise_shutdown_clock(
+            observed=True, phase_at=2, exit_at=21.64,
+        )
+        self.assertEqual(result, 0)
+        self.assertEqual(elapsed, 21.64)
+        self.assertAlmostEqual(waits[-1], 28)
+
+    def test_rpc_shutdown_budget_rejects_missing_late_and_unsuccessful_phase(self):
+        wrong_exit = self._shutdown_report()
+        wrong_exit["phases"][-1]["exitCode"] = 1
+        for phase_at, exit_at, report in (
+            (None, 1, None), (None, 100, None), (11, 22, None), (1, 2, wrong_exit),
+        ):
+            with self.subTest(phase_at=phase_at, exit_at=exit_at):
+                result, elapsed, _ = self._exercise_shutdown_clock(
+                    observed=True, phase_at=phase_at, exit_at=exit_at, phase_report=report,
+                )
+                self.assertIsInstance(result, AssertionError)
+                self.assertLessEqual(elapsed, 10.001)
+
+    def test_rpc_shutdown_budget_bounds_raw_and_post_exit_entry_hangs(self):
+        for observed, phase_at in ((False, None), (True, 2)):
+            with self.subTest(observed=observed):
+                result, elapsed, _ = self._exercise_shutdown_clock(
+                    observed=observed, phase_at=phase_at, exit_at=100,
+                )
+                self.assertIsInstance(result, subprocess.TimeoutExpired)
+                self.assertAlmostEqual(elapsed, 30)
+
+    def test_rpc_shutdown_observer_records_eof_and_exit_without_stdout_changes(self):
+        node, _ = live_pi_cli()
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observer-") as directory:
+            root = Path(directory)
+            preload, _, trace = write_rpc_shutdown_observer(root)
+            result = subprocess.run(
+                [node, "--require", str(preload), "-e",
+                 "process.stdin.resume(); process.stdin.on('end', () => process.exit(0));"],
+                input="", text=True, capture_output=True, timeout=10, check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, "")
+            self.assertEqual(result.stderr, "")
+            report = read_json(trace)
+            self.assertEqual([row["phase"] for row in report["phases"]],
+                             ["started", "stdin_end", "process_exit"])
+            self.assertIn('"stdin_end"', rpc_shutdown_diagnostics(trace))
+            self.assertIn('"process_exit"', rpc_shutdown_diagnostics(trace))
+            self.assertEqual(report["phases"][-1]["exitCode"], 0)
+
+    def test_rpc_shutdown_observer_does_not_force_exit_on_eof(self):
+        node, _ = live_pi_cli()
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observer-passive-") as directory:
+            preload, _, _ = write_rpc_shutdown_observer(Path(directory))
+            result = subprocess.run(
+                [node, "--require", str(preload), "-e",
+                 "process.stdin.resume(); process.stdin.on('end', () => {"
+                 "setTimeout(() => process.stdout.write('still-running'), 100);"
+                 "setTimeout(() => process.exit(0), 200); });"],
+                input="", text=True, capture_output=True, timeout=10, check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, "still-running")
+            self.assertEqual(result.stderr, "")
+
+    def test_rpc_shutdown_diagnostics_are_bounded_and_tolerate_missing_or_invalid_trace(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observer-") as directory:
+            trace = Path(directory) / "trace.json"
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable")
+            trace.write_bytes(b"{" + b"x" * 20_000)
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            trace.write_text(json.dumps({"large": "x" * 9000}), encoding="utf-8")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            trace.write_bytes(b"{}" + b" " * 9000)
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            trace.write_bytes(b"{}" + b" " * 8190)
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "{}")
+            trace.write_bytes(b"{not-json}")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            trace.write_bytes(b"\xff")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            trace.write_bytes(b"[]")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            trace.write_bytes(b"[" * 2000 + b"]" * 2000)
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            trace.write_text(json.dumps({"phases": [{"phase": "stdin_end"}]}), encoding="utf-8")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), '{"phases":[{"phase":"stdin_end"}]}')
+            trace.write_text(json.dumps({"large": "x" * 3000}), encoding="utf-8")
+            self.assertLessEqual(len(rpc_shutdown_diagnostics(trace)), 2000)
+
+    def test_rpc_shutdown_observer_never_turns_an_eof_hang_into_a_pass(self):
+        node, _ = live_pi_cli()
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observer-hang-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            home = root / "home"
+            cwd.mkdir()
+            home.mkdir()
+            preload, _, trace = write_rpc_shutdown_observer(home)
+            observed = []
+            child_code = (
+                "process.stdin.once('data', () => process.stdout.write("
+                "JSON.stringify({id:'commands',success:true,data:{commands:[]}})+'\\n'));"
+                "process.stdin.on('end', () => setInterval(() => {}, 1000));"
+            )
+            with self.assertRaisesRegex(AssertionError, "orderly shutdown did not complete") as raised:
+                run_rpc_commands(
+                    cwd, root / "agent", home,
+                    _rpc_command=[node, "--require", str(preload), "-e", child_code],
+                    _on_process_started=lambda process, reader: observed.append((process, reader)),
+                    _observe_shutdown=True,
+                )
+            self.assertIn('"stdin_end"', str(raised.exception))
+            self.assertNotIn('"process_exit"', str(raised.exception))
+            self.assertEqual(len(observed), 1)
+            process, reader = observed[0]
+            self.assertIsNotNone(process.poll(), "the failing RPC root must be reaped")
+            self.assertFalse(reader.is_alive(), "the failing RPC stdout reader must stop")
+            self.assertIn('"stdin_end"', rpc_shutdown_diagnostics(trace))
+
+    def test_rpc_post_exit_entry_hang_reaps_process_tree_and_readers(self):
+        node, _ = live_pi_cli()
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-exit-hang-") as directory:
+            root = Path(directory)
+            cwd, home = root / "cwd", root / "home"
+            cwd.mkdir()
+            home.mkdir()
+            preload, _, trace = write_rpc_shutdown_observer(home)
+            child_marker = root / "child-pid.txt"
+            observed = []
+            code = (
+                "const {spawn}=require('node:child_process');"
+                "const {writeFileSync}=require('node:fs');"
+                "const child=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],"
+                "{stdio:['ignore',1,2]});"
+                f"writeFileSync({json.dumps(str(child_marker))},String(child.pid));"
+                "process.stdin.once('data',()=>process.stdout.write("
+                "JSON.stringify({id:'commands',success:true,data:{commands:[]}})+'\\n'));"
+                "process.stdin.on('end',()=>{"
+                "globalThis.__caPiRpcShutdownObserve('session_shutdown_observer');process.exit(0);});"
+                "process.on('exit',()=>Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0));"
+            )
+            with self.assertRaisesRegex(AssertionError, "did not exit within 30 seconds"):
+                run_rpc_commands(
+                    cwd, root / "agent", home,
+                    _rpc_command=[node, "--require", str(preload), "-e", code],
+                    _on_process_started=lambda process, reader: observed.append((process, reader)),
+                    _observe_shutdown=True,
+                )
+            self.assertEqual(len(observed), 1)
+            process, reader = observed[0]
+            self.assertTrue(rpc_shutdown_phase_complete(trace, process.pid))
+            self.assertIsNotNone(process.poll(), "post-exit-entry hang must reap the RPC root")
+            self.assertFalse(reader.is_alive(), "descendant-held stdout must close after cleanup")
+            child_pid = int(child_marker.read_text(encoding="utf-8"))
+            if os.name == "nt":
+                result = subprocess.run(
+                    ["tasklist", "/FI", f"PID eq {child_pid}", "/FO", "CSV", "/NH"],
+                    text=True, encoding="utf-8", errors="replace", capture_output=True,
+                    timeout=5, check=False,
+                )
+                self.assertNotIn(f',"{child_pid}",', result.stdout)
+            else:
+                deadline = time.monotonic() + 3
+                while time.monotonic() < deadline:
+                    try:
+                        os.kill(child_pid, 0)
+                    except ProcessLookupError:
+                        break
+                    time.sleep(0.02)
+                else:
+                    self.fail("post-exit-entry hang left a descendant alive")
+
+    def test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-raw-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            cwd.mkdir()
+            observed = []
+            with mock.patch.object(
+                sys.modules[__name__], "write_rpc_shutdown_observer",
+                side_effect=AssertionError("raw compatibility path must not inject an observer"),
+            ):
+                records = run_rpc_commands(
+                    cwd, root / "agent", root / "home",
+                    _on_process_started=lambda process, reader: observed.append(process.args),
+                )
+            self.assertTrue(records[0]["success"])
+            self.assertEqual(len(observed), 1)
+            self.assertNotIn("--require", observed[0])
+            self.assertFalse(any("ca-rpc-shutdown-observer" in argument for argument in observed[0]))
 
     def test_rpc_stderr_backpressure_does_not_block_shutdown(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-stderr-") as directory:
@@ -3378,8 +3813,41 @@ class NpmPublishContractTest(unittest.TestCase):
                     observed, tag, source, expected_object=expected
                 )
 
+PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc", "shutdown", "publish")
+
+
+def platform_package_suites():
+    """Partition the full discovered suite without dropping or repeating cases."""
+    suites = {name: unittest.TestSuite() for name in PLATFORM_PACKAGE_PARTITIONS}
+
+    def cases(suite):
+        for test in suite:
+            if isinstance(test, unittest.TestSuite):
+                yield from cases(test)
+            else:
+                yield test
+
+    for case in cases(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])):
+        if isinstance(case, NpmPublishContractTest):
+            partition = "publish"
+        elif "shutdown" in case._testMethodName or "post_exit_entry" in case._testMethodName:
+            partition = "shutdown"
+        elif "rpc" in case._testMethodName:
+            partition = "rpc"
+        else:
+            partition = "package"
+        suites[partition].addTest(case)
+    return suites
+
+
 if __name__ == "__main__":
-    if "--rpc-commands" in sys.argv:
+    if "--platform-partition" in sys.argv:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--platform-partition", choices=PLATFORM_PACKAGE_PARTITIONS, required=True)
+        args = parser.parse_args()
+        result = unittest.TextTestRunner(verbosity=2).run(platform_package_suites()[args.platform_partition])
+        raise SystemExit(0 if result.wasSuccessful() else 1)
+    elif "--rpc-commands" in sys.argv:
         sys.argv = [
             sys.argv[0],
             "PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status",

@@ -2,6 +2,9 @@
 """Task 11 cross-platform contract runner and its deterministic fixtures."""
 
 import argparse
+import ast
+import collections
+import importlib.util
 import io
 import json
 import os
@@ -16,7 +19,7 @@ from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SUPPORTED = ("1.0.0",)
+SUPPORTED = ("1.0.2",)
 PLATFORM_COMMAND_TIMEOUT_SECONDS = 180
 PI_TOOLS_VITEST_LAUNCHER = (
     ROOT / "plugins" / "ca-pi" / "tools" / "node_modules" / ".bin" /
@@ -30,7 +33,7 @@ def version_policy(version):
         return {"version": version, "blocking": True}
     if version == "latest":
         return {"version": version, "blocking": False}
-    raise ValueError("Pi version must be 1.0.0 or latest")
+    raise ValueError("Pi version must be 1.0.2 or latest")
 
 
 def fixture_commands(fixtures_only):
@@ -38,7 +41,10 @@ def fixture_commands(fixtures_only):
     npm = str(resolve_executable("npm"))
     commands = [
         [python, ".github/scripts/test_host_descriptors.py"],
-        [python, ".github/scripts/test_pi_package.py"],
+        # Preserve every package case while keeping costly real shutdown proofs
+        # in bounded commands. Each partition retains the same 180-second cap.
+        *[[python, ".github/scripts/test_pi_package.py", "--platform-partition", partition]
+          for partition in ("package", "rpc", "shutdown", "publish")],
         # The real-host package fixture owns a Git daemon, temp repository, and
         # external Pi loader. Give it a fresh Vitest process so the platform
         # rerun cannot inherit state from the process-tree fixture files.
@@ -94,6 +100,110 @@ def resolve_executable(name):
 
 
 class PlatformContractFixtures(unittest.TestCase):
+    def test_package_partitions_cover_the_full_discovered_suite_exactly_once(self):
+        name = "platform_partition_package_tests"
+        spec = importlib.util.spec_from_file_location(name, ROOT / ".github/scripts/test_pi_package.py")
+        module = importlib.util.module_from_spec(spec)
+        with mock.patch.dict(sys.modules, {name: module}):
+            spec.loader.exec_module(module)
+
+            def case_ids(suite):
+                for test in suite:
+                    if isinstance(test, unittest.TestSuite):
+                        yield from case_ids(test)
+                    else:
+                        yield test.id()
+
+            full = collections.Counter(case_ids(unittest.defaultTestLoader.loadTestsFromModule(module)))
+            suites = module.platform_package_suites()
+            partition_ids = {key: list(case_ids(suite)) for key, suite in suites.items()}
+            planned = [command[-1] for command in fixture_commands(True)
+                       if len(command) == 4 and command[2] == "--platform-partition"]
+            self.assertEqual(planned, list(module.PLATFORM_PACKAGE_PARTITIONS))
+            self.assertEqual(len(planned), len(set(planned)))
+            actual = collections.Counter(case for partition in planned for case in partition_ids[partition])
+            self.assertEqual(actual, full)
+            self.assertTrue(full)
+            self.assertTrue(all(count == 1 for count in actual.values()))
+            self.assertTrue(all(partition_ids.values()))
+            for partition, methods in {
+                "rpc": ("test_real_isolated_rpc_command_discovery_and_keyed_status",
+                        "test_real_rpc_enabled_untrusted_global_session_stays_before_repository_boundary"),
+                "shutdown": ("test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture",
+                             "test_rpc_shutdown_observer_never_turns_an_eof_hang_into_a_pass",
+                             "test_rpc_post_exit_entry_hang_reaps_process_tree_and_readers"),
+                "publish": ("test_npm_pack_contents_match_pi_payload",),
+            }.items():
+                for method in methods:
+                    self.assertTrue(any(case.endswith("." + method) for case in partition_ids[partition]), method)
+
+    def test_partition_failure_and_timeout_stop_the_aggregate_with_bounded_diagnostics(self):
+        commands = [[sys.executable, ".github/scripts/test_pi_package.py", "--platform-partition", "shutdown"],
+                    [sys.executable, "must-not-run.py"]]
+        for result in (
+            subprocess.CompletedProcess(commands[0], 1, "failure", "diagnostic"),
+            subprocess.TimeoutExpired(commands[0], 180, output=b"x" * 6000, stderr=b"\xfflast test diagnostic"),
+        ):
+            with (mock.patch.object(sys.modules[__name__], "fixture_commands", return_value=commands),
+                  mock.patch.object(sys.modules[__name__], "PI_TOOLS_VITEST_LAUNCHER",
+                                    mock.Mock(is_file=mock.Mock(return_value=True))),
+                  mock.patch.object(subprocess, "run", side_effect=[result] if isinstance(result, Exception) else None,
+                                    return_value=result) as run,
+                  mock.patch("sys.stdout", new_callable=io.StringIO) as output,
+                  mock.patch("sys.stderr", new_callable=io.StringIO) as errors):
+                self.assertEqual(run_contract(None, True), 1)
+                self.assertEqual(run.call_count, 1)
+                self.assertEqual(run.call_args.kwargs["timeout"], 180)
+                self.assertIs(run.call_args.kwargs["capture_output"], True)
+                self.assertEqual(run.call_args.kwargs["encoding"], "utf-8")
+                self.assertEqual(run.call_args.kwargs["errors"], "replace")
+                report = json.loads(output.getvalue())
+                self.assertEqual(report["command"], "test_pi_package.py[shutdown]")
+                self.assertEqual(report["result"], "timed_out" if isinstance(result, subprocess.TimeoutExpired) else "failed")
+                self.assertLessEqual(len(errors.getvalue()), 4000)
+                self.assertIn("diagnostic", errors.getvalue())
+                if isinstance(result, subprocess.TimeoutExpired):
+                    self.assertEqual(report["timeoutSeconds"], 180)
+                    self.assertIn("\ufffdlast test diagnostic", errors.getvalue())
+
+    def test_platform_aggregate_executes_each_required_command_once(self):
+        for fixtures_only in (True, False):
+            planned = fixture_commands(fixtures_only)
+            with (mock.patch.object(sys.modules[__name__], "PI_TOOLS_VITEST_LAUNCHER",
+                                    mock.Mock(is_file=mock.Mock(return_value=True))),
+                  mock.patch.object(subprocess, "run",
+                                    return_value=subprocess.CompletedProcess([], 0, "", "")) as run,
+                  mock.patch("sys.stdout", new_callable=io.StringIO) as output):
+                self.assertEqual(run_contract(None, fixtures_only), 0)
+                self.assertEqual([call.args[0] for call in run.call_args_list], planned)
+                self.assertTrue(all(call.kwargs["timeout"] == 180 for call in run.call_args_list))
+                rows = [json.loads(line) for line in output.getvalue().splitlines()]
+                self.assertEqual(len(rows), len(planned) + 1)
+                self.assertTrue(all(row["result"] == "passed" for row in rows))
+
+    def test_partition_cli_runs_the_requested_group_and_propagates_failure(self):
+        path = ROOT / ".github/scripts/test_pi_package.py"
+        name = "platform_partition_cli_tests"
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        entry = compile(ast.Module(body=[tree.body[-1]], type_ignores=[]), str(path), "exec")
+        with mock.patch.dict(sys.modules, {name: module, "__main__": module}):
+            spec.loader.exec_module(module)
+            for partition in module.PLATFORM_PACKAGE_PARTITIONS:
+                expected = [case.id() for case in module.platform_package_suites()[partition]]
+                for success in (True, False):
+                    with (mock.patch.object(module, "__name__", "__main__"),
+                          mock.patch.object(sys, "argv", [str(path), "--platform-partition", partition]),
+                          mock.patch.object(unittest, "TextTestRunner") as runner):
+                        runner.return_value.run.return_value.wasSuccessful.return_value = success
+                        with self.assertRaises(SystemExit) as raised:
+                            exec(entry, module.__dict__)
+                        self.assertEqual(raised.exception.code, 0 if success else 1)
+                        runner.return_value.run.assert_called_once()
+                        actual = [case.id() for case in runner.return_value.run.call_args.args[0]]
+                        self.assertEqual(actual, expected)
+
     def test_cold_aggregate_reports_missing_vitest_prerequisite_before_fixture_subprocesses(self):
         with tempfile.TemporaryDirectory() as raw_dir:
             missing_launcher = pathlib.Path(raw_dir) / PI_TOOLS_VITEST_LAUNCHER.name
@@ -132,11 +242,11 @@ class PlatformContractFixtures(unittest.TestCase):
         )
 
     def test_supported_versions_block_and_only_latest_is_nonblocking(self):
-        self.assertEqual(version_policy("1.0.0"), {"version": "1.0.0", "blocking": True})
-        with self.assertRaisesRegex(ValueError, "1.0.0 or latest"):
+        self.assertEqual(version_policy("1.0.2"), {"version": "1.0.2", "blocking": True})
+        with self.assertRaisesRegex(ValueError, "1.0.2 or latest"):
             version_policy("0.80.5")
         self.assertEqual(version_policy("latest"), {"version": "latest", "blocking": False})
-        with self.assertRaisesRegex(ValueError, "1.0.0 or latest"):
+        with self.assertRaisesRegex(ValueError, "1.0.2 or latest"):
             version_policy("0.81.0")
 
     def test_singleton_support_wording_has_no_retired_matrix_counts(self):
@@ -262,19 +372,35 @@ def run_contract(pi_version, fixtures_only):
     environment = os.environ.copy()
     environment.update({"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"})
     for index, command in enumerate(fixture_commands(fixtures_only), start=1):
-        completed = subprocess.run(
-            command, cwd=ROOT, env=environment, check=False, capture_output=True,
-            text=True, encoding="utf-8", errors="replace",
-            timeout=PLATFORM_COMMAND_TIMEOUT_SECONDS,
-        )
         label = pathlib.Path(command[1] if len(command) > 1 else command[0]).name
+        if len(command) == 4 and command[2] == "--platform-partition":
+            label += f"[{command[3]}]"
+
+        def diagnostic(stdout, stderr):
+            def text(value):
+                return value.decode("utf-8", "replace") if isinstance(value, bytes) else value or ""
+            return (text(stdout) + "\n" + text(stderr)).replace(str(ROOT), "<repo>")[-4000:]
+
+        try:
+            completed = subprocess.run(
+                command, cwd=ROOT, env=environment, check=False, capture_output=True,
+                text=True, encoding="utf-8", errors="replace",
+                timeout=PLATFORM_COMMAND_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired as exc:
+            print(json.dumps({
+                "piVersion": pi_version or "fixtures", "blocking": bool(policy and policy["blocking"]),
+                "result": "timed_out", "step": index, "command": label,
+                "timeoutSeconds": PLATFORM_COMMAND_TIMEOUT_SECONDS,
+            }))
+            sys.stderr.write(diagnostic(exc.output, exc.stderr))
+            return 1
         if completed.returncode != 0:
-            detail = (completed.stdout + "\n" + completed.stderr).replace(str(ROOT), "<repo>")[-4000:]
             print(json.dumps({
                 "piVersion": pi_version or "fixtures", "blocking": bool(policy and policy["blocking"]),
                 "result": "failed", "step": index, "command": label,
             }))
-            sys.stderr.write(detail)
+            sys.stderr.write(diagnostic(completed.stdout, completed.stderr))
             return completed.returncode or 1
         print(json.dumps({"step": index, "command": label, "result": "passed"}))
     print(json.dumps({
