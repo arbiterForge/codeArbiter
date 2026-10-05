@@ -61,6 +61,18 @@ class PiHostLocksTest(unittest.TestCase):
         unpublished = json.loads(json.dumps(source))
         unpublished["packages"][f"node_modules/{helper.PACKAGE}"].pop("integrity")
         self.assertEqual(helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, unpublished), captured)
+        for location, field, value in (
+            (None, "name", "wrong-install"), (None, "version", "1.0.1"),
+            (None, "lockfileVersion", 2), (None, "packages", None),
+            ("", "name", "wrong-install"), ("", "version", "1.0.1"),
+            ("", "dependencies", {helper.PACKAGE: "1.0.1"}),
+        ):
+            with self.subTest(location=location, field=field):
+                modified = json.loads(json.dumps(source))
+                target = modified if location is None else modified["packages"][location]
+                target[field] = value
+                with self.assertRaisesRegex(ValueError, "root identity"):
+                    helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, modified)
         for field, value in (("version", "1.0.1"), ("integrity", "sha512-other"), ("dependencies", {"unsafe": "file:../outside"}), ("hasShrinkwrap", True)):
             with self.subTest(field=field):
                 modified = json.loads(json.dumps(source))
@@ -76,6 +88,11 @@ class PiHostLocksTest(unittest.TestCase):
         with mock.patch.object(helper, "MAX_METADATA_PACKAGES", 2):
             with self.assertRaisesRegex(ValueError, "package count"):
                 helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, source)
+        deep = json.loads(json.dumps(source))
+        deep["packages"]["node_modules/parent/node_modules/child"] = deep["packages"].pop("node_modules/child")
+        with mock.patch.object(helper, "MAX_METADATA_DEPTH", 1):
+            with self.assertRaisesRegex(ValueError, "depth limit"):
+                helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, deep)
 
     def test_capture_without_shrinkwrap_remains_pending_and_checks_every_registry_identity(self):
         helper = load_helper()
@@ -127,6 +144,48 @@ class PiHostLocksTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "HTTP 302"):
                 helper._fetch_source_install_lock("a" * 40, float("inf"))
         self.assertEqual(connection.request.call_args.args[1], "/earendil-works/pi/" + "a" * 40 + "/packages/coding-agent/install-lock/package-lock.json")
+
+    def test_source_install_lock_fetch_rejects_expired_oversized_and_invalid_responses(self):
+        helper = load_helper()
+        with mock.patch.object(helper.time, "monotonic", return_value=2.0), \
+             mock.patch.object(helper.http.client, "HTTPSConnection") as connect:
+            with self.assertRaisesRegex(ValueError, "time budget"):
+                helper._fetch_source_install_lock("a" * 40, 1.0)
+            connect.assert_not_called()
+        for label, payload, declared, message in (
+            ("valid", b"{}", "2", None),
+            ("declared-oversized", b"{}", "17", "output limit"),
+            ("streamed-oversized", b"{\"long\":\"" + b"x" * 20 + b"\"}", None, "output limit"),
+            ("not-object", b"[]", None, "not an object"),
+            ("invalid-json", b"{", None, "Expecting"),
+        ):
+            with self.subTest(label=label):
+                stream = io.BytesIO(payload)
+                response = SimpleNamespace(status=200, getheader=lambda name: declared, read=stream.read)
+                connection = mock.Mock()
+                connection.getresponse.return_value = response
+                with mock.patch.object(helper, "MAX_METADATA_OUTPUT_BYTES", 16), \
+                     mock.patch.object(helper.http.client, "HTTPSConnection", return_value=connection):
+                    if message is None:
+                        self.assertEqual(helper._fetch_source_install_lock("a" * 40, float("inf")), {})
+                    else:
+                        with self.assertRaisesRegex(ValueError, message):
+                            helper._fetch_source_install_lock("a" * 40, float("inf"))
+                connection.close.assert_called_once()
+
+    def test_exact_registry_metadata_rejects_wrong_name_or_version(self):
+        helper = load_helper()
+        record = {"name": helper.PACKAGE, "version": "1.0.2", "dist": {
+            "tarball": "https://registry.npmjs.org/pi.tgz", "integrity": "sha512-root"}}
+        for field, value in (("name", "wrong-package"), ("version", "1.0.1")):
+            with self.subTest(field=field):
+                changed = {**record, field: value}
+                with mock.patch.object(helper, "_fetch_registry_packument", return_value=changed):
+                    with self.assertRaisesRegex(ValueError, "exact registry record identity"):
+                        helper._run_registry_metadata("npm", helper.PACKAGE, "1.0.2", {}, float("inf"))
+        with mock.patch.object(helper, "_fetch_registry_packument", return_value=record) as fetch:
+            self.assertEqual(helper._run_registry_metadata("npm", helper.PACKAGE, "1.0.2", {}, float("inf"))["version"], "1.0.2")
+            self.assertEqual(fetch.call_args.args, (helper.PACKAGE, float("inf"), "1.0.2"))
 
     def test_reviewed_fixture_bytes_are_forced_to_lf_on_every_checkout(self):
         fixtures = (
@@ -1034,17 +1093,29 @@ class PiHostLocksTest(unittest.TestCase):
                     deadline=float("inf"), byte_budget=len(payload), require_shrinkwrap=True,
                 )
             self.assertEqual(result["shrinkwrap"], valid)
+            absent = archive_bytes([])
+            integrity = "sha512-" + base64.b64encode(hashlib.sha512(absent).digest()).decode("ascii")
+            with mock.patch.object(helper.http.client, "HTTPSConnection", connection_for(absent)):
+                result = helper._download_registry_tarball(
+                    helper.PACKAGE, SUPPORTED_VERSION,
+                    "https://registry.npmjs.org/root.tgz", integrity, destination,
+                    deadline=float("inf"), byte_budget=len(absent), require_shrinkwrap=False,
+                )
+            self.assertIsNone(result["shrinkwrap"])
             for label, (entries, message) in cases.items():
-                with self.subTest(label=label):
-                    payload = archive_bytes(entries)
-                    integrity = "sha512-" + base64.b64encode(hashlib.sha512(payload).digest()).decode("ascii")
-                    with mock.patch.object(helper.http.client, "HTTPSConnection", connection_for(payload)):
-                        with self.assertRaisesRegex(ValueError, message):
-                            helper._download_registry_tarball(
-                                helper.PACKAGE, SUPPORTED_VERSION,
-                                "https://registry.npmjs.org/root.tgz", integrity, destination,
-                                deadline=float("inf"), byte_budget=len(payload), require_shrinkwrap=True,
-                            )
+                for required in (True, False):
+                    if label == "missing" and not required:
+                        continue  # Genuine absence is the supported source-lock fallback.
+                    with self.subTest(label=label, require_shrinkwrap=required):
+                        payload = archive_bytes(entries)
+                        integrity = "sha512-" + base64.b64encode(hashlib.sha512(payload).digest()).decode("ascii")
+                        with mock.patch.object(helper.http.client, "HTTPSConnection", connection_for(payload)):
+                            with self.assertRaisesRegex(ValueError, message):
+                                helper._download_registry_tarball(
+                                    helper.PACKAGE, SUPPORTED_VERSION,
+                                    "https://registry.npmjs.org/root.tgz", integrity, destination,
+                                    deadline=float("inf"), byte_budget=len(payload), require_shrinkwrap=required,
+                                )
 
     def test_wrapper_lock_rejects_unsafe_published_paths(self):
         helper = load_helper()
