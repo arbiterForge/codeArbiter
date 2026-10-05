@@ -201,7 +201,7 @@ func Structural(d *model.Document) []fault.Error {
 	if d.Kind() == "plan" {
 		if policy := model.M(n["verification_inputs"]); policy != nil {
 			for _, p := range model.Strings(policy["roots"]) {
-				if !Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") {
+				if !Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") || IsRuntimeMarkerPath(p) {
 					add(&es, "INVALID_INPUT_POLICY", "", "verification_inputs.roots", "unsafe input root")
 				}
 			}

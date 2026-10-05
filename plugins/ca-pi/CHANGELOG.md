@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.16.3] - 2026-10-05
+## [0.16.4] - 2026-10-05
 
 ### Fixed
 
@@ -12,6 +12,16 @@ All notable changes to `ca-pi` are documented in this file.
   mandatory `SPEC-` and `PLAN-` prefixes.
 - Carry native typed record reordering with preserved identities and history;
   changed plan content retains its normal approval requirement.
+
+## [0.16.3] - 2026-10-05
+
+### Fixed
+
+- Keep host hook runtime markers out of review input snapshots, so an
+  independent review no longer goes stale because the reviewer read files.
+  Plans can no longer root verification inputs in, or claim coverage of, that
+  marker directory. Review and verification requests armed by an older engine
+  go stale after upgrading; re-arm them.
 
 ## [0.16.2] - 2026-10-04
 

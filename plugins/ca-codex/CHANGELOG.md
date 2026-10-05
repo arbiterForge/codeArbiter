@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.15.3] - 2026-10-05
+## [0.15.4] - 2026-10-05
 
 ### Fixed
 
@@ -14,6 +14,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   such as `ST-LS-LOOP-SPEC` without renaming them or weakening identity validation.
 - Restore typed record reordering while retaining identities, execution history,
   and the approval requirement for changed plan content.
+
+## [0.15.3] - 2026-10-05
+
+### Fixed
+
+- Keep host hook runtime markers out of review input snapshots, so an
+  independent review no longer goes stale because the reviewer read files.
+  Plans can no longer root verification inputs in, or claim coverage of, that
+  marker directory. Review and verification requests armed by an older engine
+  go stale after upgrading; re-arm them.
 
 ## [0.15.2] - 2026-10-04
 

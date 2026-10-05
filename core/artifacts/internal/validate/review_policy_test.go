@@ -1,7 +1,9 @@
 package validate_test
 
 import (
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
 	"strings"
@@ -61,5 +63,42 @@ func TestReviewNamedTestRequirementAtReadiness(t *testing.T) {
 	}
 	if !found {
 		t.Fatal("ready plan permits an unbound test runner")
+	}
+}
+
+// The snapshot never hashes host runtime markers, so a plan must neither root its
+// evidence there nor claim a task path there as covered.
+func TestReadyRefusesRuntimeMarkerInputs(t *testing.T) {
+	s := testutil.Seal(t, testutil.Spec())
+	for _, root := range []string{".codearbiter/.markers", ".codearbiter/.markers/mode.d"} {
+		p := testutil.Plan(s)
+		model.M(p["normative"])["verification_inputs"] = map[string]any{"roots": model.List(".", root), "exclude_directories": model.List()}
+		_, err := render.Prepare(p)
+		if fault.Code(err) != "INVALID_INPUT_POLICY" || !strings.Contains(err.Error(), "unsafe input root") {
+			t.Errorf("root %q under the runtime marker directory was accepted", root)
+		}
+	}
+	for _, policy := range []map[string]any{nil, {"roots": model.List("."), "exclude_directories": model.List()}} {
+		p := testutil.Plan(s)
+		n := model.M(p["normative"])
+		if policy == nil {
+			delete(n, "verification_inputs")
+		} else {
+			n["verification_inputs"] = policy
+		}
+		task := model.M(model.A(n["tasks"])[0])
+		task["paths"] = append(model.A(task["paths"]), map[string]any{"action": "modify", "path": ".codearbiter/.markers/mode.d/x.json"})
+		found := false
+		for _, e := range validate.Ready(testutil.Seal(t, p), s) {
+			if e.Code == "UNCOVERED_INPUT" && strings.Contains(e.Message, ".codearbiter/.markers/") {
+				found = true
+			}
+		}
+		if !found {
+			t.Errorf("task path under the runtime marker directory was certified as covered (policy %v)", policy)
+		}
+	}
+	if !validate.InputIncludes(map[string]any{}, ".codearbiter/.markers-x/note.md") {
+		t.Error("a look-alike sibling of the runtime marker directory lost coverage")
 	}
 }
