@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://codearbiter.dev/sitemap-index.xml

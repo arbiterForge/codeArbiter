@@ -23,16 +23,16 @@ const qualityRouteCases = [
   {
     path: "/",
     status: 200,
-    title: "Hard Gates for Agentic Coding | codeArbiter",
-    description: "One repository-owned governance layer for Claude Code, Codex, and Pi: real stops, durable project context, and an audit trail that survives the host you use.",
+    title: "codeArbiter: Agentic Coding Governance for Claude Code, Codex & Pi",
+    description: "codeArbiter is an open-source governance layer for AI coding agents, with repository-owned hard gates, reviews, audit trails, and durable project context for Claude Code, Codex, and Pi.",
     canonicalPath: "/",
-    h1: "Hard gates for agentic coding.",
+    h1: "codeArbiter: hard gates for agentic coding.",
   },
   {
     path: "/overview/",
     status: 200,
     title: "What Is codeArbiter | codeArbiter",
-    description: "How codeArbiter orchestrates shared gated workflows in Claude Code, Codex, and Pi.",
+    description: "What codeArbiter is, how its agentic coding governance works, and how it coordinates repository-owned gates across Claude Code, Codex, and Pi.",
     canonicalPath: "/overview/",
     h1: "What Is codeArbiter",
   },
@@ -240,7 +240,7 @@ test("AC-02: keyboard search restores its opener and global navigation reaches h
   await expect(home).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Hard gates for agentic coding.", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "codeArbiter: hard gates for agentic coding.", exact: true })).toBeVisible();
 });
 
 test("AC-02: dismissing during debounce cannot reopen stale search results", async ({ page }) => {
