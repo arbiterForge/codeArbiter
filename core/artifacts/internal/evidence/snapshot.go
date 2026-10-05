@@ -178,7 +178,7 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 		}
 	}
 	for _, p := range roots {
-		if !validate.Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") {
+		if !validate.Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") || validate.IsRuntimeMarkerPath(p) {
 			return nil, fault.New("INVALID_INPUT_POLICY", "unsafe input root")
 		}
 	}
@@ -188,7 +188,7 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 		}
 	}
 	excluded := func(p string) bool {
-		if p == ".git" {
+		if p == ".git" || p == validate.RuntimeMarkers {
 			return true
 		}
 		for _, x := range excludes {

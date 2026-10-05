@@ -8,7 +8,9 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -109,5 +111,134 @@ func TestReviewNoZeroTestProofForAlternateRunnerSpelling(t *testing.T) {
 				t.Fatalf("zero-test evidence was accepted for %v: %v", argv, err)
 			}
 		})
+	}
+}
+
+// Host hooks write gitignored runtime state under .codearbiter/.markers/ (read-
+// injection dedup markers, mode entries, gate records) while a reviewer reads the
+// frozen target. That state is not reviewable input: if it entered the manifest,
+// every review would invalidate its own evidence before publication.
+func TestSnapshotIgnoresHostRuntimeMarkers(t *testing.T) {
+	f, p := snapshotFixture(t, []string{"."}, []string{})
+	write := func(rel, body string) {
+		t.Helper()
+		full := filepath.Join(f.Root, filepath.FromSlash(rel))
+		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte(body), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write(".codearbiter/.markers/standup-2026-10-04", "x")
+	before, err := Snapshot(f, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(".codearbiter/.markers/readinject-0123.marker", "")
+	write(".codearbiter/.markers/mode.d/session.json", "{}")
+	after, err := Snapshot(f, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if before["sha256"] != after["sha256"] {
+		t.Fatal("a host runtime marker written during review changed the input snapshot")
+	}
+	for name := range model.M(model.M(after["manifest"])["entries"]) {
+		if name == ".codearbiter/.markers/" || strings.HasPrefix(name, ".codearbiter/.markers/") {
+			t.Fatalf("runtime marker entry %s is in the input manifest", name)
+		}
+	}
+	// Controls: the exclusion is exactly the marker directory, not governance or
+	// a look-alike sibling.
+	write(".codearbiter/.markers-x/note.md", "x")
+	sibling, err := Snapshot(f, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sibling["sha256"] == after["sha256"] {
+		t.Fatal("a look-alike sibling of the marker directory was excluded")
+	}
+	write(".codearbiter/CONTEXT.md", "changed")
+	governed, err := Snapshot(f, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if governed["sha256"] == sibling["sha256"] {
+		t.Fatal("a governed .codearbiter file change did not change the input snapshot")
+	}
+}
+
+// A link named like the marker directory is skipped unfollowed: its in-repo
+// target is still hashed at its real path, so the exclusion hides nothing.
+func TestSnapshotMarkerLinkHidesNothing(t *testing.T) {
+	f, p := snapshotFixture(t, []string{"."}, []string{})
+	target := filepath.Join(f.Root, "real")
+	if err := os.MkdirAll(target, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(target, "input.go"), []byte("package real\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(f.Root, ".codearbiter"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(target, filepath.Join(f.Root, ".codearbiter", ".markers")); err != nil {
+		t.Skipf("symlinks unavailable: %v", err)
+	}
+	snap, err := Snapshot(f, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	entries := model.M(model.M(snap["manifest"])["entries"])
+	if entries["real/input.go"] == nil {
+		t.Fatal("the in-repo target of a marker-named link lost its own coverage")
+	}
+	for name := range entries {
+		if strings.HasPrefix(name, ".codearbiter/.markers/") {
+			t.Fatalf("snapshot followed a marker-named link: %s", name)
+		}
+	}
+}
+
+// The exclusion is exact-case: on a case-sensitive filesystem a differently
+// cased directory is ordinary input and stays hashed.
+func TestSnapshotMarkerExclusionIsExactCase(t *testing.T) {
+	f, p := snapshotFixture(t, []string{"."}, []string{})
+	if err := os.MkdirAll(filepath.Join(f.Root, ".codearbiter", ".Markers"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(f.Root, ".codearbiter", ".markers")); err == nil {
+		t.Skip("case-insensitive filesystem")
+	}
+	if err := os.WriteFile(filepath.Join(f.Root, ".codearbiter", ".Markers", "x"), []byte("x"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	snap, err := Snapshot(f, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if model.M(model.M(snap["manifest"])["entries"])[".codearbiter/.Markers/x"] == nil {
+		t.Fatal("a case variant of the marker directory was excluded")
+	}
+}
+
+// Junctions report neither a directory nor a symlink, so the marker exclusion
+// must not apply to them; the rooted read refuses an escaping junction instead.
+func TestSnapshotMarkerJunctionFailsClosed(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("junctions are Windows-only")
+	}
+	f, p := snapshotFixture(t, []string{"."}, []string{})
+	if err := os.MkdirAll(filepath.Join(f.Root, ".codearbiter"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	outside := t.TempDir()
+	link := filepath.Join(f.Root, ".codearbiter", ".markers")
+	if out, err := exec.Command("cmd", "/c", "mklink", "/J", link, outside).CombinedOutput(); err != nil {
+		t.Skipf("mklink /J unavailable: %v %s", err, out)
+	}
+	if _, err := Snapshot(f, p); err == nil {
+		t.Fatal("snapshot accepted an escaping junction at the marker directory")
 	}
 }

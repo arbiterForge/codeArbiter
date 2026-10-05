@@ -8,6 +8,20 @@ import (
 	"strings"
 )
 
+// RuntimeMarkers is the gitignored directory where host hooks keep per-session
+// runtime state (read-injection dedup markers, mode entries, gate records). Hooks
+// write it while a reviewer reads the frozen target, so it is never reviewable
+// input: the snapshot omits it, and plans may neither root evidence in it nor
+// claim coverage of a path beneath it. Plans cannot exclude governance paths, so
+// the engine owns this one exclusion.
+const RuntimeMarkers = ".codearbiter/.markers"
+
+// IsRuntimeMarkerPath reports whether p is the runtime marker directory or
+// beneath it. Exact-case and literal, like every other input path comparison.
+func IsRuntimeMarkerPath(p string) bool {
+	return p == RuntimeMarkers || strings.HasPrefix(p, RuntimeMarkers+"/")
+}
+
 // InputWithin uses literal repository-relative paths, never basename or glob matching.
 func InputWithin(root, target string) bool {
 	return root == "." || target == root || strings.HasPrefix(target, root+"/")
@@ -34,6 +48,9 @@ func InputPolicyErrors(norm map[string]any) []fault.Error {
 // InputIncludes checks declared path coverage, not complete build-dependency
 // closure. The latter still requires project-specific review of roots/excludes.
 func InputIncludes(norm map[string]any, target string) bool {
+	if IsRuntimeMarkerPath(target) {
+		return false
+	}
 	policy := model.M(norm["verification_inputs"])
 	if policy == nil {
 		return true
