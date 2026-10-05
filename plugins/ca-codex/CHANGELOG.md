@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.15.3] - 2026-10-05
+
+### Fixed
+
+- Prepare feature-author and reviewer context for existing native artifact IDs
+  such as `ST-LS-LOOP-SPEC` without renaming them or weakening identity validation.
+
 ## [0.15.2] - 2026-10-04
 
 ### Fixed

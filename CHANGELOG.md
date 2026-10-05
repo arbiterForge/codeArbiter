@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.3] - 2026-10-05
+
+### Fixed
+
+- Accept native artifact IDs without requiring `SPEC-` and `PLAN-` prefixes when
+  preparing feature-author and reviewer context. Preserve exact IDs and reject
+  malformed identities using the native protocol's identifier grammar.
+
 ## [2.24.2] - 2026-10-04
 
 ### Fixed

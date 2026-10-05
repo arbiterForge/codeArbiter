@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.3] - 2026-10-05
+
+### Fixed
+
+- Carry the shared feature-context fix for valid native artifact IDs without
+  mandatory `SPEC-` and `PLAN-` prefixes.
+
 ## [0.16.2] - 2026-10-04
 
 ### Fixed
