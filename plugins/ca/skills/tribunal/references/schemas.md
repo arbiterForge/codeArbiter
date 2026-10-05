@@ -12,8 +12,8 @@ On Codex/Pi derive the bundle root from the loaded routine path.
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" inventory --scope "$SCOPE" --format markdown
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" profile deep --capabilities "$CAPABILITIES_JSON"
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" estimate --packet-bytes 4096 --profiles '{"deep":2,"standard":1}' --verification-candidates 1 --concurrency 3 --extraction-bytes 256
-"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" start --scope "$SCOPE" --evidence-path contract.txt --detail "$DETAIL_JSON"
-"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" resume-status "$RUN" --scope "$SCOPE"
+"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" start --scope "$SCOPE" --target-digest "$TARGET_DIGEST" --evidence-path contract.txt --detail "$DETAIL_JSON"
+"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" resume-status "$RUN" --scope "$SCOPE" --target-digest "$TARGET_DIGEST" --evidence-path contract.txt
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" read-run "$RUN"
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN" --record "$LEAD_JSON"
 "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN" --id reliability-lead-001 --disposition promoted --rationale "Owned by reliability-001"
@@ -33,6 +33,13 @@ and JSON arguments from validated records. The example evidence file must exist
 and belong to the declared inputs; use actual bounded filenames. Omit optional
 `--verification` when no attempt exists. Emit wave/report events only after their
 projections exist. Disposition events record actual user choices/actions.
+
+Use the caller's current declarations for both `start` and `resume-status`:
+recompute `TARGET_DIGEST` and repeat `--evidence-path` for every declared file.
+Omit `--target-digest` from both commands when there is no explicit target.
+If a previously declared target or evidence path has been removed, start a fresh
+run. Omitted resume options reuse the saved values; they do not prove that the
+caller still intends those inputs.
 
 Run operations return `ok` and fixed refusal reasons. Inventory instead returns
 `status: ok|partial|unavailable`; partial is usable only with its unavailable

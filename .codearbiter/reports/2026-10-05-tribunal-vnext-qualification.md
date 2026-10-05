@@ -134,12 +134,60 @@ paths, freshness timestamps and trusted executable identities remained unchanged
 the actual managed pre-commit and feature commit then passed. This local repair
 does not install a plugin release or alter another checkout's source.
 
-The final inert Codex candidate contract passes at package digest
+The post-hook inert Codex candidate contract passed at package digest
 `b49790e3f09e07f911b0b2cfe90ccfad3618f12049d7e60196612ffa9a429470`.
 The previous digest above preserves the pre-correction check. The model-capture
 bundles do not include this hook helper, so their original bindings remain intact.
 
 ## Distribution boundary
+
+The first hosted run found two distribution omissions after the local checks
+above: three frozen evidence bundles lacked root-token inventory classification,
+and the rewritten Tribunal command page omitted its existing Codex compatibility
+note. The inventory now names only those three evidence files; an unlisted
+neighbor still fails. The compatibility paragraph is restored. All twelve
+inventory tests and twenty-two public-document tests pass locally, followed by
+a fresh site build and 34,977 resolved internal links. No captured evidence or
+CI workflow was rewritten. Final-head hosted qualification remains separate.
+
+The Windows jobs also exposed a short-path alias mismatch when opening legacy
+history. The correction normalizes only the repository prefix; report components
+still reject links and reparse points. A native Windows regression went RED
+before the fix, then all 38 affected run/workflow tests passed. Independent
+security and coverage reviews confirmed both history preservation and refusal
+across two different roots containing valid same-name reports.
+
+The site browser assertion now expects the Pi installation guide for "install Pi",
+matching the actual first result and the page's installation instructions. Exact
+route equality remains enforced; the focused Chrome test and typecheck pass.
+
+Review found an apostrophe escaping defect in inventory Markdown. A regression
+failed on the corrupted entity before the single-pass correction; all 25
+inventory tests and independent security/coverage reviews pass. Resume examples
+now pass current target/evidence declarations and explain that removing one
+requires a fresh run. Three host projection checks and reference validation pass.
+The frozen delivered-bundle snapshot predates this example clarification and is
+retained unchanged, as its README explains.
+
+The suggestion to exclude all other Tribunal reports and the gate-event log from
+root-scope fingerprints was not applied. The approved contract binds declared
+reviewed inputs and excludes only the active run's output. Historical evidence
+and tracked governance changes must still cause drift when included in that scope.
+The earlier collision comment is already covered by exclusive allocation and retry.
+
+Two final compatibility regressions also went RED before correction. POSIX
+literal colon/backslash filenames are accepted while Windows restrictions stay
+intact. Normal protected Git configuration remains available without adding trust;
+environment sanitization and fixed inert Git operations remain enforced. Forty
+affected run/workflow tests pass locally; the native POSIX fixture is skipped on
+Windows and belongs to hosted Linux/macOS validation. The coordinator separately
+reran the filename, Git subprocess and inventory escaping regressions: all three
+pass. Accepted Windows path-normalization code and tests remain byte-identical.
+
+The final inert Codex package check passes at digest
+`599f06f21e8547468b2fe9e4359f19889c7d7e99bb9299fe9470c40125e27788`.
+Earlier package digests and all captured model evidence retain their original
+bindings. These local receipts do not substitute for final-head hosted checks.
 
 Prepared package versions: ca **2.25.0**, ca-codex **0.16.0**, ca-pi **0.17.0**.
 The external supported Pi version remains **1.0.2**. The dependency review found

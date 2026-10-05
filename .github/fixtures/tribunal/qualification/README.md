@@ -38,6 +38,12 @@ The benchmark remains bound to its original pre-format-correction bundle; its
 findings were not rerun or edited. Package reference/parity checks independently
 verify the delivered notation.
 
+That delivered-bundle file is the frozen snapshot at the resource-notation
+correction. A later clarification in `references/schemas.md` makes the resume
+example pass the current target and evidence declarations, as already required
+by the source-binding contract. Neither snapshot nor captured review was
+rewritten to include that clarification; current host projection checks cover it.
+
 `launch-evidence.json` retains selected fields from the actual native collaboration
 launch calls and their tool responses: all three used fresh contexts (`fork_turns:
 none`) without model/reasoning overrides. The three assignment exports retain the

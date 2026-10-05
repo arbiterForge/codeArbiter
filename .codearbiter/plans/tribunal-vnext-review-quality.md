@@ -171,3 +171,19 @@ reviewed generator. Every registry, freshness and trusted-identity file retained
 its bytes and timestamp. The real managed pre-commit then passed, and the
 Tribunal feature commit completed. The narrow hook repair travels as a separate
 fix commit on PR #887. Exact-head hosted CI remains the pre-merge requirement.
+
+The first hosted run exposed two distribution omissions. Its root-token inventory
+now classifies the three exact frozen Tribunal bundles as historical evidence,
+with a regression that still refuses a neighboring unlisted file. The rewritten
+command page restores the existing Codex packaged-charter and fallback note.
+The twelve inventory tests and twenty-two public-document tests pass locally;
+the rebuilt site resolves all 34,977 internal links. Capture bytes, runtime policy
+and CI workflow definitions are unchanged.
+
+The remaining observed CI corrections preserve Windows legacy-history access
+through short repository aliases and correct the exact "install Pi" browser
+expectation to the dedicated guide. Their focused tests and independent reviews
+pass. Review also found and corrected inventory apostrophe escaping, with causal
+RED/GREEN and inert-markup controls. Resume invocation examples now explicitly
+carry current declarations; frozen model captures retain their original bindings.
+These delivery corrections remain within the approved implementation scope.
