@@ -4,6 +4,19 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.6] - 2026-10-05
+
+### Fixed
+
+- Preserve the shared adapter's bounded native completion-review context
+  references and complete review-result prompt contract (#921).
+- Fingerprint complete completion-review workspaces up to 1 GiB independently
+  of the 256 MiB selected verification-input budget. Preserve full content
+  hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.
+- Preserve the shared engine's distinct fresh-verification completion profile
+  and historical receipt validation. Pi verification and review authority remain
+  unsupported; this shared payload change does not enable those host seams.
+
 ## [0.16.5] - 2026-10-05
 
 ### Changed

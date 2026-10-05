@@ -97,9 +97,18 @@ class FakeClient:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(raw)
-            return {"context_ref": relative.as_posix(), "context_sha256": digest,
+            result = {"context_ref": relative.as_posix(), "context_sha256": digest,
                     "activity": self.context["activity"], "subject": self.context["subject"],
                     "input_sha256": self.context["input_sha256"]}
+            if "verification_command_bindings" in request:
+                # A fixed synthetic engine response; real normalization is
+                # exercised by ClaudeEndToEndTest with the native executable.
+                result["completion_workspace_after"] = [{
+                    "root": binding["workspace_root"], "filesystem_id": binding["workspace_filesystem_id"],
+                    "git_common_dir": binding["git_common_dir"], "git_common_filesystem_id": binding["git_common_filesystem_id"],
+                    "head": "fixture", "status_sha256": "7" * 64, "content_sha256": "8" * 64,
+                } for binding in request["verification_command_bindings"]]
+            return result
         if operation == "capture-observation":
             return {"receipt": self.receipt, "receipt_sha256": "9" * 64}
         raise AssertionError(operation)
@@ -421,7 +430,8 @@ class AuthorityAdapterTest(unittest.TestCase):
             "payload_sha256", "producer_profile", "producer_run_id",
             "producer_result", "producer_result_sha256",
         })
-        self.assertEqual(observation["producer_profile"], "declared-command/0.2.0")
+        self.assertEqual(observation["producer_profile"], "declared-command/0.3.0")
+        self.assertTrue(observation["producer_result"]["completion_workspace_after"])
         canonical_result = json.dumps(
             observation["producer_result"], ensure_ascii=True, allow_nan=False,
             sort_keys=True, separators=(",", ":"),
@@ -3763,6 +3773,9 @@ class ClaudeEndToEndTest(unittest.TestCase):
 
     def test_completion_native_hook_allows_canonical_bookkeeping_and_rejects_source_drift(self):
         """Actual native validation; host hook events remain labeled synthetic fixtures."""
+        # Native publication must remain fresh even when its complete evidence
+        # history is visible to Git, as it is in real governed workspaces.
+        (self.root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
         bridge = self.host.load_bridge(self.plugin)
         workflow = self.host.Workflow(bridge, self.root, self.installation, "completion", "claude", self.plugin)
         client = workflow.client
@@ -4965,7 +4978,7 @@ class CompletionReviewTransportTest(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION|INCOMPLETE_REVIEW"):
                     self.adapter._parse_decision(json.dumps(invalid), request)
 
-    def _complete_native(self, armed):
+    def _complete_native(self, armed, *, decision_json=None):
         parent = {"session_id": "completion-fixture-parent", "turn_id": "completion-parent-turn",
                   "tool_name": "spawn_agent", "tool_use_id": "completion-call", "tool_input": armed["launch_envelope"]}
         child = {"session_id": parent["session_id"], "turn_id": "01900000-0000-7000-8000-000000000002",
@@ -4975,7 +4988,7 @@ class CompletionReviewTransportTest(unittest.TestCase):
             {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"agent_id": child["agent_id"], "nickname": None})},
             {**child, "hook_event_name": "SubagentStart"},
             {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
-             "last_assistant_message": json.dumps(self._decision(armed))},
+             "last_assistant_message": decision_json if decision_json is not None else json.dumps(self._decision(armed))},
         ):
             result = self.adapter.observe_codex_hook(self.root, event)
         self.assertEqual(result["state"], "COMPLETED")
@@ -4996,6 +5009,121 @@ class CompletionReviewTransportTest(unittest.TestCase):
         request = self.adapter._load(self.root, armed["request_id"])
         self.assertEqual(resumes[-1]["completion_context_ref"], request["context_ref"])
         self.assertEqual(resumes[-1]["completion_context_sha256"], request["context_sha256"])
+
+    def test_codex_native_review_retains_completion_near_request_budget(self):
+        self._fixture()
+        small = self._arm_completion()
+        baseline = self.adapter._load(self.root, small["request_id"])
+        padding = self.adapter.MAX_STATE - len(self.adapter._canonical(baseline)) - 2048
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * padding}
+        armed = self._arm_completion()
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertLess(len(self.adapter._canonical(request)), self.adapter.MAX_STATE)
+        decision = self._decision(armed)
+        decision["assessment"] = "Bounded independent fixture assessment. " * 200
+        self.assertLess(len(json.dumps(decision).encode()), self.adapter.MAX_DECISION)
+        with mock.patch.object(self, "_decision", return_value=decision):
+            self._complete_native(armed)
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["state"], "COMPLETED")
+        self.assertEqual(completed["context"], self.client.context)
+        self.assertEqual(completed["payload"]["assessment"], decision["assessment"])
+        published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "CAPTURED")
+
+    def test_completion_dispatch_fields_and_obligations_match_closed_parser(self):
+        self._fixture()
+        armed = self._arm_completion()
+        prompt = armed["dispatch_prompt"]
+        field_list = prompt.split(". Fields: ", 1)[1]
+        self.assertIn("completion_sha256", field_list)
+        self.assertIn("completion_assessment", field_list)
+        for obligation in ("criterion:AC-001", "criterion:AC-002", "step:1", "done_when:1"):
+            self.assertIn(json.dumps(obligation), prompt)
+
+    def test_native_completion_unicode_result_preserves_decision_and_state_bounds(self):
+        self._fixture()
+        small = self._arm_completion()
+        baseline = self.adapter._load(self.root, small["request_id"])
+        self.client.context["input_manifest"] = {
+            "fixture_padding": "p" * (self.adapter.MAX_STATE - len(self.adapter._canonical(baseline)) - 2048)}
+        armed = self._arm_completion()
+        decision = self._decision(armed)
+        decision["assessment"] = "\U0001f600" * 15000
+        raw = json.dumps(decision, ensure_ascii=False)
+        self.assertGreater(len(raw.encode()), self.adapter.MAX_DECISION - 8192)
+        self.assertLess(len(raw.encode()), self.adapter.MAX_DECISION)
+        self.assertGreater(len(self.adapter._canonical(decision)), self.adapter.MAX_DECISION)
+        self._complete_native(armed, decision_json=raw)
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["payload"]["assessment"], decision["assessment"])
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "CAPTURED")
+
+    def test_native_completion_overbudget_base_rejects_before_registration(self):
+        self._fixture()
+        self.client.context["task"]["criterion_refs"] = [f"AC-{index:06d}-" + "x" * 240 for index in range(650)]
+        with self.assertRaisesRegex(RuntimeError, "review result has no bounded lifecycle reserve"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v1", completion_receipts=[self.receipt_ref],
+                supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), [])
+
+    def test_native_completion_full_context_uses_native_budget_not_mutable_state_budget(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 * self.adapter.MAX_STATE)}
+        armed = self._arm_completion()
+        self.assertGreater(len(self.adapter._native_context_canonical(self.client.context)), self.adapter.MAX_STATE)
+        self._complete_native(armed)
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["context"], self.client.context)
+        self.assertEqual(completed["state"], "CAPTURED")
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+
+    def test_native_completion_context_over_native_budget_cannot_arm(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (8 << 20)}
+        with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v1", completion_receipts=[self.receipt_ref],
+                supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), [])
+
+    def test_native_completion_private_context_reference_fails_closed(self):
+        self._fixture()
+        armed = self._arm_completion()
+        state_path = Path(armed["request_path"])
+        original = json.loads(state_path.read_bytes())
+        self.assertEqual(original["context"], self.adapter.CONTEXT_REFERENCE)
+        context_path = self.root / original["context_ref"]
+        context_bytes = context_path.read_bytes()
+        for mutation in ("missing", "tampered", "wrong-kind", "unknown-storage", "missing-storage"):
+            with self.subTest(mutation=mutation):
+                state = copy.deepcopy(original)
+                if mutation == "missing":
+                    context_path.unlink()
+                elif mutation == "tampered":
+                    context_path.write_bytes(context_bytes + b" ")
+                elif mutation == "wrong-kind":
+                    context = copy.deepcopy(self.client.context)
+                    context["activity"] = "verification"
+                    raw = self.adapter._native_context_canonical(context)
+                    digest = hashlib.sha256(raw).hexdigest()
+                    state.update(context_ref=f".codearbiter/.artifacts/evidence-contexts/{digest}.json", context_sha256=digest)
+                    (self.root / state["context_ref"]).write_bytes(raw)
+                elif mutation == "unknown-storage":
+                    state["context_storage"] = "unbounded/0.1.0"
+                else:
+                    del state["context_storage"]
+                state["integrity_sha256"] = self.adapter._integrity(state)
+                state_path.write_bytes(self.adapter._canonical(state))
+                with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT|INVALID_AUTHORITY_STATE"):
+                    self.adapter._load(self.root, armed["request_id"])
+                context_path.write_bytes(context_bytes)
+                state_path.write_bytes(self.adapter._canonical(original))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "ARMED")
 
     def test_completed_native_review_cannot_publish_after_selected_material_drift(self):
         self._fixture()
@@ -5062,14 +5190,25 @@ class CompletionReviewTransportTest(unittest.TestCase):
                        completion_sha256=hashlib.sha256(self.adapter._canonical(context["completion"])).hexdigest())
         context["subject"]["record_id"] = "CP-001"
         armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "CP-001", "quality_review",
+            codex_review_profile="native-v1",
             completion_receipts=[self.receipt_ref, other_verification["receipt_ref"]], supporting_files=[str(self.material)])
         decision = self._decision(armed)
         decision["completion_assessment"].extend([
             dict(row, task_id="T-002", evidence_refs=[other_verification["receipt_ref"]])
             for row in decision["completion_assessment"]])
-        decision["completion_assessment"][0]["evidence_refs"] = [other_verification["receipt_ref"]]
+        invalid = copy.deepcopy(decision)
+        invalid["completion_assessment"][0]["evidence_refs"] = [other_verification["receipt_ref"]]
         with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_REVIEW_DECISION"):
-            self.adapter._parse_decision(json.dumps(decision), self.adapter._load(self.root, armed["request_id"]))
+            self.adapter._parse_decision(json.dumps(invalid), self.adapter._load(self.root, armed["request_id"]))
+        self._complete_native(armed, decision_json=json.dumps(decision))
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        captured = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(captured["state"], "CAPTURED")
+        self.assertEqual(captured["context"], context)
+        self.assertEqual(captured["payload"]["task_hashes"], context["task_hashes"])
+        self.assertEqual(captured["payload"]["completion_assessment"], decision["completion_assessment"])
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+        self.assertEqual(json.loads(Path(armed["request_path"]).read_bytes())["context"], self.adapter.CONTEXT_REFERENCE)
 
 
 if __name__ == "__main__":
