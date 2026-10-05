@@ -24,6 +24,11 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 )
 
+// MaxCompletionWorkspaceTotal bounds each complete tracked/nonignored workspace
+// independently of Snapshot's 256 MiB selected verification-input budget.
+// Member and entry limits remain shared; every admitted member is still hashed.
+const MaxCompletionWorkspaceTotal = 1 << 30
+
 // CompletionWorkspaces freezes the command bindings from a qualified verifier.
 // Raw mode reproduces the producer's Python fingerprint exactly. Consumer mode
 // normalizes only validated canonical artifacts and validated derived outputs
@@ -427,8 +432,8 @@ func completionWorkspace(f *store.FS, binding map[string]any, normalize bool) (m
 			return nil, err
 		}
 		total += len(data)
-		if total > MaxInputTotal {
-			return nil, fault.New("MAX_INPUTS", "completion workspace exceeds 256 MiB")
+		if total > MaxCompletionWorkspaceTotal {
+			return nil, fault.New("MAX_INPUTS", "completion workspace exceeds 1 GiB")
 		}
 		if norm, ok := norms[path]; ok {
 			if kind != "file" {

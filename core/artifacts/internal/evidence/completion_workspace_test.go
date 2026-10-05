@@ -3,6 +3,7 @@ package evidence
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -153,6 +154,87 @@ func TestCompletionWorkspaceMappedMutationInvalidates(t *testing.T) {
 	}
 	if reflect.DeepEqual(before, after) {
 		t.Fatal("mapped source mutation did not invalidate completed evidence")
+	}
+}
+
+func TestCompletionWorkspaceLargeEvidenceClosure(t *testing.T) {
+	f := completionFixture(t)
+	// Nine ordinary members exceed the selected-input budget without exceeding
+	// the per-member limit. Sparse files keep fixture creation inexpensive.
+	for i := 0; i < 9; i++ {
+		path := filepath.Join(f.Root, fmt.Sprintf("historical-evidence-%02d.bin", i))
+		file, err := os.Create(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = file.Truncate(30 << 20)
+		closeErr := file.Close()
+		if err != nil || closeErr != nil {
+			t.Fatalf("create historical evidence: %v %v", err, closeErr)
+		}
+	}
+	bindings, want := completionPython(t, f.Root)
+	raw, err := CompletionWorkspaces(f, bindings, false)
+	if err != nil {
+		t.Fatalf("valid 270 MiB completion workspace rejected: %v", err)
+	}
+	if !reflect.DeepEqual(raw, want) {
+		t.Fatal("large workspace raw fingerprint differs from complete producer closure")
+	}
+	before, err := CompletionWorkspaces(f, bindings, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	unchanged, err := CompletionWorkspaces(f, bindings, true)
+	if err != nil || !equalCompletion(before, unchanged) {
+		t.Fatalf("unchanged large completion closure is stale: %v", err)
+	}
+	file, err := os.OpenFile(filepath.Join(f.Root, "historical-evidence-08.bin"), os.O_WRONLY, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = file.WriteAt([]byte("mutation"), (30<<20)-8)
+	closeErr := file.Close()
+	if err != nil || closeErr != nil {
+		t.Fatalf("mutate historical evidence: %v %v", err, closeErr)
+	}
+	after, err := CompletionWorkspaces(f, bindings, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if equalCompletion(before, after) {
+		t.Fatal("selected completion freshness accepted a changed large-workspace member")
+	}
+}
+
+func TestCompletionWorkspaceByteBounds(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		count int
+		size  int64
+		want  string
+	}{
+		{"member", 1, (32 << 20) + 1, "MAX_BYTES"},
+		{"workspace", 33, 32 << 20, "completion workspace exceeds 1 GiB"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			f := completionFixture(t)
+			bindings, _ := completionPython(t, f.Root)
+			for i := 0; i < test.count; i++ {
+				file, err := os.Create(filepath.Join(f.Root, fmt.Sprintf("member-%02d.bin", i)))
+				if err != nil {
+					t.Fatal(err)
+				}
+				err = file.Truncate(test.size)
+				closeErr := file.Close()
+				if err != nil || closeErr != nil {
+					t.Fatalf("create bounded fixture: %v %v", err, closeErr)
+				}
+			}
+			if _, err := CompletionWorkspaces(f, bindings, false); err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("%s bound was not retained: %v", test.name, err)
+			}
+		})
 	}
 }
 

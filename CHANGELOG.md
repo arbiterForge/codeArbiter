@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.5] - 2026-10-05
+
+### Fixed
+
+- Fingerprint complete completion-review workspaces up to 1 GiB independently
+  of the 256 MiB selected verification-input budget. Preserve full content
+  hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.
+
 ## [2.24.4] - 2026-10-05
 
 ### Fixed

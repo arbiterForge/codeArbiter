@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.15.5] - 2026-10-05
+
+### Fixed
+
+- Fingerprint complete completion-review workspaces up to 1 GiB independently
+  of the 256 MiB selected verification-input budget. Preserve full content
+  hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.
+
 ## [0.15.4] - 2026-10-05
 
 ### Fixed
