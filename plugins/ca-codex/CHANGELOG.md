@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.15.1] - 2026-10-04
+## [0.15.2] - 2026-10-04
 
 ### Fixed
 
@@ -15,6 +15,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - State the accepted reviewer finding severities so informational findings do
   not accidentally invalidate a review.
 - Correct Pi approval guidance to describe the missing authority adapter.
+
+## [0.15.1] - 2026-10-04
+
+### Fixed
+
+- Carry the shared Claude review-join fix in the vendored authority library. Codex
+  review behavior is unchanged.
 
 ## [0.15.0] - 2026-10-03
 
