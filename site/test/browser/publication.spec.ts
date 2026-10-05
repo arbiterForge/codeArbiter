@@ -31,10 +31,10 @@ const qualityRouteCases = [
   {
     path: "/overview/",
     status: 200,
-    title: "What Is codeArbiter | codeArbiter",
-    description: "What codeArbiter is, how its agentic coding governance works, and how it coordinates repository-owned gates across Claude Code, Codex, and Pi.",
+    title: "What is Code Arbiter? | codeArbiter",
+    description: "What is Code Arbiter? Open-source agentic coding governance for Claude Code, Codex, and Pi, with development gates and repository-owned project records.",
     canonicalPath: "/overview/",
-    h1: "What Is codeArbiter",
+    h1: "What is Code Arbiter?",
   },
   {
     path: "/academy/",
