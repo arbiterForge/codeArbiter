@@ -3813,8 +3813,41 @@ class NpmPublishContractTest(unittest.TestCase):
                     observed, tag, source, expected_object=expected
                 )
 
+PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc", "shutdown", "publish")
+
+
+def platform_package_suites():
+    """Partition the full discovered suite without dropping or repeating cases."""
+    suites = {name: unittest.TestSuite() for name in PLATFORM_PACKAGE_PARTITIONS}
+
+    def cases(suite):
+        for test in suite:
+            if isinstance(test, unittest.TestSuite):
+                yield from cases(test)
+            else:
+                yield test
+
+    for case in cases(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])):
+        if isinstance(case, NpmPublishContractTest):
+            partition = "publish"
+        elif "shutdown" in case._testMethodName or "post_exit_entry" in case._testMethodName:
+            partition = "shutdown"
+        elif "rpc" in case._testMethodName:
+            partition = "rpc"
+        else:
+            partition = "package"
+        suites[partition].addTest(case)
+    return suites
+
+
 if __name__ == "__main__":
-    if "--rpc-commands" in sys.argv:
+    if "--platform-partition" in sys.argv:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--platform-partition", choices=PLATFORM_PACKAGE_PARTITIONS, required=True)
+        args = parser.parse_args()
+        result = unittest.TextTestRunner(verbosity=2).run(platform_package_suites()[args.platform_partition])
+        raise SystemExit(0 if result.wasSuccessful() else 1)
+    elif "--rpc-commands" in sys.argv:
         sys.argv = [
             sys.argv[0],
             "PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status",

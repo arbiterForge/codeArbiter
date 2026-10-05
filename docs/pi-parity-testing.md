@@ -85,7 +85,11 @@ arguments. Missing, malformed, late, or unsuccessful phase evidence fails the
 observed proof, and reaching exit entry does not waive the natural-exit deadline.
 Stdout and stderr drain continuously; timeout and failure still terminate and
 verify the process tree and readers. The aggregate command limit remains 180
-seconds.
+seconds. Its package suite runs in four disjoint groups: package contracts, raw
+RPC compatibility, observed shutdown and hang regressions, and npm publication
+contracts. The groups contain every discovered package test exactly once, and
+any failure or timeout stops the aggregate. Timeout reports retain bounded
+per-test output for diagnosis. The global hosted job budget is unchanged.
 
 The separate exit allowance covers Node's synchronous persistence of an enabled
 cold compile cache after orderly runtime disposal. Windows pressure probes
