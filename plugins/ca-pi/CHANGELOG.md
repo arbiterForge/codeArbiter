@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Preserve the shared adapter's bounded native completion-review context
+  references and complete review-result prompt contract (#921).
 - Fingerprint complete completion-review workspaces up to 1 GiB independently
   of the 256 MiB selected verification-input budget. Preserve full content
   hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.

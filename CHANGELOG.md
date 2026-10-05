@@ -16,6 +16,10 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Retain native completion-review contexts by validated immutable reference,
+  reserving bounded result growth before launch without increasing request,
+  decision or native-context limits. List the complete result fields and
+  separate task obligations in the review prompt (#921).
 - Fingerprint complete completion-review workspaces up to 1 GiB independently
   of the 256 MiB selected verification-input budget. Preserve full content
   hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.

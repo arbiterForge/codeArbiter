@@ -375,6 +375,16 @@ the scope reaches `REVIEW`, reverify against one current source snapshot, run th
 combined quality review, and use `accept-scope` once. Do not accept tasks
 individually.
 
+Current Codex native V1 completion reviews retain the full frozen context in
+its immutable, content-addressed file and keep only its closed reference in
+mutable request state. Loading validates the exact context locator, hash,
+canonical bytes and review kind. The native context budget remains 8 MiB;
+mutable request state remains bounded at 1 MiB. Before dispatch, the adapter
+reserves the exact fixed result identities, six times the 64 KiB decision
+budget for canonical JSON escaping, and 32 bounded 256-byte lifecycle slots.
+A request without that capacity is refused before child launch. Historical
+inline requests retain their existing limits and abandonment-only recovery.
+
 An ARMED review that never launched can be abandoned through the adapter:
 
 ```sh

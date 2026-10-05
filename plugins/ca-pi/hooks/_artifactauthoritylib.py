@@ -82,6 +82,16 @@ REQUEST_LOCK_WAIT_SECONDS = 5.0
 CLAUDE_JOIN_LOCK_WAIT_SECONDS = 30.0
 MAX_OUTPUT = 8 << 20
 MAX_DECISION = 65536
+# Current native completion reviews retain the complete immutable context by
+# exact reference instead of duplicating it in every mutable request state.
+CONTEXT_STORAGE = "frozen-reference/0.1.0"
+CONTEXT_REFERENCE = {"format": "codearbiter.evidence-context-reference/0.1.0"}
+# The native canonical decoder already bounds each complete context at 8 MiB.
+MAX_EVIDENCE_CONTEXT = 8 << 20
+# ASCII canonical JSON can expand each input UTF-8 byte to at most six bytes.
+# Reserve that closed decision budget plus 32 bounded 256-byte lifecycle slots
+# (host identities, content-addressed locators, their keys and delimiters).
+REVIEW_RESULT_RESERVE = 6 * MAX_DECISION + 32 * 256
 MAX_COMPLETION_FILES = 16
 MAX_COMPLETION_FILE_BYTES = 64 << 10
 MAX_COMPLETION_TOTAL_BYTES = 256 << 10
@@ -398,9 +408,41 @@ def _request_lock(spool: Path, relative: Path, wait: float | None = None):
         # Do not unlink: a peer may already be waiting on this same inode.
 
 
+def _referenced_review_state(value: dict[str, Any]) -> dict[str, Any]:
+    if (value.get("context_storage") != CONTEXT_STORAGE
+            or value.get("codex_review_profile") != CODEX_NATIVE_V1
+            or value.get("host", "codex") != "codex"
+            or value.get("activity") not in REVIEW_ACTIVITIES
+            or "completion" not in value["context"] or "handback" in value):
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "context reference is not a native completion review")
+    base = dict(value, state="ARMED", launch=None, observation_ref=None,
+                observation_sha256=None, receipt=None, recovery=None)
+    for field in ("payload", "authority_source"):
+        base.pop(field, None)
+    base["integrity_sha256"] = "0" * 64
+    stored_base = dict(base, context=CONTEXT_REFERENCE)
+    context = value["context"]
+    # Quality review additionally copies its exact task hashes into the result.
+    static_payload = {"input_sha256": context["input_sha256"],
+                      "spec_sha256": context["spec_sha256"],
+                      "completion_sha256": context["completion_sha256"]}
+    if value["activity"] == "spec_review":
+        static_payload["task_sha256"] = context["task_sha256"]
+    else:
+        static_payload.update(base_input_sha256=context["base_input_sha256"],
+                              task_hashes=context["task_hashes"])
+    if len(_canonical(stored_base)) + len(_canonical(static_payload)) + REVIEW_RESULT_RESERVE > MAX_STATE:
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "review result has no bounded lifecycle reserve")
+    return dict(value, context=CONTEXT_REFERENCE)
+
+
 def _save(root: Path, value: dict[str, Any]) -> None:
     expected = value.get("integrity_sha256")
     updated = dict(value)
+    if "context_storage" in updated:
+        if _read_context(root, updated["context_ref"], updated["context_sha256"]) != updated["context"]:
+            raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "stored review context changed")
+        updated = _referenced_review_state(updated)
     updated["integrity_sha256"] = _integrity(updated)
     legacy_abandonment = (
         value["state"] == "ABANDONED"
@@ -462,7 +504,7 @@ def _load(
         "authority_source", "dispatch_prompt", "review_contract_sha256",
         "required_coverage", "wrapper", "command_bindings", "recovery",
         "launch_envelope", "workspace_roots", "host", "codex_review_profile",
-        "handback",
+        "handback", "context_storage",
     }
     if (
         not isinstance(value, dict)
@@ -490,6 +532,16 @@ def _load(
         or value["activity"] not in REVIEW_ACTIVITIES
     ):
         raise AuthorityError("INVALID_AUTHORITY_STATE", "Codex review profile is unsupported")
+    if "context_storage" in value:
+        if value["context"] != CONTEXT_REFERENCE:
+            raise AuthorityError("INVALID_AUTHORITY_STATE", "stored context reference is malformed")
+        value["context"] = _read_context(root, value["context_ref"], value["context_sha256"])
+        subject = value["context"].get("subject", {})
+        _validate_context(value["context"], subject.get("artifact_id"),
+                          subject.get("record_id"), value["activity"])
+        _referenced_review_state(value)
+    elif value["context"] == CONTEXT_REFERENCE:
+        raise AuthorityError("INVALID_AUTHORITY_STATE", "context reference lacks its closed storage profile")
     if len(raw) > MAX_STATE:
         if recover_armed_review and value["state"] == "ABANDONED":
             # Only an abandonment can have retained this; recovering it again is
@@ -520,13 +572,20 @@ def _validate_hash(value: Any, field: str) -> str:
     return value
 
 
-def _read_context(root: Path, context_ref: str, context_hash: str) -> dict[str, Any]:
+def _read_context(
+    root: Path, context_ref: str, context_hash: str
+) -> dict[str, Any]:
     _validate_hash(context_hash, "context_sha256")
     expected_ref = f".codearbiter/.artifacts/evidence-contexts/{context_hash}.json"
     if context_ref != expected_ref:
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context locator is not content addressed")
     try:
-        raw = (root / expected_ref).read_bytes()
+        path = root / expected_ref
+        _path_identity(path)
+        with path.open("rb") as stream:
+            raw = stream.read(MAX_EVIDENCE_CONTEXT + 1)
+        if len(raw) > MAX_EVIDENCE_CONTEXT:
+            raise ValueError("context exceeds the native canonical budget")
         context = json.loads(raw.decode("utf-8"))
     except (OSError, UnicodeError, ValueError) as exc:
         raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context bytes are unavailable") from exc
@@ -1335,6 +1394,7 @@ def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) ->
         if request.get("codex_review_profile") == CODEX_NATIVE_V1 else ""
     )
     completion = ""
+    completion_fields = ""
     if "completion" in context:
         completion = (
             "This explicit completion review assesses performed work against every selected task's "
@@ -1364,7 +1424,10 @@ def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) ->
             "that support each conclusion. Missing or unreadable facts require status=missing and "
             "decision=changes_requested. A passing decision requires every completion obligation "
             "substantiated; a claimed coverage list is insufficient.\n"
+            "Separate required task/obligation pairs: "
+            + json.dumps(sorted(_completion_obligations(context)), ensure_ascii=True) + ".\n"
         )
+        completion_fields = ", completion_sha256 (exact selected packet hash), completion_assessment (separate obligation rows)"
     return (
         f"[CODEARBITER_AUTHORITY_REQUEST:{request['request_id']}]\n"
         f"Target repository: {request['repository']['path']}\n"
@@ -1378,7 +1441,8 @@ def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) ->
         + json.dumps(request["required_coverage"], ensure_ascii=True)
         + ". Fields: format, request_id, target_sha256, contract_sha256, decision "
           "(pass or changes_requested), coverage (unique strings), findings (objects with "
-          "severity, code, message), assessment (non-empty string). Reply with the JSON "
+          "severity, code, message), assessment (non-empty string)"
+        + completion_fields + ". Reply with the JSON "
           "object only: no code fence and no other text."
     )
 
@@ -1462,6 +1526,8 @@ def arm_request(
         seed_value["host"] = host
     if codex_review_profile is not None:
         seed_value["codex_review_profile"] = CODEX_NATIVE_V1
+        if completion_selection is not None:
+            seed_value["context_storage"] = CONTEXT_STORAGE
     seed = _canonical(seed_value)
     request_id = _digest(seed)
     request = {
@@ -1487,6 +1553,8 @@ def arm_request(
         request["host"] = host
     if codex_review_profile is not None:
         request["codex_review_profile"] = CODEX_NATIVE_V1
+        if completion_selection is not None:
+            request["context_storage"] = CONTEXT_STORAGE
     if activity in REVIEW_ACTIVITIES:
         request["review_contract_sha256"], request["required_coverage"] = _review_binding(context)
         request["dispatch_prompt"] = _dispatch_prompt(request)
