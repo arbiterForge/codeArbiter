@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.1] - 2026-10-04
+
+### Fixed
+
+- Complete Claude reviews whose start and launch result arrive together. The two
+  hooks could each miss the other's half of the join, so about half of async
+  reviews were rejected after the reviewer reported. The join is now serialized.
+
 ## [2.24.0] - 2026-10-03
 
 ### Added

@@ -1971,19 +1971,30 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         pre, _ = self._launch(armed)
         agent_id = "agent-mid-write"
         real_fsync = self.adapter.os.fsync
-        fired = []
+        fired, errors = [], []
+
+        def post():
+            try:
+                self._post(pre, agentId=agent_id)
+            except Exception as exc:  # noqa: BLE001 - surfaced below
+                errors.append(exc)
 
         def fsync(fd):
-            # The launch result lands while the start marker is being written.
+            # The launch result lands, in its own hook process, while the
+            # start marker is being written; it waits for the join lock.
             if not fired:
-                fired.append(True)
-                self._post(pre, agentId=agent_id)
+                fired.append(threading.Thread(target=post))
+                fired[0].start()
+                fired[0].join(0.5)
             return real_fsync(fd)
 
         with mock.patch.object(self.adapter.os, "fsync", fsync):
             self._start(agent_id)
-        self.assertTrue(fired)
+            self.assertTrue(fired)
+            fired[0].join(15)
+        self.assertEqual(errors, [])
         self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        self.assertFalse(self.adapter._claude_start_marker(agent_id).exists())
 
     def test_each_stop_guard_rejects(self):
         cases = {
@@ -2546,6 +2557,78 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         self.assertEqual((state["state"], state["launch"]["post_confirmed"]), ("LAUNCHING", True))
         self.assertIsNone(self._handback(agent_id, self._decision(armed)))
         self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+
+    def _race_launch_join(self, nonce, held):
+        """Run SubagentStart and the async launch result on two threads,
+        holding the `held` side between its read and its write while the
+        other side runs. Each hook is its own process in production."""
+        agent_id = "agent-" + nonce
+        armed, _pre, post = self._launch_2286(nonce, agent_id)
+        start = claude_fixture("2.1.286/subagentstart.json", agent_id=agent_id, agent_type=REVIEWER)
+        paused, resume = threading.Event(), threading.Event()
+        scans, scan, save = [], self.adapter._claude_requests, self.adapter._save
+
+        def hold(side):
+            if threading.current_thread().name == side == held and not paused.is_set():
+                paused.set()
+                resume.wait(10)
+
+        def scan_then_hold(*args, **kwargs):
+            found = scan(*args, **kwargs)
+            if threading.current_thread().name == "start":
+                scans.append(None)
+                if len(scans) == 2:
+                    # After the agent-id scan, before deciding on a marker.
+                    hold("start")
+            return found
+
+        def hold_then_save(root, request):
+            if request["state"] == "LAUNCHING" and request["launch"]["post_confirmed"]:
+                # After the marker check, before saving the launch result.
+                hold("post")
+            save(root, request)
+
+        errors = []
+
+        def run(event):
+            try:
+                self.adapter.observe_claude_hook(self.root, event)
+            except Exception as exc:  # noqa: BLE001 - surfaced below
+                errors.append(exc)
+
+        first, second = (start, post) if held == "start" else (post, start)
+        names = ("start", "post") if held == "start" else ("post", "start")
+        scans_held = mock.patch.object(self.adapter, "_claude_requests", side_effect=scan_then_hold)
+        saves_held = mock.patch.object(self.adapter, "_save", side_effect=hold_then_save)
+        with scans_held, saves_held:
+            a = threading.Thread(target=run, args=(first,), name=names[0])
+            a.start()
+            self.assertTrue(paused.wait(10), "the held hook never reached its pause point")
+            b = threading.Thread(target=run, args=(second,), name=names[1])
+            b.start()
+            b.join(0.5)
+            resume.set()
+            a.join(15)
+            b.join(15)
+        self.assertEqual(errors, [])
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["launch"]["agent_type"]), ("RUNNING", REVIEWER))
+        self.assertFalse(self.adapter._claude_start_marker(agent_id).exists(), "start marker was orphaned")
+        return armed, agent_id
+
+    def test_launch_result_between_start_scans_still_joins(self):
+        # The launch result saved agent_id after SubagentStart's agent-id scan
+        # but before its pending-launch scan: neither side wrote the join.
+        armed, agent_id = self._race_launch_join("claude-race-between-scans", "start")
+        self._handback(agent_id, self._decision(armed))
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+
+    def test_start_between_marker_check_and_launch_save_still_joins(self):
+        # SubagentStart wrote its marker after the launch result looked for it
+        # and rescanned before the launch result saved agent_id.
+        armed, agent_id = self._race_launch_join("claude-race-marker-check", "post")
+        self._handback(agent_id, self._decision(armed))
         self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
 
     def test_2286_handback_cannot_push_state_past_its_bound(self):
