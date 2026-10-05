@@ -6,6 +6,11 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [0.17.0] - 2026-10-05
 
+### Fixed
+
+- Read multiple stale Git-hook registrations correctly on Windows and Unix,
+  preserving enforcement by the current registered checker.
+
 ### Added
 
 - Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,

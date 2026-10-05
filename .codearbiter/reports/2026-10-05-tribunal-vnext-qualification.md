@@ -35,7 +35,7 @@ The coordinator independently ran these checks against the delivered changes:
 | `tools/sync-core.py --check`, `tools/build-surface.py --check`, `tools/build-host-packages.py --check` | PASS; 88 core files across all three hosts byte-identical |
 | `.github/scripts/check-plugin-refs.py` | PASS; full plugin reference graph, including generic and literal Codex agent routes |
 | Command-route declarations, badge and catalog checks | PASS |
-| Codex inert candidate package/resource contract | PASS; final package digest `f5c8659e3a28c98311f8f026c4775b52e3fbe06b90664e51b132555d43709ba1` |
+| Codex inert candidate package/resource contract before the delivery-hook correction | PASS; package digest `f5c8659e3a28c98311f8f026c4775b52e3fbe06b90664e51b132555d43709ba1` |
 | Three focused site suites: lens pages, reference sidebar, trust-policy claims | 32 tests PASS |
 | Site typecheck, build, internal link audit | PASS; 173 built pages, 13 lens pages, search over 192 pages; 34,976 internal links resolve |
 
@@ -112,6 +112,32 @@ mechanical-delta receipt prove that only link notation changed, preserving every
 label, path and all other text. The model comparison predates that formatting
 correction; it was not rerun or silently rebound to different bytes. Fresh
 resource, projection, card, workflow and site checks cover the delivered notation.
+
+## Delivery-hook correction
+
+The actual commit gate exposed a shared-hook parsing defect: the freshness probe
+emitted multiple stale registrations on separate lines, while its shell consumer
+matched space-delimited names. Native Windows CRLF also needed normalization.
+A two-line correction in the canonical hook generator and its three copies fixes
+that consumer without changing the probe, ownership policy or security markers.
+
+The named real-hook regression failed with H-09b before the correction, then
+passed with the same test bytes. It also requires the current enforcer to reject
+an unapproved migration with H-14. Nine focused tests, syntax and generator parity
+pass. The coordinator independently reran the three freshness tests; independent
+security and coverage reviews found no remaining issue. A reviewer omitted the
+selected enforcer invocation only in a temporary fixture, and the migration
+assertion failed as intended.
+
+The reviewed normal installer refreshed both local managed shims. All registered
+paths, freshness timestamps and trusted executable identities remained unchanged;
+the actual managed pre-commit and feature commit then passed. This local repair
+does not install a plugin release or alter another checkout's source.
+
+The final inert Codex candidate contract passes at package digest
+`b49790e3f09e07f911b0b2cfe90ccfad3618f12049d7e60196612ffa9a429470`.
+The previous digest above preserves the pre-correction check. The model-capture
+bundles do not include this hook helper, so their original bindings remain intact.
 
 ## Distribution boundary
 

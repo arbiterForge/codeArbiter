@@ -142,3 +142,32 @@ correction owns only the offending canonical Tribunal link notation plus regener
 outputs; reviewer rules, schemas and helper behavior do not change. Existing reference
 validation supplies the failing reproduction and required green result. The earlier
 component reviews and actual captured model outputs remain historical evidence.
+
+## Delivery follow-up
+
+The first commit attempt exposed an existing shared-hook defect: the freshness
+probe emits one stale registration per line, while the shell consumed a
+space-delimited list. Two stale registrations therefore ran alongside the current
+checker and disagreed on security-marker format. The direct current enforcers
+passed; the registered legacy Pi enforcer and native shared hook reproduced H-09b.
+
+The bounded `ca-fix` follow-up owns `core/pysrc/_githooks.py`, its three generated
+host copies, and `plugins/ca/hooks/tests/test_git_hooks.py`. A real generated-hook
+regression must fail before the shell consumer changes, then prove both stale
+entries are skipped and current security enforcement remains active. Windows
+CRLF observed in that same reproduction is part of the parsing correction.
+The line-oriented diagnostic producer and the existing freshness policy stay
+unchanged.
+
+Accepted locally: the unchanged named regression went RED with H-09b and GREEN
+after the consumer correction. Nine focused tests and generator parity pass;
+the coordinator independently reran the three freshness tests. Independent
+security and coverage reviews found no remaining issue. Removing the selected
+enforcer invocation in a temporary fixture makes the migration-refusal assertion
+fail, proving the new test cannot pass by skipping enforcement.
+
+The normal installer refreshed the managed pre-commit/pre-push pair from the
+reviewed generator. Every registry, freshness and trusted-identity file retained
+its bytes and timestamp. The real managed pre-commit then passed, and the
+Tribunal feature commit completed. The narrow hook repair travels as a separate
+fix commit on PR #887. Exact-head hosted CI remains the pre-merge requirement.

@@ -14,6 +14,11 @@ predate the plugin rewrite and are grouped by date.
 
 ## [2.25.0] - 2026-10-05
 
+### Fixed
+
+- Read the shared Git hook's stale-registration list correctly with multiple
+  entries and Windows line endings, so the current security checker owns the verdict.
+
 ### Added
 
 - Add semantic-contract and change-closure Tribunal lenses, with applicability,

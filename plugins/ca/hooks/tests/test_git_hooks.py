@@ -1335,6 +1335,40 @@ class TestFreshnessGuardPreventsStaleFalseBlock(_GitFixture):
         self.assertEqual(res.returncode, 0, res.stderr)
         self.assertNotIn("H-09b", res.stderr + res.stdout)
 
+    def test_fresh_real_enforcer_skips_multiple_stale_ones(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        os.utime(os.path.join(dropin, "ca.seen"), (200, 200))
+        for plugin in ("ca-codex", "ca-pi"):
+            target = self._stale_enforcer(f"{plugin}-stale.py") + "\n"
+            with open(os.path.join(dropin, f"{plugin}.path"), "w",
+                      encoding="utf-8", newline="\n") as f:
+                f.write(target)
+            if plugin == "ca-codex":
+                # One older confirmed sibling and one never confirmed sibling
+                # yield two separate lines in the freshness probe's output.
+                seen = os.path.join(dropin, f"{plugin}.seen")
+                with open(seen, "w", encoding="utf-8", newline="\n") as f:
+                    f.write(target)
+                os.utime(seen, (100, 100))
+        self.assertEqual(_githooks.stale_registered_plugins(dropin),
+                         ["ca-codex", "ca-pi"])
+
+        _git(["checkout", "-q", "-b", "feat/x"], self.root)
+        self._stage_gate_events_audit_row()
+        res = _sh(["sh", "-c", "git commit -m audit"], self.root)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertNotIn("H-09b", res.stderr + res.stdout)
+
+        # The selected real enforcer must still block an unapproved migration;
+        # the stale fixture enforcers do not implement this gate at all.
+        migration = "db/migrations/0001_init.sql"
+        self._write(os.path.join(self.root, migration), "CREATE TABLE t (id int);\n")
+        _git(["add", migration], self.root)
+        res = _sh(["sh", "-c", "git commit -m migration"], self.root)
+        self.assertNotEqual(res.returncode, 0, res.stderr)
+        self.assertIn("H-14", res.stderr + res.stdout)
+
 
 class TestCrossHostPathFormResolution(_GitFixture):
     """ADR-0038 (ties H1, #684/#683): a registry or trusted-identity entry

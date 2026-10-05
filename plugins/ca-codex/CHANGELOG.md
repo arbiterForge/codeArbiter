@@ -8,6 +8,11 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [0.16.0] - 2026-10-05
 
+### Fixed
+
+- Read multiple stale Git-hook registrations correctly on Windows and Unix,
+  preserving enforcement by the current registered checker.
+
 ### Added
 
 - Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,
