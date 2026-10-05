@@ -25,7 +25,7 @@ from urllib.parse import quote, urlsplit
 PACKAGE = "@earendil-works/pi-coding-agent"
 REGISTRY = "https://registry.npmjs.org"
 REGISTRY_ARGS = (f"--registry={REGISTRY}", f"--@earendil-works:registry={REGISTRY}")
-SUPPORTED = ("1.0.0",)
+SUPPORTED = ("1.0.2",)
 LOCK_ROOT = Path(".github/fixtures/pi-hosts")
 VERSION = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 SOURCE_REPOSITORY = "https://github.com/earendil-works/pi"
@@ -152,9 +152,11 @@ def _read_response_chunk(
     return chunk
 
 
-def _fetch_registry_packument(package_name: str, deadline: float) -> dict[str, Any]:
+def _fetch_registry_packument(package_name: str, deadline: float, version: str | None = None) -> dict[str, Any]:
     if PACKAGE_NAME.fullmatch(package_name) is None:
         raise ValueError(f"candidate registry metadata has an invalid package name: {package_name}")
+    if version is not None and VERSION.fullmatch(version) is None:
+        raise ValueError("candidate registry metadata version is invalid")
     last_error: OSError | http.client.HTTPException | None = None
     for attempt in range(3):
         remaining = deadline - time.monotonic()
@@ -166,7 +168,7 @@ def _fetch_registry_packument(package_name: str, deadline: float) -> dict[str, A
             )
             try:
                 connection.request(
-                    "GET", "/" + quote(package_name, safe="@"),
+                    "GET", "/" + quote(package_name, safe="@") + (f"/{version}" if version else ""),
                     headers={
                         "Accept": "application/json",
                         "User-Agent": "codeArbiter-pi-host-lock/1",
@@ -266,7 +268,13 @@ def _run_registry_metadata(
     npm: str, package_name: str, specification: str,
     environment: dict[str, str], deadline: float,
 ) -> Any:
-    packument = _fetch_registry_packument(package_name, deadline)
+    if VERSION.fullmatch(specification):
+        record = _fetch_registry_packument(package_name, deadline, specification)
+        if record.get("name") != package_name or record.get("version") != specification:
+            raise ValueError("candidate exact registry record identity mismatch")
+        packument = {"versions": {specification: record}}
+    else:
+        packument = _fetch_registry_packument(package_name, deadline)
     selected = _select_registry_version(npm, specification, packument, environment, deadline)
     record = packument["versions"][selected]
     if not isinstance(record, dict) or not isinstance(record.get("dist"), dict):
@@ -434,8 +442,7 @@ def _download_registry_tarball(
                     alternate_metadata_members.append(member)
                 if member.isfile() and member.name == "package/npm-shrinkwrap.json":
                     shrinkwrap_members.append(member)
-                    if require_shrinkwrap:
-                        shrinkwrap = _read_archive_json(archive, member, deadline)
+                    shrinkwrap = _read_archive_json(archive, member, deadline)
                 elif (
                     member.isfile()
                     and member.name.count("/") == 1
@@ -448,13 +455,13 @@ def _download_registry_tarball(
                 raise ValueError("candidate tarball must contain exactly one canonical package manifest")
             if alternate_metadata_members:
                 raise ValueError("candidate tarball contains alternate package identity metadata")
-            if require_shrinkwrap and len(shrinkwrap_members) != 1:
+            if len(shrinkwrap_members) > 1 or require_shrinkwrap and len(shrinkwrap_members) != 1:
                 raise ValueError("candidate tarball must contain exactly one canonical npm shrinkwrap")
     except (tarfile.TarError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise ValueError("candidate tarball has no valid package identity") from error
     if not isinstance(manifest, dict) or manifest.get("name") != package_name or manifest.get("version") != version:
         raise ValueError("candidate tarball package identity does not match preflight metadata")
-    if require_shrinkwrap and (
+    if (require_shrinkwrap or shrinkwrap_members) and (
         not isinstance(shrinkwrap, dict)
         or shrinkwrap.get("name") != package_name
         or shrinkwrap.get("version") != version
@@ -466,6 +473,81 @@ def _download_registry_tarball(
     ):
         raise ValueError("candidate tarball shrinkwrap identity does not match preflight metadata")
     return {"manifest": manifest, "shrinkwrap": shrinkwrap}
+
+
+def _fetch_source_install_lock(source_commit: str, deadline: float) -> dict[str, Any]:
+    """Read inert managed-install data at npm's exact gitHead, never a moving ref."""
+    if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
+        raise ValueError("candidate source commit is invalid")
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise ValueError("candidate source lock exceeded the aggregate time budget")
+    connection = http.client.HTTPSConnection("raw.githubusercontent.com", timeout=min(MAX_METADATA_QUERY_SECONDS, remaining))
+    try:
+        connection.request("GET", f"/earendil-works/pi/{source_commit}/packages/coding-agent/install-lock/package-lock.json",
+                           headers={"User-Agent": "codeArbiter-pi-host-lock/1"})
+        response = connection.getresponse()
+        if response.status != 200:
+            raise ValueError(f"candidate source lock returned HTTP {response.status}")
+        length = response.getheader("Content-Length")
+        if length is not None and int(length) > MAX_METADATA_OUTPUT_BYTES:
+            raise ValueError("candidate source lock exceeded the output limit")
+        chunks = []
+        size = 0
+        while chunk := _read_response_chunk(response, deadline, MAX_METADATA_QUERY_SECONDS,
+                                           MAX_METADATA_OUTPUT_BYTES + 1 - size,
+                                           "candidate source lock exceeded the aggregate time budget"):
+            size += len(chunk)
+            if size > MAX_METADATA_OUTPUT_BYTES:
+                raise ValueError("candidate source lock exceeded the output limit")
+            chunks.append(chunk)
+        value = json.loads(b"".join(chunks).decode("utf-8"))
+        if not isinstance(value, dict):
+            raise ValueError("candidate source lock is not an object")
+        return value
+    finally:
+        connection.close()
+
+
+def _wrapper_lock_from_source_install_lock(
+    version: str, root_metadata: dict[str, Any], manifest: dict[str, Any], source: dict[str, Any],
+) -> dict[str, Any]:
+    packages = source.get("packages")
+    source_name = PACKAGE + "-install"
+    if (source.get("name") != source_name or source.get("version") != version
+            or source.get("lockfileVersion") != 3 or not isinstance(packages, dict)
+            or not isinstance(packages.get(""), dict)
+            or packages[""].get("name") != source_name or packages[""].get("version") != version
+            or packages[""].get("dependencies") != {PACKAGE: version}):
+        raise ValueError("candidate source lock root identity mismatch")
+    if len(packages) > MAX_METADATA_PACKAGES:
+        raise ValueError("candidate source lock exceeded the package count limit")
+    for key in packages:
+        if (not isinstance(key, str) or key and (
+                not key.startswith("node_modules/") or "\\" in key
+                or any(part in {"", ".", ".."} for part in key.split("/")))):
+            raise ValueError("candidate source lock has an unsafe package path")
+        if key.count("node_modules/") > MAX_METADATA_DEPTH:
+            raise ValueError("candidate source lock exceeded the depth limit")
+    agent = packages.get(f"node_modules/{PACKAGE}")
+    if (not isinstance(agent, dict) or agent.get("version") != version
+            or agent.get("resolved") != root_metadata["dist.tarball"]
+            or agent.get("integrity") not in {None, root_metadata["dist.integrity"]}):
+        raise ValueError("candidate source lock package identity mismatch")
+    if agent.get("hasShrinkwrap"):
+        raise ValueError("candidate source lock contradicts the absent published shrinkwrap")
+    for field in ("dependencies", "optionalDependencies", "peerDependencies", "peerDependenciesMeta", "engines", "bin"):
+        if agent.get(field, {}) != manifest.get(field, {}):
+            raise ValueError(f"candidate source lock differs from the verified tarball manifest: {field}")
+    lock = json.loads(json.dumps(source))
+    lock["name"] = f"@codearbiter/pi-host-{version}"
+    lock["version"] = "0.0.0"
+    lock["packages"][""] = {"name": lock["name"], "version": "0.0.0", "dependencies": {PACKAGE: version}}
+    # Upstream generates this lock before publication, so root integrity may be
+    # absent. Bind it to the independently downloaded, verified npm tarball.
+    lock["packages"][f"node_modules/{PACKAGE}"]["integrity"] = root_metadata["dist.integrity"]
+    _validate_locked_dependency_edges(lock["packages"])
+    return lock
 
 
 def _wrapper_lock_from_published_shrinkwrap(
@@ -942,11 +1024,15 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
         verified_root = _download_registry_tarball(
             PACKAGE, version, root_metadata["dist.tarball"], root_metadata["dist.integrity"],
             root_archive, deadline=metadata_deadline, byte_budget=MAX_METADATA_CACHE_BYTES,
-            require_shrinkwrap=True,
         )
-        lock = _wrapper_lock_from_published_shrinkwrap(
-            version, root_metadata, verified_root["shrinkwrap"],
-        )
+        from_source = verified_root["shrinkwrap"] is None
+        if from_source:
+            lock = _wrapper_lock_from_source_install_lock(
+                version, root_metadata, verified_root["manifest"],
+                _fetch_source_install_lock(root_metadata["gitHead"], metadata_deadline),
+            )
+        else:
+            lock = _wrapper_lock_from_published_shrinkwrap(version, root_metadata, verified_root["shrinkwrap"])
     lock_path = destination / "package-lock.json"
     lock_path.write_text(json.dumps(lock, indent=2) + "\n", encoding="utf-8", newline="\n")
     packages = lock.get("packages")
@@ -974,9 +1060,9 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
                 continue
             if not _approved_registry_url(resolved):
                 raise ValueError(f"candidate registry or integrity mismatch at {key}")
-            if isinstance(integrity, str) and integrity.startswith("sha512-"):
+            if not from_source and isinstance(integrity, str) and integrity.startswith("sha512-"):
                 continue
-            if integrity is not None or not isinstance(package_name, str) or PACKAGE_NAME.fullmatch(package_name) is None:
+            if (integrity is not None and not from_source) or not isinstance(package_name, str) or PACKAGE_NAME.fullmatch(package_name) is None:
                 raise ValueError(f"candidate registry or integrity mismatch at {key}")
             if not isinstance(package_version, str) or VERSION.fullmatch(package_version) is None:
                 raise ValueError(f"candidate registry or integrity mismatch at {key}")
@@ -986,6 +1072,14 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
             if metadata.get("version") != package_version or metadata.get("dist.tarball") != resolved:
                 raise ValueError(f"candidate registry metadata mismatch at {key}")
             expected_integrity = metadata["dist.integrity"]
+            if integrity is not None and integrity != expected_integrity:
+                raise ValueError(f"candidate registry metadata integrity mismatch at {key}")
+            if from_source:
+                for field in ("dependencies", "optionalDependencies", "peerDependencies", "peerDependenciesMeta"):
+                    if value.get(field, {}) != metadata.get(field, {}):
+                        raise ValueError(f"candidate source lock differs from registry metadata at {key}: {field}")
+                value["integrity"] = expected_integrity
+                continue
             archive = verify_root / f"{index}.tgz"
             _download_registry_tarball(
                 package_name, package_version, resolved, expected_integrity, archive,

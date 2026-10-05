@@ -880,7 +880,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["1.0.0"]',
+        'pi-version: ["1.0.2"]',
         "pi_host_locks.py install --version ${{ matrix.pi-version }}",
         "npm ci --ignore-scripts",
     ):
@@ -1011,7 +1011,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 class PiPackageTests(unittest.TestCase):
     def test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin(self) -> None:
-        # Pi 1.0.0 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
+        # Pi 1.0.2 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
         for label, declared, expected in (
             ("string-bin", "dist/bundle/cli.js", "dist/bundle/cli.js"),
             ("map-bin", {"pi": "dist/bundle/cli.js"}, "dist/bundle/cli.js"),
@@ -1292,7 +1292,7 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["1.0.0"]',
+            'pi-version: ["1.0.2"]',
             "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
@@ -1699,7 +1699,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 1.0.0 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 1.0.2 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,

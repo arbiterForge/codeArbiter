@@ -43,6 +43,91 @@ SUPPORTED_VERSION = load_helper().SUPPORTED[0]
 
 
 class PiHostLocksTest(unittest.TestCase):
+    def test_source_install_lock_binds_tarball_and_rejects_mutations(self):
+        helper = load_helper()
+        metadata = {"dist.tarball": "https://registry.npmjs.org/pi.tgz", "dist.integrity": "sha512-root"}
+        manifest = {"name": helper.PACKAGE, "version": "1.0.2", "dependencies": {"child": "1.2.3"}}
+        source = {
+            "name": helper.PACKAGE + "-install", "version": "1.0.2", "lockfileVersion": 3,
+            "packages": {
+                "": {"name": helper.PACKAGE + "-install", "version": "1.0.2", "dependencies": {helper.PACKAGE: "1.0.2"}},
+                f"node_modules/{helper.PACKAGE}": {"version": "1.0.2", **manifest, "resolved": metadata["dist.tarball"], "integrity": metadata["dist.integrity"]},
+                "node_modules/child": {"version": "1.2.3", "resolved": "https://registry.npmjs.org/child.tgz", "integrity": "sha512-child"},
+            },
+        }
+        captured = helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, source)
+        self.assertEqual(captured["packages"][""]["dependencies"], {helper.PACKAGE: "1.0.2"})
+        self.assertNotIn("hasShrinkwrap", captured["packages"][f"node_modules/{helper.PACKAGE}"])
+        unpublished = json.loads(json.dumps(source))
+        unpublished["packages"][f"node_modules/{helper.PACKAGE}"].pop("integrity")
+        self.assertEqual(helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, unpublished), captured)
+        for field, value in (("version", "1.0.1"), ("integrity", "sha512-other"), ("dependencies", {"unsafe": "file:../outside"}), ("hasShrinkwrap", True)):
+            with self.subTest(field=field):
+                modified = json.loads(json.dumps(source))
+                modified["packages"][f"node_modules/{helper.PACKAGE}"][field] = value
+                with self.assertRaisesRegex(ValueError, "identity|manifest|shrinkwrap"):
+                    helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, modified)
+        for key in ("../escape", "node_modules/../escape", "node_modules\\child"):
+            with self.subTest(key=key):
+                modified = json.loads(json.dumps(source))
+                modified["packages"][key] = modified["packages"].pop("node_modules/child")
+                with self.assertRaisesRegex(ValueError, "path"):
+                    helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, modified)
+        with mock.patch.object(helper, "MAX_METADATA_PACKAGES", 2):
+            with self.assertRaisesRegex(ValueError, "package count"):
+                helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, source)
+
+    def test_capture_without_shrinkwrap_remains_pending_and_checks_every_registry_identity(self):
+        helper = load_helper()
+        version = "1.0.2"
+        root = {"version": version, "dist.tarball": "https://registry.npmjs.org/pi.tgz", "dist.integrity": "sha512-root",
+                "repository.url": helper.SOURCE_REPOSITORY, "gitHead": "a" * 40, "dependencies": {"child": "1.2.3"}}
+        manifest = {"name": helper.PACKAGE, "version": version, "dependencies": root["dependencies"]}
+        source = {"name": helper.PACKAGE + "-install", "version": version, "lockfileVersion": 3, "packages": {
+            "": {"name": helper.PACKAGE + "-install", "version": version, "dependencies": {helper.PACKAGE: version}},
+            f"node_modules/{helper.PACKAGE}": {"version": version, "resolved": root["dist.tarball"], "dependencies": root["dependencies"]},
+            "node_modules/child": {"version": "1.2.3", "resolved": "https://registry.npmjs.org/child.tgz", "integrity": "sha512-child"},
+        }}
+        child = {"version": "1.2.3", "dist.tarball": "https://registry.npmjs.org/child.tgz", "dist.integrity": "sha512-child"}
+        for mutation in (None, "integrity", "dependencies"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as raw:
+                record = dict(child)
+                if mutation == "integrity":
+                    record["dist.integrity"] = "sha512-changed"
+                elif mutation == "dependencies":
+                    record["dependencies"] = {"unsafe": "file:../outside"}
+                with mock.patch.object(helper, "_run_registry_metadata", side_effect=[root, record]) as metadata, \
+                     mock.patch.object(helper, "_fetch_source_install_lock", return_value=source) as fetch, \
+                     mock.patch.object(helper, "_download_registry_tarball", return_value={"manifest": manifest, "shrinkwrap": None}), \
+                     mock.patch.object(helper.subprocess, "run", side_effect=AssertionError("candidate resolution or execution is forbidden")):
+                    destination = Path(raw) / "candidate"
+                    if mutation is not None:
+                        with self.assertRaisesRegex(ValueError, "metadata"):
+                            helper.capture_candidate(version, destination)
+                        self.assertFalse((destination / "review.json").exists())
+                    else:
+                        helper.capture_candidate(version, destination)
+                        receipt = json.loads((destination / "review.json").read_text())
+                        self.assertEqual(receipt["result"], "PENDING_REVIEW")
+                        with self.assertRaisesRegex(ValueError, "pending"):
+                            helper._validate_directory(destination, version, require_reviewed=True)
+                        self.assertEqual(metadata.call_count, 2)
+                        self.assertEqual(fetch.call_args.args[0], root["gitHead"])
+
+    def test_source_install_lock_fetch_is_commit_bound_bounded_and_refuses_redirects(self):
+        helper = load_helper()
+        for commit in ("main", "../escape", "a" * 39):
+            with self.assertRaisesRegex(ValueError, "source commit"):
+                helper._fetch_source_install_lock(commit, float("inf"))
+        class Response:
+            status = 302
+        connection = mock.Mock()
+        connection.getresponse.return_value = Response()
+        with mock.patch.object(helper.http.client, "HTTPSConnection", return_value=connection):
+            with self.assertRaisesRegex(ValueError, "HTTP 302"):
+                helper._fetch_source_install_lock("a" * 40, float("inf"))
+        self.assertEqual(connection.request.call_args.args[1], "/earendil-works/pi/" + "a" * 40 + "/packages/coding-agent/install-lock/package-lock.json")
+
     def test_reviewed_fixture_bytes_are_forced_to_lf_on_every_checkout(self):
         fixtures = (
             ".github/fixtures/pi-hosts/0.84.1/package-lock.json",
@@ -364,8 +449,7 @@ class PiHostLocksTest(unittest.TestCase):
 
     def test_accepted_advisories_admit_a_strictly_safer_host(self):
         helper = load_helper()
-        if "1.0.0" not in helper.SUPPORTED:
-            self.skipTest("Pi 1.0.0 is not the supported host in this tree")
+        helper.SUPPORTED = ("1.0.0",)  # Historical fixture proof, never current admission.
         with tempfile.TemporaryDirectory(prefix="ca-pi-accepted-") as raw:
             root, target, review = self._accepted_root(raw)
             self._write_review(target, review)
@@ -383,8 +467,7 @@ class PiHostLocksTest(unittest.TestCase):
 
     def test_accepted_advisories_fail_closed(self):
         helper = load_helper()
-        if "1.0.0" not in helper.SUPPORTED:
-            self.skipTest("Pi 1.0.0 is not the supported host in this tree")
+        helper.SUPPORTED = ("1.0.0",)  # Keep the retained-advisory rejection contract exercised.
         today = date.today()
         mutations = {
             "empty-list": lambda r: r.__setitem__("accepted_advisories", []),

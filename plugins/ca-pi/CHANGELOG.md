@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.5] - 2026-10-05
+
+### Changed
+
+- Promote the tested Pi host window through exact Pi 1.0.2 with a reviewed
+  managed-install lock, clearing the three brace-expansion advisories.
+
 ## [0.16.4] - 2026-10-05
 
 ### Fixed

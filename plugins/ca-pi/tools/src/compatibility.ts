@@ -6,7 +6,7 @@ export interface HostCompatibility {
   pythonMajor: number | null;
 }
 
-const SUPPORTED_PI_VERSIONS = new Set(["1.0.0"]);
+const SUPPORTED_PI_VERSIONS = new Set(["1.0.2"]);
 const MINIMUM_NODE = [22, 19, 0] as const;
 
 // Anchored so the three numeric groups must be followed by end-of-string or a
@@ -31,7 +31,7 @@ export function atLeast(version: string, minimum: readonly number[]): boolean {
 
 export function compatibilityDirection(input: HostCompatibility): string | null {
   if (!SUPPORTED_PI_VERSIONS.has(input.piVersion)) {
-    return "codeArbiter requires Pi 1.0.0; install a supported Pi version and run /ca-doctor.";
+    return "codeArbiter requires Pi 1.0.2; install a supported Pi version and run /ca-doctor.";
   }
   if (!atLeast(input.nodeVersion, MINIMUM_NODE)) {
     return "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.";

@@ -9,7 +9,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "fab1158555dba8cfb1a9e7c39ef59f647aacb512",
+      "hash": "59eebe16338f78513a9c94655786b2e2ff2e3cec",
       "path": "package.json"
     },
     {
@@ -24,22 +24,22 @@
     },
     {
       "drift_trigger": true,
-      "hash": "1fdaeca27e3500fe198e49924f92e4bf614139c1",
+      "hash": "b375833d41810cba078445a12a8299a40d36847c",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "c7d972e21fea4263b9e6ac5322a989279f24694d",
+      "hash": "367d02346807e66637a9a7dc9904c4ec9dcd34f0",
       "path": "plugins/ca-pi/extensions/codearbiter-child.js"
     },
     {
       "drift_trigger": true,
-      "hash": "36fbba71bf5ec99a17f3b86573eec4e99fe8a7cf",
+      "hash": "d0f8cb774ffaa9050335a5feeb23a80f21e6f7cb",
       "path": "plugins/ca-pi/extensions/codearbiter.js"
     },
     {
       "drift_trigger": true,
-      "hash": "8a78024042424685d218f533b574edc6b9c4022d",
+      "hash": "72ed460857ac01541a95d6a7e2b0fdbd4c74ddd5",
       "path": "plugins/ca-pi/package.json"
     },
     {
