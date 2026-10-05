@@ -3216,6 +3216,87 @@ def _claude_bind_child(root: Path, request: dict[str, Any]) -> dict[str, Any]:
     return {"request_id": request["request_id"], "state": "RUNNING"}
 
 
+@contextmanager
+def _claude_join_lock():
+    """Serialize the Claude launch/child join across hook processes.
+
+    SubagentStart and an async Agent launch result fire back to back as
+    separate hook processes. Each reads the request and then writes its half
+    of the join; unserialized, either can read before the other writes and
+    both miss, leaving the review LAUNCHING with no start marker."""
+    try:
+        with _request_lock(_registry_root(), Path("claude-join")):
+            yield
+    except OSError as exc:
+        raise AuthorityError("AUTHORITY_BUSY", "Claude review join is unavailable") from exc
+
+
+def _claude_launch_result(event: dict[str, Any]) -> dict[str, Any] | None:
+    session_id = event.get("session_id")
+    tool_use_id = event.get("tool_use_id")
+    matches = [
+        (candidate_root, candidate)
+        for candidate_root, candidate in _claude_requests({"LAUNCHING"})
+        if (candidate.get("launch") or {}).get("tool_use_id") == tool_use_id
+        and candidate["launch"].get("parent_session_id") == session_id
+    ]
+    if not matches:
+        return None
+    if len(matches) != 1:
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch correlation is ambiguous")
+    root, request = matches[0]
+    response = event.get("tool_response")
+    try:
+        prompt_id = _host_id(event.get("prompt_id"), "prompt_id")
+        if request["launch"].get("parent_prompt_id") != prompt_id or request["launch"]["post_confirmed"]:
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch result is out of order")
+        if not isinstance(response, dict):
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "agent result is malformed")
+        agent_id = _host_id(response.get("agentId"), "agentId")
+        resolved = _model_id(response.get("resolvedModel"), "resolvedModel")
+    except AuthorityError:
+        _reject(root, request, "uncorrelated-launch-result")
+        raise
+    request["launch"].update(post_confirmed=True, agent_id=agent_id, resolved_model=resolved)
+    return _claude_bind_child(root, request)
+
+
+def _claude_subagent_start(event: dict[str, Any]) -> dict[str, Any] | None:
+    agent_id = _host_id(event.get("agent_id"), "agent_id")
+    agent_type = _host_id(event.get("agent_type"), "agent_type")
+    pending = _claude_requests({"LAUNCHING"})
+    for candidate_root, candidate in pending:
+        launch = candidate.get("launch") or {}
+        if launch.get("agent_id") == agent_id:
+            if agent_type != CLAUDE_REVIEWER:
+                _reject(candidate_root, candidate, "unpinned-reviewer-agent")
+                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "subagent is not the pinned reviewer")
+            launch["agent_type"] = agent_type
+            candidate["state"] = "RUNNING"
+            _save(candidate_root, candidate)
+            return {"request_id": candidate["request_id"], "state": "RUNNING"}
+    if any((candidate.get("launch") or {}).get("post_confirmed") is False for _root, candidate in pending):
+        # The launch result may not have arrived yet; remember this start.
+        marker = _claude_start_marker(agent_id)
+        data = _canonical({"agent_id": agent_id, "agent_type": agent_type})
+        # Written aside and linked into place: a reader must never see an
+        # empty or partial marker.
+        temporary = marker.with_name(f".{marker.name}.{secrets.token_hex(8)}.tmp")
+        fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        try:
+            os.write(fd, data)
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+        try:
+            os.link(temporary, marker)
+        except FileExistsError:
+            return None
+        finally:
+            temporary.unlink(missing_ok=True)
+    return None
+
+
 def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any] | None:
     """Correlate a Claude Code reviewer launch, child lifecycle, and first result.
 
@@ -3275,77 +3356,14 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         return {"request_id": request["request_id"], "state": "LAUNCHING"}
 
     if name == "PostToolUse" and tool == "Agent":
-        session_id = event.get("session_id")
-        tool_use_id = event.get("tool_use_id")
-        matches = [
-            (candidate_root, candidate)
-            for candidate_root, candidate in _claude_requests({"LAUNCHING"})
-            if (candidate.get("launch") or {}).get("tool_use_id") == tool_use_id
-            and candidate["launch"].get("parent_session_id") == session_id
-        ]
-        if not matches:
-            return None
-        if len(matches) != 1:
-            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch correlation is ambiguous")
-        root, request = matches[0]
-        response = event.get("tool_response")
-        try:
-            prompt_id = _host_id(event.get("prompt_id"), "prompt_id")
-            if request["launch"].get("parent_prompt_id") != prompt_id or request["launch"]["post_confirmed"]:
-                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch result is out of order")
-            if not isinstance(response, dict):
-                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "agent result is malformed")
-            agent_id = _host_id(response.get("agentId"), "agentId")
-            resolved = _model_id(response.get("resolvedModel"), "resolvedModel")
-        except AuthorityError:
-            _reject(root, request, "uncorrelated-launch-result")
-            raise
-        request["launch"].update(post_confirmed=True, agent_id=agent_id, resolved_model=resolved)
-        return _claude_bind_child(root, request)
+        with _claude_join_lock():
+            return _claude_launch_result(event)
 
     if name == "SubagentStart":
         if not _claude_requests({"LAUNCHING"}):
             return None
-        agent_id = _host_id(event.get("agent_id"), "agent_id")
-        agent_type = _host_id(event.get("agent_type"), "agent_type")
-        for candidate_root, candidate in _claude_requests({"LAUNCHING"}):
-            launch = candidate.get("launch") or {}
-            if launch.get("agent_id") == agent_id:
-                if agent_type != CLAUDE_REVIEWER:
-                    _reject(candidate_root, candidate, "unpinned-reviewer-agent")
-                    raise AuthorityError("UNSUPPORTED_HOST_SEAM", "subagent is not the pinned reviewer")
-                launch["agent_type"] = agent_type
-                candidate["state"] = "RUNNING"
-                _save(candidate_root, candidate)
-                return {"request_id": candidate["request_id"], "state": "RUNNING"}
-        if any(
-            (candidate.get("launch") or {}).get("post_confirmed") is False
-            for _root, candidate in _claude_requests({"LAUNCHING"})
-        ):
-            # The launch result may not have arrived yet; remember this start.
-            marker = _claude_start_marker(agent_id)
-            data = _canonical({"agent_id": agent_id, "agent_type": agent_type})
-            # Written aside and linked into place: a concurrent launch result
-            # joining this agent must never read an empty or partial marker.
-            temporary = marker.with_name(f".{marker.name}.{secrets.token_hex(8)}.tmp")
-            fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            try:
-                os.write(fd, data)
-                os.fsync(fd)
-            finally:
-                os.close(fd)
-            try:
-                os.link(temporary, marker)
-            except FileExistsError:
-                return None
-            finally:
-                temporary.unlink(missing_ok=True)
-            # The launch result may have bound this agent while the marker was
-            # being written; finish the join now rather than strand it.
-            for candidate_root, candidate in _claude_requests({"LAUNCHING"}):
-                if (candidate.get("launch") or {}).get("agent_id") == agent_id:
-                    return _claude_bind_child(candidate_root, candidate)
-        return None
+        with _claude_join_lock():
+            return _claude_subagent_start(event)
 
     if name == "PostToolUse" and tool == CLAUDE_HANDBACK_TOOL:
         # Every child's handback lands here; only the bound reviewer's counts.

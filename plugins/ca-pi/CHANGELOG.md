@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.1] - 2026-10-04
+
+### Fixed
+
+- Carry the shared Claude review-join fix in the vendored authority library. Pi
+  behavior is unchanged.
+
 ## [0.16.0] - 2026-10-03
 
 ### Added
