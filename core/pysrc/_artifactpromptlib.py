@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import stat
 import tempfile
 
@@ -28,6 +29,8 @@ _FEATURE_ACTORS = frozenset({
     "auth-crypto-reviewer", "dependency-reviewer", "migration-reviewer",
     "coverage-auditor",
 })
+# Match the native artifact protocol's idType; kind is separate from identity.
+_ARTIFACT_ID_RE = re.compile(r"[A-Z][A-Z0-9-]{1,79}")
 
 
 def compose_feature_actor_input(*, actor: str, brief: str,
@@ -60,9 +63,8 @@ def compose_feature_actor_input(*, actor: str, brief: str,
             raise PromptRouteError(f"feature {label} is invalid")
     if confirmed_mini_spec is None:
         if (type(spec_id) is not str or type(plan_id) is not str or
-                not spec_id.startswith("SPEC-") or
-                not plan_id.startswith("PLAN-") or
-                len(spec_id) > 128 or len(plan_id) > 128):
+                _ARTIFACT_ID_RE.fullmatch(spec_id) is None or
+                _ARTIFACT_ID_RE.fullmatch(plan_id) is None):
             raise PromptRouteError("feature artifact identity is invalid")
     elif (spec_id is not None or plan_id is not None or
           type(confirmed_mini_spec) is not str or

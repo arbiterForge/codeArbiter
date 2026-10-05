@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.4] - 2026-10-05
+
+### Fixed
+
+- Accept native artifact IDs without requiring `SPEC-` and `PLAN-` prefixes when
+  preparing feature-author and reviewer context. Preserve exact IDs and reject
+  malformed identities using the native protocol's identifier grammar.
+- Restore typed record reordering so an existing plan can move an independent
+  checkpoint without replacing its IDs or losing execution history. A changed
+  order still requires normal approval before execution.
+
 ## [2.24.3] - 2026-10-05
 
 ### Fixed

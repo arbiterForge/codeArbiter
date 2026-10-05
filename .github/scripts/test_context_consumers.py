@@ -469,6 +469,38 @@ class TestFeatureActorContext(unittest.TestCase):
                       mini['input'])
         self.assertIn('"plan_id":null', mini['input'])
 
+    def test_native_artifact_ids_do_not_require_kind_prefixes(self):
+        """The context composer preserves IDs admitted by the native engine."""
+        for spec_id, plan_id in (
+                ('ST-LS-LOOP-SPEC', 'ST-LS-LOOP-PLAN'),
+                ('AB', 'CD'),
+                ('S' * 80, 'P' * 80)):
+            with self.subTest(spec_id=spec_id, plan_id=plan_id):
+                child = actor_prompts.compose_feature_actor_input(
+                    actor='infra-author', brief='Inspect the approved task',
+                    spec_id=spec_id, plan_id=plan_id, task_id='T-04',
+                    **self.inputs())
+                self.assertEqual(child['spec_id'], spec_id)
+                self.assertEqual(child['plan_id'], plan_id)
+                self.assertIn('"spec_id":"' + spec_id + '"', child['input'])
+                self.assertIn('"plan_id":"' + plan_id + '"', child['input'])
+                self.assertEqual(child['action'], 'requires_actor_check')
+
+    def test_feature_actor_rejects_invalid_native_artifact_ids(self):
+        for invalid in (None, 42, '', 'A', 'S' * 81, 'lowercase',
+                        'SPEC-../ESCAPE', 'SPEC-A\n', 'SPEC-A B',
+                        'SPEC-\u00c9', 'SPEC-\ud800'):
+            for field in ('spec_id', 'plan_id'):
+                ids = {'spec_id': 'ST-LS-LOOP-SPEC',
+                       'plan_id': 'ST-LS-LOOP-PLAN', field: invalid}
+                with self.subTest(field=field, invalid=repr(invalid)):
+                    with self.assertRaisesRegex(
+                            actor_prompts.PromptRouteError,
+                            'feature artifact identity is invalid'):
+                        actor_prompts.compose_feature_actor_input(
+                            actor='infra-author', brief='Inspect the approved task',
+                            task_id='T-04', **ids, **self.inputs())
+
     def test_t035_feature_actor_context_negative_controls(self):
         """Unresolved constraints remain visible and stop material action."""
         core = str(Path(__file__).resolve().parents[2] / 'core' / 'pysrc')

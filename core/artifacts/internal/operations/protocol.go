@@ -43,8 +43,9 @@ func changesType() object {
 	add := closed(object{"op": enum("record.add"), "collection": text(), "parent_id": idType(), "record": object{"type": "object"}}, "op", "collection", "record")
 	update := closed(object{"op": enum("record.update"), "symbol": idType(), "fields": object{"type": "object"}, "retirement_reason": text()}, "op", "symbol", "fields")
 	retire := closed(object{"op": enum("record.retire"), "symbol": idType(), "reason": text(), "replacement_ref": text()}, "op", "symbol", "reason")
+	reorder := closed(object{"op": enum("record.reorder"), "collection": text(), "ids": array(idType(), 1)}, "op", "collection", "ids")
 	header := closed(object{"op": enum("header.update"), "fields": closed(object{"title": text(), "summary": text(), "governs": array(text(), 0), "baseline": common("baseline"), "verification_inputs": closed(object{"roots": array(text(), 1), "exclude_directories": array(text(), 0)}, "roots", "exclude_directories")})}, "op", "fields")
-	return array(object{"oneOf": []any{add, update, retire, header}}, 1)
+	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
 var operations = []string{"capabilities", "schema", "create", "apply", "read", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}

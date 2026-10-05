@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.16.4] - 2026-10-05
+
+### Fixed
+
+- Carry the shared feature-context fix for valid native artifact IDs without
+  mandatory `SPEC-` and `PLAN-` prefixes.
+- Carry native typed record reordering with preserved identities and history;
+  changed plan content retains its normal approval requirement.
+
 ## [0.16.3] - 2026-10-05
 
 ### Fixed
