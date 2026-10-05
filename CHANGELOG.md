@@ -12,6 +12,23 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.25.0] - 2026-10-05
+
+### Added
+
+- Add semantic-contract and change-closure Tribunal lenses, with applicability,
+  evidence requirements, and false-positive guards across the thirteen-card roster.
+- Collect deterministic inventory without running project code, prepare bounded
+  review packets, and resolve review settings from the active host's capabilities.
+
+### Changed
+
+- Bind Tribunal resume to the exact reviewed source, allocate unique run directories,
+  preserve cross-lens leads, and group corroborating findings by root cause.
+- Require separate verification of serious findings and keep unresolved claims out
+  of confirmed fix work. Complete issue-filing and optional telemetry dispositions
+  separately from the report, preserving explicit consent and aggregate-only feedback.
+
 ## [2.24.4] - 2026-10-05
 
 ### Fixed

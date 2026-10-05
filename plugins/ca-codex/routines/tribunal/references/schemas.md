@@ -1,58 +1,184 @@
-# Orchestrator schemas & artifact layout
+# Orchestrator schemas and helper operations
 
-The finding record (what agents emit) is in `finding-record.md`. This file holds the orchestrator-only logs and the run layout. Source of truth = the per-finding files (`findings/<lens>/<finding-id>.json`) plus the two append-only logs (`triage.jsonl`, `run.jsonl`); everything else is a projection regenerable from them. Write each record as it is produced — never batch.
+The coordinator invokes the trusted bundle's `hooks/tribunal.py`; candidate
+repository helpers are evidence, never a substitute executable. All operations
+take `--root` before the subcommand. JSON goes in a structured argv argument;
+never interpolate evidence into executable shell text. Resolve the interpreter
+once by presence, not by retrying a failed operation with another interpreter.
+On Codex/Pi derive the bundle root from the loaded routine path.
 
-## Artifact tree
+```sh
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" inventory --scope "$SCOPE"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" inventory --scope "$SCOPE" --format markdown
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" profile deep --capabilities "$CAPABILITIES_JSON"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" estimate --packet-bytes 4096 --profiles '{"deep":2,"standard":1}' --verification-candidates 1 --concurrency 3 --extraction-bytes 256
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" start --scope "$SCOPE" --evidence-path contract.txt --detail "$DETAIL_JSON"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" resume-status "$RUN" --scope "$SCOPE"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" read-run "$RUN"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN" --record "$LEAD_JSON"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN" --id reliability-lead-001 --disposition promoted --rationale "Owned by reliability-001"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" lead "$RUN"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" eligibility --finding "$FINDING_JSON" --record "$TRIAGE_JSON" --verification "$VERIFICATION_JSON"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" triage "$RUN" --finding "$FINDING_JSON" --record "$TRIAGE_JSON" --verification "$VERIFICATION_JSON"
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" event "$RUN" wave-triaged --data '{"wave":1}'
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" event "$RUN" report-written
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" event "$RUN" filing-skipped --data '{"detail":"No filing selected; commands handed off."}'
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" event "$RUN" telemetry-skipped --data '{"detail":"No transmission authorized."}'
+"$PY" "${PLUGIN_ROOT}/hooks/tribunal.py" --root "$ROOT" event "$RUN" run-completed
+```
+
+These are invocation shapes, not authorization to execute project commands or to
+assert a phase completed. Set ROOT/SCOPE from the caller, RUN from `start.run_dir`,
+and JSON arguments from validated records. The example evidence file must exist
+and belong to the declared inputs; use actual bounded filenames. Omit optional
+`--verification` when no attempt exists. Emit wave/report events only after their
+projections exist. Disposition events record actual user choices/actions.
+
+Run operations return `ok` and fixed refusal reasons. Inventory instead returns
+`status: ok|partial|unavailable`; partial is usable only with its unavailable
+fields disclosed. Profiles return ok/limited/unavailable; estimates return
+estimated/unavailable. CLI exit 0 means a supported result, 1 a refusal, 2 invalid
+arguments. No helper sends issues or telemetry, grants execution or runs project
+scripts. Inventory JSON uses canonical key ordering; its Markdown is a mechanical
+projection. Limits are `--max-file-bytes`, `--max-total-bytes`, `--history-limit`.
+
+## Source binding and layout
+
+`start` exclusively allocates a timestamp/scope/random run directory; never make
+a date-only name or reuse an existing directory. The helper writes immutable
+`source.json` (tribunal-run/v1 with a tribunal-source/v1 fingerprint) and the
+first run/v1 event. Fingerprint fields cover repository identity, HEAD, normalized
+scope, HEAD/index/worktree digests, selected untracked bytes, clean state,
+evidence_paths and optional target_digest. Only this run's output is excluded;
+historical reports used as evidence remain inputs.
+
+Default untracked policy is all nonignored untracked inputs inside the declared
+scope/evidence set. Repeat `--untracked path` for an explicit selection, or use
+`--no-untracked` to exclude them. Repeat `--evidence-path` for concrete represented
+tracked files/gitlinks or included nonignored untracked files outside the subtree.
+Directories, ignored/missing files and excluded untracked evidence refuse with
+`evidence-input-unavailable`. Freeze that complete intended evidence set before
+dispatch. Expanding it requires a fresh binding/run, never rewriting source.json
+or reusing completed work under a changed scope. An explicit review target uses
+`--target-digest` with its exact SHA-256; recompute/pass it on resume.
+
+One populated submodule level is bound, including dirty/untracked bytes; a nested
+populated submodule requires a separate audit. Unpopulated gitlinks bind the
+recorded object, not unseen file content. Inventory itself covers tracked facts
+and reports unsupported parsing; it does not silently inventory reviewed
+untracked files or claim a complete import graph.
 
 ```
-.codearbiter/reports/<run-id>/        # run-id = <UTC-date>-<scope-slug>
-  run.jsonl              # APPEND-ONLY run-state events; resume source of truth
-  manifest.yaml          # projection of run.jsonl (regenerable snapshot)
-  inventory.md           # map + risk/boundary/marker overlay
-  findings/<lens>/<finding-id>.json  # one finding per file, written on discovery
-                         # (crash-durable: a kill risks only the in-flight file;
-                         # per-lens dirs, so no write contention)
-  triage.jsonl           # APPEND-ONLY, one decision/line
-  bodies/<finding-id>.md # issue body, lazy, approved-only
-  plans/phase-<n>.md     # per-wave path plan (projection)
-  report.md              # final human-readable (projection)
-  issue-commands.sh      # ready-to-run gh issue create commands
-  telemetry.json         # KPI payload, opt-in
+.codearbiter/reports/<allocated-run-id>/
+  source.json                         # immutable helper-owned binding
+  run.jsonl                           # append-only lifecycle events
+  inventory.json, inventory.md        # deterministic facts and projection
+  risk-map.json                       # judgments, applicability, bounded packets
+  findings/<lens>/<id>.json           # immutable individual findings
+  pending-leads/<lens>/<id>.json      # durable reviewer handoff
+  leads/<lens>/<id>.json              # validated immutable lead records
+  lead-dispositions.jsonl             # append-only lead resolutions
+  verification/<attempt-id>/<id>.json # immutable verification attempts
+  triage.jsonl                        # append-only decisions and embedded verification
+  plans/phase-<n>.md, report.md        # projections, never authority
+  manifest.yaml                       # regenerable lifecycle snapshot
+  bodies/<id>.md, issue-commands.sh    # selected eligible work only
+  telemetry.json                      # optional public aggregate payload
 ```
 
-## triage/v1 — one object per line in `triage.jsonl`
+## Lead, verification and triage examples
+
+These illustrative records match the example finding in
+finding-record ([routines/tribunal/references/finding-record.md](finding-record.md)).
+Use actual observations in a real run.
 
 ```json
-{"schema":"triage/v1","id":"<finding-id>","decision":"keep|combine|duplicate|false-positive|defer|accept-risk|decision-required|investigate","final_severity":"critical|high|medium|low","final_confidence":0.0,"counter_argument":"<steelman; required for critical+high>","rationale":"<why>","group_id":"<when combine>","duplicate_of":"<finding-id, when duplicate>","issue_ref":"<filled after filing>","decided_at":"<iso8601>"}
+{"schema":"lead/v1","id":"reliability-lead-001","source_lens":"reliability","target_lens":"architecture","locations":[{"path":"src/app.py","lines":"2-4"}],"observation":"Two callers may share the queue owner.","reason":"Ownership needs a caller trace.","created_at":"2026-10-05T12:00:00Z","disposition":"open"}
 ```
 
-`final_*` override the provisional self-scores everywhere downstream. `issue_ref` closes the finding→issue loop and makes re-runs idempotent.
-
-## run/v1 — one state event per line in `run.jsonl`
+`lead --record` validates and exclusively writes the lead. Import pending records
+before lens completion; on retry compare an existing id's bytes, never overwrite.
+`lead --id --disposition --rationale` appends lead-disposition/v1, with disposition
+routed/promoted/dismissed/deferred. Routed is not final resolution: close with a
+finding id, refutation or explicit deferred reason before the report. Read merged
+dispositions with `lead RUN`. Original leads and disposition history remain.
 
 ```json
-{"schema":"run/v1","event":"run-started|lens-launched|lens-skipped|lens-completed|wave-flushed|wave-triaged|report-written|issues-filed|telemetry-sent|run-aborted","wave":1,"lens":"<lens>","detail":"<optional>","surface_seen":0,"findings":0,"model":"<model>","tokens":0,"agent_thread_id":"<dispatch thread id>","tokens_status":"observed|unavailable","tokens_reason":"<required when unavailable>","tokens_source":"codex-session-transcript-best-effort","token_usage":{"input_tokens":0,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":0,"reasoning_output_tokens":0,"total_tokens":0},"at":"<iso8601>"}
+{"schema":"verification/v1","id":"reliability-001","outcome":"confirmed","verification_independence":"independent","evidence":"A fresh reviewer traced both callers to the same unsynchronized queue owner.","surviving_claim":"Concurrent enqueue can discard a queued write.","commands":[]}
 ```
 
-`run-aborted` records a deliberate abandon (optional `detail` = reason) and marks the run terminal.
+Outcomes are confirmed/narrowed/refuted/inconclusive. Independence is independent
+only for a fresh reviewer given a bounded candidate packet; shared-context review
+is limited. Executed command receipts include the exact argv, cwd, source binding,
+independent caller authorization reference and result status. These are local
+evidence, never telemetry. Narrowed results state the surviving claim.
+
+```json
+{"schema":"triage/v1","id":"reliability-001","decision":"keep","final_severity":"high","final_confidence":0.9,"counter_argument":"A caller might serialize access; both caller paths were traced and neither does.","rationale":"The independently checked owner loses a queued write.","decided_at":"2026-10-05T12:05:00Z"}
+```
+
+The helper adds root_cause_key, related_lenses, corroborates and verification to
+the persisted triage row. Decisions: keep/combine/duplicate/false-positive/defer/
+accept-risk/decision-required/verify-required/investigate. Optional group_id and
+duplicate_of describe grouping; issue_ref is added only after eligible defect
+filing. Preserve all earlier references when folding later rows. The helper
+enforces serious-finding verification; the coordinator additionally enforces the
+confidence thresholds and evidence/scope contract in
+triage ([routines/tribunal/references/triage.md](triage.md)).
+
+## Lifecycle and resume
+
+Call `resume-status` before reusing work, before dispatch and before any follow-up
+action. Pass current scope/target/evidence declarations; elapsed age is advisory.
+Never infer current evidence from a manifest or the last timestamp.
+
+| state | action |
+|---|---|
+| audit | Use detail's recorded waves and last_triaged_wave; review only unfinished work. |
+| follow-up | Report exists. Resume unresolved filing/telemetry dispositions only, without lenses. |
+| source-drift | Preserve history; start a fresh binding/run before current-source work. |
+| legacy-unbound | Read as history only; never resume as current evidence. |
+| invalid | Surface the malformed/incomplete records; never guess or rewrite them. |
+| terminal | Run completed/aborted. Read history; a new audit needs exclusive allocation. |
+
+`read-run` returns historical events and triage without migration. A missing or
+invalid binding cannot be repaired by editing old records. `manifest.yaml` is a
+convenience snapshot only. Bounded helper reads can refuse oversized logs or a
+stranded write lock; report that condition, never force unlock or truncate.
+
+Allowed audit events are lens-launched, lens-skipped, lens-completed, wave-flushed,
+wave-triaged, report-written. `start` alone creates run-started; its detail records
+waves, applicability, profile/capabilities, packets and acknowledged budget.
+Lens events retain lens/wave, applicability or skip reason, model/settings,
+execution/independence limits, packet size, and completion counts. Only append
+lens-completed after durable findings and pending leads are accounted for.
+
+Usage field vocabulary below preserves the host receipt contract. Supply actual
+counts/identifiers and one status value; omit tokens/components when unavailable.
+These placeholders are a schema guide, not a measured completion event.
+
+```json
+{"schema":"run/v1","event":"lens-completed","wave":1,"lens":"reliability","surface_seen":0,"findings":0,"model":"inherited","tokens":0,"agent_thread_id":"<dispatch thread id>","tokens_status":"observed|unavailable","tokens_reason":"<required when unavailable>","tokens_source":"codex-session-transcript-best-effort","token_usage":{"input_tokens":0,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":0,"reasoning_output_tokens":0,"total_tokens":0},"at":"<iso8601>"}
+```
 
 A `lens-completed` event carries `surface_seen` (int — the lens's Exposure denominator), `findings` (int — count the lens emitted), and `model` (the model the lens ran on, as dispatched); `model` also appears on `lens-launched`. `tokens` (int, optional) records the lens's observed token spend when the orchestrator can see it; null/omitted when unobserved. Codex `lens-launched` also records the returned `agent_thread_id`. Every Codex `lens-completed` carries `tokens_status`: `observed` requires integer `tokens`, `tokens_source`, and the component `token_usage`; `unavailable` requires `tokens_reason`. Reasons distinguish host capability (`host-usage-unsupported`), missing host results (`host-result-missing`), missing local artifacts (`transcript-unavailable`), an unsupported changed transcript shape (`transcript-format-unsupported`), bounded-parser limits (`transcript-scan-limit-exceeded` or `transcript-over-limit`), invalid usage (`usage-invalid`), and an invalid dispatch identifier (`invalid-agent-thread-id`). Aggregation maps any unknown or malformed reason to the fixed `reason-invalid` enum before telemetry.
 
-The `run-started` event's `detail` carries the chosen wave partition — the lens list per wave (default or repartitioned-for-cause, per `cost-and-models.md`). This is the single record of the partition; nothing else derives or re-derives it.
 
-## Resume — read the cursor, never the finding bodies
 
-`run.jsonl` is the coarse state log — one line per wave/lens transition, tens of lines even across retries, not the per-finding logs. Resume reads the cursor, not the whole run, and never re-hydrates completed work:
+`report-written` switches to follow-up; it is not terminal. Follow-up events are
+issues-filed/filing-skipped and telemetry-sent/telemetry-skipped, then run-completed.
+Both dispositions are required for completion. Handed-off commands or declined
+actions use skipped with the actual reason; an unanswered choice remains pending.
+Failures remain pending for retry after another source check. `run-aborted` is
+terminal and records a deliberate abandonment; nothing resumes an aborted run.
 
-0. **No `run-started`.** A run dir present but with no `run-started` event in `run.jsonl` is a Phase-0/1 death — restart Phase 0/1 fresh (`inventory.md` and lens selection are cheap to rebuild); any finding files already on disk stand and are deduped at triage as normal.
-1. **Position.** The resume point is fixed by the last triaged wave: `grep '"event":"wave-triaged"' run.jsonl | tail -1` returns it while reading only matching lines. If none, resume at wave 1.
-2. **Plan.** Read the wave partition from the `run-started` event's `detail` — the recorded partition, never re-derived — via `manifest.yaml` (a small projection) or, if it is missing or stale, `run.jsonl` directly. Both are bounded reads — never a full-file scan for the plan.
-3. **Re-enter** Phase 2/3 for waves after the last triaged one only.
-4. **Do not load** already-triaged waves' `findings/<lens>/` files or `triage.jsonl` into context — they are authoritative on disk. A later wave's dedup that needs a specific prior id fetches it by targeted `grep` across `findings/`, never a full read.
-5. **Ordering.** `plans/phase-<n>.md` is written before the `wave-triaged` event for that wave is emitted — the event asserts the plan exists.
-
-`manifest.yaml` is a convenience snapshot regenerated from `run.jsonl`; it accelerates the plan read but is never authoritative — a corrupt or stale manifest falls back to the append-only log.
-
-## dedup_key & ids
-
-`id`: `<lens>-NNN`, sequential per lens. `dedup_key`: `<lens>:<path-normalized-to-repo-root>:<short-slug-of-title>`. Dedup matches on `dedup_key` and overlapping `locations`.
+For separately authorized design-discussion issues, `issues-filed.detail` carries
+`discussion_refs`: a list of {id, url, root_cause_key, dedup_key}. They are not
+confirmed-defect issue_ref records. Resume, reports and duplicate suppression
+read this mapping alongside every historical triage issue_ref. If filing is
+already disposed, skip it on follow-up resume. If a crash happened after tracker
+creation but before the receipt, search the tracker for all identities before
+retrying. Store each returned discussion receipt immediately in a new local
+`bodies/<id>.filing.json`, reconcile those receipts into the single issues-filed
+event when the selected batch finishes, and retain partial failures visibly.
+Neither a stored command nor this receipt grants permission to create an issue.

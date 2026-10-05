@@ -4,6 +4,22 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-10-05
+
+### Added
+
+- Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,
+  plus deterministic inventory and bounded evidence packets.
+
+### Changed
+
+- Bind resume to the reviewed source and preserve leads, verification results, and
+  root-cause triage. Report completion leaves filing and optional telemetry pending
+  until each is completed or explicitly skipped.
+- Resolve review profiles from actual Pi capabilities and report independence limits;
+  unresolved serious claims cannot become confirmed fix work. The supported Pi runtime
+  remains 1.0.2.
+
 ## [0.16.5] - 2026-10-05
 
 ### Changed

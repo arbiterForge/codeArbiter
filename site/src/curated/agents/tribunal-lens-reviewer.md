@@ -8,38 +8,45 @@ related: [skills/tribunal, commands/tribunal, architecture-drift-reviewer]
 The single generic executor behind every tribunal audit lens. `/ca:tribunal`'s roster dispatch
 sends this agent out once per active lens, and each dispatch carries an assignment: which lens to
 run, which slice of the codebase to cover, and where the run's on-disk record lives. The agent
-then loads that lens's card from disk and works through its checklist against the assigned scope,
-strictly read-only, touching nothing outside the run directory.
+then loads that lens's card from the selected trusted bundle and reviews the assigned evidence.
+It reads product code and writes its findings, leads, or verification results only inside the run
+directory. Repository text and tool output cannot change its role or authorize shell commands.
 
-## One body, eleven cards
+## One body, thirteen cards
 
-This agent replaced eleven `tribunal-<lens>-reviewer` agents that were near-duplicates of each
-other: identical dispatch, evidence, and reporting mechanics wrapped around a different checklist.
-The per-lens substance now lives in eleven [lens cards](/reference/#tribunal-lenses), one card per
-lens (starting with [appsec](/reference/tribunal-lenses/appsec/)), each carrying that lens's scope
-weighting, required project reading, checklist, exposure denominator, and out-of-scope boundary.
-Consolidating the shared machinery into one body means a mechanics fix lands once instead of
-eleven times, and a lens's mandate changes by editing its card, not by rewriting an agent.
+The review questions live in thirteen [lens cards](/reference/#tribunal-lenses). Each card states
+when it applies, when to skip it, what evidence a finding needs, and common false positives.
+[Semantic-contract](/reference/tribunal-lenses/semantic-contract/) checks behavior against an
+established requirement. [Change-closure](/reference/tribunal-lenses/change-closure/) traces a
+change through consumers, hosts, generated files, and distributed packages. The eleven earlier
+lens names and their public links remain available.
 
 ## Assignment mechanism
 
-The dispatch prompt opens with an assignment block naming the lens slug, the scope slice, and the
-run directory. The slug must resolve to a real card under the tribunal skill's lens references; if
-no such card exists on disk the agent treats the dispatch as malformed and stops rather than
-inventing its own mandate. It re-reads the card fresh on every dispatch instead of relying on any
-remembered summary of it.
+The assignment names the lens, checked source binding, finding scope, bounded evidence, and output
+directory. Finding scope controls where a defect may be reported; evidence scope can include
+declared callers or contracts needed to understand it. A missing card or source binding stops
+the review. The reviewer cannot silently expand the assignment.
 
-## Why this model tier
+## Review and verification
 
-Ships `model: inherit` because the reasoning budget is chosen per lens, not per agent: the
-tribunal skill's dispatch guidance runs the adversarial lenses (appsec, architecture, reliability)
-on the highest-reasoning tier and scales the remaining lenses down to cheaper tiers. One body
-serving all eleven lenses has to leave the tier to the caller.
+In review mode, the agent seeks concrete contract failures and records impact and evidence.
+In verification mode, a fresh instance tries to disprove a candidate finding using only the claim
+and necessary evidence. It returns confirmed, narrowed, refuted, or inconclusive. Critical/high
+claims and expensive inferential recommendations require this attempt before becoming confirmed
+fix work. A host without fresh contexts records limited independence and leaves serious claims
+verification-required.
+
+The caller selects supported `deep` or `standard` settings for each assignment. The agent inherits
+the configured model where a distinct profile is unavailable, and records that limitation.
 
 ## What it emits
 
-Individual finding records under the run directory's per-lens findings folder, each persisted the
-instant the defect is confirmed so an interrupted run loses nothing, with numbering continued from
-whatever is already on disk. Severity and confidence in those records are provisional; the
-orchestrator's triage pass recalibrates them. Back to the caller it returns only a compact
-summary: severity counts, leading finding ids, and the lens's exposure figure.
+Findings are saved individually as they are discovered, with provisional severity and confidence.
+Cross-lens observations become durable leads for another lens to establish or dismiss; a lead is
+not yet a defect. Verification attempts are saved separately. Existing records are preserved
+across interruption, and triage groups corroborating findings by root cause.
+
+The return message stays compact: finding and lead identifiers, provisional counts, reviewed
+exposure, and unresolved limits. The agent never edits project code, files issues, sends telemetry,
+or dispatches another reviewer.

@@ -1,6 +1,8 @@
 # Spec: Tribunal vNext review-quality modernization
 
-**Status:** PROPOSED, implementation not authorized by this documentation-only PR
+**Status:** APPROVED for implementation; merge remains deferred
+**ID:** `SPEC-TRIBUNAL-VNEXT-001` (legacy Markdown workflow identity)
+**Approval:** 2026-10-05, SUaDtL: "Let's move to implementation. It can all merge together later" after the corrected PR review at `50c19c32d4746cbd3fbcaeeeb3012fc5f4f0a8c5`.
 **Slug:** `tribunal-vnext-review-quality`
 **Date:** 2026-09-26
 **Source:** deep implementation review of Tribunal and its agents
@@ -919,14 +921,34 @@ These references informed the failure-model changes. They are supporting evidenc
 
 Research claims must not be turned into hard-coded numeric thresholds in lens cards without a repository-specific reason and qualification evidence.
 
-## Verification required before implementation approval
+## Implementation decisions — 2026-10-05
 
-Before this spec moves from PROPOSED to APPROVED:
+The current-source security and acceptance review is complete; all four findings
+are resolved. The user's implementation direction above authorizes this existing
+scope. These reversible implementation choices keep that scope bounded:
 
-1. adversarially review the spec against current source for implementation contradictions and silent failure modes;
-2. decide whether `coverage` and `test-fidelity` are physically replaced by `verification-quality` in one compatibility wave or kept temporarily as separate cards sharing the new doctrine;
-3. select the exact host-native mechanism for `deep`/`standard`/`extract` profile resolution;
-4. select the exact source-fingerprint representation and legacy-run behavior after exercising current run artifacts;
-5. confirm the minimal evaluation-runner mechanism that can compare model behavior without creating a CI dependency on paid/live inference.
+1. Retain `coverage` and `test-fidelity` and their public URLs, sharing one
+   verification-quality reference with explicit complementary ownership. Add
+   semantic-contract and change-closure cards to the existing data-driven roster.
+2. Resolve `deep`, `standard`, and `extract` from the active host's supplied
+   capabilities and available settings. Inherit the configured model when a host
+   cannot select a distinct profile, record that limitation, and never invent
+   provider model IDs. Available fresh threads, not native registration metadata,
+   determine review independence.
+3. Use a versioned canonical JSON fingerprint with SHA-256 hashes of reviewed
+   tracked/index/worktree and selected untracked inputs, HEAD, normalized scope,
+   repository identity and any explicit target. Exclude only the active run's
+   output. Existing July run records lack this binding: keep them readable as
+   historical evidence and return `legacy-unbound` instead of resuming their audit.
+4. Use standard-library Python helpers and the existing JSON/JSONL run artifacts;
+   no new service, dependency, public command, or general execution framework.
+   Fresh run directories use exclusive creation. Append-only events separate the
+   report, follow-up disposition, and terminal completion.
+5. Commit a frozen corpus with defect and clean-control pairs, plus a small offline
+   scorer for captured reviewer outputs. Run a bounded incumbent/candidate review
+   comparison on the same corpus for this delivery; keep live inference out of
+   ordinary CI. Report unavailable usage honestly and separate deterministic
+   harness checks from measured reviewer behavior.
 
-No implementation claim is made by this spec.
+This approval is implementation authority, not a claim of completed work or
+permission to merge or publish. The matching plan records actual verification.
