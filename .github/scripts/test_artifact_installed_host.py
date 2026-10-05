@@ -479,8 +479,8 @@ class Workflow:
 
     def approve(self, artifact_id: str) -> str:
         if self.host == "pi":
-            # Pi 0.84.1 exposes no pre-model event carrying the user's exact
-            # prompt. Keep its cold lifecycle proof synthetic and fail closed
+            # Pi 1.0.0 has an input event, but no Pi-native authority adapter.
+            # Keep its cold lifecycle proof synthetic and fail closed
             # rather than manufacturing host-observed approval authority.
             receipt = self.stage_policy_event(
                 artifact_id,

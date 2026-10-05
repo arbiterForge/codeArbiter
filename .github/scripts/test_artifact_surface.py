@@ -225,8 +225,8 @@ class ArtifactSurfaceTest(unittest.TestCase):
 
     def test_pi_prompt_approval_is_explicitly_unsupported(self) -> None:
         warning = (
-            "Pi 0.84.1 exposes no\n"
-            "pre-model event carrying the user's exact prompt, so under Pi do not arm this\n"
+            "Pi 1.0.0 exposes an `input`\n"
+            "event, but codeArbiter has no Pi-native authority adapter. Under Pi do not arm this\n"
             "adapter"
         )
         for relative in ARTIFACT_GUIDANCE_PATHS:

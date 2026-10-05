@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.1] - 2026-10-04
+
+### Fixed
+
+- Keep prerequisite confirmations and reply codes valid for the same 24-hour
+  window, and show the deadline when requesting approval.
+- State the accepted reviewer finding severities so informational findings do
+  not accidentally invalidate a review.
+- Correct Pi approval guidance to describe the missing authority adapter.
+
 ## [2.24.0] - 2026-10-03
 
 ### Added

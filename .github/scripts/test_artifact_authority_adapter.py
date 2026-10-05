@@ -2616,6 +2616,18 @@ class NativeReviewTransportTest(unittest.TestCase):
     tearDown = AuthorityAdapterTest.tearDown
     _setup_claude = ClaudeAuthorityAdapterTest._setup_claude
 
+    def test_review_prompt_and_charter_state_the_finding_contract(self):
+        self._setup_claude()
+        contract = "severity must be BLOCK, WARN, or INFO"
+        for host in ("codex", "claude"):
+            with self.subTest(host=host):
+                armed = self._arm_review(host, "spec_review", "finding-contract-" + host)
+                self.assertIn(contract, armed["dispatch_prompt"])
+                self.assertIn("exactly severity, code, message", armed["dispatch_prompt"])
+        charter = (REPO / "core/surface/agents/authority-reviewer.md").read_text(encoding="utf-8")
+        self.assertIn(contract, charter)
+        self.assertIn("exactly severity, code, message", charter)
+
     def _arm_review(self, host, activity, nonce, entries=0):
         self.client = FakeClient(self.root)
         context = self.client.context
