@@ -117,6 +117,14 @@ _IMMUTABLE_HISTORY_PREFIXES = (
     ".superpowers/sdd/",
     "legacy/",
 )
+_IMMUTABLE_HISTORY_FILES = {
+    "CHANGELOG.md",
+    # Frozen review captures retain quoted native syntax; neighboring fixtures
+    # still require their own classification.
+    ".github/fixtures/tribunal/qualification/candidate-bundle.json",
+    ".github/fixtures/tribunal/qualification/candidate-delivered-bundle.json",
+    ".github/fixtures/tribunal/qualification/incumbent-bundle.json",
+}
 _FIXTURE_INPUT_PREFIXES = (
     "site/scripts/generator/",
     "site/src/curated/",
@@ -170,7 +178,7 @@ def _classify_claude_root_occurrence(
     relative: str, line: str, descriptor_host: str | None
 ) -> str | None:
     """Return the one sanctioned class, or None for a forbidden active use."""
-    if relative == "CHANGELOG.md" or relative.startswith(_IMMUTABLE_HISTORY_PREFIXES):
+    if relative in _IMMUTABLE_HISTORY_FILES or relative.startswith(_IMMUTABLE_HISTORY_PREFIXES):
         return "immutable-history"
     if _is_test_or_fixture(relative):
         return "codex-compatibility-fixture-input"
