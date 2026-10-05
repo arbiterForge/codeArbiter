@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.24.3] - 2026-10-05
+
+### Fixed
+
+- Keep host hook runtime markers out of review input snapshots, so an
+  independent review no longer goes stale because the reviewer read files.
+  Plans can no longer root verification inputs in, or claim coverage of, that
+  marker directory. Review and verification requests armed by an older engine
+  go stale after upgrading; re-arm them.
+
 ## [2.24.2] - 2026-10-04
 
 ### Fixed
