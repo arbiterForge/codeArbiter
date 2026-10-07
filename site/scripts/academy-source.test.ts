@@ -200,6 +200,22 @@ describe("loadAcademySource", () => {
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/installer bytes do not match the reviewed checksum/);
   });
 
+  it.each([
+    ["install.ps1", false], ["install.sh", false],
+    ["install.ps1", true], ["install.sh", true],
+  ] as const)("rejects jointly changed %s files with an unchanged commit (staged=%s)", (name, staged) => {
+    const fixtureRoot = createFixture();
+    const sourceRoot = join(fixtureRoot, "academy-source");
+    const commit = execFileSync("git", ["-C", sourceRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+    const bytes = "jointly changed installer fixture\n";
+    writeFileSync(join(sourceRoot, "install", name), bytes);
+    writeFileSync(join(sourceRoot, "install", `${name}.sha256`), `${createHash("sha256").update(bytes).digest("hex")}  ${name}\n`);
+    if (staged) execFileSync("git", ["-C", sourceRoot, "add", "install"]);
+
+    expect(execFileSync("git", ["-C", sourceRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim()).toBe(commit);
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/installer files do not match the pinned source commit/);
+  });
+
   it.each(["install.ps1", "install.sh"])("rejects a noncanonical %s checksum", (name) => {
     const fixtureRoot = createFixture();
     writeFileSync(join(fixtureRoot, "academy-source", "install", `${name}.sha256`), `${"a".repeat(64)} ${name}\n`);
@@ -220,6 +236,31 @@ describe("loadAcademySource", () => {
       const variants = homeAction(manifest, 3).variants as JsonRecord[];
       const variant = variants.find(({ command }) => String(command).includes(token))!;
       variant.command = `${variant.command}${token}`;
+    });
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/home installer command must contain/);
+  });
+
+  it.each(["macos", "linux"])("rejects Windows/%s installer tokens swapped with unchanged totals", (os) => {
+    const fixtureRoot = createFixture();
+    mutateHomeActionManifest(fixtureRoot, (manifest) => {
+      const variants = homeAction(manifest, 3).variants as JsonRecord[];
+      const windows = variants.find(({ operating_system }) => operating_system === "windows")!;
+      const shell = variants.find(({ operating_system }) => operating_system === os)!;
+      [windows.command, shell.command] = [shell.command, windows.command];
+    });
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/home installer command must contain/);
+  });
+
+  it("rejects shell installer tokens redistributed into one OS variant", () => {
+    const fixtureRoot = createFixture();
+    mutateHomeActionManifest(fixtureRoot, (manifest) => {
+      const variants = homeAction(manifest, 3).variants as JsonRecord[];
+      const macos = variants.find(({ operating_system }) => operating_system === "macos")!;
+      const linux = variants.find(({ operating_system }) => operating_system === "linux")!;
+      macos.command = `${macos.command}\n${linux.command}`;
+      linux.command = "";
     });
 
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/home installer command must contain/);

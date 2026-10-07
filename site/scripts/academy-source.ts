@@ -178,24 +178,40 @@ function trackFor(id: string): AcademyLessonSource["track"] {
   return "power-user";
 }
 
-function hydrateHomeInstallerDigests(sourceRoot: string, manifest: AcademyActionManifestSource): void {
+function hydrateHomeInstallerDigests(sourceRoot: string, commit: string, manifest: AcademyActionManifestSource): void {
   const variants = manifest.actions.flatMap((action) => action.variants);
-  for (const [token, name, count] of [
-    ["{{INSTALL_PS1_SHA256}}", "install.ps1", 1],
-    ["{{INSTALL_SH_SHA256}}", "install.sh", 2],
+  for (const [token, name, operatingSystems] of [
+    ["{{INSTALL_PS1_SHA256}}", "install.ps1", ["windows"]],
+    ["{{INSTALL_SH_SHA256}}", "install.sh", ["macos", "linux"]],
   ] as const) {
+    const count = operatingSystems.length;
     if (variants.reduce((total, variant) => total + variant.command.split(token).length - 1, 0) !== count) {
       throw new Error(`Academy home installer command must contain ${token} exactly ${count} time(s)`);
     }
+    for (const os of operatingSystems) {
+      const osCount = variants.filter((variant) => variant.operating_system === os)
+        .reduce((total, variant) => total + variant.command.split(token).length - 1, 0);
+      if (osCount !== 1) {
+        throw new Error(`Academy home installer command must contain ${token} exactly once for ${os}`);
+      }
+    }
     // Expected digests belong to the reviewed Academy source, never a runtime download.
-    const checksum = readFileSync(sourcePath(sourceRoot, "install", `${name}.sha256`), "utf8");
+    const checksumBytes = readFileSync(sourcePath(sourceRoot, "install", `${name}.sha256`));
+    const checksum = checksumBytes.toString("utf8");
     const match = checksum.match(/^([0-9a-f]{64})  (install\.(?:ps1|sh))\n$/);
     if (!match || checksum !== `${match[1]}  ${name}\n`) {
       throw new Error(`Academy reviewed installer checksum is not canonical: ${name}`);
     }
-    const actual = createHash("sha256").update(readFileSync(sourcePath(sourceRoot, "install", name))).digest("hex");
+    const installerBytes = readFileSync(sourcePath(sourceRoot, "install", name));
+    const actual = createHash("sha256").update(installerBytes).digest("hex");
     if (actual !== match[1]) {
       throw new Error(`Academy installer bytes do not match the reviewed checksum: ${name}`);
+    }
+    for (const [file, bytes] of [[`${name}.sha256`, checksumBytes], [name, installerBytes]] as const) {
+      const committedBytes = execFileSync("git", ["-C", sourceRoot, "show", `${commit}:install/${file}`]);
+      if (!bytes.equals(committedBytes)) {
+        throw new Error(`Academy installer files do not match the pinned source commit: ${file}`);
+      }
     }
     for (const variant of variants) {
       variant.command = variant.command.replaceAll(token, match[1]);
@@ -206,7 +222,7 @@ function hydrateHomeInstallerDigests(sourceRoot: string, manifest: AcademyAction
   }
 }
 
-function loadHomeActions(sourceRoot: string): Map<string, AcademyHomeActionSource> {
+function loadHomeActions(sourceRoot: string, commit: string): Map<string, AcademyHomeActionSource> {
   let manifest: unknown;
   try {
     manifest = parseJson(sourcePath(sourceRoot, "academy", "actions", "home.json"));
@@ -214,7 +230,7 @@ function loadHomeActions(sourceRoot: string): Map<string, AcademyHomeActionSourc
     throw new Error("Academy Home action manifest is required", { cause: error });
   }
   validateActionManifest(manifest, "home");
-  hydrateHomeInstallerDigests(sourceRoot, manifest);
+  hydrateHomeInstallerDigests(sourceRoot, commit, manifest);
   const actions = new Map<string, AcademyHomeActionSource>();
   for (const action of manifest.actions) {
     if (actions.has(action.id)) {
@@ -225,7 +241,7 @@ function loadHomeActions(sourceRoot: string): Map<string, AcademyHomeActionSourc
   return actions;
 }
 
-function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
+function loadHomeGuide(sourceRoot: string, commit: string): AcademyHomeSource {
   let guide: string;
   try {
     guide = readFileSync(sourcePath(sourceRoot, "academy", "guides", "home.md"), "utf8");
@@ -264,7 +280,7 @@ function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
     throw new Error("Academy Home guide must contain five setup steps");
   }
 
-  const actions = loadHomeActions(sourceRoot);
+  const actions = loadHomeActions(sourceRoot, commit);
   const steps = setupLinks.map((step, index) => {
     const heading = lines.findIndex((line, lineIndex) => lineIndex > setupHeading && line === `## ${step.title}`);
     if (heading === -1) {
@@ -317,7 +333,8 @@ export function loadAcademySource(root: string): AcademySource {
       throw new Error(`Academy public inventory requires a published ${label} lesson`);
     }
   }
-  const home = loadHomeGuide(sourceRoot);
+  const commit = execFileSync("git", ["-C", sourceRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+  const home = loadHomeGuide(sourceRoot, commit);
 
   const lessons = availableLabs.map((id) => {
     const track = trackFor(id);
@@ -333,7 +350,7 @@ export function loadAcademySource(root: string): AcademySource {
 
   return {
     release: RELEASE,
-    commit: execFileSync("git", ["-C", sourceRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+    commit,
     home,
     lessons,
   };
