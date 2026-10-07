@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import os
 from pathlib import Path
 import platform
@@ -1027,8 +1026,10 @@ def _engine_timeout() -> float:
             raise ValueError("surrounding whitespace")
         value = float(raw)
     except ValueError:
-        value = math.nan
-    if not math.isfinite(value) or value <= 0 or value > _MAX_ENGINE_TIMEOUT_SECONDS:
+        value = None
+    # Comparisons with NaN are false and infinity exceeds the cap, so this
+    # single range check also refuses non-finite values.
+    if value is None or not 0 < value <= _MAX_ENGINE_TIMEOUT_SECONDS:
         raise ArtifactError("INVALID_ENGINE_TIMEOUT",
                             f"{ENGINE_TIMEOUT_ENV} must be a number of seconds in (0, {_MAX_ENGINE_TIMEOUT_SECONDS}]")
     return value
