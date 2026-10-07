@@ -47,6 +47,11 @@ EXPECTED_SUITES = {
         "test_existing_html_mutation_revalidates_payload_before_writing",
         "test_legacy_markdown_route_remains_usable_with_missing_payload",
         "test_new_html_route_reports_actionable_capability_error_before_writing",
+        "test_default_leaves_headroom_over_a_thirty_second_snapshot",
+        "test_environment_override_is_honored",
+        "test_explicit_timeout_wins_over_environment",
+        "test_malformed_override_refuses",
+        "test_timeout_reaches_the_bounded_child",
     },
     "test_artifact_authoring.py": {
         "test_installed_intent_cli_accepts_native_empty_diagnostics",
