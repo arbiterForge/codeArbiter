@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import platform
@@ -1008,11 +1009,36 @@ def _context_release_qualified(installation: Path) -> bool:
         return False
 
 
+# A whole-tree input snapshot on a large repository can take ~30s on Windows,
+# so the old 30s bound timed out every publish, arm and verify. The bound is a
+# wait limit, never a gate: raising it relaxes no check.
+DEFAULT_ENGINE_TIMEOUT_SECONDS = 120
+ENGINE_TIMEOUT_ENV = "CODEARBITER_ENGINE_TIMEOUT"
+_MAX_ENGINE_TIMEOUT_SECONDS = 3600
+
+
+def _engine_timeout() -> float:
+    """Resolve the operator override; a malformed value refuses, never defaults."""
+    raw = os.environ.get(ENGINE_TIMEOUT_ENV)
+    if raw is None:
+        return DEFAULT_ENGINE_TIMEOUT_SECONDS
+    try:
+        if raw != raw.strip():
+            raise ValueError("surrounding whitespace")
+        value = float(raw)
+    except ValueError:
+        value = math.nan
+    if not math.isfinite(value) or value <= 0 or value > _MAX_ENGINE_TIMEOUT_SECONDS:
+        raise ArtifactError("INVALID_ENGINE_TIMEOUT",
+                            f"{ENGINE_TIMEOUT_ENV} must be a number of seconds in (0, {_MAX_ENGINE_TIMEOUT_SECONDS}]")
+    return value
+
+
 class ArtifactClient:
-    def __init__(self, root: str | Path, installation: str | Path, *, timeout: float = 30):
+    def __init__(self, root: str | Path, installation: str | Path, *, timeout: float | None = None):
         self.root = _trusted_directory(root, "UNSAFE_ROOT")
         self.installation = _trusted_directory(installation, "CAPABILITY_MISSING")
-        self.timeout = timeout
+        self.timeout = _engine_timeout() if timeout is None else timeout
 
     def workflow_preflight(self) -> dict[str, object]:
         """Read fresh installed prerequisites; never attest live host authority."""

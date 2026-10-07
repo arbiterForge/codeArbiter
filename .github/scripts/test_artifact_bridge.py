@@ -16,6 +16,7 @@ from unittest import mock
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(REPO/"core/pysrc"))
 from _artifactlib import (
+    DEFAULT_ENGINE_TIMEOUT_SECONDS,
     ArtifactClient,
     ArtifactError,
     _select_authoring_route,
@@ -37,6 +38,56 @@ def setUpModule():
         subprocess.run([sys.executable,str(REPO/"tools/build-artifacts.py"),
                         "--output",str(INSTALLATION)],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
+
+class EngineTimeoutTests(unittest.TestCase):
+    """A whole-tree snapshot on a large Windows repository took ~30s, the old
+    hard-coded bound, so every publish/arm/verify timed out. The default must
+    leave headroom, an operator override must be honored, and a malformed
+    override must refuse rather than silently fall back to a default."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
+        self.directory = physical_test_directory(self.tmp.name)
+
+    def client(self, **kwargs):
+        return ArtifactClient(self.directory, self.directory, **kwargs)
+
+    def test_default_leaves_headroom_over_a_thirty_second_snapshot(self):
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("CODEARBITER_ENGINE_TIMEOUT", None)
+            self.assertEqual(DEFAULT_ENGINE_TIMEOUT_SECONDS, 120)
+            self.assertEqual(self.client().timeout, 120)
+
+    def test_environment_override_is_honored(self):
+        with mock.patch.dict(os.environ, {"CODEARBITER_ENGINE_TIMEOUT": "300"}):
+            self.assertEqual(self.client().timeout, 300)
+        with mock.patch.dict(os.environ, {"CODEARBITER_ENGINE_TIMEOUT": "45.5"}):
+            self.assertEqual(self.client().timeout, 45.5)
+
+    def test_explicit_timeout_wins_over_environment(self):
+        with mock.patch.dict(os.environ, {"CODEARBITER_ENGINE_TIMEOUT": "300"}):
+            self.assertEqual(self.client(timeout=7).timeout, 7)
+
+    def test_malformed_override_refuses(self):
+        for value in ("", "abc", "0", "-5", "nan", "inf", "3601", " 60"):
+            with self.subTest(value=value), mock.patch.dict(os.environ, {"CODEARBITER_ENGINE_TIMEOUT": value}):
+                with self.assertRaises(ArtifactError) as raised:
+                    self.client()
+                self.assertEqual(raised.exception.code, "INVALID_ENGINE_TIMEOUT")
+
+    def test_timeout_reaches_the_bounded_child(self):
+        import _artifactlib
+        with mock.patch.dict(os.environ, {"CODEARBITER_ENGINE_TIMEOUT": "300"}):
+            client = ArtifactClient(self.directory, INSTALLATION)
+        seen = []
+
+        def fake(argv, request, fd, timeout, **kwargs):
+            seen.append(timeout)
+            raise ArtifactError("TIMEOUT", "stop")
+        with mock.patch.object(_artifactlib, "_bounded_child", fake):
+            with self.assertRaises(ArtifactError):
+                client.call("identity", {"artifact_id": "SPEC-X"})
+        self.assertEqual(seen, [300], "the configured bound must be the one the engine child is waited on")
 
 class BridgeTests(unittest.TestCase):
     def setUp(self):
