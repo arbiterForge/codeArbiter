@@ -1,0 +1,10 @@
+---
+import { loadAtlas } from '../../scripts/execution-maps/atlas';
+import { renderAtlasHtml } from '../../scripts/execution-maps/atlas-render';
+import '../styles/workflow-atlas.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Fragment set:html={renderAtlasHtml(loadAtlas(), base)} />
+<script>
+  import '../scripts/workflow-atlas';
+</script>
