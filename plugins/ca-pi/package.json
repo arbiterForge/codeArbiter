@@ -1,6 +1,6 @@
 {
   "name": "@arbiterforge/ca-pi",
-  "version": "0.16.7",
+  "version": "0.17.0",
   "private": true,
   "license": "AGPL-3.0-only",
   "type": "module",

@@ -1,0 +1,696 @@
+{
+  "schema": "tribunal-review/v1",
+  "evidence_kind": "captured",
+  "run_id": "pr887-benchmark-A",
+  "corpus_sha256": "ba54b81610a64ccfaa589a4822b264d47c92c11f34c41c013f764c8f1ea1fea2",
+  "packet_sha256": "1c1f18136a9043c85f63296ca37b9b9d1a69e2d58781e5ded68ff61ae242465a",
+  "model": null,
+  "host": "codex",
+  "card_revision": "50c19c32d4746cbd3fbcaeeeb3012fc5f4f0a8c5",
+  "card_bundle_sha256": "efc7a7cbb625f70ae9543fa2b26fa9dba5c7d624ce0d46c894f6ba54fd0e83ef",
+  "duration_seconds": null,
+  "tokens": null,
+  "cases": [
+    {
+      "case_id": "c-d265f4b87a0d",
+      "source_sha256": "1efc2cb58458ad706486d5d4f2825ede36e888cc38c4eb8d1189f80e9536682f",
+      "findings": [
+        {
+          "finding_id": "reliability-001",
+          "contract_id": "R1",
+          "title": "The outer endpoint lets StorageUnavailable escape instead of returning HTTP 503",
+          "severity": "medium",
+          "lens": "reliability",
+          "root_cause_key": "c-d265f4b87a0d:missing-storage-error-http-mapping",
+          "evidence": [
+            {
+              "path": "service.py",
+              "line": 4,
+              "quote": "async def endpoint(store):\n    return 200, await load(store)"
+            },
+            {
+              "path": "adapter.txt",
+              "line": 1,
+              "quote": "store.read raises StorageUnavailable when storage is offline. The shown endpoint is the outermost request error boundary; no other middleware maps errors."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-875fd92ffae7",
+      "source_sha256": "01b3aed1d9c87badd0af4ca368d5ce3b9ee2f0582627d6e1ce85df90baf01784",
+      "findings": [
+        {
+          "finding_id": "performance-001",
+          "contract_id": "R1",
+          "title": "Per-user network calls exceed the one-request render limit and serialize up to eight requests",
+          "severity": "medium",
+          "lens": "performance",
+          "root_cause_key": "c-875fd92ffae7:per-user-network-loop",
+          "evidence": [
+            {
+              "path": "roster.py",
+              "line": 3,
+              "quote": "    for identifier in ids:\n        rows.append(await api.get_user(identifier))"
+            },
+            {
+              "path": "scale.txt",
+              "line": 1,
+              "quote": "The route validates len(ids) <= 8 and runs on every interactive refresh. get_user performs one network request; get_users(ids) performs one batch request. Each request has observed 80ms latency."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-156c990cf0ac",
+      "source_sha256": "904441148c561a6bf3c758419f6d426a8c5da4975806a582dbeaefa1880a0258",
+      "findings": []
+    },
+    {
+      "case_id": "c-1117bbb38081",
+      "source_sha256": "a55edd1996bc6e73cfa3906d0651bf5eaca697bdf75ded75ffbbd921cc4233d4",
+      "findings": []
+    },
+    {
+      "case_id": "c-cc03862646d8",
+      "source_sha256": "b029265ce63fd363aa2a4f7172a7405e0d354dad1c71e5d41f4f59c41c348882",
+      "findings": [
+        {
+          "finding_id": "reliability-002",
+          "contract_id": "R1",
+          "title": "Floor division underbills started hours: one minute costs zero units and 61 minutes costs one",
+          "severity": "high",
+          "lens": "reliability",
+          "root_cause_key": "c-cc03862646d8:started-hour-floor-rounding",
+          "evidence": [
+            {
+              "path": "billing.py",
+              "line": 1,
+              "quote": "def units(minutes):\n    return minutes // 60"
+            },
+            {
+              "path": "billing_test.py",
+              "line": 3,
+              "quote": "        assert units(minutes) == minutes // 60"
+            }
+          ],
+          "verification_status": "unverified"
+        },
+        {
+          "finding_id": "coverage-001",
+          "contract_id": "R1",
+          "title": "The billing assertion repeats floor rounding and accepts the implementation that violates started-hour billing",
+          "severity": "medium",
+          "lens": "coverage",
+          "root_cause_key": "c-cc03862646d8:started-hour-floor-rounding",
+          "evidence": [
+            {
+              "path": "billing_test.py",
+              "line": 1,
+              "quote": "def test_units():\n    for minutes in [0, 1, 60, 61]:\n        assert units(minutes) == minutes // 60"
+            },
+            {
+              "path": "billing.py",
+              "line": 2,
+              "quote": "    return minutes // 60"
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-19b06a6c44c5",
+      "source_sha256": "7d3a42dc403d1fe4be1fb868954a7448d3333bbdf642335cbdd3d9fe410bd9ea",
+      "findings": []
+    },
+    {
+      "case_id": "c-7adfbc05abc1",
+      "source_sha256": "a2aa46140d9290137cb9b36c45039dc883a42b358dc004b58615e3cef45d7c19",
+      "findings": [
+        {
+          "finding_id": "appsec-001",
+          "contract_id": "R1",
+          "title": "Unauthenticated search text is concatenated into SQL, allowing query syntax injection",
+          "severity": "critical",
+          "lens": "appsec",
+          "root_cause_key": "c-7adfbc05abc1:query-text-sql-concatenation",
+          "evidence": [
+            {
+              "path": "search.py",
+              "line": 2,
+              "quote": "    term = request.query[\"q\"]\n    return db.query(\"SELECT id FROM products WHERE name = \" + \"'\" + term + \"'\")"
+            },
+            {
+              "path": "boundary.txt",
+              "line": 1,
+              "quote": "q reaches this handler directly from unauthenticated HTTP query strings. db.query(sql, params) supports positional ? bindings. No validation or escaping occurs in middleware."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-939a3220714b",
+      "source_sha256": "010ffdac58df503560935c42d466aa6f5a9982fe577b681c29c583c4bdd5143e",
+      "findings": []
+    },
+    {
+      "case_id": "c-fbae159b0948",
+      "source_sha256": "f781619b22c9400eb9c517c1e98edbb4d57adce32ab0f5c93967e517e106039e",
+      "findings": []
+    },
+    {
+      "case_id": "c-59b6c595d22e",
+      "source_sha256": "d99618ec64fa729dfb3981a386be714f0fcae113ed8fbb2f9e0767deb8293675",
+      "findings": [
+        {
+          "finding_id": "architecture-001",
+          "contract_id": "R1",
+          "title": "InvoiceService discards the supplied Clock and reads system time instead of the deterministic clock",
+          "severity": "medium",
+          "lens": "architecture",
+          "root_cause_key": "c-59b6c595d22e:discarded-clock-injection",
+          "evidence": [
+            {
+              "path": "clock.py",
+              "line": 9,
+              "quote": "    def __init__(self, clock: Clock):\n        self.clock = SystemClock()\n    def issued_at(self):\n        return self.clock.now()"
+            },
+            {
+              "path": "use.txt",
+              "line": 1,
+              "quote": "Tests provide FixedClock.now returning 100. No other production implementation is planned. utc_epoch reads the real system time."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-e34c3e9e7f7f",
+      "source_sha256": "edf709894c496805284b5f988db6f750e9fea1d00e9bf88218524f85cdf73491",
+      "findings": []
+    },
+    {
+      "case_id": "c-861876ed2aa1",
+      "source_sha256": "eb8f48b9322de824350d2fda1c00275e61e5ce702c43c20c3003ebf6f8946195",
+      "findings": []
+    },
+    {
+      "case_id": "c-9cf0a546f0cf",
+      "source_sha256": "18545a50cf69806ce9d5c56dcc9b09dda268c74d1b96e4562d259996aae19318",
+      "findings": [
+        {
+          "finding_id": "test-fidelity-001",
+          "contract_id": "R1",
+          "title": "FakeStore returns a truthy dictionary for an absent row, making remove_status return 204 instead of 404",
+          "severity": "medium",
+          "lens": "test-fidelity",
+          "root_cause_key": "c-9cf0a546f0cf:fake-remove-return-contract-drift",
+          "evidence": [
+            {
+              "path": "store_test.py",
+              "line": 3,
+              "quote": "        found = key in self.rows\n        self.rows.pop(key, None)\n        return {\"removed\": found}"
+            },
+            {
+              "path": "store_test.py",
+              "line": 7,
+              "quote": "def remove_status(store, key):\n    return 204 if store.remove(key) else 404"
+            },
+            {
+              "path": "production.txt",
+              "line": 1,
+              "quote": "Store.remove is documented and implemented to return a boolean. FakeStore.rows is initialized to a dictionary by the fixture."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-7211210f91ca",
+      "source_sha256": "98cfbab452c92125a2dd8d7115c3f40dc80445cb8c348d7202f4b20360456016",
+      "findings": []
+    },
+    {
+      "case_id": "c-aebc348ab8f7",
+      "source_sha256": "4c76c728c8889ff5bc1a52efb3fb8a69d79d650416f1d062aefc43f5cba48b1e",
+      "findings": []
+    },
+    {
+      "case_id": "c-980cfccb7a99",
+      "source_sha256": "b238a4d0f509bd72e56a5e25dd9bec9c060dd1782529806bae28fd79854d163b",
+      "findings": []
+    },
+    {
+      "case_id": "c-58beeb3ee53b",
+      "source_sha256": "2864a460162941d5d733e504406035975363d5e69ddb3017d87dfc3bfbc5e1e7",
+      "findings": [
+        {
+          "finding_id": "infra-001",
+          "contract_id": "R1",
+          "title": "The declared pi archive ships a format-1 adapter without schema.json, leaving format-2 activation incomplete",
+          "severity": "high",
+          "lens": "infra",
+          "root_cause_key": "c-58beeb3ee53b:incomplete-pi-format-2-archive",
+          "evidence": [
+            {
+              "path": "canonical.json",
+              "line": 1,
+              "quote": "{\"format\":2,\"hosts\":[\"claude\",\"codex\",\"pi\"],\"required_files\":[\"adapter.json\",\"schema.json\"]}"
+            },
+            {
+              "path": "archives.json",
+              "line": 1,
+              "quote": "{\"claude\":{\"adapter.json\":{\"format\":2},\"schema.json\":{\"reads\":[1,2]}},\"codex\":{\"adapter.json\":{\"format\":2},\"schema.json\":{\"reads\":[1,2]}},\"pi\":{\"adapter.json\":{\"format\":1}}}"
+            },
+            {
+              "path": "release.txt",
+              "line": 1,
+              "quote": "These complete frozen archive inventories are the exact candidate distribution inputs, not source-only build claims. Migration adds nullable fields; both readers accept old rows."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-498f4eaedbed",
+      "source_sha256": "a3c048a2854a17a64a412118a859826db1c02003c42b07616b9399c5c764b2a4",
+      "findings": []
+    },
+    {
+      "case_id": "c-0bdb89cab168",
+      "source_sha256": "5fe30546b1ec1de084f9f1001e864e606fcaf00b9fd1f271844dc36c5104264e",
+      "findings": [
+        {
+          "finding_id": "typesafety-001",
+          "contract_id": "R1",
+          "title": "The unchecked Order cast accepts null and invalid IDs instead of raising InvalidOrder",
+          "severity": "medium",
+          "lens": "typesafety",
+          "root_cause_key": "c-0bdb89cab168:unchecked-order-boundary-cast",
+          "evidence": [
+            {
+              "path": "order.ts",
+              "line": 2,
+              "quote": "function parse(raw: unknown): Order {\n  return raw as Order;\n}"
+            },
+            {
+              "path": "caller.txt",
+              "line": 1,
+              "quote": "parse receives JSON decoded directly from the network, including null and objects with numeric id. There is no upstream schema validator."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-698e3fc89ad4",
+      "source_sha256": "3211d3f9f267f78a566927b68aa1412e1629ebb8c5fda1a994b6ee8144e22ad1",
+      "findings": [
+        {
+          "finding_id": "reliability-003",
+          "contract_id": "R1",
+          "title": "Age-only resume accepts the supplied changed revision and reuses review for a different source fingerprint",
+          "severity": "medium",
+          "lens": "reliability",
+          "root_cause_key": "c-698e3fc89ad4:age-only-resume-without-fingerprint-equality",
+          "evidence": [
+            {
+              "path": "resume.py",
+              "line": 1,
+              "quote": "def can_resume(saved, current, age_hours):\n    return age_hours < 168"
+            },
+            {
+              "path": "inputs.json",
+              "line": 1,
+              "quote": "{\"saved\":{\"head\":\"rev-a\",\"scope\":\"src\",\"dirty_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"current\":{\"head\":\"rev-b\",\"scope\":\"src\",\"dirty_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"age_hours\":1}"
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-49298b89c6b4",
+      "source_sha256": "bca129824410a46731f1657c832de6196b51d31cf4a039861814c8f3a235f608",
+      "findings": []
+    },
+    {
+      "case_id": "c-6d35c334b8e2",
+      "source_sha256": "2fcb89c45fc2f34ef673b0a0f043a9d895995e2d9a809f2a8f1c67d539f6d4e6",
+      "findings": [
+        {
+          "finding_id": "reliability-004",
+          "contract_id": "R1",
+          "title": "An unavailable database is reported as successful empty inventory instead of raising InventoryUnavailable",
+          "severity": "medium",
+          "lens": "reliability",
+          "root_cause_key": "c-6d35c334b8e2:inventory-failure-empty-success-fallback",
+          "evidence": [
+            {
+              "path": "inventory.py",
+              "line": 4,
+              "quote": "    except DatabaseUnavailable:\n        return []"
+            },
+            {
+              "path": "boundary.txt",
+              "line": 1,
+              "quote": "DatabaseUnavailable is the only failure raised by db.query_items. Its successful result is a list. The caller distinguishes failure from an empty list."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-acb66012dbba",
+      "source_sha256": "5ad6b58accc0d8d32e5f27cffe9cdf086605f548d2d34f2719090cc2c5c82f2b",
+      "findings": []
+    },
+    {
+      "case_id": "c-5680907fa495",
+      "source_sha256": "1cc2be1c907ec77ec91d8652a633e8c5095a422589ef802cc99cdfc2bc92cb43",
+      "findings": []
+    },
+    {
+      "case_id": "c-0f43aa73355b",
+      "source_sha256": "cdcb4166147da0132013daf1904682f18f31fb1290c904bb40c0698306671995",
+      "findings": []
+    },
+    {
+      "case_id": "c-c9614219cdbc",
+      "source_sha256": "98222d3f01412265ea569cf1ce3d755173e27808aae17db08699ad7a6195cca2",
+      "findings": [
+        {
+          "finding_id": "reliability-005",
+          "contract_id": "R1",
+          "title": "latest_record selects the smallest epoch and returns the early record instead of the latest",
+          "severity": "medium",
+          "lens": "reliability",
+          "root_cause_key": "c-c9614219cdbc:latest-record-minimum-selection",
+          "evidence": [
+            {
+              "path": "records.py",
+              "line": 1,
+              "quote": "def latest_record(records):\n    return min(records, key=lambda r: r[\"epoch\"])"
+            },
+            {
+              "path": "sample.txt",
+              "line": 1,
+              "quote": "Input: [{\"id\":\"early\",\"epoch\":3},{\"id\":\"late\",\"epoch\":9}]. Records always contain a numeric epoch; empty input is excluded by the caller."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-0b9916bfc670",
+      "source_sha256": "0b38ca61c0680001600a99508d15f6e71d3564b7e5894a34873412cd31faeaf5",
+      "findings": [
+        {
+          "finding_id": "appsec-002",
+          "contract_id": "R1",
+          "title": "Authenticated callers can read another tenant's invoice because the global lookup lacks tenant authorization",
+          "severity": "critical",
+          "lens": "appsec",
+          "root_cause_key": "c-0b9916bfc670:invoice-tenant-authorization-missing",
+          "evidence": [
+            {
+              "path": "route.py",
+              "line": 1,
+              "quote": "def invoice_route(request, store):\n    user = require_authenticated(request)\n    return store.get_invoice(request.invoice_id)"
+            },
+            {
+              "path": "boundary.txt",
+              "line": 1,
+              "quote": "Authentication validates user identity only. get_invoice returns any matching invoice globally. Stored invoices have tenant_id; there is no other authorization middleware or row-level policy."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-6f39576ea8ef",
+      "source_sha256": "4975dd23d8ff9f0b8b4b9715207c617ceea44b77e024d242525d54f7a2c163f9",
+      "findings": []
+    },
+    {
+      "case_id": "c-ddac1dcbc6f0",
+      "source_sha256": "5435eaa9bf8754efe454e3eaee4fac8589e18555fb5534de83fc16d0fd477638",
+      "findings": []
+    },
+    {
+      "case_id": "c-0cd48f1198de",
+      "source_sha256": "bff834747bd0d91b497487ee39f196a463f2bed4171b8362f04535fb302ece83",
+      "findings": [
+        {
+          "finding_id": "appsec-003",
+          "contract_id": "R1",
+          "title": "publish sends unapproved records immediately because it never checks the trusted approval flag",
+          "severity": "high",
+          "lens": "appsec",
+          "root_cause_key": "c-0cd48f1198de:publish-approval-check-missing",
+          "evidence": [
+            {
+              "path": "publish.py",
+              "line": 3,
+              "quote": "def publish(record):\n    return send(record)"
+            },
+            {
+              "path": "boundary.txt",
+              "line": 1,
+              "quote": "approved is a trusted boolean set by the human approval boundary. send publishes immediately. publish is the only send caller. Review assignment remains controlled by its caller."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-4b38e4ae72a0",
+      "source_sha256": "af346666499245036ae0241975e225a1c617a7766cd2d5c1fd0929517432ee39",
+      "findings": [
+        {
+          "finding_id": "architecture-002",
+          "contract_id": "R1",
+          "title": "charge bypasses Gateway.capture through the raw provider, so production captures omit the sole audit hook",
+          "severity": "high",
+          "lens": "architecture",
+          "root_cause_key": "c-4b38e4ae72a0:raw-provider-bypass-of-gateway-audit",
+          "evidence": [
+            {
+              "path": "payment.py",
+              "line": 4,
+              "quote": "    def capture(self, order):\n        audit(order.id)\n        return self.raw.capture(order)"
+            },
+            {
+              "path": "payment.py",
+              "line": 8,
+              "quote": "def charge(gateway, order):\n    return gateway.raw.capture(order)"
+            },
+            {
+              "path": "trace.txt",
+              "line": 1,
+              "quote": "Gateway.capture is the sole audit owner. The raw provider never writes audit events. charge is the production call path."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-d5131433fd92",
+      "source_sha256": "e8eaf84ac428ed7dafcc55ca5528bd56221bdf31b7db7e765419d8caa691b913",
+      "findings": [
+        {
+          "finding_id": "reliability-006",
+          "contract_id": "R1",
+          "title": "Concurrent read-modify-write increments can both store one, losing one of two completed increments",
+          "severity": "high",
+          "lens": "reliability",
+          "root_cause_key": "c-d5131433fd92:nontransactional-counter-read-modify-write",
+          "evidence": [
+            {
+              "path": "counter.py",
+              "line": 1,
+              "quote": "async def increment(store):\n    value = await store.get(\"count\")\n    await store.set(\"count\", value + 1)"
+            },
+            {
+              "path": "schedule.txt",
+              "line": 1,
+              "quote": "Initial count 0; two requests may interleave at any await. atomic_increment(key, delta) is one indivisible store operation."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-2106b1bbf656",
+      "source_sha256": "2c231fd81d9cdb7bb66bfe7b2f8ead711ad7e24015c87c89ad2cca92249fe746",
+      "findings": []
+    },
+    {
+      "case_id": "c-1aab3df8953e",
+      "source_sha256": "48c70c2774d29349d06fb0adfaf55ef6b9a092d38c36dd7effaebf111413a9a1",
+      "findings": [
+        {
+          "finding_id": "coverage-002",
+          "contract_id": "R1",
+          "title": "The subtraction regression discards the result and passes even when subtract returns a value other than seven",
+          "severity": "medium",
+          "lens": "coverage",
+          "root_cause_key": "c-1aab3df8953e:subtraction-result-not-asserted",
+          "evidence": [
+            {
+              "path": "math_test.py",
+              "line": 4,
+              "quote": "def test_subtract():\n    subtract(10, 3)"
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-b14958625995",
+      "source_sha256": "5e61f98c9f2d43edbd3ab2769551d4525fd8c208d90e5207a0e73fd0f4a3bf64",
+      "findings": [
+        {
+          "finding_id": "appsec-004",
+          "contract_id": "R1",
+          "title": "The public feed returns all_posts and discloses private drafts",
+          "severity": "critical",
+          "lens": "appsec",
+          "root_cause_key": "c-b14958625995:public-feed-unfiltered-drafts",
+          "evidence": [
+            {
+              "path": "feed.py",
+              "line": 1,
+              "quote": "def feed(db):\n    return {\"Access-Control-Allow-Origin\": \"*\"}, db.all_posts()"
+            },
+            {
+              "path": "schema.txt",
+              "line": 1,
+              "quote": "all_posts includes both status=\"published\" and status=\"draft\". published_posts filters status=\"published\". This route accepts no cookies or authorization headers and sets no Allow-Credentials header."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-a55798669ca9",
+      "source_sha256": "85bb84372cce6fcf4d35c6a4f5ff4c47569d997170274a8a55bb1a1c397b9ed4",
+      "findings": [
+        {
+          "finding_id": "appsec-005",
+          "contract_id": "R1",
+          "title": "A failed shared policy read grants download and export instead of denying both operations",
+          "severity": "critical",
+          "lens": "appsec",
+          "root_cause_key": "c-a55798669ca9:shared-policy-failure-allows-access",
+          "evidence": [
+            {
+              "path": "policy.py",
+              "line": 4,
+              "quote": "    except StoreUnavailable:\n        return True"
+            },
+            {
+              "path": "policy.py",
+              "line": 7,
+              "quote": "def download(store, actor):\n    if not allowed(store, actor):\n        raise Forbidden()\n    return read_document()"
+            },
+            {
+              "path": "policy.py",
+              "line": 12,
+              "quote": "def export(store, actor):\n    if not allowed(store, actor):\n        raise Forbidden()\n    return export_documents()"
+            },
+            {
+              "path": "ownership.txt",
+              "line": 1,
+              "quote": "The store can raise StoreUnavailable. There is no additional authorization middleware. Both callers rely exclusively on allowed; their failure paths share its policy default."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-2e69e2c7e227",
+      "source_sha256": "9b9eaae5be902b6528b89aa0023e7ed4e6f4c5cca84f2b7794bda437e549bca7",
+      "findings": [
+        {
+          "finding_id": "reliability-007",
+          "contract_id": "R1",
+          "title": "Catching Exception retries Unauthorized and may return a second-call result instead of propagating the first denial",
+          "severity": "medium",
+          "lens": "reliability",
+          "root_cause_key": "c-2e69e2c7e227:retry-catch-broadened-to-unauthorized",
+          "evidence": [
+            {
+              "path": "client.py",
+              "line": 1,
+              "quote": "def fetch(call):\n    try:\n        return call()\n    except Exception:\n        return call()"
+            },
+            {
+              "path": "fixture.txt",
+              "line": 1,
+              "quote": "sequence raises an exception value or returns a nonexception value on successive calls. Unauthorized inherits Exception, not ConnectionError."
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-f08477f754ff",
+      "source_sha256": "4d0900961c999db646d7cf0918a0a34a76daae0c34c48aa5091ab421a12287bc",
+      "findings": []
+    },
+    {
+      "case_id": "c-da7220ed1dcc",
+      "source_sha256": "2c40297ffcea6e4622a3446ba2c140417b65b6e75136559c815a33e31717e09c",
+      "findings": [
+        {
+          "finding_id": "secrets-supply-001",
+          "contract_id": "R1",
+          "title": "The manifest requires harbor-parse-plus 2.0.0, which does not exist in the complete intended registry snapshot",
+          "severity": "medium",
+          "lens": "secrets-supply",
+          "root_cause_key": "c-da7220ed1dcc:dependency-name-absent-from-registry",
+          "evidence": [
+            {
+              "path": "manifest.json",
+              "line": 1,
+              "quote": "{\"dependencies\":{\"harbor-parse-plus\":\"2.0.0\"},\"registry\":\"fixture-registry\"}"
+            },
+            {
+              "path": "registry.json",
+              "line": 1,
+              "quote": "{\"registry\":\"fixture-registry\",\"snapshot\":\"2026-10-01\",\"complete\":true,\"packages\":{\"harbor-parse\":[\"2.0.0\"],\"cedar-format\":[\"1.0.0\"]}}"
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    {
+      "case_id": "c-7f127879db07",
+      "source_sha256": "ad2e8060742531c58fd61328ce0a90de5a219a303d2b0b476b86f09d08a0c199",
+      "findings": []
+    }
+  ]
+}

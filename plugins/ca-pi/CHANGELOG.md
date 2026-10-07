@@ -4,6 +4,32 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-10-05
+
+### Fixed
+
+- Read multiple stale Git-hook registrations correctly on Windows and Unix,
+  preserving enforcement by the current registered checker.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
+
+### Added
+
+- Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,
+  plus deterministic inventory and bounded evidence packets.
+
+### Changed
+
+- Bind resume to the reviewed source and preserve leads, verification results, and
+  root-cause triage. Report completion leaves filing and optional telemetry pending
+  until each is completed or explicitly skipped.
+- Resolve review profiles from actual Pi capabilities and report independence limits;
+  unresolved serious claims cannot become confirmed fix work. The supported Pi runtime
+  remains 1.0.2.
+
 ## [0.16.7] - 2026-10-07
 
 ### Fixed

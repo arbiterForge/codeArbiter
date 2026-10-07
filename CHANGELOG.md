@@ -12,6 +12,33 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.25.0] - 2026-10-05
+
+### Fixed
+
+- Read the shared Git hook's stale-registration list correctly with multiple
+  entries and Windows line endings, so the current security checker owns the verdict.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
+
+### Added
+
+- Add semantic-contract and change-closure Tribunal lenses, with applicability,
+  evidence requirements, and false-positive guards across the thirteen-card roster.
+- Collect deterministic inventory without running project code, prepare bounded
+  review packets, and resolve review settings from the active host's capabilities.
+
+### Changed
+
+- Bind Tribunal resume to the exact reviewed source, allocate unique run directories,
+  preserve cross-lens leads, and group corroborating findings by root cause.
+- Require separate verification of serious findings and keep unresolved claims out
+  of confirmed fix work. Complete issue-filing and optional telemetry dispositions
+  separately from the report, preserving explicit consent and aggregate-only feedback.
+
 ## [2.24.6] - 2026-10-07
 
 ### Fixed

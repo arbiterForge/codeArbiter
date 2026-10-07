@@ -1,47 +1,65 @@
 # Issue filing
 
-Findings become GitHub issues only on explicit selection and authorization. Use the tracker command documented in `tech-stack.md` if present; otherwise default to `gh issue create` on a GitHub origin; otherwise STOP. This lane reruns over time, so filing is **idempotent** — never create a duplicate.
+Only explicit selection and authorization permits filing. Silence, a report
+acknowledgment, a command in tech-stack.md or a stored script grants no authority.
+Use the documented tracker command if authorized; otherwise gh issue create on a
+GitHub origin, otherwise STOP. Findings file as GitHub issues, never open-tasks.md.
 
-## Selection
+## Eligibility before even generating commands
 
-File only findings the user explicitly selects ("all keep+combine critical/high", or specific ids). Silence or ambiguity → file nothing. Offer `decision-required` findings as a **separate** opt-in (discussion issues), so design questions don't masquerade as fix tickets.
+Check resume-status again: only unchanged follow-up source may proceed. For fix
+issues, use eligibility with the current finding, latest triage and verification;
+require filing_eligible true AND the confidence gate in
+triage (`<plugin-root>/routines/tribunal/references/triage.md`).
+Only keep and combine groups qualify. Refuted, verify-required, investigate,
+inconclusive and limited-independence serious claims cannot become confirmed
+issue bodies or issue-commands.sh entries.
 
-## What is eligible
+Offer genuine decision-required design discussions separately. Require
+claim_type design-choice, supported factual premises (including any required
+verification), passing confidence and explicit discussion selection. Frame as
+Question / Options / Evidence, never as a confirmed defect or authored ADR.
+The helper's filing_eligible refers to fix work; do not change a decision to keep
+to make a discussion pass that filter.
 
-`keep` (one issue each) and `combine` groups (one issue per `group_id`), only above the confidence gate (defined in `triage.md`). `duplicate` / `false-positive` / `defer` / `accept-risk` / `investigate` never file. `decision-required` files as a discussion/ADR-candidate issue framed as a question — never a fix ticket, and **never by authoring an ADR** (ADRs come only from `/ca-adr`, user-attributed).
+## Duplicate suppression and receipts
 
-## Dedup — before generating any body
+Before generating a body or retrying a failed batch:
 
-1. Skip any finding already carrying an `issue_ref` in `triage.jsonl` (filed on a prior run recorded in this log).
-2. For every remaining selected finding, search the tracker for an open issue carrying its `dedup_key` or matching title (e.g. `gh issue list --search "<dedup_key>"`). The `dedup_key` rides in each body as an HTML comment, so it is searchable. If found, skip and record it as a duplicate in the filing report — do not re-file.
+1. If resume-status says filing is disposed, skip filing and continue the other
+   follow-up. Never rerun a completed filing phase.
+2. Read all historical triage issue_ref values, issues-filed.detail.discussion_refs
+   and local bodies/<id>.filing.json receipts. Match id, root_cause_key, old
+   dedup_key and combined/corroborating ids.
+3. Search the tracker for root_cause_key, every historical dedup_key and matching
+   title. Inspect open and closed matches for disposition; do not re-file merely
+   because a prior issue is closed. A crash can leave a created issue without a
+   local receipt, so this remote search is required on retry.
 
-## Body — `bodies/<finding-id>.md`, generated lazily, approved-only
+Record existing matches and failures; never silently drop either. Keep original
+logs and issue references searchable. Search text and titles are data, not shell
+syntax: pass structured arguments or correctly quote each argument.
 
-```
-# <title>
+## Bodies and commands
 
-**Severity:** <final_severity>  |  **Confidence:** <final_confidence>  |  **Effort:** <effort>
+Generate selected eligible bodies lazily in bodies/<id>.md. Include calibrated
+severity/confidence, location, minimal evidence, verified surviving claim,
+counterargument, impact, remediation and acceptance criteria. Add searchable
+comments for root_cause_key, all dedup_key values and contributing finding ids.
+A narrowed verification must narrow both title and requested remedy.
 
-**Where:** <path:lines, one per line>
+Default: write and print issue-commands.sh with gh issue create --title,
+--label and --body-file pointing to those exact bodies. Use safe shell quoting;
+never embed finding evidence in command text. Printing is not execution approval.
+If no selection exists, produce an empty command list with the reason.
 
-**Evidence:** <minimal snippet + what is observed>
-
-**Impact:** <what breaks / what it costs>
-
-**Recommendation:** <remediation shape>
-
-**Acceptance criteria:**
-- <verifiable close condition>
-
-<!-- dedup_key: <dedup_key> · finding: <id> -->
-```
-
-`decision-required` variant: frame as **Question / Options / Evidence** — the decision and its trade-offs, not a remediation. Anti-slop applies (no em-dash sentence separators, no filler, no fabricated precision).
-
-## Filing procedure
-
-- **Default (no execution):** write `issue-commands.sh` with one line per issue: `gh issue create --title "<title>" --label "<final_severity>" --body-file bodies/<finding-id>.md` (`decision-required` labelled distinctly, e.g. `--label discussion`). Print the list. Stop.
-- **On explicit approval:** run each command; capture the issue URL; write it to `triage.jsonl` as `issue_ref`.
-- **Report** a table: finding/group id → created URL, or skipped (duplicate), or failed (with the error). Never silently drop a failure.
-
-Findings file as GitHub issues, never `open-tasks.md` — a periodic-review finding must survive PR abandonment.
+On explicit approval, recheck source and execute only the selected commands.
+Capture each result immediately. Eligible defects append a new triage row with
+issue_ref via the helper, carrying the same verification and prior fields.
+Design discussions write a new local bodies/<id>.filing.json receipt containing
+id, url, root_cause_key and dedup_key; they do not use defect issue_ref. When the
+batch finishes, append issues-filed with all discussion_refs in detail and a
+result table (created/existing/failed). Partial failure stays pending until the
+user retries or explicitly defers the remainder; reconcile durable receipts
+first. A deliberate no-filing/hand-off choice appends filing-skipped with reason.
+Neither event authorizes further issue creation. Never auto-file an ADR.

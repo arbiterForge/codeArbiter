@@ -6,6 +6,32 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-10-05
+
+### Fixed
+
+- Read multiple stale Git-hook registrations correctly on Windows and Unix,
+  preserving enforcement by the current registered checker.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
+
+### Added
+
+- Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,
+  plus deterministic inventory and bounded evidence packets.
+
+### Changed
+
+- Bind resume to the reviewed source and preserve leads, verification results, and
+  root-cause triage. Report completion leaves filing and optional telemetry pending
+  until each is completed or explicitly skipped.
+- Resolve review profiles from actual Codex capabilities. Use fresh host threads for
+  serious-finding verification when available; record limited independence otherwise
+  and retain unresolved serious claims as verification-required.
+
 ## [0.15.6] - 2026-10-07
 
 ### Fixed

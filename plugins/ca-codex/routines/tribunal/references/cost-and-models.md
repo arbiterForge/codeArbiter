@@ -1,64 +1,85 @@
-# Cost estimate, model recommendation & concurrency
+# Cost, profiles and concurrency
 
-## Sizing commands
+Use the trusted `tribunal.py` helper's `inventory`, `profile` and `estimate` modes
+described in schemas ([routines/tribunal/references/schemas.md](schemas.md)).
+Mechanical extraction runs no project code. Its tracked-file sizes and bounded
+parsers are facts, not a model review; unavailable fields stay explicit.
 
-Prefer `tokei` or `cloc` if present; else `git ls-files | xargs wc -l`. Capture total LOC, file count, and the top languages. Read `tech-stack.md` for the language set first.
+## Resolve the host before recommending settings
 
-## v0 token estimate (crude, self-calibrating)
+Profiles express work, never provider model identifiers:
 
-An order-of-magnitude band, not a quote. Refined over runs by the `tokens_estimated`/`tokens_actual` telemetry pair.
+| Lens or role | Profile |
+|---|---|
+| orchestrator | deep |
+| appsec | deep |
+| reliability | deep |
+| architecture | deep |
+| semantic-contract | deep |
+| change-closure | standard |
+| secrets-supply | standard |
+| migration | standard |
+| test-fidelity | standard |
+| performance | standard |
+| observability | standard |
+| typesafety | standard |
+| coverage | standard |
+| infra | standard |
+| serious-finding verifier (same generic reviewer, verify mode) | deep |
+| optional map-structure / map-deps semantic classification | extract |
 
-```
-repo_tokens   = LOC * 10                     # ~8-12 tokens/line; 10 default
-per_lens      = repo_tokens * 0.5 * 3        # 0.5 coverage fraction * 3 read+reason+write on high-reasoning
-lenses_total  = per_lens * active_lens_count
-mapping       = repo_tokens * 1.2
-total_point   = mapping + lenses_total
-band          = [total_point * 0.5, total_point * 2]
-```
+Observe the active host's `fresh_threads`, `model_override`, `reasoning_override`,
+available `models` and `reasoning_levels`. Populate `profiles` only with available
+settings, then call `profile` for each selected profile. Recommend the strongest
+supported reasoning setting for deep work; do not invent a model name, effort
+control or external provider. Missing overrides inherit configured settings and
+record limitations. Do not silently change the acknowledged settings or budget.
 
-Present the band, the inputs, and that high-reasoning output tokens dominate. On a large repo this is routinely millions of tokens — say so.
+Fresh thread capability is separate from native agent registration. In particular,
+`agents: false` does not imply that fresh host threads are unavailable. Dispatch
+the selected trusted role/card into a fresh thread when supported. If not,
+explicitly record inline/shared-context execution and
+`verification_independence: limited`; it cannot clear serious-finding verification.
+No additional registered agent is needed for verification.
 
-## Model recommendation (state at Phase 0)
+## Evidence-based token band
 
-Drive this lane with the highest-reasoning model available at high effort. A cheap model inflates false positives, and this lane files real issues. Every lens runs the same agent (`tribunal-lens-reviewer`); the tier varies per LENS at dispatch time:
+`estimate` accepts `packet_bytes` (sum across selected lens packets; repeated
+evidence counts each time), `profile_counts`, `verification_candidates`,
+`extraction_bytes` (inventory/mapper context delivered to the model, not bytes
+Python scanned), and `concurrency`. Include all approved reasoning work, including
+optional mappers, when recording the estimate inputs.
 
-| Lens (or role) | Model | Effort |
-|---|---|---|
-| orchestrator (the skill) | Opus 4.8 | high |
-| appsec | Opus 4.8 | high |
-| reliability | Opus 4.8 | high |
-| architecture | Opus 4.8 | high |
-| secrets-supply | Sonnet 5 | high |
-| migration | Sonnet 5 | high |
-| test-fidelity | Sonnet 5 | high |
-| performance | Sonnet 5 | medium |
-| observability | Sonnet 5 | medium |
-| typesafety | Sonnet 5 | medium |
-| coverage | Sonnet 5 | medium |
-| infra | Sonnet 5 | medium |
-| optional mappers (`map-structure`, `map-deps`) | Haiku 4.5 | low |
+The current estimator is a disclosed heuristic: bytes/4, profile multipliers
+deep=6, standard=3, extract=1, 1,000 tokens per role and a half-to-double band.
+Verification adds the average packet plus an allowance. It returns `token_band`,
+`inputs`, `assumptions`, `limitations`, and unavailable measured usage/price.
+Show these inputs and the broad band before cost acknowledgment. Compatible
+historical usage may inform a separately labelled calibration; never present the
+heuristic as measured usage, dollars or a quality guarantee.
 
-Advisory only: `tribunal-lens-reviewer` ships `model: inherit`; a dispatch-time override takes an alias (`haiku`/`sonnet`/`opus`/`fable`), not a pinned ID, and there is no per-dispatch effort control. This table guides the orchestrator's dispatch choices — it is not mechanically enforced.
+Reduce total work through a narrower scope, applicability-based lens selection,
+smaller packets, deterministic preprocessing or a validated lower profile.
+Concurrency is capped at five and further limited by actual host capacity.
+Lower concurrency affects elapsed time and peak resources; it does not reduce total tokens.
 
-API strings: `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5-20251001` — as of authoring; substitute the current flagship. `claude-fable-5` now sits above Opus as the highest-reasoning flagship. On proprietary code all tiers must be approved (Anthropic) models — never an external worker.
-
-## Default wave partition
-
-The default dispatch order (Phase 2), aligned with the model tiers above:
+## Default waves
 
 | Wave | Lenses |
 |---|---|
-| 1 | appsec, architecture, reliability |
-| 2 | secrets-supply, migration, test-fidelity |
+| 1 | appsec, architecture, reliability, semantic-contract |
+| 2 | secrets-supply, migration, test-fidelity, change-closure |
 | 3 | coverage, infra, observability, performance, typesafety |
 
-A lens dropped from the roster at Phase 1 (scope-inapplicable) is simply absent from its wave — no renumbering. Phase 0/1 MAY choose a different partition for cause (e.g. a migration-heavy repo pulling `migration` into wave 1), but whichever partition is used MUST be recorded in `run-started` (`schemas.md`) — resume reads the recorded partition, never re-derives it.
-
-## Concurrency & cost control
-
-Concurrency ≤5 lenses in flight regardless of roster size — the roster is a budget, not a simultaneous-dispatch target. Cost levers offered at Phase 0: narrow scope to a subtree; trim the Tier-2 lenses (`performance`, `observability`, `typesafety`); lower concurrency.
+Remove inapplicable lenses without renumbering waves. Record the selected
+partition, profiles, capability limits, applicability and estimate in
+`run-started.detail` through `start --detail`. Resume uses that partition.
+Any material increase beyond acknowledged work returns to the cost gate.
 
 ## Optional mappers
 
-On a large/sprawling repo, offload raw file-reading to two cheap mapper subagents so it stays out of the orchestrator's retained context: `map-structure` (tree, languages, entry points, core/shared/test locations, churn) and `map-deps` (manifests, lockfiles, integration surface, env/secret-usage surface). On a small repo, map inline and skip them. Either way, produce the same `inventory.md`. These are the only subagents beyond the lens reviewer, and they carry no `tribunal-` prefix because they are generic extractors, not judges.
+Use map-structure or map-deps only for unresolved semantic relationships after
+deterministic extraction. Supply a compact bounded packet and precise questions;
+do not use model agents for basic counting or enumeration. Record their limits
+and evidence in the risk map. The coordinator alone dispatches reviewers,
+verifiers and these optional mappers; specialists never dispatch children.

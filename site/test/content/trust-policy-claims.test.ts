@@ -63,16 +63,20 @@ describe("public trust-policy claims", () => {
 
   it("keeps the public policy aligned with the tribunal's canonical contract", () => {
     const privacy = normalizeWhitespace(readRepo("PRIVACY.md"));
-    const telemetry = readRepo(
+    const telemetry = normalizeWhitespace(readRepo(
       "core/surface/skills/tribunal/references/telemetry.md",
-    );
+    ));
     const faq = readRepo("site/src/content/docs/faq.md");
 
     for (const boundary of [
-      "Off by default",
+      "off by default",
       "explicit per-run authorization",
-      "public codeArbiter repo",
-      "Repo identity is omitted by default",
+      "public codeArbiter repository",
+      "Exclude repository identity, source fingerprints, commit hashes",
+      "paths, code, finding text/titles",
+      "optional user-entered --tag <label>",
+      "never auto-populate it",
+      "--tag itself grants no send authorization",
       "telemetry-sent",
     ]) {
       expect(telemetry).toContain(boundary);
