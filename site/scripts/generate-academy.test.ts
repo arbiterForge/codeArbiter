@@ -328,6 +328,8 @@ describe("generateAcademy", () => {
       expect(mismatching.stderr).toContain("installer digest did not match Preview 0.32");
       expect(existsSync(sentinel)).toBe(false);
     },
+    // Both real shell launches retain their independent 10-second deadlines.
+    25_000,
   );
 
   it("builds one accessible Academy overview from the canonical public inventory", () => {
