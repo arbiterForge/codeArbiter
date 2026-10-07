@@ -5,7 +5,8 @@ import { execFileSync } from 'node:child_process';
 import { featureMap, type ExecutionMap } from './model';
 import { workflows } from './workflows';
 import { supplementalViews } from './atlas-content';
-import { REVIEWED_AT, invocation, commandDescription, validateAtlas, type Atlas, type AtlasView, type AtlasSource, type HostDescriptor, type RouteMeta } from './atlas-model';
+import { commandMetadata } from './atlas-command';
+import { REVIEWED_AT, invocation, validateAtlas, type Atlas, type AtlasView, type AtlasSource, type HostDescriptor, type RouteMeta } from './atlas-model';
 
 // Astro bundles server imports, so import.meta.url is not a repository path.
 function repositoryRoot(): string {
@@ -64,9 +65,11 @@ export function loadAtlas(root = repositoryRoot()): Atlas {
   }
   for (const view of supplementalViews) for (const source of Object.values(view.sources)) if (!checked.has(source.path)) { checkReviewedSource(root,source.path,source.blob); checked.add(source.path); }
   const entries = Object.entries(catalog.commands).map(([id,meta]) => {
-    const path = `core/surface/commands/${id}.md`;
-    checkReviewedSource(root,path);
-    return {...meta,id,description:commandDescription(readFileSync(resolve(root,path),'utf8')),views:entryViews[id] ?? [],source:{path,revision:REVIEWED_AT},invocations:Object.fromEntries(hosts.map(host=>[host.name,invocation(host,id)]))};
+    const {path,description} = commandMetadata(id, path => {
+      checkReviewedSource(root,path);
+      return readFileSync(resolve(root,path),'utf8');
+    });
+    return {...meta,id,description,views:entryViews[id] ?? [],source:{path,revision:REVIEWED_AT},invocations:Object.fromEntries(hosts.map(host=>[host.name,invocation(host,id)]))};
   }).sort((a,b)=>catalog.visibilityOrder.indexOf(a.visibility)-catalog.visibilityOrder.indexOf(b.visibility)||a.id.localeCompare(b.id,'en'));
   // The directory itself is reviewed, so adding/removing a lens cannot silently
   // change the count in an otherwise stale explanation.
