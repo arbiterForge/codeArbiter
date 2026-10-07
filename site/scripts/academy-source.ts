@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 
@@ -177,6 +178,34 @@ function trackFor(id: string): AcademyLessonSource["track"] {
   return "power-user";
 }
 
+function hydrateHomeInstallerDigests(sourceRoot: string, manifest: AcademyActionManifestSource): void {
+  const variants = manifest.actions.flatMap((action) => action.variants);
+  for (const [token, name, count] of [
+    ["{{INSTALL_PS1_SHA256}}", "install.ps1", 1],
+    ["{{INSTALL_SH_SHA256}}", "install.sh", 2],
+  ] as const) {
+    if (variants.reduce((total, variant) => total + variant.command.split(token).length - 1, 0) !== count) {
+      throw new Error(`Academy home installer command must contain ${token} exactly ${count} time(s)`);
+    }
+    // Expected digests belong to the reviewed Academy source, never a runtime download.
+    const checksum = readFileSync(sourcePath(sourceRoot, "install", `${name}.sha256`), "utf8");
+    const match = checksum.match(/^([0-9a-f]{64})  (install\.(?:ps1|sh))\n$/);
+    if (!match || checksum !== `${match[1]}  ${name}\n`) {
+      throw new Error(`Academy reviewed installer checksum is not canonical: ${name}`);
+    }
+    const actual = createHash("sha256").update(readFileSync(sourcePath(sourceRoot, "install", name))).digest("hex");
+    if (actual !== match[1]) {
+      throw new Error(`Academy installer bytes do not match the reviewed checksum: ${name}`);
+    }
+    for (const variant of variants) {
+      variant.command = variant.command.replaceAll(token, match[1]);
+    }
+  }
+  if (variants.some((variant) => variant.command.includes("{{INSTALL_"))) {
+    throw new Error("Academy home command contains an unresolved installer token");
+  }
+}
+
 function loadHomeActions(sourceRoot: string): Map<string, AcademyHomeActionSource> {
   let manifest: unknown;
   try {
@@ -185,6 +214,7 @@ function loadHomeActions(sourceRoot: string): Map<string, AcademyHomeActionSourc
     throw new Error("Academy Home action manifest is required", { cause: error });
   }
   validateActionManifest(manifest, "home");
+  hydrateHomeInstallerDigests(sourceRoot, manifest);
   const actions = new Map<string, AcademyHomeActionSource>();
   for (const action of manifest.actions) {
     if (actions.has(action.id)) {

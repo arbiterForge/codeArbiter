@@ -1,12 +1,17 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { loadAcademySource } from "./academy-source";
 
 const fixtureRoots: string[] = [];
 const fixtureLessonIds = ["F01-fork-clone-doctor", "P01-practice", "U01-operate"] as const;
+const fixtureInstallers = {
+  "install.ps1": "Write-Output 'reviewed installer fixture'\n",
+  "install.sh": "#!/bin/sh\nprintf '%s\\n' 'reviewed installer fixture'\n",
+};
 
 const requiredTracks = [
   ["Foundation", "F01-fork-clone-doctor"],
@@ -29,6 +34,12 @@ function createFixture(
   mkdirSync(join(academyRoot, "tracks", "practitioner"), { recursive: true });
   mkdirSync(join(academyRoot, "tracks", "power-user"), { recursive: true });
   mkdirSync(join(academyRoot, "actions"), { recursive: true });
+  const installRoot = join(root, "academy-source", "install");
+  mkdirSync(installRoot);
+  for (const [name, bytes] of Object.entries(fixtureInstallers)) {
+    writeFileSync(join(installRoot, name), bytes);
+    writeFileSync(join(installRoot, `${name}.sha256`), `${createHash("sha256").update(bytes).digest("hex")}  ${name}\n`);
+  }
 
   writeFileSync(
     join(academyRoot, "publication", "preview-0.32.json"),
@@ -74,7 +85,19 @@ function createFixture(
           copy: true,
         }]],
         ["home-enter-clone", "Enter the cloned repository.", [], []],
-        ["home-install", "Install the reviewed Academy tools.", [], []],
+        ["home-install", "Install the reviewed Academy tools.", [], [
+          ["windows", "powershell", "{{INSTALL_PS1_SHA256}}"],
+          ["macos", "sh", "{{INSTALL_SH_SHA256}}"],
+          ["linux", "sh", "{{INSTALL_SH_SHA256}}"],
+        ].map(([os, language, token]) => ({
+          id: os,
+          surface: "native-terminal",
+          operating_system: os,
+          host: "none",
+          language,
+          command: `expected=${token}`,
+          copy: true,
+        }))],
         ["home-doctor", "Run the Academy Doctor command.", [], []],
       ].map(([id, instruction, resources, variants], index) => ({
         id,
@@ -121,7 +144,7 @@ function createFixture(
   const submoduleRoot = join(root, "academy-source");
   execFileSync("git", ["init", "--quiet", submoduleRoot]);
   execFileSync("git", ["-C", submoduleRoot, "config", "core.autocrlf", "false"]);
-  execFileSync("git", ["-C", submoduleRoot, "add", "academy"]);
+  execFileSync("git", ["-C", submoduleRoot, "add", "academy", "install"]);
   execFileSync("git", [
     "-C",
     submoduleRoot,
@@ -158,6 +181,60 @@ afterEach(() => {
 });
 
 describe("loadAcademySource", () => {
+  it("hydrates Home installer commands from reviewed checksum files", () => {
+    const source = loadAcademySource(createFixture());
+    const variants = source.home.steps[3].action.variants;
+
+    expect(variants).toHaveLength(3);
+    for (const variant of variants) {
+      const name = variant.operating_system === "windows" ? "install.ps1" : "install.sh";
+      const digest = createHash("sha256").update(fixtureInstallers[name]).digest("hex");
+      expect(variant.command).toBe(`expected=${digest}`);
+    }
+  });
+
+  it.each(["install.ps1", "install.sh"])("rejects drift from the reviewed %s checksum", (name) => {
+    const fixtureRoot = createFixture();
+    writeFileSync(join(fixtureRoot, "academy-source", "install", name), "changed installer bytes\n");
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/installer bytes do not match the reviewed checksum/);
+  });
+
+  it.each(["install.ps1", "install.sh"])("rejects a noncanonical %s checksum", (name) => {
+    const fixtureRoot = createFixture();
+    writeFileSync(join(fixtureRoot, "academy-source", "install", `${name}.sha256`), `${"a".repeat(64)} ${name}\n`);
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/reviewed installer checksum is not canonical/);
+  });
+
+  it.each(["install.ps1", "install.sh"])("rejects a missing %s checksum", (name) => {
+    const fixtureRoot = createFixture();
+    rmSync(join(fixtureRoot, "academy-source", "install", `${name}.sha256`));
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow();
+  });
+
+  it.each(["{{INSTALL_PS1_SHA256}}", "{{INSTALL_SH_SHA256}}"])("rejects changed counts for %s", (token) => {
+    const fixtureRoot = createFixture();
+    mutateHomeActionManifest(fixtureRoot, (manifest) => {
+      const variants = homeAction(manifest, 3).variants as JsonRecord[];
+      const variant = variants.find(({ command }) => String(command).includes(token))!;
+      variant.command = `${variant.command}${token}`;
+    });
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/home installer command must contain/);
+  });
+
+  it("rejects unresolved security-critical installer tokens", () => {
+    const fixtureRoot = createFixture();
+    mutateHomeActionManifest(fixtureRoot, (manifest) => {
+      const variant = (homeAction(manifest, 3).variants as JsonRecord[])[0];
+      variant.command = `${variant.command}\n{{INSTALL_UNKNOWN_SHA256}}`;
+    });
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/unresolved installer token/);
+  });
+
   it("loads the current immutable Preview 0.32 consumer pin", () => {
     const source = loadAcademySource(resolve(import.meta.dirname, "../.."));
 
