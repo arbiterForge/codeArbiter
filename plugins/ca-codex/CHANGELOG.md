@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.15.6] - 2026-10-07
+
+### Fixed
+
+- Wait up to 120 seconds (was 30) for the structured-artifact engine before timing out. On a
+  large repository a whole-tree input snapshot takes about 30 seconds on Windows, so every
+  verification, review publish and approval arm failed with `TIMEOUT`. Set
+  `CODEARBITER_ENGINE_TIMEOUT` (seconds, up to 3600) to change the bound; a malformed value
+  is refused rather than ignored. The bound is a wait limit only and relaxes no check.
+
 ## [0.15.5] - 2026-10-05
 
 ### Fixed
