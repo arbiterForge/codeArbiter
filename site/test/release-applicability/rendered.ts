@@ -45,7 +45,7 @@ if (compatibilityText.includes("no compiled binaries") || compatibilityText.incl
 }
 const farmRow = compatibilityHtml.match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g)
   ?.find((row) => row.match(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/)?.[1]
-    .replace(/<[^>]+>/g, "").trim() === "/ca:sprint --farm");
+    .replace(/<[^>]+>/g, " ").trim() === "/ca:sprint --farm");
 const codexFarmCell = farmRow?.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)?.[2];
 if (!codexFarmCell?.includes("premium-subagent path") || !codexFarmCell.includes("backend is not packaged")) {
   throw new Error("Built Compatibility output does not preserve the Codex farm fallback in its host cell");
