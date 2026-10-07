@@ -143,7 +143,8 @@ Gate: the chosen option completed — for open-PR a PR exists against the defaul
 
 When an authorized branch integration has a genuine Git conflict in
 `.codearbiter/code-map.md` and the selected resolution is the exact current
-HEAD version, use the shipped [context conflict helper](<plugin-root>/hooks/resolve-context-conflict.py).
+HEAD version, use the shipped helper at
+`<plugin-root>/hooks/resolve-context-conflict.py`.
 Run `python "<plugin-root>/hooks/resolve-context-conflict.py" --root "<project-root>" inspect`,
 then immediately pass its returned `binding` to the same helper with
 `restore-head --expected <binding>`. This implements the already selected
