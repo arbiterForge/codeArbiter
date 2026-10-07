@@ -34,6 +34,23 @@ const compatibilityHtml = readFileSync(
 );
 const homeHtml = readFileSync(join(siteRoot, "dist/index.html"), "utf8");
 
+const compatibilityText = compatibilityHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+for (const boundary of ["Python hook core", "installation-pinned", "ca-artifact", "native-platform qualification", "binary digest"]) {
+  if (!compatibilityText.includes(boundary)) {
+    throw new Error(`Built Compatibility output is missing the runtime boundary: ${boundary}`);
+  }
+}
+if (compatibilityText.includes("no compiled binaries") || compatibilityText.includes("Zero, for the plugin itself")) {
+  throw new Error("Built Compatibility output still denies the packaged native runtime");
+}
+const farmRow = compatibilityHtml.match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g)
+  ?.find((row) => row.match(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/)?.[1]
+    .replace(/<[^>]+>/g, "").trim() === "/ca:sprint --farm");
+const codexFarmCell = farmRow?.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)?.[2];
+if (!codexFarmCell?.includes("premium-subagent path") || !codexFarmCell.includes("backend is not packaged")) {
+  throw new Error("Built Compatibility output does not preserve the Codex farm fallback in its host cell");
+}
+
 function requireBuiltValue(value: string, description: string): void {
   if (!compatibilityHtml.includes(value)) {
     throw new Error(`Built Compatibility output is missing ${description}: ${value}`);
