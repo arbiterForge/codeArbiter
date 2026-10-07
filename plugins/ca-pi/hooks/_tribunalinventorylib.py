@@ -640,7 +640,7 @@ def estimate_cost(packet_bytes, profile_counts, *, verification_candidates=0,
     weighted = sum(_PROFILE_WEIGHTS[key] * value for key, value in profile_counts.items())
     packet_tokens = math.ceil(packet_bytes / 4)
     point = math.ceil(packet_tokens * weighted / max(count, 1) + 1000 * count + extraction_bytes / 4
-                      + verification_candidates * (1000 + 4 * packet_tokens / max(count, 1)))
+                      + verification_candidates * (1000 + packet_tokens / max(count, 1)))
     result.update({"status": "estimated", "token_band": {"low": math.floor(point / 2), "high": point * 2},
                    "inputs": {"packet_bytes": packet_bytes, "profile_counts": dict(sorted(profile_counts.items())),
                               "active_lenses": count, "verification_candidates": verification_candidates,

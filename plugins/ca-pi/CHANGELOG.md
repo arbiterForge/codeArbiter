@@ -13,6 +13,8 @@ All notable changes to `ca-pi` are documented in this file.
 - Resolve a genuine legacy code-map merge conflict using the exact committed
   current version, preserving context protection, provenance and index entries.
 - Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
 
 ### Added
 

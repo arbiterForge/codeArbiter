@@ -402,6 +402,13 @@ class ProfileCostTests(unittest.TestCase):
             larger = subject("estimate_cost", **arguments)
             self.assertGreater(larger["token_band"]["high"], baseline["token_band"]["high"])
 
+    def test_ac37_verification_adds_average_packet_tokens_and_allowance(self):
+        baseline = subject("estimate_cost", 40000, {"standard": 1})
+        verified = subject("estimate_cost", 40000, {"standard": 1}, verification_candidates=1)
+        # The 10,000-token packet costs 31,000 for the role, then 11,000 for verification.
+        self.assertEqual(baseline["token_band"], {"low": 15500, "high": 62000})
+        self.assertEqual(verified["token_band"], {"low": 21000, "high": 84000})
+
     def test_ac37_concurrency_changes_resources_not_total_token_band(self):
         serial = subject("estimate_cost", 10000, {"standard": 4}, concurrency=1)
         parallel = subject("estimate_cost", 10000, {"standard": 4}, concurrency=4)

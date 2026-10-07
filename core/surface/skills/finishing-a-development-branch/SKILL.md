@@ -145,10 +145,13 @@ When an authorized branch integration has a genuine Git conflict in
 `.codearbiter/code-map.md` and the selected resolution is the exact current
 HEAD version, use the shipped helper at
 `{{PLUGIN_ROOT}}/hooks/resolve-context-conflict.py`.
-Run `python "{{PLUGIN_ROOT}}/hooks/resolve-context-conflict.py" --root "{{PROJECT_DIR}}" inspect`,
+Resolve the interpreter once by presence:
+`PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`.
+Run `"$PY" "{{PLUGIN_ROOT}}/hooks/resolve-context-conflict.py" --root "{{PROJECT_DIR}}" inspect`,
 then immediately pass its returned `binding` to the same helper with
 `restore-head --expected <binding>`. This implements the already selected
-resolution; it adds no approval step.
+resolution; it adds no approval step. Use the selected interpreter for both
+operations; never retry an operation under another interpreter after a failure.
 
 The helper accepts only legacy schema-1 code-map provenance and a matching
 current three-stage merge with one supported conflict block. It refuses native
