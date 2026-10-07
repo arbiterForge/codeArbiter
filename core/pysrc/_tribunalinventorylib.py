@@ -79,7 +79,7 @@ def _git(root, *args):
     """Bound stdout while it is read, not after an unbounded capture finishes."""
     env = root_bound_git_env()
     for key in tuple(env):
-        if key.startswith(("GIT_CONFIG", "GIT_TRACE")) or key in {
+        if key.startswith("GIT_TRACE") or key in {
             "GIT_EXTERNAL_DIFF", "GIT_DIFF_OPTS", "GIT_ASKPASS", "GIT_EXEC_PATH",
             "GIT_NAMESPACE", "GIT_PAGER",
         }:

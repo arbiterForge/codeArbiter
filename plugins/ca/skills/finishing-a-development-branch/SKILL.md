@@ -139,6 +139,31 @@ Carry out the chosen option, and only that one:
 
 Gate: the chosen option completed — for open-PR a PR exists against the default branch; for merge the work landed through that PR; for discard the user confirmed against a stated loss summary.
 
+### Legacy code-map conflict recovery
+
+When an authorized branch integration has a genuine Git conflict in
+`.codearbiter/code-map.md` and the selected resolution is the exact current
+HEAD version, use the shipped [context conflict helper](${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py).
+Run `python "${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py" --root "${CLAUDE_PROJECT_DIR}" inspect`,
+then immediately pass its returned `binding` to the same helper with
+`restore-head --expected <binding>`. This implements the already selected
+resolution; it adds no approval step.
+
+The helper accepts only legacy schema-1 code-map provenance and a matching
+current three-stage merge with one supported conflict block. It refuses native
+or uncertain ownership, unsupported renderings, and changed Git, file or
+provenance identities. It restores only the exact committed HEAD blob and leaves
+provenance, other files and every index entry untouched. Review the resulting
+diff, then stage the resolved path through the normal explicit staging lane.
+Do not substitute direct writes, Git restore, arbitrary revisions/content, or a
+context adoption when recovery refuses. Use the shipped helper. When repairing
+this operation in codeArbiter itself, the normal contributor path may exercise
+the tested and independently reviewed canonical implementation under
+`core/pysrc/`, with live enforcement intact; no copied ad hoc script, installed
+cache edit or hook/trust change is permitted. Native context writer/adoption
+qualification remains unchanged. Re-run the current-head review and CI
+requirements after integration; previous green evidence does not bind new code.
+
 ### Open-PR procedure
 
 Run this procedure only for the selected open-PR or merge-via-PR action, after the
