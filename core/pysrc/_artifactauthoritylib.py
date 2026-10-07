@@ -141,7 +141,7 @@ def _canonical(value: Any) -> bytes:
         raise AuthorityError("INVALID_AUTHORITY_STATE", "state is not finite JSON") from exc
 
 
-def _native_context_canonical(value: Any) -> bytes:
+def _native_context_canonical(value: Any, code: str = "INVALID_EVIDENCE_CONTEXT") -> bytes:
     """Match the artifact engine's safe-integer, UTF-16-key-order JSON bytes."""
     def ordered(item: Any, depth: int) -> Any:
         if depth > 64:
@@ -172,7 +172,13 @@ def _native_context_canonical(value: Any) -> bytes:
             raise ValueError("context exceeds native byte limit")
         return raw
     except (TypeError, ValueError, UnicodeError, RecursionError) as exc:
-        raise AuthorityError("INVALID_EVIDENCE_CONTEXT", "context is outside native canonical JSON") from exc
+        raise AuthorityError(code, "value is outside native canonical JSON") from exc
+
+
+def _engine_digest(value: Any) -> str:
+    """Digest a value exactly as the engine's canonical.Hash does: raw UTF-8,
+    never ASCII-escaped, so non-ASCII text binds to the same digest."""
+    return _digest(_native_context_canonical(value, "INVALID_AUTHORITY_STATE"))
 
 
 def _digest(data: bytes) -> str:
@@ -2106,11 +2112,11 @@ def _closed_observation(
         "subject": request["context"]["subject"],
         "context_ref": request["context_ref"],
         "context_sha256": request["context_sha256"],
-        "payload_sha256": _digest(_canonical(payload)),
+        "payload_sha256": _engine_digest(payload),
         "producer_profile": producer_profile,
         "producer_run_id": producer_run_id,
         "producer_result": producer_result,
-        "producer_result_sha256": _digest(_canonical(producer_result)),
+        "producer_result_sha256": _engine_digest(producer_result),
     }
 
 
@@ -2163,11 +2169,11 @@ def capture_user_prompt(
         "subject": subject,
         "context_ref": context_ref,
         "context_sha256": context_sha256,
-        "payload_sha256": _digest(_canonical(event.get("payload"))),
+        "payload_sha256": _engine_digest(event.get("payload")),
         "producer_profile": "host-user-prompt/0.1.0",
         "producer_run_id": producer_run_id,
         "producer_result": producer_result,
-        "producer_result_sha256": _digest(_canonical(producer_result)),
+        "producer_result_sha256": _engine_digest(producer_result),
     }
     observation_raw = _canonical(observation)
     observation_sha256 = _digest(observation_raw)
@@ -2213,12 +2219,12 @@ def _context_preview_context(root: Path, client: Any, preview: dict[str, Any], p
                "record_id": "CONTEXT-" + preview["document_id"].upper(),
                "normative_sha256": binding}
     if (
-        _digest(raw) != context_hash or raw != _canonical(context)
+        _digest(raw) != context_hash or raw != _native_context_canonical(context, "INVALID_CONTEXT_AUTHORITY")
         or context.get("activity") != CONTEXT_ROUTE
         or context.get("preview") != preview
         or context.get("subject") != subject
         or context.get("record") != {"preview_binding_sha256": binding}
-        or context.get("record_sha256") != _digest(_canonical(context.get("record")))
+        or context.get("record_sha256") != _engine_digest(context.get("record"))
         or context.get("input_sha256") != binding
         or context.get("prompt_sha256") != _digest(prompt.encode("utf-8"))
         or result.get("subject") != subject
@@ -2302,9 +2308,9 @@ def capture_context_preview(root: str | Path, client: Any, prompt: str, *, host:
     observation = {
         "format": OBSERVATION_FORMAT, "kind": CONTEXT_ROUTE,
         "subject": context["subject"], "context_ref": context_ref,
-        "context_sha256": context_hash, "payload_sha256": _digest(_canonical(payload)),
+        "context_sha256": context_hash, "payload_sha256": _engine_digest(payload),
         "producer_profile": "host-user-context-preview/0.1.0", "producer_run_id": producer_run_id,
-        "producer_result": producer_result, "producer_result_sha256": _digest(_canonical(producer_result)),
+        "producer_result": producer_result, "producer_result_sha256": _engine_digest(producer_result),
     }
     observation_raw = _canonical(observation)
     observation_hash = _digest(observation_raw)
