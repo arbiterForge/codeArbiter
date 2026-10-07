@@ -144,6 +144,8 @@ jobs:
       ca-sandbox: ${{ steps.filter.outputs.ca-sandbox }}
       ca-codex: ${{ steps.filter.outputs.ca-codex }}
       ca-pi: ${{ steps.filter.outputs.ca-pi }}
+      pi-versions: ${{ steps.pi-policy.outputs.versions }}
+      pi-last-verified: ${{ steps.pi-policy.outputs.last-verified }}
       host-descriptors: ${{ steps.filter.outputs.host-descriptors }}
       hooks: ${{ steps.filter.outputs.hooks }}
       impact: ${{ steps.filter.outputs.impact }}
@@ -155,6 +157,19 @@ jobs:
       artifacts: ${{ steps.filter.outputs.artifacts == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Resolve supported Pi versions from repository policy
+        id: pi-policy
+        shell: python
+        run: |
+          import json
+          import os
+          import subprocess
+          import sys
+          policy = json.loads(subprocess.check_output(
+              [sys.executable, ".github/scripts/pi_promotion.py", "policy"], text=True))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("versions=" + json.dumps(policy["supported_versions"], separators=(",", ":")) + "\n")
+              output.write("last-verified=" + policy["last_verified"] + "\n")
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
@@ -217,6 +232,7 @@ jobs:
               - '.github/scripts/test_pi_host_locks.py'
               - '.github/fixtures/pi-hosts/**'
               - '.github/pi-promotion-targets.json'
+              - '.github/scripts/pi_promotion.py'
               - '.github/scripts/test_pi_parity.py'
               - '.github/scripts/pi_benchmark.py'
               - '.github/scripts/test_pi_benchmark.py'
@@ -1363,7 +1379,7 @@ jobs:
         # any way a second cell would reveal. Pinned to the upper bound of the
         # supported window.
         working-directory: .
-        run: python .github/scripts/pi_host_locks.py install --version 1.0.2 --prefix "$RUNNER_TEMP/pi-host-0.84.1"
+        run: python .github/scripts/pi_host_locks.py install --version ${{ needs.changes.outputs.pi-last-verified }} --prefix "$RUNNER_TEMP/pi-host-${{ needs.changes.outputs.pi-last-verified }}"
       - name: Install (locked)
         # --ignore-scripts for the same reason every sibling job uses it: this
         # graph's output is a committed artifact. The graph itself is audited by
@@ -1823,7 +1839,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        pi-version: ["1.0.2"]
+        pi-version: ${{ fromJSON(needs.changes.outputs.pi-versions) }}
     runs-on: ${{ matrix.os }}
     # Issue #399. Worst observed cell before this split was 452s (windows-latest,
     # run 30123976665); the Windows cold `npm install --global` dominates and is

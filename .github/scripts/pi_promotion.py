@@ -32,7 +32,6 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     ".github/scripts/pi_host_locks.py",
     ".github/scripts/test_verify_pi_support.py",
     ".github/scripts/verify_pi_support.py",
-    ".github/workflows/ci.yml",
     "README.md",
     "core/hosts.json",
     "core/surface/commands/doctor.md",
@@ -628,7 +627,10 @@ def _main() -> int:
     root = Path.cwd()
     if arguments.command == "policy":
         policy = read_policy(root, targets)
-        print(json.dumps({"minimum": policy.minimum, "last_verified": policy.last_verified, "node_floor": policy.node_floor}))
+        print(json.dumps({
+            "minimum": policy.minimum, "last_verified": policy.last_verified,
+            "supported_versions": policy.supported_versions, "node_floor": policy.node_floor,
+        }))
         return 0
     if arguments.command == "apply":
         candidate = parse_candidate(arguments.candidate, read_policy(root, targets))

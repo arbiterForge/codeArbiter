@@ -190,7 +190,7 @@ jobs:
           npm --prefix plugins/ca-pi/tools ci --ignore-scripts
           npm --prefix plugins/ca-pi/tools run build
           python .github/scripts/check_docs_contract.py
-          git add -- plugins/ca-pi core .github/fixtures/pi-hosts .github/scripts/pi_host_locks.py .github/scripts/test_host_descriptors.py .github/scripts/test_pi_child_live.py .github/scripts/test_pi_package.py .github/scripts/test_pi_platform_contract.py .github/scripts/test_public_pi_docs.py .github/scripts/test_verify_pi_support.py .github/scripts/verify_pi_support.py .github/workflows/ci.yml README.md docs site package.json .codearbiter/specs/pi-support.md .codearbiter/specs/ci-impact-selection.md .codearbiter/tech-stack.md
+          git add -- plugins/ca-pi core .github/fixtures/pi-hosts .github/scripts/pi_host_locks.py .github/scripts/test_host_descriptors.py .github/scripts/test_pi_child_live.py .github/scripts/test_pi_package.py .github/scripts/test_pi_platform_contract.py .github/scripts/test_public_pi_docs.py .github/scripts/test_verify_pi_support.py .github/scripts/verify_pi_support.py README.md docs site package.json .codearbiter/specs/pi-support.md .codearbiter/specs/ci-impact-selection.md .codearbiter/tech-stack.md
           git diff --quiet
           test -z "$(git ls-files --others --exclude-standard)"
           git diff --cached --check
