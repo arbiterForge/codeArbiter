@@ -31,6 +31,8 @@ predate the plugin rewrite and are grouped by date.
   result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
   failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
   canonical form.
+- Pin the farm build and test dependency graph to `source-map-js` 1.2.2,
+  closing the excessive source-map allocation advisory GHSA-68fv-2mgg-jv7q.
 
 ## [2.24.4] - 2026-10-05
 

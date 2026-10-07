@@ -28,7 +28,12 @@
     "coverage": "vitest run --coverage && npm run test:academy-base && npm run test:release-applicability-rendered"
   },
   "overrides": {
-    "esbuild": "^0.28.1"
+    "esbuild": "^0.28.1",
+    "postcss-nested": {
+      "postcss-selector-parser": "7.1.6"
+    },
+    "smol-toml": "1.9.0",
+    "source-map-js": "1.2.2"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.1",
@@ -36,7 +41,7 @@
     "astro": "^7.0.3"
   },
   "optionalDependencies": {
-    "sharp": "^0.35.0"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
