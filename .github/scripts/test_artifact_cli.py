@@ -125,6 +125,73 @@ class CliTests(unittest.TestCase):
         self.assertTrue(envelope["ok"])
         self.assertFalse(envelope["result"]["valid"])
 
+    def batch_spec(self):
+        from test_artifact_authoring import spec_normative
+        normative = spec_normative()
+        normative["scope"] = [{"id": f"SCOPE-{number:02d}", "statement": "λ" * 700}
+                              for number in range(1, 5)]
+        result, envelope = self.invoke("create", {
+            "operation_id": "cli-batch-create", "artifact_id": "SPEC-BATCH",
+            "kind": "spec", "slug": "batch", "title": normative["title"],
+            "summary": normative["summary"], "normative": normative,
+        })
+        self.assertEqual(result.returncode, 0, envelope)
+        result, envelope = self.invoke("identity", {"artifact_id": "SPEC-BATCH"})
+        self.assertEqual(result.returncode, 0, envelope)
+        return envelope["result"]
+
+    def test_native_batch_pages_are_exact_bounded_and_non_authorizing(self):
+        identity = self.batch_spec()
+        ids = ["SCOPE-04", "SCOPE-02", "SCOPE-01", "SCOPE-03"]
+        request = {"artifact_id": "SPEC-BATCH", "symbols": ids,
+                   "model_sha256": identity["model_sha256"], "offset": 0, "budget": 4096}
+        before = {str(path.relative_to(self.root)): path.read_bytes()
+                  for path in self.root.rglob("*") if path.is_file()}
+        seen, pages = [], 0
+        while True:
+            result, envelope = self.invoke("read-batch", request)
+            self.assertEqual(result.returncode, 0, envelope)
+            self.assertLessEqual(len(result.stdout), 4096)
+            page = envelope["result"]
+            self.assertFalse(page["context_complete"])
+            self.assertNotIn("context_ticket", page)
+            self.assertEqual(page["mode"], "exact")
+            self.assertEqual(page["model_sha256"], identity["model_sha256"])
+            self.assertEqual(page["offset"], len(seen))
+            self.assertEqual(page["total"], len(ids))
+            for row in page["records"]:
+                code, exact = self.invoke("read", {"artifact_id": "SPEC-BATCH", "symbol": row["id"], "mode": "exact", "budget": 4096})
+                self.assertEqual(code.returncode, 0, exact)
+                self.assertEqual(row["record"], exact["result"]["record"])
+                seen.append(row["id"])
+            pages += 1
+            if page["next_offset"] is None:
+                break
+            self.assertEqual(page["next_offset"], len(seen))
+            self.assertLess(pages, len(ids))
+            request["offset"] = page["next_offset"]
+        self.assertGreater(pages, 1)
+        self.assertEqual(seen, ids)
+        self.assertEqual(before, {str(path.relative_to(self.root)): path.read_bytes()
+                                  for path in self.root.rglob("*") if path.is_file()})
+
+    def test_native_batch_rejects_stale_missing_and_duplicate_selection(self):
+        identity = self.batch_spec()
+        request = {"artifact_id": "SPEC-BATCH", "symbols": ["SCOPE-01"],
+                   "model_sha256": identity["model_sha256"], "budget": 4096}
+        cases = [
+            ({"symbols": []}, "INVALID_MODEL"),
+            ({"symbols": ["SCOPE-01", "SCOPE-01"]}, "INVALID_MODEL"),
+            ({"symbols": ["SCOPE-01", "SCOPE-MISSING"]}, "SYMBOL_NOT_FOUND"),
+            ({"model_sha256": "0" * 64}, "STALE_CURSOR"),
+            ({"unexpected": True}, "INVALID_MODEL"),
+        ]
+        for changed, code in cases:
+            with self.subTest(changed=changed):
+                result, envelope = self.invoke("read-batch", {**request, **changed})
+                self.assert_error(result, envelope, code)
+                self.assertNotIn("result", envelope)
+
 
 def main() -> int:
     global BINARY, COUNTERS

@@ -202,6 +202,19 @@ func Run(root, op string, input object) (any, error) {
 			return reads.Exact(d, model.S(r["symbol"]), budget)
 		}
 		return reads.Page(f, c, d, model.S(r["symbol"]), model.S(r["cursor"]), budget)
+	case "read-batch":
+		if model.S(r["model_sha256"]) != d.Hash() {
+			return nil, fault.New("STALE_CURSOR", "exact batch requires the same model identity")
+		}
+		offset, ok := model.NativeInt(model.I(r["offset"]))
+		if !ok {
+			return nil, fault.New("INVALID_OFFSET", "batch offset is outside the native integer range")
+		}
+		out, err := reads.ExactBatch(d, model.Strings(r["symbols"]), offset, budget)
+		if err != nil {
+			return nil, err
+		}
+		return out, nil
 	case "outline":
 		offset, ok := model.NativeInt(model.I(r["offset"]))
 		if !ok {
