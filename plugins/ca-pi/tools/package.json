@@ -12,6 +12,9 @@
     "test": "vitest run",
     "coverage": "vitest run --coverage"
   },
+  "overrides": {
+    "source-map-js": "1.2.2"
+  },
   "devDependencies": {
     "@types/node": "25.9.4",
     "@vitest/coverage-v8": "4.1.11",

@@ -13,6 +13,9 @@
   "engines": {
     "node": ">=20.6"
   },
+  "overrides": {
+    "source-map-js": "1.2.2"
+  },
   "devDependencies": {
     "@types/node": "^25.9.2",
     "@vitest/coverage-v8": "4.1.11",
