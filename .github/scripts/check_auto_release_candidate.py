@@ -89,11 +89,11 @@ def _as_list(value) -> list[str]:
 def _intent_paths(row) -> list[str]:
     """Return the declared, target-specific release-intent surface."""
     paths: list[str] = []
-    for field in ("manifest", "generated-manifest", "changelog", "payload", "artifacts"):
+    for field in ("manifest", "generated_manifest", "changelog", "payload", "artifacts"):
         for path in _as_list(row.get(field)):
             if path not in paths:
                 paths.append(path)
-    for path in _as_list(row.get("payload-exclude")):
+    for path in _as_list(row.get("payload_exclude")):
         paths.append(f":(exclude){path}")
     return paths
 

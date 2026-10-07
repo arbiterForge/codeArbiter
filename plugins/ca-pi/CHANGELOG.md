@@ -10,6 +10,9 @@ All notable changes to `ca-pi` are documented in this file.
 
 - Read multiple stale Git-hook registrations correctly on Windows and Unix,
   preserving enforcement by the current registered checker.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
 
 ### Added
 
@@ -24,6 +27,16 @@ All notable changes to `ca-pi` are documented in this file.
 - Resolve review profiles from actual Pi capabilities and report independence limits;
   unresolved serious claims cannot become confirmed fix work. The supported Pi runtime
   remains 1.0.2.
+
+## [0.16.6] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
 
 ## [0.16.5] - 2026-10-05
 

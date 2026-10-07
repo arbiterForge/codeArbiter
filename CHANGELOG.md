@@ -18,6 +18,9 @@ predate the plugin rewrite and are grouped by date.
 
 - Read the shared Git hook's stale-registration list correctly with multiple
   entries and Windows line endings, so the current security checker owns the verdict.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
 
 ### Added
 
@@ -33,6 +36,18 @@ predate the plugin rewrite and are grouped by date.
 - Require separate verification of serious findings and keep unresolved claims out
   of confirmed fix work. Complete issue-filing and optional telemetry dispositions
   separately from the report, preserving explicit consent and aggregate-only feedback.
+
+## [2.24.5] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
+- Pin the farm build and test dependency graph to `source-map-js` 1.2.2,
+  closing the excessive source-map allocation advisory GHSA-68fv-2mgg-jv7q.
 
 ## [2.24.4] - 2026-10-05
 

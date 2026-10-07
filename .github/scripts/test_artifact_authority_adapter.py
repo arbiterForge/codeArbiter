@@ -3519,7 +3519,7 @@ class ClaudeEndToEndTest(unittest.TestCase):
             "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
             "target_sha256": context["input_sha256"], "contract_sha256": armed["review_contract_sha256"],
             "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
-            "assessment": "Independent Claude review of the frozen target.",
+            "assessment": getattr(self, "review_assessment", "Independent Claude review of the frozen target."),
         })
         if fixtures:
             # Claude Code 2.1.286: the report arrives as the child's handback.
@@ -3581,6 +3581,14 @@ class ClaudeEndToEndTest(unittest.TestCase):
     def test_end_to_end_claude_2_1_286(self):
         """The same flow on Claude Code 2.1.286's tagged model and handback report."""
         self.host_fixtures = "2.1.286/"
+        self.test_end_to_end_claude()
+
+    def test_end_to_end_claude_non_ascii_review_publishes(self):
+        """A reviewer reply with non-ASCII text publishes: the observation's
+        payload and producer-result digests use the engine's UTF-8 canonical
+        form, not ASCII-escaped JSON."""
+        self.host_fixtures = "2.1.286/"
+        self.review_assessment = "Independent review — the frozen target holds; naïve ✓ 😀."
         self.test_end_to_end_claude()
 
     @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")
