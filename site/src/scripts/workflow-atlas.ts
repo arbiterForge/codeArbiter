@@ -10,6 +10,8 @@ class WorkflowAtlas extends HTMLElement {
   private downloads = new Map<string, number>();
   private resizePending = false;
   private navigationRevision = 0;
+  private lastFollowedHash?: string;
+  private pendingLink?: { hash: string; revision: number };
   private inspectorTemplates = new Map<string, HTMLTemplateElement>();
   private atlas!: Atlas;
   private active!: AtlasView;
@@ -141,11 +143,16 @@ class WorkflowAtlas extends HTMLElement {
       if (!hash) {
         return;
       }
-      // Astro may pushState without hashchange. Keep the native navigation and
-      // read only its destination; never interpret DOM text as HTML or a selector.
-      const revision = ++this.navigationRevision;
-      queueMicrotask(() => {
-        if (!controller.signal.aborted && revision === this.navigationRevision) {
+      // Built atlas fragments opt out of Astro routing. Wait until propagation
+      // finishes so a later listener can cancel the native action. No history
+      // entry or URL is written here; only an accepted destination is followed.
+      const pending = { hash, revision: ++this.navigationRevision };
+      this.pendingLink = pending;
+      this.later(() => {
+        if (this.pendingLink === pending) {
+          this.pendingLink = undefined;
+        }
+        if (!event.defaultPrevented && pending.revision === this.navigationRevision) {
           this.follow(hash, true);
         }
       });
@@ -214,7 +221,21 @@ class WorkflowAtlas extends HTMLElement {
         this.stage.classList.remove('dragging');
       }, options);
     }
-    const locationChanged = () => this.follow(location.hash);
+    const locationChanged = () => {
+      // Let the pending click finish cancellation checks and own its focus.
+      // Even when a newer manual choice superseded it, its matching native
+      // notification must not restore the older route or viewport.
+      if (this.pendingLink?.hash === location.hash) {
+        this.lastFollowedHash = location.hash;
+        return;
+      }
+      // One native navigation may emit popstate, hashchange and page-load.
+      // Reapplying its destination would replace focused nodes and cancel the
+      // explicit link's queued focus. It could also undo a later manual choice.
+      if (location.hash !== this.lastFollowedHash) {
+        this.follow(location.hash);
+      }
+    };
     window.addEventListener('hashchange', locationChanged, options);
     window.addEventListener('popstate', locationChanged, options);
     document.addEventListener('astro:page-load', locationChanged, options);
@@ -257,6 +278,8 @@ class WorkflowAtlas extends HTMLElement {
     this.show(this.atlas.views[0].id);
     this.follow(location.hash);
     controller.signal.addEventListener('abort', () => {
+      this.pendingLink = undefined;
+      this.lastFollowedHash = undefined;
       this.frames.forEach(cancelAnimationFrame);
       this.frames.clear();
       this.observer?.disconnect();
@@ -409,12 +432,20 @@ class WorkflowAtlas extends HTMLElement {
   private readSize(node?: AtlasNode): void {
     this.fitMode = 'manual';
     this.resize(.85, false);
-    const target = node ?? this.active.nodes.find(n => n.kind === 'cmd' && (!this.route || n.title.includes('/' + this.route))) ?? this.active.nodes.find(n => n.routes.includes(this.route)) ?? this.active.nodes[0];
+    const target = node ?? this.active.nodes.find(n =>
+      n.kind === 'cmd' && (!this.route || (
+        n.routes.includes(this.route) &&
+        n.title.match(/\/[a-z][a-z0-9-]*/g)?.includes('/' + this.route)
+      ))
+    ) ?? this.active.nodes.find(n => n.routes.includes(this.route)) ?? this.active.nodes[0];
     this.stage.scrollLeft = Math.max(0, target.x * this.scale - 25);
     this.stage.scrollTop = Math.max(0, target.y * this.scale - 65);
   }
 
   private follow(hash: string, focus = false): boolean {
+    // Explicit links always follow, including a repeated fragment. Remember
+    // unrelated/invalid destinations too so Back from them can restore a route.
+    this.lastFollowedHash = hash;
     if (!hash.startsWith('#') || hash.length < 2 || hash.length > 1024) {
       return false;
     }
