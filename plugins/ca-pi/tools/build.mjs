@@ -85,6 +85,13 @@ await build({
   outfile: "../helpers/windows-supervisor.js",
 });
 
+// Private explicit entrypoint only; never registered in the ordinary Pi manifest.
+await build({
+  ...shared,
+  entryPoints: ["src/approval-entry.ts"],
+  outfile: "../helpers/approval-dialog.js",
+});
+
 await build({
   ...shared,
   define: {

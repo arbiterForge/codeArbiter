@@ -1362,7 +1362,7 @@ class PiPackageTests(unittest.TestCase):
         helpers = PLUGIN / "helpers"
         self.assertEqual(
             sorted(path.name for path in helpers.glob("*.js")),
-            ["windows-supervisor.js"],
+            ["approval-dialog.js", "windows-supervisor.js"],
         )
         supervisor = helpers / "windows-supervisor.js"
         text = supervisor.read_bytes().decode("utf-8", errors="strict")
@@ -1371,6 +1371,12 @@ class PiPackageTests(unittest.TestCase):
         build = (TOOLS / "build.mjs").read_text(encoding="utf-8")
         self.assertIn('entryPoints: ["src/windows-supervisor.ts"]', build)
         self.assertIn('outfile: "../helpers/windows-supervisor.js"', build)
+        self.assertIn('entryPoints: ["src/approval-entry.ts"]', build)
+        self.assertIn('outfile: "../helpers/approval-dialog.js"', build)
+        approval = (helpers / "approval-dialog.js").read_bytes().decode("utf-8", errors="strict")
+        self.assertNotIn("sourceMappingURL", approval)
+        manifest = json.loads((PLUGIN / "package.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["pi"]["extensions"], ["./extensions/codearbiter.js"])
         ci = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         stale_scope = "git diff --quiet -- plugins/ca-pi/extensions plugins/ca-pi/helpers"
         diagnostic_scope = "git --no-pager diff -- plugins/ca-pi/extensions plugins/ca-pi/helpers"

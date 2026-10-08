@@ -592,7 +592,7 @@ describe("ca-pi package", () => {
 
   test("ships one UTF-8 Windows supervisor and keeps its stale-build gate coupled to source", async () => {
     const helpers = resolve(pluginRoot, "helpers");
-    await expect((await import("node:fs/promises")).readdir(helpers)).resolves.toEqual(["windows-supervisor.js"]);
+    await expect((await import("node:fs/promises")).readdir(helpers)).resolves.toEqual(["approval-dialog.js", "windows-supervisor.js"]);
     const bytes = await readFile(windowsSupervisor);
     const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
     expect(text).toContain("STARTED");
@@ -600,6 +600,12 @@ describe("ca-pi package", () => {
     const buildSource = await readFile(resolve(toolsRoot, "build.mjs"), "utf8");
     expect(buildSource).toContain('entryPoints: ["src/windows-supervisor.ts"]');
     expect(buildSource).toContain('outfile: "../helpers/windows-supervisor.js"');
+    expect(buildSource).toContain('entryPoints: ["src/approval-entry.ts"]');
+    expect(buildSource).toContain('outfile: "../helpers/approval-dialog.js"');
+    const approval = new TextDecoder("utf-8", { fatal: true }).decode(await readFile(resolve(helpers, "approval-dialog.js")));
+    expect(approval).not.toContain("sourceMappingURL");
+    const manifest = JSON.parse(await readFile(resolve(pluginRoot, "package.json"), "utf8"));
+    expect(manifest.pi.extensions).toEqual(["./extensions/codearbiter.js"]);
     const workflow = await readFile(resolve(pluginRoot, "..", "..", ".github", "workflows", "ci.yml"), "utf8");
     expect(workflow).toContain("git diff --quiet -- plugins/ca-pi/extensions plugins/ca-pi/helpers");
     expect(workflow).toContain("git --no-pager diff -- plugins/ca-pi/extensions plugins/ca-pi/helpers");

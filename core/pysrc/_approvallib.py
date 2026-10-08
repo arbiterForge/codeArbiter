@@ -26,6 +26,7 @@ TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 HOST_RE = re.compile(r"[A-Za-z0-9_-]{1,32}")
 SESSION_RE = re.compile(r"[A-Za-z0-9._:-]{1,256}")
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
+PI_DIALOG_SESSION_RE = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")
 
 
 class ApprovalError(RuntimeError):
@@ -354,14 +355,29 @@ def consume_user_approval(
     host: str,
     session_id: str,
     seam: str = "UserPromptSubmit",
+    expected_pending_sha256: str | None = None,
 ) -> dict[str, Any]:
     root = Path(root).resolve(strict=True)
-    if seam not in {"UserPromptSubmit", "AskUserQuestion"}:
+    if seam not in {"UserPromptSubmit", "AskUserQuestion", "PiNativeInput"}:
         raise ApprovalError("INVALID_HOST_CONTEXT", "approval seam is unsupported")
+    if host == "pi" or seam == "PiNativeInput":
+        # Only the isolated Pi dialog producer owns this seam. Its native session
+        # and fresh dialog generation travel together; ordinary Pi input events
+        # can contain transformed text and cannot use the prompt-hook route.
+        if (host != "pi" or seam != "PiNativeInput" or not isinstance(session_id, str)
+                or PI_DIALOG_SESSION_RE.fullmatch(session_id) is None
+                or not isinstance(expected_pending_sha256, str)
+                or SHA256_RE.fullmatch(expected_pending_sha256) is None):
+            raise ApprovalError("INVALID_HOST_CONTEXT", "Pi approval requires its native dialog session and generation")
     pending = _load_pending(root)
     if pending is None or not isinstance(prompt, str):
         return {"matched": False, "approved": False}
+    if expected_pending_sha256 is not None and not secrets.compare_digest(
+            hashlib.sha256(_canonical(pending)).hexdigest(), expected_pending_sha256):
+        raise ApprovalError("STALE_APPROVAL", "approval request changed while native input was pending")
     if pending["format"] == "codearbiter.pending-user-approval/0.2.0":
+        if host == "pi":
+            raise ApprovalError("INVALID_HOST_CONTEXT", "paired Pi approval is not qualified")
         import _sprintapprovallib
         return _sprintapprovallib.consume(root, client, pending, prompt, host=host, session_id=session_id, seam=seam)
     parts = prompt.split(" ")

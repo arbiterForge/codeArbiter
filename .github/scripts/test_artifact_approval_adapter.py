@@ -110,6 +110,54 @@ class ApprovalAdapterTest(unittest.TestCase):
                 host="claude", session_id="session-lenient",
             )
 
+    def test_pi_generic_prompt_label_cannot_approve(self):
+        """A transformed Pi input event is not original native dialog input."""
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="synthetic-pi-token")
+        with self.assertRaisesRegex(self.adapter.ApprovalError, "INVALID_HOST_CONTEXT"):
+            self.adapter.consume_user_approval(
+                self.root, self.client, armed["reply"], host="pi",
+                session_id="f04b8659-e0f5-4c77-a382-2b8bd7d1e214",
+            )
+        self.assertFalse(any(operation == "capture-observation" for operation, _ in self.client.calls))
+        self.assertTrue((self.root / self.adapter.PENDING).exists())
+
+    def test_pi_native_dialog_keeps_exact_text_and_session_generation(self):
+        """Synthetic component event only; this does not qualify human input."""
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="synthetic-pi-token")
+        session = "f04b8659-e0f5-4c77-a382-2b8bd7d1e214:a77d6932-3eb9-4720-b1bf-d201bed22a98"
+        pending_hash = hashlib.sha256(self.adapter._canonical(self.adapter._load_pending(self.root))).hexdigest()
+        try:
+            result = self.adapter.consume_user_approval(
+                self.root, self.client, armed["reply"], host="pi",
+                session_id=session, seam="PiNativeInput", expected_pending_sha256=pending_hash,
+            )
+        except (self.adapter.ApprovalError, TypeError) as error:
+            result = {"approved": False, "error": getattr(error, "code", "UNSUPPORTED_BINDING")}
+        self.assertTrue(result.get("approved"), result)
+        source = json.loads((self.root / result["authority_source"]).read_text(encoding="utf-8"))
+        self.assertEqual(source["source_text"], armed["reply"])
+        self.assertEqual(source["origin"], f"pi:PiNativeInput:{session}")
+        replay = self.adapter.consume_user_approval(
+            self.root, self.client, armed["reply"], host="pi",
+            session_id=session, seam="PiNativeInput", expected_pending_sha256=pending_hash,
+        )
+        self.assertEqual(replay, {"matched": False, "approved": False})
+
+    def test_pi_native_dialog_refuses_a_rearmed_request_before_capture(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="synthetic-pi-token")
+        try:
+            self.adapter.consume_user_approval(
+                self.root, self.client, armed["reply"], host="pi", seam="PiNativeInput",
+                session_id="f04b8659-e0f5-4c77-a382-2b8bd7d1e214:a77d6932-3eb9-4720-b1bf-d201bed22a98",
+                expected_pending_sha256="0" * 64,
+            )
+            code = "APPROVED"
+        except (self.adapter.ApprovalError, TypeError) as error:
+            code = getattr(error, "code", "UNSUPPORTED_BINDING")
+        self.assertEqual(code, "STALE_APPROVAL")
+        self.assertFalse(any(operation == "capture-observation" for operation, _ in self.client.calls))
+        self.assertTrue((self.root / self.adapter.PENDING).exists())
+
     def test_short_code_from_hook_approves_and_records_the_full_reply(self):
         armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-short")
         self.assertRegex(armed["code"], r"^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{4}$")
@@ -1031,6 +1079,112 @@ class SprintPairIntegrationTest(unittest.TestCase):
             self.pair.cancel(self.root, original)
         self.assertFalse(self.consume("approve-sprint SPEC-FLOW PLAN-FLOW delegate-methods synthetic-pair-token")["matched"])
         self.assertTrue(self.consume(new["reply"])["approved"])
+
+
+class PiNativeApprovalTest(unittest.TestCase):
+    """Real-engine fixtures with synthetic replies, never human authority."""
+    @classmethod
+    def setUpClass(cls):
+        from test_artifact_authoring import build_installation
+        cls.owner, cls.installation = build_installation()
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.owner is not None:
+            cls.owner.cleanup()
+
+    def setUp(self):
+        from test_artifact_authoring import physical_test_directory, WorkflowHarness
+        self.approval = importlib.import_module("_approvallib")
+        self.routes = importlib.import_module("_artifactpromptlib")
+        self.replies = importlib.import_module("_replylib")
+        spec = importlib.util.spec_from_file_location("pi_native_approval", REPO / "plugins/ca-pi/hooks/pi-approval.py")
+        self.bridge = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.bridge)
+        self.temp = tempfile.TemporaryDirectory(prefix="ca-pi-native-approval-fixture-")
+        self.addCleanup(self.temp.cleanup)
+        self.root = physical_test_directory(self.temp.name) / "repo"
+        self.root.mkdir()
+        for module in (self.routes, self.replies):
+            old = module.REGISTRY_PARENT
+            module.REGISTRY_PARENT = self.root.parent
+            self.addCleanup(setattr, module, "REGISTRY_PARENT", old)
+        self.h = WorkflowHarness(self.root, self.installation)
+        self.h.create_spec()
+        self.armed = self.approval.arm_user_approval(self.root, self.h.client, "SPEC-FLOW", token="synthetic-native-pi-token")
+        self.inspect = {"version": 1, "event": "native_approval_inspect", "cwd": str(self.root)}
+        self.snapshot = self.bridge.handle(self.inspect, self.h.client)["resultPatch"]
+        self.request = {"version": 1, "event": "native_approval_consume", "cwd": str(self.root),
+                        "sessionId": "f04b8659-e0f5-4c77-a382-2b8bd7d1e214",
+                        "input": {"reply": self.armed["reply"], "pending_sha256": self.snapshot["pending_sha256"],
+                                  "generation": "a77d6932-3eb9-4720-b1bf-d201bed22a98"}}
+
+    def sources(self):
+        return list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+
+    def test_inspect_is_inert_and_binds_the_exact_pending_request(self):
+        self.assertEqual(self.snapshot["pending_sha256"], hashlib.sha256(
+            self.approval._canonical(self.approval._load_pending(self.root))).hexdigest())
+        self.assertEqual(self.sources(), [])
+        self.assertEqual(self.snapshot["artifact_id"], "SPEC-FLOW")
+
+    def test_exact_synthetic_native_reply_reaches_the_real_engine_once(self):
+        result = self.bridge.handle(self.request, self.h.client)["resultPatch"]
+        self.assertTrue(result["approved"])
+        validated = self.h.client.call("validate", {"artifact_id": "SPEC-FLOW", "gate": "approved"})
+        self.assertTrue(validated["valid"])
+        source = json.loads(self.sources()[0].read_text(encoding="utf-8"))
+        self.assertEqual(source["source_text"], self.armed["reply"])
+        self.assertEqual(source["origin"], "pi:PiNativeInput:" + self.request["sessionId"] + ":" + self.request["input"]["generation"])
+        replay = self.bridge.handle(self.request, self.h.client)["resultPatch"]
+        self.assertEqual(replay, {"matched": False, "approved": False})
+        self.assertEqual(len(self.sources()), 1)
+
+    def test_wrong_token_artifact_padding_and_denial_never_capture(self):
+        for reply in ("yes", "deny", self.armed["reply"] + " ",
+                      self.armed["reply"].replace("SPEC-FLOW", "SPEC-OTHER"),
+                      "approve SPEC-FLOW wrong-token-value"):
+            with self.subTest(reply=reply):
+                request = {**self.request, "input": {**self.request["input"], "reply": reply}}
+                self.assertFalse(self.bridge.handle(request, self.h.client)["resultPatch"]["approved"])
+        self.assertEqual(self.sources(), [])
+
+    def test_changed_artifact_refuses_before_capture(self):
+        self.h.mutate("apply", "SPEC-FLOW", changes=[{"op": "header.update", "fields": {"summary": "Changed while dialog was open."}}])
+        with self.assertRaisesRegex(self.approval.ApprovalError, "STALE_APPROVAL"):
+            self.bridge.handle(self.request, self.h.client)
+        self.assertEqual(self.sources(), [])
+
+    def test_rearming_same_artifact_invalidates_the_old_dialog_snapshot(self):
+        self.approval.cancel_user_approval(self.root, "SPEC-FLOW")
+        new = self.approval.arm_user_approval(self.root, self.h.client, "SPEC-FLOW", token="synthetic-different-pi-token")
+        request = {**self.request, "input": {**self.request["input"], "reply": new["reply"]}}
+        with self.assertRaisesRegex(self.approval.ApprovalError, "STALE_APPROVAL"):
+            self.bridge.handle(request, self.h.client)
+        self.assertEqual(self.sources(), [])
+
+    def test_cancellation_and_new_client_do_not_restore_authority(self):
+        self.approval.cancel_user_approval(self.root, "SPEC-FLOW")
+        from test_artifact_authoring import WorkflowHarness
+        resumed = WorkflowHarness(self.root, self.installation)
+        self.assertEqual(self.bridge.handle(self.request, resumed.client)["resultPatch"], {"matched": False, "approved": False})
+        self.assertEqual(self.sources(), [])
+
+    def test_closed_input_shape_and_native_session_generation_are_required(self):
+        bad = [{**self.request, "host": "pi"}, {**self.request, "source": "interactive"},
+               {**self.request, "sessionId": "caller-asserted-session"},
+               {**self.request, "input": {**self.request["input"], "generation": "old"}},
+               {**self.request, "input": {**self.request["input"], "originalText": self.armed["reply"]}},
+               {**self.request, "input": {**self.request["input"], "reply": "x" * 513}}]
+        for request in bad:
+            with self.subTest(request=request), self.assertRaises(ValueError):
+                self.bridge.handle(request, self.h.client)
+        self.assertEqual(self.sources(), [])
+
+    def test_duplicate_json_fields_are_refused(self):
+        with self.assertRaises(ValueError):
+            json.loads('{"reply":"deny","reply":"approve"}', object_pairs_hook=self.bridge.unique_object)
+
 
 
 if __name__ == "__main__":
