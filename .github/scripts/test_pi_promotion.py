@@ -276,6 +276,32 @@ class PromotionPatchTests(unittest.TestCase):
             self.assertIn("## [0.1.1] - 2026-07-17", changelog.read_text(encoding="utf-8"))
             self.assertIn("Pi 0.80.10", changelog.read_text(encoding="utf-8"))
 
+    def test_release_metadata_preserves_unreleased_section_before_new_release(self):
+        """Issue #662: promotion must not move Unreleased below a release."""
+        module = load_module()
+        introduction = "# Changelog\n\nAll notable changes to `ca-pi` are documented in this file.\n\n"
+        older = "## [0.1.0] - 2026-07-01\n\n### Fixed\n\n- Retained historical entry.\n"
+        for pending, history in (("", older), ("### Fixed\n\n- Pending work.\n\n", older),
+                                 ("### Fixed\n\n- Pending work.\n\n", "")):
+            with self.subTest(pending=bool(pending), history=bool(history)):
+                with tempfile.TemporaryDirectory() as raw:
+                    root = Path(raw)
+                    target_path = self._host_adapter_fixture(root, "0.1.0")
+                    changelog = root / "plugins" / "ca-pi" / "CHANGELOG.md"
+                    unreleased = "## [Unreleased]\n\n" + pending
+                    changelog.write_text(introduction + unreleased + history, encoding="utf-8")
+                    module.apply_promotion(
+                        root, module.load_targets(target_path), module.Candidate("0.80.10"),
+                        date="2026-07-17",
+                    )
+                    self.assertEqual(
+                        changelog.read_text(encoding="utf-8"),
+                        introduction + unreleased
+                        + "## [0.1.1] - 2026-07-17\n\n### Changed\n\n"
+                        + "- Promote the verified Pi host window through exact Pi 0.80.10.\n\n"
+                        + history,
+                    )
+
     def test_release_metadata_advances_the_generated_root_manifest_in_lockstep(self):
         """Regression: run 31318743524. Since #653 the repo-root package.json is
         the published npm manifest, rendered from the nested version; a promotion

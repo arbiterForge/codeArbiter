@@ -356,9 +356,18 @@ def _plan_release_metadata(repo: Path, release: ReleaseSource, candidate: Candid
         f"\n\n## [{next_version}] - {date}\n\n### Changed\n\n"
         f"- Promote the verified Pi host window through exact Pi {candidate.version}.\n"
     )
+    unreleased = re.search(r"(?m)^## \[Unreleased\][ \t]*$", changelog)
+    if unreleased is not None:
+        next_heading = re.search(r"(?m)^## ", changelog[unreleased.end():])
+        insertion = len(changelog) if next_heading is None else unreleased.end() + next_heading.start()
+        prefix = changelog[:insertion]
+        separator = "" if prefix.endswith("\n\n") else "\n" if prefix.endswith("\n") else "\n\n"
+        changelog = prefix + separator + entry.lstrip("\n") + "\n" + changelog[insertion:]
+    else:
+        changelog = changelog.replace(marker, marker + entry, 1)
     writes: list[tuple[Path, str]] = [
         (package_path, json.dumps(package, indent=2) + "\n"),
-        (changelog_path, changelog.replace(marker, marker + entry, 1)),
+        (changelog_path, changelog),
     ]
     changed: list[Path] = [release.package_path, release.changelog_path]
     if release.root_package_path is not None:
