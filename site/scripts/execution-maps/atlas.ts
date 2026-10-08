@@ -19,9 +19,11 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 
 // Original diagram/source links retain REVIEWED_AT. Freshness is separately
 // revalidated against this exact main revision, never whichever HEAD is newest.
-// PR936 changes only the Claude role count (19 -> 20) in the atlas's product
-// inputs. No route, host authority or geometry changes follow from that correction.
-export const REVALIDATED_AT = '81055792c71ba7aaeeaf5280e81ce2929bb25cc1';
+// PR936 corrected the Claude role count. Since that review, PR935 appends the
+// preflight-batching changelog entry and changes pure-read locking, not the
+// mapped caller, context, approval or output contracts. PR934 fixes Academy
+// embedding outside this atlas. No geometry or runtime-performance claim changes.
+export const REVALIDATED_AT = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 
 function repositoryRoot():string {
   let root=process.cwd();
