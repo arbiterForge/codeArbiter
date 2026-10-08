@@ -1,6 +1,7 @@
 ---
 title: Compare Workflow Routes
 description: "Follow sprint, dependency, decision, release and initialization work through commands, skills and agents to their actual outputs and stopping points."
+tableOfContents: false
 journey:
   level: Practitioner
   time: "Trace the route you need"
@@ -18,40 +19,48 @@ release can all involve review, yet their callers, records and stopping points d
 with the result you need, then trace the handoff that produces it. Do not run every command
 in a diagram as a checklist.
 
-The [feature example](/concepts/) follows attended work through its task loop to an open PR.
-These maps extend that visual language to six source-traced routes. Each route has an
-ordered reading view and full three-row SVG generated from the same model. Choose **Read the
-procedure** for the operating instructions or **Trace the route** to open its first chapter.
-The two initialization maps live together in the repository-initialization chooser. The reading view
-retains the conditions and source links that a compact image cannot fit.
-
-## Choose by the result, not the inventory
-
-<WorkflowDirectory />
-
 ## Workflow atlas
 
-Follow an entry, compare the context layers, or inspect the complete catalog. The explorer
-reuses the existing chapter models and adds source-bound context, diagnosis and deep-audit
-views. Commands remain entries, skills own procedures, and agents perform bounded roles.
-Context, state, gates and outputs are separate concepts, not extra agents.
+Choose a map tab, then **Trace an entry** to highlight its nodes and connecting arrows.
+Selecting an entry keeps the current map in place, so you can compare routes without losing
+the surrounding context. Select a node to inspect its explanation and pinned sources beside
+the diagram. **Clear** restores the complete map.
 
-For example, select **/fix**, then open its diagnostic map. A confirmed code defect can
-return to the original authorized repair caller; a design question or unresolved result
-stops that repair. **Context layers** shows what must reach the actual author before action.
-The entry catalog also retains commands with no dedicated teaching map. Their exact
-procedures remain in the command reference rather than being inferred from a catalog group.
+**Fit width**, **Fit all**, **Read size** and the zoom controls change the canvas scale.
+Drag blank space to pan, or use the scrollbars. **Context layers** shows how governing inputs
+reach each participant; execution, context, conditional and return arrows remain distinct.
+**SVG ↓** saves the complete editable map, not just its highlighted portion.
 
 <WorkflowAtlas />
 
+The nine spatial maps retain the original route atlas's composition and interactions.
+The text routes below the canvas provide the same entries, node details and directed
+handoffs without JavaScript and in print. This atlas is a source explanation, not a record
+of work performed in your project. Its source ledger records the scope of each reading.
+
+## Choose by the result, not the inventory
+
+The [feature example](/concepts/) follows attended work through its task loop to an open PR.
+The existing chapter maps below extend that visual language to six source-traced routes.
+Each route has an ordered reading view and full three-row SVG generated from its own model.
+Choose **Read the procedure** for the operating instructions or **Trace the route** to open
+its first chapter. Their addresses and historical source revisions remain unchanged.
+The two initialization maps live together in the repository-initialization chooser.
+
+<WorkflowDirectory />
+
 ## Keep your place in a route
 
-The chapter chooser gives the overview. **Next chapter** and **Previous chapter** let you
-continue without scrolling back through the explanation. **Link to this chapter** gives that
-chapter an ordinary browser address. Following it reveals the requested chapter and opens
-its enclosing disclosures, including the appropriate initialization alternative. Keyboard focus
-follows an explicit chapter link into the requested chapter, so you can continue from that
-point instead of returning to a control that is now hidden.
+In the atlas, **Link to view** preserves the selected map and highlighted entry. After a
+node selection it links to that node. Tab and entry controls alone do not write browser
+history. Explicit links use ordinary fragments; Back, Forward and reload restore them.
+**Text routes** opens the complete reading path without replacing the interactive map.
+
+In the existing chapter maps, **Next chapter** and **Previous chapter** let you continue
+without scrolling back through the explanation. **Link to this chapter** gives that chapter
+an ordinary browser address. Following it reveals the requested chapter and opens its
+enclosing disclosures, including the appropriate initialization alternative. Keyboard focus
+follows an explicit chapter link into the requested chapter.
 
 Chapter buttons only change the reading view. Explicit chapter links change the address fragment,
 so browser Back can return to the earlier linked chapter. No bookmark or progress record is saved.
@@ -63,20 +72,21 @@ means you have read the route, not performed or approved the work.
 
 **Commands** are entries or caller-owned procedures. **Skills** own procedural work.
 **Agents** perform bounded roles. Those are three participant types, not three consecutive
-phases. Read the numbered steps left to right in a chapter, then continue to the next chapter.
-A handoff can cross rows and return to its caller. The horizontal dotted row is a visual guide,
-not an executable connection among every item on that row.
+phases. In the chapter maps, read the numbered steps left to right, then continue to the
+next chapter. A handoff can cross rows and return to its caller. The horizontal dotted row
+is a visual guide, not an executable connection among every item on that row.
 
-A dashed reuse arrow means the current caller performs an existing procedure without invoking
-its entry again. Conditional reviewers participate only when their source contract selects them.
-The return notes preserve task repetition, correction and user decisions. An empty role row is
-intentional when the owning route names no participant of that type. It is better to show the
-absence than invent an agent to make a diagram look balanced.
+A dashed reuse arrow in a chapter map means the current caller performs an existing procedure
+without invoking its entry again. In the atlas, consult the side-panel legend for execution,
+context, conditional, return and stop relationships. Conditional reviewers participate only
+when their source contract selects them. Return paths preserve task repetition, correction
+and user decisions. An empty role row is intentional when the owning route names no participant
+of that type. It is better to show the absence than invent an agent to make a diagram look balanced.
 
-The common arrowhead is centered on its final straight segment. It marks a directed handoff,
-not completion, success or approval. None of the diagram controls runs a command or records a
-workflow transition. On narrow screens, use the complete text path rather than shrinking the
-full image until its labels become unreadable.
+Arrowheads mark directed handoffs, not completion, success or approval. None of the diagram
+controls runs a command or records a workflow transition. On narrow screens, **Read size**
+keeps the atlas legible in its panning canvas and **Details ↓** reaches its inspector.
+The complete text path remains available rather than requiring a shrunken image.
 
 ## Boundaries that change the route
 

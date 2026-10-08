@@ -1,53 +1,59 @@
-import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
-import { loadAtlas, gitBlob, checkReviewedSource } from './atlas';
-import { REVIEWED_AT, validateAtlas } from './atlas-model';
-import { renderAtlasHtml } from './atlas-render';
-import { featureMap } from './model';
-import { workflows } from './workflows';
+import {readFileSync,mkdtempSync,mkdirSync,writeFileSync,rmSync,symlinkSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {describe,expect,it} from 'vitest';
+import {loadAtlas,loadAtlasTheme,originalAtlas,gitBlob,checkReviewedSource} from './atlas';
+import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
+import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
+import provenance from './atlas-data/provenance.json';
 const root=new URL('../../../',import.meta.url);
-describe('atlas against actual repository sources',()=>{
-  it('covers the entire owning catalog with host-specific exposure',()=>{
-    const a=loadAtlas();const catalog=JSON.parse(readFileSync(new URL('core/surface/command-routes.json',root),'utf8'));
-    expect(a.entries.map(e=>e.id).sort()).toEqual(Object.keys(catalog.commands).sort());
-    expect(validateAtlas(a)).toEqual([]);
-    expect(a.entries.find(e=>e.id==='prune')!.invocations.codex).toBeNull();
-    expect(a.entries.find(e=>e.id==='statusline')!.invocations.pi).toBeNull();
-    expect(a.entries.find(e=>e.id==='cleanup')!.replacement).toBe('pr --cleanup');
-    expect(a.entries.find(e=>e.id==='conflict')!.visibility).toBe('internal');
-    expect(a.entries.find(e=>e.id==='btw')!.visibility).toBe('deprecated');
-    expect(a.lensCount).toBe(13);
+
+describe('atlas source and original-composition regression contract',()=>{
+  it('covers the exact catalog, original detail and real host exposure',()=>{
+    const a=loadAtlas(),catalog=JSON.parse(readFileSync(new URL('core/surface/command-routes.json',root),'utf8'));
+    expect(a.commands.map(c=>c.name).sort()).toEqual(Object.keys(catalog.commands).sort());expect(validateAtlas(a)).toEqual([]);
+    expect(a.commands.find(c=>c.name==='prune')!.invocations!.codex).toBeNull();expect(a.commands.find(c=>c.name==='statusline')!.invocations!.pi).toBeNull();
+    expect(a.commands.find(c=>c.name==='cleanup')!.replacement).toBe('pr --cleanup');expect(a.commands.find(c=>c.name==='conflict')!.visibility).toBe('internal');expect(a.commands.find(c=>c.name==='btw')!.visibility).toBe('deprecated');expect(a.lensCount).toBe(13);
+    for(const c of originalAtlas().commands){const current=a.commands.find(x=>x.name===c.name)!;for(const key of ['steps','context','output','gates','source_ids'] as const)expect(current[key]).toEqual(c[key]);}
   });
-  it('reuses every existing chapter node and edge without repinning its history',()=>{
-    const a=loadAtlas();
-    for(const original of [featureMap,...workflows.map(w=>w.map)]){
-      const view=a.views.find(v=>v.id===original.id)!;
-      expect(view.chapters.flatMap(c=>c.nodes.map(n=>n.id))).toEqual(original.chapters.flatMap(c=>c.nodes.map(n=>n.id)));
-      expect(view.edges).toEqual([...original.chapters.flatMap(c=>c.edges),...original.alternatives]);
-      for(const source of Object.values(view.sources))expect(source.revision).toBe(original.reviewedAt);
-    }
+  it('matches every original box, routed edge, label, route membership and panel',()=>{
+    const a=originalAtlas();
+    expect(a.views.map(v=>v.id)).toEqual(['all-routes','feature-sprint','context-layers','change-lanes','review-delivery','knowledge-operations','brownfield-lifecycle','debug-handoff','tribunal-lifecycle']);
+    const pins=provenance.geometrySha256 as Record<string,string>;
+    for(const v of a.views)expect(createHash('sha256').update(JSON.stringify(geometryRecord(v))).digest('hex')).toBe(pins[v.id]);
+    const changed=structuredClone(a.views[0]);changed.nodes[0].x++;
+    expect(createHash('sha256').update(JSON.stringify(geometryRecord(changed))).digest('hex')).not.toBe(pins[changed.id]);
   });
-  it('keeps the existing page and adds a native component, not an iframe',()=>{
+  it('preserves prior chapter addresses while placing the restored canvas first',()=>{
     const page=readFileSync(new URL('site/src/content/docs/concepts/workflow-routes.mdx',root),'utf8');
-    expect(page).toContain('<WorkflowDirectory />');expect(page).toContain('<WorkflowAtlas />');expect(page).toContain('## Keep your place in a route');expect(page).not.toContain('<iframe');
-    expect(renderAtlasHtml(loadAtlas(),'/nested/base')).toContain('/nested/base/workflow-atlas/');
+    expect(page).toContain('<WorkflowDirectory />');expect(page).toContain('<WorkflowAtlas />');expect(page).toContain('## Keep your place in a route');expect(page).toContain('tableOfContents: false');expect(page).not.toContain('<iframe');
+    expect(page.indexOf('<WorkflowAtlas />')).toBeLessThan(page.indexOf('<WorkflowDirectory />'));
+    expect(renderAtlasHtml(loadAtlas(),loadAtlasTheme(),'/nested/base')).toContain('/nested/base/workflow-atlas/');
   });
-  it('rejects source drift and supports logical CRLF checkouts',()=>{
+  it('rejects source drift and preserves logical CRLF checkout support',()=>{
     const dir=mkdtempSync(join(tmpdir(),'ca-atlas-source-'));
     try{
-      mkdirSync(join(dir,'core'));writeFileSync(join(dir,'core/source.md'),'source\r\n');
-      const pin=gitBlob(Buffer.from('source\n'));
+      mkdirSync(join(dir,'core'));writeFileSync(join(dir,'core/source.md'),'source\r\n');const pin=gitBlob(Buffer.from('source\n'));
       expect(()=>checkReviewedSource(dir,'core/source.md',pin)).not.toThrow();
       writeFileSync(join(dir,'core/source.md'),'changed\n');expect(()=>checkReviewedSource(dir,'core/source.md',pin)).toThrow(/Atlas source changed/);
       expect(()=>checkReviewedSource(dir,'../outside.md',pin)).toThrow(/Invalid atlas source path/);
+      expect(()=>checkReviewedSource(dir,'core/source.md')).toThrow(/needs reviewed Git object/);
     }finally{rmSync(dir,{recursive:true,force:true});}
   });
-  it('generates script-free and interactive editions with the same source identity',()=>{
-    const base=new URL(`site/public/workflow-atlas/${REVIEWED_AT}/`,root);
+  it('does not follow a symlinked parent into another tree',()=>{
+    const dir=mkdtempSync(join(tmpdir(),'ca-atlas-link-'));
+    try{
+      mkdirSync(join(dir,'core'));mkdirSync(join(dir,'actual'));writeFileSync(join(dir,'actual/source.md'),'source\n');symlinkSync(join(dir,'actual'),join(dir,'core/alias'),'junction');
+      expect(()=>checkReviewedSource(dir,'core/alias/source.md',gitBlob(Buffer.from('source\n')))).toThrow(/symlink/);
+    }finally{rmSync(dir,{recursive:true,force:true});}
+  });
+  it('exports the same spatial SVGs and source identity, without font payloads',()=>{
+    const a=loadAtlas(),t=loadAtlasTheme(),base=new URL(`site/public/workflow-atlas/${REVIEWED_AT}/`,root);
     const plain=readFileSync(new URL('reading-guide.html',base),'utf8'),interactive=readFileSync(new URL('atlas.html',base),'utf8');
     expect(plain).not.toContain('<script');expect(interactive).toContain('<script type="module">');
     for(const doc of [plain,interactive]){expect(doc).toContain(REVIEWED_AT);expect(doc).toContain('name="robots" content="noindex"');expect(doc).toContain('data-pagefind-ignore="all"');expect(doc).not.toMatch(/\.woff2|<iframe/);}
+    for(const v of a.views)expect(readFileSync(new URL(v.id+'.svg',base),'utf8')).toBe(renderAtlasSvg(a,v,t));
+    expect(interactive).toContain('href="./all-routes.svg"');expect(interactive).toContain('data-node-inspector="t-done"');expect(interactive).toContain('run-completed');
   });
 });

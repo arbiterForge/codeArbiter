@@ -1,0 +1,1189 @@
+[
+  {
+    "name": "add-dep",
+    "visibility": "core",
+    "family": "Change",
+    "owner": "dependency-reviewer / ephemeral-tool branch",
+    "steps": [
+      "Distinguish durable adoption from one pinned ephemeral run",
+      "Adoption: review license, provenance, maintenance and supply chain",
+      "Ephemeral: exact version + approved registry + confirmation, no manifest/lock change",
+      "Return to requesting workflow; behavior adoption remains feature/fix work"
+    ],
+    "context": [
+      "tech-stack.md and security-controls.md",
+      "Package identity, purpose and provenance"
+    ],
+    "output": "Vetted dependency decision/adoption, or a verified one-off tool result.",
+    "gates": "Denied license or supply-chain concern blocks. Ephemeral execution must not silently become adoption.",
+    "source_ids": [
+      "S02",
+      "S04",
+      "S05"
+    ],
+    "related": [
+      "chore",
+      "feature",
+      "fix"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "add-dep"
+  },
+  {
+    "name": "adr",
+    "visibility": "core",
+    "family": "Decide",
+    "owner": "decision-lifecycle — author",
+    "steps": [
+      "Read current decision context",
+      "Present the specific decision and alternatives",
+      "Obtain explicit user choice and attribution",
+      "Write numbered ADR through its owner"
+    ],
+    "context": [
+      "Project risks, open questions and related ADRs",
+      "User decision and evidence"
+    ],
+    "output": "Durable, attributed architecture decision; not proof of implementation.",
+    "gates": "Never guess a CONFIRM answer. Accepted/Planned is not delivery evidence.",
+    "source_ids": [
+      "S04",
+      "S21"
+    ],
+    "related": [
+      "adr-status",
+      "reconcile"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "adr"
+  },
+  {
+    "name": "adr-status",
+    "visibility": "advanced",
+    "family": "Decide",
+    "owner": "decision-lifecycle — read-only",
+    "steps": [
+      "Select status mode before authoring prerequisites",
+      "Inspect age, challenges and supersession chains",
+      "Return ADR health report"
+    ],
+    "context": [
+      "Current ADR records and relationships"
+    ],
+    "output": "Read-only ADR health/status report.",
+    "gates": "Status inspection grants no writing authority and is not delivery proof.",
+    "source_ids": [
+      "S02",
+      "S21"
+    ],
+    "related": [
+      "adr",
+      "reconcile"
+    ],
+    "modes": [
+      "--adr N"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "adr-status"
+  },
+  {
+    "name": "audit",
+    "visibility": "advanced",
+    "family": "Operate",
+    "owner": "read-only governance packet",
+    "steps": [
+      "Select requested window",
+      "Read source governance records",
+      "Assemble a dated, non-overwriting packet"
+    ],
+    "context": [
+      "Source audit logs and decision records"
+    ],
+    "output": "Dated governance evidence packet; source records unchanged.",
+    "gates": "Preserve quoted audit lines; never overwrite an existing packet.",
+    "source_ids": [
+      "S02",
+      "S04"
+    ],
+    "related": [
+      "metrics",
+      "checkpoint"
+    ],
+    "modes": [
+      "[range]"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "audit"
+  },
+  {
+    "name": "btw",
+    "visibility": "deprecated",
+    "family": "Help",
+    "owner": "direct lightweight question",
+    "steps": [
+      "Answer the project question without mutation",
+      "Return to the caller"
+    ],
+    "context": [
+      "Only evidence needed for the question"
+    ],
+    "output": "Answer only.",
+    "gates": "Prefer asking directly; a question is not mutation authority.",
+    "source_ids": [
+      "S01",
+      "S02",
+      "S03"
+    ],
+    "related": [],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "btw"
+  },
+  {
+    "name": "checkpoint",
+    "visibility": "advanced",
+    "family": "Review",
+    "owner": "dispatching-parallel-agents → checkpoint-aggregator",
+    "steps": [
+      "Periodic whole-codebase reviewer sweep",
+      "Read-only findings → triage → verdict",
+      "Explicit checkpoint-aggregator persistence"
+    ],
+    "context": [
+      "Whole-codebase scope and governing ADRs",
+      "Complete triaged reviewer reports"
+    ],
+    "output": "Dated, non-overwriting .codearbiter/checkpoints/ report.",
+    "gates": "An informational checkpoint is not a promotion/merge gate.",
+    "source_ids": [
+      "S04",
+      "S21",
+      "S22"
+    ],
+    "related": [
+      "review",
+      "audit"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "checkpoint"
+  },
+  {
+    "name": "chore",
+    "visibility": "core",
+    "family": "Change",
+    "owner": "chore — type-scaled command",
+    "steps": [
+      "Choose docs, deps or revert",
+      "Docs: prose, copy review, secrets and diff checks; no TDD for prose",
+      "Deps: manifest + lockfile, dependency review, affected tests",
+      "Revert: named git revert, affected tests and referenced reason",
+      "Commit-gate → finishing-a-development-branch"
+    ],
+    "context": [
+      "Requested non-behavioral scope",
+      "Project verification commands",
+      "Dependency/security policy when relevant"
+    ],
+    "output": "Reviewed prose, dependency bump or named revert, then authorized commit/PR.",
+    "gates": "Behavioral adoption redirects to feature/fix; no behavioral work hidden inside a chore.",
+    "source_ids": [
+      "S20",
+      "S11",
+      "S12"
+    ],
+    "related": [
+      "add-dep",
+      "feature",
+      "fix",
+      "commit"
+    ],
+    "modes": [
+      "docs",
+      "deps",
+      "revert"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "chore"
+  },
+  {
+    "name": "cleanup",
+    "visibility": "alias",
+    "family": "Ship",
+    "owner": "post-merge-cleanup",
+    "steps": [
+      "Prove merge containment against fetched default",
+      "Classify residue",
+      "Confirm each discard",
+      "Fast-forward-only transition; preserve unique work and remote branches"
+    ],
+    "context": [
+      "Same context contract as pr --cleanup"
+    ],
+    "output": "Proven post-merge local cleanup.",
+    "gates": "Retained compatibility entry. Prefer pr --cleanup. Owner gates remain unchanged.",
+    "source_ids": [
+      "S01",
+      "S02",
+      "S04",
+      "S21"
+    ],
+    "related": [
+      "pr"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "pr"
+  },
+  {
+    "name": "commands",
+    "visibility": "advanced",
+    "family": "Help",
+    "owner": "grouped command catalog",
+    "steps": [
+      "Read grouped catalog",
+      "Show canonical, advanced and retained routes"
+    ],
+    "context": [
+      "COMMANDS.md and visibility metadata"
+    ],
+    "output": "Command help; no work or state mutation.",
+    "gates": "Descriptions discover owners; they do not replace full procedures.",
+    "source_ids": [
+      "S01",
+      "S02",
+      "S03"
+    ],
+    "related": [],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "commands"
+  },
+  {
+    "name": "commit",
+    "visibility": "core",
+    "family": "Ship",
+    "owner": "commit-gate",
+    "steps": [
+      "Explicit permission → safe branch → homogeneous classification",
+      "Focused tests/lint/secrets and specialized gates",
+      "Fresh behavior proof and current HTML acceptance where applicable",
+      "Conditional provenance heal → diff review → follow-up harvest",
+      "Selective staging → Conventional Commit message → local commit"
+    ],
+    "context": [
+      "Exact staged diff and declared verification commands",
+      "TDD proof and current acceptance receipts",
+      "Provenance and scope-specific policy"
+    ],
+    "output": "Local commit SHA, explicit paths and gate report. Not automatically a push or PR.",
+    "gates": "Nine gates; no blanket staging; no protected-branch commit; stale acceptance blocks before staging. Legacy v1 Phase 5.5 heal is not permission to raw-write enrolled v2 document/provenance pairs.",
+    "source_ids": [
+      "S11",
+      "S10",
+      "S26"
+    ],
+    "related": [
+      "pr",
+      "release"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "commit"
+  },
+  {
+    "name": "conflict",
+    "visibility": "internal",
+    "family": "Decide",
+    "owner": "conflict protocol",
+    "steps": [
+      "Detect contradiction between governing rules, documents and code",
+      "Stop other work",
+      "Surface both sides and wait for the user"
+    ],
+    "context": [
+      "Conflicting authorities and exact evidence"
+    ],
+    "output": "Visible stopped state and a specific user decision request.",
+    "gates": "Ambiguous reconcile-vs-conflict resolves to stopping, not silent continuation.",
+    "source_ids": [
+      "S03",
+      "S04"
+    ],
+    "related": [
+      "reconcile",
+      "adr"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "conflict"
+  },
+  {
+    "name": "context-check",
+    "visibility": "alias",
+    "family": "Operate",
+    "owner": "context-check",
+    "steps": [
+      "Default status and initial drift report are read-only",
+      "Assess legacy v1 drift and each enrolled v2 identity/coverage state separately; unknown is not fresh",
+      "Wait for explicit selected documents and affected scope, or explicit full refresh; defer changes nothing",
+      "Re-scout only the selected assignments through qualified containment and a bounded current join",
+      "For v2, approve the exact owned-field document/provenance preview and apply only its native receipt",
+      "Read back committed pairs; retain the initialized marker, unselected human content and separate task/question/audit history; do not stage or commit"
+    ],
+    "context": [
+      "Current bounded source/target snapshots and action-boundary checks",
+      "v1 drift separately from v2 current/stale/unknown coverage; identity matching is not semantic proof",
+      "Explicit document selection, actual field ownership, qualified scouts and native writer capability"
+    ],
+    "output": "Read-only state/drift report, or explicitly selected native context updates with declared full/incremental coverage.",
+    "gates": "Report alone is not refresh consent. No reinitialization or marker removal. No legacy raw rebaseline fallback for v2, no unsupported human-layout overwrite, no staging or commit.",
+    "source_ids": [
+      "S26",
+      "S13",
+      "S23"
+    ],
+    "related": [
+      "init",
+      "status",
+      "commit"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "status"
+  },
+  {
+    "name": "create-context",
+    "visibility": "alias",
+    "family": "Knowledge",
+    "owner": "context-creation",
+    "steps": [
+      "Uninitialized project with meaningful source → bounded brownfield initial population",
+      "Brownfield: qualified read-only scout profile → closed reports → scoped synthesis and relevant gap decisions",
+      "Approve each native document/provenance preview; receipt-only apply, then separately approved finalization",
+      "Finalize the 13 required identities through its own native preview/receipt; recover uncertain operations by the same operation ID"
+    ],
+    "context": [
+      "Same bounded brownfield source, containment, report, ownership and provenance contract as init --brownfield"
+    ],
+    "output": "Five current content/provenance pairs and separately finalized initialized state, or a precise capability/evidence conflict.",
+    "gates": "Initial population only; existing initialized state routes to status drift. Generic scout role or a source-only preparation fixture does not establish qualified containment or writer admission.",
+    "source_ids": [
+      "S13",
+      "S23",
+      "S26"
+    ],
+    "related": [
+      "init",
+      "status"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "init"
+  },
+  {
+    "name": "debug",
+    "visibility": "advanced",
+    "family": "Change",
+    "owner": "debug",
+    "steps": [
+      "Capture the cited symptom, expectation, reproduction state and actual request scope",
+      "Test evidence-backed mechanisms using safe discriminators; preserve inconclusive observations and capture limits",
+      "Choose exactly one disposition: confirmed_code_defect, confirmed_noncode_cause, design_question, no_action or unresolved",
+      "For transfer, validate the bounded transient debug-handoff/1.0.0 packet with the installed helper",
+      "Return the diagnosis and truthful continuation; only an already-authorized fix caller can continue a qualifying code-defect handoff"
+    ],
+    "context": [
+      "Available project instructions and scoped source evidence, not compulsory new onboarding",
+      "Observed versus expected behavior, reproduction status, supported causes and regression oracle",
+      "Relevant worktree, source/build/runtime identity, dirty state, limitations and independent caller authority"
+    ],
+    "output": "One evidence-backed disposition and a bounded summary; transient validated handoff when available. No default persistent case store, task or ADR.",
+    "gates": "Diagnosis never authorizes repair. Invalid/unavailable handoff validation stops transfer; recheck current evidence. No-action requires positive closure evidence. A design question is not an automatic ADR.",
+    "source_ids": [
+      "S25",
+      "S19",
+      "S27",
+      "S04"
+    ],
+    "related": [
+      "fix",
+      "task",
+      "adr"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "debug"
+  },
+  {
+    "name": "decompose",
+    "visibility": "alias",
+    "family": "Knowledge",
+    "owner": "decompose",
+    "steps": [
+      "Persist six interview layers and draft ADRs",
+      "Synthesize architecture, phased plan and backlog",
+      "User reviews the three records",
+      "Populate project context and lock initialization"
+    ],
+    "context": [
+      "Same context contract as init --greenfield"
+    ],
+    "output": "Approved greenfield planning records and initialized project knowledge.",
+    "gates": "Retained compatibility entry. Prefer init --greenfield. Owner gates remain unchanged.",
+    "source_ids": [
+      "S01",
+      "S02",
+      "S04",
+      "S21"
+    ],
+    "related": [
+      "init"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "init"
+  },
+  {
+    "name": "doctor",
+    "visibility": "core",
+    "family": "Operate",
+    "owner": "installation diagnostics",
+    "steps": [
+      "Inspect active install and payload",
+      "Verify ownership/enforcement configuration",
+      "Run harmless live-fire probe",
+      "Report capability gaps"
+    ],
+    "context": [
+      "Installed host and package resources"
+    ],
+    "output": "Installation and enforcement diagnostic report.",
+    "gates": "Diagnostic success is not completed end-to-end workflow qualification.",
+    "source_ids": [
+      "S02",
+      "S10"
+    ],
+    "related": [
+      "init",
+      "status"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "doctor"
+  },
+  {
+    "name": "feature",
+    "visibility": "core",
+    "family": "Change",
+    "owner": "brainstorming → writing-plans → executing-plans",
+    "steps": [
+      "Discover an existing exact-format pair and resume before new triage",
+      "Small: confirm 1–3 criteria and log triage, then TDD",
+      "Full: approve specification, bind/approve plan, then attended batches",
+      "Fresh task authors, spec proof, scope-quality acceptance",
+      "Before each author or independent reviewer acts, compose its own current scoped input and perform bounded actor delivery; a coordinator read is not receipt",
+      "Current acceptance → authorized commit → selected PR disposition"
+    ],
+    "context": [
+      "Project purpose, stage and code-map",
+      "Scope-specific rules and recorded ADR intent",
+      "Approved criteria and exact plan binding",
+      "Task paths, dependencies, verification and complete context ticket",
+      "Current actor-scoped selection: map/provenance, command cwd and observed evidence, constraints and host-effective instructions",
+      "Actual author and independent reviewer delivery bound to task/worktree/source/host epochs; reselect after resume, compaction or scope change",
+      "Use exact engine-returned IDs, not assumed SPEC-/PLAN- prefixes. Approved prerequisites use one visible 24-hour request/reply deadline."
+    ],
+    "output": "Full lane: typed spec + plan, accepted code/tests, evidence and selected PR outcome. Small lane: inline mini-spec, no spec artifact.",
+    "gates": "No guessed unknowns; no implementation before red; batch checkpoints; no mixed-format resume; installed HTML admission required. Selected context is orientation, not task admission. Small features retain their confirmed inline mini-spec without invented artifact IDs.",
+    "source_ids": [
+      "S06",
+      "S08",
+      "S09",
+      "S10",
+      "S11",
+      "S12",
+      "S27",
+      "S31",
+      "S32"
+    ],
+    "related": [
+      "sprint",
+      "fix",
+      "commit",
+      "pr"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex: admitted installed typed workflow only. Pi 1.0.2 is the current runtime target, but its native approval adapter remains unimplemented (DEGRADED); legacy Markdown pairs and inline small-feature work have separate contracts.",
+    "canonical": "feature"
+  },
+  {
+    "name": "fix",
+    "visibility": "core",
+    "family": "Change",
+    "owner": "tdd — bug variant",
+    "steps": [
+      "Establish the confirmed defect from current reproduction or supported source/contract causal evidence",
+      "If needed, use one bounded internal debug prerequisite and return to this same authorized fix caller",
+      "Validate any available handoff; independently recheck caller authority and actual worktree/source/runtime applicability",
+      "Select and deliver bounded current context to the actual fix author",
+      "Observe the named regression red for the correct defect, then implement the minimum fix and complete TDD",
+      "Return proof; commit, PR and other follow-ups retain their separate authority"
+    ],
+    "context": [
+      "Current expectation, causal evidence, reproduction limits and named regression oracle",
+      "Task paths; scoped map/provenance; command cwd and current collector evidence",
+      "Applicable constraints and native effective instructions; actor/worktree/source/host epoch binding"
+    ],
+    "output": "Minimal authorized correction with genuine failing-before / passing-after regression evidence.",
+    "gates": "No repair from packet intent alone. Only a validated confirmed_code_defect → fix handoff can resume an authorized repair. Setup/import/unrelated red is not target-red proof. No feature artifact is invented.",
+    "source_ids": [
+      "S19",
+      "S25",
+      "S27",
+      "S09"
+    ],
+    "related": [
+      "debug",
+      "task",
+      "commit"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "fix"
+  },
+  {
+    "name": "init",
+    "visibility": "core",
+    "family": "Knowledge",
+    "owner": "init-codearbiter.py → context-creation / decompose",
+    "steps": [
+      "--check reports only; activation/scaffold is a separate action",
+      "Uninitialized project with meaningful source → bounded brownfield initial population",
+      "Brownfield: qualified read-only scout profile → closed reports → scoped synthesis and relevant gap decisions",
+      "Approve each native document/provenance preview; receipt-only apply, then separately approved finalization",
+      "No meaningful source → retain the separate six-layer greenfield interview and persisted drafts",
+      "Already initialized → normal operation; a selected refresh belongs to status drift, not init"
+    ],
+    "context": [
+      "Source shape and maturity; existing file ownership and initialization state",
+      "Qualified scout reports and current source snapshots for brownfield, persisted interview answers for greenfield"
+    ],
+    "output": "Initialized project knowledge after the selected owner completes its real gates; a stub alone is not ready.",
+    "gates": "Brownfield profile or qualified native writer unavailable → block that dependent step. Five document/provenance pairs have independent approvals; finalization has its own 13-identity preview and receipt. Never clear the marker to refresh.",
+    "source_ids": [
+      "S23",
+      "S13",
+      "S14",
+      "S26"
+    ],
+    "related": [
+      "create-context",
+      "decompose",
+      "status"
+    ],
+    "modes": [
+      "--check",
+      "--stage N",
+      "--brownfield",
+      "--greenfield"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "init"
+  },
+  {
+    "name": "metrics",
+    "visibility": "advanced",
+    "family": "Operate",
+    "owner": "read-only trend report",
+    "steps": [
+      "Read selected and prior windows",
+      "Summarize overrides, small lanes and low-confidence choices",
+      "Return comparison"
+    ],
+    "context": [
+      "Override, triage and sprint decision logs"
+    ],
+    "output": "Trend report against prior window.",
+    "gates": "Reporting is not state mutation or workflow approval.",
+    "source_ids": [
+      "S02"
+    ],
+    "related": [
+      "audit",
+      "sprint"
+    ],
+    "modes": [
+      "--window N"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "metrics"
+  },
+  {
+    "name": "override",
+    "visibility": "core",
+    "family": "Operate",
+    "owner": "permitted logged bypass",
+    "steps": [
+      "Check governing rule permits the specific bypass",
+      "Obtain explicit confirmation and reason",
+      "Record user attribution in overrides.log",
+      "Proceed only within that permitted boundary"
+    ],
+    "context": [
+      "Governing rule, requested exception, user identity and reason"
+    ],
+    "output": "Attributed override audit entry and bounded continuation.",
+    "gates": "Not universal bypass authority; forbidden safety boundaries remain forbidden.",
+    "source_ids": [
+      "S03",
+      "S04"
+    ],
+    "related": [
+      "audit",
+      "metrics"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "override"
+  },
+  {
+    "name": "pr",
+    "visibility": "core",
+    "family": "Ship",
+    "owner": "finishing-a-development-branch",
+    "steps": [
+      "Watch/cleanup modes branch before creation prerequisites",
+      "Creation: current-head commit and current acceptance",
+      "Applicable diff reviewers → blocker clearance",
+      "Open-PR procedure in this same owner",
+      "Merge only when explicitly selected and exact-head hosted CI is green",
+      "During an authorized integration, an explicitly chosen exact-HEAD legacy code-map conflict resolution may use inspect → bound restore-head. It leaves the index untouched; inspect, stage normally and re-prove the changed head."
+    ],
+    "context": [
+      "Branch, base, head and current diff",
+      "Current commit/acceptance proof",
+      "Applicable ADR ancestry and hosted CI"
+    ],
+    "output": "Open PR; optionally an explicitly authorized merge. Watch and cleanup return their own outputs.",
+    "gates": "No self-loop back to PR wrapper. Sprint opens only. No inferred merge/discard authority.",
+    "source_ids": [
+      "S12",
+      "S04"
+    ],
+    "related": [
+      "watch",
+      "cleanup",
+      "commit",
+      "release"
+    ],
+    "modes": [
+      "--watch",
+      "--cleanup"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "pr"
+  },
+  {
+    "name": "preview",
+    "visibility": "core",
+    "family": "Review",
+    "owner": "read-only preview command",
+    "steps": [
+      "Inspect current diff without onboarding",
+      "Predict matching reviewers",
+      "Run state-free secret scan",
+      "Return preview only"
+    ],
+    "context": [
+      "Current diff and shared review matrix"
+    ],
+    "output": "Predicted review fleet and scan report; no project-state mutation.",
+    "gates": "Prediction is not review evidence. No init, staging or writing required.",
+    "source_ids": [
+      "S02",
+      "S04",
+      "S18"
+    ],
+    "related": [
+      "review",
+      "init"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "preview"
+  },
+  {
+    "name": "prune",
+    "visibility": "advanced",
+    "family": "Operate",
+    "owner": "transcript / native-compaction control",
+    "steps": [
+      "Inspect or select prune policy",
+      "Claude: dry-run or operate only on a non-live transcript",
+      "Pi: use native compaction, not active-session rewriting",
+      "Return inspection, audit or compaction result"
+    ],
+    "context": [
+      "Host-specific transcript/compaction state"
+    ],
+    "output": "Reduced transcript bulk after resume/compaction or a report.",
+    "gates": "Never execute pruning against Claude’s live transcript; no supported Codex transcript route is asserted.",
+    "source_ids": [
+      "S02",
+      "S04"
+    ],
+    "related": [
+      "statusline"
+    ],
+    "modes": [
+      "status",
+      "dry",
+      "run",
+      "audit",
+      "on",
+      "off"
+    ],
+    "hosts": "Claude Code; Pi uses native compaction. Not listed for Codex.",
+    "canonical": "prune"
+  },
+  {
+    "name": "reconcile",
+    "visibility": "advanced",
+    "family": "Decide",
+    "owner": "decision-variance",
+    "steps": [
+      "Choose report-only or reconciliation mode",
+      "Restricted scouts gather cited evidence",
+      "Grader supplies SMARTS comparison; optional challenger",
+      "User selects the decision",
+      "Attributed decision-log write only in reconciliation mode"
+    ],
+    "context": [
+      "Three decomposition plans and decision-log",
+      "Accepted ADRs, deferrals, scoped source evidence"
+    ],
+    "output": "Variance report, or an explicit attributed architectural ruling.",
+    "gates": "Report-only writes nothing; grader recommends, never decides. Contradictory governing rules use conflict instead.",
+    "source_ids": [
+      "S04",
+      "S05",
+      "S21",
+      "S22"
+    ],
+    "related": [
+      "adr",
+      "conflict"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "reconcile"
+  },
+  {
+    "name": "refactor",
+    "visibility": "core",
+    "family": "Change",
+    "owner": "refactor",
+    "steps": [
+      "Name a behavior-preserving scope",
+      "Prove parity coverage with pre-existing tests",
+      "Backfill coverage or new seams through TDD when needed",
+      "Restructure without changing behavior",
+      "Verify unchanged contracts; commit only through commit-gate"
+    ],
+    "context": [
+      "Existing behavior and unchanged tests",
+      "Stage-specific coverage profile",
+      "Project standards and affected paths",
+      "For targeted test-only work, use the existing caller via compose_fix_or_test_actor_input; do not invent a feature spec merely to supply context."
+    ],
+    "output": "Restructured implementation with behavioral parity evidence.",
+    "gates": "No parity proof, no refactor; behavior changes belong in feature/fix.",
+    "source_ids": [
+      "S04",
+      "S21",
+      "S09",
+      "S27"
+    ],
+    "related": [
+      "feature",
+      "fix",
+      "commit"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "refactor"
+  },
+  {
+    "name": "release",
+    "visibility": "core",
+    "family": "Ship",
+    "owner": "release",
+    "steps": [
+      "Resolve the declared target, version policy, payload and reviewed executable inputs; dry-run reports only and skips writes and execution.",
+      "Prepare version/changelog and declared release surfaces through the ordinary commit gate on a non-default branch.",
+      "Report the exact assets and publisher, open the release PR and STOP. Interactive preparation does not compose a local tag.",
+      "Only after the PR merges may a qualifying hosted publisher continue at the exact merged, fetched and verified default-branch commit.",
+      "Compose and validate the exact tag/cohort only through that publisher. Apply the existing one-cohort publication authority; CI success alone is not publication permission.",
+      "Read back the exact non-draft release and declared inventory. A declared provenance closeout uses its own receipt PR; an already-published receipt-only path never publishes again."
+    ],
+    "context": [
+      "Declared target row, exact manifest/changelog/payload ownership",
+      "Exact release-surface commit, fetched default branch and current hosted evidence",
+      "Existing publication authority for this cohort, exact assets and any declared provenance requirement"
+    ],
+    "output": "A release-preparation PR; separately, an authorized hosted publication and its exact readback. Declared receipt closeout remains a separate PR.",
+    "gates": "Mandatory release-PR stop. No local tag fallback, red/stale-head publication or implicit consent. Dry-run does not fetch, execute checks, commit or publish.",
+    "source_ids": [
+      "S33",
+      "S34"
+    ],
+    "related": [
+      "commit",
+      "pr"
+    ],
+    "modes": [
+      "--dry-run"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "release"
+  },
+  {
+    "name": "review",
+    "visibility": "core",
+    "family": "Review",
+    "owner": "dispatching-parallel-agents",
+    "steps": [
+      "Select reviewers by actual diff paths",
+      "Select context separately for every actual reviewer, check named critical references, and deliver its bounded input with current actor/worktree/epoch binding",
+      "Run independent read-only units",
+      "Collect reports and terminal states",
+      "finding-triage → verdict-aggregator",
+      "Return current-diff verdict"
+    ],
+    "context": [
+      "Exact diff and governing project documents",
+      "Applicable spec obligations and ADRs",
+      "Reviewer-specific scoped reports",
+      "Resolved diff paths; source-scoped constraints and native instruction precedence",
+      "Reviewer-specific critical references and observed input delivery, not the author’s packet or a parent session marker"
+    ],
+    "output": "In-memory triaged verdict with blocking findings separated from lower-severity findings.",
+    "gates": "CRITICAL/HIGH block the current change. Prediction or missing results cannot substitute for completed review. Missing critical context blocks a substantive verdict; safe bounded orientation may continue. Posting an inbound PR verdict requires separate authority.",
+    "source_ids": [
+      "S04",
+      "S18",
+      "S22",
+      "S28",
+      "S27"
+    ],
+    "related": [
+      "checkpoint",
+      "pr",
+      "preview"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "review"
+  },
+  {
+    "name": "spike",
+    "visibility": "core",
+    "family": "Change",
+    "owner": "self-contained spike command",
+    "steps": [
+      "Frame a question and timebox",
+      "Explore on disposable spike/<slug>",
+      "Capture findings",
+      "Exit to findings or a new feature workflow"
+    ],
+    "context": [
+      "Question, uncertainty and experiment bounds",
+      "Relevant source and project constraints"
+    ],
+    "output": "Findings / throwaway experiment, not production delivery.",
+    "gates": "Spike branch never merges or opens a PR. Its commit exemption cannot be used to land production code.",
+    "source_ids": [
+      "S02",
+      "S04"
+    ],
+    "related": [
+      "feature",
+      "debug"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "spike"
+  },
+  {
+    "name": "sprint",
+    "visibility": "core",
+    "family": "Change",
+    "owner": "SPRINT.md → subagent-driven-development",
+    "steps": [
+      "Resolve same-format artifacts; retain existing approved intent",
+      "Prepare spec and draft plan for one real user approval of the pair",
+      "Execute the full plan without attended batch pauses",
+      "SMARTS governs delegated in-scope choices; correction must rerun failed gates",
+      "Before each author or independent reviewer acts, compose its own current scoped input and perform bounded actor delivery; a coordinator read is not receipt",
+      "Current acceptance → authorized commit → open PR only"
+    ],
+    "context": [
+      "Project rules and recorded intent",
+      "Approved spec/plan and explicit delegation terms",
+      "Task-specific contextual reads",
+      "Actual review, verification and authority receipts",
+      "Current actor-scoped selection: map/provenance, command cwd and observed evidence, constraints and host-effective instructions",
+      "Actual author and independent reviewer delivery bound to task/worktree/source/host epochs; reselect after resume, compaction or scope change",
+      "Use exact engine-returned IDs, not assumed SPEC-/PLAN- prefixes. Approved prerequisites use one visible 24-hour request/reply deadline."
+    ],
+    "output": "Accepted plan and implementation, sprint decision log, open PR and summary. No autonomous merge.",
+    "gates": "Initial approval never self-issued. Security/authority/irreversible-action stops remain. HTML --farm blocked; legacy farm is opt-in preview. Selected context is orientation, not task admission.",
+    "source_ids": [
+      "S07",
+      "S08",
+      "S10",
+      "S12",
+      "S27",
+      "S09",
+      "S31",
+      "S32"
+    ],
+    "related": [
+      "feature",
+      "commit",
+      "pr"
+    ],
+    "modes": [
+      "--farm"
+    ],
+    "hosts": "Claude Code / Codex: admitted installed typed workflow only. Pi 1.0.2 is the current runtime target, but its native approval adapter remains unimplemented (DEGRADED); legacy Markdown pairs and inline small-feature work have separate contracts.",
+    "canonical": "sprint"
+  },
+  {
+    "name": "standup",
+    "visibility": "advanced",
+    "family": "Operate",
+    "owner": "repository hygiene command",
+    "steps": [
+      "Inspect branch/worktree/stash and working-tree state",
+      "Report unsafe or ambiguous residue",
+      "Confirm safe cleanup actions individually",
+      "Apply only permitted fast-forward/cleanup actions"
+    ],
+    "context": [
+      "Current Git and repository state"
+    ],
+    "output": "Hygiene briefing and individually authorized cleanup results.",
+    "gates": "Dirty, stashed or unpushed work is not silently discarded.",
+    "source_ids": [
+      "S02",
+      "S04"
+    ],
+    "related": [
+      "status",
+      "cleanup"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "standup"
+  },
+  {
+    "name": "status",
+    "visibility": "core",
+    "family": "Operate",
+    "owner": "status / context-check",
+    "steps": [
+      "Default status and initial drift report are read-only",
+      "Assess legacy v1 drift and each enrolled v2 identity/coverage state separately; unknown is not fresh",
+      "Wait for explicit selected documents and affected scope, or explicit full refresh; defer changes nothing",
+      "Re-scout only the selected assignments through qualified containment and a bounded current join",
+      "For v2, approve the exact owned-field document/provenance preview and apply only its native receipt",
+      "Read back committed pairs; retain the initialized marker, unselected human content and separate task/question/audit history; do not stage or commit"
+    ],
+    "context": [
+      "Current bounded source/target snapshots and action-boundary checks",
+      "v1 drift separately from v2 current/stale/unknown coverage; identity matching is not semantic proof",
+      "Explicit document selection, actual field ownership, qualified scouts and native writer capability"
+    ],
+    "output": "Read-only state/drift report, or explicitly selected native context updates with declared full/incremental coverage.",
+    "gates": "Report alone is not refresh consent. No reinitialization or marker removal. No legacy raw rebaseline fallback for v2, no unsupported human-layout overwrite, no staging or commit.",
+    "source_ids": [
+      "S26",
+      "S13",
+      "S23"
+    ],
+    "related": [
+      "init",
+      "context-check",
+      "commit"
+    ],
+    "modes": [
+      "drift"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "status"
+  },
+  {
+    "name": "statusline",
+    "visibility": "advanced",
+    "family": "Operate",
+    "owner": "Claude Code statusline control",
+    "steps": [
+      "Select install, uninstall or status",
+      "Change or inspect the owned Claude statusline configuration",
+      "Return status"
+    ],
+    "context": [
+      "Claude Code install and statusline settings"
+    ],
+    "output": "Statusline configuration or status report.",
+    "gates": "Claude-specific catalog surface; not a cross-host workflow.",
+    "source_ids": [
+      "S02"
+    ],
+    "related": [
+      "doctor"
+    ],
+    "modes": [
+      "install",
+      "uninstall",
+      "status"
+    ],
+    "hosts": "Claude Code only",
+    "canonical": "statusline"
+  },
+  {
+    "name": "task",
+    "visibility": "core",
+    "family": "Operate",
+    "owner": "taskwrite.py → _taskboardlib",
+    "steps": [
+      "Select add, start or done",
+      "Validate board transition through sanctioned writer",
+      "Persist dated task-board change"
+    ],
+    "context": [
+      "open-tasks.md schema and current entry state",
+      "Requested task or harvested work"
+    ],
+    "output": "Task-board entry or valid state transition, separate from typed plan acceptance.",
+    "gates": "start stamps date; done requires in-progress; never delete a task to complete it. A debug disposition alone never authorizes a task-board write; a concrete follow-up needs separate task authority.",
+    "source_ids": [
+      "S02",
+      "S04",
+      "S25"
+    ],
+    "related": [
+      "standup",
+      "feature"
+    ],
+    "modes": [
+      "add",
+      "start",
+      "done"
+    ],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "task"
+  },
+  {
+    "name": "threat-model",
+    "visibility": "advanced",
+    "family": "Review",
+    "owner": "security-architecture",
+    "steps": [
+      "Explicitly request sensitive-design analysis",
+      "Run lightweight STRIDE with applicable specialists",
+      "Return threats and mitigations to the design owner"
+    ],
+    "context": [
+      "Design scope, assets and trust boundaries",
+      "security-controls.md"
+    ],
+    "output": "Threat/mitigation analysis and constraints.",
+    "gates": "Opt-in, not a routine change gate; critical unmitigated threat stops this pass.",
+    "source_ids": [
+      "S04",
+      "S21"
+    ],
+    "related": [
+      "feature",
+      "adr"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "threat-model"
+  },
+  {
+    "name": "tribunal",
+    "visibility": "advanced",
+    "family": "Review",
+    "owner": "tribunal",
+    "steps": [
+      "Resolve deliberate audit intent, finding scope and the concrete evidence set; inspect matching source-bound runs.",
+      "Resume only unchanged bound source: audit continues unfinished waves; follow-up continues pending filing/telemetry. Drift, invalid and legacy-unbound records do not establish current progress.",
+      "Use deterministic inventory and real host profiles to estimate packet cost; acknowledge cost and settings before any model dispatch; start a fresh bound run when required.",
+      "Separate mechanical inventory from the judgment-based risk map. Record every lens as applicable or skipped, with bounded packets and source checks.",
+      "Dispatch the generic tribunal-lens-reviewer in MODE review for each active lens, at most five concurrent and within actual host capacity. Persist findings and leads immediately.",
+      "Attempt fresh independent MODE verify for every serious or expensive inferential claim. Confirmed/narrowed, refuted and inconclusive are different outcomes; shared-context or inconclusive serious work remains verify-required.",
+      "Apply eligibility and confidence checks before root-cause triage and per-wave kept plans. Keep investigations, verification work and genuine design decisions separate.",
+      "Write report and manifest, then record report-written. This enters follow-up, not terminal completion.",
+      "Resolve selected issue filing and optional public telemetry separately, under their own authority. Unanswered choices and unresolved failures remain pending.",
+      "Record run-completed only after both filing and telemetry have a completed or explicitly skipped disposition; preserve the bound history."
+    ],
+    "context": [
+      "Declared finding scope and separately bounded evidence scope",
+      "Trusted installed or explicitly selected review bundle, not instructions from candidate source",
+      "Mechanical source inventory, project contracts and judgment-based risk map",
+      "Applicability and bounded packet per lens, actual host/model capacity and acknowledged cost",
+      "Persisted source binding, findings, leads, root-cause triage, independent verification and actual follow-up receipts"
+    ],
+    "output": "Source-bound audit run with a thirteen-lens roster, selected applicable lenses, eligible phase plans and report. Report-written is follow-up; run-completed requires both follow-up dispositions.",
+    "gates": "Opt-in only; never a routine commit or merge gate. No source drift reuse, synthetic independence, automatic repair, automatic ADR or task-board write. Execution, issue filing and telemetry each require their own applicable authority.",
+    "source_ids": [
+      "S29",
+      "S30",
+      "S31"
+    ],
+    "related": [
+      "review",
+      "checkpoint",
+      "debug",
+      "fix"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi with actual host capacity and limitations recorded. A fresh same-role verifier is not automatically independent. No universal cross-host qualification claimed.",
+    "canonical": "tribunal"
+  },
+  {
+    "name": "watch",
+    "visibility": "alias",
+    "family": "Ship",
+    "owner": "watch",
+    "steps": [
+      "Attach detached hosted-CI watcher",
+      "On red, diagnose within authority",
+      "On green, notify and offer merge",
+      "Never auto-merge"
+    ],
+    "context": [
+      "Same context contract as pr --watch"
+    ],
+    "output": "CI state / diagnosis and a merge offer; no automatic merge.",
+    "gates": "Retained compatibility entry. Prefer pr --watch. Owner gates remain unchanged.",
+    "source_ids": [
+      "S01",
+      "S02",
+      "S04",
+      "S21"
+    ],
+    "related": [
+      "pr"
+    ],
+    "modes": [],
+    "hosts": "Claude Code / Codex / Pi; admission and runtime capabilities still apply",
+    "canonical": "pr"
+  }
+]

@@ -1,95 +1,113 @@
 # Workflow atlas ownership and maintenance
 
-The native explorer lives on `/concepts/workflow-routes/`. It supplements the
-existing Concept Map and six workflow chapters; their URLs, source revisions and
-ordinary reading paths remain unchanged. It changes presentation only.
+The atlas on `/concepts/workflow-routes/` is the original standalone spatial atlas,
+ported into the documentation shell. It is not a command directory, accordion
+replacement, or automatic three-column redraw of similar information.
 
-## Inputs and projections
+## Preserve the original experience
 
-`core/surface/command-routes.json` owns entry identity, visibility and compatibility
-submodes. `core/hosts.json` owns each host's spelling and exclusions. Descriptions
-come from the owning command frontmatter. A source-catalog entry does not imply
-that every installed host can execute every typed workflow.
+The nine maps, 213 nodes and 178 routed relationships come from the October 7
+standalone atlas at source `9496cff6332fe0b97195b7ebe67b73f62f30e5b3`.
+`atlas-data/provenance.json` records the recovered source and per-view geometry
+fingerprints. The recovered text representation contains the complete embedded
+model and SVGs; it is not represented as an acquired original archive.
 
-`site/scripts/execution-maps/model.ts` and `workflows.ts` retain the existing
-chapter maps. `atlas.ts` projects their nodes, checks, conditional roles, chapter
-boundaries and edges without changing their historical source identities.
-`atlas-content.ts` owns the additional context, debug/fix, review/delivery and
-Tribunal explanations. Context, state, gate and output nodes are not fake agents.
-The complete catalog overview groups entries; groups are not execution phases.
-An entry without a dedicated teaching map links to its exact reference procedure.
+`atlas-data/` keeps one readable JSON model per original view plus its command and
+source catalog. Node boxes, text breaks, panels, labels and routed polylines are
+retained. `atlas-render.ts` changes theme and integration markup, not the spatial
+composition. No arrow is replaced with a numbered continuation or prose list.
+Complete text handoffs remain an additional reading path, not a substitute.
 
-`atlas-render.ts` emits the static reading path and SVGs from the same model.
-`WorkflowAtlas.astro` mounts that reading path in the existing site shell.
-The optional client changes visibility, opens native disclosures and follows
-explicit links. It does not save progress or authorize any operation.
+The native viewer retains map tabs, independent entry highlighting, the side
+inspector, node selection, Fit width, Fit all, Read size, zoom, blank-space panning,
+source links and full SVG export. Selecting a route does not remove unrelated
+nodes or replace the map. Switching maps retains the route. The inspector shows
+the original route steps, context, outputs, gates, related entries and evidence.
 
-`generate-atlas.ts`, invoked by `npm run gen`, creates:
+The page keeps the website header and left navigation. Only this wide map page
+omits the usual right-hand contents rail; the atlas inspector needs that space.
+The existing result directory, Concept Map, six chapter maps and their published
+addresses/source revisions are unchanged. Those chapter maps keep their existing
+role-row schema and renderer. They are not copied into a replacement atlas model.
 
-- `public/workflow-atlas/<reviewed-commit>/atlas.html`: self-contained offline edition;
-- `reading-guide.html`: script-free edition;
-- one SVG per view and `sources.json`: the same source bindings as the native page.
+## Owners and source checks
 
-These outputs are gitignored. No Python copy of the editorial model is required.
-No font file, runtime GitHub request, analytics, iframe or graph-library dependency
-is added. The web page uses lazy SVG images instead of embedding every SVG tree.
-Offline editions are noindex and excluded from Pagefind indexing. Repeated
-reference/catalog text and existing maps are excluded from duplicate indexing;
-the owner page and new explanatory material remain searchable.
+`core/surface/command-routes.json` owns identity, visibility and compatibility
+submodes. `core/hosts.json` owns host spelling and exclusions. `atlas-command.ts`
+retains the checked SKILL_ENTRY wrapper resolution added during the earlier repair.
+The restored inspector is supplemented with those host forms and exact procedures,
+not replaced with generated command summaries.
 
-## Reviewing source changes
+`atlas.ts` compares the full logical product-source files with the reviewed Git
+objects. CRLF normalization is allowed; source drift and symlinked paths refuse.
+A changed owner names the affected path. Missing history is not replaced with main.
+The lens directory is compared with its reviewed inventory. Source-linked workflow
+explanations are not runtime, released-artifact or installed-host certification.
+Historical site-design references in the source ledger are not product claims and
+are not frozen as a condition of this integration changing the site itself.
 
-`REVIEWED_AT` identifies the catalog and supplemental review. Existing chapter
-sources retain their separate historical revisions. The generator compares full
-logical source bytes with reviewed Git blobs, not only short matching excerpts.
-A changed owner fails generation with its path. CRLF checkout normalization is
-allowed; other content changes require review. Missing history fails explicitly.
-Use a checkout containing the reviewed commit, as the existing site CI does.
+For an intentional refresh, inspect the changed owner, update its affected route
+and check the diagram. Update only the necessary geometry and text wrapping.
+Advance the reviewed binding and geometry fingerprint after that review, not to
+silence a failing test. Unrelated source commits do not require repinning all maps.
 
-For an affected owner, inspect the complete change and its dependent routes.
-Correct the explanation before intentionally advancing the reviewed revision and
-any explicit blob pins. Preserve historical chapter sources and relocation
-metadata. Never repin merely to make a test green. Lens count comes from the
-actual reviewed lens directory; it is not hand-maintained marketing copy.
-These checks detect stale explanations, not semantic correctness or live-host
-qualification. No release status or organization-wide canon is established.
+## Theme and exports
 
-## Navigation and accessibility
+`src/styles/design-system.css` remains the only product token owner.
+`atlas-theme.ts` resolves those values for SVG and standalone exports; it neither
+copies font bytes nor maintains another palette. Native text uses the site's
+existing local fonts. Offline documents use the same font stack with its system
+fallbacks; no remote fonts or analytics are introduced.
 
-Entry links are `#atlas-<entry>`. View links are `#atlas-view-<view>` and node links
-are `#atlas-node-<view>-<node>`. Existing chapter fragments are not intercepted.
-Chooser changes do not write history; explicit native links do. Custom-element
-connection/disconnection owns event listeners during Astro client navigation.
-All text remains in static HTML. At narrow widths read the text first; the optional
-full-size vector region scrolls internally. Print includes the complete reading
-path. Diagram controls never represent executed or approved steps.
+`WorkflowAtlas.astro` mounts the same renderer directly in the existing page.
+`generate-atlas.ts`, already invoked by `npm run gen`, emits the self-contained
+viewer, script-free reading guide, nine SVGs and source ledger under
+`public/workflow-atlas/<reviewed-commit>/`. Outputs are gitignored. Download links
+inside an offline package are relative, not links to an unmerged public artifact.
+
+There is one active SVG in the native page. Other diagrams and inspector bodies
+are inert templates. This intentionally preserves instant offline view switching
+and the original direct node interaction, rather than using noninteractive images.
+Templates and duplicate canvas/inspector material do not enter Pagefind's index;
+the static text reading path remains searchable. Offline documents are noindex.
+
+## Navigation and lifecycle
+
+Entry addresses remain `#atlas-<entry>`. Explicit map links use
+`#atlas-view-<view>~<entry>` when an entry is highlighted; node addresses use
+`#atlas-node-<view>-<node>`. Prior atlas view aliases and the original standalone
+map fragments still resolve. Unrelated existing chapter addresses are ignored.
+Chooser controls do not write history or storage. Explicit native links do.
+
+Keep the Astro navigation repair: same-page routing can update history without
+hashchange. Read the literal clicked fragment after routing, retain popstate and
+page-load handling, and disconnect all listeners/observers on removal. Modified,
+canceled, download and new-tab actions must not become atlas selection commands.
+
+Keyboard node activation, zoom shortcuts, native touch scrolling, source-dialog
+focus, reduced motion and forced colors remain supported. Narrow screens retain
+the actual panning map and move the inspector below it, as in the original viewer.
+The complete text path is available without JavaScript. Print exposes that full
+path and restores the previous selection afterward, including repeated previews.
+No control signifies executed work, verification, progress or approval.
 
 ## Verification and rollback
 
-Run in `site/`:
+Run the existing generator, typecheck, unit, build/link and production-browser
+checks. The browser suite must exercise the native page, not only the standalone
+export. Inspect actual desktop and mobile captures of the canvas in the site shell.
 
-```sh
-npm test
-npm run typecheck
-npm run build
-npm run link-audit
-npm run test:browser -- workflow-atlas.spec.ts
-```
+The regression contract checks the original per-view geometry fingerprints, all
+213 boxes, all 178 polyline paths, every entry's highlight membership, real node
+inspection, keyboard, drag/zoom, complete clean SVG export, actual Astro round trips,
+Back/Forward/reload/repeated fragments, no-script reading, doubled text and repeated
+print restoration. Wrapper parsing, source-drift and host-exclusion tests remain.
+Do not retain a green accordion test by weakening the original interaction contract.
 
-Inspect the built owner page, command-reference links, historical chapter links,
-all entry selections, actual host exclusions, downloads, no-script and print
-reading, browser Back/reload, client navigation, enlarged text, forced colors and
-reduced motion. Check rendered SVG labels as well as graph references. Run the
-existing full browser suite before merging because source indexing and shared
-navigation can be affected. The new browser tests run against the real built site,
-not a substituted fixture. Existing CI jobs are reused without relaxed gates.
+Local in-memory browser rendering can check layout and the controller. It cannot
+certify a production Astro route or public deployment. Bind hosted test results and
+any downloaded Pages artifact to the actual candidate head. After authorized merge
+and deployment, read back the public page and downloads separately.
 
-Implementation-session local evidence is limited to TypeScript syntax, strict
-checking of the pure model/render/client modules, model assertions and Chromium
-in-memory component checks. Full repository generation, Astro build and browser
-qualification must be established by the PR jobs or a connected development
-checkout; a local fixture is not a production-site pass.
-
-After merge, compare the deployed owner page and downloads with the tested build.
-Opening this PR does not deploy it. Rollback is an ordinary revert of this site
-integration; existing chapters, command procedures and project state are unchanged.
+Rollback is a normal revert of the site integration. No product workflow, package,
+authority producer, consumer state or existing chapter model is migrated here.
