@@ -94,7 +94,7 @@ test('explicit addresses, repeated fragments, history and real Astro reconnectio
   const length=await page.evaluate(()=>history.length);await atlas.locator('[data-atlas-permalink]').focus();await page.keyboard.press('Enter');expect(await page.evaluate(()=>history.length)).toBe(length);
   await expect(atlas.locator('[data-atlas-stage]')).toBeFocused();
   const node=atlas.locator('[data-atlas-stage] [data-node]').first();await node.focus();await page.keyboard.press('Enter');await atlas.locator('[data-atlas-permalink]').click();
-  await expect(page).toHaveURL(/#atlas-node-tribunal-lifecycle-t-entry$/);await expect(node).toBeFocused();await page.reload();await expect(atlas).toHaveAttribute('data-selected-node','t-entry');
+  await expect(page).toHaveURL(/#atlas-node-tribunal-lifecycle-t-entry~tribunal$/);await expect(node).toBeFocused();await page.reload();await expect(atlas).toHaveAttribute('data-selected-node','t-entry');await expect(select).toHaveValue('tribunal');
   await select.selectOption('fix');await atlas.evaluate(el=>el.setAttribute('data-test-original','true'));await page.evaluate(()=>Reflect.set(window,'atlasTestDocument','retained'));
   await atlas.locator('[data-atlas-inspector] a[href="/reference/commands/fix/"]').click();await expect(page).toHaveURL(/\/reference\/commands\/fix\/$/);
   await page.locator(`a[href="${route}#atlas-fix"]`).first().click();await expect(select).toHaveValue('fix');await expect(atlas).not.toHaveAttribute('data-test-original');expect(await page.evaluate(()=>Reflect.get(window,'atlasTestDocument'))).toBe('retained');
@@ -122,7 +122,7 @@ test('narrow layout, enlarged text, forced colors and repeated print restore the
   await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(route+'#atlas-view-tribunal-lifecycle');
   const atlas=root(page);await atlas.locator('[data-action="read-size"]').click();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
-  await atlas.locator('[data-action="details"]').click();await expect(atlas.locator('[data-atlas-inspector]')).toBeInViewport();
+  await atlas.locator('[data-action="details"]').click();await expect(atlas.locator('[data-atlas-inspector]')).toBeInViewport();await expect(atlas.locator('[data-atlas-inspector]')).toBeFocused();
   await page.evaluate(()=>document.fonts.ready);mkdirSync(resolve('.astro/browser-evidence'),{recursive:true});
   const capture=resolve('.astro/browser-evidence/native-atlas-mobile.png');
   await page.screenshot({path:capture});await testInfo.attach('native-atlas-mobile',{path:capture,contentType:'image/png'});
