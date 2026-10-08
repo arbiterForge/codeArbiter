@@ -45,7 +45,7 @@ rewriting historical diagram provenance. CRLF normalization is allowed; source
 drift and symlinked paths refuse. A changed owner names the affected path. Missing
 history is not replaced with main.
 
-The October 8 revalidation is bound to main
+The first October 8 revalidation was bound to main
 `81055792c71ba7aaeeaf5280e81ce2929bb25cc1` (PR936). Its only changed atlas product
 input is the Claude role-charter count in `docs/parity.md`, corrected from 19 to
 20. That count is not a route or authority change, so all nine graph files and
@@ -53,6 +53,15 @@ original geometry fingerprints remain unchanged. The loader still compares the
 complete current file with that exact Git object; it does not accept arbitrary
 changes or drop the file from checking. The viewer's scope and exported ledger
 name the revalidation separately from the original source links.
+A subsequent October 8 review is bound to main
+`97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa` after PR935 and PR934. Among this
+interval's atlas product inputs, only `CHANGELOG.md` changed: the reviewed
+preflight-batching entry was added. The engine's shared pure observations do not
+change the mapped caller, context, approval or output contracts. Academy embedding
+is separate from the atlas. The revalidation tests retain the earlier count-only
+comparison and require the exact new changelog addition, unchanged parity text,
+original source links and original geometry. No performance claim is inferred.
+
 The lens directory is compared with its reviewed inventory. Source-linked workflow
 explanations are not runtime, released-artifact or installed-host certification.
 Historical site-design references in the source ledger are not product claims and
@@ -102,13 +111,21 @@ when origin, pathname and query still match the document. Other absolute links
 retain their native destination. Resolve node targets by exact identity, not by
 interpolating a fragment into a CSS selector.
 
-Keep the Astro navigation repair: same-page routing can update history without
-hashchange. Read the clicked destination after routing, retain popstate and
-page-load handling, and disconnect all listeners/observers on removal. Modified,
-canceled, download and new-tab actions must not become atlas selection commands.
+Keep atlas-owned same-document links native with `data-astro-reload`; cross-page
+procedure links retain Astro routing. Defer selection until click propagation
+finishes, then check cancellation and whether a newer manual choice superseded it.
+Coalesce duplicate popstate, hashchange and page-load notifications for one native
+destination without replacing the focused SVG node. Explicit links still follow
+repeated fragments. Clear pending navigation on removal, and remember unrelated
+destinations so Back can restore a valid atlas address. Modified, canceled,
+download and new-tab actions must not become atlas selection commands.
+
 Queued focus work belongs to its reading selection; a newer selection supersedes
 it. Coalesce resize work and recheck the current fit mode before applying it so
-queued automatic fitting cannot undo a later zoom or Read size action.
+queued automatic fitting cannot undo a later zoom or Read size action. Read size
+requires both route membership and a complete slash-command token for a command
+node; `/prune` must not substitute for `/pr`. Preserve the fallback to another
+route member, then the first node.
 
 Cache inert inspector templates once per connection. Reconnecting without an
 atlas-owned address resets both the selector and highlight, not just one of them.
@@ -139,8 +156,9 @@ Do not retain a green accordion test by weakening the original interaction contr
 
 The quality regressions also cover hostile DOM-source identities at the permalink
 boundary, unrelated heading isolation, trace-preserving node links in native and
-offline editions, stale navigation/resize callbacks, reconnect synchronization,
-and pending export cleanup. Controlled callback fixtures test ordering explicitly;
+offline editions, duplicate-notification focus retention, late document-level
+cancellation, exact command targeting, stale navigation/resize callbacks,
+reconnect synchronization and pending export cleanup. Controlled callback fixtures test ordering explicitly;
 they supplement, not replace, the real navigation and download tests.
 
 Local in-memory browser rendering can check layout and the controller. It cannot
