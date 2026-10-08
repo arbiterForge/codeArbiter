@@ -27,6 +27,19 @@ type Engine struct {
 	RequestHash string
 }
 
+// Only observations that produce no context tokens, receipts or state changes
+// may overlap. New operations remain exclusive until explicitly classified.
+func sharedObservation(op string, r object) bool {
+	switch op {
+	case "snapshot", "identity", "outline", "read-batch":
+		return true
+	case "read":
+		return model.S(r["mode"]) == "exact"
+	default:
+		return false
+	}
+}
+
 func Identity(d *model.Document, p string) object {
 	return object{"artifact_id": d.ID(), "kind": d.Kind(), "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "symbol_count": int64(len(d.Symbols.ByID))}
 }
@@ -67,7 +80,7 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	defer f.Close()
-	unlock, e := f.Lock(true, 2*time.Second)
+	unlock, e := f.Lock(!sharedObservation(op, r), 2*time.Second)
 	if e != nil {
 		return nil, e
 	}
@@ -202,6 +215,19 @@ func Run(root, op string, input object) (any, error) {
 			return reads.Exact(d, model.S(r["symbol"]), budget)
 		}
 		return reads.Page(f, c, d, model.S(r["symbol"]), model.S(r["cursor"]), budget)
+	case "read-batch":
+		if model.S(r["model_sha256"]) != d.Hash() {
+			return nil, fault.New("STALE_CURSOR", "exact batch requires the same model identity")
+		}
+		offset, ok := model.NativeInt(model.I(r["offset"]))
+		if !ok {
+			return nil, fault.New("INVALID_OFFSET", "batch offset is outside the native integer range")
+		}
+		out, err := reads.ExactBatch(d, model.Strings(r["symbols"]), offset, budget)
+		if err != nil {
+			return nil, err
+		}
+		return out, nil
 	case "outline":
 		offset, ok := model.NativeInt(model.I(r["offset"]))
 		if !ok {

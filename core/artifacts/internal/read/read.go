@@ -206,6 +206,47 @@ func Exact(d *model.Document, id string, budget int) (map[string]any, error) {
 	}
 	return out, nil
 }
+
+// ExactBatch pages a checked bounded selection without creating delivery receipts.
+// Validate the entire selection before returning any of its whole records.
+func ExactBatch(d *model.Document, ids []string, offset, budget int) (map[string]any, error) {
+	if offset < 0 || offset >= len(ids) {
+		return nil, fault.New("INVALID_OFFSET", "batch offset outside record selection")
+	}
+	items := make([]any, 0, len(ids))
+	for _, id := range ids {
+		exact, err := Exact(d, id, budget)
+		if err != nil {
+			return nil, err
+		}
+		r := d.Symbols.ByID[id]
+		items = append(items, map[string]any{"id": id, "kind": r.Kind, "retired": r.Retired, "record": exact["record"]})
+	}
+	out := map[string]any{"artifact_id": d.ID(), "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "mode": "exact", "context_complete": false, "offset": int64(offset), "total": int64(len(ids)), "records": []any{}, "next_offset": nil}
+	selected := []any{}
+	next := offset
+	for next < len(items) {
+		candidate := append(append([]any{}, selected...), items[next])
+		out["records"] = candidate
+		b, _ := json.Marshal(out)
+		// The exact-read record allowance already reserves 1024 bytes. The
+		// smaller page reserve fits its metadata and the outer CLI envelope.
+		if len(b)+512 > budget {
+			break
+		}
+		selected = candidate
+		next++
+	}
+	if len(selected) == 0 {
+		return nil, fault.New("RECORD_TOO_LARGE", "whole exact record exceeds this page budget")
+	}
+	out["records"] = selected
+	if next < len(items) {
+		out["next_offset"] = int64(next)
+	}
+	return out, nil
+}
+
 func Page(f *store.FS, c *repository.Catalog, d *model.Document, id, cursor string, budget int) (map[string]any, error) {
 	if budget < 4096 || budget > MaxBudget {
 		return nil, fault.New("INVALID_BUDGET", "response budget must be 4096..65536 bytes")

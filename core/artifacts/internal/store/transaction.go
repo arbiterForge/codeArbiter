@@ -17,6 +17,7 @@ import (
 const meta = ".codearbiter/.artifacts"
 
 var opPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$`)
+var journalDigestPattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
 
 func derivedTransactionTarget(p string, beforeHash, afterHash any, size int64) bool {
 	prefix := meta + "/farm-bindings/"
@@ -103,7 +104,7 @@ func validJournal(id string, j map[string]any) error {
 			return bad()
 		}
 	}
-	if model.S(j["operation_id"]) != id || !regexp.MustCompile(`^[0-9a-f]{64}$`).MatchString(model.S(j["request_sha256"])) {
+	if model.S(j["operation_id"]) != id || !journalDigestPattern.MatchString(model.S(j["request_sha256"])) {
 		return bad()
 	}
 	state := model.S(j["state"])
@@ -127,7 +128,7 @@ func validJournal(id string, j map[string]any) error {
 			return bad()
 		}
 		for _, k := range []string{"before_sha256", "after_sha256"} {
-			if r[k] != nil && !regexp.MustCompile(`^[0-9a-f]{64}$`).MatchString(model.S(r[k])) {
+			if r[k] != nil && !journalDigestPattern.MatchString(model.S(r[k])) {
 				return bad()
 			}
 		}
