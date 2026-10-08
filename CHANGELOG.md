@@ -12,12 +12,20 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.25.1] - 2026-10-08
+## [2.25.2] - 2026-10-08
 
 ### Fixed
 
 - Recognize the scoped Pi package in shared workflow preflight and report its
   unavailable approval support without enabling the workflow.
+- Preserve exact native Pi approval input bindings in the shared adapter while
+  refusing ordinary prompt input and unqualified paired approval.
+
+## [2.25.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
 
 ## [2.25.0] - 2026-10-05
 

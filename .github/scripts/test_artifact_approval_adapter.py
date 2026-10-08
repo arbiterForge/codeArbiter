@@ -601,29 +601,42 @@ class _PlanClient(_FakeClient):
         self.snapshot_error = None
         self.drift_after = None
         self.bad_next_offset = False
+        self.outline_page_size = 1
+        self.batch_page_size = 128
 
     def call(self, operation, request=None, **kwargs):
         request = dict(request or {})
-        if operation not in {"outline", "read", "snapshot"}:
+        if operation not in {"outline", "read", "read-batch", "snapshot"}:
             return super().call(operation, request, **kwargs)
         self.calls.append((operation, request))
         identity = dict(self.identity)
         if operation == "outline":
             offset = request.get("offset", 0)
-            task = self.tasks[offset]
+            tasks = self.tasks[offset:offset + self.outline_page_size]
+            end = offset + len(tasks)
             result = {**identity, "offset": offset, "total": len(self.tasks),
-                      "records": [{"id": task["id"], "kind": "tasks", "retired": False}],
+                      "records": [{"id": task["id"], "kind": "tasks", "retired": False} for task in tasks],
                       "next_offset": offset if self.bad_next_offset else
-                      (offset + 1 if offset + 1 < len(self.tasks) else None)}
+                      (end if end < len(self.tasks) else None)}
         elif operation == "read":
             result = {**identity, "mode": "exact", "context_complete": False,
                       "record": next(task for task in self.tasks if task["id"] == request["symbol"])}
+        elif operation == "read-batch":
+            offset = request.get("offset", 0)
+            selected = request["symbols"][offset:offset + self.batch_page_size]
+            end = offset + len(selected)
+            result = {**identity, "mode": "exact", "context_complete": False,
+                      "offset": offset, "total": len(request["symbols"]),
+                      "records": [{"id": symbol, "kind": "tasks", "retired": False,
+                                   "record": next(task for task in self.tasks if task["id"] == symbol)}
+                                  for symbol in selected],
+                      "next_offset": end if end < len(request["symbols"]) else None}
         else:
             if self.snapshot_error:
                 raise self.snapshot_error
             result = {"sha256": "8" * 64, "entry_count": 1,
                       "platform": "fixture", "roots": ["."], "exclude_directories": []}
-        if operation == self.drift_after:
+        if operation == self.drift_after or operation == "read-batch" and self.drift_after == "read":
             self.identity["model_sha256"] = "9" * 64
         return result
 
@@ -645,6 +658,60 @@ class PlanApprovalPreflightTest(unittest.TestCase):
             self.root, self.client, "PLAN-EXAMPLE", token="plan-preflight-token"
         )
 
+    def test_preflight_batches_task_reads(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 11)]
+        client.outline_page_size = 128
+        result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(result["command_count"], 10)
+        self.assertLessEqual(len(client.calls), 5, "ten small tasks need one outline, one batch, two identities and a snapshot")
+        self.assertEqual([operation for operation, _ in client.calls].count("snapshot"), 1)
+
+    def test_batch_pages_reject_malformed_or_incomplete_delivery(self):
+        faults = {
+            "context complete": lambda page: page.update(context_complete=True),
+            "wrong mode": lambda page: page.update(mode="contextual"),
+            "wrong total": lambda page: page.update(total=3),
+            "wrong offset": lambda page: page.update(offset=1),
+            "boolean offset": lambda page: page.update(offset=False),
+            "early end": lambda page: page.update(next_offset=None),
+            "skipped row": lambda page: page.update(next_offset=3),
+            "no progress": lambda page: page.update(next_offset=0),
+            "foreign task": lambda page: page["records"][0].update(id="T-999"),
+            "wrong kind": lambda page: page["records"][0].update(kind="checkpoints"),
+            "retired task": lambda page: page["records"][0].update(retired=True),
+            "wrong record": lambda page: page["records"][0].update(record={"id": "T-999"}),
+            "duplicate row": lambda page: page["records"].__setitem__(1, page["records"][0]),
+        }
+        for label, corrupt in faults.items():
+            with self.subTest(label=label):
+                client = self.plan()
+                client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+                client.outline_page_size, client.batch_page_size = 128, 2
+                original = client.call
+                def damaged(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "read-batch":
+                        corrupt(page)
+                    return page
+                with mock.patch.object(client, "call", side_effect=damaged):
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                        self.adapter._preflight_plan_verification(client, dict(client.identity))
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_batch_continuation_keeps_selection_and_model_pin(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+        client.outline_page_size, client.batch_page_size = 128, 2
+        result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(result["command_count"], 4)
+        batches = [request for operation, request in client.calls if operation == "read-batch"]
+        self.assertEqual(len(batches), 2)
+        self.assertEqual([request["offset"] for request in batches], [0, 2])
+        for request in batches:
+            self.assertEqual(request["symbols"], [task["id"] for task in client.tasks])
+            self.assertEqual(request["model_sha256"], client.identity["model_sha256"])
+
     def test_reports_all_commands_and_snapshot_before_pending_approval(self):
         client = self.plan()
         client.tasks = [
@@ -659,7 +726,10 @@ class PlanApprovalPreflightTest(unittest.TestCase):
             self.arm()
         for detail in ("T-001", "T-002", "unsupported-one", "unsupported-two", "pagefind.exe", "MAX_BYTES"):
             self.assertIn(detail, str(caught.exception))
-        self.assertEqual([r[1]["symbol"] for r in client.calls if r[0] == "read"], ["T-001", "T-002"])
+        inspected = [symbol for operation, request in client.calls
+                     for symbol in ([request["symbol"]] if operation == "read" else
+                                    request["symbols"] if operation == "read-batch" else [])]
+        self.assertEqual(inspected, ["T-001", "T-002"])
         self.assertFalse((self.root / self.adapter.PENDING).exists())
 
     def test_snapshot_failure_alone_blocks_plan_approval(self):
