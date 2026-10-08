@@ -33,7 +33,7 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 |---|---|---|---|---|
 | Public entries | 37 `/ca:*` commands | 35 `$ca-*` entry skills | 36 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
 | Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
-| Role charters | 19 current plugin agents | published releases from 0.7.5 contain the complete packaged resource charter set for their release; current source and 0.9.4 contain 19 | 19 current generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
+| Role charters | 20 current plugin agents | published releases from 0.7.5 contain the complete packaged resource charter set for their release; current source and 0.9.4 contain 19 | 19 current generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
