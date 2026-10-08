@@ -21,6 +21,7 @@ import (
 const MaxReadyRecordBytes = 12 * 1024
 
 var drive = regexp.MustCompile(`^[a-zA-Z]:`)
+var reservedDeviceName = regexp.MustCompile(`^(COM|LPT)[1-9]$`)
 
 // Path accepts portable, slash-separated repository paths, not globs.
 func Path(s string, allowDot bool) bool {
@@ -40,7 +41,7 @@ func Path(s string, allowDot bool) bool {
 			return false
 		}
 		u := strings.ToUpper(strings.SplitN(p, ".", 2)[0])
-		if u == "CON" || u == "PRN" || u == "AUX" || u == "NUL" || regexp.MustCompile(`^(COM|LPT)[1-9]$`).MatchString(u) {
+		if u == "CON" || u == "PRN" || u == "AUX" || u == "NUL" || reservedDeviceName.MatchString(u) {
 			return false
 		}
 	}

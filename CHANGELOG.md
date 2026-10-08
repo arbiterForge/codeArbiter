@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.25.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
+
 ## [2.25.0] - 2026-10-05
 
 ### Fixed

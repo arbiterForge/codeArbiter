@@ -2130,3 +2130,28 @@ Securable: the upgrade strictly reduces known high-severity exposure, while wait
 pi_host_locks review validation and the install-time audit compare findings to the receipt's accepted advisories. The Pi 1.0.0 promotion lands on the same branch.
 
 ---
+
+## DECISION-0074 — artifact-concurrent-readers — Allow narrow concurrent artifact observations
+
+**Date:** 2026-10-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** Project owner, direct CLI conversation — "Implement narrow concurrent readers (Recommended)" and "Do this".
+**Decision category:** architecture/concurrency
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Remediation PERF-05 calls for reducing avoidable observation lock timeouts while preserving write, receipt and recovery consistency.
+- **Scaffold position:** Every repository operation takes an exclusive lock; a short identity read times out behind a longer snapshot even though both are observations.
+- **Status type:** open-decision-closure
+
+### Decision
+Allow shared cooperative repository locks only for snapshot, identity, outline, read-batch and read with mode explicitly exact. All other repository operations retain exclusive locks, including contextual reads, receipt and context producers, writes and recovery. Preserve the two-second lock timeout and all existing admission, filesystem, snapshot and mutation validation.
+
+### SMARTS rationale
+Scalable and Available: independent observations can overlap without waiting for a long snapshot. Maintainable: a closed allowlist leaves new operations exclusive by default. Reliable, Testable and Securable: deterministic contention tests must prove reader overlap, writer exclusion, retry/recovery and retained validation. This decision introduces no writer-fairness guarantee, latency SLO or stronger protection against non-cooperating same-user edits.
+
+### Implementation implication
+Use the existing shared-lock support in the native store backends and keep this fix in the existing performance PR. No daemon, persistent index, new dependency, machine configuration, CI runner requirement or project-state migration is authorized by this decision.
+
+---
