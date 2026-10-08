@@ -11,8 +11,9 @@ journey:
 
 import ReleaseApplicability from "../../../components/ReleaseApplicability.astro";
 
-codeArbiter's requirements are deliberately narrow: Claude Code, Codex, or Pi, plus Python 3 on
-`PATH`. All three hosts share `.codearbiter/`; see the
+codeArbiter's Python hook core requires a supported host, Git, and Python 3 on `PATH`.
+Structured HTML workflows also require the installation-pinned native artifact runtime and the
+installed host's authority adapters. All three hosts share `.codearbiter/`; see the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
 and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 
@@ -26,6 +27,7 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 | **Codex** | Minimum 0.143.0; live-verified on 0.144.1 | `ca-codex` uses one OS-specific handler per event and a Codex adapter that converts the shared guard verdict to structured deny output. Trust the hook set through `/hooks`. |
 | **Pi** | 1.0.2 (this release line) | `ca-pi` is a Feature Forge `preview`, available and welcomed for real use while broader testing continues before stable status or a claim of 100% validation. Install it with `pi install npm:@arbiterforge/ca-pi`, or pin the reproducible Git tag: `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`. Also requires Node.js 22.19+. Requires an affirmative project-trust decision before repository-aware startup. Its human-readable generated catalog is `plugins/ca-pi/SKILLS.md`. See [Install for Pi](/getting-started/pi/). |
 | **Python** | Python 3, stdlib only, available under the interpreter name your adapter registers | No minimum Python 3 minor is currently declared. CI exercises the runner's current Python 3 on Windows, macOS, and Linux; focused Windows hook evidence also covers CPython 3.10, 3.12, and 3.14. Claude Code carries its documented `python3`/`python` fallback shape. Codex uses OS-specific `command` and `commandWindows` handlers and fails loud if its selected interpreter is absent. Pi installs final TypeScript wrappers first, then blocks mutating calls with an interpreter breadcrumb until the Python bridge is healthy. No adapter treats that state as active enforcement. No third-party Python packages are installed or imported (ADR-0004). |
+| **Native artifact runtime** | Installation-pinned `ca-artifact` executable for structured HTML workflows | Binary-bearing public packages include the Go-built executable. A source checkout or Python installation alone does not provide the complete installed-host workflow. See [Structured HTML workflow prerequisites](#structured-html-workflow-prerequisites) for the required host authority adapters. |
 | **Operating system** | Native Windows, macOS, or Linux runtime with a checkout created and used by that runtime's Git | The `.git/hooks` backstop is a POSIX `sh` script. On Windows, Git for Windows runs it with its bundled `sh.exe`. Git Bash is part of that native Windows cell and is not WSL. Windows is also a promoted, tested platform for `ca-pi`; see [Windows notes](/getting-started/pi/#windows). Linked-worktree support uses Git's default `<main>/.git/worktrees` storage layout. See [Git runtime boundary](#git-runtime-boundary) for layout and mixed-runtime exclusions. |
 | **git** | A Git binary that provides `rev-parse --git-path hooks`, `rev-parse --path-format=absolute --git-dir --git-common-dir`, and `git hook run`; ADR lifecycle proof requires Git 2.45.0+ with `--no-lazy-fetch` | codeArbiter asks the selected Git binary for its effective hook and shared-worktree paths, then doctor uses that same binary for a harmless managed `pre-push` live-fire probe with empty input. That binary's accepted `core.hooksPath` grammar is authoritative, including its expansion of values such as `~`, `%(prefix)`, absolute paths, and relative paths. The lifecycle verifier additionally enforces the offline capability described below. |
 | **Node.js** | Not required for Claude Code or Codex | Node is required for `ca-pi` (22.19+) and is only otherwise needed to build or develop **this documentation site** (`site/`) and the optional pluggable-execution-farm TypeScript dispatcher (`plugins/ca/tools/`) if you use `/ca:sprint --farm`. Node is not a runtime dependency of the Claude Code/Codex enforcement hooks themselves. |
@@ -101,7 +103,7 @@ for the current boundaries.
 | Mutation permission | Host permission flow plus gates | Codex approval plus gates | Execute mode asks before governed mutations or external side effects; hard blocks deny first |
 | Plan mode | Host plan workflow | Read-only collaboration mode | Plan mode is read-only except for the current canonical spec, plan, and plan ledger |
 | Background jobs | Host managed | Host managed | Bounded session-only jobs, never restored from Pi session entries; unverified cleanup blocks later launches with `/ca-doctor` direction |
-| `/ca:sprint --farm` | `preview`, shared `farm.js` backend | `preview`, shared `farm.js` backend | `preview`, same shared `farm.js` backend through the trusted parent extension; no Pi-native farm engine |
+| `/ca:sprint --farm` | `preview`, shared `farm.js` backend | Falls back to the normal premium-subagent path because the farm backend is not packaged | `preview`, same shared `farm.js` backend through the trusted parent extension; no Pi-native farm engine |
 | Subagent/child dispatch | Plugin agents dispatched directly | Current hosts provide agent threads: codeArbiter loads the role charter and retains a receipt when evidence requires one. A bounded 0.9.4 receipt proves one exact installed-charter review, not enforced isolation or every route. Older hosts may fall back inline, but context creation blocks without isolated scouts | Fresh child Pi processes via the parent-only `codearbiter_dispatch` EXEC tool; single/chain/parallel modes share bounded depth, concurrency, timeout, cancellation, and process-tree cleanup |
 | Transcript pruning / compaction | Claude transcript-pruning engine | No transcript pruning; host-neutral staleness warning | Native Pi compaction event; codeArbiter does not rewrite Pi session JSONL |
 | Project state | Shared `.codearbiter/` store | Shared `.codearbiter/` store | Shared `.codearbiter/` store |
@@ -162,11 +164,18 @@ the same invariant per hook and the two default background startup activities de
 
 ## Third-Party Dependencies
 
-Zero, for the plugin itself. `plugins/ca/hooks/*.py` import only the Python standard library: no
-`pip install`, no `requirements.txt`, no compiled binaries (ADR-0004). The one TypeScript toolchain in
-the repo, `plugins/ca/tools/` (the farm dispatcher), carries its own `devDependencies` for its own
-build and test. Those are irrelevant to whether the enforcement hooks run, since the hooks never
-import from that package.
+The Python hook core imports only the Python standard library. It requires no `pip install` or
+third-party Python packages (ADR-0004).
+
+Structured HTML workflows also execute the installation-pinned `ca-artifact` native binary,
+built with Go. The bridge verifies its packaged manifest, native-platform qualification and
+binary digest before execution. See the
+[security policy](https://github.com/arbiterForge/codeArbiter/blob/main/SECURITY.md) and
+[third-party notices](https://github.com/arbiterForge/codeArbiter/blob/main/THIRD_PARTY_NOTICES.md).
+
+The farm dispatcher (`plugins/ca/tools/`) and Pi adapter (`plugins/ca-pi/tools/`) have their own
+TypeScript build and test dependencies. Those packages do not add Python dependencies to the
+enforcement hooks.
 
 The docs site (`site/`) has its own, larger `package.json` (Astro, Starlight, vitest). That's a
 dependency surface for **building this website**, never for using the plugin.

@@ -14,6 +14,38 @@ function normalizeWhitespace(value: string): string {
 }
 
 describe("public trust-policy claims", () => {
+  it("separates the Python hook core from the pinned native artifact runtime", () => {
+    const compatibility = normalizeWhitespace(
+      readRepo("site/src/content/docs/getting-started/compatibility.mdx"),
+    );
+    const security = normalizeWhitespace(readRepo("SECURITY.md"));
+
+    expect(compatibility).toContain("Python hook core");
+    expect(compatibility).not.toContain("no compiled binaries");
+    expect(compatibility).not.toContain("Zero, for the plugin itself");
+    for (const boundary of ["installation-pinned", "`ca-artifact`", "native-platform qualification", "binary digest"]) {
+      expect(security).toContain(boundary);
+      expect(compatibility).toContain(boundary);
+    }
+  });
+
+  it("keeps the Codex farm cell within its owning backend exception", () => {
+    const compatibility = readRepo("site/src/content/docs/getting-started/compatibility.mdx");
+    const parity = readRepo("docs/parity.md");
+    const notes = normalizeWhitespace(readRepo("core/surface/includes/codex-host-notes.md"));
+    const row = compatibility.split("\n").find((line) => line.startsWith("| `/ca:sprint --farm` |"));
+    const parityRow = parity.split("\n").find((line) => line.startsWith("| `--farm` |"));
+
+    expect(row).toBeDefined();
+    expect(parityRow).toBeDefined();
+    const codexCell = row!.split("|")[3];
+    expect(notes).toContain("premium-subagent path");
+    expect(parityRow!.split("|")[3]).toContain("until backend packaging lands");
+    expect(codexCell).toContain("premium-subagent path");
+    expect(codexCell).toContain("backend is not packaged");
+    expect(codexCell).not.toContain("shared `farm.js` backend");
+  });
+
   it("discloses the optional tribunal KPI submission boundary", () => {
     const privacy = normalizeWhitespace(readRepo("PRIVACY.md"));
 
