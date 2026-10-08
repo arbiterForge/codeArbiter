@@ -180,6 +180,7 @@ function trackFor(id: string): AcademyLessonSource["track"] {
 
 function hydrateHomeInstallerDigests(sourceRoot: string, commit: string, manifest: AcademyActionManifestSource): void {
   const variants = manifest.actions.flatMap((action) => action.variants);
+  const installVariants = manifest.actions.find((action) => action.id === "home-install")?.variants ?? [];
   for (const [token, name, operatingSystems] of [
     ["{{INSTALL_PS1_SHA256}}", "install.ps1", ["windows"]],
     ["{{INSTALL_SH_SHA256}}", "install.sh", ["macos", "linux"]],
@@ -189,7 +190,7 @@ function hydrateHomeInstallerDigests(sourceRoot: string, commit: string, manifes
       throw new Error(`Academy home installer command must contain ${token} exactly ${count} time(s)`);
     }
     for (const os of operatingSystems) {
-      const osCount = variants.filter((variant) => variant.operating_system === os)
+      const osCount = installVariants.filter((variant) => variant.operating_system === os)
         .reduce((total, variant) => total + variant.command.split(token).length - 1, 0);
       if (osCount !== 1) {
         throw new Error(`Academy home installer command must contain ${token} exactly once for ${os}`);

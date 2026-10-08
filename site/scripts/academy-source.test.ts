@@ -266,6 +266,18 @@ describe("loadAcademySource", () => {
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/home installer command must contain/);
   });
 
+  it.each(["windows", "macos", "linux"])("rejects %s installer tokens moved to another Home action", (os) => {
+    const fixtureRoot = createFixture();
+    mutateHomeActionManifest(fixtureRoot, (manifest) => {
+      const variants = homeAction(manifest, 3).variants as JsonRecord[];
+      const installer = variants.find(({ operating_system }) => operating_system === os)!;
+      homeAction(manifest, 1).variants = [{ ...installer }];
+      installer.command = "echo installer";
+    });
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/home installer command must contain/);
+  });
+
   it("rejects unresolved security-critical installer tokens", () => {
     const fixtureRoot = createFixture();
     mutateHomeActionManifest(fixtureRoot, (manifest) => {
