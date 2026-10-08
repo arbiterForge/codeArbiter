@@ -27,6 +27,19 @@ type Engine struct {
 	RequestHash string
 }
 
+// Only observations that produce no context tokens, receipts or state changes
+// may overlap. New operations remain exclusive until explicitly classified.
+func sharedObservation(op string, r object) bool {
+	switch op {
+	case "snapshot", "identity", "outline", "read-batch":
+		return true
+	case "read":
+		return model.S(r["mode"]) == "exact"
+	default:
+		return false
+	}
+}
+
 func Identity(d *model.Document, p string) object {
 	return object{"artifact_id": d.ID(), "kind": d.Kind(), "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "symbol_count": int64(len(d.Symbols.ByID))}
 }
@@ -67,7 +80,7 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	defer f.Close()
-	unlock, e := f.Lock(true, 2*time.Second)
+	unlock, e := f.Lock(!sharedObservation(op, r), 2*time.Second)
 	if e != nil {
 		return nil, e
 	}
