@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
+
 ## [0.17.0] - 2026-10-05
 
 ### Fixed

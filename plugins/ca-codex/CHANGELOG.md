@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
+
 ## [0.16.0] - 2026-10-05
 
 ### Fixed
