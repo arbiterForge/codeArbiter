@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-10-08
+
+### Fixed
+
+- Recognize the installed `@arbiterforge/ca-pi` package and report the missing
+  prompt, verification and review authority precisely. New full-lane workflows
+  remain refused until that support is qualified.
+
 ## [0.17.0] - 2026-10-05
 
 ### Fixed

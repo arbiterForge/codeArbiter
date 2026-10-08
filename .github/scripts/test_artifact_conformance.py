@@ -68,6 +68,7 @@ EXPECTED_SUITES = {
         "test_admission_rechecks_resources_after_initial_success",
         "test_admission_refuses_missing_producers_and_host_helpers",
         "test_admission_refuses_pi_before_any_new_full_lane_artifact",
+        "test_admission_identifies_scoped_pi_package_without_enabling_workflow",
         "test_admission_rejects_bare_engine_installation",
         "test_admission_rejects_linked_helper_ancestors",
         "test_admission_rejects_malformed_duplicate_and_oversized_registry",

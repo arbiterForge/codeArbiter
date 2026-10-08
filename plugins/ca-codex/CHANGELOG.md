@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.1] - 2026-10-08
+
+### Fixed
+
+- Recognize the scoped Pi package in shared workflow preflight and report its
+  unavailable approval support without enabling the workflow.
+
 ## [0.16.0] - 2026-10-05
 
 ### Fixed
