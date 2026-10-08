@@ -134,6 +134,17 @@ test('new reading choices supersede queued navigation and automatic fitting', as
   await settle(page);
   await expect(atlas).toHaveAttribute('data-zoom', '0.85');
 
+  // A direct zoom choice also supersedes a pending node-focus frame even when
+  // neither the active map nor the selected node changes.
+  await atlas.evaluate(element => {
+    history.replaceState(history.state, '', '#atlas-node-context-layers-c-green');
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    element.querySelector<HTMLButtonElement>('[data-action="plus"]')!.click();
+  });
+  await settle(page);
+  await expect(atlas).toHaveAttribute('data-selected-node', 'c-green');
+  expect(Number(await atlas.getAttribute('data-zoom'))).toBeCloseTo(0.85 * 1.22, 5);
+
   await atlas.evaluate(element => {
     history.replaceState(history.state, '', '#atlas-node-context-layers-c-green');
     window.dispatchEvent(new HashChangeEvent('hashchange'));

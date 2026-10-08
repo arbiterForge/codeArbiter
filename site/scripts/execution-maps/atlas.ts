@@ -17,6 +17,12 @@ import brownfield from './atlas-data/brownfield-lifecycle.json';
 import debug from './atlas-data/debug-handoff.json';
 import tribunal from './atlas-data/tribunal-lifecycle.json';
 
+// Original diagram/source links retain REVIEWED_AT. Freshness is separately
+// revalidated against this exact main revision, never whichever HEAD is newest.
+// PR936 changes only the Claude role count (19 -> 20) in the atlas's product
+// inputs. No route, host authority or geometry changes follow from that correction.
+export const REVALIDATED_AT = '81055792c71ba7aaeeaf5280e81ce2929bb25cc1';
+
 function repositoryRoot():string {
   let root=process.cwd();
   while(!existsSync(resolve(root,'core/hosts.json')) || !existsSync(resolve(root,'site/package.json'))) {
@@ -33,8 +39,8 @@ export function checkReviewedSource(root:string,path:string,pin?:string):void {
   if(!lstatSync(absolute).isFile())throw new Error(`Atlas source is not a regular file: ${path}`);
   let expected=pin;
   if(!expected) {
-    try {expected=execFileSync('git',['rev-parse','--verify',`${REVIEWED_AT}:${path}`],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
-    catch{throw new Error(`Atlas needs reviewed Git object ${REVIEWED_AT}:${path}. Do not substitute main.`);}
+    try {expected=execFileSync('git',['rev-parse','--verify',`${REVALIDATED_AT}:${path}`],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
+    catch{throw new Error(`Atlas needs reviewed Git object ${REVALIDATED_AT}:${path}. Do not substitute main.`);}
   }
   if(gitBlob(Buffer.from(readFileSync(absolute,'utf8').replace(/\r\n/g,'\n')))!==expected)throw new Error(`Atlas source changed: ${path}. Review affected routes, then intentionally update the review binding.`);
 }
@@ -66,9 +72,10 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   }
   const lensDir='core/surface/skills/tribunal/references/lenses';
   const names=readdirSync(resolve(root,lensDir)).filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
-  const expected=execFileSync('git',['ls-tree','--name-only',`${REVIEWED_AT}:${lensDir}`],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
+  const expected=execFileSync('git',['ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
+  atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
   return atlas;
 }
 

@@ -91,6 +91,9 @@ class WorkflowAtlas extends HTMLElement {
         return;
       }
       const action = target.closest<HTMLElement>('[data-action]')?.dataset.action;
+      if (['fit-width', 'fit-all', 'read-size', 'plus', 'minus', 'details'].includes(action ?? '')) {
+        this.navigationRevision++;
+      }
       if (action === 'clear') {
         this.choose('');
       }
@@ -168,6 +171,7 @@ class WorkflowAtlas extends HTMLElement {
         return;
       }
       if (['+', '=', '-', '0', 'Escape'].includes(event.key)) {
+        this.navigationRevision++;
         event.preventDefault();
       }
       if (event.key === '+' || event.key === '=' || event.key === '-') {
@@ -183,6 +187,7 @@ class WorkflowAtlas extends HTMLElement {
     }, options);
     this.stage.addEventListener('wheel', event => {
       if (event.ctrlKey || event.metaKey) {
+        this.navigationRevision++;
         event.preventDefault();
         this.fitMode = 'manual';
         this.resize(this.scale * (event.deltaY < 0 ? 1.12 : 1 / 1.12));
@@ -192,6 +197,7 @@ class WorkflowAtlas extends HTMLElement {
       if (event.pointerType !== 'mouse' || event.button !== 0 || !(event.target instanceof Element) || event.target.closest('[data-node],a')) {
         return;
       }
+      this.navigationRevision++;
       this.drag = { x: event.clientX, y: event.clientY, left: this.stage.scrollLeft, top: this.stage.scrollTop, pointer: event.pointerId };
       this.stage.setPointerCapture(event.pointerId);
       this.stage.classList.add('dragging');

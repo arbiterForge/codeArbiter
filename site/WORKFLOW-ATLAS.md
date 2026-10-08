@@ -38,9 +38,21 @@ retains the checked SKILL_ENTRY wrapper resolution added during the earlier repa
 The restored inspector is supplemented with those host forms and exact procedures,
 not replaced with generated command summaries.
 
-`atlas.ts` compares the full logical product-source files with the reviewed Git
-objects. CRLF normalization is allowed; source drift and symlinked paths refuse.
-A changed owner names the affected path. Missing history is not replaced with main.
+`atlas.ts` compares the full logical product-source files with the explicitly
+revalidated Git objects. The original diagram identity and links remain at
+`REVIEWED_AT`; `REVALIDATED_AT` records the later compatibility review without
+rewriting historical diagram provenance. CRLF normalization is allowed; source
+drift and symlinked paths refuse. A changed owner names the affected path. Missing
+history is not replaced with main.
+
+The October 8 revalidation is bound to main
+`81055792c71ba7aaeeaf5280e81ce2929bb25cc1` (PR936). Its only changed atlas product
+input is the Claude role-charter count in `docs/parity.md`, corrected from 19 to
+20. That count is not a route or authority change, so all nine graph files and
+original geometry fingerprints remain unchanged. The loader still compares the
+complete current file with that exact Git object; it does not accept arbitrary
+changes or drop the file from checking. The viewer's scope and exported ledger
+name the revalidation separately from the original source links.
 The lens directory is compared with its reviewed inventory. Source-linked workflow
 explanations are not runtime, released-artifact or installed-host certification.
 Historical site-design references in the source ledger are not product claims and
