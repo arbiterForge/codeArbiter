@@ -68,7 +68,17 @@ test('node inspector, pan, zoom and full editable export retain the original int
   const exported=page.waitForEvent('download');await atlas.locator('[data-action="export"]').click();const download=await exported;
   expect(download.suggestedFilename()).toBe('codearbiter-context-layers.svg');
   const stream=await download.createReadStream();const chunks:Buffer[]=[];for await(const chunk of stream!)chunks.push(Buffer.from(chunk));const svg=Buffer.concat(chunks).toString();
-  expect(svg).not.toContain(' dim');expect(svg).not.toContain(' selected');
+  // Inspect presentation classes, not prose such as "selected rules" in the
+  // original diagram. The negative control proves the selector detects state.
+  const exportedState=await page.evaluate(source=>{
+    const doc=new DOMParser().parseFromString(source,'image/svg+xml');
+    const presentation=()=>doc.querySelectorAll('.dim,.selected').length;
+    const result={parseErrors:doc.querySelectorAll('parsererror').length,root:doc.documentElement.localName,nodes:doc.querySelectorAll('[data-node]').length,presentation:presentation(),detectsState:false};
+    const first=doc.querySelector('[data-node]');
+    if(first){first.classList.add('dim','selected');result.detectsState=presentation()>0;}
+    return result;
+  },svg);
+  expect(exportedState).toEqual({parseErrors:0,root:'svg',nodes:v.nodes.length,presentation:0,detectsState:true});
   for(const n of v.nodes)expect(svg).toContain(`data-node="${n.id}"`);
   for(const e of v.edges)expect(svg).toContain(`points="${e.points.map(p=>p.join(',')).join(' ')}"`);
   await atlas.locator('[data-action="sources"]').click();await expect(atlas.locator('dialog')).toBeVisible();await page.keyboard.press('Escape');await expect(atlas.locator('dialog')).toBeHidden();
