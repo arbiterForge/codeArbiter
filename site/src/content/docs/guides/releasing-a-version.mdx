@@ -59,6 +59,22 @@ does not invent a release-target row in advance.
 With exactly one target, a bare release selects that target. With multiple targets, name one.
 An unknown or ambiguous target stops rather than selecting `ca` or the nearest Git tag.
 
+## Current release-note version grammar
+
+The release-note helpers accept plain final `MAJOR.MINOR.PATCH` versions under the default
+`semver` policy. A declared `numeric-sequence` policy accepts canonical dotted numeric versions
+with the component count set by `initial-version`. Release headings must use `## [VERSION] ...`
+or `## vVERSION ...`. Prerelease and build-metadata headings are refused, never prefix-matched
+as a final version. This is not full SemVer heading support.
+
+At most one `Unreleased` section may precede the released sections. Duplicate target headings,
+malformed version-shaped headings and an `Unreleased` section after a release stop extraction.
+Publication reconstructs notes from the tagged commit's regular-file changelog blob; a dirty
+working copy cannot replace those bytes.
+
+Full prerelease and build-metadata heading support remains deferred follow-up work. Documenting
+the current strict behavior does not satisfy that requirement.
+
 ## Prerequisites
 
 Confirm the current repository root, non-default branch and clean working tree. Inspect the

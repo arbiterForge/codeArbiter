@@ -1,5 +1,5 @@
 ---
-title: Pi
+title: Install for Pi
 description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi npm and pinned-Git channels, supported versions, and version pinning."
 journey:
   level: "Foundation"

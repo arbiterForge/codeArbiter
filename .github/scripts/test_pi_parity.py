@@ -237,6 +237,25 @@ class ParityCatalogCounts(unittest.TestCase):
                 self.assertIsNotNone(match, f"malformed routine count cell for {plugin}")
                 self.assertEqual(expected, int(match.group(1)))
 
+    def test_the_role_charters_row_matches_each_generated_host(self):
+        """Count installed host charters, excluding the index and host omissions."""
+        parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
+        row = next((line for line in parity.splitlines()
+                    if line.startswith("| Role charters ")), None)
+        self.assertIsNotNone(row, "the Role charters row is gone")
+        patterns = (
+            r"^(\d+) current plugin agents",
+            r"current source and [\d.]+ contain (\d+)",
+            r"^(\d+) current generated roles",
+        )
+        for index, (plugin, pattern) in enumerate(zip(self._CATALOGS, patterns), start=1):
+            with self.subTest(plugin=plugin):
+                charters = (REPO / "plugins" / plugin / "agents").glob("*.md")
+                expected = sum(path.name != "INDEX.md" for path in charters)
+                match = re.search(pattern, self._row_cell(row, index).strip())
+                self.assertIsNotNone(match, f"malformed role count cell for {plugin}")
+                self.assertEqual(expected, int(match.group(1)))
+
 
 class PiParityFixtures(unittest.TestCase):
     def test_parity_ledger_classifies_the_new_pi_surfaces_exactly(self):
