@@ -79,16 +79,22 @@ the caller's selected feature or coherent sprint, with unrelated scope explicitl
 
 ## Phase 2 — Shape the approach · gate: BLOCK
 
-Before drilling into details, establish WHICH design the details belong to:
+Before drilling into details, establish WHICH design the details belong to. Work these steps in
+order; selection never precedes the SMARTS pass.
 
-- Propose the genuine candidate approaches — usually two or three — each with its real trade-off stated (`X gives you A but costs B`). Recommend exactly one, with the reasoning that picks it. The user rules on material product decisions during initial feature or sprint planning; within an already-approved sprint, its existing delegated decision rules apply and the choice is logged. A recommendation made before approval does not authorize execution.
-- **Never manufacture alternatives.** When only one sane approach exists, say so and say why — a padded list of straw options is noise wearing the costume of rigor, and it trains the reader to skim the one section that matters.
-- **Check each candidate against accepted ADRs** (the pre-flight index; ADR-0025). A contradicting candidate is surfaced WITH the ADR citation, never silently dropped — and it may not be recommended except paired with a supersession fork via `/adr`. When the contradicting candidate is the only sane approach, that IS the fork: present it (the user rules under `/feature`; under `/sprint` this surfaces at the interactive Phase 1 gate, where the user is present to rule).
-- Apply the isolation lens to the recommended shape while it is still soft: can each part be understood without reading its internals, and can its internals change without breaking its consumers? A design that fails this here fails it again in review, after the code exists.
-- Apply the YAGNI lens: strike anything the Phase 1 problem statement does not demand. A capability the caller never asked for is scope creep with a head start.
+1. **Bound the context.** State the decision, its scope and horizon, and only the context-envelope dimensions in `{{PLUGIN_ROOT}}/includes/smarts/core.md` that could differentiate the approaches. Propose the genuine candidate approaches — usually two or three — each with its real trade-off stated (`X gives you A but costs B`).
+   **Never manufacture alternatives.** When only one sane approach exists, say so and say why — a padded list of straw options is noise wearing the costume of rigor, and it trains the reader to skim the one section that matters.
+   **Check each candidate against accepted ADRs** (the pre-flight index; ADR-0025). A contradicting candidate is surfaced WITH the ADR citation, never silently dropped — and it may not be recommended except paired with a supersession fork via `/adr`. When the contradicting candidate is the only sane approach, that IS the fork: present it (the user rules under `/feature`; under `/sprint` this surfaces at the interactive Phase 1 gate, where the user is present to rule).
+2. **Run the SMARTS pass.** Apply `{{PLUGIN_ROOT}}/includes/smarts/core.md` inline in this conversation: a SMARTS comparison when two or more materially plausible approaches exist, otherwise a one-option fitness scan that states why no alternative was credible. Mark missing evidence `Unknown` with its missing observation and surface a decision-critical Unknown before selecting. The pass dispatches no grader or scout, performs no bulk read of `plans/` or `decisions/` (the pre-flight index is its only read of those records), and loads `{{PLUGIN_ROOT}}/includes/smarts/lenses.md` only when a verdict turns on a consideration the core summaries do not settle. An explicit request for a full SMARTS read changes only the presentation depth — the full option-by-option table — with no new command and no change to decision authority.
+3. **Surface non-SMARTS constraints.** Name the cost, schedule, team-skill, vendor or stakeholder constraints that materially affect the recommendation, alongside the SMARTS result; they supplement it and never become a seventh lens.
+4. **Select under existing authority.** Recommend exactly one approach, with the reasoning that picks it, applying the core's priority order when lenses conflict; a tie without explicit priority evidence stays tied and goes to the user. The user rules on material product decisions during initial feature or sprint planning; within an already-approved sprint, its existing delegated decision rules apply and the choice is logged. A recommendation made before approval does not authorize execution.
+   Apply the isolation lens to the recommended shape while it is still soft: can each part be understood without reading its internals, and can its internals change without breaking its consumers? A design that fails this here fails it again in review, after the code exists.
+   Apply the YAGNI lens: strike anything the Phase 1 problem statement does not demand. A capability the caller never asked for is scope creep with a head start.
+5. **Record the rationale.** Write the decisive lenses, any Unknowns with their missing observations, the non-SMARTS constraints and the selection reason into the running notes; they seed the spec's `SEC-SMARTS` section, or the SMARTS rationale section of a Markdown spec.
 
-Gate: one approach selected under the caller's existing authority and recorded with its trade-off;
-nothing in it exceeds the stated problem. Selection during initial planning is not execution authority.
+Gate: the SMARTS pass ran before selection; one approach selected under the caller's existing
+authority and recorded with its trade-off and rationale; nothing in it exceeds the stated problem.
+Selection during initial planning is not execution authority.
 
 ## Phase 3 — Socratic refinement loop · gate: BLOCK
 

@@ -106,6 +106,7 @@ Gate: the handoff is routed. Exit (a) carries an explicit regression test obliga
 - MUST NOT proceed past Phase 2 with fewer than three distinct hypotheses, or with three rewordings of one suspicion.
 - MUST include at least one boring environmental / configuration / dependency hypothesis in Phase 2.
 - MUST NOT promote INCONCLUSIVE evidence to CONFIRMED or REFUTED without a cited source.
+- MUST NOT apply SMARTS to hypothesis ranking or root-cause confirmation — diagnosis is evidence-led; a remediation strategy choice belongs to `/fix` after root cause.
 - MUST cite the source of every piece of evidence — log path + timestamp, commit SHA, trace ID.
 - MUST exit Phase 4 with exactly one of (a) confirmed bug → `/fix`, (b) ambiguity → `/adr`, or (c) no-action close.
 - MUST NOT route to `/fix` for a bug not yet confirmed by cited evidence — `/fix` is for known bugs.

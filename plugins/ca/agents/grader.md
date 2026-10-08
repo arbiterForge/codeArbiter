@@ -78,7 +78,7 @@ Constraints:
 | Testable | ... | ... | ... |
 | Securable | ... | ... | ... |
 
-(Each cell: starts with verdict word — Strong, Adequate, Weak, or Indifferent — followed by brief justification. No hedging adverbs. Specific evidence required, not vague claims.)
+(Each cell: starts with verdict word — Strong, Adequate, Weak, Indifferent, or Unknown — followed by brief justification. An `Unknown` cell names its `missing_observation` and states whether it is `decision_critical`. No hedging adverbs. Specific evidence required, not vague claims.)
 
 ## Lens dominance for this decision
 
@@ -115,7 +115,8 @@ Before returning, verify:
 | Check | Status |
 |---|---|
 | Every SMARTS cell ≤ 25 words | yes / no — [list violating cells if any] |
-| Every cell starts with verdict word (Strong/Adequate/Weak/Indifferent) | yes / no |
+| Every cell starts with verdict word (Strong/Adequate/Weak/Indifferent/Unknown) | yes / no |
+| Every `Unknown` cell names its missing observation and decision-criticality | yes / no |
 | No hedging adverbs used | yes / no — [list occurrences if any] |
 | Recommendation strength is strong, moderate, or tied (not "weak") | yes / no |
 | No vague claims ("industry standard", "widely adopted") | yes / no |
@@ -125,7 +126,7 @@ If any check fails: fix the violation before returning. A non-conformant analysi
 
 ## Strength of Recommendation Levels
 
-- **strong** — multiple dominant lenses align cleanly on one option; non-SMARTS considerations confirm.
+- **strong** — multiple dominant lenses align cleanly on one option; non-SMARTS considerations confirm; and no option carries a decision-critical `Unknown`.
 - **moderate** — dominant lenses align with caveats, or a single lens dominates.
 - **tied** — the analysis produces no preferred option; user judgment is required.
 
@@ -138,7 +139,7 @@ The `decision-variance` skill uses strength to decide how forcefully to present 
 Non-negotiable:
 
 1. **Length cap:** each SMARTS cell ≤ 25 words.
-2. **Verdict-first:** each cell starts with `Strong`, `Adequate`, `Weak`, or `Indifferent`.
+2. **Verdict-first:** each cell starts with `Strong`, `Adequate`, `Weak`, `Indifferent`, or `Unknown`. An `Unknown` cell names its `missing_observation` and states whether it is `decision_critical`; a lens that matters but lacks evidence is `Unknown`, never `Indifferent` for missing evidence.
 3. **Justification follows:** ≤ 20 words after the verdict.
 4. **No hedging adverbs:** "potentially," "might," "arguably," "perhaps," "generally," "tends to," "could be," "may" are forbidden.
 5. **Evidence specificity:** vague claims do not count. Cite a specific property of the option, a specific project constraint, or a specific failure mode.

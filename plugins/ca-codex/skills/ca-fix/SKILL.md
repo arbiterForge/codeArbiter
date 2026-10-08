@@ -21,6 +21,12 @@ new behavior:
    (not an unrelated error).
 4. **Confirm it's red for the right reason** — the failure message matches the described defect.
 
+**Remediation strategy (conditional).** Only after step 2 has confirmed the root cause, and only when
+materially distinct remediation strategies exist (for example, a local guard versus a contract
+change), run a SMARTS comparison per [includes/smarts/core.md](../../includes/smarts/core.md) inline before any fix
+code. A single obvious fix gets no SMARTS table. SMARTS never ranks hypotheses or confirms the cause;
+diagnosis stays evidence-led in `debug`.
+
 Only then does `tdd` proceed: minimal fix to green, then the remaining `tdd` gates. The implementation
 agent (`backend-author`, `frontend-author`, or `infra-author`) is selected by where the bug lives. If
 the defect cannot be pinned by a failing test, STOP and surface the question.

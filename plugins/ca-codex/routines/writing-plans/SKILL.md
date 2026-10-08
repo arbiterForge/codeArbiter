@@ -85,6 +85,14 @@ Break the work into the smallest honest units. Each **task** is ~2–5 minutes o
 Split anything that won't fit ~5 minutes or touches unrelated paths. Reject the trap of one
 monolithic "implement the feature" task — that defeats the plan.
 
+**Design-drift guard.** Decomposition splits decided work; it never designs. If splitting surfaces a
+material solution choice the approved spec does not decide — two or more materially plausible
+approaches the spec leaves open, or a step that would contradict the spec's recorded SMARTS
+rationale — STOP and never pick, score or SMARTS-evaluate it here. Route the undecided choice back to
+the owning design workflow, `brainstorming` ([routines/brainstorming/SKILL.md](../brainstorming/SKILL.md)), and
+resume planning only once the spec records the decision. A choice the spec already decides, or a
+trivial local implementation detail with no material solution choice, is not drift.
+
 Gate: every task has at least one path AND a verification AND a `maps-to`. A task missing any of the
 three blocks the plan.
 
@@ -174,6 +182,7 @@ artifacts exist before handing off to `subagent-driven-development` ([routines/s
 - MUST NOT write the plan while any acceptance criterion is uncovered or any task covers nothing.
 - MUST NOT guess a verification command — cite `tech-stack.md` or STOP.
 - MUST NOT resolve an ambiguous criterion by guessing — raise a `[CONFIRM-NN]`.
+- MUST NOT score or decide an undecided material solution choice while planning — the Phase 2 design-drift guard routes it back to `brainstorming`.
 - MUST run the `uncovered_intent` backstop and ask the negative-judgment question in Phase 1, and MUST NOT treat Phase 4's bijection proof as a substitute — bijection proves the plan and the ledger agree with each other, never that the ledger is complete (#566).
 - MUST NOT emit `plan.json` in `--farm` mode without writing and confirming each failing test first.
 - MUST NOT set `meta.model` or `meta.apiBaseUrl` in `plan.json` — these belong to the dispatch step.

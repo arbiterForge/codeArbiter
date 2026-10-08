@@ -132,6 +132,27 @@ class TestSmartsStepZero(SurfaceCase):
                        r"(?i)never bulk-read `?plans/`? or `?decisions/`?",
                        "the index-first loading rule is normative (consumer cost bound)")
 
+    def test_step_zero_scope_unchanged_after_core_rewrite(self):
+        # The SMARTS design-quality rewrite changed everything around Step 0 and
+        # nothing inside it: the section is pinned
+        # byte-for-byte on every copy, so a later core edit cannot quietly
+        # rescope ADR-0025 or drop an exemption.
+        import hashlib
+        for rel in SMARTS_COPIES:
+            with self.subTest(copy=rel):
+                match = re.search(r"(?ms)^## Step 0[^\n]*\n.*?(?=^## )", read(rel))
+                self.assertIsNotNone(match, f"{rel}: no Step 0 section")
+                self.assertEqual(hashlib.sha256(match.group(0).encode("utf-8")).hexdigest(),
+                                 "38626d5389992bc066d89dc96ecfbc8ee899764a2901c1236fdbc04227be1d78",
+                                 f"{rel}: Step 0 scope and exemptions must stay unchanged")
+        # writing-plans is outside Step 0's scope: it must not re-run the
+        # recorded-intent check or re-score a choice the spec already decided.
+        plans = read("core/surface/skills/writing-plans/SKILL.md")
+        for pattern in (r"Step 0", r"(?i)recorded[- ]intent", r"intent: (per|silent)", r"ADR-0025",
+                        r"(?i)re-?scor"):
+            with self.subTest(pattern=pattern):
+                self.assertNotRegex(plans, pattern, "writing-plans runs no recorded-intent rescore")
+
     def test_fail_soft_sentence(self):
         self.assert_on(SMARTS_COPIES,
                        r"(?i)intent: silent — no decomposition record",

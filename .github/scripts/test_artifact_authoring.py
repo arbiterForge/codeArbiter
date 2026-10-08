@@ -1200,6 +1200,47 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.assertIn("[INVALID-HTML-SPEC]", result.stdout)
         self.assertEqual(spec.read_bytes(), before)
 
+    def test_smarts_rationale_round_trips_through_existing_records(self) -> None:
+        # The SMARTS design-rationale convention (includes/smarts/core.md) is
+        # written and read through existing mutation and read operations only:
+        # approach + a bound decision + one SEC-SMARTS section, no schema change.
+        created = self.harness.create_spec()
+        blocks = [
+            {"type": "paragraph", "text": "Alternatives: a file-first resolver was considered and rejected.", "refs": []},
+            {"type": "paragraph", "text": "Decisive lenses: Reliable and Testable.", "refs": []},
+            {"type": "list", "items": [
+                "Weak: none material.",
+                "Unknown: cold-start latency; missing observation is a startup measurement; not decision-critical.",
+            ], "refs": []},
+            {"type": "paragraph", "text": "Load-bearing assumption: values are validated before resolution.", "refs": []},
+            {"type": "paragraph", "text": "Non-SMARTS considerations: none material.", "refs": []},
+            {"type": "paragraph", "text": "Priority evidence: the approved spec ranks correctness first.", "refs": []},
+        ]
+        decision = {"id": "DEC-01", "topic": "Resolution order",
+                    "choice": "Environment values take precedence over file values.",
+                    "rationale": "The SMARTS comparison found the file-first order Weak on Reliable.",
+                    "authority": "proposed"}
+        self.harness.mutate("apply", "SPEC-FLOW", changes=[
+            {"op": "record.add", "collection": "decisions", "record": decision},
+            {"op": "record.update", "symbol": "APPROACH-01", "fields": {"binding_decision_refs": ["DEC-01"]}},
+            {"op": "record.add", "collection": "sections",
+             "record": {"id": "SEC-SMARTS", "title": "SMARTS design rationale", "blocks": blocks}},
+        ])
+        ready = self.harness.client.call("validate", {"artifact_id": "SPEC-FLOW", "gate": "ready"},
+                                         permit_invalid=True)
+        self.assertTrue(ready["valid"], ready)
+        # The unchanged installed engine schema accepts the convention at the
+        # ready gate; nothing beyond existing collections is written.
+        after = self.harness.client.call("identity", {"artifact_id": "SPEC-FLOW"})
+        self.assertNotEqual(after["normative_sha256"], created["normative_sha256"])
+        read = lambda symbol: self.harness.client.call(
+            "read", {"artifact_id": "SPEC-FLOW", "symbol": symbol, "mode": "exact"})["record"]
+        section = read("SEC-SMARTS")
+        self.assertEqual(section["title"], "SMARTS design rationale")
+        self.assertEqual(section["blocks"], blocks)
+        self.assertEqual(read("APPROACH-01")["binding_decision_refs"], ["DEC-01"])
+        self.assertEqual(read("DEC-01"), decision)
+
     def test_producers_create_and_read_canonical_html_pair(self) -> None:
         self.harness.create_pair()
         for artifact_id in ("SPEC-FLOW", "PLAN-FLOW"):

@@ -1,5 +1,5 @@
 ---
-import { smartsExample as example, evidenceSourceUrl, validateDecisionEvidence } from '../../scripts/decision-evidence';
+import { smartsExample as example, cellVerdictText, evidenceSourceUrl, validateDecisionEvidence } from '../../scripts/decision-evidence';
 const errors = validateDecisionEvidence();
 if (errors.length) throw new Error(errors.join('; '));
 ---
@@ -13,7 +13,7 @@ if (errors.length) throw new Error(errors.join('; '));
       <dt><span aria-hidden="true">0{index + 1}</span><strong>{lens.name}</strong><p>{lens.question}</p></dt>
       {lens.cells.map((cell, option) => <dd data-smarts-option={option}>
         <p class="ca-smarts-comparison__option">{example.options[option]}</p>
-        <p class="ca-smarts-comparison__verdict">{cell.verdict}.</p><p>{cell.reason}</p>
+        <p class="ca-smarts-comparison__verdict">{cellVerdictText(cell)}</p><p>{cell.reason}</p>
       </dd>)}
     </div>)}
   </dl>

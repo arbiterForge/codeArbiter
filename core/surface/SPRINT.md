@@ -165,6 +165,14 @@ Use the private request shape and adapter in `{{PLUGIN_ROOT}}/includes/artifacts
 or an append-only log is not itself authority. A single evidenced option is allowed; an in-scope tie
 uses the existing priorities rather than another user interview. Do not manufacture alternatives.
 
+Each six-lens cell carries one of the five verdicts in `{{PLUGIN_ROOT}}/includes/smarts/core.md`. An
+`Unknown` cell must carry `missing_observation` (the observation that would settle it) and
+`decision_critical` (true when that observation could change the selection); those two fields appear
+on no other verdict. The engine refuses a selected option that carries a decision-critical `Unknown`,
+and a `strong` strength while any option carries one. An `Unknown` cannot bypass a hard gate or
+manufacture authority: it never stands in for user approval, a prerequisite or security authority,
+and the named Hard gates below stay true stops.
+
 The producer retains all protected plan fields and requires the original user-approved scope. It can
 change only existing task `steps`; paths, tests, criteria, dependencies, prerequisites, rollback and
 checkpoint membership cannot expand. It quiesces affected writers by refusing `IN_PROGRESS` and

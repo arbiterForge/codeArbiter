@@ -111,6 +111,13 @@ traces to — not against whether tests merely pass.
 - Scope is clean: nothing implemented beyond the task; nothing required by it omitted.
 - Out-of-scope work the subagent noticed is recorded with an inline `[NEEDS-TRIAGE]` marker — never
   acted on inside this task.
+- **Design-rationale drift.** When the approved spec records a SMARTS design rationale (`SEC-SMARTS`,
+  or a Markdown spec's `## SMARTS design rationale` section), check the change against it for
+  material invalidation only: a load-bearing assumption the change contradicts, a `Weak` or `Unknown`
+  the rationale chose to avoid that the change newly introduces, or a materially different approach
+  than the one selected. Do not re-run SMARTS or grade the implementation. A mismatch returns the
+  task to Phase 2 with the contradicted rationale cited, or routes the design question back to
+  `brainstorming`; never pick a replacement approach inside review.
 
 For HTML, capture the actual spec-review event against the exact task and
 artifact identities. After the governed verification runner has produced its

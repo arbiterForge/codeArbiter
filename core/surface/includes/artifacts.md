@@ -72,6 +72,11 @@ ADR compatibility review, open-question handling, harvest and user/SMARTS gates.
 One criterion may need multiple tests. Never invent a condition, oracle, source,
 command, result, approval or reviewer to satisfy a required field.
 
+A spec's SMARTS design rationale is stored in its existing `approach` record, bound
+`decisions` records and one `SEC-SMARTS` section, as defined once in
+`{{PLUGIN_ROOT}}/includes/smarts/core.md` (Design rationale record); a legacy Markdown spec
+uses its one `## SMARTS design rationale` section instead.
+
 Before requesting review or approval of a plan, use the private
 `_approvallib._preflight_plan_verification(client, identity)` with its current engine identity.
 It checks all task verification definitions through complete bounded engine reads

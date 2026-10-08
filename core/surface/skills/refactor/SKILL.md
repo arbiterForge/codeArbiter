@@ -79,6 +79,12 @@ Gate: either "No new seams", or failing seam tests with all pre-existing tests s
 
 ## Phase 4 — Implementation · gate: BLOCK
 
+**Strategy choice (conditional).** Only when materially distinct restructuring strategies exist (for
+example, extract-and-delegate versus move-and-rename), and only after the Phase 1 surface table and
+the Phase 2 parity proof are settled, run a SMARTS comparison per
+`{{PLUGIN_ROOT}}/includes/smarts/core.md` inline to choose between them. The choice never widens the
+surface table or relaxes a parity or coverage gate. One evident strategy gets no SMARTS table.
+
 Apply the restructure with zero behavior change, to the conventions in `coding-standards.md`. Confine every edit to the surface table. Acceptable edits: rename symbols (with consumer updates); extract or inline functions and methods; move symbols between files; replace an internal implementation with an equivalent one; collapse or split modules where the public interface is preserved.
 
 Unacceptable inside a refactor: adding a behavior, branch, error path, or side effect; changing the value any public method returns for any pre-existing input; adding a public method beyond a Phase 3 seam; changing observable order of operations (event emission, logging, IO). Classify the resulting staged diff against `commit-gate` classification criteria — a diff that classifies as `feat` is not a refactor; halt and route to `tdd`.

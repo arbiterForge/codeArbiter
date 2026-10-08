@@ -276,6 +276,12 @@ func resetMethodDependents(next *model.Document, task string) error {
 	}
 	return nil
 }
+
+// smartsProducerProfile is the vocabulary smarts-apply validates new
+// decisions under and stamps on their observations; historical 0.1.0
+// records keep validating under their own recorded profile.
+const smartsProducerProfile = observation.SMARTSProfileV2
+
 func (e *Engine) smartsApply(r object, entry repository.Entry) (any, error) {
 	d := entry.Doc
 	if d.Kind() != "plan" {
@@ -304,7 +310,7 @@ func (e *Engine) smartsApply(r object, entry repository.Entry) (any, error) {
 		return nil, fault.New("DELEGATION_REQUIRED", "the original combined spec approval is no longer current")
 	}
 	decision := model.M(r["decision"])
-	if err = observation.ValidateDecision(decision); err != nil {
+	if err = observation.ValidateDecisionV2(decision); err != nil {
 		return nil, err
 	}
 	id := model.S(decision["task_id"])
@@ -318,7 +324,7 @@ func (e *Engine) smartsApply(r object, entry repository.Entry) (any, error) {
 		return nil, err
 	}
 	record := object{"pair": pair, "grant_receipt": grant.Path, "decision": decision, "before_normative": d.Norm(), "after_normative": next.Norm()}
-	if err = observation.ValidateSMARTSRecord(record); err != nil {
+	if err = observation.ValidateSMARTSRecordFor(smartsProducerProfile, record); err != nil {
 		return nil, err
 	}
 	if d.NormHash() == next.NormHash() {
@@ -343,7 +349,7 @@ func (e *Engine) smartsApply(r object, entry repository.Entry) (any, error) {
 	result := object{"grant_receipt": grant.Path, "decision_sha256": dh, "scope_sha256": pair["scope_sha256"]}
 	rhash, _ := canonical.Hash(result)
 	phash, _ := canonical.Hash(payload)
-	obs := object{"format": "codearbiter.observation/0.2.0", "kind": "approval", "subject": subject, "context_ref": cr["context_ref"], "context_sha256": cr["context_sha256"], "payload_sha256": phash, "producer_profile": observation.SMARTSProfile, "producer_run_id": r["operation_id"], "producer_result": result, "producer_result_sha256": rhash}
+	obs := object{"format": "codearbiter.observation/0.2.0", "kind": "approval", "subject": subject, "context_ref": cr["context_ref"], "context_sha256": cr["context_sha256"], "payload_sha256": phash, "producer_profile": smartsProducerProfile, "producer_run_id": r["operation_id"], "producer_result": result, "producer_result_sha256": rhash}
 	ob, err := canonical.Marshal(obs)
 	if err != nil {
 		return nil, err

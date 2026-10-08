@@ -2325,9 +2325,14 @@ class ReconcileOwnershipTest(unittest.TestCase):
         # reconstructing those two clauses keeps the rest of its exact contract.
         old_filter, new_filter = 'label. `concur` and `both-silent` cases produce no entry — they live in the evidence index only.', 'label. `concur` and `both-silent` cases without an unresolved authority flag stay\nin the evidence index. Every `same-level-conflict` still produces an unresolved\nreport item, including when the artifact/scaffold comparison is `concur`. Cite\nboth governing sources and their disagreement; do not invent an artifact/scaffold\nvariance, resolution or scoring inputs where that comparison actually agrees.'
         old_gate, new_gate = 'recommendation. No `concur`/`both-silent` noise in the report.', 'recommendation. Every `same-level-conflict` remains visible with both source\ncitations, independently of comparison status. Only unflagged `concur`/`both-silent`\nitems are omitted from the report; unresolved authority conflicts are not noise.'
+        # The SMARTS five-verdict vocabulary (Unknown with its missing-observation
+        # rule) is the second approved delta, reconstructed the same way.
+        old_vocab, new_vocab = 'verdict-first cells (Strong /\nAdequate / Weak / Indifferent), the length cap, no hedging adverbs, evidence specificity. The\nrecommendation carries one strength label — strong / moderate / tied.', 'verdict-first cells (Strong /\nAdequate / Weak / Indifferent / Unknown), the length cap, no hedging adverbs, evidence specificity.\nAn `Unknown` cell names its `missing_observation` and states whether it is `decision_critical`; a\nlens that matters but lacks evidence is `Unknown`, never `Indifferent` for missing evidence. The\nrecommendation carries one strength label — strong / moderate / tied — and is never `strong` while\nany option carries a decision-critical `Unknown`.'
         self.assertEqual(scoring.count(new_filter), 1)
         self.assertEqual(scoring.count(new_gate), 1)
-        legacy = scoring.replace(new_filter, old_filter).replace(new_gate, old_gate)
+        self.assertEqual(scoring.count(new_vocab), 1)
+        legacy = (scoring.replace(new_filter, old_filter).replace(new_gate, old_gate)
+                  .replace(new_vocab, old_vocab))
         self.assertEqual(hashlib.sha256(legacy.encode()).hexdigest(),
                          'd2129e34ce0bd412801d93c6372b5ca09617c90499940028fd9bcb75251d4c37')
         self.assertIn('{{PLUGIN_ROOT}}/includes/smarts/core.md', card)

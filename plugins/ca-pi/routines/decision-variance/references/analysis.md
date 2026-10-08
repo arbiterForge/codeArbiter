@@ -106,8 +106,11 @@ both governing sources and their disagreement; do not invent an artifact/scaffol
 variance, resolution or scoring inputs where that comparison actually agrees.
 
 The SMARTS table follows `<plugin-root>/includes/smarts/core.md` exactly: six lenses, verdict-first cells (Strong /
-Adequate / Weak / Indifferent), the length cap, no hedging adverbs, evidence specificity. The
-recommendation carries one strength label — strong / moderate / tied.
+Adequate / Weak / Indifferent / Unknown), the length cap, no hedging adverbs, evidence specificity.
+An `Unknown` cell names its `missing_observation` and states whether it is `decision_critical`; a
+lens that matters but lacks evidence is `Unknown`, never `Indifferent` for missing evidence. The
+recommendation carries one strength label — strong / moderate / tied — and is never `strong` while
+any option carries a decision-critical `Unknown`.
 
 **Precedent row.** Before writing the tables, scan the existing decision log once: tally which
 lenses prior resolutions turned on (which lens was decisive, which way ties broke) and note

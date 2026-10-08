@@ -160,7 +160,7 @@ func RequestSchema(op string) (object, error) {
 	case "smarts-apply":
 		cas()
 		add("grant_receipt", text(), true)
-		add("decision", observation.DecisionSchema(), true)
+		add("decision", observation.DecisionSchemaV2(), true)
 	case "approve":
 		cas()
 		add("receipt", text(), true)

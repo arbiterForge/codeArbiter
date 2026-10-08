@@ -71,6 +71,13 @@ judged against `$ARGUMENTS` and a quick look at the code, never assumed:
 - no new dependency, endpoint, command, or configuration surface;
 - the behavior change is expressible as 1–3 concrete, individually testable acceptance criteria.
 
+**Small-lane SMARTS.** Only when the change involves a material solution choice — two or more
+materially plausible ways to build it — run a SMARTS scan per `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md`,
+inline with no grader or scout, and state its one-line result with the mini-spec. Otherwise state
+`SMARTS: no material solution choice` and continue; that path adds no SMARTS table and no extra
+artifact. If the scan shows that the better approach would violate any small-lane criterion above,
+route to the **full lane**.
+
 **Small lane:** state the mini-spec inline (the 1–3 criteria) and STOP for the user's one-reply
 confirmation. On confirmation, append one line to `${CLAUDE_PROJECT_DIR}/.codearbiter/triage.log`
 (append-only, `>>`):

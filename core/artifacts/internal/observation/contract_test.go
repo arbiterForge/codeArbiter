@@ -402,3 +402,132 @@ func TestClaudeReviewProfile(t *testing.T) {
 		})
 	}
 }
+
+// smartsLink builds an internally consistent SMARTS approval event, its
+// engine context and the host observation for one recorded decision under
+// the given producer profile, so ValidateLink exercises the full contract:
+// profile admission, routing and the profile's own decision validator.
+func smartsLink(t *testing.T, profile string, decision map[string]any) (event, observed, context map[string]any, ref, contextHash string) {
+	t.Helper()
+	steps := model.A(model.M(model.A(decision["options"])[model.I(decision["selected"])])["steps"])
+	before := map[string]any{"tasks": []any{map[string]any{"id": "T-001", "title": "Method task", "steps": []any{"Original step."}}}}
+	after := map[string]any{"tasks": []any{map[string]any{"id": "T-001", "title": "Method task", "steps": steps}}}
+	scope, err := ProtectedPlanHash(before)
+	if err != nil {
+		t.Fatal(err)
+	}
+	identity := func(id, kind string) map[string]any {
+		return map[string]any{"artifact_id": id, "kind": kind, "revision": int64(1), "model_sha256": testDigest(id + "-model"), "normative_sha256": testDigest(id + "-norm")}
+	}
+	pair := map[string]any{"format": "codearbiter.sprint-pair/0.1.0", "spec": identity("SPEC-EXAMPLE", "spec"), "plan": identity("PLAN-EXAMPLE", "plan"), "approved_plan_normative_sha256": testDigest("approved"), "scope_sha256": scope, "delegate_methods": true}
+	record := map[string]any{"pair": pair, "grant_receipt": ".codearbiter/.artifacts/receipts/grant.json", "decision": decision, "before_normative": before, "after_normative": after}
+	payload := map[string]any{"smarts": record}
+	decisionBytes, _ := canonical.Marshal(decision)
+	afterHash, _ := canonical.Hash(map[string]any{"format_version": model.FormatVersion, "kind": "plan", "schema_version": model.SchemaVersion, "artifact_id": "PLAN-EXAMPLE", "normative": after})
+	subj := map[string]any{"artifact_id": "PLAN-EXAMPLE", "record_id": "PLAN-EXAMPLE", "normative_sha256": afterHash}
+	runID := "smarts-apply-1"
+	event = map[string]any{"kind": "approval", "authority_kind": "smarts_workflow", "origin": runID, "subject": subj, "payload": payload, "source_text": string(decisionBytes)}
+	payloadHash, _ := canonical.Hash(payload)
+	context = map[string]any{"activity": "approval", "subject": subj, "record": payload, "record_sha256": payloadHash, "input_sha256": afterHash, "prompt_sha256": canonical.BytesHash(decisionBytes)}
+	contextBytes, _ := canonical.Marshal(context)
+	contextHash = canonical.BytesHash(contextBytes)
+	decisionHash, _ := canonical.Hash(decision)
+	result := map[string]any{"grant_receipt": record["grant_receipt"], "decision_sha256": decisionHash, "scope_sha256": scope}
+	resultHash, _ := canonical.Hash(result)
+	ref = ContextRef(contextHash)
+	observed = map[string]any{"format": "codearbiter.observation/0.2.0", "kind": "approval", "subject": subj, "context_ref": ref, "context_sha256": contextHash, "payload_sha256": payloadHash, "producer_profile": profile, "producer_run_id": runID, "producer_result": result, "producer_result_sha256": resultHash}
+	return event, observed, context, ref, contextHash
+}
+
+// legacyDecision is a historical four-state smarts-plan-method/0.1.0
+// decision whose selected option marks Scalable Indifferent while the other
+// option marks it Weak: valid under 0.1.0, rejected by the 0.2.0 uniformity
+// rule.
+func legacyDecision() map[string]any {
+	lenses, other := map[string]any{}, map[string]any{}
+	for _, name := range Lenses {
+		lenses[name] = map[string]any{"verdict": "Adequate", "reason": "Existing bounded task contracts remain unchanged."}
+		other[name] = map[string]any{"verdict": "Adequate", "reason": "Existing bounded task contracts remain unchanged."}
+	}
+	lenses["Scalable"] = map[string]any{"verdict": "Indifferent", "reason": "Load is fixed at this scope."}
+	other["Scalable"] = map[string]any{"verdict": "Weak", "reason": "Rebuilds the index on each call."}
+	return map[string]any{"task_id": "T-001", "options": []any{
+		map[string]any{"label": "Explicit precedence", "steps": []any{"Write the retained negative test.", "Use an explicit precedence table."}, "lenses": lenses},
+		map[string]any{"label": "Implicit precedence", "steps": []any{"Derive precedence at call time."}, "lenses": other},
+	}, "selected": int64(0), "strength": "moderate", "rationale": "The recorded spec determines precedence; this method preserves its constraints."}
+}
+
+// unknownDecision is a five-state decision whose only option carries a
+// non-critical Unknown: valid only under smarts-plan-method/0.2.0.
+func unknownDecision() map[string]any {
+	return decisionV2([]any{optionV2("Bounded cache", baselineLensesV2(map[string]map[string]any{
+		"Available": unknownCellV2("Failover behavior is not yet measured.", "Cache behavior during a node restart.", false),
+	}))}, 0, "moderate")
+}
+
+func smartsRecordOf(event map[string]any) map[string]any {
+	return model.M(model.M(event["payload"])["smarts"])
+}
+
+func validateSMARTSLink(t *testing.T, profile string, decision map[string]any) error {
+	t.Helper()
+	event, observed, context, ref, contextHash := smartsLink(t, profile, decision)
+	if es := schema.ValidateWith(Schema(), observed); len(es) > 0 {
+		return &es[0]
+	}
+	return ValidateLink(event, observed, context, ref, contextHash)
+}
+
+func TestSMARTSProfileLegacyAccepted(t *testing.T) {
+	t.Run("historical 0.1.0 record validates under the four-state schema", func(t *testing.T) {
+		if err := validateSMARTSLink(t, LegacySMARTSProfile, legacyDecision()); err != nil {
+			t.Fatalf("0.1.0 record rejected: %v", err)
+		}
+		event, _, _, _, _ := smartsLink(t, LegacySMARTSProfile, legacyDecision())
+		if err := ValidateSMARTSRecord(smartsRecordOf(event)); err != nil {
+			t.Fatalf("producer entry point rejected a 0.1.0 record: %v", err)
+		}
+	})
+	t.Run("0.2.0 record carrying Unknown validates under the five-state schema", func(t *testing.T) {
+		if err := validateSMARTSLink(t, SMARTSProfileV2, unknownDecision()); err != nil {
+			t.Fatalf("0.2.0 record rejected: %v", err)
+		}
+	})
+	t.Run("0.2.0 record is judged by the 0.2.0 rules", func(t *testing.T) {
+		// legacyDecision passes under 0.1.0 (above); recorded under 0.2.0 its
+		// non-uniform Indifferent must be rejected.
+		if fault.Code(validateSMARTSLink(t, SMARTSProfileV2, legacyDecision())) != "OBSERVATION_UNVERIFIED" {
+			t.Fatal("0.2.0 record escaped the 0.2.0 validator")
+		}
+		event, _, _, _, _ := smartsLink(t, SMARTSProfileV2, legacyDecision())
+		assertInvalidSmarts(t, ValidateSMARTSRecordFor(SMARTSProfileV2, smartsRecordOf(event)), "indifferent")
+	})
+	t.Run("unrecognized profile is rejected", func(t *testing.T) {
+		const profile = "smarts-plan-method/0.3.0"
+		event, observed, context, ref, contextHash := smartsLink(t, profile, legacyDecision())
+		if fault.Code(ValidateLink(event, observed, context, ref, contextHash)) != "OBSERVATION_UNVERIFIED" {
+			t.Fatal("contract admitted an unrecognized SMARTS profile")
+		}
+		if len(schema.ValidateWith(Schema(), observed)) == 0 {
+			t.Fatal("observation schema admitted an unrecognized SMARTS profile")
+		}
+		assertInvalidSmarts(t, ValidateSMARTSRecordFor(profile, smartsRecordOf(event)), "unrecognized")
+	})
+}
+
+func TestSMARTSProfileLegacyRejectsUnknown(t *testing.T) {
+	t.Run("0.1.0 record carrying Unknown fails the contract", func(t *testing.T) {
+		if fault.Code(validateSMARTSLink(t, LegacySMARTSProfile, unknownDecision())) != "OBSERVATION_UNVERIFIED" {
+			t.Fatal("0.1.0 record carrying Unknown was accepted")
+		}
+	})
+	t.Run("0.1.0 record carrying Unknown fails the four-state schema", func(t *testing.T) {
+		event, _, _, _, _ := smartsLink(t, LegacySMARTSProfile, unknownDecision())
+		record := smartsRecordOf(event)
+		for name, err := range map[string]error{"routed": ValidateSMARTSRecordFor(LegacySMARTSProfile, record), "producer": ValidateSMARTSRecord(record)} {
+			if fault.Code(err) != "INVALID_MODEL" {
+				t.Fatalf("%s: expected a schema rejection, got %v", name, err)
+			}
+		}
+	})
+}

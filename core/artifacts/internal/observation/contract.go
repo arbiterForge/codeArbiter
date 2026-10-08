@@ -174,7 +174,7 @@ func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
 		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, LegacySMARTSProfile, SMARTSProfileV2)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
@@ -267,7 +267,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
+	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || IsSMARTSProfile(profile))) {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -283,7 +283,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 			if !validatePairPrompt(observed, event, context) {
 				return fail()
 			}
-		} else if profile == SMARTSProfile {
+		} else if IsSMARTSProfile(profile) {
 			if !validateSMARTS(observed, event, context) {
 				return fail()
 			}

@@ -292,6 +292,19 @@ jobs:
               - 'plugins/ca-codex/routines/**'
               - 'plugins/ca-pi/skills/**'
               - 'plugins/ca-pi/routines/**'
+              # test_smarts_integration_surface.py pins the generated SMARTS
+              # projections outside skills/ and routines/ as well; a
+              # regeneration landing without its core/ change must reach it.
+              - 'plugins/ca/includes/smarts/**'
+              - 'plugins/ca-codex/includes/smarts/**'
+              - 'plugins/ca-pi/includes/smarts/**'
+              - 'plugins/ca/agents/**'
+              - 'plugins/ca-codex/agents/**'
+              - 'plugins/ca-pi/agents/**'
+              - 'plugins/ca/commands/**'
+              - 'plugins/ca/SPRINT.md'
+              - 'plugins/ca-codex/SPRINT.md'
+              - 'plugins/ca-pi/SPRINT.md'
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
@@ -402,6 +415,7 @@ jobs:
               - '.github/scripts/test_artifact_reconciliation_adapter.py'
               - '.github/scripts/test_replylib.py'
               - '.github/scripts/test_artifact_authoring.py'
+              - '.github/scripts/test_smarts_engine_contract.py'
               - '.github/scripts/test_artifact_installed_host.py'
               - '.github/scripts/test_artifact_consumers.py'
               - '.github/scripts/test_artifact_conformance.py'
@@ -553,6 +567,12 @@ jobs:
       - name: Verify artifact consumer inventory closure
         if: matrix.os == 'ubuntu-24.04'
         run: python .github/scripts/test_artifact_consumers.py
+      - name: Verify SMARTS engine contract by exact test name
+        # The suite requires a pass event for each named Go test and fails
+        # closed on a host without WSL, so it runs on the Linux cells only;
+        # the other cells already run the full module above.
+        if: startsWith(matrix.os, 'ubuntu-')
+        run: python .github/scripts/test_smarts_engine_contract.py
       - name: Test Python-to-binary bridge
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
@@ -2162,6 +2182,14 @@ jobs:
         # brainstorming's four touches - on every projection that carries
         # each surface (ca-codex ships no agents/, an explicit exemption).
         run: python .github/scripts/test_recorded_intent_surface.py
+      - name: Run SMARTS design-quality integration contract
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # SMARTS is a prose contract across the canonical core and every
+        # consuming workflow. This pins step order and required text (the
+        # five-verdict vocabulary, the conditional triggers, the no-SMARTS
+        # diagnosis and planning boundaries) and parity on the generated
+        # Claude Code, Codex and Pi projections.
+        run: python .github/scripts/test_smarts_integration_surface.py
       - name: Run INDEX/routing-surface parity gate (#592)
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Issue #592. The skills/agents INDEX.md one-liners and

@@ -17,8 +17,15 @@ export type EvidenceSource = keyof typeof evidenceSources;
 export const evidenceSourceUrl = (key: EvidenceSource) =>
   `https://github.com/arbiterForge/codeArbiter/blob/${evidenceSourceRevision}/${evidenceSources[key].path}`;
 
-export type CellVerdict = 'Strong' | 'Adequate' | 'Weak' | 'Indifferent';
-export interface LensCell { verdict: CellVerdict; reason: string }
+export const cellVerdicts = ['Strong', 'Adequate', 'Weak', 'Indifferent', 'Unknown'] as const;
+export type CellVerdict = typeof cellVerdicts[number];
+/** An Unknown cell names its missing observation and whether it could change the selection. */
+export type LensCell =
+  | { verdict: Exclude<CellVerdict, 'Unknown'>; reason: string }
+  | { verdict: Extract<CellVerdict, 'Unknown'>; reason: string; missingObservation: string; decisionCritical: boolean };
+export const cellVerdictText = (cell: LensCell) => cell.verdict === 'Unknown'
+  ? `Unknown — missing: ${cell.missingObservation} (${cell.decisionCritical ? 'decision-critical' : 'not decision-critical'}).`
+  : `${cell.verdict}.`;
 /** Hypothetical project constraints, not a benchmark or a verdict about a real dependency. */
 export const smartsExample = {
   title: 'Where should a saved-search export run?',
