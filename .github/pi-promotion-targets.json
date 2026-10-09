@@ -137,6 +137,13 @@
       "after": "supported Pi {candidate} public extension"
     },
     {
+      "id": "pi-support-supported-version",
+      "path": ".codearbiter/specs/pi-support.md",
+      "class": "current-doc",
+      "before": "- Supported Pi: exact `{last_verified}`",
+      "after": "- Supported Pi: exact `{candidate}`"
+    },
+    {
       "id": "pi-support-live-verification",
       "path": ".codearbiter/specs/pi-support.md",
       "class": "current-doc",
