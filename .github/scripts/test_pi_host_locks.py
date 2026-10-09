@@ -43,6 +43,153 @@ SUPPORTED_VERSION = load_helper().SUPPORTED[0]
 
 
 class PiHostLocksTest(unittest.TestCase):
+    @staticmethod
+    def _source_metadata_fixture():
+        # Unsigned structural test data, never a signature-verification receipt.
+        version, commit = "1.1.0", "a" * 40
+        digest = bytes(range(64))
+        metadata = {
+            "version": version, "repository.url": "https://github.com/earendil-works/pi",
+            "dist.tarball": "https://registry.npmjs.org/pi.tgz",
+            "dist.integrity": "sha512-" + base64.b64encode(digest).decode("ascii"),
+            "dependencies": {},
+        }
+        statement = {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [{"name": f"pkg:npm/%40earendil-works/pi-coding-agent@{version}",
+                         "digest": {"sha512": digest.hex()}}],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {"buildDefinition": {
+                "buildType": "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1",
+                "externalParameters": {"workflow": {"repository": metadata["repository.url"],
+                                                     "ref": f"refs/tags/v{version}"}},
+                "resolvedDependencies": [{"uri": f"git+{metadata['repository.url']}@refs/tags/v{version}",
+                                          "digest": {"gitCommit": commit}}],
+            }},
+        }
+        return metadata, statement
+
+    def _capture_source_metadata(self, metadata, statement, *, change_document=None, transport=None):
+        helper = load_helper()
+        version = metadata["version"]
+        document = {"attestations": [{
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "bundle": {"dsseEnvelope": {"payloadType": "application/vnd.in-toto+json",
+                "payload": base64.b64encode(json.dumps(statement).encode()).decode("ascii")}},
+        }]}
+        if change_document:
+            change_document(document)
+        body = io.BytesIO(json.dumps(document).encode())
+        clock = [0]
+        response = mock.Mock(status=302 if transport == "redirect" else 200)
+        response.getheader.return_value = str(helper.MAX_METADATA_OUTPUT_BYTES + 1) if transport == "header-limit" else None
+        def read(size):
+            if transport == "deadline":
+                clock[0] = helper.MAX_METADATA_WALK_SECONDS + 1
+            return body.read(size)
+        response.read1 = read
+        connection = mock.Mock()
+        connection.getresponse.return_value = response
+        manifest = {"name": PACKAGE, "version": version, "dependencies": {}}
+        source_lock = {"name": PACKAGE + "-install", "version": version, "lockfileVersion": 3, "packages": {
+            "": {"name": PACKAGE + "-install", "version": version, "dependencies": {PACKAGE: version}},
+            f"node_modules/{PACKAGE}": {"version": version, "resolved": metadata["dist.tarball"]},
+        }}
+        with tempfile.TemporaryDirectory(prefix="ca-pi-source-metadata-") as raw, \
+             mock.patch.object(helper, "_run_registry_metadata", return_value=metadata), \
+             mock.patch.object(helper, "_fetch_source_install_lock", return_value=source_lock) as source, \
+             mock.patch.object(helper, "_download_registry_tarball", return_value={"manifest": manifest, "shrinkwrap": None}) as download, \
+             mock.patch.object(helper.http.client, "HTTPSConnection", return_value=connection) as https, \
+             mock.patch.object(helper.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(helper, "MAX_METADATA_OUTPUT_BYTES", 16 if transport == "body-limit" else helper.MAX_METADATA_OUTPUT_BYTES), \
+             mock.patch.object(helper.subprocess, "run", side_effect=AssertionError("candidate execution is forbidden")):
+            destination = Path(raw) / "candidate"
+            try:
+                helper.capture_candidate(version, destination)
+            except ValueError:
+                download.assert_not_called()
+                source.assert_not_called()
+                self.assertFalse((destination / "review.json").exists())
+                raise
+            receipt = json.loads((destination / "review.json").read_text())
+            self.assertEqual(set(receipt), helper.CANDIDATE_FIELDS)
+            self.assertEqual(receipt["result"], "PENDING_REVIEW")
+            self.assertEqual(receipt["source_commit"], "a" * 40)
+            self.assertEqual(source.call_args.args[0], "a" * 40)
+            with self.assertRaisesRegex(ValueError, "pending"):
+                helper._validate_directory(destination, version, require_reviewed=True)
+            if metadata.get("gitHead") is not None:
+                https.assert_not_called()
+            else:
+                self.assertEqual(https.call_args.args[0], "registry.npmjs.org")
+                self.assertEqual(connection.request.call_args.args[:2], (
+                    "GET", "/-/npm/v1/attestations/@earendil-works%2Fpi-coding-agent@1.1.0"))
+                connection.close.assert_called_once()
+
+    def test_capture_missing_git_head_uses_exact_pending_provenance_metadata(self):
+        for present in (False, True):
+            with self.subTest(null_git_head=present):
+                metadata, statement = self._source_metadata_fixture()
+                if present:
+                    metadata["gitHead"] = None
+                self._capture_source_metadata(metadata, statement)
+        metadata, statement = self._source_metadata_fixture()
+        metadata["gitHead"] = "a" * 40
+        self._capture_source_metadata(metadata, statement)
+        for invalid in ("", "main", "b" * 39, 1, [], False):
+            with self.subTest(malformed_present_git_head=invalid):
+                metadata["gitHead"] = invalid
+                with self.assertRaisesRegex(ValueError, "source"):
+                    self._capture_source_metadata(metadata, statement)
+
+    def test_capture_provenance_metadata_rejects_mismatched_or_ambiguous_sources(self):
+        self._capture_source_metadata(*self._source_metadata_fixture())
+        mutations = (
+            ("statement-type", lambda s: s.__setitem__("_type", "unknown")),
+            ("subject-package", lambda s: s["subject"][0].__setitem__("name", "pkg:npm/other@1.1.0")),
+            ("subject-version", lambda s: s["subject"][0].__setitem__("name", "pkg:npm/%40earendil-works/pi-coding-agent@1.1.1")),
+            ("subject-digest", lambda s: s["subject"][0]["digest"].__setitem__("sha512", "0" * 128)),
+            ("multiple-subjects", lambda s: s["subject"].append(s["subject"][0])),
+            ("predicate", lambda s: s.__setitem__("predicateType", "unknown")),
+            ("build-type", lambda s: s["predicate"]["buildDefinition"].__setitem__("buildType", "unknown")),
+            ("repository", lambda s: s["predicate"]["buildDefinition"]["externalParameters"]["workflow"].__setitem__("repository", "https://github.com/other/pi")),
+            ("tag", lambda s: s["predicate"]["buildDefinition"]["externalParameters"]["workflow"].__setitem__("ref", "refs/heads/main")),
+            ("source-uri", lambda s: s["predicate"]["buildDefinition"]["resolvedDependencies"][0].__setitem__("uri", "git+https://github.com/other/pi@refs/tags/v1.1.0")),
+            ("source-commit", lambda s: s["predicate"]["buildDefinition"]["resolvedDependencies"][0]["digest"].__setitem__("gitCommit", "main")),
+            ("multiple-sources", lambda s: s["predicate"]["buildDefinition"]["resolvedDependencies"].append(s["predicate"]["buildDefinition"]["resolvedDependencies"][0])),
+            ("missing-source", lambda s: s["predicate"]["buildDefinition"].pop("resolvedDependencies")),
+            ("wrong-shape", lambda s: s.__setitem__("predicate", [])),
+        )
+        for name, mutate in mutations:
+            with self.subTest(binding=name):
+                metadata, statement = self._source_metadata_fixture()
+                mutate(statement)
+                with self.assertRaisesRegex(ValueError, "metadata"):
+                    self._capture_source_metadata(metadata, statement)
+        for field, value in (("dist.integrity", "sha512-invalid"), ("dist.integrity", "sha512-YQ=="),
+                             ("repository.url", "https://github.com/other/pi")):
+            with self.subTest(field=field, value=value):
+                metadata, statement = self._source_metadata_fixture()
+                metadata[field] = value
+                with self.assertRaisesRegex(ValueError, "metadata"):
+                    self._capture_source_metadata(metadata, statement)
+        for name, mutate in (
+            ("no-slsa", lambda d: d["attestations"][0].__setitem__("predicateType", "other")),
+            ("ambiguous-slsa", lambda d: d["attestations"].append(d["attestations"][0])),
+            ("invalid-base64", lambda d: d["attestations"][0]["bundle"]["dsseEnvelope"].__setitem__("payload", "%%%")),
+            ("payload-type", lambda d: d["attestations"][0]["bundle"]["dsseEnvelope"].__setitem__("payloadType", "text/plain")),
+            ("attestations-shape", lambda d: d.__setitem__("attestations", {})),
+            ("attestations-limit", lambda d: d.__setitem__("attestations", d["attestations"] * 9)),
+        ):
+            with self.subTest(document=name), self.assertRaisesRegex(ValueError, "metadata"):
+                self._capture_source_metadata(*self._source_metadata_fixture(), change_document=mutate)
+
+    def test_capture_provenance_metadata_fetch_preserves_registry_bounds(self):
+        self._capture_source_metadata(*self._source_metadata_fixture())
+        for case in ("redirect", "header-limit", "body-limit", "deadline"):
+            with self.subTest(transport=case), self.assertRaisesRegex(ValueError, "HTTP|limit|budget"):
+                self._capture_source_metadata(*self._source_metadata_fixture(), transport=case)
+
     def test_source_install_lock_binds_tarball_and_rejects_mutations(self):
         helper = load_helper()
         metadata = {"dist.tarball": "https://registry.npmjs.org/pi.tgz", "dist.integrity": "sha512-root"}
