@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.3] - 2026-10-09
+
+### Fixed
+
+- Keep managed Git hooks working with a restricted PATH while preserving
+  trusted executable identities, cross-host path resolution and stale-registration checks.
+
 ## [0.16.2] - 2026-10-08
 
 ### Fixed
