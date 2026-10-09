@@ -59,7 +59,7 @@ class PiInstallRunbookTest(unittest.TestCase):
         self.assertIn("pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v", text)
         self.assertIn("pi install npm:@arbiterforge/ca-pi", text)
         self.assertNotIn("Pi 0.80.5", text)
-        self.assertIn("Pi 1.0.2", text)
+        self.assertIn("Pi 1.1.0", text)
         self.assertNotIn("git-only", text.lower())
         self.assertNotIn("no npm release", text.lower())
 

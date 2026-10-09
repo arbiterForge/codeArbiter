@@ -104,7 +104,7 @@ extension, an enforcement-only child extension, and a Windows supervisor.
 Python 3 remains required for the shared core.
 
 The external Pi runtime is a test and install input, never a checked-in or
-runtime dependency. The supported promotion version is exact Pi 1.0.2.
+runtime dependency. The supported promotion version is exact Pi 1.1.0.
 
 ## Test
 
@@ -312,7 +312,7 @@ python .github/scripts/test_public_pi_docs.py
 ```
 
 The platform aggregate is `python .github/scripts/test_pi_platform_contract.py
---fixtures-only`. A supported-version run adds `--pi-version 1.0.2` after
+--fixtures-only`. A supported-version run adds `--pi-version 1.1.0` after
 installing that exact external Pi version from its reviewed host lock with
 scripts disabled. CI owns the Windows/macOS/Linux matrix.
 

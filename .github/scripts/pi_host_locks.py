@@ -25,7 +25,7 @@ from urllib.parse import quote, urlsplit
 PACKAGE = "@earendil-works/pi-coding-agent"
 REGISTRY = "https://registry.npmjs.org"
 REGISTRY_ARGS = (f"--registry={REGISTRY}", f"--@earendil-works:registry={REGISTRY}")
-SUPPORTED = ("1.0.2",)
+SUPPORTED = ("1.1.0",)
 LOCK_ROOT = Path(".github/fixtures/pi-hosts")
 VERSION = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 SOURCE_REPOSITORY = "https://github.com/earendil-works/pi"

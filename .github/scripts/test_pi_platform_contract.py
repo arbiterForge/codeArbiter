@@ -19,7 +19,7 @@ from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SUPPORTED = ("1.0.2",)
+SUPPORTED = ("1.1.0",)
 PLATFORM_COMMAND_TIMEOUT_SECONDS = 180
 PI_TOOLS_VITEST_LAUNCHER = (
     ROOT / "plugins" / "ca-pi" / "tools" / "node_modules" / ".bin" /
@@ -33,7 +33,7 @@ def version_policy(version):
         return {"version": version, "blocking": True}
     if version == "latest":
         return {"version": version, "blocking": False}
-    raise ValueError("Pi version must be 1.0.2 or latest")
+    raise ValueError("Pi version must be 1.1.0 or latest")
 
 
 def fixture_commands(fixtures_only):
@@ -242,11 +242,11 @@ class PlatformContractFixtures(unittest.TestCase):
         )
 
     def test_supported_versions_block_and_only_latest_is_nonblocking(self):
-        self.assertEqual(version_policy("1.0.2"), {"version": "1.0.2", "blocking": True})
-        with self.assertRaisesRegex(ValueError, "1.0.2 or latest"):
+        self.assertEqual(version_policy("1.1.0"), {"version": "1.1.0", "blocking": True})
+        with self.assertRaisesRegex(ValueError, "1.1.0 or latest"):
             version_policy("0.80.5")
         self.assertEqual(version_policy("latest"), {"version": "latest", "blocking": False})
-        with self.assertRaisesRegex(ValueError, "1.0.2 or latest"):
+        with self.assertRaisesRegex(ValueError, "1.1.0 or latest"):
             version_policy("0.81.0")
 
     def test_singleton_support_wording_has_no_retired_matrix_counts(self):
