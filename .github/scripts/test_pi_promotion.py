@@ -169,6 +169,69 @@ class PromotionPolicyTests(unittest.TestCase):
                 f"promotion PR does not stage declared target {path}",
             )
 
+    def test_runtime_contracts_use_reviewed_baseline_before_prospective_apply(self):
+        validate = validation_job(WORKFLOW_PATH.read_text(encoding="utf-8"))
+        lines = (line.strip().removeprefix("run: ") for line in validate.splitlines())
+        commands = [line for line in lines
+                    if line.startswith("python .github/scripts/pi_promotion.py contract ")]
+        prefix = 'python .github/scripts/pi_promotion.py contract --id '
+        state = ' --state "$CA_PI_RECEIPT_STATE" -- '
+        apply = prefix + "promotion-apply" + state + (
+            'python .github/scripts/pi_promotion.py apply --candidate "$CA_PI_CANDIDATE"'
+        )
+        self.assertEqual(commands.count(apply), 1)
+        boundary = commands.index(apply)
+        runtime = {
+            "adapter-suite": "npm --prefix plugins/ca-pi/tools test",
+            "security-contract": "python .github/scripts/test_pi_security.py",
+            "package-contract": "python .github/scripts/test_pi_package.py",
+            "platform-contract": "python .github/scripts/test_pi_platform_contract.py --fixtures-only",
+        }
+        for identifier, invocation in runtime.items():
+            with self.subTest(contract=identifier):
+                command = prefix + identifier + state + invocation
+                self.assertEqual(commands.count(command), 1, "preserve the full runtime contract")
+                self.assertLess(commands.index(command), boundary,
+                                "runtime contracts must use reviewed source before candidate apply")
+        install = prefix + "toolchain-install" + state + (
+            "npm --prefix plugins/ca-pi/tools ci --ignore-scripts"
+        )
+        self.assertEqual(commands.count(install), 1)
+        for invocation in ("python tools/build-surface.py", "npm --prefix plugins/ca-pi/tools run build"):
+            with self.subTest(baseline_build=invocation):
+                build = prefix + "generated-artifacts" + state + invocation
+                before = commands[:boundary]
+                self.assertEqual(before.count(build), 1, "build the reviewed baseline before runtime tests")
+                self.assertLess(before.index(install), before.index(build))
+                for identifier, runtime_invocation in runtime.items():
+                    self.assertLess(before.index(build), before.index(prefix + identifier + state + runtime_invocation))
+
+    def test_prospective_phase_preserves_static_source_contracts(self):
+        validate = validation_job(WORKFLOW_PATH.read_text(encoding="utf-8"))
+        prospective = validate.split(' -- python .github/scripts/pi_promotion.py apply --candidate ', 1)[1]
+        lines = (line.strip().removeprefix("run: ") for line in prospective.splitlines())
+        commands = [line.split(' --state "$CA_PI_RECEIPT_STATE" -- ', 1)[1]
+                    for line in lines
+                    if line.startswith("python .github/scripts/pi_promotion.py contract ")]
+        generation = ("python tools/build-surface.py", "npm --prefix plugins/ca-pi/tools run build")
+        static = (
+            "npm --prefix plugins/ca-pi/tools run typecheck",
+            "python .github/scripts/test_host_descriptors.py",
+            "python .github/scripts/test_pi_parity.py",
+            "python tools/build-surface.py --check",
+            "python tools/build-host-packages.py --check",
+            "python .github/scripts/test_pi_security.py --contract-only",
+            "python .github/scripts/check_docs_contract.py",
+        )
+        for invocation in (*generation, *static):
+            with self.subTest(command=invocation):
+                self.assertEqual(commands.count(invocation), 1,
+                                 "preserve prospective generated, fixture and static validation")
+                if invocation in static:
+                    for build in generation:
+                        self.assertLess(commands.index(build), commands.index(invocation))
+        self.assertNotIn("pi_host_locks.py install", prospective)
+
     def test_checked_in_recipe_cannot_name_an_unapproved_runtime_write_path(self):
         module = load_module()
         with tempfile.TemporaryDirectory() as raw:
