@@ -4,6 +4,20 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.2] - 2026-10-08
+
+### Fixed
+
+- Recognize the installed `@arbiterforge/ca-pi` package and report the missing
+  prompt, verification and review authority precisely. New full-lane workflows
+  remain refused until that support is qualified.
+
+### Added
+
+- Add a private, explicitly loaded native approval dialog candidate with exact
+  reply, pending-artifact, session and generation bindings. Ordinary extension
+  registration is unchanged; real human qualification remains pending.
+
 ## [0.17.1] - 2026-10-07
 
 ### Fixed
