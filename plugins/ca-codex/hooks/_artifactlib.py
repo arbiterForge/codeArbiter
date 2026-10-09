@@ -386,7 +386,7 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
     present = [row for row in manifests if (plugin / row[2]).exists()
                or (plugin / row[2]).is_symlink()]
     if not present:
-        present = [("pi", "ca-pi", "package.json")]
+        present = [("pi", "@arbiterforge/ca-pi", "package.json")]
     if len(present) != 1:
         result["missing"] = ["one unambiguous installed host manifest"]
         return result

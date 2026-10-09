@@ -11,6 +11,7 @@ import ast
 import importlib.util
 import json
 import fnmatch
+import os
 import re
 import shlex
 import subprocess
@@ -1308,7 +1309,7 @@ class WorkflowContractTest(unittest.TestCase):
         # version or the host OS stays in the supported-host matrix.
         for token in (
             "os: [ubuntu-latest, windows-latest, macos-latest]",
-            f"pi-version: {json.dumps(list(_supported_pi_hosts()))}",
+            "pi-version: ${{ fromJSON(needs.changes.outputs.pi-versions) }}",
             "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "run: npm test -- test/package.test.ts",
             "run: python .github/scripts/test_pi_package.py --rpc-commands",
@@ -1316,6 +1317,63 @@ class WorkflowContractTest(unittest.TestCase):
         ):
             with self.subTest(token=token):
                 self.assertIn(token, matrix, f"ca-pi-tools must keep `{token}`")
+
+    def test_pi_ci_consumers_share_the_existing_policy_outputs(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("pi-versions: ${{ steps.pi-policy.outputs.versions }}", jobs["changes"])
+        self.assertIn("pi-last-verified: ${{ steps.pi-policy.outputs.last-verified }}", jobs["changes"])
+        self.assertIn("pi-version: ${{ fromJSON(needs.changes.outputs.pi-versions) }}", jobs["ca-pi-tools"])
+        self.assertIn(
+            'pi_host_locks.py install --version ${{ needs.changes.outputs.pi-last-verified }} '
+            '--prefix "$RUNNER_TEMP/pi-host-${{ needs.changes.outputs.pi-last-verified }}"',
+            jobs["coverage-union-pi"],
+        )
+        for path in (".github/pi-promotion-targets.json", ".github/scripts/pi_promotion.py",
+                     "plugins/ca-pi/tools/src/compatibility.ts"):
+            with self.subTest(path=path):
+                self.assertTrue(any(fnmatch.fnmatchcase(path, pattern) for pattern in paths_filter(ci, "ca-pi")))
+
+    def test_pi_policy_output_step_resolves_current_and_prospective_source(self):
+        changes = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["changes"]
+        step = re.search(
+            r"(?m)^        id: pi-policy\n        shell: python\n        run: \|\n"
+            r"(?P<body>(?:          [^\n]*\n)+)", changes,
+        )
+        self.assertIsNotNone(step, "CI has no output step reading the canonical Pi support policy")
+        script = "\n".join(line[10:] for line in step.group("body").splitlines())
+        descriptor_path = Path(".github/pi-promotion-targets.json")
+        descriptor = json.loads((REPO_ROOT / descriptor_path).read_text(encoding="utf-8"))
+        source_path = Path(descriptor["policy"]["compatibility_source"])
+        source = (REPO_ROOT / source_path).read_text(encoding="utf-8")
+        pattern = re.compile(descriptor["policy"]["supported_versions_pattern"])
+        major, minor, patch = map(int, _supported_pi_hosts()[-1].split("."))
+        prospective = f"{major}.{minor}.{patch + 1}"
+        cases = (_supported_pi_hosts(), (prospective,), (_supported_pi_hosts()[-1], prospective), ("invalid",))
+        for versions in cases:
+            with self.subTest(versions=versions), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                for path in (descriptor_path, Path(".github/scripts/pi_promotion.py"), source_path):
+                    destination = root / path
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_bytes((REPO_ROOT / path).read_bytes())
+                (root / source_path).write_text(
+                    pattern.sub(lambda _: f"new Set({json.dumps(versions)})", source), encoding="utf-8",
+                )
+                output = root / "job-output"
+                result = subprocess.run(
+                    [sys.executable, "-c", script], cwd=root, capture_output=True, text=True, check=False,
+                    env={**os.environ, "GITHUB_OUTPUT": str(output)},
+                )
+                if versions == ("invalid",):
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("promotion-error:", result.stderr)
+                    self.assertFalse(output.exists() and output.read_text(encoding="utf-8").strip())
+                else:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    values = dict(line.split("=", 1) for line in output.read_text(encoding="utf-8").splitlines())
+                    self.assertEqual(json.loads(values["versions"]), list(versions))
+                    self.assertEqual(values["last-verified"], versions[-1])
 
     def test_every_pi_ci_and_promotion_job_declares_a_bounded_timeout(self):
         # Issue #399: a wedged npm install or leaked process otherwise holds a

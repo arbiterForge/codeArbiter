@@ -12,6 +12,22 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.25.3] - 2026-10-09
+
+### Fixed
+
+- Keep managed Git hooks working with a restricted PATH while preserving
+  trusted executable identities, cross-host path resolution and stale-registration checks.
+
+## [2.25.2] - 2026-10-08
+
+### Fixed
+
+- Recognize the scoped Pi package in shared workflow preflight and report its
+  unavailable approval support without enabling the workflow.
+- Preserve exact native Pi approval input bindings in the shared adapter while
+  refusing ordinary prompt input and unqualified paired approval.
+
 ## [2.25.1] - 2026-10-07
 
 ### Fixed
