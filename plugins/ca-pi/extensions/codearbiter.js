@@ -7806,6 +7806,7 @@ var PI_PROVIDER_ENV = Object.freeze({
   "amazon-bedrock": ["AWS_PROFILE", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_BEARER_TOKEN_BEDROCK", "AWS_REGION"],
   "ant-ling": ["ANT_LING_API_KEY"],
   anthropic: ["ANTHROPIC_OAUTH_TOKEN", "ANTHROPIC_API_KEY"],
+  azure: ["AZURE_OPENAI_API_KEY", "AZURE_OPENAI_BASE_URL", "AZURE_OPENAI_RESOURCE_NAME", "AZURE_OPENAI_API_VERSION", "AZURE_OPENAI_DEPLOYMENT_NAME_MAP"],
   "azure-openai-responses": ["AZURE_OPENAI_API_KEY", "AZURE_OPENAI_BASE_URL", "AZURE_OPENAI_RESOURCE_NAME", "AZURE_OPENAI_API_VERSION", "AZURE_OPENAI_DEPLOYMENT_NAME_MAP"],
   cerebras: ["CEREBRAS_API_KEY"],
   "cloudflare-ai-gateway": ["CLOUDFLARE_API_KEY", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_GATEWAY_ID"],
@@ -8351,16 +8352,16 @@ function validMessage(value) {
   if (value.role === "assistant") {
     return exactKeys4(
       value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp", "durationMs"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"]
-    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.providerThinkingLevel === void 0 || boundedString2(value.providerThinkingLevel)) && (value.thinkingLevel === void 0 || boundedString2(value.thinkingLevel)) && (value.endTurn === void 0 || typeof value.endTurn === "boolean") && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.providerThinkingLevel === void 0 || boundedString2(value.providerThinkingLevel)) && (value.thinkingLevel === void 0 || boundedString2(value.thinkingLevel)) && (value.endTurn === void 0 || typeof value.endTurn === "boolean") && (value.durationMs === void 0 || typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs >= 0) && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
     return exactKeys4(
       value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp", "durationMs"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"]
-    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && (value.usage === void 0 || validUsage(value.usage)) && (value.nestedCalls === void 0 || validNestedCalls(value.nestedCalls)) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && (value.usage === void 0 || validUsage(value.usage)) && (value.nestedCalls === void 0 || validNestedCalls(value.nestedCalls)) && (value.durationMs === void 0 || typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs >= 0) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   return false;
 }
@@ -8449,9 +8450,11 @@ function parseChildJsonLine(line) {
       } else if (!exactKeys4(record2, ["type", "id", "command", "success", "error"]) || typeof record2.error !== "string") invalidProtocol();
       break;
     case "agent_start":
-    case "agent_settled":
     case "turn_start":
       if (!exactKeys4(record2, ["type"])) invalidProtocol();
+      break;
+    case "agent_settled":
+      if (!exactKeys4(record2, ["type", "aborted"]) || typeof record2.aborted !== "boolean") invalidProtocol();
       break;
     case "agent_end":
       if (!exactKeys4(record2, ["type", "messages", "willRetry"]) || !Array.isArray(record2.messages) || record2.messages.length > MAX_JSON_ARRAY || !record2.messages.every(validMessage) || typeof record2.willRetry !== "boolean") invalidProtocol();
@@ -8473,7 +8476,7 @@ function parseChildJsonLine(line) {
       if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args", "partialResult", "parentToolCallId"], ["type", "toolCallId", "toolName", "args", "partialResult"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args) || !validOpaqueJson(record2.partialResult)) invalidProtocol();
       break;
     case "tool_execution_end":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId"], ["type", "toolCallId", "toolName", "result", "isError"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
+      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId", "durationMs"], ["type", "toolCallId", "toolName", "result", "isError"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || record2.durationMs !== void 0 && (typeof record2.durationMs !== "number" || !Number.isFinite(record2.durationMs) || record2.durationMs < 0) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
       break;
     case "extension_error":
       if (!exactKeys4(record2, ["type", "extensionPath", "event", "error"]) || typeof record2.extensionPath !== "string" || typeof record2.event !== "string" || typeof record2.error !== "string") invalidProtocol();
@@ -8771,6 +8774,10 @@ async function runPiChild(request, signal) {
         } else if (record2.type === "agent_settled") {
           if (phase !== "await-settled") {
             finishFailure("protocol_error");
+            return;
+          }
+          if (record2.aborted === true) {
+            finishFailure("cancelled");
             return;
           }
           phase = "complete";

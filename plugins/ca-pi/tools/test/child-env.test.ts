@@ -340,6 +340,35 @@ describe("Task 6 child environment", () => {
     }
   });
 
+  test("projects the renamed Azure provider without exposing operator credentials", async () => {
+    const { document, error, upstream, childEnv, cleanup } = await projectedModels(
+      { providers: { azure: { baseUrl: "https://azure.example/openai", api: "azure-openai-responses" } } },
+      "azure",
+      { AZURE_OPENAI_API_KEY: PLANTED_UPSTREAM_LITERAL },
+    );
+    try {
+      expect(error).toBeUndefined();
+      expect(document).toEqual({
+        providers: {
+          azure: {
+            api: "azure-openai-responses",
+            baseUrl: BROKER_BASE_URL,
+            apiKey: BROKER_APIKEY_REFERENCE,
+          },
+        },
+      });
+      expect(upstream).toEqual({
+        baseUrl: "https://azure.example/openai", credential: PLANTED_UPSTREAM_LITERAL, headers: {},
+      });
+      expect(childEnv?.CODEARBITER_PI_BROKER_TOKEN).toBe(BROKER_GRANT);
+      expect(childEnv?.AZURE_OPENAI_API_KEY).toBeUndefined();
+      expect(JSON.stringify(document)).not.toContain(PLANTED_UPSTREAM_LITERAL);
+      expect(JSON.stringify(childEnv)).not.toContain(PLANTED_UPSTREAM_LITERAL);
+    } finally {
+      await cleanup();
+    }
+  });
+
   /** #455 (AC-1) adversarial probe, the same shape #426 used: plant known literals, then walk
    * every surface the child can reach. */
   test("plants operator literals and finds none of them anywhere in the child boundary", async () => {

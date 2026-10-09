@@ -10,6 +10,11 @@ All notable changes to `ca-pi` are documented in this file.
 
 - Promote the verified Pi host window through exact Pi 1.1.0.
 
+### Fixed
+
+- Accept Pi 1.1.0 execution timing fields and settlement outcomes without treating aborted child work as successful.
+- Recognize Pi's renamed Azure provider while retaining parent-only provider credentials.
+
 ## [0.17.3] - 2026-10-09
 
 ### Fixed

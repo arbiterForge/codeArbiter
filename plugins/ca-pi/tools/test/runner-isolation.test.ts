@@ -327,7 +327,7 @@ describe("Task 6 exact Pi child launch", () => {
       [{ type: "response", id: "task", command: "prompt", success: true }, { type: "response", id: 7, command: "prompt", success: true }],
       [{ type: "agent_start" }, { type: "agent_start", injected: true }],
       [{ type: "agent_end", messages: [assistantMessage], willRetry: false }, { type: "agent_end", messages: [assistantMessage] }],
-      [{ type: "agent_settled" }, { type: "agent_settled", settled: true }],
+      [{ type: "agent_settled", aborted: false }, { type: "agent_settled", settled: true }],
       [{ type: "turn_start" }, { type: "turn_start", turnIndex: 1 }],
       [{ type: "turn_end", message: assistantMessage, toolResults: [] }, { type: "turn_end", message: assistantMessage, toolResults: "none" }],
       [{ type: "message_start", message: userMessage }, { type: "message_start", message: { role: "user", content: "task" } }],
@@ -539,6 +539,84 @@ describe("Task 6 exact Pi child launch", () => {
     expect(JSON.stringify(failed)).not.toContain("raw-provider-error");
   });
 
+  test("Pi 1.1 settlement requires its exact boolean aborted outcome", async () => {
+    const { parseChildJsonLine } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    for (const aborted of [false, true]) {
+      const event = { type: "agent_settled", aborted };
+      expect(parseChildJsonLine(JSON.stringify(event))).toEqual(event);
+    }
+    for (const event of [
+      { type: "agent_settled" },
+      ...[null, 0, "false", [], {}].map((aborted) => ({ type: "agent_settled", aborted })),
+      { type: "agent_settled", aborted: false, injected: true },
+    ]) expect(() => parseChildJsonLine(JSON.stringify(event))).toThrow("schema");
+  });
+
+  test.each(["assistant", "toolResult", "tool_execution_end"] as const)(
+    "Pi 1.1 %s durationMs accepts only the source-defined bounded record shape",
+    async (kind) => {
+      const { parseChildJsonLine } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+      const base = kind === "assistant" ? assistantMessage : kind === "toolResult"
+        ? { role: "toolResult", toolCallId: "call", toolName: "read", content: [], isError: false, timestamp: 1 }
+        : { type: "tool_execution_end", toolCallId: "call", toolName: "read", result: { content: [] }, isError: false };
+      const frame = (value: Record<string, unknown>) => kind === "tool_execution_end"
+        ? value : { type: "message_end", message: value };
+      for (const durationMs of [0, 17]) {
+        const event = frame({ ...base, durationMs });
+        expect(parseChildJsonLine(JSON.stringify(event))).toEqual(event);
+      }
+      // Duration is optional for legacy/deferred messages and immediately refused tools.
+      expect(parseChildJsonLine(JSON.stringify(frame(base)))).toEqual(frame(base));
+      for (const durationMs of [null, -1, "17", false, [], {}, Number.POSITIVE_INFINITY]) {
+        expect(() => parseChildJsonLine(JSON.stringify(frame({ ...base, durationMs })))).toThrow("schema");
+      }
+      expect(() => parseChildJsonLine(JSON.stringify(frame({ ...base, durationMs: 0 }))
+        .replace('"durationMs":0', '"durationMs":1e400'))).toThrow("schema");
+      expect(() => parseChildJsonLine(JSON.stringify(frame({ ...base, durationMs: 17, injected: true })))).toThrow("schema");
+    },
+  );
+
+  test.each([false, true])("Pi 1.1 settlement aborted=%s preserves terminal outcome and cleanup", async (aborted) => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const child = new FakeChild();
+    const finalMessage = { ...assistantMessage, durationMs: 17 };
+    const request = await materializedRequest();
+    let input = "";
+    child.stdin.on("data", (chunk) => {
+      input += chunk.toString("utf8");
+      const records = input.trimEnd().split("\n");
+      if (records.length === 1) writeValidAttestation(child, request);
+      else if (records.length === 2) {
+        child.stdout.write(JSON.stringify({ type: "response", id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee-handshake", command: "prompt", success: true }) + "\n");
+      } else if (records.length === 3) {
+        const task = JSON.parse(records[2]!) as { id: string };
+        for (const event of [
+          { type: "response", id: task.id, command: "prompt", success: true },
+          { type: "agent_start" },
+          { type: "tool_execution_end", toolCallId: "call", toolName: "read", result: { content: [] }, isError: false, durationMs: 3 },
+          { type: "message_end", message: { role: "toolResult", toolCallId: "call", toolName: "read", content: [], isError: false, timestamp: 1, durationMs: 3 } },
+          { type: "message_end", message: finalMessage },
+          { type: "agent_end", messages: [finalMessage], willRetry: false },
+          { type: "agent_settled", aborted },
+        ]) child.stdout.write(JSON.stringify(event) + "\n");
+        child.close(0);
+      }
+    });
+    runnerMocks.spawn.mockReturnValue(child);
+    const result = await runPiChild(request as never, new AbortController().signal);
+    if (aborted) {
+      expect(runnerMocks.cleanupTerminate).toHaveBeenCalledWith("cancelled");
+      expect(result).toEqual({ terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." });
+      expect(result).not.toHaveProperty("output");
+    } else {
+      expect(result).toMatchObject({ terminal: "completed", output: "child-complete", pid: 4242 });
+      expect(runnerMocks.cleanupTerminate).toHaveBeenCalledWith("parent_shutdown");
+    }
+    expect(runnerMocks.environmentCleanupStarted).toHaveBeenCalledOnce();
+    const childEnv = runnerMocks.spawn.mock.calls[0]![2].env as NodeJS.ProcessEnv;
+    expect(existsSync(childEnv.PI_CODING_AGENT_DIR!)).toBe(false);
+  });
+
   // ADR-0016 requires "a fixed, bounded degraded failure" — bounded, not mute. The isolation
   // paths ADR-0016 introduced (private-root creation and credential scrub/cleanup) previously
   // collapsed into the reason-less diagnostic, so a child that never launched was
@@ -682,7 +760,7 @@ describe("Task 6 exact Pi child launch", () => {
         child.stdout.write(JSON.stringify({ type: "agent_start" }) + "\n");
         child.stdout.write(JSON.stringify({ type: "message_end", message: assistantMessage }) + "\n");
         child.stdout.write(JSON.stringify({ type: "agent_end", messages: [assistantMessage], willRetry: false }) + "\n");
-        child.stdout.write(JSON.stringify({ type: "agent_settled" }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_settled", aborted: false }) + "\n");
         child.stderr.write("diagnostic dummy-openai-value");
         child.close();
       }
@@ -780,7 +858,7 @@ describe("Task 6 exact Pi child launch", () => {
         child.stdout.write(JSON.stringify({ type: "response", id: task.id, command: "prompt", success: true }) + "\n");
         child.stdout.write(JSON.stringify({ type: "agent_start" }) + "\n");
         child.stdout.write(JSON.stringify({ type: "agent_end", messages: [assistantMessage], willRetry: false }) + "\n");
-        child.stdout.write(JSON.stringify({ type: "agent_settled" }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_settled", aborted: false }) + "\n");
         child.close(7);
       }
     });
@@ -817,7 +895,7 @@ describe("Task 6 exact Pi child launch", () => {
         expect(split).toBeGreaterThan(0);
         child.stdout.write(finalLine.subarray(0, split));
         child.stdout.write(finalLine.subarray(split));
-        child.stdout.write(JSON.stringify({ type: "agent_settled" }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_settled", aborted: false }) + "\n");
         child.close(0);
       }
     });
@@ -860,19 +938,19 @@ describe("Task 6 exact Pi child launch", () => {
   test("requires correlated task acceptance and an ordered post-task lifecycle before completion", async () => {
     const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
     const scenarios = [
-      [{ type: "agent_settled" }],
+      [{ type: "agent_settled", aborted: false }],
       [
         { type: "response", id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee", command: "prompt", success: true },
         { type: "message_end", message: assistantMessage },
       ],
       [
         { type: "response", id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee", command: "prompt", success: true },
-        { type: "agent_settled" },
+        { type: "agent_settled", aborted: false },
       ],
       [
         { type: "response", id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee", command: "prompt", success: true },
         { type: "agent_start" },
-        { type: "agent_settled" },
+        { type: "agent_settled", aborted: false },
       ],
     ] as const;
     for (const recordsAfterHandshake of scenarios) {
@@ -1297,7 +1375,7 @@ describe("Task 6 exact Pi child launch", () => {
           child.stdout.write(JSON.stringify({ type: "agent_start" }) + "\n");
           child.stdout.write(JSON.stringify({ type: "message_end", message: finalMessage }) + "\n");
           child.stdout.write(JSON.stringify({ type: "agent_end", messages: [finalMessage], willRetry: false }) + "\n");
-          child.stdout.write(JSON.stringify({ type: "agent_settled" }) + "\n");
+          child.stdout.write(JSON.stringify({ type: "agent_settled", aborted: false }) + "\n");
           child.close();
         }
       });
@@ -1341,7 +1419,7 @@ describe("Task 6 exact Pi child launch", () => {
         child.stdout.write(JSON.stringify({ type: "response", id: task.id, command: "prompt", success: true }) + "\n");
         child.stdout.write(JSON.stringify({ type: "agent_start" }) + "\n");
         child.stdout.write(JSON.stringify({ type: "agent_end", messages: [leakingAssistant], willRetry: false }) + "\n");
-        child.stdout.write(JSON.stringify({ type: "agent_settled" }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_settled", aborted: false }) + "\n");
         child.close();
       }
     });
