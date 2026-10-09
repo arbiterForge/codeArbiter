@@ -1763,7 +1763,9 @@ class OfficialWriteScopeTests(unittest.TestCase):
         major, minor, patch = map(int, policy.last_verified.split("."))
         candidate = promotion.Candidate(f"{major}.{minor}.{patch + 1}")
         workflows = (Path(".github/workflows/ci.yml"), Path(".github/workflows/pi-promotion.yml"))
+        site_test = Path("site/test/generator/forge-status.test.ts")
         paths = {target.path for target in targets.targets} | set(workflows)
+        paths.add(site_test)
         paths.add(targets.policy.compatibility_source)
         paths.update(path for path in (
             targets.release.package_path, targets.release.changelog_path,
@@ -1783,6 +1785,11 @@ class OfficialWriteScopeTests(unittest.TestCase):
             for path in workflows:
                 self.assertEqual((root / path).read_bytes(), (REPO / path).read_bytes())
             self.assertEqual(promotion.read_policy(root, targets).supported_versions, (candidate.version,))
+            self.assertIn(
+                f'toContain("Pi {candidate.version}")',
+                (root / site_test).read_text(encoding="utf-8"),
+                "promotion must advance the site generator's version assertion",
+            )
 
     def test_official_write_scope_rejects_a_reintroduced_workflow_target(self):
         promotion = load_module()

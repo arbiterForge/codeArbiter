@@ -43,6 +43,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "site/src/content/docs/getting-started/pi.md",
     "site/scripts/generator/forge-status.ts",
     "site/test/content/documentation-presentation.test.ts",
+    "site/test/generator/forge-status.test.ts",
     "site/src/content/docs/guides/troubleshooting.md",
     "plugins/ca-pi/CHANGELOG.md",
     "plugins/ca-pi/package.json",

@@ -238,6 +238,13 @@
       "after": "requires: \"Pi {candidate}, Node.js 22.19+, and Python 3\""
     },
     {
+      "id": "site-forge-status-pi-requirement-test",
+      "path": "site/test/generator/forge-status.test.ts",
+      "class": "ci",
+      "before": "toContain(\"Pi {last_verified}\")",
+      "after": "toContain(\"Pi {candidate}\")"
+    },
+    {
       "id": "site-compatibility-supported",
       "path": "site/src/content/docs/getting-started/compatibility.mdx",
       "class": "current-doc",
