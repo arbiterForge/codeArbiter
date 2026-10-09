@@ -115,26 +115,38 @@ jobs:
         run: |
           python .github/scripts/pi_host_locks.py capture --version ${{ needs.resolve.outputs.candidate }} --output "$RUNNER_TEMP/pi-candidate-lock"
           # The PENDING_REVIEW graph is data only. Dependency review is required before candidate code executes.
-      - name: Apply the declared prospective promotion in this disposable checkout
-        run: python .github/scripts/pi_promotion.py contract --id promotion-apply --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/pi_promotion.py apply --candidate "$CA_PI_CANDIDATE"
-        shell: bash
       - name: Install reviewed adapter toolchain
         run: python .github/scripts/pi_promotion.py contract --id toolchain-install --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools ci --ignore-scripts
         shell: bash
-      - name: Rebuild declared generated artifacts
+      - name: Build reviewed baseline artifacts
         shell: bash
         run: |
           python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- python tools/build-surface.py
           python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools run build
-      - name: Validate adapter, package, security, and documentation contracts
+      - name: Validate runtime contracts against the reviewed baseline
+        shell: bash
+        run: |
+          python .github/scripts/pi_promotion.py contract --id adapter-suite --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools test
+          python .github/scripts/pi_promotion.py contract --id security-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_security.py
+          python .github/scripts/pi_promotion.py contract --id package-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_package.py
+          python .github/scripts/pi_promotion.py contract --id platform-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_platform_contract.py --fixtures-only
+      - name: Apply the declared prospective promotion in this disposable checkout
+        run: python .github/scripts/pi_promotion.py contract --id promotion-apply --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/pi_promotion.py apply --candidate "$CA_PI_CANDIDATE"
+        shell: bash
+      - name: Rebuild declared prospective artifacts without executing the candidate
+        shell: bash
+        run: |
+          python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- python tools/build-surface.py
+          python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools run build
+      - name: Validate prospective static and fixture contracts
         shell: bash
         run: |
           python .github/scripts/pi_promotion.py contract --id adapter-typecheck --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools run typecheck
-          python .github/scripts/pi_promotion.py contract --id adapter-suite --state "$CA_PI_RECEIPT_STATE" -- npm --prefix plugins/ca-pi/tools test
-          python .github/scripts/pi_promotion.py contract --id security-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_security.py
+          python .github/scripts/pi_promotion.py contract --id parity-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_host_descriptors.py
           python .github/scripts/pi_promotion.py contract --id parity-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_parity.py
-          python .github/scripts/pi_promotion.py contract --id package-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_package.py
-          python .github/scripts/pi_promotion.py contract --id platform-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_platform_contract.py --fixtures-only
+          python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- python tools/build-surface.py --check
+          python .github/scripts/pi_promotion.py contract --id generated-artifacts --state "$CA_PI_RECEIPT_STATE" -- python tools/build-host-packages.py --check
+          python .github/scripts/pi_promotion.py contract --id security-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_security.py --contract-only
           python .github/scripts/pi_promotion.py contract --id docs-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/check_docs_contract.py
       - name: Render the compact promotion receipt
         if: failure()
