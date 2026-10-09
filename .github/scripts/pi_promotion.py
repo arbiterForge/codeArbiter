@@ -32,7 +32,6 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     ".github/scripts/pi_host_locks.py",
     ".github/scripts/test_verify_pi_support.py",
     ".github/scripts/verify_pi_support.py",
-    ".github/workflows/ci.yml",
     "README.md",
     "core/hosts.json",
     "core/surface/commands/doctor.md",
@@ -357,9 +356,18 @@ def _plan_release_metadata(repo: Path, release: ReleaseSource, candidate: Candid
         f"\n\n## [{next_version}] - {date}\n\n### Changed\n\n"
         f"- Promote the verified Pi host window through exact Pi {candidate.version}.\n"
     )
+    unreleased = re.search(r"(?m)^## \[Unreleased\][ \t]*$", changelog)
+    if unreleased is not None:
+        next_heading = re.search(r"(?m)^## ", changelog[unreleased.end():])
+        insertion = len(changelog) if next_heading is None else unreleased.end() + next_heading.start()
+        prefix = changelog[:insertion]
+        separator = "" if prefix.endswith("\n\n") else "\n" if prefix.endswith("\n") else "\n\n"
+        changelog = prefix + separator + entry.lstrip("\n") + "\n" + changelog[insertion:]
+    else:
+        changelog = changelog.replace(marker, marker + entry, 1)
     writes: list[tuple[Path, str]] = [
         (package_path, json.dumps(package, indent=2) + "\n"),
-        (changelog_path, changelog.replace(marker, marker + entry, 1)),
+        (changelog_path, changelog),
     ]
     changed: list[Path] = [release.package_path, release.changelog_path]
     if release.root_package_path is not None:
@@ -628,7 +636,10 @@ def _main() -> int:
     root = Path.cwd()
     if arguments.command == "policy":
         policy = read_policy(root, targets)
-        print(json.dumps({"minimum": policy.minimum, "last_verified": policy.last_verified, "node_floor": policy.node_floor}))
+        print(json.dumps({
+            "minimum": policy.minimum, "last_verified": policy.last_verified,
+            "supported_versions": policy.supported_versions, "node_floor": policy.node_floor,
+        }))
         return 0
     if arguments.command == "apply":
         candidate = parse_candidate(arguments.candidate, read_policy(root, targets))
