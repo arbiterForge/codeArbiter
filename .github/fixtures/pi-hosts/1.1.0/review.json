@@ -1,0 +1,12 @@
+{
+  "schema": "codearbiter-pi-host-lock-review-v1",
+  "package": "@earendil-works/pi-coding-agent",
+  "version": "1.1.0",
+  "registry": "https://registry.npmjs.org",
+  "root_integrity": "sha512-SeEi/4hdcHNgA9UWlefZl7ZZpm3dzi2OoxNjDHsBJ9o298LNOtbL4DGKgitlEj6uCTccvtw6f2hlCkTPVJ2RXg==",
+  "lock_sha256": "c7043b03e1b38d05d1e3369808197e6857a68b3e4a77a707ef6712ca53d491ec",
+  "config_sha256": "33b6086536ead6650ea727f8287587b06abb9525eacaf8f6cb227efb78eda850",
+  "source_repository": "https://github.com/earendil-works/pi",
+  "source_commit": "abe508e1b89912adde45528136c3221eb69acdd7",
+  "result": "PENDING_REVIEW"
+}
