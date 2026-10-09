@@ -41,13 +41,6 @@
       "after": "JSON.stringify([\"{candidate}\"].sort())"
     },
     {
-      "id": "adapter-matrix",
-      "path": ".github/workflows/ci.yml",
-      "class": "ci",
-      "before": "pi-version: [\"{last_verified}\"]",
-      "after": "pi-version: [\"{candidate}\"]"
-    },
-    {
       "id": "platform-contract-window",
       "path": ".github/scripts/test_pi_platform_contract.py",
       "class": "ci",
@@ -328,14 +321,6 @@
       "class": "current-doc",
       "before": "- \"Pi {last_verified}\"",
       "after": "- \"Pi {candidate}\""
-    },
-    {
-      "id": "ci-single-version-live-installs",
-      "path": ".github/workflows/ci.yml",
-      "class": "ci",
-      "before": "pi_host_locks.py install --version {last_verified}",
-      "after": "pi_host_locks.py install --version {candidate}",
-      "occurrences": "all"
     },
     {
       "id": "site-presentation-pi-window-literal",

@@ -115,6 +115,28 @@ class PromotionPolicyTests(unittest.TestCase):
                 with self.assertRaises(module.PromotionError):
                     module.parse_candidate(raw, policy)
 
+    def test_policy_cli_exports_the_existing_supported_version_window(self):
+        for versions in (("1.0.2",), ("1.0.3",), ("1.0.2", "1.0.3")):
+            with self.subTest(versions=versions), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                self.fixture_repo(root)
+                source = root / "plugins" / "ca-pi" / "tools" / "src" / "compatibility.ts"
+                source.write_text(
+                    f'const SUPPORTED_PI_VERSIONS = new Set({json.dumps(versions)});\n'
+                    "const MINIMUM_NODE = [22, 19, 0] as const;\n",
+                    encoding="utf-8",
+                )
+                result = subprocess.run(
+                    [sys.executable, str(MODULE_PATH), "--targets", str(self.targets(root)), "policy"],
+                    cwd=root, capture_output=True, text=True, check=False,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                policy = json.loads(result.stdout)
+                self.assertEqual(policy.get("supported_versions"), list(versions))
+                self.assertEqual(policy["minimum"], versions[0])
+                self.assertEqual(policy["last_verified"], versions[-1])
+                self.assertEqual(policy["node_floor"], [22, 19, 0])
+
     def test_promotion_workflow_is_trusted_and_write_gated(self):
         workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
         self.assertIn("workflow_dispatch:", workflow)
@@ -134,6 +156,11 @@ class PromotionPolicyTests(unittest.TestCase):
         self.assertNotIn("test_pi_platform_contract.py --pi-version", validate)
         stage_line = next(line.strip() for line in open_pr.splitlines() if line.strip().startswith("git add --"))
         stage_entries = [entry.replace("\\", "/").rstrip("/") for entry in shlex.split(stage_line)[3:]]
+        self.assertFalse(
+            any(entry in (".", ".github", ".github/workflows") or entry.startswith(".github/workflows/")
+                for entry in stage_entries),
+            "github.token promotion must not stage workflow files",
+        )
         targets = json.loads((REPO / ".github" / "pi-promotion-targets.json").read_text(encoding="utf-8"))
         for target in targets["targets"]:
             path = target["path"].replace("\\", "/")
@@ -248,6 +275,32 @@ class PromotionPatchTests(unittest.TestCase):
             self.assertEqual(json.loads(package.read_text(encoding="utf-8"))["version"], "0.1.1")
             self.assertIn("## [0.1.1] - 2026-07-17", changelog.read_text(encoding="utf-8"))
             self.assertIn("Pi 0.80.10", changelog.read_text(encoding="utf-8"))
+
+    def test_release_metadata_preserves_unreleased_section_before_new_release(self):
+        """Issue #662: promotion must not move Unreleased below a release."""
+        module = load_module()
+        introduction = "# Changelog\n\nAll notable changes to `ca-pi` are documented in this file.\n\n"
+        older = "## [0.1.0] - 2026-07-01\n\n### Fixed\n\n- Retained historical entry.\n"
+        for pending, history in (("", older), ("### Fixed\n\n- Pending work.\n\n", older),
+                                 ("### Fixed\n\n- Pending work.\n\n", "")):
+            with self.subTest(pending=bool(pending), history=bool(history)):
+                with tempfile.TemporaryDirectory() as raw:
+                    root = Path(raw)
+                    target_path = self._host_adapter_fixture(root, "0.1.0")
+                    changelog = root / "plugins" / "ca-pi" / "CHANGELOG.md"
+                    unreleased = "## [Unreleased]\n\n" + pending
+                    changelog.write_text(introduction + unreleased + history, encoding="utf-8")
+                    module.apply_promotion(
+                        root, module.load_targets(target_path), module.Candidate("0.80.10"),
+                        date="2026-07-17",
+                    )
+                    self.assertEqual(
+                        changelog.read_text(encoding="utf-8"),
+                        introduction + unreleased
+                        + "## [0.1.1] - 2026-07-17\n\n### Changed\n\n"
+                        + "- Promote the verified Pi host window through exact Pi 0.80.10.\n\n"
+                        + history,
+                    )
 
     def test_release_metadata_advances_the_generated_root_manifest_in_lockstep(self):
         """Regression: run 31318743524. Since #653 the repo-root package.json is
@@ -1639,6 +1692,47 @@ class OfficialWriteScopeTests(unittest.TestCase):
         promotion = load_module()
         targets = promotion.load_targets(REPO / ".github" / "pi-promotion-targets.json")
         self.assertEqual(targets.release.host_adapter_path, Path("plugins/ca-pi/hooks/_host.py"))
+
+    def test_prospective_promotion_preserves_workflow_bytes(self):
+        promotion = load_module()
+        targets = promotion.load_targets(REPO / ".github" / "pi-promotion-targets.json")
+        policy = promotion.read_policy(REPO, targets)
+        major, minor, patch = map(int, policy.last_verified.split("."))
+        candidate = promotion.Candidate(f"{major}.{minor}.{patch + 1}")
+        workflows = (Path(".github/workflows/ci.yml"), Path(".github/workflows/pi-promotion.yml"))
+        paths = {target.path for target in targets.targets} | set(workflows)
+        paths.add(targets.policy.compatibility_source)
+        paths.update(path for path in (
+            targets.release.package_path, targets.release.changelog_path,
+            targets.release.root_package_path, targets.release.host_adapter_path,
+        ) if path is not None)
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            for path in paths:
+                destination = root / path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes((REPO / path).read_bytes())
+            changed = promotion.apply_promotion(root, targets, candidate, date="2026-10-07")
+            self.assertEqual(
+                [path.as_posix() for path in changed if path.parts[:2] == (".github", "workflows")],
+                [], "a prospective promotion still rewrites a workflow",
+            )
+            for path in workflows:
+                self.assertEqual((root / path).read_bytes(), (REPO / path).read_bytes())
+            self.assertEqual(promotion.read_policy(root, targets).supported_versions, (candidate.version,))
+
+    def test_official_write_scope_rejects_a_reintroduced_workflow_target(self):
+        promotion = load_module()
+        document = json.loads((REPO / ".github" / "pi-promotion-targets.json").read_text(encoding="utf-8"))
+        document["targets"].append({
+            "id": "workflow-write-regression", "path": ".github/workflows/ci.yml", "class": "ci",
+            "before": "old", "after": "new",
+        })
+        with tempfile.TemporaryDirectory() as raw:
+            path = Path(raw) / "targets.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaisesRegex(promotion.PromotionError, "unapproved write path: .github/workflows/ci.yml"):
+                promotion._enforce_official_write_scope(REPO, promotion.load_targets(path))
 
 
 class HelpProbeResolutionTests(unittest.TestCase):
