@@ -81,17 +81,22 @@ func selectedVerification(f *store.FS, plan, spec *model.Document, ref, input st
 	if err != nil {
 		return nil, err
 	}
-	if model.S(obs["producer_profile"]) != observation.QualifiedCommandProfile {
+	profile := model.S(obs["producer_profile"])
+	if profile != observation.QualifiedCommandProfile && profile != observation.CompletionCommandProfile {
 		return nil, fault.New("UNQUALIFIED_COMPLETION_VERIFICATION", "completion review requires a current qualified verifier observation")
 	}
 	producer := model.M(obs["producer_result"])
-	return map[string]any{
+	row := map[string]any{
 		"task_id": id, "receipt_ref": r.Path, "receipt_sha256": r.Hash, "event_ref": r.EventPath, "event_sha256": r.Data["event_sha256"],
 		"source_ref": r.Data["authority_source_ref"], "source_sha256": r.Data["authority_source_sha256"],
 		"observation_ref": r.Event["observation_ref"], "observation_sha256": r.Event["observation_sha256"],
 		"context_ref": obs["context_ref"], "context_sha256": obs["context_sha256"],
 		"command_bindings": producer["command_bindings"], "workspace_after": producer["workspace_after"],
-	}, nil
+	}
+	if profile == observation.CompletionCommandProfile {
+		row["completion_workspace_after"] = producer["completion_workspace_after"]
+	}
+	return row, nil
 }
 
 // ReviewContext follows the retained native receipt chain, never a caller's
@@ -209,16 +214,23 @@ func BuildCompletion(f *store.FS, plan, spec *model.Document, context, selection
 				priorMaterials[model.S(m["source_path"])] = m
 			}
 		} else {
-			raw, err := CompletionWorkspaces(f, model.A(row["command_bindings"]), false)
-			if err != nil {
-				return nil, err
-			}
-			if !equalCompletion(raw, row["workspace_after"]) {
-				return nil, fault.New("WORKSPACE_DRIFT", "selected verification worktree bytes or identity changed")
+			if row["completion_workspace_after"] == nil {
+				// Retained qualified 0.2 observations keep their original raw
+				// comparison; they cannot acquire the new producer's semantics.
+				raw, err := CompletionWorkspaces(f, model.A(row["command_bindings"]), false)
+				if err != nil {
+					return nil, err
+				}
+				if !equalCompletion(raw, row["workspace_after"]) {
+					return nil, fault.New("WORKSPACE_DRIFT", "selected verification worktree bytes or identity changed")
+				}
 			}
 			normalized, err := CompletionWorkspaces(f, model.A(row["command_bindings"]), true)
 			if err != nil {
 				return nil, err
+			}
+			if row["completion_workspace_after"] != nil && !equalCompletion(normalized, row["completion_workspace_after"]) {
+				return nil, fault.New("WORKSPACE_DRIFT", "selected verification normalized worktree changed")
 			}
 			row["consumer_workspace_after"] = normalized
 		}

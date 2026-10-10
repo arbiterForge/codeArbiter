@@ -60,6 +60,46 @@ func TestQualifiedRunnerContractAcceptsDirectAndNativeNPM(t *testing.T) {
 	}
 }
 
+func TestCompletionRunnerContractKeepsProfilesSeparate(t *testing.T) {
+	for _, mutation := range []string{"valid", "missing-closure", "relabel-old", "wrong-root", "raw-drift"} {
+		t.Run(mutation, func(t *testing.T) {
+			observed, event, context, contextHash := runnerObservation(false)
+			observed["producer_profile"] = CompletionCommandProfile
+			result := model.M(observed["producer_result"])
+			copy, err := canonical.Clone(map[string]any{"workspaces": result["workspace_after"]})
+			if err != nil {
+				t.Fatal(err)
+			}
+			result["completion_workspace_after"] = copy["workspaces"]
+			switch mutation {
+			case "missing-closure":
+				delete(result, "completion_workspace_after")
+			case "relabel-old":
+				observed["producer_profile"] = QualifiedCommandProfile
+			case "wrong-root":
+				model.M(model.A(result["completion_workspace_after"])[0])["root"] = "foreign"
+			case "raw-drift":
+				changed, cloneErr := canonical.Clone(map[string]any{"workspaces": result["workspace_after"]})
+				if cloneErr != nil {
+					t.Fatal(cloneErr)
+				}
+				result["workspace_after"] = changed["workspaces"]
+				model.M(model.A(result["workspace_after"])[0])["content_sha256"] = testDigest("changed raw bytes")
+			}
+			if accepted := runnerAccepted(observed, event, context, contextHash); accepted != (mutation == "valid") {
+				t.Fatalf("profile isolation failed for %s: accepted=%v", mutation, accepted)
+			}
+		})
+	}
+	observed, _, _, _ := runnerObservation(false)
+	observed["format"] = "codearbiter.observation/0.1.0"
+	observed["producer_profile"] = CompletionCommandProfile
+	delete(observed, "producer_result")
+	if len(schema.ValidateWith(InspectionSchema(), observed)) == 0 {
+		t.Fatal("new completion producer profile was admitted as historical observation format")
+	}
+}
+
 func TestQualifiedRunnerContractRejectsBindingMutations(t *testing.T) {
 	mutations := map[string]func(map[string]any){
 		"missing collector":       func(b map[string]any) { delete(b, "collector_profile") },
