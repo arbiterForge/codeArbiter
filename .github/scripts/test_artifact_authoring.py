@@ -279,6 +279,26 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
     def test_admission_refuses_pi_before_any_new_full_lane_artifact(self):
         self.refused(self.client("ca-pi"))
 
+    def test_admission_identifies_scoped_pi_package_without_enabling_workflow(self):
+        client = self.client("ca-pi")
+        manifest = self.plugin / "package.json"
+        original = json.loads(manifest.read_bytes())
+        status = client.workflow_preflight()
+        self.assertEqual(status["host"], "pi")
+        self.assertEqual(status["adapter_version"], original["version"])
+        self.assertEqual(status["missing"], ["Pi production prompt, verification and review authority"])
+        self.assertFalse(status["resources_available"])
+        self.assertFalse(status["live_host_verified"])
+        self.refused(client)
+        for wrong_name in ("ca-pi", "@arbiterforge/unrelated"):
+            with self.subTest(name=wrong_name):
+                manifest.write_text(json.dumps({**original, "name": wrong_name}), encoding="utf-8")
+                status = client.workflow_preflight()
+                self.assertIsNone(status["host"])
+                self.assertEqual(status["missing"], ["matching installed host identity"])
+                self.assertFalse(status["resources_available"])
+                self.refused(client)
+
     def test_admission_refuses_missing_producers_and_host_helpers(self):
         client = self.client()
         for name in ("_approvallib.py", "_prerequisitelib.py", "_sprintapprovallib.py",

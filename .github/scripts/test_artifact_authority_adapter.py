@@ -120,7 +120,9 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
+        # OS temp roots may be aliases (macOS /var -> /private/var). Normal
+        # transcript fixtures use real paths; linked-path tests add their own links.
+        self.root = Path(self.temp.name).resolve()
         (self.root / ".codearbiter").mkdir()
         git_run(["git", "init", "--quiet", str(self.root)], check=True)
         git_run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
@@ -141,6 +143,10 @@ class AuthorityAdapterTest(unittest.TestCase):
             git_run(["git", "-C", str(self.root), "worktree", "remove", "--force", str(self.linked)], check=False)
         self.adapter.REGISTRY_PARENT = self.original_registry_parent
         self.temp.cleanup()
+
+    def test_engine_digest_rejects_non_native_values_as_invalid_authority_state(self):
+        with self.assertRaisesRegex(RuntimeError, "^INVALID_AUTHORITY_STATE:"):
+            self.adapter._engine_digest({"unsupported_number": 0.5})
 
     def test_fixture_git_commands_ignore_inherited_repository_location(self):
         environment = dict(os.environ)
@@ -384,6 +390,59 @@ class AuthorityAdapterTest(unittest.TestCase):
             read(escaped_bytes)
         with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_EVIDENCE_CONTEXT"):
             read(native_bytes + b"\n")
+
+    def test_large_verification_context_is_referenced_and_rehydrated(self):
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 << 20)}
+        context_bytes = self.adapter._canonical(self.client.context)
+        self.assertGreater(len(context_bytes), self.adapter.MAX_STATE)
+        self.assertLess(len(context_bytes), self.adapter.MAX_EVIDENCE_CONTEXT)
+
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="request-nonce-large-verification",
+        )
+        state_bytes = Path(armed["request_path"]).read_bytes()
+        stored = json.loads(state_bytes)
+        self.assertLessEqual(len(state_bytes), self.adapter.MAX_STATE)
+        self.assertEqual(stored["context"], {
+            "format": "codearbiter.evidence-context-reference/0.1.0",
+        })
+        self.assertEqual((self.root / stored["context_ref"]).read_bytes(), context_bytes)
+
+        loaded = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(loaded["state"], "ARMED")
+        self.assertEqual(loaded["context"], self.client.context)
+        self.assertEqual(loaded["command_bindings"], stored["command_bindings"])
+        self.assertEqual(len(loaded["command_bindings"]), 1)
+        binding = loaded["command_bindings"][0]
+        self.assertEqual(binding["definition_sha256"], self.client.context["commands"][0]["definition_sha256"])
+        self.assertEqual(binding["argv"][1:], ["-m", "unittest", "tests.test_config", "-v"])
+        self.assertTrue(Path(binding["argv"][0]).is_absolute())
+        self.assertEqual(binding["cwd"], str(self.root))
+
+    def test_verification_result_without_lifecycle_reserve_refuses_before_registration(self):
+        self.client.context["commands"][0]["definition"]["required_tests"] = [
+            f"test_capacity_{index:04d}_" + "x" * 220 for index in range(4800)
+        ]
+        self.assertLess(
+            len(self.adapter._canonical(self.client.context)), self.adapter.MAX_EVIDENCE_CONTEXT,
+        )
+        spool = self.adapter._spool_root(self.root)
+        registry = self.adapter._registry_root()
+        before_spool = {path.name: path.read_bytes() for path in spool.glob("*.json")}
+        before_registry = {path.name: path.read_bytes() for path in registry.glob("*.json")}
+
+        with self.assertRaisesRegex(
+            self.adapter.AuthorityError,
+            "^INVALID_AUTHORITY_STATE: verification result has no bounded lifecycle reserve$",
+        ):
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="request-nonce-oversized-verification",
+            )
+
+        self.assertEqual({path.name: path.read_bytes() for path in spool.glob("*.json")}, before_spool)
+        self.assertEqual({path.name: path.read_bytes() for path in registry.glob("*.json")}, before_registry)
 
     def test_verifier_executes_engine_argv_without_shell_and_publishes_observation(self):
         armed = self.adapter.arm_request(
@@ -3529,7 +3588,7 @@ class ClaudeEndToEndTest(unittest.TestCase):
             "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
             "target_sha256": context["input_sha256"], "contract_sha256": armed["review_contract_sha256"],
             "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
-            "assessment": "Independent Claude review of the frozen target.",
+            "assessment": getattr(self, "review_assessment", "Independent Claude review of the frozen target."),
         })
         if fixtures:
             # Claude Code 2.1.286: the report arrives as the child's handback.
@@ -3591,6 +3650,14 @@ class ClaudeEndToEndTest(unittest.TestCase):
     def test_end_to_end_claude_2_1_286(self):
         """The same flow on Claude Code 2.1.286's tagged model and handback report."""
         self.host_fixtures = "2.1.286/"
+        self.test_end_to_end_claude()
+
+    def test_end_to_end_claude_non_ascii_review_publishes(self):
+        """A reviewer reply with non-ASCII text publishes: the observation's
+        payload and producer-result digests use the engine's UTF-8 canonical
+        form, not ASCII-escaped JSON."""
+        self.host_fixtures = "2.1.286/"
+        self.review_assessment = "Independent review — the frozen target holds; naïve ✓ 😀."
         self.test_end_to_end_claude()
 
     @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")

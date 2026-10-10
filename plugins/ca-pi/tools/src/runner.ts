@@ -428,8 +428,9 @@ function validMessage(value: unknown): boolean {
     // (rawStopReason observed on the live RPC wire; promotion run
     // 31352831520 degraded every 0.84 child dispatch on it).
     // `providerThinkingLevel`, `thinkingLevel` and `endTurn` entered in Pi 1.0.0.
+    // Pi 1.1.0 adds monotonic execution timing to final assistant messages.
     return exactKeys(value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp", "durationMs"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"])
       && validContent(value.content, "assistant")
       && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string")
@@ -440,6 +441,7 @@ function validMessage(value: unknown): boolean {
       && (value.providerThinkingLevel === undefined || boundedString(value.providerThinkingLevel))
       && (value.thinkingLevel === undefined || boundedString(value.thinkingLevel))
       && (value.endTurn === undefined || typeof value.endTurn === "boolean")
+      && (value.durationMs === undefined || (typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs >= 0))
       && (value.deferred === undefined || validDeferredHandle(value.deferred))
       && (value.diagnostics === undefined || (Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)))
       && validUsage(value.usage)
@@ -447,9 +449,9 @@ function validMessage(value: unknown): boolean {
   }
   if (value.role === "toolResult") {
     // `usage` (tool-execution usage) entered the toolResult schema in Pi 0.84.x;
-    // `nestedCalls` (codemode's nested tool calls) in Pi 1.0.0.
+    // `nestedCalls` (codemode's nested tool calls) in Pi 1.0.0; `durationMs` in 1.1.0.
     return exactKeys(value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp", "durationMs"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"])
       && typeof value.toolCallId === "string"
       && typeof value.toolName === "string"
@@ -457,6 +459,7 @@ function validMessage(value: unknown): boolean {
       && (value.details === undefined || validOpaqueJson(value.details))
       && (value.usage === undefined || validUsage(value.usage))
       && (value.nestedCalls === undefined || validNestedCalls(value.nestedCalls))
+      && (value.durationMs === undefined || (typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs >= 0))
       && typeof value.isError === "boolean"
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
@@ -578,9 +581,12 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
         || typeof record.error !== "string") invalidProtocol();
       break;
     case "agent_start":
-    case "agent_settled":
     case "turn_start":
       if (!exactKeys(record, ["type"])) invalidProtocol();
+      break;
+    case "agent_settled":
+      // Pi 1.1.0 always reports whether this agent run was aborted.
+      if (!exactKeys(record, ["type", "aborted"]) || typeof record.aborted !== "boolean") invalidProtocol();
       break;
     case "agent_end":
       if (!exactKeys(record, ["type", "messages", "willRetry"])
@@ -629,9 +635,10 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
         || !validOpaqueJson(record.args) || !validOpaqueJson(record.partialResult)) invalidProtocol();
       break;
     case "tool_execution_end":
-      // Pi 1.0.0 tags codemode-nested executions with their parent call.
-      if (!exactKeys(record, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId"], ["type", "toolCallId", "toolName", "result", "isError"])
+      // Pi 1.0.0 tags nested executions; 1.1.0 adds optional execution timing.
+      if (!exactKeys(record, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId", "durationMs"], ["type", "toolCallId", "toolName", "result", "isError"])
         || (record.parentToolCallId !== undefined && !boundedString(record.parentToolCallId))
+        || (record.durationMs !== undefined && (typeof record.durationMs !== "number" || !Number.isFinite(record.durationMs) || record.durationMs < 0))
         || typeof record.toolCallId !== "string" || typeof record.toolName !== "string"
         || !validOpaqueJson(record.result) || typeof record.isError !== "boolean") invalidProtocol();
       break;
@@ -953,6 +960,7 @@ export async function runPiChild(
           }
         } else if (record.type === "agent_settled") {
           if (phase !== "await-settled") { finishFailure("protocol_error"); return; }
+          if (record.aborted === true) { finishFailure("cancelled"); return; }
           phase = "complete";
           endInput();
         } else {

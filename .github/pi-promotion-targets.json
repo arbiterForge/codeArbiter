@@ -41,13 +41,6 @@
       "after": "JSON.stringify([\"{candidate}\"].sort())"
     },
     {
-      "id": "adapter-matrix",
-      "path": ".github/workflows/ci.yml",
-      "class": "ci",
-      "before": "pi-version: [\"{last_verified}\"]",
-      "after": "pi-version: [\"{candidate}\"]"
-    },
-    {
       "id": "platform-contract-window",
       "path": ".github/scripts/test_pi_platform_contract.py",
       "class": "ci",
@@ -142,6 +135,13 @@
       "class": "generated",
       "before": "supported Pi {last_verified} public extension",
       "after": "supported Pi {candidate} public extension"
+    },
+    {
+      "id": "pi-support-supported-version",
+      "path": ".codearbiter/specs/pi-support.md",
+      "class": "current-doc",
+      "before": "- Supported Pi: exact `{last_verified}`",
+      "after": "- Supported Pi: exact `{candidate}`"
     },
     {
       "id": "pi-support-live-verification",
@@ -245,6 +245,13 @@
       "after": "requires: \"Pi {candidate}, Node.js 22.19+, and Python 3\""
     },
     {
+      "id": "site-forge-status-pi-requirement-test",
+      "path": "site/test/generator/forge-status.test.ts",
+      "class": "ci",
+      "before": "toContain(\"Pi {last_verified}\")",
+      "after": "toContain(\"Pi {candidate}\")"
+    },
+    {
       "id": "site-compatibility-supported",
       "path": "site/src/content/docs/getting-started/compatibility.mdx",
       "class": "current-doc",
@@ -328,14 +335,6 @@
       "class": "current-doc",
       "before": "- \"Pi {last_verified}\"",
       "after": "- \"Pi {candidate}\""
-    },
-    {
-      "id": "ci-single-version-live-installs",
-      "path": ".github/workflows/ci.yml",
-      "class": "ci",
-      "before": "pi_host_locks.py install --version {last_verified}",
-      "after": "pi_host_locks.py install --version {candidate}",
-      "occurrences": "all"
     },
     {
       "id": "site-presentation-pi-window-literal",

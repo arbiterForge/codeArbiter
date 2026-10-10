@@ -185,7 +185,7 @@ class StaticPackageContractTest(unittest.TestCase):
                 self.write_hooks(mutated)
                 self.assert_rejects("hook inventory")
 
-    def test_preserves_exact_installed_native_v1_240_second_cohort(self):
+    def test_preserves_exact_native_v1_240_second_inventory(self):
         manifest = self.install_authority_hooks()
         matcher = "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent"
         for event in ("PreToolUse", "PostToolUse"):

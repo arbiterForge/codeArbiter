@@ -1,0 +1,93 @@
+{
+  "schema": "tribunal-qualification-launch-evidence/v1",
+  "source": "Selected actual collaboration tool-call and tool-output fields from the controller local Codex session JSONL.",
+  "limits": "Launch message payloads are encrypted in the native log and are not exported. Assignment files preserve the separately retained input text with only the controller temporary directory prefix redacted. This records fresh launch settings and declared input boundaries, not a complete child tool trace or a cryptographic host attestation.",
+  "events": [
+    {
+      "timestamp": "2026-10-05T16:26:46.240Z",
+      "event_type": "function_call",
+      "call_id": "call_r06FkmCdWocK2ETo8XrUXY7J",
+      "namespace": "collaboration",
+      "name": "spawn_agent",
+      "task_name": "pr887_benchmark_a",
+      "fork_turns": "none",
+      "model_override_present": false,
+      "reasoning_override_present": false,
+      "source_record_sha256": "9624352009631615f0dbd1ed03049df0e2ca035af5f335afb836678b06769f85"
+    },
+    {
+      "timestamp": "2026-10-05T16:26:47.334Z",
+      "event_type": "function_call_output",
+      "call_id": "call_r06FkmCdWocK2ETo8XrUXY7J",
+      "output": {
+        "task_name": "/root/pr887_benchmark_a"
+      },
+      "source_record_sha256": "0414e3a6c990a5760517dcb25955256ce567b19764ea3554e87914dec6030f9e"
+    },
+    {
+      "timestamp": "2026-10-05T17:27:14.693Z",
+      "event_type": "function_call",
+      "call_id": "call_e0rvjmHTOQEnURmqChjbX6fT",
+      "namespace": "collaboration",
+      "name": "spawn_agent",
+      "task_name": "pr887_benchmark_b",
+      "fork_turns": "none",
+      "model_override_present": false,
+      "reasoning_override_present": false,
+      "source_record_sha256": "b43fa8408bb600f627b3f11f8b3e4884fcfdd10d7203839b3a872e86d5def5b3"
+    },
+    {
+      "timestamp": "2026-10-05T17:27:17.028Z",
+      "event_type": "function_call_output",
+      "call_id": "call_e0rvjmHTOQEnURmqChjbX6fT",
+      "output": {
+        "task_name": "/root/pr887_benchmark_b"
+      },
+      "source_record_sha256": "cf8f51155e9de00c45abcf3565e947ce6510c73990a223c946ac5531e4c445cf"
+    },
+    {
+      "timestamp": "2026-10-05T17:34:20.121Z",
+      "event_type": "function_call",
+      "call_id": "call_uGRSjk4Y3FupCRoapCqh4DKB",
+      "namespace": "collaboration",
+      "name": "spawn_agent",
+      "task_name": "pr887_benchmark_verifier",
+      "fork_turns": "none",
+      "model_override_present": false,
+      "reasoning_override_present": false,
+      "source_record_sha256": "e013253e849f2dfef89795729f3af20ff3f6b997d5aa401f6e04fbf3fbc1a4a6"
+    },
+    {
+      "timestamp": "2026-10-05T17:34:21.507Z",
+      "event_type": "function_call_output",
+      "call_id": "call_uGRSjk4Y3FupCRoapCqh4DKB",
+      "output": {
+        "task_name": "/root/pr887_benchmark_verifier"
+      },
+      "source_record_sha256": "0763ec7f80b081438cda0532403742530b95d0096727e767c6f935b35f178614"
+    }
+  ],
+  "assignments": [
+    {
+      "file": "incumbent-assignment.txt",
+      "source_file": "tribunal887-benchmark-A-brief.txt",
+      "source_sha256": "2098b50d186237426e5dc38da87241a1c873df13a2a2b51215f331dce04fd1ad",
+      "export_sha256": "e0a3197ca902ef3a3715e717ceeb82810649387c6580712636d6e041b82c6ecd",
+      "redaction": "Controller temporary directory prefix only, replaced by <controller-temp>."
+    },
+    {
+      "file": "candidate-assignment.txt",
+      "source_file": "tribunal887-benchmark-B-brief.txt",
+      "source_sha256": "08df11a0176a51c993e3cdaa79efd4b4316341a84500612153e696f1537467f1",
+      "export_sha256": "b5b907e5fb868d8eec5621e0a7dca8ad22336a5f7c04b81ebea69d8831fdb8ff",
+      "redaction": "Controller temporary directory prefix only, replaced by <controller-temp>."
+    },
+    {
+      "file": "verifier-assignment.txt",
+      "source_file": "tribunal887-benchmark-verifier-brief.txt",
+      "source_sha256": "53f0e7619656b92be101b4a0b9ba35eb7bc2730cf9c4e69ee4ad0184cc8da285",
+      "export_sha256": "eea40f23008d2c1cf45b9e799de3fd59c527b0b8448262704ad0b4704fcf534f",
+      "redaction": "Controller temporary directory prefix only, replaced by <controller-temp>."
+    }
+  ]
+}

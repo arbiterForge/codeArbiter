@@ -1,0 +1,92 @@
+/* The original canvas + inspector composition, inside the documentation shell.
+   All product values come from design-system.css; offline exports resolve it. */
+:root:has(ca-workflow-atlas){--sl-content-width:90rem}
+:root:has(ca-workflow-atlas) .sl-markdown-content>p{max-inline-size:75ch}
+.ca-atlas{display:block;container-type:inline-size;position:relative;min-inline-size:0;margin-block:var(--ca-space-6);border:1px solid var(--ca-line);border-radius:var(--ca-radius-md);background:var(--ca-bg);color:var(--ca-ink-soft);font-family:var(--ca-font-sans);overflow-wrap:anywhere}
+.ca-atlas *{box-sizing:border-box}
+.ca-atlas [hidden]{display:none!important}
+.ca-atlas :is(h3,h4,p,ol,ul){margin:0}
+.ca-atlas :is(h3,h4){color:var(--ca-ink);letter-spacing:-.025em}
+.ca-atlas h3{font-size:var(--ca-text-xl);line-height:1.3}
+.ca-atlas h4{font-size:var(--ca-text-sm);line-height:1.4}
+.ca-atlas p{line-height:1.65}
+.ca-atlas :is(button,select){font:inherit;font-size:var(--ca-text-sm);color:var(--ca-ink);border:1px solid var(--ca-line-strong);border-radius:var(--ca-radius-sm);background:var(--ca-bg-raised);padding:var(--ca-space-2) var(--ca-space-3);cursor:pointer}
+.ca-atlas button:hover{border-color:var(--ca-brand);background:var(--ca-bg-soft)}
+.ca-atlas button[aria-pressed=true]{border-color:var(--ca-brand);color:var(--ca-ink);background:var(--ca-brand-wash)}
+.ca-atlas a{color:var(--ca-ink-soft);text-underline-offset:.2em}
+.ca-atlas a:hover{color:var(--ca-brand-bright)}
+.ca-atlas :is(button,a,select,summary,[tabindex]):focus-visible{outline:2px solid var(--ca-brand-bright);outline-offset:3px}
+.ca-atlas code{font-family:var(--ca-font-mono);font-size:.9em;overflow-wrap:anywhere}
+.ca-atlas .atlas-mast{display:flex;align-items:center;justify-content:space-between;gap:var(--ca-space-5);padding:var(--ca-space-5);border-bottom:1px solid var(--ca-line);background:var(--ca-bg-raised);border-radius:var(--ca-radius-md) var(--ca-radius-md) 0 0}
+.ca-atlas .atlas-mast .ca-eyebrow{margin-bottom:var(--ca-space-2)}
+.ca-atlas .subtitle{font-size:var(--ca-text-sm);color:var(--ca-ink-muted);margin-top:var(--ca-space-2)}
+.ca-atlas .atlas-pin{font-size:var(--ca-text-xs);text-align:right;flex-shrink:0;color:var(--ca-ink-muted)}
+.ca-atlas .tabs{display:flex;gap:var(--ca-space-2);overflow:auto;scrollbar-width:thin;padding:var(--ca-space-3) var(--ca-space-5);border-bottom:1px solid var(--ca-line)}
+.ca-atlas .tabs button{white-space:nowrap;background:transparent}
+.ca-atlas .tools{display:flex;align-items:end;gap:var(--ca-space-2);flex-wrap:wrap;padding:var(--ca-space-3) var(--ca-space-5);border-bottom:1px solid var(--ca-line)}
+.ca-atlas .tools label{display:grid;gap:var(--ca-space-1);font-size:var(--ca-text-xs);color:var(--ca-ink-muted);max-inline-size:100%}
+.ca-atlas .tools select{inline-size:15rem;max-inline-size:100%}
+.ca-atlas .tools a{font-size:var(--ca-text-xs);padding:var(--ca-space-2)}
+.ca-atlas .spacer{flex:1}
+.ca-atlas output{align-self:center;min-inline-size:3.1rem;text-align:center;font:var(--ca-text-xs)/1.5 var(--ca-font-mono);color:var(--ca-ink-muted)}
+.ca-atlas .frame{display:grid;grid-template-columns:minmax(0,1fr) 20rem;block-size:clamp(34rem,72vh,56rem);min-inline-size:0}
+.ca-atlas .stagewrap{display:flex;position:relative;flex-direction:column;min-inline-size:0;min-block-size:0}
+.ca-atlas .stage{overflow:auto;flex:1;min-block-size:0;overscroll-behavior:contain;scrollbar-width:thin;background:var(--ca-bg);touch-action:pan-x pan-y pinch-zoom}
+.ca-atlas .stage.dragging{cursor:grabbing}
+.ca-atlas .stage svg{display:block;inline-size:100%;max-inline-size:none;block-size:auto;user-select:none}
+.ca-atlas .stage .edge{pointer-events:none}
+.ca-atlas .stage .node{cursor:pointer;transition:opacity 120ms}
+.ca-atlas .stage .node:hover>rect:first-of-type{stroke:var(--ca-info);stroke-width:3}
+.ca-atlas .stage .node:focus-visible{outline:none}
+.ca-atlas .stage .node:focus-visible>rect:first-of-type{stroke:var(--ca-brand-bright);stroke-width:4}
+.ca-atlas .stage .node.selected>rect:first-of-type{stroke:var(--ca-brand);stroke-width:3}
+.ca-atlas .stage .dim{opacity:.16}
+.ca-atlas .foot{display:flex;justify-content:space-between;gap:var(--ca-space-3);padding:var(--ca-space-2) var(--ca-space-3);border-top:1px solid var(--ca-line);font-size:var(--ca-text-xs);color:var(--ca-ink-muted)}
+.ca-atlas .hint{display:none}
+.ca-atlas .inspect{overflow:auto;min-inline-size:0;border-left:1px solid var(--ca-line);background:var(--ca-bg-raised);padding:var(--ca-space-5);scrollbar-width:thin}
+.ca-atlas .inspect h3{margin-bottom:var(--ca-space-3)}
+.ca-atlas .inspect h4{margin:var(--ca-space-5) 0 var(--ca-space-2);text-transform:uppercase;letter-spacing:.08em;font-size:var(--ca-text-xs);color:var(--ca-ink-muted)}
+.ca-atlas .inspect p{font-size:var(--ca-text-sm);margin-bottom:var(--ca-space-3)}
+.ca-atlas .inspect ol{padding-left:var(--ca-space-5);font-size:var(--ca-text-sm)}
+.ca-atlas .inspect li{padding-bottom:var(--ca-space-3);line-height:1.6}
+.ca-atlas .eyebrow{font-size:var(--ca-text-xs);text-transform:uppercase;letter-spacing:.1em;color:var(--ca-ink-muted)}
+.ca-atlas .chips{display:flex;flex-wrap:wrap;gap:var(--ca-space-2)}
+.ca-atlas .chips button{font-size:var(--ca-text-xs);padding:var(--ca-space-1) var(--ca-space-2)}
+.ca-atlas .contextline{font-size:var(--ca-text-sm);border-left:2px dashed var(--ca-line-strong);padding-left:var(--ca-space-3);margin-block:var(--ca-space-2)}
+.ca-atlas .callout{font-size:var(--ca-text-sm);line-height:1.65;border-left:3px solid var(--ca-brand);background:var(--ca-brand-wash);padding:var(--ca-space-3);margin-block:var(--ca-space-4)}
+.ca-atlas .notice{padding:var(--ca-space-3);border:1px solid var(--ca-line-strong);border-radius:var(--ca-radius-sm)}
+.ca-atlas .src{display:block;font-size:var(--ca-text-xs);overflow-wrap:anywhere;margin-block:var(--ca-space-2);text-decoration:none}
+.ca-atlas .src small{display:block;color:var(--ca-ink-muted);font-size:inherit;line-height:1.6}
+.ca-atlas .src:hover{text-decoration:underline}
+.ca-atlas .legend{display:grid;gap:var(--ca-space-3);font-size:var(--ca-text-xs);margin-block:var(--ca-space-4)}
+.ca-atlas .legend i{display:inline-block;inline-size:1.5rem;border-top:2px solid var(--ca-info);vertical-align:middle;margin-right:var(--ca-space-2)}
+.ca-atlas .legend .context{border-top:2px dashed var(--ca-ink-soft)}
+.ca-atlas .legend .conditional{border-top:2px dotted var(--ca-brand)}
+.ca-atlas .legend .return{border-color:var(--ca-ink-muted)}
+.ca-atlas .legend .stop{border-color:var(--ca-danger)}
+.ca-atlas .atlas-hosts{display:grid;gap:var(--ca-space-2);margin:var(--ca-space-3) 0}
+.ca-atlas .atlas-hosts :is(dt,dd){margin:0;font-size:var(--ca-text-xs);line-height:1.7}
+.ca-atlas .atlas-hosts dt{text-transform:uppercase;letter-spacing:.08em;color:var(--ca-ink-muted)}
+.ca-atlas .mobile-details{display:none}
+.ca-atlas .atlas-address{position:absolute;inset:0 auto auto 0;inline-size:1px;block-size:1px;pointer-events:none}
+.ca-atlas .reading-wrap{border-top:1px solid var(--ca-line);padding:var(--ca-space-4) var(--ca-space-5)}
+.ca-atlas summary{cursor:pointer;color:var(--ca-ink);font-weight:650}
+.ca-atlas .static-reading{max-inline-size:75ch;margin-inline:auto;padding-block:var(--ca-space-5);font-size:var(--ca-text-md);line-height:1.75}
+.ca-atlas .static-reading :is(p,ol,ul){margin-block:var(--ca-space-3)}
+.ca-atlas .static-reading :is(ol,ul){padding-left:var(--ca-space-5)}
+.ca-atlas .static-reading h4{margin-top:var(--ca-space-5)}
+.ca-atlas .static-reading h3{margin-block:var(--ca-space-4)}
+.ca-atlas .reading-card{padding-block:var(--ca-space-6);border-top:1px solid var(--ca-line)}
+.ca-atlas .reading-links{display:flex;flex-wrap:wrap;gap:var(--ca-space-2) var(--ca-space-4);margin-block:var(--ca-space-5)}
+.ca-atlas .static-reading [data-reading-node]{padding-block:var(--ca-space-5);border-bottom:1px solid var(--ca-line);scroll-margin-top:5rem}
+.ca-atlas .atlas-downloads{border-top:1px solid var(--ca-line);padding:var(--ca-space-4) var(--ca-space-5);font-size:var(--ca-text-xs);line-height:2}
+.ca-atlas dialog{max-inline-size:min(52rem,90vw);max-block-size:85vh;overflow:auto;border:1px solid var(--ca-line-strong);border-radius:var(--ca-radius-md);background:var(--ca-bg-panel);color:var(--ca-ink-soft);padding:var(--ca-space-5)}
+.ca-atlas dialog::backdrop{background:rgb(0 0 0 / 70%)}
+.ca-atlas .dialogtop{display:flex;justify-content:space-between;align-items:start;gap:var(--ca-space-4);margin-bottom:var(--ca-space-4)}
+.ca-atlas .sourcecard{border-top:1px solid var(--ca-line);padding-block:var(--ca-space-3);font-size:var(--ca-text-xs)}
+@container(min-width:75rem){.ca-atlas .frame{grid-template-columns:minmax(0,1fr) 23rem}.ca-atlas .hint{display:inline}}
+@container(max-width:52rem){.ca-atlas .frame{grid-template-columns:1fr;block-size:auto}.ca-atlas .stagewrap{block-size:65vh;min-block-size:26rem}.ca-atlas .inspect{border-left:0;border-top:1px solid var(--ca-line);max-block-size:none}.ca-atlas .mobile-details{display:inline-block}.ca-atlas .atlas-pin{display:none}.ca-atlas .spacer{display:none}}
+@container(max-width:30rem){.ca-atlas .atlas-mast,.ca-atlas .tools,.ca-atlas .tabs{padding:var(--ca-space-3)}.ca-atlas .tools select{inline-size:100%}.ca-atlas .atlas-entry-label{flex-basis:calc(100% - 4.5rem)}.ca-atlas .inspect{padding:var(--ca-space-4)}}
+@media(prefers-reduced-motion:reduce){.ca-atlas *{scroll-behavior:auto!important;transition:none!important}}
+@media(forced-colors:active){.ca-atlas{--ca-bg:Canvas;--ca-bg-raised:Canvas;--ca-bg-panel:Canvas;--ca-bg-soft:Canvas;--ca-ink:CanvasText;--ca-ink-soft:CanvasText;--ca-ink-muted:CanvasText;--ca-line:CanvasText;--ca-line-strong:CanvasText;--ca-info:LinkText;--ca-brand:Highlight;--ca-brand-bright:Highlight;--ca-brand-wash:Canvas;--ca-danger:CanvasText}.ca-atlas .stage .dim{opacity:.4}.ca-atlas :is(button,select){color:ButtonText;background:ButtonFace}}
+@media print{.ca-atlas{container-type:normal;border:0;--ca-bg:#fff;--ca-bg-raised:#fff;--ca-bg-panel:#fff;--ca-ink:#111;--ca-ink-soft:#111;--ca-ink-muted:#333;--ca-line:#ccc;--ca-brand:#111;--ca-brand-wash:transparent;color:#111;background:#fff}.ca-atlas :is(.tabs,.tools,.frame,dialog,.atlas-downloads){display:none!important}.ca-atlas .reading-wrap{border:0;padding:0}.ca-atlas .reading-wrap>summary{display:none}.ca-atlas .reading-wrap::details-content{display:block;content-visibility:visible}.ca-atlas .static-reading{max-inline-size:none}.ca-atlas :is(h3,h4){break-after:avoid}.ca-atlas .reading-links{display:none}}

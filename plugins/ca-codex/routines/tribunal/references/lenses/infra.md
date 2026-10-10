@@ -1,24 +1,64 @@
 # infra — lens mandate
 
-Executed by `tribunal-lens-reviewer` under the `infra` assignment. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `infra` assignment.
+
+## Purpose / failure family
+Find unsafe build, deployment and publication boundaries, or configuration
+failures that compromise the promised runtime/release behavior.
+
+## Applicability
+The assigned scope includes CI, containers, infrastructure configuration,
+deployment or release automation with meaningful trust or lifecycle boundaries.
+
+## Skip conditions
+No affected pipeline/deployment surface. Do not infer a hosted-service posture
+for a local development fixture or a declared disposable environment.
 
 ## Scope emphasis
-CI workflows, Dockerfiles/compose, IaC and deploy manifests, release automation in the assigned slice.
+Workflow event to credential/artifact/publish boundary; container and deploy
+configuration to actual exposed service, privilege and resource lifecycle.
 
 ## Required reading
-- `<project-root>/.codearbiter/security-controls.md` — trust boundaries and approved secret stores; `<project-root>/.codearbiter/tech-stack.md` — deploy targets and CI conventions.
+- Finding record ([routines/tribunal/references/finding-record.md](../finding-record.md)) and review risk ([routines/tribunal/references/review-risk.md](../review-risk.md)).
+- `<project-root>/.codearbiter/security-controls.md` — pipeline trust and secret
+  boundaries; `<project-root>/.codearbiter/tech-stack.md` — deploy targets,
+  CI/release contracts and applicable protections.
 
-## Checklist
-- CI/CD workflows: untrusted input (PR titles, branch names, comments) interpolated into `run:` steps; excessive workflow/token `permissions`; third-party actions pinned to tags, not SHAs; fork-writable cache keys (poisoning); artifacts promoted without provenance; masked failures (swallowed exit codes) ahead of a publish step.
-- Container posture: base image unpinned or of unvetted provenance; running as root; secrets baked into layers or build args.
-- IaC/deploy manifests: drift between environments; missing resource limits; services exposed wider than intended.
-- Release automation: publish/tag steps ungated by branch or tag protections.
+## Deterministic probes
+Inspect workflow triggers/permissions, action/image references, cache/artifact
+producers and consumers, publish conditions, container users/mounts and deploy
+exposure. Use existing configuration/provenance receipts; do not trigger jobs.
 
-## Categories & severity
-`security` for exploitable pipeline issues (injection, token overreach, cache poisoning); `dependency` for provenance/pinning; `reliability` for deploy-config correctness. Exploitable-from-fork is critical/high.
+## Review questions
+- Can untrusted event data become shell syntax, credential access or executable
+  candidate code in a privileged workflow?
+- Can a less-trusted cache or artifact cross into release without identity checks?
+- Do masked failures or mismatched protections permit publication after failed gates?
+- Are image provenance, privileges, secret layers and service exposure consistent
+  with the declared threat model?
+- Can deploy ordering, resource exhaustion or environment drift violate availability?
 
-## Exposure
-Count of workflows + Dockerfiles/compose files + IaC/deploy manifests examined.
+## False-positive guards / non-findings
+A tag, root user or wide permission is a lead, not automatic exploitability.
+Establish the reachable event, actual credential scope and accepted controls.
+Inherited protections require evidence; unavailable remote settings remain
+unverified rather than presumed missing or effective.
+
+## Evidence requirements
+Show the event/input-to-privilege or configuration-to-runtime trace and concrete
+consequence. Absence claims state the search universe across reusable workflows,
+environment/repository controls and deployment owners. Bind artifact claims to
+actual identity; a successful source check does not prove published bytes.
+
+## Exposure metric
+Count of pipeline/deploy boundary paths inspected, distinguishing source
+configuration from verified external settings and artifact evidence.
+
+## Escalation / cross-lens handoff
+Route application dependency trust to secrets-supply and incomplete propagation
+to change-closure. Corroborate one root defect when bad artifact trust also
+appears as a release-closure issue.
 
 ## Out of scope
-Supply-chain risk of app dependencies (secrets-supply) — this lens owns the pipeline and deploy surface itself.
+Changing infrastructure, running jobs, application dependency audits and severity
+based solely on a configuration signature.

@@ -376,6 +376,50 @@ class TokenTest(_RepoCase):
 
 
 class ReviewFeedbackRegressionTest(unittest.TestCase):
+    def test_tribunal_usage_schema_contract_survives_in_memory_projection(self):
+        for host, identity, source in (("claude", "agent_id", "claude-subagent-transcript"),
+                                       ("codex", "agent_thread_id", "codex-session-transcript-best-effort")):
+            folder = "skills" if host == "claude" else "routines"
+            rendered = B.render_all(REPO_ROOT, host)
+            schema = rendered[folder + "/tribunal/references/schemas.md"].decode()
+            with self.subTest(host=host):
+                self.assertIn('"' + identity + '"', schema)
+                self.assertIn('"tokens_source":"' + source + '"', schema)
+                self.assertIn('"tokens_status":"observed|unavailable"', schema)
+                telemetry = rendered[folder + "/tribunal/references/telemetry.md"].decode()
+                if host == "codex":
+                    self.assertIn('"tokens_actual_status":"complete|partial|unavailable"', telemetry)
+                else:
+                    self.assertNotIn("tokens_actual_status", telemetry)
+
+    def test_tribunal_profiles_render_without_provider_or_registration_assumptions(self):
+        for host in ("claude", "codex", "pi"):
+            rendered = B.render_all(REPO_ROOT, host)
+            folder = "skills" if host == "claude" else "routines"
+            text = rendered[folder + "/tribunal/references/cost-and-models.md"].decode()
+            with self.subTest(host=host):
+                for obsolete in ("Opus 4.8", "Sonnet 5", "Haiku 4.5", "claude-opus", "claude-fable", "repo_tokens"):
+                    self.assertNotIn(obsolete, text)
+                for required in ("fresh_threads", "model_override", "reasoning_override", "packet_bytes",
+                                 "semantic-contract", "change-closure", "does not reduce total tokens"):
+                    self.assertIn(required, text)
+                reviewer = rendered["agents/tribunal-lens-reviewer.md"].decode()
+                self.assertNotIn("Bash", _frontmatter(reviewer))
+                self.assertIn("MODE: review | verify", reviewer)
+
+    def test_tribunal_helper_examples_render_to_executable_host_paths(self):
+        for host in ("claude", "codex", "pi"):
+            folder = "skills" if host == "claude" else "routines"
+            text = B.render_all(REPO_ROOT, host)[folder + "/tribunal/references/schemas.md"].decode()
+            with self.subTest(host=host):
+                self.assertIn('hooks/tribunal.py" --root', text)
+                self.assertIn("resume-status", text)
+                self.assertIn("filing-skipped", text)
+                self.assertIn("telemetry-skipped", text)
+                self.assertIn("run-completed", text)
+                self.assertNotIn("{{", text)
+                self.assertNotIn("[hooks/tribunal.py]", text)
+
     def test_surface_readme_describes_active_codex_agent_output(self):
         text = (REPO_ROOT / "core" / "surface" / "README.md").read_text(
             encoding="utf-8"
@@ -423,9 +467,9 @@ class ReviewFeedbackRegressionTest(unittest.TestCase):
         pi = B.render_all(REPO_ROOT, "pi")[
             "agents/tribunal-lens-reviewer.md"
         ].decode()
-        self.assertIn("under skills/tribunal/references/lenses/", pi)
+        self.assertIn("under routines/tribunal/references/lenses/", pi)
         self.assertIn(
-            "names a card under skills/tribunal/references/lenses/", pi
+            "names a card under routines/tribunal/references/lenses/", pi
         )
 
 class ExtractionInversionTest(_RepoCase):

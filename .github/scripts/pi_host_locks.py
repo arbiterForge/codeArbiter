@@ -25,7 +25,7 @@ from urllib.parse import quote, urlsplit
 PACKAGE = "@earendil-works/pi-coding-agent"
 REGISTRY = "https://registry.npmjs.org"
 REGISTRY_ARGS = (f"--registry={REGISTRY}", f"--@earendil-works:registry={REGISTRY}")
-SUPPORTED = ("1.0.2",)
+SUPPORTED = ("1.1.0",)
 LOCK_ROOT = Path(".github/fixtures/pi-hosts")
 VERSION = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 SOURCE_REPOSITORY = "https://github.com/earendil-works/pi"
@@ -157,6 +157,10 @@ def _fetch_registry_packument(package_name: str, deadline: float, version: str |
         raise ValueError(f"candidate registry metadata has an invalid package name: {package_name}")
     if version is not None and VERSION.fullmatch(version) is None:
         raise ValueError("candidate registry metadata version is invalid")
+    return _fetch_registry_json("/" + quote(package_name, safe="@") + (f"/{version}" if version else ""), deadline)
+
+
+def _fetch_registry_json(path: str, deadline: float) -> dict[str, Any]:
     last_error: OSError | http.client.HTTPException | None = None
     for attempt in range(3):
         remaining = deadline - time.monotonic()
@@ -168,7 +172,7 @@ def _fetch_registry_packument(package_name: str, deadline: float, version: str |
             )
             try:
                 connection.request(
-                    "GET", "/" + quote(package_name, safe="@") + (f"/{version}" if version else ""),
+                    "GET", path,
                     headers={
                         "Accept": "application/json",
                         "User-Agent": "codeArbiter-pi-host-lock/1",
@@ -211,6 +215,62 @@ def _fetch_registry_packument(package_name: str, deadline: float, version: str |
                 time.sleep(delay)
     assert last_error is not None
     raise last_error
+
+
+def _candidate_source_commit(metadata: dict[str, Any], version: str, deadline: float) -> str:
+    """Capture unverified source metadata; admission still requires provenance review."""
+    if metadata.get("repository.url") != SOURCE_REPOSITORY:
+        raise ValueError("candidate registry metadata has no approved source identity")
+    git_head = metadata.get("gitHead")
+    if git_head is not None:
+        if not isinstance(git_head, str) or re.fullmatch(r"[0-9a-f]{40}", git_head) is None:
+            raise ValueError("candidate registry metadata has no approved source identity")
+        return git_head
+
+    # Derive the fixed registry endpoint instead of following a metadata-supplied URL.
+    document = _fetch_registry_json("/-/npm/v1/attestations/" + quote(f"{PACKAGE}@{version}", safe="@"), deadline)
+    try:
+        attestations = document["attestations"]
+        if not isinstance(attestations, list) or not 1 <= len(attestations) <= 8:
+            raise ValueError("invalid attestation inventory")
+        if not all(isinstance(item, dict) for item in attestations):
+            raise ValueError("invalid attestation record")
+        matches = [item for item in attestations if item.get("predicateType") == "https://slsa.dev/provenance/v1"]
+        if len(matches) != 1:
+            raise ValueError("missing or ambiguous source metadata")
+        envelope = matches[0]["bundle"]["dsseEnvelope"]
+        if envelope["payloadType"] != "application/vnd.in-toto+json":
+            raise ValueError("invalid payload type")
+        statement = json.loads(base64.b64decode(envelope["payload"], validate=True))
+        integrity = metadata["dist.integrity"]
+        if not isinstance(integrity, str) or not integrity.startswith("sha512-"):
+            raise ValueError("invalid package integrity")
+        digest = base64.b64decode(integrity.removeprefix("sha512-"), validate=True)
+        if len(digest) != 64 or "sha512-" + base64.b64encode(digest).decode("ascii") != integrity:
+            raise ValueError("invalid package integrity")
+        expected_subject = [{"name": f"pkg:npm/%40earendil-works/pi-coding-agent@{version}",
+                             "digest": {"sha512": digest.hex()}}]
+        if (statement["_type"] != "https://in-toto.io/Statement/v1"
+                or statement["predicateType"] != "https://slsa.dev/provenance/v1"
+                or statement["subject"] != expected_subject):
+            raise ValueError("package subject mismatch")
+        definition = statement["predicate"]["buildDefinition"]
+        workflow = definition["externalParameters"]["workflow"]
+        tag = f"refs/tags/v{version}"
+        if (definition["buildType"] != "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1"
+                or workflow["repository"] != SOURCE_REPOSITORY or workflow["ref"] != tag):
+            raise ValueError("source repository or tag mismatch")
+        sources = definition["resolvedDependencies"]
+        if not isinstance(sources, list) or len(sources) != 1:
+            raise ValueError("missing or ambiguous source identity")
+        source = sources[0]
+        commit = source["digest"]["gitCommit"]
+        if (source["uri"] != f"git+{SOURCE_REPOSITORY}@{tag}"
+                or not isinstance(commit, str) or re.fullmatch(r"[0-9a-f]{40}", commit) is None):
+            raise ValueError("invalid immutable source identity")
+        return commit
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError("candidate provenance metadata does not bind the exact package and source") from error
 
 
 def _npm_semver_module(npm: str) -> Path:
@@ -476,7 +536,7 @@ def _download_registry_tarball(
 
 
 def _fetch_source_install_lock(source_commit: str, deadline: float) -> dict[str, Any]:
-    """Read inert managed-install data at npm's exact gitHead, never a moving ref."""
+    """Read inert managed-install data at the captured exact commit, never a moving ref."""
     if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
         raise ValueError("candidate source commit is invalid")
     remaining = deadline - time.monotonic()
@@ -1007,10 +1067,7 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
     ))
     if root_metadata.get("version") != version:
         raise ValueError("candidate root metadata did not resolve the exact requested version")
-    if root_metadata.get("repository.url") != SOURCE_REPOSITORY or re.fullmatch(
-        r"[0-9a-f]{40}", str(root_metadata.get("gitHead", "")),
-    ) is None:
-        raise ValueError("candidate registry metadata has no approved source identity")
+    source_commit = _candidate_source_commit(root_metadata, version, metadata_deadline)
     for field in ("dependencies", "optionalDependencies", "peerDependencies"):
         dependencies = root_metadata.get(field, {}) or {}
         if not isinstance(dependencies, dict):
@@ -1029,7 +1086,7 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
         if from_source:
             lock = _wrapper_lock_from_source_install_lock(
                 version, root_metadata, verified_root["manifest"],
-                _fetch_source_install_lock(root_metadata["gitHead"], metadata_deadline),
+                _fetch_source_install_lock(source_commit, metadata_deadline),
             )
         else:
             lock = _wrapper_lock_from_published_shrinkwrap(version, root_metadata, verified_root["shrinkwrap"])
@@ -1099,7 +1156,7 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
         "lock_sha256": hashlib.sha256(lock_path.read_bytes()).hexdigest(),
         "config_sha256": hashlib.sha256((destination / ".npmrc").read_bytes()).hexdigest(),
         "source_repository": root_metadata.get("repository.url"),
-        "source_commit": root_metadata.get("gitHead"),
+        "source_commit": source_commit,
         "result": "PENDING_REVIEW",
     }
     (destination / "review.json").write_text(

@@ -207,6 +207,16 @@ _SIDEBAR_PANEL_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/sidebar-window-contract.test.ts",
 })
 
+# Exact implementation and test artifacts of the private native approval
+# producer. Unlisted helpers, hooks, and tools still fail closed.
+_NATIVE_APPROVAL_NON_POLICY_ARTIFACTS = frozenset({
+    "helpers/approval-dialog.js",
+    "hooks/pi-approval.py",
+    "tools/src/approval-dialog.ts",
+    "tools/src/approval-entry.ts",
+    "tools/test/approval-dialog.test.ts",
+})
+
 
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -547,6 +557,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_ISSUE_464_NON_POLICY_ARTIFACTS)
         | set(_FOOTER_PARITY_NON_POLICY_ARTIFACTS)
         | set(_SIDEBAR_PANEL_NON_POLICY_ARTIFACTS)
+        | set(_NATIVE_APPROVAL_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
@@ -671,7 +682,7 @@ class DescriptorContractTest(unittest.TestCase):
         module = _descriptors()
         pi = module.host_descriptor("pi", str(REPO))
         fingerprints = dict(pi.package["skill_expansion_fingerprints"])
-        self.assertEqual(set(fingerprints), {"1.0.2"})
+        self.assertEqual(set(fingerprints), {"1.1.0"})
         self.assertTrue(all(re.fullmatch(r"[a-f0-9]{64}", value) for value in fingerprints.values()))
         doctor_source = (REPO / "plugins/ca-pi/tools/src/doctor.ts").read_text(encoding="utf-8")
         for fingerprint in fingerprints.values():

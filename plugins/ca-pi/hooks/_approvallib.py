@@ -26,6 +26,7 @@ TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 HOST_RE = re.compile(r"[A-Za-z0-9_-]{1,32}")
 SESSION_RE = re.compile(r"[A-Za-z0-9._:-]{1,256}")
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
+PI_DIALOG_SESSION_RE = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")
 
 
 class ApprovalError(RuntimeError):
@@ -95,6 +96,37 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
         if not isinstance(value, dict) or any(value.get(key) != identity.get(key) for key in keys):
             raise _artifactlib.ArtifactError("STALE_PLAN_PREFLIGHT", "plan identity changed during verification preflight; reread the complete current plan")
 
+    def task_records(ids: list[str]):
+        for start in range(0, len(ids), 128):
+            selected = ids[start:start + 128]
+            offset = 0
+            for _ in range(len(selected)):
+                page = client.call("read-batch", {
+                    "artifact_id": artifact_id, "symbols": selected,
+                    "model_sha256": identity["model_sha256"], "offset": offset, "budget": 16384,
+                })
+                same_identity(page)
+                _artifactlib.ArtifactClient._check_page(page, offset, "records")
+                records = page["records"]
+                end = offset + len(records)
+                if (page.get("mode") != "exact" or page.get("context_complete") is not False
+                        or type(page.get("offset")) is not int or page["offset"] != offset
+                        or type(page.get("total")) is not int or page["total"] != len(selected)
+                        or not records or end > len(selected)
+                        or page["next_offset"] != (end if end < len(selected) else None)):
+                    raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task batch count, offset or completeness changed")
+                for expected_id, row in zip(selected[offset:end], records):
+                    if (not isinstance(row, dict) or row.get("id") != expected_id
+                            or row.get("kind") != "tasks" or row.get("retired") is not False
+                            or not isinstance(row.get("record"), dict) or row["record"].get("id") != expected_id):
+                        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task batch contains an invalid or unexpected record")
+                    yield row["record"]
+                if page["next_offset"] is None:
+                    break
+                offset = end
+            else:
+                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task batch did not terminate")
+
     same_identity(client.call("identity", {"artifact_id": artifact_id}))
     root = _artifactlib._trusted_directory(client.root, "UNSAFE_ROOT")
     diagnostics: list[str] = []
@@ -113,6 +145,7 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
                 or total is not None and page["total"] != total):
             raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline count or offset changed")
         total = page["total"]
+        tasks = []
         for row in page["records"]:
             if (not isinstance(row, dict) or not isinstance(row.get("id"), str)
                     or row["id"] in seen or type(row.get("retired")) is not bool):
@@ -120,11 +153,9 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
             seen.add(row["id"])
             if row.get("kind") != "tasks" or row["retired"]:
                 continue
-            exact = client.call("read", {"artifact_id": artifact_id, "symbol": row["id"], "mode": "exact", "budget": 16384})
-            same_identity(exact)
-            task = exact.get("record")
-            if (not isinstance(task, dict) or task.get("id") != row["id"]
-                    or not isinstance(task.get("verification"), list) or not task["verification"]):
+            tasks.append(row["id"])
+        for task in task_records(tasks):
+            if not isinstance(task.get("verification"), list) or not task["verification"]:
                 raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task lacks complete verification definitions")
             for number, definition in enumerate(task["verification"], 1):
                 command_count += 1
@@ -145,7 +176,7 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
                     _artifactauthoritylib.validate_command_definition(definition, cwd=cwd)
                 except (_artifactlib.ArtifactError, _artifactauthoritylib.AuthorityError) as exc:
                     argv = definition.get("argv") if isinstance(definition, dict) else None
-                    diagnostics.append(f"{row['id']} verification[{number}] {json.dumps(argv, ensure_ascii=True)}: {exc}")
+                    diagnostics.append(f"{task['id']} verification[{number}] {json.dumps(argv, ensure_ascii=True)}: {exc}")
         next_offset = page["next_offset"]
         expected = offset + len(page["records"])
         if next_offset is None:
@@ -354,14 +385,29 @@ def consume_user_approval(
     host: str,
     session_id: str,
     seam: str = "UserPromptSubmit",
+    expected_pending_sha256: str | None = None,
 ) -> dict[str, Any]:
     root = Path(root).resolve(strict=True)
-    if seam not in {"UserPromptSubmit", "AskUserQuestion"}:
+    if seam not in {"UserPromptSubmit", "AskUserQuestion", "PiNativeInput"}:
         raise ApprovalError("INVALID_HOST_CONTEXT", "approval seam is unsupported")
+    if host == "pi" or seam == "PiNativeInput":
+        # Only the isolated Pi dialog producer owns this seam. Its native session
+        # and fresh dialog generation travel together; ordinary Pi input events
+        # can contain transformed text and cannot use the prompt-hook route.
+        if (host != "pi" or seam != "PiNativeInput" or not isinstance(session_id, str)
+                or PI_DIALOG_SESSION_RE.fullmatch(session_id) is None
+                or not isinstance(expected_pending_sha256, str)
+                or SHA256_RE.fullmatch(expected_pending_sha256) is None):
+            raise ApprovalError("INVALID_HOST_CONTEXT", "Pi approval requires its native dialog session and generation")
     pending = _load_pending(root)
     if pending is None or not isinstance(prompt, str):
         return {"matched": False, "approved": False}
+    if expected_pending_sha256 is not None and not secrets.compare_digest(
+            hashlib.sha256(_canonical(pending)).hexdigest(), expected_pending_sha256):
+        raise ApprovalError("STALE_APPROVAL", "approval request changed while native input was pending")
     if pending["format"] == "codearbiter.pending-user-approval/0.2.0":
+        if host == "pi":
+            raise ApprovalError("INVALID_HOST_CONTEXT", "paired Pi approval is not qualified")
         import _sprintapprovallib
         return _sprintapprovallib.consume(root, client, pending, prompt, host=host, session_id=session_id, seam=seam)
     parts = prompt.split(" ")

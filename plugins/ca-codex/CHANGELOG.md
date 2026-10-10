@@ -6,7 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.15.5] - 2026-10-05
+## [0.16.5] - 2026-10-10
+
+### Fixed
+
+- Bind native V2 reviews on Codex 0.162.0-alpha.2 to the parent session, turn,
+  tool call, child identity and transcript. Refuse steering, stale associations
+  and invalid completions while retaining the first child Stop as the result.
+- Keep large verification contexts in immutable references with bounded result
+  capacity, retaining the existing evidence limits and completion checks.
+
+## [0.16.4] - 2026-10-10
 
 ### Fixed
 
@@ -19,6 +29,74 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Bind a native normalized completion closure during fresh verification so
   publishing its own evidence does not look like source drift. Retain raw
   before/after command checks, validated-output checks, and historical profiles.
+
+## [0.16.3] - 2026-10-09
+
+### Fixed
+
+- Keep managed Git hooks working with a restricted PATH while preserving
+  trusted executable identities, cross-host path resolution and stale-registration checks.
+
+## [0.16.2] - 2026-10-08
+
+### Fixed
+
+- Recognize the scoped Pi package in shared workflow preflight and report its
+  unavailable approval support without enabling the workflow.
+- Preserve exact native Pi approval input bindings in the shared adapter while
+  refusing ordinary prompt input and unqualified paired approval.
+
+## [0.16.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
+
+## [0.16.0] - 2026-10-05
+
+### Fixed
+
+- Read multiple stale Git-hook registrations correctly on Windows and Unix,
+  preserving enforcement by the current registered checker.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
+
+### Added
+
+- Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,
+  plus deterministic inventory and bounded evidence packets.
+
+### Changed
+
+- Bind resume to the reviewed source and preserve leads, verification results, and
+  root-cause triage. Report completion leaves filing and optional telemetry pending
+  until each is completed or explicitly skipped.
+- Resolve review profiles from actual Codex capabilities. Use fresh host threads for
+  serious-finding verification when available; record limited independence otherwise
+  and retain unresolved serious claims as verification-required.
+
+## [0.15.6] - 2026-10-07
+
+### Fixed
+
+- Wait up to 120 seconds (was 30) for the structured-artifact engine before timing out. On a
+  large repository a whole-tree input snapshot takes about 30 seconds on Windows, so every
+  verification, review publish and approval arm failed with `TIMEOUT`. Set
+  `CODEARBITER_ENGINE_TIMEOUT` (seconds, up to 3600) to change the bound; a malformed value
+  is refused rather than ignored. The bound is a wait limit only and relaxes no check.
+
+## [0.15.5] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
 
 ## [0.15.4] - 2026-10-05
 

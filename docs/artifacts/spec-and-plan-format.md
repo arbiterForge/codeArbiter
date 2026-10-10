@@ -86,6 +86,13 @@ context-incomplete. Every cursor and delivery ticket binds the plan, its spec
 and contributing authority records. A changed dependency yields a stale cursor,
 not partial context.
 
+Internal preflight can use `read-batch` for 1–128 unique symbol IDs under one
+required `model_sha256`. Each bounded page returns whole exact records and an
+explicit continuation offset; every request validates the entire selection.
+Repeat the same selection, model identity and budget when continuing. These
+reads are context-incomplete and issue no delivery or approval receipt. Final
+snapshot, identity and approval-consumption checks still apply.
+
 ## Capability and diagnostics
 
 Each qualified host package carries an installation-owned `release.json` that

@@ -349,13 +349,23 @@ def _resolve_live_dir(path):
 # semantics like `_path_form_candidates` on POSIX -- embedded verbatim into
 # every generated shim so the REAL git-hook execution path (not just Python
 # diagnostics) resolves a foreign-but-translatable spelling instead of
-# failing closed on it. Pure POSIX sh (`case`, `cut`, `tr`, parameter
-# expansion) -- no extra process spawn beyond the cheap utilities already
-# used elsewhere in this shim. Prints the resolved path and returns 0 on the
+# failing closed on it. POSIX shell builtins only: the trusted-identity path
+# must also work when PATH contains no trusted utilities (ADR-0015).
+# Prints the resolved path and returns 0 on the
 # first candidate that exists; returns 1 with nothing printed when NONE of
 # the (as-is, plus up to two translated) candidates resolves -- callers must
 # treat that as "does not exist," preserving ADR-0014's fail-closed contract.
+_CX_DRIVE_CASE_SH = "".join(
+    f"    {letter.lower()}|{letter}) DRL={letter.lower()}; DRU={letter} ;;\n"
+    for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+)
 _CX_RESOLVE_SH = (
+    "_cx_drive_case() {\n"
+    '  case "$1" in\n'
+    f"{_CX_DRIVE_CASE_SH}"
+    "    *) return 1 ;;\n"
+    "  esac\n"
+    "}\n"
     "_cx_resolve() {\n"
     "  P=$1\n"
     "  K=-f\n"
@@ -364,17 +374,15 @@ _CX_RESOLVE_SH = (
     "    /mnt/[A-Za-z]/*)\n"
     '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     '      REST=${P#/mnt/?/}\n'
-    '      DR=$(printf \'%s\' "$P" | cut -c6)\n'
-    '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
-    '      DRU=$(printf \'%s\' "$DR" | tr \'a-z\' \'A-Z\')\n'
+    '      DR=${P#/mnt/}; DR=${DR%%/*}\n'
+    '      _cx_drive_case "$DR" || return 1\n'
     '      A1="/$DRL/$REST"; A2="$DRU:/$REST"\n'
     "      ;;\n"
     "    /[A-Za-z]/*)\n"
     '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     '      REST=${P#/?/}\n'
-    '      DR=$(printf \'%s\' "$P" | cut -c2)\n'
-    '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
-    '      DRU=$(printf \'%s\' "$DR" | tr \'a-z\' \'A-Z\')\n'
+    '      DR=${P#/}; DR=${DR%%/*}\n'
+    '      _cx_drive_case "$DR" || return 1\n'
     '      A1="/mnt/$DRL/$REST"; A2="$DRU:/$REST"\n'
     "      ;;\n"
     "    [A-Za-z]:/*)\n"
@@ -387,7 +395,8 @@ _CX_RESOLVE_SH = (
     "      # Git-Bash resolves this same spelling too, but via A1 (\"/<drive>/\n"
     "      # ...\"), which Git-Bash ALSO resolves -- so nothing is lost by\n"
     "      # withholding the raw as-is test for this one grammar.\n"
-    '      DR=$(printf \'%s\' "$P" | cut -c1 | tr \'A-Z\' \'a-z\')\n'
+    '      DR=${P%%:*}\n'
+    '      _cx_drive_case "$DR" || return 1\n'
     "      # ??: (two wildcards, literal colon) never matches a drive-letter\n"
     "      # path like C:/... (its 3rd char is / , not the required literal\n"
     "      # ':'), so it left REST completely unstripped -- a confirmed\n"
@@ -396,7 +405,7 @@ _CX_RESOLVE_SH = (
     "      # correct 3-char match for this branch's own case pattern.\n"
     '      REST=${P#?:/}\n'
     '      REST=${REST#/}\n'
-    '      A1="/$DR/$REST"; A2="/mnt/$DR/$REST"\n'
+    '      A1="/$DRL/$REST"; A2="/mnt/$DRL/$REST"\n'
     "      ;;\n"
     "    *)\n"
     '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
@@ -801,12 +810,15 @@ def _shim(dropin_dir, phase):
         f"{_FRESHNESS_PY}"
         "CODEARBITER_556_FRESHNESS\n"
         ")\n"
+        # Match whole LF/CRLF lines without executing a PATH-resolved utility.
+        "CR=$(printf '\\r')\n"
+        "NL='\n'\n"
         "SEEN=0\n"
         'for c in "$D"/*.path; do\n'
         '  [ -f "$c" ] || continue\n'
         '  N=${c##*/}\n'
         '  case "$N" in [0-9]*.[0-9]*.[0-9]*.path) continue ;; esac\n'
-        '  case " $SKIP " in *" ${N%.path} "*) continue ;; esac\n'
+        '  case "$NL$SKIP$NL" in *"$NL${N%.path}$NL"*|*"$NL${N%.path}$CR$NL"*) continue ;; esac\n'
         '  IFS= read -r E < "$c" || continue\n'
         '  E=$(_cx_resolve "$E") || continue\n'
         '  SEEN=1\n'

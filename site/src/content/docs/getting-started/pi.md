@@ -1,12 +1,12 @@
 ---
-title: Pi
+title: Install for Pi
 description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi npm and pinned-Git channels, supported versions, and version pinning."
 journey:
   level: "Foundation"
   time: "12 minutes"
   outcome: "Install a pinned ca-pi preview, trust the project, opt in a repository, and verify a real gate."
   prerequisites:
-    - "Pi 1.0.2"
+    - "Pi 1.1.0"
     - "Node.js 22.19 or newer"
   proof: "Pi reports the pinned extension and a disposable broad-stage probe is blocked by H-03."
 ---
@@ -27,7 +27,7 @@ Confirm all before installing:
   a missing interpreter blocks mutating calls and points to `/ca-doctor` rather than silently
   disabling governance.
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity.
-- **A supported Pi host**: exact Pi 1.0.2 for this release line. See
+- **A supported Pi host**: exact Pi 1.1.0 for this release line. See
   [Compatibility](/getting-started/compatibility/) for the full matrix.
 
 ## 1. Install

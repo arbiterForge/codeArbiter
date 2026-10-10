@@ -6,6 +6,9 @@
   "engines": {
     "node": ">=22.19.0"
   },
+  "overrides": {
+    "source-map-js": "1.2.2"
+  },
   "scripts": {
     "build": "node ./build.mjs",
     "typecheck": "tsc --noEmit",
