@@ -1,0 +1,64 @@
+{
+  "basis": "Original nine-map standalone atlas, October 7 2026. Recovered embedded model and vector geometry; not the rejected PR accordion renderer.",
+  "graphScope": "Node identities, boxes, labels, routes, sources, ordered polyline vertices, panels and notes. Theme and containing website are deliberately not geometry.",
+  "views": [
+    {
+      "id": "all-routes",
+      "nodes": 33,
+      "edges": 21
+    },
+    {
+      "id": "feature-sprint",
+      "nodes": 22,
+      "edges": 22
+    },
+    {
+      "id": "context-layers",
+      "nodes": 24,
+      "edges": 20
+    },
+    {
+      "id": "change-lanes",
+      "nodes": 25,
+      "edges": 22
+    },
+    {
+      "id": "review-delivery",
+      "nodes": 24,
+      "edges": 19
+    },
+    {
+      "id": "knowledge-operations",
+      "nodes": 25,
+      "edges": 10
+    },
+    {
+      "id": "brownfield-lifecycle",
+      "nodes": 16,
+      "edges": 14
+    },
+    {
+      "id": "debug-handoff",
+      "nodes": 20,
+      "edges": 22
+    },
+    {
+      "id": "tribunal-lifecycle",
+      "nodes": 24,
+      "edges": 28
+    }
+  ],
+  "geometrySerialization": "UTF-8 JSON.stringify(geometryRecord(view)); numeric values normalized by JSON parsing.",
+  "geometrySha256": {
+    "all-routes": "21459cb1d1386881786fb434a716a6f30a0140fa0accd1f9da64beabc2ad45fa",
+    "feature-sprint": "b1fd7490f8ca26cc28e0bdf9ca3b0b4a33d5c1676fd95caae422b6af61a83f97",
+    "context-layers": "642558f839b01b69be97d245a6c75cee6a065434d4971591a5da2be4d80fb141",
+    "change-lanes": "d8ac7eed876998c492fa59903bd1f09b238964e8b6dfbf3d56d198da1e163b3a",
+    "review-delivery": "cdb469e6a196b6616c3622a7e2d8179d635bddede079e25aac24cc187292c2f6",
+    "knowledge-operations": "0b5f1c8f35a96baf95121993fac3a6f18d3c5d8c59c2ddf3bba7a9d7c99d30e8",
+    "brownfield-lifecycle": "dbec1306ecbce1656cce8c6af09d869d314079f51bf466c1fc8e1edc1d3822c3",
+    "debug-handoff": "8e140e551342a8fe0aeec5f0f34ad5d8b3e92d3d64d300ba29f0b4261b828b64",
+    "tribunal-lifecycle": "44cc0846be64eb154654e86a9f6549d21a1439c5d43eda5ad32b91aac2319a2e"
+  },
+  "integrationChanges": "Site theme and shell, native lifecycle, safe explicit addresses, host forms and offline packaging. The obsolete standalone-delivery caveat was replaced; workflow steps and spatial geometry are retained."
+}
