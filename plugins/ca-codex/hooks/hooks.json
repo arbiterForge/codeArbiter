@@ -39,13 +39,13 @@
         ]
       },
       {
-        "matcher": "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent",
+        "matcher": "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent|collaborationsend_message|collaborationfollowup_task|collaborationinterrupt_agent",
         "hooks": [
           {
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
-            "timeout": 30,
+            "timeout": 240,
             "statusMessage": "codeArbiter: bind independent review launch"
           }
         ]
@@ -57,7 +57,7 @@
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
-            "timeout": 30,
+            "timeout": 240,
             "statusMessage": "codeArbiter: authorize production verifier"
           }
         ]
@@ -77,13 +77,13 @@
         ]
       },
       {
-        "matcher": "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent",
+        "matcher": "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent|collaborationsend_message|collaborationfollowup_task|collaborationinterrupt_agent",
         "hooks": [
           {
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
-            "timeout": 30,
+            "timeout": 240,
             "statusMessage": "codeArbiter: bind independent review child"
           }
         ]
@@ -95,7 +95,7 @@
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
-            "timeout": 30,
+            "timeout": 240,
             "statusMessage": "codeArbiter: corroborate production verifier"
           }
         ]
@@ -108,7 +108,7 @@
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
-            "timeout": 30,
+            "timeout": 240,
             "statusMessage": "codeArbiter: observe independent review start"
           }
         ]
@@ -121,7 +121,7 @@
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
-            "timeout": 30,
+            "timeout": 240,
             "statusMessage": "codeArbiter: observe independent review completion"
           }
         ]
@@ -145,7 +145,7 @@
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/prompt-submit.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/prompt-submit.py\"",
-            "timeout": 30,
+            "timeout": 240,
             "statusMessage": "codeArbiter: mode plane",
             "additionalContextLimit": 8000
           }

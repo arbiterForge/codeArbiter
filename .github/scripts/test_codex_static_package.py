@@ -68,6 +68,10 @@ class StaticPackageContractTest(unittest.TestCase):
             return value
 
         events = manifest["hooks"]
+        for group in events["UserPromptSubmit"]:
+            for hook in group["hooks"]:
+                if "prompt-submit.py" in hook.get("command", ""):
+                    hook["timeout"] = 30
         # Reconstruct the independently pinned historical inventory from the
         # current package; never turn its exact digest assertion into a superset.
         for event in ("PreToolUse", "PostToolUse"):
@@ -124,6 +128,8 @@ class StaticPackageContractTest(unittest.TestCase):
                 "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
                 "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
                 "7343a38841e254ff07a35b0ba8f0a1115112f52490c8e33aee9f3a98a1678046",
+                "aeb0954ac97529e7e6eb2f6670f5578380956341dd39c52c5e8269b1af5c9cc3",
+                "e6f12eb10c7c9cee0abd549d4cbe4dc9c2146d2651a758ae4c4ea92e57719784",
             )),
         )
         self.assertTrue({"SubagentStart", "SubagentStop"}.issubset(self.checker.HOOK_EVENTS))
@@ -160,6 +166,72 @@ class StaticPackageContractTest(unittest.TestCase):
         self.assertEqual(
             hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
             "7343a38841e254ff07a35b0ba8f0a1115112f52490c8e33aee9f3a98a1678046",
+        )
+        self.write_hooks(manifest)
+        self.assertEqual(self.checker.candidate_static_contract(self.package)["verdict"], "PASS")
+        for event in ("PreToolUse", "PostToolUse"):
+            for omitted in matcher.split("|"):
+                with self.subTest(event=event, omitted=omitted):
+                    mutated = json.loads(canonical)
+                    group = next(group for group in mutated["hooks"][event]
+                                 if group.get("matcher") == matcher)
+                    group["matcher"] = "|".join(tool for tool in matcher.split("|") if tool != omitted)
+                    self.write_hooks(mutated)
+                    self.assert_rejects("hook inventory")
+        for event in ("SubagentStart", "SubagentStop"):
+            with self.subTest(omitted_event=event):
+                mutated = json.loads(canonical)
+                del mutated["hooks"][event]
+                self.write_hooks(mutated)
+                self.assert_rejects("hook inventory")
+
+    def test_preserves_exact_installed_native_v1_240_second_cohort(self):
+        manifest = self.install_authority_hooks()
+        matcher = "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|multi_agent_v1resume_agent|multi_agent_v1close_agent"
+        for event in ("PreToolUse", "PostToolUse"):
+            group = next(group for group in manifest["hooks"][event] if group.get("matcher") == "spawn_agent")
+            group["matcher"] = matcher
+        del manifest["hooks"]["SubagentStop"][0]["hooks"][0]["additionalContextLimit"]
+        retained = []
+        for groups in manifest["hooks"].values():
+            for group in groups:
+                for hook in group["hooks"]:
+                    if any(name in hook.get("command", "") for name in ("artifact-authority-hook.py", "prompt-submit.py")):
+                        hook["timeout"] = 240
+                        retained.append(hook)
+        self.assertEqual(len(retained), 7)
+        canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
+        self.assertEqual(hashlib.sha256(canonical.encode()).hexdigest(), "aeb0954ac97529e7e6eb2f6670f5578380956341dd39c52c5e8269b1af5c9cc3")
+        self.write_hooks(manifest)
+        self.assertEqual(self.checker.candidate_static_contract(self.package)["verdict"], "PASS")
+        for hook in retained:
+            hook["timeout"] = 120
+            self.write_hooks(manifest)
+            self.assert_rejects("hook inventory")
+            hook["timeout"] = 240
+
+    def test_accepts_exact_native_v2_hook_package_and_rejects_guard_removal(self):
+        manifest = self.install_authority_hooks()
+        matcher = (
+            "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|"
+            "multi_agent_v1resume_agent|multi_agent_v1close_agent|"
+            "collaborationsend_message|collaborationfollowup_task|collaborationinterrupt_agent"
+        )
+        for event in ("PreToolUse", "PostToolUse"):
+            groups = [group for group in manifest["hooks"][event]
+                      if group.get("matcher") == "spawn_agent"]
+            self.assertEqual(len(groups), 1)
+            groups[0]["matcher"] = matcher
+        del manifest["hooks"]["SubagentStop"][0]["hooks"][0]["additionalContextLimit"]
+        for groups in manifest["hooks"].values():
+            for group in groups:
+                for hook in group["hooks"]:
+                    if any(name in hook.get("command", "") for name in ("artifact-authority-hook.py", "prompt-submit.py")):
+                        hook["timeout"] = 240
+        canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
+        self.assertEqual(
+            hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+            "e6f12eb10c7c9cee0abd549d4cbe4dc9c2146d2651a758ae4c4ea92e57719784",
         )
         self.write_hooks(manifest)
         self.assertEqual(self.checker.candidate_static_contract(self.package)["verdict"], "PASS")
