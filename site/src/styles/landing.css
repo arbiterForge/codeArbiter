@@ -188,7 +188,7 @@ ca-splash-docs {
 .ca-splash {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(32rem, 1.1fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: clamp(2.5rem, 7vw, 6rem);
   align-items: center;
   max-width: var(--ca-landing-width);
@@ -202,13 +202,14 @@ ca-splash-docs {
 }
 
 .ca-splash__copy h1 {
-  max-width: 9ch;
+  max-width: 12ch;
   margin: var(--ca-space-4) 0 var(--ca-space-5);
   color: var(--ca-ink);
-  font-size: var(--ca-text-display);
+  font-size: clamp(2.5rem, 6vw, 4.8rem);
   font-weight: 780;
   letter-spacing: -0.065em;
   line-height: 0.95;
+  overflow-wrap: normal;
   text-wrap: balance;
 }
 
@@ -776,7 +777,7 @@ ca-splash-docs {
   }
 
   .ca-splash__copy h1 {
-    font-size: clamp(2.8rem, 15vw, 4.6rem);
+    font-size: clamp(2.5rem, 12vw, 4.6rem);
   }
 
   .ca-splash__proof {
