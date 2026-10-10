@@ -38,8 +38,8 @@ retains the checked SKILL_ENTRY wrapper resolution added during the earlier repa
 The restored inspector is supplemented with those host forms and exact procedures,
 not replaced with generated command summaries.
 
-`atlas.ts` compares the full logical product-source files with the explicitly
-revalidated Git objects. The original diagram identity and links remain at
+`atlas.ts` compares complete logical workflow-owner files with the explicitly
+revalidated Git objects. The historical changelog has the bounded growth rule below. The original diagram identity and links remain at
 `REVIEWED_AT`; `REVALIDATED_AT` records the later compatibility review without
 rewriting historical diagram provenance. CRLF normalization is allowed; source
 drift and symlinked paths refuse. A changed owner names the affected path. Missing
@@ -71,6 +71,29 @@ For an intentional refresh, inspect the changed owner, update its affected route
 and check the diagram. Update only the necessary geometry and text wrapping.
 Advance the reviewed binding and geometry fingerprint after that review, not to
 silence a failing test. Unrelated source commits do not require repinning all maps.
+
+## Historical changelog growth
+
+The October 9 branch update to `26ecb3eac589cdb12102c29eb5b7847eab5c4fb7`
+incorporated main `f5160861dbfde0b231d9fe557961bf3117ad7039`. Of the existing
+atlas source inputs, only the root changelog changed, by inserting new release
+notes. Freezing that entire file unnecessarily broke both documentation jobs.
+
+S40 is a historical citation, not a feed of current releases. For the implicit
+root `CHANGELOG.md` review only, the loader allows insertion after its unchanged
+Unreleased preamble and before the complete unchanged reviewed release history.
+The historical body must remain an exact suffix, including its trailing newline.
+Edits, deletions, reordering or additions inside/after that history still refuse.
+Missing or ambiguous boundaries, missing Git objects and symlinks still refuse.
+Explicit blob pins, nested changelogs and every workflow owner remain byte-strict.
+
+The comparison reads the old Git blob already resolved from `REVALIDATED_AT`.
+It never substitutes HEAD or main and never advances either review identity.
+New notes are not consumed as atlas content, qualification or release evidence.
+The original S40 URL, scope, model and geometry remain unchanged. Product-source
+changes still require their own route review; this is not a claim that later
+implementation changes have been qualified. The old count and preflight review
+tests are retained, with positive growth and negative drift/source-check tests.
 
 ## Theme and exports
 

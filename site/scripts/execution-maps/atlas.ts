@@ -33,6 +33,20 @@ function repositoryRoot():string {
   return root;
 }
 export function gitBlob(bytes:Uint8Array):string {return createHash('sha1').update(`blob ${bytes.byteLength}\0`).update(bytes).digest('hex');}
+/** S40 cites immutable release history, not notes added after its review. */
+export function retainsReviewedChangelog(current:string,reviewed:string):boolean {
+  current=current.replace(/\r\n/g,'\n');reviewed=reviewed.replace(/\r\n/g,'\n');
+  const boundary='## [Unreleased]\n\n';
+  const start=reviewed.indexOf(boundary);
+  if(start<0 || start!==reviewed.lastIndexOf(boundary))return false;
+  const split=start+boundary.length;
+  const header=reviewed.slice(0,split),history=reviewed.slice(split);
+  // Only insertion between the unchanged preamble and complete old history is
+  // permitted. The added notes are not consumed, rendered or marked reviewed.
+  return history.startsWith('## [') && current.length>=reviewed.length &&
+    current.startsWith(header) && current.endsWith(history) &&
+    current.indexOf(boundary)===current.lastIndexOf(boundary);
+}
 export function checkReviewedSource(root:string,path:string,pin?:string):void {
   if(!validSourcePath(path))throw new Error(`Invalid atlas source path: ${path}`);
   // Reject symlinked parents as well as a symlink leaf.
@@ -44,7 +58,17 @@ export function checkReviewedSource(root:string,path:string,pin?:string):void {
     try {expected=execFileSync('git',['rev-parse','--verify',`${REVALIDATED_AT}:${path}`],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
     catch{throw new Error(`Atlas needs reviewed Git object ${REVALIDATED_AT}:${path}. Do not substitute main.`);}
   }
-  if(gitBlob(Buffer.from(readFileSync(absolute,'utf8').replace(/\r\n/g,'\n')))!==expected)throw new Error(`Atlas source changed: ${path}. Review affected routes, then intentionally update the review binding.`);
+  const current=readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
+  if(gitBlob(Buffer.from(current))===expected)return;
+  // Keep explicit pins and every workflow owner byte-strict. Only the root
+  // historical changelog may grow above its intact reviewed release history.
+  if(path==='CHANGELOG.md' && pin===undefined) {
+    let reviewed:string;
+    try {reviewed=execFileSync('git',['cat-file','blob',expected],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']});}
+    catch{throw new Error(`Atlas needs reviewed Git object ${REVALIDATED_AT}:${path}. Do not substitute main.`);}
+    if(retainsReviewedChangelog(current,reviewed))return;
+  }
+  throw new Error(`Atlas source changed: ${path}. Review affected routes, then intentionally update the review binding.`);
 }
 /** Exact recovered maps, not the former grid-card projection. */
 export function originalAtlas():Atlas {
