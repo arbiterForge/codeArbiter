@@ -8,6 +8,7 @@ const root = fileURLToPath(new URL('../../../', import.meta.url));
 const countReview = '81055792c71ba7aaeeaf5280e81ce2929bb25cc1';
 const preflightReview = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
+const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
@@ -52,8 +53,7 @@ describe('atlas source compatibility revalidation', () => {
   });
 
   it('binds only the reviewed Pi target changes and preserved changelog history', () => {
-    expect(REVALIDATED_AT).toBe(piReview);
-    expect(changedProductInputs(preflightReview, REVALIDATED_AT)).toEqual([
+    expect(changedProductInputs(preflightReview, piReview)).toEqual([
       'CHANGELOG.md', 'core/hosts.json', 'core/surface/commands/doctor.md', 'docs/parity.md',
     ]);
     const replacements: Record<string, string[]> = {
@@ -71,15 +71,15 @@ describe('atlas source compatibility revalidation', () => {
         expect(expected.split(fragment)).toHaveLength(2);
         expected = expected.replace(fragment, fragment.replace('1.0.2', '1.1.0'));
       }
-      expect(git('show', `${REVALIDATED_AT}:${path}`)).toBe(expected);
+      expect(git('show', `${piReview}:${path}`)).toBe(expected);
     }
-    expect(retainsReviewedChangelog(git('show', `${REVALIDATED_AT}:CHANGELOG.md`),
+    expect(retainsReviewedChangelog(git('show', `${piReview}:CHANGELOG.md`),
       git('show', `${preflightReview}:CHANGELOG.md`))).toBe(true);
   });
 
   it('preserves every host invocation and exclusion across the Pi target update', () => {
     const before = JSON.parse(git('show', `${preflightReview}:core/hosts.json`)).hosts as HostDescriptor[];
-    const after = JSON.parse(git('show', `${REVALIDATED_AT}:core/hosts.json`)).hosts as HostDescriptor[];
+    const after = JSON.parse(git('show', `${piReview}:core/hosts.json`)).hosts as HostDescriptor[];
     expect(after.map(host => host.name)).toEqual(before.map(host => host.name));
     for (const [index, host] of after.entries()) {
       expect(host.command_form).toBe(before[index].command_form);
@@ -88,6 +88,22 @@ describe('atlas source compatibility revalidation', () => {
         expect(invocation(host, command.name)).toBe(invocation(before[index], command.name));
       }
     }
+  });
+
+  it('binds only the reviewed completion owners and preserved changelog history', () => {
+    expect(REVALIDATED_AT).toBe(completionReview);
+    expect(changedProductInputs(piReview, completionReview)).toEqual([
+      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/includes/artifacts.md',
+    ]);
+    const reviewedBlobs = {
+      'core/pysrc/_artifactauthoritylib.py': '6ddbf7268705ca649b77450d544477ea3fc56b60',
+      'core/surface/includes/artifacts.md': '4241e8bc3ebf22296f2e6174548b9de06491e09f',
+    };
+    for (const [path, blob] of Object.entries(reviewedBlobs)) {
+      expect(git('rev-parse', `${completionReview}:${path}`).trim()).toBe(blob);
+    }
+    expect(retainsReviewedChangelog(git('show', `${completionReview}:CHANGELOG.md`),
+      git('show', `${piReview}:CHANGELOG.md`))).toBe(true);
   });
 
   it('preserves original geometry and source links independently of the compatibility review', () => {

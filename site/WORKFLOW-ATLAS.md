@@ -104,7 +104,7 @@ metadata still reported the earlier base revision. The strict host check correct
 refused the new descriptor. Review the tested merge and live main, not only the
 last main commit incorporated into the branch.
 
-`REVALIDATED_AT` now records that exact source review. The only additional mapped
+The Pi compatibility review records that exact source revision. The additional mapped
 inputs are `core/hosts.json`, `core/surface/commands/doctor.md` and `docs/parity.md`.
 They change the Pi target from 1.0.2 to 1.1.0: one fingerprint key, one doctor
 sentence and three parity sentences. The fingerprint value, all command forms,
@@ -119,6 +119,25 @@ an intentional source review. This does not permit arbitrary host edits or infer
 installed-host qualification from a version string. Both the original diagram
 source links and their historical notes stay at `REVIEWED_AT`. No graph, controller
 or approval mechanism is changed by this integration correction.
+
+## Completion-review compatibility review
+
+PR918's integrated source at `0192dc314817ffab18219d6485c11ac1531bbc5c`
+updates `core/surface/includes/artifacts.md` (S10) and the cited native adapter,
+`core/pysrc/_artifactauthoritylib.py` (S32). They define the normalized
+`declared-command/0.3.0` completion closure, retain raw execution fingerprint
+checks, and bound Codex native V1 context retention and result capacity.
+The feature, sprint and commit routes still require fresh verification,
+current review receipts and scope acceptance. Context delivery and observed
+approval remain separate requirements. The doctor route still reports capability
+gaps without certifying a completed workflow.
+
+`REVALIDATED_AT` advances to that reviewed source. Every other mapped owner is
+unchanged from the Pi review; the root changelog only adds release entries above
+the preserved history. The regression pins both exact source blobs and requires
+that bounded input delta. Earlier compatibility comparisons, all nine maps and
+the historical S10/S32 source links remain unchanged. Retain the review commit
+in the merged history so clean full-history checkouts can resolve its Git objects.
 
 ## Theme and exports
 

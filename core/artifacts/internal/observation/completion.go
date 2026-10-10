@@ -14,9 +14,10 @@ func CompletionSchema() map[string]any {
 		"task_id": text(), "receipt_ref": text(), "receipt_sha256": hash(),
 		"source_ref": text(), "source_sha256": hash(), "event_ref": text(), "event_sha256": hash(),
 		"observation_ref": text(), "observation_sha256": hash(), "context_ref": text(), "context_sha256": hash(),
-		"command_bindings":         map[string]any{"type": "array", "items": commandBindingSchema(true), "minItems": int64(1)},
-		"workspace_after":          map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
-		"consumer_workspace_after": map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
+		"command_bindings":           map[string]any{"type": "array", "items": commandBindingSchema(true), "minItems": int64(1)},
+		"workspace_after":            map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
+		"completion_workspace_after": map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1), "maxItems": int64(256)},
+		"consumer_workspace_after":   map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1)},
 	}, "task_id", "receipt_ref", "receipt_sha256", "source_ref", "source_sha256", "event_ref", "event_sha256", "observation_ref", "observation_sha256", "context_ref", "context_sha256", "command_bindings", "workspace_after", "consumer_workspace_after")
 	material := closed(map[string]any{
 		"source_path": text(), "sha256": hash(), "size_bytes": map[string]any{"type": "integer", "minimum": int64(0), "maximum": int64(65536)},

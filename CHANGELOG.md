@@ -12,6 +12,21 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.25.4] - 2026-10-10
+
+### Fixed
+
+- Retain native completion-review contexts by validated immutable reference,
+  reserving bounded result growth before launch without increasing request,
+  decision or native-context limits. List the complete result fields and
+  separate task obligations in the review prompt (#921).
+- Fingerprint complete completion-review workspaces up to 1 GiB independently
+  of the 256 MiB selected verification-input budget. Preserve full content
+  hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.
+- Bind a native normalized completion closure during fresh verification so
+  publishing its own evidence does not look like source drift. Retain raw
+  before/after command checks, validated-output checks, and historical profiles.
+
 ## [2.25.3] - 2026-10-09
 
 ### Fixed

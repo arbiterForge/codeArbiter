@@ -18,12 +18,14 @@ import debug from './atlas-data/debug-handoff.json';
 import tribunal from './atlas-data/tribunal-lifecycle.json';
 
 // Original diagram/source links retain REVIEWED_AT. Freshness is separately
-// revalidated against this exact main revision, never whichever HEAD is newest.
+// revalidated against this exact source revision, never whichever HEAD is newest.
 // PR936 corrected the Claude role count; PR935 added preflight batching. PR943
 // changes the Pi target to 1.1.0 in the host fingerprint key, doctor and parity
 // text, without changing command forms, exclusions, routes or diagram geometry.
-// The historical comparisons and exact current delta are tested separately.
-export const REVALIDATED_AT = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
+// PR918 updates the artifacts owner and cited native adapter with normalized
+// completion closure and bounded context retention. Their routes and authority
+// boundaries agree with the maps. Historical comparisons remain independently tested.
+export const REVALIDATED_AT = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 
 function repositoryRoot():string {
   let root=process.cwd();

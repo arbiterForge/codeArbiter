@@ -198,8 +198,8 @@ func observationSchema(format string, current bool) map[string]any {
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
 	if current {
 		profiles := model.M(base["producer_profile"])
-		profiles["enum"] = append(model.A(profiles["enum"]), CodexNativeV1ReviewProfile)
-		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), reviewResultSchema(), claudeReviewResultSchema(), codexNativeV1ReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
+		profiles["enum"] = append(model.A(profiles["enum"]), CodexNativeV1ReviewProfile, CompletionCommandProfile)
+		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), completionVerificationResultSchema(), reviewResultSchema(), claudeReviewResultSchema(), codexNativeV1ReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
 		required = append(required, "producer_result")
 	}
 	return closed(base, required...)
@@ -285,7 +285,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) || kind == "context_approval" && profile != "host-user-context-preview/0.1.0" {
+	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile && profile != CompletionCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) || kind == "context_approval" && profile != "host-user-context-preview/0.1.0" {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -390,6 +390,23 @@ func validateVerification(observed, event, context map[string]any) bool {
 	if !same(before, after) {
 		return false
 	}
+	if model.S(observed["producer_profile"]) == CompletionCommandProfile {
+		normalized := model.A(result["completion_workspace_after"])
+		if len(normalized) != len(after) {
+			return false
+		}
+		for i, value := range normalized {
+			workspace, raw := model.M(value), model.M(after[i])
+			for _, field := range []string{"root", "filesystem_id", "git_common_dir", "git_common_filesystem_id", "head"} {
+				if model.S(workspace[field]) != model.S(raw[field]) {
+					return false
+				}
+			}
+		}
+	} else if result["completion_workspace_after"] != nil {
+		// New normalized closure semantics cannot be attached to old profiles.
+		return false
+	}
 	workspaces := map[string]map[string]any{}
 	for _, value := range before {
 		workspace := model.M(value)
@@ -423,7 +440,7 @@ func validateVerification(observed, event, context map[string]any) bool {
 				return false
 			}
 		}
-		if model.S(observed["producer_profile"]) == QualifiedCommandProfile {
+		if model.S(observed["producer_profile"]) == QualifiedCommandProfile || model.S(observed["producer_profile"]) == CompletionCommandProfile {
 			if !validateQualifiedBinding(binding, definition) {
 				return false
 			}
