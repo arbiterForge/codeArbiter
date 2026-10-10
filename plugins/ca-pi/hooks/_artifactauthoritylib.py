@@ -3021,7 +3021,8 @@ def _codex_v2_activity(event: dict[str, Any], request: dict[str, Any]) -> dict[s
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native activity suffix is absent, incomplete or oversized")
     matches = []
     try:
-        for line in suffix.decode("utf-8").splitlines():
+        # JSONL records end at LF; Unicode line separators are valid string data.
+        for line in suffix.decode("utf-8").split("\n")[:-1]:
             value = json.loads(line, object_pairs_hook=_unique_json_pairs, parse_constant=_invalid_json_constant)
             payload = value.get("payload") if isinstance(value, dict) else None
             item = payload.get("item") if isinstance(payload, dict) else None
@@ -3402,12 +3403,6 @@ def _codex_native_steering(event: dict[str, Any]) -> None:
         canonical_path = None
         if isinstance(target, str) and CODEX_AGENT_PATH_RE.fullmatch(target):
             canonical_path = target
-        elif isinstance(target, str) and re.fullmatch(r"[a-z0-9_]+(?:/[a-z0-9_]+)*", target):
-            with _codex_transcript(event.get("transcript_path")) as (stream, _):
-                _, meta = _codex_metadata(stream)
-            caller_path = meta.get("agent_path") or "/root"
-            if isinstance(caller_path, str) and CODEX_AGENT_PATH_RE.fullmatch(caller_path):
-                canonical_path = caller_path + "/" + target
         child_identity = None
         if agent_id is not None:
             _claim_codex_event(agent_id, "failed")
@@ -3421,6 +3416,13 @@ def _codex_native_steering(event: dict[str, Any]) -> None:
                     or request["state"] not in {"LAUNCHING", "RUNNING"}
                     or launch.get("parent_session_id") != event.get("session_id")):
                 continue
+            # Caller-relative identity matters only to an active review here.
+            if canonical_path is None and isinstance(target, str) and re.fullmatch(r"[a-z0-9_]+(?:/[a-z0-9_]+)*", target):
+                with _codex_transcript(event.get("transcript_path")) as (stream, _):
+                    _, meta = _codex_metadata(stream)
+                caller_path = meta.get("agent_path") or "/root"
+                if isinstance(caller_path, str) and CODEX_AGENT_PATH_RE.fullmatch(caller_path):
+                    canonical_path = caller_path + "/" + target
             matches = canonical_path == launch.get("task_name") or (
                 agent_id is not None and (launch.get("agent_id") == agent_id or
                 isinstance(child_identity, dict) and child_identity.get("agent_path") == launch.get("task_name")

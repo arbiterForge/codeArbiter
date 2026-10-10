@@ -5383,6 +5383,21 @@ class CodexNativeV2HookTest(unittest.TestCase):
                     self.assertEqual(observed["producer_result"]["launch"], launch)
                     self.adapter.publish_request(self.root, self.client, armed["request_id"])
 
+    def test_native_v2_activity_jsonl_preserves_unicode_line_separators(self):
+        armed, events, native = self._fixture("unicode-jsonl")
+        self._observe(events["pre"])
+        unrelated = {"type": "event_msg", "payload": {
+            "type": "agent_message", "message": "first\u0085second\u2028third\u2029last",
+        }}
+        with Path(events["pre"]["transcript_path"]).open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps(unrelated, ensure_ascii=False) + "\n")
+        self._append(events, native)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(request["state"], "COMPLETED")
+        self.assertEqual(request["launch"]["native_activity"], native)
+
     def test_native_v2_activity_and_response_negative_controls(self):
         self._complete("activity-witness")
         cases = {"parent": lambda n, e: n.update(thread_id="01900000-0000-7000-8000-000000000099"),
@@ -5596,6 +5611,35 @@ class CodexNativeV2HookTest(unittest.TestCase):
                     with self.assertRaises(RuntimeError):
                         self._observe({**events["pre"], "tool_name": tool, "tool_input": {"target": target}})
                     self._no_authority(armed)
+
+    def test_native_v2_relative_steering_requires_transcript_only_for_active_session(self):
+        event = {"hook_event_name": "PreToolUse", "session_id": self.PARENT,
+                 "tool_name": "collaborationsend_message", "tool_input": {"target": "ordinary"}}
+        transcripts = (None, str(self.root / "missing-transcript.jsonl"), str(self.root))
+        armed = None
+        for state in ("none", "armed", "other-session"):
+            if state == "armed":
+                armed, events, _ = self._fixture("steering-transcript-scope")
+            elif state == "other-session":
+                self._observe(events["pre"])
+                event["session_id"] = "01900000-0000-7000-8000-000000000099"
+            before = Path(armed["request_path"]).read_bytes() if armed else None
+            for transcript in transcripts:
+                with self.subTest(state=state, transcript=transcript):
+                    self.assertIsNone(self._observe({**event, "transcript_path": transcript}))
+            if armed:
+                self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+
+        # An active request in this session must still block relative steering
+        # when the caller identity cannot be resolved from its transcript.
+        event["session_id"] = self.PARENT
+        before = Path(armed["request_path"]).read_bytes()
+        for transcript in transcripts:
+            with self.subTest(state="active", transcript=transcript):
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                    self._observe({**event, "transcript_path": transcript})
+        self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+        self._no_authority(armed)
 
     def test_native_v2_concurrent_launches_join_exact_call_identity(self):
         armed, events, native = self._fixture("concurrent")

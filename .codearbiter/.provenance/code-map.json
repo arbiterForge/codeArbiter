@@ -137,7 +137,7 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.25.4)",
+          "claim": "Claude Code plugin manifest for ca (v2.25.5)",
           "confidence": "strong",
           "lines": "1-end"
         }
@@ -149,7 +149,7 @@
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.16.4), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.16.5), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
@@ -161,7 +161,7 @@
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.17.5, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.17.6, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
