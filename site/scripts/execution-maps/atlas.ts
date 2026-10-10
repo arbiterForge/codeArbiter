@@ -19,11 +19,11 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 
 // Original diagram/source links retain REVIEWED_AT. Freshness is separately
 // revalidated against this exact main revision, never whichever HEAD is newest.
-// PR936 corrected the Claude role count. Since that review, PR935 appends the
-// preflight-batching changelog entry and changes pure-read locking, not the
-// mapped caller, context, approval or output contracts. PR934 fixes Academy
-// embedding outside this atlas. No geometry or runtime-performance claim changes.
-export const REVALIDATED_AT = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
+// PR936 corrected the Claude role count; PR935 added preflight batching. PR943
+// changes the Pi target to 1.1.0 in the host fingerprint key, doctor and parity
+// text, without changing command forms, exclusions, routes or diagram geometry.
+// The historical comparisons and exact current delta are tested separately.
+export const REVALIDATED_AT = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 
 function repositoryRoot():string {
   let root=process.cwd();
@@ -82,7 +82,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const checked=new Set<string>();
   const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin);checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
-  const hosts=(JSON.parse(read('core/hosts.json','3b100523fb773d1bac374c52ca331936f0c37bf6')) as {hosts:HostDescriptor[]}).hosts;
+  const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
   // Product owners must still match. Site-design pointers are historical
   // integration evidence, not product claims; this PR intentionally changes them.

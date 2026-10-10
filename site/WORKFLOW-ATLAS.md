@@ -39,7 +39,8 @@ The restored inspector is supplemented with those host forms and exact procedure
 not replaced with generated command summaries.
 
 `atlas.ts` compares complete logical workflow-owner files with the explicitly
-revalidated Git objects. The historical changelog has the bounded growth rule below. The original diagram identity and links remain at
+revalidated Git objects. The historical changelog has the bounded growth rule
+below. The original diagram identity and links remain at
 `REVIEWED_AT`; `REVALIDATED_AT` records the later compatibility review without
 rewriting historical diagram provenance. CRLF normalization is allowed; source
 drift and symlinked paths refuse. A changed owner names the affected path. Missing
@@ -94,6 +95,30 @@ The original S40 URL, scope, model and geometry remain unchanged. Product-source
 changes still require their own route review; this is not a claim that later
 implementation changes have been qualified. The old count and preflight review
 tests are retained, with positive growth and negative drift/source-check tests.
+
+## Pi target compatibility review
+
+PR943 moved main to `6a243348a0e74b0a50c37eccf4d61520129a5c1c` before the next
+PR build. The tested merge included that newer main even though the pull request
+metadata still reported the earlier base revision. The strict host check correctly
+refused the new descriptor. Review the tested merge and live main, not only the
+last main commit incorporated into the branch.
+
+`REVALIDATED_AT` now records that exact source review. The only additional mapped
+inputs are `core/hosts.json`, `core/surface/commands/doctor.md` and `docs/parity.md`.
+They change the Pi target from 1.0.2 to 1.1.0: one fingerprint key, one doctor
+sentence and three parity sentences. The fingerprint value, all command forms,
+all route exclusions and the degraded doctor/approval boundaries are unchanged.
+The new regression requires those exact substitutions across complete files and
+checks every host invocation. The older count and preflight assertions keep their
+original commits; they are not repurposed as evidence for this review.
+
+The host descriptor now uses the same full-file `REVALIDATED_AT` comparison as
+other owners, rather than a second hard-coded blob that could be overlooked during
+an intentional source review. This does not permit arbitrary host edits or infer
+installed-host qualification from a version string. Both the original diagram
+source links and their historical notes stay at `REVIEWED_AT`. No graph, controller
+or approval mechanism is changed by this integration correction.
 
 ## Theme and exports
 

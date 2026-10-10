@@ -84,7 +84,7 @@ describe('changelog exception stays bound to actual reviewed Git history', () =>
       .replace(oldNote, '- Changed historical behavior.'));
     expect(() => checkReviewedSource(dir, 'CHANGELOG.md')).toThrow(/Atlas source changed/);
   });
-  it('does not extend the exception to a workflow owner or nested changelog', () => {
+  it('does not extend the exception to a workflow owner or other source path', () => {
     mkdirSync(join(dir, 'core'), { recursive: true });
     const hosts = git('show', `${REVALIDATED_AT}:core/hosts.json`);
     writeFileSync(join(dir, 'core/hosts.json'), hosts + '\n');
@@ -92,7 +92,10 @@ describe('changelog exception stays bound to actual reviewed Git history', () =>
     mkdirSync(join(dir, 'plugins/ca-pi'), { recursive: true });
     const sibling = git('show', `${REVALIDATED_AT}:plugins/ca-pi/CHANGELOG.md`);
     writeFileSync(join(dir, 'plugins/ca-pi/CHANGELOG.md'), sibling.replace(boundary, boundary + newer) + '\n');
-    expect(() => checkReviewedSource(dir, 'plugins/ca-pi/CHANGELOG.md')).toThrow(/Atlas source changed/);
+    expect(() => checkReviewedSource(dir, 'plugins/ca-pi/CHANGELOG.md')).toThrow(/Invalid atlas source path/);
+    writeFileSync(join(dir, 'core/CHANGELOG.md'), reviewed.replace(boundary, boundary + newer));
+    expect(() => checkReviewedSource(dir, 'core/CHANGELOG.md', gitBlob(Buffer.from(reviewed))))
+      .toThrow(/Atlas source changed/);
   });
   it('requires the old Git object rather than substituting current text or main', () => {
     const empty = mkdtempSync(join(tmpdir(), 'ca-atlas-missing-history-'));

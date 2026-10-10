@@ -1155,7 +1155,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 class PiPackageTests(unittest.TestCase):
     def test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin(self) -> None:
-        # Pi 1.0.2 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
+        # Pi 1.1.0 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
         for label, declared, expected in (
             ("string-bin", "dist/bundle/cli.js", "dist/bundle/cli.js"),
             ("map-bin", {"pi": "dist/bundle/cli.js"}, "dist/bundle/cli.js"),
@@ -1467,7 +1467,7 @@ class PiPackageTests(unittest.TestCase):
 
         hard_coded_matrix = ci.replace(
             "pi-version: ${{ fromJSON(needs.changes.outputs.pi-versions) }}",
-            'pi-version: ["1.0.2"]',
+            'pi-version: ["1.1.0"]',
             1,
         )
         self.assertNotEqual(hard_coded_matrix, ci)
@@ -1861,7 +1861,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 1.0.2 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 1.1.0 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,
