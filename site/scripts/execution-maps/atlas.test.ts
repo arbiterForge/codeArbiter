@@ -3,8 +3,10 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource} from './atlas';
+import {fileURLToPath} from 'node:url';
+import {afterAll,beforeAll,describe,expect,it} from 'vitest';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT} from './atlas';
+import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 import provenance from './atlas-data/provenance.json';
@@ -86,6 +88,33 @@ describe('atlas source and original-composition regression contract',()=>{
       });
       expect(output.trim()).toBe('selected repository verified');
     }finally{rmSync(dir,{recursive:true,force:true});}
+  });
+  describe('Git replacement refs',()=>{
+    let dir:string,pin:string;
+    beforeAll(()=>{
+      dir=mkdtempSync(join(tmpdir(),'ca-atlas-replace-'));
+      const fixtureEnv=Object.fromEntries(Object.entries(process.env).filter(([name])=>!name.toUpperCase().startsWith('GIT_')));
+      const git=(args:string[],input?:string):string=>execFileSync('git',args,{cwd:dir,env:fixtureEnv,input,encoding:'utf8'}).trim();
+      const atlas=originalAtlas(),lensDir='core/surface/skills/tribunal/references/lenses';
+      const inputs=new Set(['core/hosts.json',lensDir,...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path)]);
+      for(const command of atlas.commands)commandMetadata(command.name,path=>{
+        inputs.add(path);return readFileSync(new URL(path,root),'utf8');
+      });
+      git(['clone','--quiet','--shared','--no-checkout',fileURLToPath(root),dir]);
+      git(['restore',`--source=${REVALIDATED_AT}`,'--worktree','--',...inputs]);
+      pin=git(['hash-object','-w','--stdin'],'reviewed source\n');
+      const replacement=git(['hash-object','-w','--stdin'],'changed source\n');
+      git(['replace',pin,replacement]);
+      writeFileSync(join(dir,'core/source.md'),'changed source\n');
+      const reviewedTree=git(['rev-parse',`${REVALIDATED_AT}:${lensDir}`]);
+      const emptyTree=git(['mktree'],'');
+      git(['replace',reviewedTree,emptyTree]);
+    });
+    afterAll(()=>{if(dir)rmSync(dir,{recursive:true,force:true});});
+    it('ignores replacement refs for reviewed blobs and lens rosters',()=>{
+      expect.soft(()=>checkReviewedSource(dir,'core/source.md',pin)).toThrow(/Atlas source changed/);
+      expect(loadAtlas(dir).lensCount).toBe(13);
+    });
   });
   it('exports the same spatial SVGs and source identity, without font payloads',()=>{
     const a=loadAtlas(),t=loadAtlasTheme(),base=new URL(`site/public/workflow-atlas/${REVIEWED_AT}/`,root);

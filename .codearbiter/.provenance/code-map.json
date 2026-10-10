@@ -143,7 +143,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "aba399eff239d011eab02eb4a813a4b21205b9b2",
+      "hash": "a22de7d5e4d7134863f5679ab07d101f78c17595",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
@@ -155,7 +155,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "cbb60deca359ce2748875b7688e73e947a0f971c",
+      "hash": "b6baafcb92e0e145ac00271f15706de60dfd83e7",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {

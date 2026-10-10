@@ -74,7 +74,7 @@ export function checkReviewedSource(root:string,path:string,pin?:string):void {
   const expected=pin??`${REVALIDATED_AT}:${path}`;
   const current=readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
   let reviewed:Buffer;
-  try {reviewed=execFileSync('git',['cat-file','blob',expected],{cwd:root,env:rootBoundGitEnv(),stdio:['ignore','pipe','pipe']});}
+  try {reviewed=execFileSync('git',['--no-replace-objects','cat-file','blob',expected],{cwd:root,env:rootBoundGitEnv(),stdio:['ignore','pipe','pipe']});}
   catch{throw new Error(`Atlas needs reviewed Git object ${expected} for ${path}. Do not substitute main.`);}
   // Compare actual reviewed bytes; Git owns object identities, not application crypto.
   if(Buffer.from(current).equals(reviewed))return;
@@ -113,7 +113,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   }
   const lensDir='core/surface/skills/tribunal/references/lenses';
   const names=readdirSync(resolve(root,lensDir)).filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
-  const expected=execFileSync('git',['ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,env:rootBoundGitEnv(),encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
+  const expected=execFileSync('git',['--no-replace-objects','ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,env:rootBoundGitEnv(),encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
