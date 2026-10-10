@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { checkReviewedSource, gitBlob, retainsReviewedChangelog, REVALIDATED_AT } from './atlas';
+import { checkReviewedSource, retainsReviewedChangelog, REVALIDATED_AT } from './atlas';
 
 const boundary = '## [Unreleased]\n\n';
 const preamble = '# Changelog\n\nImmutable historical citations.\n\n' + boundary;
@@ -74,7 +74,7 @@ describe('changelog exception stays bound to actual reviewed Git history', () =>
   });
   it('still refuses an explicit changelog blob mismatch', () => {
     writeFileSync(join(dir, 'CHANGELOG.md'), baseline.replace(boundary, boundary + newer));
-    expect(() => checkReviewedSource(dir, 'CHANGELOG.md', gitBlob(Buffer.from(baseline))))
+    expect(() => checkReviewedSource(dir, 'CHANGELOG.md', git('rev-parse', `${REVALIDATED_AT}:CHANGELOG.md`).trim()))
       .toThrow(/Atlas source changed: CHANGELOG.md/);
   });
   it('refuses changed or missing historical notes after new notes are added', () => {
@@ -94,7 +94,8 @@ describe('changelog exception stays bound to actual reviewed Git history', () =>
     writeFileSync(join(dir, 'plugins/ca-pi/CHANGELOG.md'), sibling.replace(boundary, boundary + newer) + '\n');
     expect(() => checkReviewedSource(dir, 'plugins/ca-pi/CHANGELOG.md')).toThrow(/Invalid atlas source path/);
     writeFileSync(join(dir, 'core/CHANGELOG.md'), reviewed.replace(boundary, boundary + newer));
-    expect(() => checkReviewedSource(dir, 'core/CHANGELOG.md', gitBlob(Buffer.from(reviewed))))
+    const pin = execFileSync('git', ['hash-object', '-w', '--stdin'], { cwd: dir, input: reviewed, encoding: 'utf8' }).trim();
+    expect(() => checkReviewedSource(dir, 'core/CHANGELOG.md', pin))
       .toThrow(/Atlas source changed/);
   });
   it('requires the old Git object rather than substituting current text or main', () => {

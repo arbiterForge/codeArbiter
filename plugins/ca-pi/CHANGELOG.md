@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.6] - 2026-10-10
+
+### Fixed
+
+- Preserve the shared engine's Codex native V2 review bindings and bounded
+  verification context storage. Pi verification and review authority remain
+  unsupported; this shared payload update does not enable those host seams.
+
 ## [0.17.5] - 2026-10-10
 
 ### Fixed

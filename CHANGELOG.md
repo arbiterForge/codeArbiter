@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.25.5] - 2026-10-10
+
+### Fixed
+
+- Preserve shared evidence validation for Codex native V2 reviews, binding
+  parent activity to child identity and the original transcript while refusing
+  steering, stale associations and invalid completions.
+- Keep large verification contexts in immutable references with bounded result
+  capacity, retaining the existing evidence limits and completion checks.
+
 ## [2.25.4] - 2026-10-10
 
 ### Fixed

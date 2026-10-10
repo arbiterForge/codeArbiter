@@ -136,6 +136,7 @@ func verificationResultSchema(qualified bool) map[string]any {
 const (
 	CodexReviewProfile         = "codex-review/0.1.0"
 	CodexNativeV1ReviewProfile = "codex-native-v1/0.145.0"
+	CodexNativeV2ReviewProfile = "codex-native-v2/0.162.0-alpha.2"
 	ClaudeReviewProfile        = "claude-review/0.1.0"
 	// ClaudeReviewer is the plugin-shipped read-only reviewer agent a Claude
 	// review launch must pin.
@@ -183,6 +184,23 @@ func reviewResultSchema() map[string]any {
 	}, "format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")
 	return closed(map[string]any{"launch": launch, "decision": decision}, "launch", "decision")
 }
+func codexNativeV2ReviewResultSchema() map[string]any {
+	uuid := map[string]any{"type": "string", "pattern": `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`}
+	agentPath := map[string]any{"type": "string", "pattern": `^/root(/[a-z0-9_]+)+$`}
+	activity := closed(map[string]any{
+		"type": map[string]any{"const": "item_completed"}, "thread_id": uuid, "turn_id": uuid,
+		"item":          closed(map[string]any{"type": map[string]any{"const": "SubAgentActivity"}, "id": text(), "kind": map[string]any{"const": "started"}, "agent_thread_id": uuid, "agent_path": agentPath}, "type", "id", "kind", "agent_thread_id", "agent_path"),
+		"started_at_ms": map[string]any{"type": "integer", "minimum": int64(0)}, "completed_at_ms": map[string]any{"type": "integer", "minimum": int64(0)},
+	}, "type", "thread_id", "turn_id", "item", "started_at_ms", "completed_at_ms")
+	child := closed(map[string]any{"cli_version": map[string]any{"const": "0.162.0-alpha.2"}, "thread_id": uuid, "parent_thread_id": uuid, "session_id": text(), "agent_path": agentPath, "metadata_sha256": hash()}, "cli_version", "thread_id", "parent_thread_id", "session_id", "agent_path", "metadata_sha256")
+	launch := closed(map[string]any{
+		"parent_session_id": text(), "parent_turn_id": uuid, "parent_thread_id": uuid, "tool_use_id": text(), "post_confirmed": map[string]any{"const": true},
+		"agent_id": uuid, "agent_type": map[string]any{"const": "default"}, "codex_review_profile": map[string]any{"const": CodexNativeV2ReviewProfile},
+		"child_turn_id": uuid, "fork_turns": map[string]any{"const": "none"}, "first_stop": map[string]any{"const": true}, "task_name": agentPath,
+		"native_activity": activity, "native_activity_sha256": hash(), "native_child": child,
+	}, "parent_session_id", "parent_turn_id", "parent_thread_id", "tool_use_id", "post_confirmed", "agent_id", "agent_type", "codex_review_profile", "child_turn_id", "fork_turns", "first_stop", "task_name", "native_activity", "native_activity_sha256", "native_child")
+	return closed(map[string]any{"launch": launch, "decision": reviewDecisionSchema()}, "launch", "decision")
+}
 func promptResultSchema() map[string]any {
 	return closed(map[string]any{
 		"host": text(), "session_id": text(), "prompt_sha256": hash(),
@@ -198,8 +216,8 @@ func observationSchema(format string, current bool) map[string]any {
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
 	if current {
 		profiles := model.M(base["producer_profile"])
-		profiles["enum"] = append(model.A(profiles["enum"]), CodexNativeV1ReviewProfile, CompletionCommandProfile)
-		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), completionVerificationResultSchema(), reviewResultSchema(), claudeReviewResultSchema(), codexNativeV1ReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
+		profiles["enum"] = append(model.A(profiles["enum"]), CodexNativeV1ReviewProfile, CodexNativeV2ReviewProfile, CompletionCommandProfile)
+		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), completionVerificationResultSchema(), reviewResultSchema(), claudeReviewResultSchema(), codexNativeV1ReviewResultSchema(), codexNativeV2ReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
 		required = append(required, "producer_result")
 	}
 	return closed(base, required...)
@@ -285,7 +303,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile && profile != CompletionCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) || kind == "context_approval" && profile != "host-user-context-preview/0.1.0" {
+	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile && profile != CompletionCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile && profile != CodexNativeV2ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) || kind == "context_approval" && profile != "host-user-context-preview/0.1.0" {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -508,6 +526,28 @@ func validateReview(observed, event, context map[string]any) bool {
 	case CodexNativeV1ReviewProfile:
 		if !codexShape || claudeShape || model.S(launch["codex_review_profile"]) != CodexNativeV1ReviewProfile || model.S(launch["child_turn_id"]) == model.S(launch["parent_turn_id"]) {
 			return false
+		}
+	case CodexNativeV2ReviewProfile:
+		activity, child := model.M(launch["native_activity"]), model.M(launch["native_child"])
+		item := model.M(activity["item"])
+		h, err := canonical.Hash(activity)
+		if !codexShape || claudeShape || model.S(launch["codex_review_profile"]) != CodexNativeV2ReviewProfile || model.S(launch["child_turn_id"]) == model.S(launch["parent_turn_id"]) || err != nil || h != model.S(launch["native_activity_sha256"]) || model.I(activity["completed_at_ms"]) < model.I(activity["started_at_ms"]) {
+			return false
+		}
+		for _, pair := range [][2]string{{"thread_id", "parent_thread_id"}, {"turn_id", "parent_turn_id"}} {
+			if model.S(activity[pair[0]]) != model.S(launch[pair[1]]) {
+				return false
+			}
+		}
+		for _, pair := range [][2]string{{"id", "tool_use_id"}, {"agent_thread_id", "agent_id"}, {"agent_path", "task_name"}} {
+			if model.S(item[pair[0]]) != model.S(launch[pair[1]]) {
+				return false
+			}
+		}
+		for _, pair := range [][2]string{{"thread_id", "agent_id"}, {"parent_thread_id", "parent_thread_id"}, {"session_id", "parent_session_id"}, {"agent_path", "task_name"}} {
+			if model.S(child[pair[0]]) != model.S(launch[pair[1]]) {
+				return false
+			}
 		}
 	case ClaudeReviewProfile:
 		if !claudeShape || codexShape || model.S(launch["agent_type"]) != ClaudeReviewer || model.S(launch["subagent_type"]) != ClaudeReviewer || launch["first_stop"] != true || launch["post_confirmed"] != true {

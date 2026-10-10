@@ -1,6 +1,5 @@
 import {readFileSync,readdirSync,lstatSync,existsSync} from 'node:fs';
 import {resolve,dirname} from 'node:path';
-import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,invocation,validateAtlas,validSourcePath,type Atlas,type HostDescriptor,type RouteMeta} from './atlas-model';
@@ -24,8 +23,25 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // text, without changing command forms, exclusions, routes or diagram geometry.
 // PR918 updates the artifacts owner and cited native adapter with normalized
 // completion closure and bounded context retention. Their routes and authority
-// boundaries agree with the maps. Historical comparisons remain independently tested.
-export const REVALIDATED_AT = '0192dc314817ffab18219d6485c11ac1531bbc5c';
+// boundaries agree with the maps. PR945 adds the exact native V2 activity/child
+// binding, steering refusal and frozen verification context references to those
+// owners and docs/hooks.md. Routes and authority boundaries remain compatible;
+// historical comparisons remain independently tested.
+export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
+
+function rootBoundGitEnv():NodeJS.ProcessEnv {
+  const env={...process.env};
+  // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
+  // removing only repository, object and discovery selectors that override cwd.
+  const selectors=new Set([
+    'GIT_ALTERNATE_OBJECT_DIRECTORIES','GIT_OBJECT_DIRECTORY','GIT_DIR','GIT_WORK_TREE',
+    'GIT_IMPLICIT_WORK_TREE','GIT_GRAFT_FILE','GIT_INDEX_FILE','GIT_NO_REPLACE_OBJECTS',
+    'GIT_REPLACE_REF_BASE','GIT_PREFIX','GIT_SHALLOW_FILE','GIT_COMMON_DIR',
+    'GIT_CEILING_DIRECTORIES','GIT_DISCOVERY_ACROSS_FILESYSTEM',
+  ]);
+  for(const name of Object.keys(env))if(selectors.has(name.toUpperCase()))delete env[name];
+  return env;
+}
 
 function repositoryRoot():string {
   let root=process.cwd();
@@ -34,7 +50,6 @@ function repositoryRoot():string {
   }
   return root;
 }
-export function gitBlob(bytes:Uint8Array):string {return createHash('sha1').update(`blob ${bytes.byteLength}\0`).update(bytes).digest('hex');}
 /** S40 cites immutable release history, not notes added after its review. */
 export function retainsReviewedChangelog(current:string,reviewed:string):boolean {
   current=current.replace(/\r\n/g,'\n');reviewed=reviewed.replace(/\r\n/g,'\n');
@@ -55,20 +70,18 @@ export function checkReviewedSource(root:string,path:string,pin?:string):void {
   let absolute=root;
   for(const part of path.split('/')) {absolute=resolve(absolute,part);if(lstatSync(absolute).isSymbolicLink())throw new Error(`Atlas source is a symlink: ${path}`);}
   if(!lstatSync(absolute).isFile())throw new Error(`Atlas source is not a regular file: ${path}`);
-  let expected=pin;
-  if(!expected) {
-    try {expected=execFileSync('git',['rev-parse','--verify',`${REVALIDATED_AT}:${path}`],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
-    catch{throw new Error(`Atlas needs reviewed Git object ${REVALIDATED_AT}:${path}. Do not substitute main.`);}
-  }
+  if(pin!==undefined && !/^[0-9a-f]{40}$/.test(pin))throw new Error(`Atlas source changed: ${path}. Use the exact reviewed blob identity.`);
+  const expected=pin??`${REVALIDATED_AT}:${path}`;
   const current=readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
-  if(gitBlob(Buffer.from(current))===expected)return;
+  let reviewed:Buffer;
+  try {reviewed=execFileSync('git',['--no-replace-objects','cat-file','blob',expected],{cwd:root,env:rootBoundGitEnv(),stdio:['ignore','pipe','pipe']});}
+  catch{throw new Error(`Atlas needs reviewed Git object ${expected} for ${path}. Do not substitute main.`);}
+  // Compare actual reviewed bytes; Git owns object identities, not application crypto.
+  if(Buffer.from(current).equals(reviewed))return;
   // Keep explicit pins and every workflow owner byte-strict. Only the root
   // historical changelog may grow above its intact reviewed release history.
   if(path==='CHANGELOG.md' && pin===undefined) {
-    let reviewed:string;
-    try {reviewed=execFileSync('git',['cat-file','blob',expected],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']});}
-    catch{throw new Error(`Atlas needs reviewed Git object ${REVALIDATED_AT}:${path}. Do not substitute main.`);}
-    if(retainsReviewedChangelog(current,reviewed))return;
+    if(retainsReviewedChangelog(current,reviewed.toString('utf8')))return;
   }
   throw new Error(`Atlas source changed: ${path}. Review affected routes, then intentionally update the review binding.`);
 }
@@ -100,7 +113,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   }
   const lensDir='core/surface/skills/tribunal/references/lenses';
   const names=readdirSync(resolve(root,lensDir)).filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
-  const expected=execFileSync('git',['ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
+  const expected=execFileSync('git',['--no-replace-objects','ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,env:rootBoundGitEnv(),encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;

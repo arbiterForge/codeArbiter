@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.5] - 2026-10-10
+
+### Fixed
+
+- Bind native V2 reviews on Codex 0.162.0-alpha.2 to the parent session, turn,
+  tool call, child identity and transcript. Refuse steering, stale associations
+  and invalid completions while retaining the first child Stop as the result.
+- Keep large verification contexts in immutable references with bounded result
+  capacity, retaining the existing evidence limits and completion checks.
+
 ## [0.16.4] - 2026-10-10
 
 ### Fixed

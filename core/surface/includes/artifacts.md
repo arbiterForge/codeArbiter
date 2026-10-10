@@ -349,7 +349,7 @@ reviewer's judgment; schema validation does not prove that every file was read
 or every conclusion is correct. Preserve the unchanged launch envelope and
 genuine host capture throughout this path.
 {{IF:codex}}
-Codex review requires an explicitly qualified native V1 interface. Before arming,
+Codex review requires an explicitly qualified native interface. For V1, before arming,
 inspect the actual registered `multi_agent_v1.spawn_agent` tool: it must expose
 `message` and `fork_context`, and its native result must carry the child UUID.
 Model names, cached metadata and disabling `multi_agent_v2` alone do not prove
@@ -366,10 +366,37 @@ role. Both Start-before-Post and Post-before-Start are supported. A first Stop
 before association rejects the request once associated; no later result replaces
 it. Do not send input, resume or close the reviewer. These operations invalidate
 an active review even if their host hook fails to prevent the operation.
-Default V2 `collaboration.spawn_agent` returns only a task path and is unsupported
-for review authority. Its exact native hook name is registered for refusal only.
-Use a fresh request in the qualified V1 interface; never substitute a coordinator
-message, wait result, transcript, or synthesized event.
+
+For Codex 0.162.0-alpha.2 V2, qualify the actual registered `collaboration.spawn_agent`
+and all three native steering guards, then arm a fresh request with
+`--codex-review-profile native-v2`. Pass exactly the returned `message`,
+`task_name` and `fork_turns:"none"` envelope; omit role, model and other inputs.
+The distinct profile is `codex-native-v2/0.162.0-alpha.2`. The model-facing task
+path supplies no UUID authority. Pre binds the hook-owned parent transcript's
+identity and offset; Post reads a bounded new native suffix and requires exactly
+one `item_completed/SubAgentActivity` binding parent thread, turn, call,
+canonical task path and child UUID. The child Start's hook-owned native metadata
+must qualify the current runtime and the same parent/session/path/UUID. Parent
+birth metadata may describe an older desktop version. Both native identities and
+their digests are retained with the closed observation. The verdict remains the
+actual first `SubagentStop.last_assistant_message` from that child's own turn.
+The first Post correlated by persisted parent session, turn and call consumes
+that launch even when its message or authority marker is absent or malformed.
+A later corrected Post cannot replace the rejected evidence. An unrelated
+ordinary Post remains outside the authority request.
+
+Native V2 completion reviews retain the full immutable context through the same
+bounded private reference as qualified V1. The eight MiB native context limit,
+one MiB mutable-state limit and lifecycle/result reserve remain independent;
+missing or altered context, changed selected facts and unknown profiles refuse.
+
+V2 supports distinct concurrent calls through their direct native identities;
+V1 retains its parent-turn ambiguity refusal. Do not send messages, follow-up work
+or interrupts to a running reviewer, by task path or UUID. These operations
+invalidate its review before or after Post association. Missing, unsafe, stale,
+oversized or ambiguous native evidence fails closed. Unqualified V2 and historical
+profileless requests remain refused; never relabel a receipt or substitute a
+coordinator message, wait result, transcript assistant text or synthesized event.
 {{END}}
 {{IF:claude}}
 On Claude Code, pass the envelope's four fields as the Agent tool's entire

@@ -139,6 +139,33 @@ that bounded input delta. Earlier compatibility comparisons, all nine maps and
 the historical S10/S32 source links remain unchanged. Retain the review commit
 in the merged history so clean full-history checkouts can resolve its Git objects.
 
+## Native V2 review compatibility review
+
+PR945 changes three mapped owners: `core/surface/includes/artifacts.md` (S10),
+`docs/hooks.md` (S17), and `core/pysrc/_artifactauthoritylib.py` (S32). The review
+and completion routes still require a fresh independent child, the unchanged
+launch envelope, real first-Stop evidence, current verification and scope
+acceptance. The qualified `codex-native-v2/0.162.0-alpha.2` profile adds a direct
+native parent/thread/call/path/UUID join; a model-facing task path alone remains
+insufficient. Steering or conflicting first evidence rejects the request. V1 and
+historical profileless requests retain their own contracts.
+
+The integrated adapter also retains immutable verification context by a bounded
+private reference, while retaining command/workspace bindings and the independent
+mutable result limit. This storage change does not waive freshness, verification,
+review or approval. S10/S17's V2 requirements and the corresponding S32 source
+were compared with the feature, context, review/commit and diagnostic nodes.
+Those nodes describe the same authority boundaries without selecting a native
+profile, so their text, source links and geometry remain unchanged.
+
+`REVALIDATED_AT` binds the reviewed integrated source. The regression retains
+all earlier compatibility comparisons, pins the exact three new source blobs,
+and requires every other mapped owner to remain unchanged except for release
+notes inserted above preserved changelog history. Keep that integration commit
+in merged history; do not substitute the latest main or relax the drift check.
+This source compatibility review does not certify an installed Codex host or a
+completed native V2 workflow.
+
 ## Theme and exports
 
 `src/styles/design-system.css` remains the only product token owner.
