@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 
@@ -9,19 +9,25 @@ const countReview = '81055792c71ba7aaeeaf5280e81ce2929bb25cc1';
 const preflightReview = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
+const nativeV2Review = '3c80387ec5c24f1878fd002362aebf11f4cff4a4';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
 });
 
-function changedProductInputs(from: string, to: string): string[] {
-  const atlas = loadAtlas();
-  const productInputs = new Set([
+let atlas: ReturnType<typeof loadAtlas>;
+let productInputs: Set<string>;
+beforeAll(() => {
+  atlas = loadAtlas();
+  productInputs = new Set([
     ...atlas.sources.filter(source => !source.path.startsWith('site/')).map(source => source.path),
     ...atlas.commands.map(command => command.source!.path),
     'core/hosts.json',
     'core/surface/command-routes.json',
   ]);
+});
+
+function changedProductInputs(from: string, to: string): string[] {
   return git('diff', '--name-only', from, to, '--')
     .trim().split('\n').filter(path => productInputs.has(path));
 }
@@ -91,7 +97,6 @@ describe('atlas source compatibility revalidation', () => {
   });
 
   it('binds only the reviewed completion owners and preserved changelog history', () => {
-    expect(REVALIDATED_AT).toBe(completionReview);
     expect(changedProductInputs(piReview, completionReview)).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/includes/artifacts.md',
     ]);
@@ -106,8 +111,25 @@ describe('atlas source compatibility revalidation', () => {
       git('show', `${piReview}:CHANGELOG.md`))).toBe(true);
   });
 
+  it('binds only the reviewed native V2 owners and preserved changelog history', () => {
+    expect(REVALIDATED_AT).toBe(nativeV2Review);
+    expect(changedProductInputs(completionReview, nativeV2Review)).toEqual([
+      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/includes/artifacts.md',
+      'docs/hooks.md',
+    ]);
+    const reviewedBlobs = {
+      'core/pysrc/_artifactauthoritylib.py': '7e865901be23bca7f29a7a0ea0b094c1f6fe7d94',
+      'core/surface/includes/artifacts.md': 'ff55bc49e336ef6ddf6498c55d7993a137214532',
+      'docs/hooks.md': '7e7312aefd548049e54b98a53297b0e19213477a',
+    };
+    for (const [path, blob] of Object.entries(reviewedBlobs)) {
+      expect(git('rev-parse', `${nativeV2Review}:${path}`).trim()).toBe(blob);
+    }
+    expect(retainsReviewedChangelog(git('show', `${nativeV2Review}:CHANGELOG.md`),
+      git('show', `${completionReview}:CHANGELOG.md`))).toBe(true);
+  });
+
   it('preserves original geometry and source links independently of the compatibility review', () => {
-    const atlas = loadAtlas();
     const original = originalAtlas();
     expect(atlas.commit).toBe(REVIEWED_AT);
     expect(atlas.scope).toContain(REVALIDATED_AT);

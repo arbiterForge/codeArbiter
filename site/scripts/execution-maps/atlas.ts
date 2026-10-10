@@ -23,8 +23,11 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // text, without changing command forms, exclusions, routes or diagram geometry.
 // PR918 updates the artifacts owner and cited native adapter with normalized
 // completion closure and bounded context retention. Their routes and authority
-// boundaries agree with the maps. Historical comparisons remain independently tested.
-export const REVALIDATED_AT = '0192dc314817ffab18219d6485c11ac1531bbc5c';
+// boundaries agree with the maps. PR945 adds the exact native V2 activity/child
+// binding, steering refusal and frozen verification context references to those
+// owners and docs/hooks.md. Routes and authority boundaries remain compatible;
+// historical comparisons remain independently tested.
+export const REVALIDATED_AT = '3c80387ec5c24f1878fd002362aebf11f4cff4a4';
 
 function repositoryRoot():string {
   let root=process.cwd();
@@ -53,12 +56,8 @@ export function checkReviewedSource(root:string,path:string,pin?:string):void {
   let absolute=root;
   for(const part of path.split('/')) {absolute=resolve(absolute,part);if(lstatSync(absolute).isSymbolicLink())throw new Error(`Atlas source is a symlink: ${path}`);}
   if(!lstatSync(absolute).isFile())throw new Error(`Atlas source is not a regular file: ${path}`);
-  let expected=pin;
-  if(!expected) {
-    try {expected=execFileSync('git',['rev-parse','--verify',`${REVALIDATED_AT}:${path}`],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
-    catch{throw new Error(`Atlas needs reviewed Git object ${REVALIDATED_AT}:${path}. Do not substitute main.`);}
-  }
-  if(!/^[0-9a-f]{40}$/.test(expected))throw new Error(`Atlas source changed: ${path}. Use the exact reviewed blob identity.`);
+  if(pin!==undefined && !/^[0-9a-f]{40}$/.test(pin))throw new Error(`Atlas source changed: ${path}. Use the exact reviewed blob identity.`);
+  const expected=pin??`${REVALIDATED_AT}:${path}`;
   const current=readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
   let reviewed:Buffer;
   try {reviewed=execFileSync('git',['cat-file','blob',expected],{cwd:root,stdio:['ignore','pipe','pipe']});}
