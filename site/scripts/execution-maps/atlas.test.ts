@@ -61,6 +61,32 @@ describe('atlas source and original-composition regression contract',()=>{
       expect(()=>checkReviewedSource(dir,'core/source.md',pin)).toThrow(/needs reviewed Git object/);
     }finally{rmSync(dir,{recursive:true,force:true});}
   });
+  it('isolates reviewed blobs from inherited Git repository variables',()=>{
+    const dir=mkdtempSync(join(tmpdir(),'ca-atlas-git-env-'));
+    const selected=join(dir,'selected'),other=join(dir,'other');
+    const fixtureEnv=Object.fromEntries(Object.entries(process.env).filter(([name])=>!name.toUpperCase().startsWith('GIT_')));
+    try{
+      for(const repo of [selected,other])execFileSync('git',['init','--quiet',repo],{env:fixtureEnv});
+      mkdirSync(join(selected,'core'));writeFileSync(join(selected,'core/source.md'),'selected source\n');
+      const pin=execFileSync('git',['hash-object','-w','--stdin'],{cwd:selected,env:fixtureEnv,input:'selected source\n',encoding:'utf8'}).trim();
+      const foreignPin=execFileSync('git',['hash-object','-w','--stdin'],{cwd:other,env:fixtureEnv,input:'foreign source\n',encoding:'utf8'}).trim();
+      const script=`
+        import { strict as assert } from 'node:assert';
+        import { checkReviewedSource } from ${JSON.stringify(new URL('./atlas.ts',import.meta.url).href)};
+        checkReviewedSource(${JSON.stringify(selected)},'core/source.md',${JSON.stringify(pin)});
+        assert.throws(()=>checkReviewedSource(${JSON.stringify(selected)},'core/source.md',${JSON.stringify(foreignPin)}),/needs reviewed Git object/);
+        console.log('selected repository verified');
+      `;
+      const output=execFileSync(process.execPath,['--import','tsx','--input-type=module','--eval',script],{
+        cwd:new URL('site/',root),encoding:'utf8',
+        env:{...fixtureEnv,GIT_DIR:join(other,'.git'),GIT_WORK_TREE:other,
+          GIT_COMMON_DIR:join(other,'.git'),GIT_INDEX_FILE:join(other,'.git','index'),
+          GIT_OBJECT_DIRECTORY:join(other,'.git','objects'),
+          GIT_ALTERNATE_OBJECT_DIRECTORIES:join(other,'.git','objects')},
+      });
+      expect(output.trim()).toBe('selected repository verified');
+    }finally{rmSync(dir,{recursive:true,force:true});}
+  });
   it('exports the same spatial SVGs and source identity, without font payloads',()=>{
     const a=loadAtlas(),t=loadAtlasTheme(),base=new URL(`site/public/workflow-atlas/${REVIEWED_AT}/`,root);
     const plain=readFileSync(new URL('reading-guide.html',base),'utf8'),interactive=readFileSync(new URL('atlas.html',base),'utf8');

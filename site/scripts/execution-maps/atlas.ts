@@ -27,7 +27,21 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // binding, steering refusal and frozen verification context references to those
 // owners and docs/hooks.md. Routes and authority boundaries remain compatible;
 // historical comparisons remain independently tested.
-export const REVALIDATED_AT = '3c80387ec5c24f1878fd002362aebf11f4cff4a4';
+export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
+
+function rootBoundGitEnv():NodeJS.ProcessEnv {
+  const env={...process.env};
+  // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
+  // removing only repository, object and discovery selectors that override cwd.
+  const selectors=new Set([
+    'GIT_ALTERNATE_OBJECT_DIRECTORIES','GIT_OBJECT_DIRECTORY','GIT_DIR','GIT_WORK_TREE',
+    'GIT_IMPLICIT_WORK_TREE','GIT_GRAFT_FILE','GIT_INDEX_FILE','GIT_NO_REPLACE_OBJECTS',
+    'GIT_REPLACE_REF_BASE','GIT_PREFIX','GIT_SHALLOW_FILE','GIT_COMMON_DIR',
+    'GIT_CEILING_DIRECTORIES','GIT_DISCOVERY_ACROSS_FILESYSTEM',
+  ]);
+  for(const name of Object.keys(env))if(selectors.has(name.toUpperCase()))delete env[name];
+  return env;
+}
 
 function repositoryRoot():string {
   let root=process.cwd();
@@ -60,7 +74,7 @@ export function checkReviewedSource(root:string,path:string,pin?:string):void {
   const expected=pin??`${REVALIDATED_AT}:${path}`;
   const current=readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
   let reviewed:Buffer;
-  try {reviewed=execFileSync('git',['cat-file','blob',expected],{cwd:root,stdio:['ignore','pipe','pipe']});}
+  try {reviewed=execFileSync('git',['cat-file','blob',expected],{cwd:root,env:rootBoundGitEnv(),stdio:['ignore','pipe','pipe']});}
   catch{throw new Error(`Atlas needs reviewed Git object ${expected} for ${path}. Do not substitute main.`);}
   // Compare actual reviewed bytes; Git owns object identities, not application crypto.
   if(Buffer.from(current).equals(reviewed))return;
@@ -99,7 +113,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   }
   const lensDir='core/surface/skills/tribunal/references/lenses';
   const names=readdirSync(resolve(root,lensDir)).filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
-  const expected=execFileSync('git',['ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
+  const expected=execFileSync('git',['ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,env:rootBoundGitEnv(),encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;

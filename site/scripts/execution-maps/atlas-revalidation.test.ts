@@ -9,7 +9,7 @@ const countReview = '81055792c71ba7aaeeaf5280e81ce2929bb25cc1';
 const preflightReview = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
-const nativeV2Review = '3c80387ec5c24f1878fd002362aebf11f4cff4a4';
+const nativeV2Review = '25980c292b529fca90c39f5f26d69a1c0674de44';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
@@ -118,7 +118,7 @@ describe('atlas source compatibility revalidation', () => {
       'docs/hooks.md',
     ]);
     const reviewedBlobs = {
-      'core/pysrc/_artifactauthoritylib.py': '7e865901be23bca7f29a7a0ea0b094c1f6fe7d94',
+      'core/pysrc/_artifactauthoritylib.py': '796471d01306edddb3c4b5af26b9f740d2c81fc7',
       'core/surface/includes/artifacts.md': 'ff55bc49e336ef6ddf6498c55d7993a137214532',
       'docs/hooks.md': '7e7312aefd548049e54b98a53297b0e19213477a',
     };
