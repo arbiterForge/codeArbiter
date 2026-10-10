@@ -15,7 +15,7 @@ const qualitySearchCases = [
   { query: quickstartTitle, expectedPath: quickstartPath },
   { query: "data leaves my machine", expectedPath: "/faq/" },
   { query: "privacy", expectedPath: "/trust/" },
-  { query: "install Pi", expectedPath: "/getting-started/install/" },
+  { query: "install Pi", expectedPath: "/getting-started/pi/" },
   { query: "override", expectedPath: "/guides/overriding-a-gate/" },
 ];
 

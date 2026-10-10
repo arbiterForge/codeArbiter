@@ -100,6 +100,23 @@ class ClaudeRootInventoryTest(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual([entry.category for entry in inventory], ["immutable-history"])
 
+    def test_tribunal_frozen_bundle_history_is_classified(self):
+        prefix = ".github/fixtures/tribunal/qualification/"
+        captured = f'{{"captured": "{ROOT_LITERAL}/hooks/pre-write.py"}}\n'
+        for name in (
+            "candidate-bundle.json", "candidate-delivered-bundle.json", "incumbent-bundle.json"
+        ):
+            with self.subTest(name=name):
+                errors, inventory = self.inventory(prefix + name, captured)
+                self.assertEqual(errors, [])
+                self.assertEqual(
+                    [entry.category for entry in inventory], ["immutable-history"]
+                )
+        errors, inventory = self.inventory(prefix + "unlisted-bundle.json", captured)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("unclassified portable/product use", errors[0])
+        self.assertEqual(inventory, [])
+
     def test_repository_inventory_ignores_untracked_local_files(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)

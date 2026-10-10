@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.24.5] - 2026-10-05
+## [2.25.4] - 2026-10-10
 
 ### Fixed
 
@@ -26,6 +26,77 @@ predate the plugin rewrite and are grouped by date.
 - Bind a native normalized completion closure during fresh verification so
   publishing its own evidence does not look like source drift. Retain raw
   before/after command checks, validated-output checks, and historical profiles.
+
+## [2.25.3] - 2026-10-09
+
+### Fixed
+
+- Keep managed Git hooks working with a restricted PATH while preserving
+  trusted executable identities, cross-host path resolution and stale-registration checks.
+
+## [2.25.2] - 2026-10-08
+
+### Fixed
+
+- Recognize the scoped Pi package in shared workflow preflight and report its
+  unavailable approval support without enabling the workflow.
+- Preserve exact native Pi approval input bindings in the shared adapter while
+  refusing ordinary prompt input and unqualified paired approval.
+
+## [2.25.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
+
+## [2.25.0] - 2026-10-05
+
+### Fixed
+
+- Read the shared Git hook's stale-registration list correctly with multiple
+  entries and Windows line endings, so the current security checker owns the verdict.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
+
+### Added
+
+- Add semantic-contract and change-closure Tribunal lenses, with applicability,
+  evidence requirements, and false-positive guards across the thirteen-card roster.
+- Collect deterministic inventory without running project code, prepare bounded
+  review packets, and resolve review settings from the active host's capabilities.
+
+### Changed
+
+- Bind Tribunal resume to the exact reviewed source, allocate unique run directories,
+  preserve cross-lens leads, and group corroborating findings by root cause.
+- Require separate verification of serious findings and keep unresolved claims out
+  of confirmed fix work. Complete issue-filing and optional telemetry dispositions
+  separately from the report, preserving explicit consent and aggregate-only feedback.
+
+## [2.24.6] - 2026-10-07
+
+### Fixed
+
+- Wait up to 120 seconds (was 30) for the structured-artifact engine before timing out. On a
+  large repository a whole-tree input snapshot takes about 30 seconds on Windows, so every
+  verification, review publish and approval arm failed with `TIMEOUT`. Set
+  `CODEARBITER_ENGINE_TIMEOUT` (seconds, up to 3600) to change the bound; a malformed value
+  is refused rather than ignored. The bound is a wait limit only and relaxes no check.
+
+## [2.24.5] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
+- Pin the farm build and test dependency graph to `source-map-js` 1.2.2,
+  closing the excessive source-map allocation advisory GHSA-68fv-2mgg-jv7q.
 
 ## [2.24.4] - 2026-10-05
 

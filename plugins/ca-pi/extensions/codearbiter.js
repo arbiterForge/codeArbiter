@@ -2,7 +2,7 @@
 var define_CODEARBITER_PI_PERMISSION_POLICY_SURFACES_default = { "ca-plan": "planning-write", codearbiter_background_bash: "background-launch" };
 
 // <define:__CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS__>
-var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "1.0.2": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
+var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "1.1.0": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
 
 // <define:__CODEARBITER_PI_TOOL_CLASSES__>
 var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", codearbiter_background_bash: "EXEC", codearbiter_dispatch: "EXEC", codearbiter_farm_preview: "EXEC", write: "WRITE", edit: "EDIT", read: "READ" };
@@ -16,7 +16,7 @@ import { fileURLToPath as fileURLToPath5, pathToFileURL as pathToFileURL2 } from
 import { types as utilTypes9 } from "node:util";
 
 // src/compatibility.ts
-var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["1.0.2"]);
+var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["1.1.0"]);
 var MINIMUM_NODE = [22, 19, 0];
 var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
@@ -31,7 +31,7 @@ function atLeast(version, minimum) {
 }
 function compatibilityDirection(input) {
   if (!SUPPORTED_PI_VERSIONS.has(input.piVersion)) {
-    return "codeArbiter requires Pi 1.0.2; install a supported Pi version and run /ca-doctor.";
+    return "codeArbiter requires Pi 1.1.0; install a supported Pi version and run /ca-doctor.";
   }
   if (!atLeast(input.nodeVersion, MINIMUM_NODE)) {
     return "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.";
@@ -6881,10 +6881,10 @@ async function collectPiDoctorInput(dependencies) {
 var REMEDIATION = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 1.0.2 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 1.1.0 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 1.0.2, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 1.1.0, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
@@ -6913,7 +6913,7 @@ function diagnosePi(input) {
   const packageHealthy = input.package.declared && input.package.name === "@arbiterforge/ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && canonicallyInside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
-  const versionHealthy = input.runtime.piVersion === "1.0.2" && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
+  const versionHealthy = input.runtime.piVersion === "1.1.0" && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
   const piBelowMinimum = !atLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
   const expectedDoctorSkill = resolve9(input.package.root, "skills", "ca-doctor", "SKILL.md");
@@ -7034,7 +7034,7 @@ function diagnosePi(input) {
     {
       id: "active-dispatch",
       state: "degraded",
-      message: "Supported Pi 1.0.2 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
+      message: "Supported Pi 1.1.0 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
       remediation: REMEDIATION["active-dispatch"]
     }
   ];
@@ -7806,6 +7806,7 @@ var PI_PROVIDER_ENV = Object.freeze({
   "amazon-bedrock": ["AWS_PROFILE", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_BEARER_TOKEN_BEDROCK", "AWS_REGION"],
   "ant-ling": ["ANT_LING_API_KEY"],
   anthropic: ["ANTHROPIC_OAUTH_TOKEN", "ANTHROPIC_API_KEY"],
+  azure: ["AZURE_OPENAI_API_KEY", "AZURE_OPENAI_BASE_URL", "AZURE_OPENAI_RESOURCE_NAME", "AZURE_OPENAI_API_VERSION", "AZURE_OPENAI_DEPLOYMENT_NAME_MAP"],
   "azure-openai-responses": ["AZURE_OPENAI_API_KEY", "AZURE_OPENAI_BASE_URL", "AZURE_OPENAI_RESOURCE_NAME", "AZURE_OPENAI_API_VERSION", "AZURE_OPENAI_DEPLOYMENT_NAME_MAP"],
   cerebras: ["CEREBRAS_API_KEY"],
   "cloudflare-ai-gateway": ["CLOUDFLARE_API_KEY", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_GATEWAY_ID"],
@@ -8351,16 +8352,16 @@ function validMessage(value) {
   if (value.role === "assistant") {
     return exactKeys4(
       value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "providerThinkingLevel", "thinkingLevel", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "endTurn", "timestamp", "durationMs"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"]
-    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.providerThinkingLevel === void 0 || boundedString2(value.providerThinkingLevel)) && (value.thinkingLevel === void 0 || boundedString2(value.thinkingLevel)) && (value.endTurn === void 0 || typeof value.endTurn === "boolean") && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.providerThinkingLevel === void 0 || boundedString2(value.providerThinkingLevel)) && (value.thinkingLevel === void 0 || boundedString2(value.thinkingLevel)) && (value.endTurn === void 0 || typeof value.endTurn === "boolean") && (value.durationMs === void 0 || typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs >= 0) && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
     return exactKeys4(
       value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "nestedCalls", "timestamp", "durationMs"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"]
-    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && (value.usage === void 0 || validUsage(value.usage)) && (value.nestedCalls === void 0 || validNestedCalls(value.nestedCalls)) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && (value.usage === void 0 || validUsage(value.usage)) && (value.nestedCalls === void 0 || validNestedCalls(value.nestedCalls)) && (value.durationMs === void 0 || typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs >= 0) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   return false;
 }
@@ -8449,9 +8450,11 @@ function parseChildJsonLine(line) {
       } else if (!exactKeys4(record2, ["type", "id", "command", "success", "error"]) || typeof record2.error !== "string") invalidProtocol();
       break;
     case "agent_start":
-    case "agent_settled":
     case "turn_start":
       if (!exactKeys4(record2, ["type"])) invalidProtocol();
+      break;
+    case "agent_settled":
+      if (!exactKeys4(record2, ["type", "aborted"]) || typeof record2.aborted !== "boolean") invalidProtocol();
       break;
     case "agent_end":
       if (!exactKeys4(record2, ["type", "messages", "willRetry"]) || !Array.isArray(record2.messages) || record2.messages.length > MAX_JSON_ARRAY || !record2.messages.every(validMessage) || typeof record2.willRetry !== "boolean") invalidProtocol();
@@ -8473,7 +8476,7 @@ function parseChildJsonLine(line) {
       if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args", "partialResult", "parentToolCallId"], ["type", "toolCallId", "toolName", "args", "partialResult"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args) || !validOpaqueJson(record2.partialResult)) invalidProtocol();
       break;
     case "tool_execution_end":
-      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId"], ["type", "toolCallId", "toolName", "result", "isError"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
+      if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "result", "isError", "parentToolCallId", "durationMs"], ["type", "toolCallId", "toolName", "result", "isError"]) || record2.parentToolCallId !== void 0 && !boundedString2(record2.parentToolCallId) || record2.durationMs !== void 0 && (typeof record2.durationMs !== "number" || !Number.isFinite(record2.durationMs) || record2.durationMs < 0) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.result) || typeof record2.isError !== "boolean") invalidProtocol();
       break;
     case "extension_error":
       if (!exactKeys4(record2, ["type", "extensionPath", "event", "error"]) || typeof record2.extensionPath !== "string" || typeof record2.event !== "string" || typeof record2.error !== "string") invalidProtocol();
@@ -8771,6 +8774,10 @@ async function runPiChild(request, signal) {
         } else if (record2.type === "agent_settled") {
           if (phase !== "await-settled") {
             finishFailure("protocol_error");
+            return;
+          }
+          if (record2.aborted === true) {
+            finishFailure("cancelled");
             return;
           }
           phase = "complete";
@@ -10598,7 +10605,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "cc75f11e8eb1df2ab70c4ae0d8c510c61fcf178d905db29a734842d8c5905752"
+        childFingerprint: "98a945a0d55cc25f75a50bbe7c94cbea192b81f3db44fd9b3133d977a2973430"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

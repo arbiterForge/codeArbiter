@@ -17,7 +17,7 @@ from typing import Any
 
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[2]
-SUPPORTED = ("1.0.2",)
+SUPPORTED = ("1.1.0",)
 PLATFORMS = ("windows", "linux", "macos")
 ARCHITECTURES = {"x64", "arm64", "pending"}
 ROW_KEYS = {"version", "platform", "architecture", "resultCode", "passed", "timingMs", "diagnosticCode"}

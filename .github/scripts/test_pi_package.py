@@ -1024,7 +1024,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["1.0.2"]',
+        "pi-version: ${{ fromJSON(needs.changes.outputs.pi-versions) }}",
         "pi_host_locks.py install --version ${{ matrix.pi-version }}",
         "npm ci --ignore-scripts",
     ):
@@ -1155,7 +1155,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 class PiPackageTests(unittest.TestCase):
     def test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin(self) -> None:
-        # Pi 1.0.2 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
+        # Pi 1.1.0 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
         for label, declared, expected in (
             ("string-bin", "dist/bundle/cli.js", "dist/bundle/cli.js"),
             ("map-bin", {"pi": "dist/bundle/cli.js"}, "dist/bundle/cli.js"),
@@ -1362,7 +1362,7 @@ class PiPackageTests(unittest.TestCase):
         helpers = PLUGIN / "helpers"
         self.assertEqual(
             sorted(path.name for path in helpers.glob("*.js")),
-            ["windows-supervisor.js"],
+            ["approval-dialog.js", "windows-supervisor.js"],
         )
         supervisor = helpers / "windows-supervisor.js"
         text = supervisor.read_bytes().decode("utf-8", errors="strict")
@@ -1371,6 +1371,12 @@ class PiPackageTests(unittest.TestCase):
         build = (TOOLS / "build.mjs").read_text(encoding="utf-8")
         self.assertIn('entryPoints: ["src/windows-supervisor.ts"]', build)
         self.assertIn('outfile: "../helpers/windows-supervisor.js"', build)
+        self.assertIn('entryPoints: ["src/approval-entry.ts"]', build)
+        self.assertIn('outfile: "../helpers/approval-dialog.js"', build)
+        approval = (helpers / "approval-dialog.js").read_bytes().decode("utf-8", errors="strict")
+        self.assertNotIn("sourceMappingURL", approval)
+        manifest = json.loads((PLUGIN / "package.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["pi"]["extensions"], ["./extensions/codearbiter.js"])
         ci = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         stale_scope = "git diff --quiet -- plugins/ca-pi/extensions plugins/ca-pi/helpers"
         diagnostic_scope = "git --no-pager diff -- plugins/ca-pi/extensions plugins/ca-pi/helpers"
@@ -1436,7 +1442,8 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["1.0.2"]',
+            "pi-versions: ${{ steps.pi-policy.outputs.versions }}",
+            "pi-version: ${{ fromJSON(needs.changes.outputs.pi-versions) }}",
             "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
@@ -1457,6 +1464,17 @@ class PiPackageTests(unittest.TestCase):
         latest_job = ci.split("  ca-pi-latest:", 1)[1].split("\n  hooks:", 1)[0]
         self.assertIn("Report latest version and test installed runtime admission", latest_job)
         self.assertEqual(pi_ci_contract_violations(ci), [])
+
+        hard_coded_matrix = ci.replace(
+            "pi-version: ${{ fromJSON(needs.changes.outputs.pi-versions) }}",
+            'pi-version: ["1.1.0"]',
+            1,
+        )
+        self.assertNotEqual(hard_coded_matrix, ci)
+        self.assertTrue(
+            pi_ci_contract_violations(hard_coded_matrix),
+            "the matrix must consume the canonical Pi policy output",
+        )
 
         security_contract = (REPO / ".github/scripts/test_pi_security.py").read_text(encoding="utf-8")
         self.assertIn(
@@ -1843,7 +1861,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 1.0.2 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 1.1.0 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,

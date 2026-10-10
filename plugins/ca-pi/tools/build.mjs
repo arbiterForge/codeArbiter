@@ -49,7 +49,7 @@ if (
   expansionFingerprints === null
   || typeof expansionFingerprints !== "object"
   || Array.isArray(expansionFingerprints)
-  || JSON.stringify(Object.keys(expansionFingerprints).sort()) !== JSON.stringify(["1.0.2"].sort())
+  || JSON.stringify(Object.keys(expansionFingerprints).sort()) !== JSON.stringify(["1.1.0"].sort())
   || Object.values(expansionFingerprints).some((value) => typeof value !== "string" || !/^[a-f0-9]{64}$/u.test(value))
 ) {
   throw new Error("core/hosts.json has no exact Pi skill expansion fingerprint matrix");
@@ -83,6 +83,13 @@ await build({
   ...shared,
   entryPoints: ["src/windows-supervisor.ts"],
   outfile: "../helpers/windows-supervisor.js",
+});
+
+// Private explicit entrypoint only; never registered in the ordinary Pi manifest.
+await build({
+  ...shared,
+  entryPoints: ["src/approval-entry.ts"],
+  outfile: "../helpers/approval-dialog.js",
 });
 
 await build({

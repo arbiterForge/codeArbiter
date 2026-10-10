@@ -1,8 +1,9 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, relative } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AcademySource } from "./academy-source";
 import { generateAcademy } from "./generate-academy";
@@ -15,6 +16,21 @@ const requiredTracks = [
   ["practitioner", "Practitioner"],
   ["power-user", "Power user"],
 ] as const;
+
+function renderedInstallerCommands(html: string): string[] {
+  return [...html.matchAll(/<pre><code\b[^>]*>([\s\S]*?)<\/code><\/pre>/g)]
+    .map((match) => match[1].replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+      .replaceAll("&quot;", '"').replaceAll("&#39;", "'").replaceAll("&amp;", "&"))
+    .filter((command) => /actualInstallerSha256|actual_installer_sha256/.test(command));
+}
+
+function reviewedInstallerDigest(name: string): string {
+  const installRoot = join(siteRoot, "..", "academy-source", "install");
+  const digest = readFileSync(join(installRoot, `${name}.sha256`), "utf8").split("  ")[0];
+  expect(digest).toMatch(/^[0-9a-f]{64}$/);
+  expect(createHash("sha256").update(readFileSync(join(installRoot, name))).digest("hex")).toBe(digest);
+  return digest;
+}
 
 function extractEmittedScripts(html: string): string[] {
   const normalizedHtml = html.toLowerCase();
@@ -253,6 +269,68 @@ describe("generateAcademy", () => {
       );
     }
   }, 30_000);
+
+  it("renders the reviewed installer digest for every operating system", () => {
+    const commands = renderedInstallerCommands(integrationAcademyHtml);
+    expect(commands).toHaveLength(3);
+    expect(integrationAcademyHtml).not.toContain("{{INSTALL_");
+    expect(commands[0]).toContain(`$expectedInstallerSha256 = "${reviewedInstallerDigest("install.ps1")}"`);
+    for (const command of commands.slice(1)) {
+      expect(command).toContain(`expected_installer_sha256='${reviewedInstallerDigest("install.sh")}'`);
+    }
+  });
+
+  it.each(["windows", "macos", "linux"])(
+    "executes harmless %s installer fixtures only after the rendered digest check passes",
+    (os) => {
+      const command = renderedInstallerCommands(integrationAcademyHtml)[["windows", "macos", "linux"].indexOf(os)];
+      const windows = os === "windows";
+      const name = windows ? "install.ps1" : "install.sh";
+      expect(command).toContain(reviewedInstallerDigest(name));
+      expect(command).not.toContain("{{INSTALL_");
+      const root = mkdtempSync(join(tmpdir(), "academy-installer-sentinel-"));
+      fixtureRoots.push(root);
+      const sentinel = join(root, "executed.txt");
+      const fixture = windows
+        ? "Set-Content -LiteralPath $env:ACADEMY_TEST_SENTINEL -Value 'executed'\n"
+        : "printf '%s\\n' executed > \"$ACADEMY_TEST_SENTINEL\"\n";
+      writeFileSync(join(root, name), fixture);
+      const tail = command.slice(command.indexOf(windows ? "$actualInstallerSha256 =" : "actual_installer_sha256="));
+      expect(tail.trim().split("\n")).toHaveLength(3);
+      const script = windows
+        ? `$installer = Join-Path $env:ACADEMY_TEST_ROOT 'install.ps1'\n$expectedInstallerSha256 = $env:ACADEMY_TEST_DIGEST\n${tail}`
+        : `set -eu\nworkdir=$ACADEMY_TEST_ROOT\nexpected_installer_sha256=$ACADEMY_TEST_DIGEST\n${tail}`;
+      const shell = windows ? "pwsh" : process.platform === "win32"
+        ? resolve(execFileSync("git", ["--exec-path"], { encoding: "utf8" }).trim(), "../../../bin/bash.exe")
+        : "sh";
+      const args = windows ? ["-NoProfile", "-NonInteractive", "-Command", script] : ["-c", script];
+      const run = (digest: string) => spawnSync(shell, args, {
+        cwd: root,
+        encoding: "utf8",
+        timeout: 10_000,
+        env: {
+          ...process.env,
+          ACADEMY_TEST_ROOT: root.replaceAll("\\", "/"),
+          ACADEMY_TEST_SENTINEL: sentinel.replaceAll("\\", "/"),
+          ACADEMY_TEST_DIGEST: digest,
+        },
+      });
+
+      const matching = run(createHash("sha256").update(fixture).digest("hex"));
+      expect(matching.error).toBeUndefined();
+      expect(matching.status, matching.stderr).toBe(0);
+      expect(readFileSync(sentinel, "utf8").trim()).toBe("executed");
+      rmSync(sentinel);
+
+      const mismatching = run("0".repeat(64));
+      expect(mismatching.error).toBeUndefined();
+      expect(mismatching.status).toBe(1);
+      expect(mismatching.stderr).toContain("installer digest did not match Preview 0.32");
+      expect(existsSync(sentinel)).toBe(false);
+    },
+    // Both real shell launches retain their independent 10-second deadlines.
+    25_000,
+  );
 
   it("builds one accessible Academy overview from the canonical public inventory", () => {
     const academyHtml = integrationAcademyHtml;

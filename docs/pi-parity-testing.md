@@ -2,7 +2,7 @@
 
 This runbook covers the `ca-pi` distribution — the pinned Git tag plus the
 CI-published npm package (ADR-0029) — and the evidence needed
-to promote a commit. Exact Pi 1.0.2 is the sole supported and latest verified
+to promote a commit. Exact Pi 1.1.0 is the sole supported and latest verified
 host in this release line. Node 22.19 or newer and Python 3
 on `PATH` are required.
 
@@ -103,7 +103,7 @@ For a supported-version run, install the exact external Pi version with install
 scripts disabled in the isolated environment, then run one of:
 
 ```sh
-python .github/scripts/test_pi_platform_contract.py --pi-version 1.0.2
+python .github/scripts/test_pi_platform_contract.py --pi-version 1.1.0
 ```
 
 A supported-version run additionally executes the real-host final-argument

@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.16.6] - 2026-10-05
+## [0.17.5] - 2026-10-10
 
 ### Fixed
 
@@ -16,6 +16,90 @@ All notable changes to `ca-pi` are documented in this file.
 - Preserve the shared engine's distinct fresh-verification completion profile
   and historical receipt validation. Pi verification and review authority remain
   unsupported; this shared payload change does not enable those host seams.
+
+## [0.17.4] - 2026-10-09
+
+### Changed
+
+- Promote the verified Pi host window through exact Pi 1.1.0.
+
+### Fixed
+
+- Accept Pi 1.1.0 execution timing fields and settlement outcomes without treating aborted child work as successful.
+- Recognize Pi's renamed Azure provider while retaining parent-only provider credentials.
+
+## [0.17.3] - 2026-10-09
+
+### Fixed
+
+- Keep managed Git hooks working with a restricted PATH while preserving
+  trusted executable identities, cross-host path resolution and stale-registration checks.
+
+## [0.17.2] - 2026-10-08
+
+### Fixed
+
+- Recognize the installed `@arbiterforge/ca-pi` package and report the missing
+  prompt, verification and review authority precisely. New full-lane workflows
+  remain refused until that support is qualified.
+
+### Added
+
+- Add a private, explicitly loaded native approval dialog candidate with exact
+  reply, pending-artifact, session and generation bindings. Ordinary extension
+  registration is unchanged; real human qualification remains pending.
+
+## [0.17.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
+
+## [0.17.0] - 2026-10-05
+
+### Fixed
+
+- Read multiple stale Git-hook registrations correctly on Windows and Unix,
+  preserving enforcement by the current registered checker.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
+
+### Added
+
+- Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,
+  plus deterministic inventory and bounded evidence packets.
+
+### Changed
+
+- Bind resume to the reviewed source and preserve leads, verification results, and
+  root-cause triage. Report completion leaves filing and optional telemetry pending
+  until each is completed or explicitly skipped.
+- Resolve review profiles from actual Pi capabilities and report independence limits;
+  unresolved serious claims cannot become confirmed fix work. The supported Pi runtime
+  remains 1.0.2.
+
+## [0.16.7] - 2026-10-07
+
+### Fixed
+
+- Wait up to 120 seconds (was 30) for the structured-artifact engine before timing out. On a
+  large repository a whole-tree input snapshot takes about 30 seconds on Windows, so every
+  verification, review publish and approval arm failed with `TIMEOUT`. Set
+  `CODEARBITER_ENGINE_TIMEOUT` (seconds, up to 3600) to change the bound; a malformed value
+  is refused rather than ignored. The bound is a wait limit only and relaxes no check.
+
+## [0.16.6] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
 
 ## [0.16.5] - 2026-10-05
 

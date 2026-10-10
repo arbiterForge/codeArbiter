@@ -615,20 +615,29 @@ describe("#455 loopback inference broker", () => {
   // deleting the destruction loop stayed green. It is load-bearing — `server.close()` alone waits
   // for every idle keep-alive connection, so a child holding one open would keep an authorized
   // listener alive for as long as it liked.
-  test("close() destroys a still-open connection instead of waiting on it", async () => {
+  test.each(["ordinary close", "peer reset"])("close() destroys a still-open connection instead of waiting on it (%s)", async (outcome) => {
     const broker = await brokerFor(NONCE_A);
     const { hostname, port } = new URL(broker.baseUrl);
     const socket = connect({ host: hostname, port: Number(port) });
     openSockets.push(socket);
     await once(socket, "connect");
-    const peerClosed = once(socket, "close");
+    const socketErrors: NodeJS.ErrnoException[] = [];
+    socket.on("error", (error: NodeJS.ErrnoException) => socketErrors.push(error));
+    // A destructive peer shutdown may report ECONNRESET before close. Require the
+    // real close event even in that case, and reject every other error below.
+    const peerClosed = new Promise<void>((resolve) => socket.once("close", () => resolve()));
     // `server.close()` alone waits for every open connection, so without the destruction loop the
     // broker cannot finish closing while any child holds a socket open. The budget only has to
     // separate "destroys promptly" from "waits on the idle keep-alive forever" — a keep-alive
     // default is measured in minutes, so 15s keeps the discrimination while riding out a loaded
     // shared CI runner (this raced 3s and flaked three hosted macOS promotion cells in a row).
+    const closing = broker.close();
+    if (outcome === "peer reset") {
+      // Reproduce the socket error observed during destructive shutdown on macOS.
+      socket.emit("error", Object.assign(new Error("read ECONNRESET"), { code: "ECONNRESET" }));
+    }
     const closed = await Promise.race([
-      broker.close().then(() => "closed" as const),
+      closing.then(() => "closed" as const),
       new Promise<"hung">((resolve) => setTimeout(() => resolve("hung"), 15_000)),
     ]);
     expect(closed).toBe("closed");
@@ -637,5 +646,6 @@ describe("#455 loopback inference broker", () => {
       peerClosed,
       new Promise((_resolve, reject) => setTimeout(() => reject(new Error("connection survived close()")), 15_000)),
     ]);
+    for (const error of socketErrors) expect(error.code).toBe("ECONNRESET");
   });
 });
