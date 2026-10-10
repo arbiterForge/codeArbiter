@@ -467,7 +467,7 @@ jobs:
             --output impact.json \
             --summary "$GITHUB_STEP_SUMMARY"
       - name: Store impact receipt
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ci-impact-receipt
           path: impact.json
@@ -556,7 +556,7 @@ jobs:
           --expect-platform "${{ matrix.expected_platform }}"
           --extra-profile "${{ runner.temp }}/artifact-cli-statements.out"
       - name: Preserve the native statement profiles
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-statements-${{ matrix.os }}
           path: ${{ runner.temp }}/artifact-statements
@@ -633,7 +633,7 @@ jobs:
           --qualification-output "${{ runner.temp }}/artifact-qualification.json"
           --context-native-observation "${{ runner.temp }}/context-native-observation.json"
       - name: Preserve the exact native candidate and qualification receipt
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-native-${{ matrix.os }}
           path: |
@@ -696,7 +696,7 @@ jobs:
         run: npm run test:browser -- artifact-review.spec.ts
       - name: Preserve browser qualification views
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-browser-review
           path: site/.astro/playwright
@@ -771,7 +771,7 @@ jobs:
           PY
       - name: Preserve the statement coverage verdict
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-statement-summary
           path: ${{ runner.temp }}/artifact-statement-summary.json
@@ -856,7 +856,7 @@ jobs:
               )
           PY
       - name: Preserve the exact multi-host package overlay
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-host-payloads-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-host-payloads
@@ -927,7 +927,7 @@ jobs:
           --trusted-workflow-run "${{ github.run_id }}"
           --promotion-receipt-sha256 "${{ steps.assemble.outputs.promotion-receipt-sha256 }}"
       - name: Preserve the exact normal release package cohort
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-release-packages-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-release-packages
@@ -1052,7 +1052,7 @@ jobs:
           --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
           --cold-receipt "${{ runner.temp }}/artifact-package-cold.json"
       - name: Preserve the exact cold-execution cell receipt
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-package-cold.json
@@ -1251,7 +1251,7 @@ jobs:
       - name: Recheck coverage inputs after execution
         if: always()
         run: python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
         # the merge job silently reported `blobs merged: 0` for every run since
@@ -1402,7 +1402,7 @@ jobs:
       - name: Recheck coverage inputs after execution
         if: always()
         run: python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
         # the merge job silently reported `blobs merged: 0` for every run since
