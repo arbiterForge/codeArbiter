@@ -723,6 +723,28 @@ class PrivateDebugEntryTest(unittest.TestCase):
         self.assertEqual(bool(value["errors"]), expected_exit != 0)
         return value
 
+    def test_documented_minimal_example_validates_without_weakening_case_ids(self):
+        example = "debug/references/minimal-unresolved.json"
+        raw = (ROOT / "core/surface/skills" / example).read_bytes()
+        self.assertLessEqual(len(raw), 65536)
+        for plugin, directory in (("ca", "skills"), ("ca-codex", "routines"),
+                                  ("ca-pi", "routines")):
+            with self.subTest(package=plugin):
+                self.assertEqual((ROOT / "plugins" / plugin / directory /
+                                  example).read_bytes(), raw)
+        result = self._result(self._run(raw, "validate"), 0)
+        self.assertEqual(result["errors"], [])
+        packet = json.loads(raw)
+        self.assertEqual(packet["disposition"]["kind"], "unresolved")
+        self.assertEqual(packet["request"]["intent"], "diagnosis_only")
+        self.assertIsNone(packet["regression"])
+        # An independent invalid fixture exercises the reported rejection;
+        # this does not repair or resubmit a rejected production packet.
+        packet["case_id"] = "descriptive-case-without-prefix"
+        invalid = json.dumps(packet).encode("utf-8")
+        result = self._result(self._run(invalid, "validate"), 2)
+        self.assertEqual(result["errors"], [{"code": "VALUE", "path": "$.case_id"}])
+
     def test_private_entry_enforces_exit_codes_and_bounded_result(self):
         valid = self._result(self._run(self.valid, "validate"), 0)
         self.assertEqual(valid["errors"], [])

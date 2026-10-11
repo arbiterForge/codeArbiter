@@ -106,6 +106,24 @@ class CollectorCompatibleTestCase(unittest.TestCase):
 
 
 class DebugOwnerBoundaryTest(CollectorCompatibleTestCase):
+    def test_packet_references_are_discoverable_before_assembly_and_validation(self):
+        owner = OWNER.read_text(encoding="utf-8")
+        before_assembly = owner.split("For a handoff, assemble", 1)[0]
+        for name in ("preparation.md", "handoff.md", "debug-handoff.schema.json"):
+            self.assertIn("{{PLUGIN_ROOT}}/skills/debug/references/" + name,
+                          before_assembly)
+        self.assertIn("DBG-[A-Za-z0-9][A-Za-z0-9_-]{2,63}", before_assembly)
+        guide = (OWNER.parent / "references/preparation.md").read_text(encoding="utf-8")
+        self.assertIn("minimal-unresolved.json", guide)
+        self.assertIn("A rejected packet stays", guide)
+        for host, (plugin, entry, routine, _index, _prefix) in PROJECTIONS.items():
+            with self.subTest(host=host):
+                for route in (entry, routine):
+                    text = (ROOT / plugin / route).read_text(encoding="utf-8")
+                    before_assembly = text.split("For a handoff, assemble", 1)[0]
+                    for name in ("preparation.md", "handoff.md", "debug-handoff.schema.json"):
+                        self.assertIn(name, before_assembly)
+
     def assert_canonical_declaration(self, declaration):
         self.assertEqual(declaration, "{{SKILL_ENTRY:debug}}\n")
 
