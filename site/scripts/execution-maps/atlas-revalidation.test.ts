@@ -1,7 +1,8 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, UNITTEST_COLLECTOR_BLOB } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -21,6 +22,7 @@ beforeAll(() => {
   atlas = loadAtlas();
   productInputs = new Set([
     ...atlas.sources.filter(source => !source.path.startsWith('site/')).map(source => source.path),
+    ...atlas.commands.map(command => `core/surface/commands/${command.name}.md`),
     ...atlas.commands.map(command => command.source!.path),
     'core/hosts.json',
     'core/surface/command-routes.json',
@@ -127,6 +129,26 @@ describe('atlas source compatibility revalidation', () => {
     }
     expect(retainsReviewedChangelog(git('show', `${nativeV2Review}:CHANGELOG.md`),
       git('show', `${completionReview}:CHANGELOG.md`))).toBe(true);
+  });
+
+  it('binds only the reviewed unittest collector and preserved changelog history', () => {
+    expect(UNITTEST_COLLECTOR_BLOB).toBe('76a2998f4bd5b6f441f5fd162bbe810b2de2ee93');
+    expect(productInputs.size).toBe(71);
+    const paths = [...productInputs];
+    const current = git('hash-object', '--', ...paths).trim().split('\n');
+    const reviewed = git('rev-parse', ...paths.map(path => `${nativeV2Review}:${path}`)).trim().split('\n');
+    expect(current).toHaveLength(paths.length);
+    expect(reviewed).toHaveLength(paths.length);
+    const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
+    expect(changed.sort()).toEqual([
+      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
+    ]);
+    const path = 'core/pysrc/_artifactauthoritylib.py';
+    expect(git('hash-object', '--', path).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
+    expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
+      .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
+    expect(retainsReviewedChangelog(readFileSync(new URL('../../../CHANGELOG.md', import.meta.url), 'utf8'),
+      git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
 
   it('preserves original geometry and source links independently of the compatibility review', () => {

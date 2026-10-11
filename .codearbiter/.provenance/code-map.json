@@ -137,25 +137,25 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.25.5)",
+          "claim": "Claude Code plugin manifest for ca (v2.25.7)",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "a22de7d5e4d7134863f5679ab07d101f78c17595",
+      "hash": "2f2044112a45b027e9979e5afef93334800a5f71",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.16.5), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.16.7), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "b6baafcb92e0e145ac00271f15706de60dfd83e7",
+      "hash": "5b4d94a8de13a1b0c7b43a182a1ca28c3fb11d0f",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {

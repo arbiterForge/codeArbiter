@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT} from './atlas';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,UNITTEST_COLLECTOR_BLOB} from './atlas';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
@@ -102,6 +102,8 @@ describe('atlas source and original-composition regression contract',()=>{
       });
       git(['clone','--quiet','--shared','--no-checkout',fileURLToPath(root),dir]);
       git(['restore',`--source=${REVALIDATED_AT}`,'--worktree','--',...inputs]);
+      writeFileSync(join(dir,'core/pysrc/_artifactauthoritylib.py'),execFileSync('git',
+        ['--no-replace-objects','cat-file','blob',UNITTEST_COLLECTOR_BLOB],{cwd:dir,env:fixtureEnv}));
       pin=git(['hash-object','-w','--stdin'],'reviewed source\n');
       const replacement=git(['hash-object','-w','--stdin'],'changed source\n');
       git(['replace',pin,replacement]);

@@ -28,6 +28,10 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // owners and docs/hooks.md. Routes and authority boundaries remain compatible;
 // historical comparisons remain independently tested.
 export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
+// PR956's exact unittest matching change agrees with S32's cited lines and
+// native authority routes. All 71 product reads and the lens roster were
+// compared. Pin the retained blob so a squash does not require a branch commit.
+export const UNITTEST_COLLECTOR_BLOB = '76a2998f4bd5b6f441f5fd162bbe810b2de2ee93';
 
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
@@ -95,7 +99,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
   const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin);checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
@@ -117,6 +121,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
   atlas.lensCount=names.length;
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
+  atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
   return atlas;
 }
 
