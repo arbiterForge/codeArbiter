@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.7] - 2026-10-10
+
+### Fixed
+
+- Carry the shared bounded verification projection and approval preflight checks,
+  retaining complete command definitions, source snapshot ordering and full plan
+  identity freshness. Pi verification and review authority remain unsupported.
+
 ## [0.17.6] - 2026-10-10
 
 ### Fixed

@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.6] - 2026-10-10
+
+### Fixed
+
+- Use the shared bounded verification projection for typed-plan approval
+  preflight, preserving full identity freshness, command and snapshot diagnostics,
+  validation order and refusal before approval arming on incomplete delivery.
+
 ## [0.16.5] - 2026-10-10
 
 ### Fixed
