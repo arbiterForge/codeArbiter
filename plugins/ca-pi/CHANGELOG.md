@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.8] - 2026-10-11
+
+### Fixed
+
+- Recognize normal verbose unittest rows for fully qualified required test
+  identities. Preserve exact identity matching and refusal of duplicate,
+  skipped, failed or missing required results (#955).
+
 ## [0.17.6] - 2026-10-10
 
 ### Fixed
