@@ -241,6 +241,17 @@ resume condition when applicable. Distinguish an executed check from a proposed
 command and a recommended handoff from a completed operation. Keep the actual
 diagnosis-only or repair-requested caller scope visible throughout.
 
+Before assembling a handoff or invoking its validator, read the installed
+packet preparation guide at `{{PLUGIN_ROOT}}/skills/debug/references/preparation.md`,
+field reference at `{{PLUGIN_ROOT}}/skills/debug/references/handoff.md`, and
+JSON Schema at `{{PLUGIN_ROOT}}/skills/debug/references/debug-handoff.schema.json`.
+Use the linked minimal unresolved example to learn the closed field shapes;
+its synthetic observations are never evidence for the current case. In
+particular, `case_id` must match `DBG-[A-Za-z0-9][A-Za-z0-9_-]{2,63}`.
+Resolve these references from the loaded trusted package. If they are absent,
+stop validated transfer and report the missing resource; do not guess a shape
+or use the one-shot validator to discover fields by trial and error.
+
 For a handoff, assemble the transient `codearbiter.debug-handoff/1.0.0` packet
 from the observations actually in hand. Preserve symptom, expectation and its
 citations, reproduction state and limitations, evidence observations and
