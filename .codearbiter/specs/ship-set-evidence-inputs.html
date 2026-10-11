@@ -1,0 +1,1215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Ship-set evidence inputs · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-SHIP-SET-EVIDENCE-INPUTS</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/ship-set-evidence-inputs.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">APPROVED · authority must be verified at use</span><h1>Ship-set evidence inputs</h1><p class="deck">Bind structured-artifact evidence to what would actually be pushed, exempt hook telemetry, cut snapshot handle opens, and give reply capture enough hook time.</p><div class="meta"><span>SPEC-SHIP-SET-EVIDENCE-INPUTS</span><span>Revision 8 · schema 0.3.1</span><span>78 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>Users and agents running structured-artifact builds (/ca:feature, /ca:sprint) whose verification and review receipts bind to the snapshot input identity.</div><div class="field"><span class="label">Outcome</span>Evidence covers exactly what would be committed and pushed, hook audit appends never stale it, snapshots are fast enough for reply capture, and typed replies are not killed by the host hook timeout.</div><div class="field"><span class="label">Problem</span>The input identity hashes every file on disk, so a write that will never be pushed (a hook appending to gate-events.log, local scratch) stales every receipt and stalls the build; and a snapshot takes 15-30s on Windows, which also makes reply capture exceed the 30s UserPromptSubmit limit.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-04">SRC-04</a></li><li><a href="#SRC-05">SRC-05</a></li></ul></div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-01 -->
+<article class="record" id="SCOPE-01" data-ca-symbol="SCOPE-01" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-01">SCOPE-01</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Snapshot membership becomes the git ship set: tracked index entries plus untracked files not ignored by git, inside the plan roots, minus explicit exclude_directories and validated engine outputs.</div></article>
+<!-- CA:END:SCOPE-01 -->
+
+<!-- CA:BEGIN:SCOPE-02 -->
+<article class="record" id="SCOPE-02" data-ca-symbol="SCOPE-02" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-02">SCOPE-02</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>`.codearbiter/gate-events.log` is a fixed engine-declared runtime path that never contributes to the input identity; it stays git-tracked.</div></article>
+<!-- CA:END:SCOPE-02 -->
+
+<!-- CA:BEGIN:SCOPE-03 -->
+<article class="record" id="SCOPE-03" data-ca-symbol="SCOPE-03" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-03">SCOPE-03</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Gitlinks (submodules) contribute their checked-out commit pointer only; index entries deleted on disk drop out; tracked executable bit comes from the index mode.</div></article>
+<!-- CA:END:SCOPE-03 -->
+
+<!-- CA:BEGIN:SCOPE-04 -->
+<article class="record" id="SCOPE-04" data-ca-symbol="SCOPE-04" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-04">SCOPE-04</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Non-git roots keep the existing filesystem walk, labelled in the manifest so the two membership modes never share an identity.</div></article>
+<!-- CA:END:SCOPE-04 -->
+
+<!-- CA:BEGIN:SCOPE-05 -->
+<article class="record" id="SCOPE-05" data-ca-symbol="SCOPE-05" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-05">SCOPE-05</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Snapshot file access on the portable store opens each directory and each input file once per scan instead of re-validating every ancestor per file.</div></article>
+<!-- CA:END:SCOPE-05 -->
+
+<!-- CA:BEGIN:SCOPE-06 -->
+<article class="record" id="SCOPE-06" data-ca-symbol="SCOPE-06" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-06">SCOPE-06</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Manifest format advances to codearbiter.verification-inputs/0.2.0; receipts bound to 0.1.0 identities read as stale, not as errors.</div></article>
+<!-- CA:END:SCOPE-06 -->
+
+<!-- CA:BEGIN:SCOPE-07 -->
+<article class="record" id="SCOPE-07" data-ca-symbol="SCOPE-07" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-07">SCOPE-07</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Claude and Codex UserPromptSubmit prompt-submit.py hook registrations declare an explicit 600-second timeout (#931 hook half).</div></article>
+<!-- CA:END:SCOPE-07 -->
+
+<!-- CA:BEGIN:SCOPE-08 -->
+<article class="record" id="SCOPE-08" data-ca-symbol="SCOPE-08" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-08">SCOPE-08</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Protocol and authoring docs describe the ship-set rule, the fixed exemption and the non-git fallback.</div></article>
+<!-- CA:END:SCOPE-08 -->
+
+<!-- CA:BEGIN:SCOPE-09 -->
+<article class="record" id="SCOPE-09" data-ca-symbol="SCOPE-09" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-09">SCOPE-09</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Each engine operation loads and validates each content-addressed evidence object at most once, and the number of reserved-output scans it performs does not grow with task or receipt count.</div></article>
+<!-- CA:END:SCOPE-09 -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NG-01 -->
+<article class="record" id="NG-01" data-ca-symbol="NG-01" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-01">NG-01</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Binding evidence to a commit or requiring per-task commits (considered and declined).</div></article>
+<!-- CA:END:NG-01 -->
+
+<!-- CA:BEGIN:NG-02 -->
+<article class="record" id="NG-02" data-ca-symbol="NG-02" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-02">NG-02</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Untracking or relocating gate-events.log.</div></article>
+<!-- CA:END:NG-02 -->
+
+<!-- CA:BEGIN:NG-03 -->
+<article class="record" id="NG-03" data-ca-symbol="NG-03" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-03">NG-03</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Exempting any other audit log (overrides.log, triage.log, sprint-log.md, decision-log.md): deliberate governance writes still stale evidence.</div></article>
+<!-- CA:END:NG-03 -->
+
+<!-- CA:BEGIN:NG-04 -->
+<article class="record" id="NG-04" data-ca-symbol="NG-04" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-04">NG-04</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Weakening output-store validation: every reserved output is still fully validated and PROTOCOL&#39;s validated-outputs rule stays; AC-12 only removes repeated reads and repeated validation of the same object within one operation.</div></article>
+<!-- CA:END:NG-04 -->
+
+<!-- CA:BEGIN:NG-05 -->
+<article class="record" id="NG-05" data-ca-symbol="NG-05" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-05">NG-05</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Recovery for a lost reply code (#931 first half) and batch reconcile (#932).</div></article>
+<!-- CA:END:NG-05 -->
+
+<!-- CA:BEGIN:NG-06 -->
+<article class="record" id="NG-06" data-ca-symbol="NG-06" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-06">NG-06</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Changing PreCompact hook registrations or Pi hooks (Pi has no prompt-capture adapter).</div></article>
+<!-- CA:END:NG-06 -->
+
+<!-- CA:BEGIN:NG-07 -->
+<article class="record" id="NG-07" data-ca-symbol="NG-07" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NG-07">NG-07</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Wall-clock latency guarantees.</div></article>
+<!-- CA:END:NG-07 -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Binding decision refs</span><ul class="items"><li><a href="#DEC-01">DEC-01</a></li><li><a href="#DEC-02">DEC-02</a></li><li><a href="#DEC-04">DEC-04</a></li></ul></div><div class="field"><span class="label">Choice</span>Compute the input identity from git&#39;s ship set (tracked plus untracked non-ignored files) with `.codearbiter/gate-events.log` as the single fixed runtime exemption, keep the existing walk for non-git roots, and reduce portable-store handle opens to one per directory and file. Ship the #931 hook timeout alongside.</div><div class="field"><span class="label">Tradeoff</span>Honoring git&#39;s ignore rules removes noise and hand-kept excludes but means ignored local state that influences tests no longer stales evidence; exact-head hosted CI covers that gap. Commit binding was declined because it needs per-task commits and still requires a clean-tree check.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2>
+<!-- CA:BEGIN:CONSTRAINT-01 -->
+<article class="record" id="CONSTRAINT-01" data-ca-symbol="CONSTRAINT-01" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-01">CONSTRAINT-01</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Statement</span>Plans still cannot exclude any `.codearbiter` path; the gate-events exemption is an engine constant for that exact path, not plan-configurable.</div></article>
+<!-- CA:END:CONSTRAINT-01 -->
+
+<!-- CA:BEGIN:CONSTRAINT-02 -->
+<article class="record" id="CONSTRAINT-02" data-ca-symbol="CONSTRAINT-02" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-02">CONSTRAINT-02</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Statement</span>Git membership uses the existing fixed read-only probe hardening (sanitized environment, no lazy fetch, no optional locks, bounded timeout); no git argv derived from artifact content.</div></article>
+<!-- CA:END:CONSTRAINT-02 -->
+
+<!-- CA:BEGIN:CONSTRAINT-03 -->
+<article class="record" id="CONSTRAINT-03" data-ca-symbol="CONSTRAINT-03" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-03">CONSTRAINT-03</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Statement</span>Existing safety holds: symlink/reparse refusal, regular-file-only reads, size limits, per-file change detection and the two-scan comparison.</div></article>
+<!-- CA:END:CONSTRAINT-03 -->
+
+<!-- CA:BEGIN:CONSTRAINT-04 -->
+<article class="record" id="CONSTRAINT-04" data-ca-symbol="CONSTRAINT-04" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CONSTRAINT-04">CONSTRAINT-04</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>all</li></ul></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-05">SRC-05</a></li></ul></div><div class="field"><span class="label">Statement</span>No new public command, skill, agent or configuration surface.</div></article>
+<!-- CA:END:CONSTRAINT-04 -->
+</section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2>
+<!-- CA:BEGIN:DEC-01 -->
+<article class="record" id="DEC-01" data-ca-symbol="DEC-01" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-01">DEC-01</a><h3>Membership rule</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Ship set = `git ls-files --stage` entries present on disk plus `git ls-files --others --exclude-standard`, honoring repository .gitignore, .git/info/exclude and core.excludesFile, then narrowed by plan roots and exclude_directories.</div><div class="field"><span class="label">Rationale</span>Matches the ruling that only what would be pushed counts (SRC-05); reuses existing probes (SRC-07).</div></article>
+<!-- CA:END:DEC-01 -->
+
+<!-- CA:BEGIN:DEC-02 -->
+<article class="record" id="DEC-02" data-ca-symbol="DEC-02" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-02">DEC-02</a><h3>Fixed exemption</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Exactly `.codearbiter/gate-events.log` is exempt, as an engine constant.</div><div class="field"><span class="label">Rationale</span>Hook-written telemetry, appended on nearly every command; keeping it tracked preserves the audit trail (SRC-08).</div></article>
+<!-- CA:END:DEC-02 -->
+
+<!-- CA:BEGIN:DEC-03 -->
+<article class="record" id="DEC-03" data-ca-symbol="DEC-03" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-03">DEC-03</a><h3>Non-git roots</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Fall back to the existing filesystem walk; manifest records `membership: filesystem` vs `git_ship_set`. A git root whose probe fails is an error, never a fallback.</div><div class="field"><span class="label">Rationale</span>Most Go and Python artifact fixtures snapshot non-git temp directories; failing closed would churn them without benefit.</div></article>
+<!-- CA:END:DEC-03 -->
+
+<!-- CA:BEGIN:DEC-04 -->
+<article class="record" id="DEC-04" data-ca-symbol="DEC-04" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-04">DEC-04</a><h3>Speed method</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Walk-relative access: one directory handle per visited directory and one open per input file per scan; file metadata from that handle; no per-file ancestor re-check.</div><div class="field"><span class="label">Rationale</span>Profile shows handle opens dominate (SRC-04); ancestors are already validated by the walk.</div></article>
+<!-- CA:END:DEC-04 -->
+
+<!-- CA:BEGIN:DEC-05 -->
+<article class="record" id="DEC-05" data-ca-symbol="DEC-05" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-05">DEC-05</a><h3>Manifest version</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>codearbiter.verification-inputs/0.2.0.</div><div class="field"><span class="label">Rationale</span>Membership semantics change; old identities must not compare equal.</div></article>
+<!-- CA:END:DEC-05 -->
+
+<!-- CA:BEGIN:DEC-06 -->
+<article class="record" id="DEC-06" data-ca-symbol="DEC-06" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-06">DEC-06</a><h3>Hook timeout</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>600 seconds on Claude and Codex prompt-submit.py UserPromptSubmit entries.</div><div class="field"><span class="label">Rationale</span>Above the 120s engine client timeout with headroom for multiple engine calls; matches the locally verified patch.</div></article>
+<!-- CA:END:DEC-06 -->
+
+<!-- CA:BEGIN:DEC-07 -->
+<article class="record" id="DEC-07" data-ca-symbol="DEC-07" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-07">DEC-07</a><h3>Evidence reuse</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Reuse validated evidence objects within one engine operation, keyed by content hash and held no longer than that operation&#39;s store handle. The snapshot validates receipt chains in a second phase, from the bytes its scan already read.</div><div class="field"><span class="label">Rationale</span>The CP-02 quality review found receipt validation re-reading each chain from the root. authority.Vector, Load and LatestTaskCompletion repeat the same reads, and Vector runs on every read operation. Content addressing makes reuse safe: the hash is checked before an object is kept, and nothing outlives the operation.</div></article>
+<!-- CA:END:DEC-07 -->
+</section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:AC-01 -->
+<article class="record" id="AC-01" data-ca-symbol="AC-01" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-01">AC-01</a><h3>Ship-set membership</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Only the tracked and untracked non-ignored changes alter the identity.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-01-01 -->
+<article class="record" id="SCN-01-01" data-ca-symbol="SCN-01-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-01-01">SCN-01-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A repo with a tracked file, an untracked non-ignored file and an ignored file.</div><div class="field"><span class="label">Then</span>Only the tracked and untracked non-ignored changes alter the identity.</div><div class="field"><span class="label">When</span>Each file&#39;s bytes change in turn and the snapshot is retaken.</div></article>
+<!-- CA:END:SCN-01-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-05">SRC-05</a></li><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Statement</span>Changing a tracked file or an untracked non-ignored file changes the identity; changing or creating a gitignored file does not.</div><div class="field"><span class="label">Trigger</span>A snapshot runs in a git work tree.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-01 -->
+<article class="record" id="VER-01" data-ca-symbol="VER-01" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-01">VER-01</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A mutant that includes ignored files fails the ignored-file case.</div><div class="field"><span class="label">Oracle</span>Go tests over a temporary git repository.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/evidence/snapshot_test.go</div></article>
+<!-- CA:END:VER-01 -->
+</div></article>
+<!-- CA:END:AC-01 -->
+
+<!-- CA:BEGIN:AC-02 -->
+<article class="record" id="AC-02" data-ca-symbol="AC-02" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-02">AC-02</a><h3>Index and submodule edges</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The deleted file is absent, edits inside the submodule do not change identity, moving its HEAD does, and the executable flag follows the index mode.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-03">SCOPE-03</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-02-01 -->
+<article class="record" id="SCN-02-01" data-ca-symbol="SCN-02-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-02-01">SCN-02-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A tracked file deleted on disk, a gitlink, and a tracked file with index mode 100755.</div><div class="field"><span class="label">Then</span>The deleted file is absent, edits inside the submodule do not change identity, moving its HEAD does, and the executable flag follows the index mode.</div><div class="field"><span class="label">When</span>The snapshot is taken and the submodule worktree is edited.</div></article>
+<!-- CA:END:SCN-02-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Statement</span>Deleted-on-disk index entries are absent from the manifest; a gitlink contributes only its checked-out commit; tracked executable flags come from the index mode.</div><div class="field"><span class="label">Trigger</span>A snapshot runs in a git work tree with special index entries.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-02 -->
+<article class="record" id="VER-02" data-ca-symbol="VER-02" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-02">VER-02</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A mutant hashing submodule contents fails the submodule case.</div><div class="field"><span class="label">Oracle</span>Go tests over a temporary repository with a nested submodule.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/evidence/snapshot_test.go</div></article>
+<!-- CA:END:VER-02 -->
+</div></article>
+<!-- CA:END:AC-02 -->
+
+<!-- CA:BEGIN:AC-03 -->
+<article class="record" id="AC-03" data-ca-symbol="AC-03" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-03">AC-03</a><h3>Gate-events exemption</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The gate-events append leaves the identity unchanged; the overrides append changes it.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-03-01 -->
+<article class="record" id="SCN-03-01" data-ca-symbol="SCN-03-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-03-01">SCN-03-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A git repo with tracked .codearbiter/gate-events.log and .codearbiter/overrides.log.</div><div class="field"><span class="label">Then</span>The gate-events append leaves the identity unchanged; the overrides append changes it.</div><div class="field"><span class="label">When</span>A line is appended to each in turn.</div></article>
+<!-- CA:END:SCN-03-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-05">SRC-05</a></li><li><a href="#SRC-08">SRC-08</a></li></ul></div><div class="field"><span class="label">Statement</span>Appending to `.codearbiter/gate-events.log` never changes the identity; appending to any other `.codearbiter` file does; a plan exclude naming `.codearbiter` is still rejected.</div><div class="field"><span class="label">Trigger</span>Hooks append to audit logs during a build.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-03 -->
+<article class="record" id="VER-03" data-ca-symbol="VER-03" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-03">VER-03</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Removing the exemption fails the gate-events case; widening it to overrides.log fails the overrides case.</div><div class="field"><span class="label">Oracle</span>Go tests plus the existing input-policy rejection test.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/evidence/snapshot_test.go</div></article>
+<!-- CA:END:VER-03 -->
+</div></article>
+<!-- CA:END:AC-03 -->
+
+<!-- CA:BEGIN:AC-04 -->
+<article class="record" id="AC-04" data-ca-symbol="AC-04" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-04">AC-04</a><h3>Plan policy compatibility</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-01">CONSTRAINT-01</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The policy validates and both exclusions apply.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-04-01 -->
+<article class="record" id="SCN-04-01" data-ca-symbol="SCN-04-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-04-01">SCN-04-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A plan whose exclude_directories names both a gitignored directory and a non-ignored directory.</div><div class="field"><span class="label">Then</span>The policy validates and both exclusions apply.</div><div class="field"><span class="label">When</span>The snapshot is taken.</div></article>
+<!-- CA:END:SCN-04-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Statement</span>Explicit roots and exclude_directories still narrow the ship set; excluding an already-ignored directory is accepted, not rejected.</div><div class="field"><span class="label">Trigger</span>An approved plan with explicit roots and excludes is snapshotted.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-04 -->
+<article class="record" id="VER-04" data-ca-symbol="VER-04" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-04">VER-04</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A mutant rejecting redundant excludes fails the test.</div><div class="field"><span class="label">Oracle</span>Go test with a fixture plan policy.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/evidence/snapshot_test.go</div></article>
+<!-- CA:END:VER-04 -->
+</div></article>
+<!-- CA:END:AC-04 -->
+
+<!-- CA:BEGIN:AC-05 -->
+<article class="record" id="AC-05" data-ca-symbol="AC-05" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-05">AC-05</a><h3>Normative artifact hashing preserved</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-03">CONSTRAINT-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The identity is unchanged.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-05-01 -->
+<article class="record" id="SCN-05-01" data-ca-symbol="SCN-05-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-05-01">SCN-05-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A tracked plan HTML.</div><div class="field"><span class="label">Then</span>The identity is unchanged.</div><div class="field"><span class="label">When</span>Only its execution-state is updated.</div></article>
+<!-- CA:END:SCN-05-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Statement</span>Spec and plan HTML still contribute their normative hash, so progress-only updates do not stale evidence while normative edits do.</div><div class="field"><span class="label">Trigger</span>A spec or plan HTML changes only in progress or presentation.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-05 -->
+<article class="record" id="VER-05" data-ca-symbol="VER-05" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-05">VER-05</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Hashing raw plan bytes fails the test.</div><div class="field"><span class="label">Oracle</span>Go test over an engine-mutated fixture plan.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/evidence/snapshot_test.go</div></article>
+<!-- CA:END:VER-05 -->
+</div></article>
+<!-- CA:END:AC-05 -->
+
+<!-- CA:BEGIN:AC-06 -->
+<article class="record" id="AC-06" data-ca-symbol="AC-06" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-06">AC-06</a><h3>Old receipts read as stale</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The evidence is reported stale (current_evidence false / STALE_EVIDENCE), not an error.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-06">SCOPE-06</a></li></ul></div><div class="field"><span class="label">Kind</span>compatibility</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-06-01 -->
+<article class="record" id="SCN-06-01" data-ca-symbol="SCN-06-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-06-01">SCN-06-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A task whose receipts bind a 0.1.0 identity.</div><div class="field"><span class="label">Then</span>The evidence is reported stale (current_evidence false / STALE_EVIDENCE), not an error.</div><div class="field"><span class="label">When</span>eligible or task-review runs.</div></article>
+<!-- CA:END:SCN-06-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Statement</span>Receipts bound to 0.1.0 manifests are treated as stale evidence with no crash or schema error.</div><div class="field"><span class="label">Trigger</span>An engine with the new manifest reads evidence from the old format.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-06 -->
+<article class="record" id="VER-06" data-ca-symbol="VER-06" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-06">VER-06</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Comparing formats as equal fails the test.</div><div class="field"><span class="label">Oracle</span>Go operations test with a fixture receipt.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/operations/engine_test.go</div></article>
+<!-- CA:END:VER-06 -->
+</div></article>
+<!-- CA:END:AC-06 -->
+
+<!-- CA:BEGIN:AC-07 -->
+<article class="record" id="AC-07" data-ca-symbol="AC-07" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-07">AC-07</a><h3>Non-git fallback</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-02">CONSTRAINT-02</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The plain directory uses the filesystem walk labelled membership filesystem; the broken git root fails closed.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-04">SCOPE-04</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-07-01 -->
+<article class="record" id="SCN-07-01" data-ca-symbol="SCN-07-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-07-01">SCN-07-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A plain temporary directory.</div><div class="field"><span class="label">Then</span>The plain directory uses the filesystem walk labelled membership filesystem; the broken git root fails closed.</div><div class="field"><span class="label">When</span>The snapshot is taken; then git is made unavailable on a git root.</div></article>
+<!-- CA:END:SCN-07-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Statement</span>Non-git roots use the existing walk with `membership: filesystem`; a git root whose probe fails returns an error rather than falling back.</div><div class="field"><span class="label">Trigger</span>A snapshot runs on a root that is not a git work tree.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-07 -->
+<article class="record" id="VER-07" data-ca-symbol="VER-07" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-07">VER-07</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A mutant that falls back on probe failure fails the test.</div><div class="field"><span class="label">Oracle</span>Go tests with a stub probe failure.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/evidence/snapshot_test.go</div></article>
+<!-- CA:END:VER-07 -->
+</div></article>
+<!-- CA:END:AC-07 -->
+
+<!-- CA:BEGIN:AC-08 -->
+<article class="record" id="AC-08" data-ca-symbol="AC-08" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-08">AC-08</a><h3>Handle opens bounded</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-03">CONSTRAINT-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Each input file is opened once; each visited directory has at most one anchor open and one listing open; no ancestor Lstat per file.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-05">SCOPE-05</a></li></ul></div><div class="field"><span class="label">Kind</span>performance</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-08-01 -->
+<article class="record" id="SCN-08-01" data-ca-symbol="SCN-08-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-08-01">SCN-08-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A tree with files at depth 1 to 6 and a counting filesystem seam.</div><div class="field"><span class="label">Then</span>Each input file is opened once; each visited directory has at most one anchor open and one listing open; no ancestor Lstat per file.</div><div class="field"><span class="label">When</span>One scan runs.</div></article>
+<!-- CA:END:SCN-08-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>Per scan, the portable store opens each visited directory at most twice (one anchor open and one listing open) and each input file at most once, with no per-file ancestor check, independent of file depth.</div><div class="field"><span class="label">Trigger</span>A snapshot scans a nested tree on the portable store.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-08 -->
+<article class="record" id="VER-08" data-ca-symbol="VER-08" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-08">VER-08</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Restoring the per-file ancestor check fails the count.</div><div class="field"><span class="label">Oracle</span>Go test using an open-counting seam that counts anchor, listing, file and ancestor-check opens separately.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/evidence/snapshot_bounds_test.go</div></article>
+<!-- CA:END:VER-08 -->
+</div></article>
+<!-- CA:END:AC-08 -->
+
+<!-- CA:BEGIN:AC-09 -->
+<article class="record" id="AC-09" data-ca-symbol="AC-09" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-09">AC-09</a><h3>Safety preserved</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-03">CONSTRAINT-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>UNSAFE_PATH, CONCURRENT_CHANGE and the two-scan rejection still occur.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-05">SCOPE-05</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-09-01 -->
+<article class="record" id="SCN-09-01" data-ca-symbol="SCN-09-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-09-01">SCN-09-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A tracked symlink, a file modified mid-read, and inputs changed between scans.</div><div class="field"><span class="label">Then</span>UNSAFE_PATH, CONCURRENT_CHANGE and the two-scan rejection still occur.</div><div class="field"><span class="label">When</span>The snapshot runs.</div></article>
+<!-- CA:END:SCN-09-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li></ul></div><div class="field"><span class="label">Statement</span>Symlink/reparse inputs are refused, a file changed while read fails, and differing scans are rejected.</div><div class="field"><span class="label">Trigger</span>Unsafe or changing inputs exist during a snapshot.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-09 -->
+<article class="record" id="VER-09" data-ca-symbol="VER-09" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-09">VER-09</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Removing the after-read SameFile check fails the mid-read case.</div><div class="field"><span class="label">Oracle</span>Existing and extended Go store/evidence tests.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/store/store_test.go</div></article>
+<!-- CA:END:VER-09 -->
+</div></article>
+<!-- CA:END:AC-09 -->
+
+<!-- CA:BEGIN:AC-10 -->
+<article class="record" id="AC-10" data-ca-symbol="AC-10" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-10">AC-10</a><h3>Prompt hook timeout</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-04">CONSTRAINT-04</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Every UserPromptSubmit prompt-submit.py entry has timeout 600 and PreCompact entries are unchanged.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-07">SCOPE-07</a></li></ul></div><div class="field"><span class="label">Kind</span>operational</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-10-01 -->
+<article class="record" id="SCN-10-01" data-ca-symbol="SCN-10-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-10-01">SCN-10-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>plugins/ca/hooks/hooks.json and plugins/ca-codex/hooks/hooks.json.</div><div class="field"><span class="label">Then</span>Every UserPromptSubmit prompt-submit.py entry has timeout 600 and PreCompact entries are unchanged.</div><div class="field"><span class="label">When</span>The contract test runs.</div></article>
+<!-- CA:END:SCN-10-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-09">SRC-09</a></li><li><a href="#SRC-10">SRC-10</a></li></ul></div><div class="field"><span class="label">Statement</span>Claude and Codex UserPromptSubmit prompt-submit.py registrations declare timeout 600; other registrations are unchanged.</div><div class="field"><span class="label">Trigger</span>Hook registrations are built.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-10 -->
+<article class="record" id="VER-10" data-ca-symbol="VER-10" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-10">VER-10</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Deleting either timeout fails the test.</div><div class="field"><span class="label">Oracle</span>Python structural test over both registration files.</div><div class="field"><span class="label">Planned target</span>.github/scripts/test_ship_set_inputs.py</div></article>
+<!-- CA:END:VER-10 -->
+</div></article>
+<!-- CA:END:AC-10 -->
+
+<!-- CA:BEGIN:AC-11 -->
+<article class="record" id="AC-11" data-ca-symbol="AC-11" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-11">AC-11</a><h3>Docs describe the rule</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every snapshot or registration build.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>They state ship-set membership, the gate-events exemption and the non-git fallback, and no longer say .gitignore does not define the policy.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-08">SCOPE-08</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-11-01 -->
+<article class="record" id="SCN-11-01" data-ca-symbol="SCN-11-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-11-01">SCN-11-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>docs/artifacts/PROTOCOL.md and core/surface/includes/artifacts.md (and generated copies).</div><div class="field"><span class="label">Then</span>They state ship-set membership, the gate-events exemption and the non-git fallback, and no longer say .gitignore does not define the policy.</div><div class="field"><span class="label">When</span>The surface test runs.</div></article>
+<!-- CA:END:SCN-11-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Statement</span>PROTOCOL.md and artifacts.md (canonical and generated) describe ship-set membership, the fixed gate-events exemption and the non-git fallback.</div><div class="field"><span class="label">Trigger</span>Protocol and authoring docs are built.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-11 -->
+<article class="record" id="VER-11" data-ca-symbol="VER-11" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-11">VER-11</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Restoring the old .gitignore sentence fails the test.</div><div class="field"><span class="label">Oracle</span>Python structural test.</div><div class="field"><span class="label">Planned target</span>.github/scripts/test_ship_set_inputs.py</div></article>
+<!-- CA:END:VER-11 -->
+</div></article>
+<!-- CA:END:AC-11 -->
+
+<!-- CA:BEGIN:AC-12 -->
+<article class="record" id="AC-12" data-ca-symbol="AC-12" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-12">AC-12</a><h3>Evidence objects read once per operation</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every engine operation that resolves receipt chains.</div></div></div><div class="field"><span class="label">Constraint refs</span><ul class="items"><li><a href="#CONSTRAINT-03">CONSTRAINT-03</a></li></ul></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Each evidence object is loaded root-relative at most once and validated at most once per operation.</li><li>Each scan pass reads every reserved file exactly once; a workspace root&#39;s state is computed at most once per operation and reused.</li><li>The snapshot keeps its two-pass concurrent-change check.</li><li>Only fully validated objects are reused, keyed by content hash; an error or an absent object is never cached.</li><li>A snapshot never falls back to a root-relative read for a receipt-chain object; a referenced object missing from the scan fails closed.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-09">SCOPE-09</a></li></ul></div><div class="field"><span class="label">Kind</span>performance</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-12-01 -->
+<article class="record" id="SCN-12-01" data-ca-symbol="SCN-12-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-12-01">SCN-12-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A smaller and a larger repository of real receipt chains, the open-counting seam and a validation counter.</div><div class="field"><span class="label">Then</span>Root-relative loads and validations per evidence object stay at most one, and scan passes per operation are the same for both sizes.</div><div class="field"><span class="label">When</span>Snapshot, read, index, task-review and accept-scope each run once.</div></article>
+<!-- CA:END:SCN-12-01 -->
+</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Statement</span>Within one engine operation, each content-addressed evidence object (receipt, workflow event, observation, evidence context or authority source) is loaded through a root-relative read at most once and schema-validated at most once, however many receipts reference it. Reserved-output scans read each file once per scan pass, and the passes per operation are bounded by a constant: the snapshot&#39;s two-pass change check plus one per distinct workspace root, independent of the number of tasks or receipts. A snapshot validates reserved-output receipts from the bytes its scan already read.</div><div class="field"><span class="label">Trigger</span>An engine operation (snapshot, read, index, task-review or accept-scope) resolves receipt chains.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-12 -->
+<article class="record" id="VER-12" data-ca-symbol="VER-12" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-12">VER-12</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Disabling per-operation reuse, restoring the snapshot&#39;s second receipt read, or recomputing a workspace root per task fails the test.</div><div class="field"><span class="label">Oracle</span>Go test using the open-counting seam and a validation counter over a smaller and a larger fixture of real receipt chains, across snapshot, read, index, task-review and accept-scope.</div><div class="field"><span class="label">Planned target</span>core/artifacts/internal/operations/evidence_reads_test.go</div></article>
+<!-- CA:END:VER-12 -->
+</div></article>
+<!-- CA:END:AC-12 -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-PROBLEM -->
+<article class="record" id="SEC-PROBLEM" data-ca-symbol="SEC-PROBLEM" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-PROBLEM">SEC-PROBLEM</a><h3>Problem</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>On 2026-10-07 a hook BLOCK in a crashed session appended one line to the tracked `.codearbiter/gate-events.log`, staling all twenty verification and review receipts of the SMARTS build. The snapshot hashes every file on disk, so writes that never ship invalidate evidence. Separately, a snapshot takes 15-30 seconds on Windows because the store opens a handle for every ancestor of every file, twice; that pushed reply capture past Claude Code&#39;s 30-second UserPromptSubmit limit (#931).</p><div class="refs">References: <a href="#SRC-02">SRC-02</a> <a href="#SRC-04">SRC-04</a> <a href="#SRC-05">SRC-05</a> </div></div></div></article>
+<!-- CA:END:SEC-PROBLEM -->
+
+<!-- CA:BEGIN:SEC-APPROACH-ALTS -->
+<article class="record" id="SEC-APPROACH-ALTS" data-ca-symbol="SEC-APPROACH-ALTS" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-APPROACH-ALTS">SEC-APPROACH-ALTS</a><h3>Approaches considered</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><ul class="items"><li>**Commit-bound evidence** (declined): requires per-task commits and still needs a clean-tree check, so a stray tracked append would still stale.</li><li>**Untrack gate-events.log** (declined): block history in a merged worktree would be lost at cleanup.</li><li>**Git ship set + fixed exemption + fewer handle opens** (selected).</li></ul><div class="refs">References: <a href="#SRC-05">SRC-05</a> </div></div></div></article>
+<!-- CA:END:SEC-APPROACH-ALTS -->
+
+<!-- CA:BEGIN:SEC-RISKS -->
+<article class="record" id="SEC-RISKS" data-ca-symbol="SEC-RISKS" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-RISKS">SEC-RISKS</a><h3>Risks</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><ul class="items"><li>Honoring .gitignore means a test that depends on ignored local state (stale node_modules, a locally built helper) can pass without staling evidence; exact-head hosted CI remains the backstop.</li><li>Machine-local ignore rules (.git/info/exclude, core.excludesFile) change membership without changing identity; files they hide also do not ship from that checkout.</li><li>Deliberate audit appends (/ca:override, triage) mid-round still stale evidence by design.</li></ul><div class="refs">References: <a href="#SRC-06">SRC-06</a> </div></div></div></article>
+<!-- CA:END:SEC-RISKS -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-01 -->
+<article class="record" id="SRC-01" data-ca-symbol="SRC-01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-01">SRC-01</a><h3>Issue #931 reconcile reply path</h3></div><div class="field"><span class="label">Locator</span>#931</div><div class="field"><span class="label">Note</span>Lost reply code has no recovery; UserPromptSubmit 30s host limit kills reply capture on slow snapshots.</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/issues/931</div></article>
+<!-- CA:END:SRC-01 -->
+
+<!-- CA:BEGIN:SRC-02 -->
+<article class="record" id="SRC-02" data-ca-symbol="SRC-02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-02">SRC-02</a><h3>Snapshot implementation</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/evidence/snapshot.go</div><div class="field"><span class="label">Note</span>Walks every file under the roots twice; only explicit exclude_directories, .git, runtime markers and validated outputs are skipped.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/snapshot.go</div></article>
+<!-- CA:END:SRC-02 -->
+
+<!-- CA:BEGIN:SRC-03 -->
+<article class="record" id="SRC-03" data-ca-symbol="SRC-03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-03">SRC-03</a><h3>Portable rooted store</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/store/fs_portable.go</div><div class="field"><span class="label">Note</span>check() Lstats every ancestor component through os.Root for each Read/Stat; Read and Stat each re-open the file.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/store/fs_portable.go</div></article>
+<!-- CA:END:SRC-03 -->
+
+<!-- CA:BEGIN:SRC-04 -->
+<article class="record" id="SRC-04" data-ca-symbol="SRC-04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-04">SRC-04</a><h3>Snapshot profile 2026-10-08</h3></div><div class="field"><span class="label">Locator</span>local timing probe + pprof, Windows, this worktree</div><div class="field"><span class="label">Note</span>snapshotOnce 14.1s cold / ~1.7s warm for 3072 entries; plain reads 0.10s; 74% CPU in NtCreateFile handle opens, 48% from check() Lstat; HTML parse 0.15s; output scan 0.5ms.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-04 -->
+
+<!-- CA:BEGIN:SRC-05 -->
+<article class="record" id="SRC-05" data-ca-symbol="SRC-05" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-05">SRC-05</a><h3>Maintainer rulings 2026-10-07</h3></div><div class="field"><span class="label">Locator</span>session 2026-10-07</div><div class="field"><span class="label">Note</span>A random append by another agent to a file that is not sent to the remote must never stale evidence; gate-events.log stays tracked but is exempt; #931 hook timeout ships in this PR.</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-05 -->
+
+<!-- CA:BEGIN:SRC-06 -->
+<article class="record" id="SRC-06" data-ca-symbol="SRC-06" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-06">SRC-06</a><h3>Artifact protocol</h3></div><div class="field"><span class="label">Locator</span>docs/artifacts/PROTOCOL.md</div><div class="field"><span class="label">Note</span>Snapshot derives identity from file bytes, executable flags, membership and normative documents; whole .codearbiter never excluded; two matching scans.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/docs/artifacts/PROTOCOL.md</div></article>
+<!-- CA:END:SRC-06 -->
+
+<!-- CA:BEGIN:SRC-07 -->
+<article class="record" id="SRC-07" data-ca-symbol="SRC-07" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-07">SRC-07</a><h3>Hardened completion git probes</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/evidence/completion_workspace.go</div><div class="field"><span class="label">Note</span>Fixed read-only git probes (ls-files --stage, ls-files --others --exclude-standard, status) with sanitized environment and timeout.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/completion_workspace.go</div></article>
+<!-- CA:END:SRC-07 -->
+
+<!-- CA:BEGIN:SRC-08 -->
+<article class="record" id="SRC-08" data-ca-symbol="SRC-08" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-08">SRC-08</a><h3>Durable gate-event sink (#186)</h3></div><div class="field"><span class="label">Locator</span>#186</div><div class="field"><span class="label">Note</span>gate-events.log is the durable append-only audit record of hook BLOCK/REMIND/WARN decisions.</div><div class="field"><span class="label">Type</span>user_request</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/issues/186</div></article>
+<!-- CA:END:SRC-08 -->
+
+<!-- CA:BEGIN:SRC-09 -->
+<article class="record" id="SRC-09" data-ca-symbol="SRC-09" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-09">SRC-09</a><h3>Claude hook registration</h3></div><div class="field"><span class="label">Locator</span>plugins/ca/hooks/hooks.json</div><div class="field"><span class="label">Note</span>UserPromptSubmit prompt-submit.py entries carry no timeout, so the host 30s default applies.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca/hooks/hooks.json</div></article>
+<!-- CA:END:SRC-09 -->
+
+<!-- CA:BEGIN:SRC-10 -->
+<article class="record" id="SRC-10" data-ca-symbol="SRC-10" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-10">SRC-10</a><h3>Codex hook registration</h3></div><div class="field"><span class="label">Locator</span>plugins/ca-codex/hooks/hooks.json</div><div class="field"><span class="label">Note</span>UserPromptSubmit prompt-submit.py entry declares &#34;timeout&#34;: 30.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca-codex/hooks/hooks.json</div></article>
+<!-- CA:END:SRC-10 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>9496cff6332fe0b97195b7ebe67b73f62f30e5b3</div><div class="field"><span class="label">Observed date</span>2026-10-08</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><ul class="items"><li>core/artifacts/internal/evidence/**</li><li>core/artifacts/internal/store/**</li><li>plugins/ca/hooks/hooks.json</li><li>plugins/ca-codex/hooks/hooks.json</li><li>docs/artifacts/PROTOCOL.md</li><li>core/surface/includes/artifacts.md</li></ul></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Execution must verify current receipt sources and binding.</p><div class="fields"><div class="field"><span class="label">Approvals</span><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>dd3d28311444255dbc30da576bdef1650bb0ab76ea5552682b4a95d1936b009e</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/0015a72fc969502b5d17da3fcc32bf3eeff1711c7f2f17a2d55737d7321b327b.json</div><div class="field"><span class="label">Source sha256</span>0015a72fc969502b5d17da3fcc32bf3eeff1711c7f2f17a2d55737d7321b327b</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>b90419ca08323aee9af0edb44c3f61fd7e39c83fa93b6896f043652288334ed1</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/50d2083be8881a0981c683312ca3f6daf123698a728beca5a50126eaf8f4a5ac.json</div><div class="field"><span class="label">Source sha256</span>50d2083be8881a0981c683312ca3f6daf123698a728beca5a50126eaf8f4a5ac</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>f4af7daba007c7c6fd7b3b4d5565c4e146e835b679668b3d111f7446a4b26a88</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/e84c49bf1f57bd4138835d71ef14178e989fda323987db5a990515ed3847f3d4.json</div><div class="field"><span class="label">Source sha256</span>e84c49bf1f57bd4138835d71ef14178e989fda323987db5a990515ed3847f3d4</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>d99fa300740eb111276f27d0e0238d868c26accf424e142aabb7ec1e999f03ee</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/0c552435219257c96709dc76a974a6c1f213ed598c83c250f3f3a885e6b0b240.json</div><div class="field"><span class="label">Source sha256</span>0c552435219257c96709dc76a974a6c1f213ed598c83c250f3f3a885e6b0b240</div></div></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>approved</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: d99fa300740eb111276f27d0e0238d868c26accf424e142aabb7ec1e999f03ee<br>Model SHA-256: 7a8d4c7c115193c8e50b61ed4401d1eff084af5fcdf648c445d9f7ff4cc4221d</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-SHIP-SET-EVIDENCE-INPUTS",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [
+      {
+        "artifact_id": "SPEC-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "dd3d28311444255dbc30da576bdef1650bb0ab76ea5552682b4a95d1936b009e",
+        "source_ref": ".codearbiter/.artifacts/receipts/0015a72fc969502b5d17da3fcc32bf3eeff1711c7f2f17a2d55737d7321b327b.json",
+        "source_sha256": "0015a72fc969502b5d17da3fcc32bf3eeff1711c7f2f17a2d55737d7321b327b"
+      },
+      {
+        "artifact_id": "SPEC-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "b90419ca08323aee9af0edb44c3f61fd7e39c83fa93b6896f043652288334ed1",
+        "source_ref": ".codearbiter/.artifacts/receipts/50d2083be8881a0981c683312ca3f6daf123698a728beca5a50126eaf8f4a5ac.json",
+        "source_sha256": "50d2083be8881a0981c683312ca3f6daf123698a728beca5a50126eaf8f4a5ac"
+      },
+      {
+        "artifact_id": "SPEC-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "f4af7daba007c7c6fd7b3b4d5565c4e146e835b679668b3d111f7446a4b26a88",
+        "source_ref": ".codearbiter/.artifacts/receipts/e84c49bf1f57bd4138835d71ef14178e989fda323987db5a990515ed3847f3d4.json",
+        "source_sha256": "e84c49bf1f57bd4138835d71ef14178e989fda323987db5a990515ed3847f3d4"
+      },
+      {
+        "artifact_id": "SPEC-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "d99fa300740eb111276f27d0e0238d868c26accf424e142aabb7ec1e999f03ee",
+        "source_ref": ".codearbiter/.artifacts/receipts/0c552435219257c96709dc76a974a6c1f213ed598c83c250f3f3a885e6b0b240.json",
+        "source_sha256": "0c552435219257c96709dc76a974a6c1f213ed598c83c250f3f3a885e6b0b240"
+      }
+    ],
+    "review_notes": [],
+    "state": "approved"
+  },
+  "integrity": {
+    "model_sha256": "7a8d4c7c115193c8e50b61ed4401d1eff084af5fcdf648c445d9f7ff4cc4221d",
+    "normative_sha256": "d99fa300740eb111276f27d0e0238d868c26accf424e142aabb7ec1e999f03ee",
+    "symbol_count": 78
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "binding_decision_refs": [
+        "DEC-01",
+        "DEC-02",
+        "DEC-04"
+      ],
+      "choice": "Compute the input identity from git's ship set (tracked plus untracked non-ignored files) with `.codearbiter/gate-events.log` as the single fixed runtime exemption, keep the existing walk for non-git roots, and reduce portable-store handle opens to one per directory and file. Ship the #931 hook timeout alongside.",
+      "id": "APPROACH-01",
+      "tradeoff": "Honoring git's ignore rules removes noise and hand-kept excludes but means ignored local state that influences tests no longer stales evidence; exact-head hosted CI covers that gap. Commit binding was declined because it needs per-task commits and still requires a clean-tree check."
+    },
+    "baseline": {
+      "commit": "9496cff6332fe0b97195b7ebe67b73f62f30e5b3",
+      "observed_date": "2026-10-08",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "constraints": [
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-01",
+        "source_refs": [
+          "SRC-06"
+        ],
+        "statement": "Plans still cannot exclude any `.codearbiter` path; the gate-events exemption is an engine constant for that exact path, not plan-configurable."
+      },
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-02",
+        "source_refs": [
+          "SRC-07"
+        ],
+        "statement": "Git membership uses the existing fixed read-only probe hardening (sanitized environment, no lazy fetch, no optional locks, bounded timeout); no git argv derived from artifact content."
+      },
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-03",
+        "source_refs": [
+          "SRC-03",
+          "SRC-06"
+        ],
+        "statement": "Existing safety holds: symlink/reparse refusal, regular-file-only reads, size limits, per-file change detection and the two-scan comparison."
+      },
+      {
+        "applies_to": [
+          "all"
+        ],
+        "id": "CONSTRAINT-04",
+        "source_refs": [
+          "SRC-05"
+        ],
+        "statement": "No new public command, skill, agent or configuration surface."
+      }
+    ],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "Only the tracked and untracked non-ignored changes alter the identity."
+        ],
+        "id": "AC-01",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A repo with a tracked file, an untracked non-ignored file and an ignored file.",
+            "id": "SCN-01-01",
+            "then": "Only the tracked and untracked non-ignored changes alter the identity.",
+            "when": "Each file's bytes change in turn and the snapshot is retaken."
+          }
+        ],
+        "source_refs": [
+          "SRC-05",
+          "SRC-07"
+        ],
+        "statement": "Changing a tracked file or an untracked non-ignored file changes the identity; changing or creating a gitignored file does not.",
+        "title": "Ship-set membership",
+        "trigger": "A snapshot runs in a git work tree.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-01",
+          "method": "automated",
+          "negative_control": "A mutant that includes ignored files fails the ignored-file case.",
+          "oracle": "Go tests over a temporary git repository.",
+          "planned_target": "core/artifacts/internal/evidence/snapshot_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "The deleted file is absent, edits inside the submodule do not change identity, moving its HEAD does, and the executable flag follows the index mode."
+        ],
+        "id": "AC-02",
+        "intent_refs": [
+          "SCOPE-03"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A tracked file deleted on disk, a gitlink, and a tracked file with index mode 100755.",
+            "id": "SCN-02-01",
+            "then": "The deleted file is absent, edits inside the submodule do not change identity, moving its HEAD does, and the executable flag follows the index mode.",
+            "when": "The snapshot is taken and the submodule worktree is edited."
+          }
+        ],
+        "source_refs": [
+          "SRC-07"
+        ],
+        "statement": "Deleted-on-disk index entries are absent from the manifest; a gitlink contributes only its checked-out commit; tracked executable flags come from the index mode.",
+        "title": "Index and submodule edges",
+        "trigger": "A snapshot runs in a git work tree with special index entries.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-02",
+          "method": "automated",
+          "negative_control": "A mutant hashing submodule contents fails the submodule case.",
+          "oracle": "Go tests over a temporary repository with a nested submodule.",
+          "planned_target": "core/artifacts/internal/evidence/snapshot_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01"
+        ],
+        "guarantees": [
+          "The gate-events append leaves the identity unchanged; the overrides append changes it."
+        ],
+        "id": "AC-03",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A git repo with tracked .codearbiter/gate-events.log and .codearbiter/overrides.log.",
+            "id": "SCN-03-01",
+            "then": "The gate-events append leaves the identity unchanged; the overrides append changes it.",
+            "when": "A line is appended to each in turn."
+          }
+        ],
+        "source_refs": [
+          "SRC-05",
+          "SRC-08"
+        ],
+        "statement": "Appending to `.codearbiter/gate-events.log` never changes the identity; appending to any other `.codearbiter` file does; a plan exclude naming `.codearbiter` is still rejected.",
+        "title": "Gate-events exemption",
+        "trigger": "Hooks append to audit logs during a build.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-03",
+          "method": "automated",
+          "negative_control": "Removing the exemption fails the gate-events case; widening it to overrides.log fails the overrides case.",
+          "oracle": "Go tests plus the existing input-policy rejection test.",
+          "planned_target": "core/artifacts/internal/evidence/snapshot_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-01"
+        ],
+        "guarantees": [
+          "The policy validates and both exclusions apply."
+        ],
+        "id": "AC-04",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A plan whose exclude_directories names both a gitignored directory and a non-ignored directory.",
+            "id": "SCN-04-01",
+            "then": "The policy validates and both exclusions apply.",
+            "when": "The snapshot is taken."
+          }
+        ],
+        "source_refs": [
+          "SRC-06"
+        ],
+        "statement": "Explicit roots and exclude_directories still narrow the ship set; excluding an already-ignored directory is accepted, not rejected.",
+        "title": "Plan policy compatibility",
+        "trigger": "An approved plan with explicit roots and excludes is snapshotted.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-04",
+          "method": "automated",
+          "negative_control": "A mutant rejecting redundant excludes fails the test.",
+          "oracle": "Go test with a fixture plan policy.",
+          "planned_target": "core/artifacts/internal/evidence/snapshot_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-03"
+        ],
+        "guarantees": [
+          "The identity is unchanged."
+        ],
+        "id": "AC-05",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A tracked plan HTML.",
+            "id": "SCN-05-01",
+            "then": "The identity is unchanged.",
+            "when": "Only its execution-state is updated."
+          }
+        ],
+        "source_refs": [
+          "SRC-06"
+        ],
+        "statement": "Spec and plan HTML still contribute their normative hash, so progress-only updates do not stale evidence while normative edits do.",
+        "title": "Normative artifact hashing preserved",
+        "trigger": "A spec or plan HTML changes only in progress or presentation.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-05",
+          "method": "automated",
+          "negative_control": "Hashing raw plan bytes fails the test.",
+          "oracle": "Go test over an engine-mutated fixture plan.",
+          "planned_target": "core/artifacts/internal/evidence/snapshot_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "The evidence is reported stale (current_evidence false / STALE_EVIDENCE), not an error."
+        ],
+        "id": "AC-06",
+        "intent_refs": [
+          "SCOPE-06"
+        ],
+        "kind": "compatibility",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A task whose receipts bind a 0.1.0 identity.",
+            "id": "SCN-06-01",
+            "then": "The evidence is reported stale (current_evidence false / STALE_EVIDENCE), not an error.",
+            "when": "eligible or task-review runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-06"
+        ],
+        "statement": "Receipts bound to 0.1.0 manifests are treated as stale evidence with no crash or schema error.",
+        "title": "Old receipts read as stale",
+        "trigger": "An engine with the new manifest reads evidence from the old format.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-06",
+          "method": "automated",
+          "negative_control": "Comparing formats as equal fails the test.",
+          "oracle": "Go operations test with a fixture receipt.",
+          "planned_target": "core/artifacts/internal/operations/engine_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-02"
+        ],
+        "guarantees": [
+          "The plain directory uses the filesystem walk labelled membership filesystem; the broken git root fails closed."
+        ],
+        "id": "AC-07",
+        "intent_refs": [
+          "SCOPE-04"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A plain temporary directory.",
+            "id": "SCN-07-01",
+            "then": "The plain directory uses the filesystem walk labelled membership filesystem; the broken git root fails closed.",
+            "when": "The snapshot is taken; then git is made unavailable on a git root."
+          }
+        ],
+        "source_refs": [
+          "SRC-02"
+        ],
+        "statement": "Non-git roots use the existing walk with `membership: filesystem`; a git root whose probe fails returns an error rather than falling back.",
+        "title": "Non-git fallback",
+        "trigger": "A snapshot runs on a root that is not a git work tree.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-07",
+          "method": "automated",
+          "negative_control": "A mutant that falls back on probe failure fails the test.",
+          "oracle": "Go tests with a stub probe failure.",
+          "planned_target": "core/artifacts/internal/evidence/snapshot_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-03"
+        ],
+        "guarantees": [
+          "Each input file is opened once; each visited directory has at most one anchor open and one listing open; no ancestor Lstat per file."
+        ],
+        "id": "AC-08",
+        "intent_refs": [
+          "SCOPE-05"
+        ],
+        "kind": "performance",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A tree with files at depth 1 to 6 and a counting filesystem seam.",
+            "id": "SCN-08-01",
+            "then": "Each input file is opened once; each visited directory has at most one anchor open and one listing open; no ancestor Lstat per file.",
+            "when": "One scan runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-03",
+          "SRC-04"
+        ],
+        "statement": "Per scan, the portable store opens each visited directory at most twice (one anchor open and one listing open) and each input file at most once, with no per-file ancestor check, independent of file depth.",
+        "title": "Handle opens bounded",
+        "trigger": "A snapshot scans a nested tree on the portable store.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-08",
+          "method": "automated",
+          "negative_control": "Restoring the per-file ancestor check fails the count.",
+          "oracle": "Go test using an open-counting seam that counts anchor, listing, file and ancestor-check opens separately.",
+          "planned_target": "core/artifacts/internal/evidence/snapshot_bounds_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-03"
+        ],
+        "guarantees": [
+          "UNSAFE_PATH, CONCURRENT_CHANGE and the two-scan rejection still occur."
+        ],
+        "id": "AC-09",
+        "intent_refs": [
+          "SCOPE-05"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A tracked symlink, a file modified mid-read, and inputs changed between scans.",
+            "id": "SCN-09-01",
+            "then": "UNSAFE_PATH, CONCURRENT_CHANGE and the two-scan rejection still occur.",
+            "when": "The snapshot runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-03"
+        ],
+        "statement": "Symlink/reparse inputs are refused, a file changed while read fails, and differing scans are rejected.",
+        "title": "Safety preserved",
+        "trigger": "Unsafe or changing inputs exist during a snapshot.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-09",
+          "method": "automated",
+          "negative_control": "Removing the after-read SameFile check fails the mid-read case.",
+          "oracle": "Existing and extended Go store/evidence tests.",
+          "planned_target": "core/artifacts/internal/store/store_test.go"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-04"
+        ],
+        "guarantees": [
+          "Every UserPromptSubmit prompt-submit.py entry has timeout 600 and PreCompact entries are unchanged."
+        ],
+        "id": "AC-10",
+        "intent_refs": [
+          "SCOPE-07"
+        ],
+        "kind": "operational",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "plugins/ca/hooks/hooks.json and plugins/ca-codex/hooks/hooks.json.",
+            "id": "SCN-10-01",
+            "then": "Every UserPromptSubmit prompt-submit.py entry has timeout 600 and PreCompact entries are unchanged.",
+            "when": "The contract test runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-01",
+          "SRC-09",
+          "SRC-10"
+        ],
+        "statement": "Claude and Codex UserPromptSubmit prompt-submit.py registrations declare timeout 600; other registrations are unchanged.",
+        "title": "Prompt hook timeout",
+        "trigger": "Hook registrations are built.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-10",
+          "method": "automated",
+          "negative_control": "Deleting either timeout fails the test.",
+          "oracle": "Python structural test over both registration files.",
+          "planned_target": ".github/scripts/test_ship_set_inputs.py"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every snapshot or registration build."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "They state ship-set membership, the gate-events exemption and the non-git fallback, and no longer say .gitignore does not define the policy."
+        ],
+        "id": "AC-11",
+        "intent_refs": [
+          "SCOPE-08"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "docs/artifacts/PROTOCOL.md and core/surface/includes/artifacts.md (and generated copies).",
+            "id": "SCN-11-01",
+            "then": "They state ship-set membership, the gate-events exemption and the non-git fallback, and no longer say .gitignore does not define the policy.",
+            "when": "The surface test runs."
+          }
+        ],
+        "source_refs": [
+          "SRC-06"
+        ],
+        "statement": "PROTOCOL.md and artifacts.md (canonical and generated) describe ship-set membership, the fixed gate-events exemption and the non-git fallback.",
+        "title": "Docs describe the rule",
+        "trigger": "Protocol and authoring docs are built.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-11",
+          "method": "automated",
+          "negative_control": "Restoring the old .gitignore sentence fails the test.",
+          "oracle": "Python structural test.",
+          "planned_target": ".github/scripts/test_ship_set_inputs.py"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every engine operation that resolves receipt chains."
+        },
+        "constraint_refs": [
+          "CONSTRAINT-03"
+        ],
+        "guarantees": [
+          "Each evidence object is loaded root-relative at most once and validated at most once per operation.",
+          "Each scan pass reads every reserved file exactly once; a workspace root's state is computed at most once per operation and reused.",
+          "The snapshot keeps its two-pass concurrent-change check.",
+          "Only fully validated objects are reused, keyed by content hash; an error or an absent object is never cached.",
+          "A snapshot never falls back to a root-relative read for a receipt-chain object; a referenced object missing from the scan fails closed."
+        ],
+        "id": "AC-12",
+        "intent_refs": [
+          "SCOPE-09"
+        ],
+        "kind": "performance",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "A smaller and a larger repository of real receipt chains, the open-counting seam and a validation counter.",
+            "id": "SCN-12-01",
+            "then": "Root-relative loads and validations per evidence object stay at most one, and scan passes per operation are the same for both sizes.",
+            "when": "Snapshot, read, index, task-review and accept-scope each run once."
+          }
+        ],
+        "source_refs": [
+          "SRC-03",
+          "SRC-04"
+        ],
+        "statement": "Within one engine operation, each content-addressed evidence object (receipt, workflow event, observation, evidence context or authority source) is loaded through a root-relative read at most once and schema-validated at most once, however many receipts reference it. Reserved-output scans read each file once per scan pass, and the passes per operation are bounded by a constant: the snapshot's two-pass change check plus one per distinct workspace root, independent of the number of tasks or receipts. A snapshot validates reserved-output receipts from the bytes its scan already read.",
+        "title": "Evidence objects read once per operation",
+        "trigger": "An engine operation (snapshot, read, index, task-review or accept-scope) resolves receipt chains.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-12",
+          "method": "automated",
+          "negative_control": "Disabling per-operation reuse, restoring the snapshot's second receipt read, or recomputing a workspace root per task fails the test.",
+          "oracle": "Go test using the open-counting seam and a validation counter over a smaller and a larger fixture of real receipt chains, across snapshot, read, index, task-review and accept-scope.",
+          "planned_target": "core/artifacts/internal/operations/evidence_reads_test.go"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "authority": "proposed",
+        "choice": "Ship set = `git ls-files --stage` entries present on disk plus `git ls-files --others --exclude-standard`, honoring repository .gitignore, .git/info/exclude and core.excludesFile, then narrowed by plan roots and exclude_directories.",
+        "id": "DEC-01",
+        "rationale": "Matches the ruling that only what would be pushed counts (SRC-05); reuses existing probes (SRC-07).",
+        "topic": "Membership rule"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Exactly `.codearbiter/gate-events.log` is exempt, as an engine constant.",
+        "id": "DEC-02",
+        "rationale": "Hook-written telemetry, appended on nearly every command; keeping it tracked preserves the audit trail (SRC-08).",
+        "topic": "Fixed exemption"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Fall back to the existing filesystem walk; manifest records `membership: filesystem` vs `git_ship_set`. A git root whose probe fails is an error, never a fallback.",
+        "id": "DEC-03",
+        "rationale": "Most Go and Python artifact fixtures snapshot non-git temp directories; failing closed would churn them without benefit.",
+        "topic": "Non-git roots"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Walk-relative access: one directory handle per visited directory and one open per input file per scan; file metadata from that handle; no per-file ancestor re-check.",
+        "id": "DEC-04",
+        "rationale": "Profile shows handle opens dominate (SRC-04); ancestors are already validated by the walk.",
+        "topic": "Speed method"
+      },
+      {
+        "authority": "proposed",
+        "choice": "codearbiter.verification-inputs/0.2.0.",
+        "id": "DEC-05",
+        "rationale": "Membership semantics change; old identities must not compare equal.",
+        "topic": "Manifest version"
+      },
+      {
+        "authority": "proposed",
+        "choice": "600 seconds on Claude and Codex prompt-submit.py UserPromptSubmit entries.",
+        "id": "DEC-06",
+        "rationale": "Above the 120s engine client timeout with headroom for multiple engine calls; matches the locally verified patch.",
+        "topic": "Hook timeout"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Reuse validated evidence objects within one engine operation, keyed by content hash and held no longer than that operation's store handle. The snapshot validates receipt chains in a second phase, from the bytes its scan already read.",
+        "id": "DEC-07",
+        "rationale": "The CP-02 quality review found receipt validation re-reading each chain from the root. authority.Vector, Load and LatestTaskCompletion repeat the same reads, and Vector runs on every read operation. Content addressing makes reuse safe: the hash is checked before an object is kept, and nothing outlives the operation.",
+        "topic": "Evidence reuse"
+      }
+    ],
+    "governs": [
+      "core/artifacts/internal/evidence/**",
+      "core/artifacts/internal/store/**",
+      "plugins/ca/hooks/hooks.json",
+      "plugins/ca-codex/hooks/hooks.json",
+      "docs/artifacts/PROTOCOL.md",
+      "core/surface/includes/artifacts.md"
+    ],
+    "intent": {
+      "caller": "Users and agents running structured-artifact builds (/ca:feature, /ca:sprint) whose verification and review receipts bind to the snapshot input identity.",
+      "id": "INTENT-01",
+      "outcome": "Evidence covers exactly what would be committed and pushed, hook audit appends never stale it, snapshots are fast enough for reply capture, and typed replies are not killed by the host hook timeout.",
+      "problem": "The input identity hashes every file on disk, so a write that will never be pushed (a hook appending to gate-events.log, local scratch) stales every receipt and stalls the build; and a snapshot takes 15-30s on Windows, which also makes reply capture exceed the 30s UserPromptSubmit limit.",
+      "source_refs": [
+        "SRC-01",
+        "SRC-04",
+        "SRC-05"
+      ]
+    },
+    "non_goals": [
+      {
+        "id": "NG-01",
+        "statement": "Binding evidence to a commit or requiring per-task commits (considered and declined)."
+      },
+      {
+        "id": "NG-02",
+        "statement": "Untracking or relocating gate-events.log."
+      },
+      {
+        "id": "NG-03",
+        "statement": "Exempting any other audit log (overrides.log, triage.log, sprint-log.md, decision-log.md): deliberate governance writes still stale evidence."
+      },
+      {
+        "id": "NG-04",
+        "statement": "Weakening output-store validation: every reserved output is still fully validated and PROTOCOL's validated-outputs rule stays; AC-12 only removes repeated reads and repeated validation of the same object within one operation."
+      },
+      {
+        "id": "NG-05",
+        "statement": "Recovery for a lost reply code (#931 first half) and batch reconcile (#932)."
+      },
+      {
+        "id": "NG-06",
+        "statement": "Changing PreCompact hook registrations or Pi hooks (Pi has no prompt-capture adapter)."
+      },
+      {
+        "id": "NG-07",
+        "statement": "Wall-clock latency guarantees."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-01",
+        "statement": "Snapshot membership becomes the git ship set: tracked index entries plus untracked files not ignored by git, inside the plan roots, minus explicit exclude_directories and validated engine outputs."
+      },
+      {
+        "id": "SCOPE-02",
+        "statement": "`.codearbiter/gate-events.log` is a fixed engine-declared runtime path that never contributes to the input identity; it stays git-tracked."
+      },
+      {
+        "id": "SCOPE-03",
+        "statement": "Gitlinks (submodules) contribute their checked-out commit pointer only; index entries deleted on disk drop out; tracked executable bit comes from the index mode."
+      },
+      {
+        "id": "SCOPE-04",
+        "statement": "Non-git roots keep the existing filesystem walk, labelled in the manifest so the two membership modes never share an identity."
+      },
+      {
+        "id": "SCOPE-05",
+        "statement": "Snapshot file access on the portable store opens each directory and each input file once per scan instead of re-validating every ancestor per file."
+      },
+      {
+        "id": "SCOPE-06",
+        "statement": "Manifest format advances to codearbiter.verification-inputs/0.2.0; receipts bound to 0.1.0 identities read as stale, not as errors."
+      },
+      {
+        "id": "SCOPE-07",
+        "statement": "Claude and Codex UserPromptSubmit prompt-submit.py hook registrations declare an explicit 600-second timeout (#931 hook half)."
+      },
+      {
+        "id": "SCOPE-08",
+        "statement": "Protocol and authoring docs describe the ship-set rule, the fixed exemption and the non-git fallback."
+      },
+      {
+        "id": "SCOPE-09",
+        "statement": "Each engine operation loads and validates each content-addressed evidence object at most once, and the number of reserved-output scans it performs does not grow with task or receipt count."
+      }
+    ],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-02",
+              "SRC-04",
+              "SRC-05"
+            ],
+            "text": "On 2026-10-07 a hook BLOCK in a crashed session appended one line to the tracked `.codearbiter/gate-events.log`, staling all twenty verification and review receipts of the SMARTS build. The snapshot hashes every file on disk, so writes that never ship invalidate evidence. Separately, a snapshot takes 15-30 seconds on Windows because the store opens a handle for every ancestor of every file, twice; that pushed reply capture past Claude Code's 30-second UserPromptSubmit limit (#931).",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-PROBLEM",
+        "title": "Problem"
+      },
+      {
+        "blocks": [
+          {
+            "items": [
+              "**Commit-bound evidence** (declined): requires per-task commits and still needs a clean-tree check, so a stray tracked append would still stale.",
+              "**Untrack gate-events.log** (declined): block history in a merged worktree would be lost at cleanup.",
+              "**Git ship set + fixed exemption + fewer handle opens** (selected)."
+            ],
+            "refs": [
+              "SRC-05"
+            ],
+            "type": "list"
+          }
+        ],
+        "id": "SEC-APPROACH-ALTS",
+        "title": "Approaches considered"
+      },
+      {
+        "blocks": [
+          {
+            "items": [
+              "Honoring .gitignore means a test that depends on ignored local state (stale node_modules, a locally built helper) can pass without staling evidence; exact-head hosted CI remains the backstop.",
+              "Machine-local ignore rules (.git/info/exclude, core.excludesFile) change membership without changing identity; files they hide also do not ship from that checkout.",
+              "Deliberate audit appends (/ca:override, triage) mid-round still stale evidence by design."
+            ],
+            "refs": [
+              "SRC-06"
+            ],
+            "type": "list"
+          }
+        ],
+        "id": "SEC-RISKS",
+        "title": "Risks"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-01",
+        "locator": "#931",
+        "note": "Lost reply code has no recovery; UserPromptSubmit 30s host limit kills reply capture on slow snapshots.",
+        "title": "Issue #931 reconcile reply path",
+        "type": "user_request",
+        "url": "https://github.com/arbiterForge/codeArbiter/issues/931"
+      },
+      {
+        "id": "SRC-02",
+        "locator": "core/artifacts/internal/evidence/snapshot.go",
+        "note": "Walks every file under the roots twice; only explicit exclude_directories, .git, runtime markers and validated outputs are skipped.",
+        "title": "Snapshot implementation",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/snapshot.go"
+      },
+      {
+        "id": "SRC-03",
+        "locator": "core/artifacts/internal/store/fs_portable.go",
+        "note": "check() Lstats every ancestor component through os.Root for each Read/Stat; Read and Stat each re-open the file.",
+        "title": "Portable rooted store",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/store/fs_portable.go"
+      },
+      {
+        "id": "SRC-04",
+        "locator": "local timing probe + pprof, Windows, this worktree",
+        "note": "snapshotOnce 14.1s cold / ~1.7s warm for 3072 entries; plain reads 0.10s; 74% CPU in NtCreateFile handle opens, 48% from check() Lstat; HTML parse 0.15s; output scan 0.5ms.",
+        "title": "Snapshot profile 2026-10-08",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-05",
+        "locator": "session 2026-10-07",
+        "note": "A random append by another agent to a file that is not sent to the remote must never stale evidence; gate-events.log stays tracked but is exempt; #931 hook timeout ships in this PR.",
+        "title": "Maintainer rulings 2026-10-07",
+        "type": "user_request",
+        "url": null
+      },
+      {
+        "id": "SRC-06",
+        "locator": "docs/artifacts/PROTOCOL.md",
+        "note": "Snapshot derives identity from file bytes, executable flags, membership and normative documents; whole .codearbiter never excluded; two matching scans.",
+        "title": "Artifact protocol",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/docs/artifacts/PROTOCOL.md"
+      },
+      {
+        "id": "SRC-07",
+        "locator": "core/artifacts/internal/evidence/completion_workspace.go",
+        "note": "Fixed read-only git probes (ls-files --stage, ls-files --others --exclude-standard, status) with sanitized environment and timeout.",
+        "title": "Hardened completion git probes",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/completion_workspace.go"
+      },
+      {
+        "id": "SRC-08",
+        "locator": "#186",
+        "note": "gate-events.log is the durable append-only audit record of hook BLOCK/REMIND/WARN decisions.",
+        "title": "Durable gate-event sink (#186)",
+        "type": "user_request",
+        "url": "https://github.com/arbiterForge/codeArbiter/issues/186"
+      },
+      {
+        "id": "SRC-09",
+        "locator": "plugins/ca/hooks/hooks.json",
+        "note": "UserPromptSubmit prompt-submit.py entries carry no timeout, so the host 30s default applies.",
+        "title": "Claude hook registration",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca/hooks/hooks.json"
+      },
+      {
+        "id": "SRC-10",
+        "locator": "plugins/ca-codex/hooks/hooks.json",
+        "note": "UserPromptSubmit prompt-submit.py entry declares \"timeout\": 30.",
+        "title": "Codex hook registration",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca-codex/hooks/hooks.json"
+      }
+    ],
+    "summary": "Bind structured-artifact evidence to what would actually be pushed, exempt hook telemetry, cut snapshot handle opens, and give reply capture enough hook time.",
+    "title": "Ship-set evidence inputs"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/ship-set-evidence-inputs.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 8,
+  "schema_version": "0.3.1",
+  "slug": "ship-set-evidence-inputs"
+}
+</script>
+</body></html>

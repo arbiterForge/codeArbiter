@@ -209,14 +209,14 @@ func BuildCompletion(f *store.FS, plan, spec *model.Document, context, selection
 				priorMaterials[model.S(m["source_path"])] = m
 			}
 		} else {
-			raw, err := CompletionWorkspaces(f, model.A(row["command_bindings"]), false)
+			raw, err := completionWorkspacesReused(f, model.A(row["command_bindings"]), false)
 			if err != nil {
 				return nil, err
 			}
 			if !equalCompletion(raw, row["workspace_after"]) {
 				return nil, fault.New("WORKSPACE_DRIFT", "selected verification worktree bytes or identity changed")
 			}
-			normalized, err := CompletionWorkspaces(f, model.A(row["command_bindings"]), true)
+			normalized, err := completionWorkspacesReused(f, model.A(row["command_bindings"]), true)
 			if err != nil {
 				return nil, err
 			}
@@ -292,7 +292,7 @@ func ValidateCompletion(f *store.FS, plan, spec *model.Document, context map[str
 		if err != nil {
 			return err
 		}
-		closure, err := CompletionWorkspaces(f, model.A(fresh["command_bindings"]), true)
+		closure, err := completionWorkspacesReused(f, model.A(fresh["command_bindings"]), true)
 		if err != nil {
 			return err
 		}

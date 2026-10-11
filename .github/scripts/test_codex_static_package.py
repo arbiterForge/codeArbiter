@@ -49,6 +49,12 @@ class StaticPackageContractTest(unittest.TestCase):
 
     def install_authority_hooks(self):
         _, manifest = self.hooks()
+        # The shipped UserPromptSubmit timeout is 600 (#931). The historical
+        # digests below pin the earlier 30s inventory, so reconstruct that.
+        for group in manifest["hooks"].get("UserPromptSubmit", []):
+            for hook in group["hooks"]:
+                if "prompt-submit.py" in hook.get("command", "") and hook.get("timeout") == 600:
+                    hook["timeout"] = 30
         canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
         if hashlib.sha256(canonical.encode("utf-8")).hexdigest() == (
             "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47"
@@ -124,6 +130,7 @@ class StaticPackageContractTest(unittest.TestCase):
                 "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
                 "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
                 "7343a38841e254ff07a35b0ba8f0a1115112f52490c8e33aee9f3a98a1678046",
+                "f81e52f167d3e7d8c1220f0a782eef2c8972e37db4284e7a5c9fcf40e8d17ff0",
             )),
         )
         self.assertTrue({"SubagentStart", "SubagentStop"}.issubset(self.checker.HOOK_EVENTS))

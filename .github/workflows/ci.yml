@@ -427,6 +427,8 @@ jobs:
               - '.github/scripts/test_artifact_authority_adapter.py'
               - '.github/scripts/fixtures/claude-hooks/**'
               - 'plugins/ca/hooks/hooks.json'
+              - 'plugins/ca-codex/hooks/hooks.json'
+              - '.github/scripts/test_ship_set_inputs.py'
               - '.github/scripts/test_artifact_prerequisite_adapter.py'
               - '.github/scripts/test_artifact_reconciliation_adapter.py'
               - '.github/scripts/test_replylib.py'
@@ -600,6 +602,13 @@ jobs:
       - name: Verify artifact consumer inventory closure
         if: matrix.os == 'ubuntu-24.04'
         run: python .github/scripts/test_artifact_consumers.py
+      # Ship-set evidence-input identity (ADR-0042) and the 600 s prompt-submit
+      # timeout. Linux only: the wrapper cross-runs Linux-only packages via WSL
+      # on other hosts, which hosted macOS/Windows runners do not provide; the
+      # same Go tests already run natively on every cell in "Test artifact engine".
+      - name: Verify ship-set evidence-input behavior
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_ship_set_inputs.py
       - name: Test host-owned artifact approval capture
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate

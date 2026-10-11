@@ -530,6 +530,78 @@ func TestTaskAcceptanceEvidence(t *testing.T) {
 		t.Fatal("partial scope acceptance")
 	}
 }
+
+// legacyEngine makes the engine emit the historical 0.1.0 manifest format until
+// the returned restore func runs, so receipts can be produced by the real
+// capture flow and bound to a 0.1.0 identity.
+func legacyEngine(t *testing.T) func() {
+	t.Helper()
+	current := evidence.ManifestFormat
+	evidence.ManifestFormat = "codearbiter.verification-inputs/0.1.0"
+	restored := false
+	restore := func() {
+		if !restored {
+			evidence.ManifestFormat = current
+			restored = true
+		}
+	}
+	t.Cleanup(restore)
+	return restore
+}
+
+func TestEligibleReadsLegacyManifestAsStale(t *testing.T) {
+	// Receipts bound to a 0.1.0 identity make the task review stale, not invalid.
+	h := newHarness(t)
+	h.createPair()
+	h.approvePair()
+	h.start("T-001")
+	restore := legacyEngine(t)
+	legacyInput := h.input()
+	vr, rr := h.taskReceipts("T-001")
+	restore()
+	if h.input() == legacyInput {
+		t.Fatal("0.1.0 and 0.2.0 manifests produced the same input identity")
+	}
+	d := h.doc("PLAN-EXAMPLE")
+	_, err := h.request("task-review", object{"artifact_id": d.ID(), "operation_id": h.next(), "expected": object{"revision": d.Revision(), "model_sha256": d.Hash()}, "task": "T-001", "verification_receipt": vr, "review_receipt": rr})
+	if fault.Code(err) != "STALE_EVIDENCE" {
+		t.Fatalf("0.1.0 receipts were not read as stale evidence: %v", err)
+	}
+
+	// An accepted plan whose receipts are 0.1.0 reports non-current evidence.
+	h = newHarness(t)
+	h.createPair()
+	h.approvePair()
+	restore = legacyEngine(t)
+	h.start("T-001")
+	h.review("T-001")
+	h.start("T-002")
+	h.review("T-002")
+	h.accept("CP-01")
+	h.start("T-003")
+	h.review("T-003")
+	h.accept("CP-02")
+	control := h.run("eligible", object{"artifact_id": "PLAN-EXAMPLE"})
+	if control["all_accepted_and_current"] != true {
+		t.Fatalf("legacy-engine control must be current under its own format: %v", control)
+	}
+	restore()
+	result, err := h.request("eligible", object{"artifact_id": "PLAN-EXAMPLE"})
+	if err != nil {
+		t.Fatalf("0.1.0 evidence raised an error instead of reading as stale: %v", err)
+	}
+	report := model.M(result)
+	if report["all_accepted_and_current"] != false {
+		t.Fatalf("0.1.0 evidence reported current: %v", report)
+	}
+	for _, v := range model.A(report["tasks"]) {
+		row := model.M(v)
+		if row["state"] == "ACCEPTED" && row["current_evidence"] != false {
+			t.Fatalf("accepted task with 0.1.0 evidence reported current: %v", row)
+		}
+	}
+}
+
 func TestReadContextBounded(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()

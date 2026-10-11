@@ -1,0 +1,1621 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Ship-set evidence inputs — implementation plan · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-SHIP-SET-EVIDENCE-INPUTS</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/ship-set-evidence-inputs.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">APPROVED · authority must be verified at use</span><h1>Ship-set evidence inputs — implementation plan</h1><p class="deck">Eleven tasks in three checkpoints: ship-set identity in the engine first, then bounded handle opens, then hook timeouts, docs, CI and versions.</p><div class="meta"><span>PLAN-SHIP-SET-EVIDENCE-INPUTS</span><span>Revision 126 · schema 0.3.1</span><span>27 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Binding mode</span>approved_source</div><div class="field"><span class="label">Normative sha256</span>d99fa300740eb111276f27d0e0238d868c26accf424e142aabb7ec1e999f03ee</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-01 -->
+<article class="record" id="T-01" data-ca-symbol="T-01" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-01">T-01</a><h3>Ship-set membership from the hardened git probes</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-01">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-01</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The test passes; a mutant that also includes ignored files fails the ignored-file case.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/evidence/snapshot_test.go</code></td></tr><tr><td>create</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-05">SRC-05</a></li><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add Go test TestSnapshotShipSetMembership over a temporary git repository with a tracked file, an untracked non-ignored file and an ignored file; changing either of the first two changes the identity, changing or creating the ignored file does not. Create the wrapper suite with method test_ship_set_membership. Each wrapper method runs its Go test by exact name (go test -json -buildvcs=false -run &#39;^Name$&#39; &lt;pkg&gt; in core/artifacts) and passes only on that test&#39;s named &#39;pass&#39; event, following test_artifact_native.py.</li><li>In a git work tree, build membership from completionGitIndex (ls-files --stage -z) entries present on disk plus completionGitUntracked (ls-files --others --exclude-standard -z), then apply plan roots, exclude_directories and engine-output exclusion. Reuse the existing hardened probes; derive no git argv from artifact content.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The ship-set membership Go test passes by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_ship_set_membership</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/5b4868aea999da0657e03309670b954194de2cfc9d723b00df34057e2ac3b4e9.json</li><li>.codearbiter/.artifacts/receipts/bada5ee552273d8a85a1f3c0167763a809cf3bcdc83ee29b20ac6cb644b807d5.json</li><li>.codearbiter/.artifacts/receipts/7e865bf14b7cd46733103dc39eedab937a10624d201c4372d57e4e0aaae75883.json</li><li>.codearbiter/.artifacts/receipts/37569e12cbffc12621f4b6807656b40f57c1c98285773f0163eb4299f313dfe9.json</li><li>.codearbiter/.artifacts/receipts/73c857f32018e99f0c64561a58189204158c71aa308538e5f0e844179db8ba38.json</li><li>.codearbiter/.artifacts/receipts/d01f32efbe9ab0f422b6e5f040f6d1b640e1d387d2dfcb2b527af015e8a530dc.json</li><li>.codearbiter/.artifacts/receipts/160b25e147a2e33368ddb077c7309590c457eb63b862ee691614397772d9c023.json</li><li>.codearbiter/.artifacts/receipts/dbee37dcea1da421c2ad23440457e684fa18e09e89becb4e0a9a9ece398bfa2f.json</li><li>.codearbiter/.artifacts/receipts/09844fc7b5fef847c0b759d12cef2b28cb15833555c409ff95d7147dfb4f82e4.json</li><li>.codearbiter/.artifacts/receipts/70046b087c1ac8935c3f78e7e8b6a011776191b7ecea829e3104ca9273466887.json</li><li>.codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json</li><li>.codearbiter/.artifacts/receipts/66f1eee3fe31a9c3b982b0b580366f8f15240f8bbe6e42817fc6fb49492f84ec.json</li><li>.codearbiter/.artifacts/receipts/768e43926da9cad9143366155de033846998189fa546c348b78780693b31f0f5.json</li><li>.codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json</li><li>.codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json</li><li>.codearbiter/.artifacts/receipts/d36568af4170dd2eea7d0ffacaadaba68d8c804f440608a185713cb8ff631ecb.json</li><li>.codearbiter/.artifacts/receipts/82d24269ae17bd3ef632f08deb99aac69aa1b0aa92c156ec8c860e0543a9d9e1.json</li><li>.codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json</li><li>.codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json</li><li>.codearbiter/.artifacts/receipts/cc10618f3b3867c40e4a42ea5d1b7048d834510a30453567e9485353fc7c5d12.json</li><li>.codearbiter/.artifacts/receipts/d2e36d82d74cbddece2b32343cc959329f00d78999b0cb05fcecb418f1276faa.json</li><li>.codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json</li><li>.codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json</li><li>.codearbiter/.artifacts/receipts/82ab54f4e991d119cd94eb5680201eeffeb135b20b464d52d425a2a9f7cf26a2.json</li><li>.codearbiter/.artifacts/receipts/ce602e31543437c5ee428f887d2f18245f9bd2206d3c9a5ccb6645570277b061.json</li><li>.codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json</li><li>.codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json</li><li>.codearbiter/.artifacts/receipts/b3a57762723b2977e47ecbfc27da902c38c6d0898ed850290674304194cbcd45.json</li><li>.codearbiter/.artifacts/receipts/acad59a4a571c3e0579922bfa7858bd67e76853b704b08d62bb8e5cc672fe1c9.json</li><li>.codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json</li><li>.codearbiter/.artifacts/receipts/b7d71c6f8dadc727973154812dd5c017a17d31304c7921941f3f8ff29cb18801.json</li><li>.codearbiter/.artifacts/receipts/450ac51f36966c6066ddb207fd4a912c583ba9e9474e9e991a72652bfef85b10.json</li><li>.codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-01 -->
+
+<!-- CA:BEGIN:T-02 -->
+<article class="record" id="T-02" data-ca-symbol="T-02" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-02">T-02</a><h3>Index and submodule edges</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-02">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-02</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All three pass; a mutant hashing submodule contents fails the gitlink case.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-07">SRC-07</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add TestSnapshotDeletedIndexEntryAbsent, TestSnapshotGitlinkPointerOnly (nested submodule: edits inside it leave identity unchanged, moving its HEAD changes it) and TestSnapshotExecutableFromIndexMode, with wrapper methods test_deleted_index_entry_absent, test_gitlink_pointer_only, test_executable_from_index_mode.</li><li>Drop index entries missing on disk; record a 160000 gitlink as the submodule&#39;s checked-out HEAD commit (the index pointer only when the submodule is not checked out) without descending; take the tracked executable flag from the index mode.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The three index-edge Go tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_deleted_index_entry_absent</li><li>test_gitlink_pointer_only</li><li>test_executable_from_index_mode</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/f093f6f3da5d866d3b0277fda246d61b7f307ca09f0896bbd59abb66c0199998.json</li><li>.codearbiter/.artifacts/receipts/b60c48e06ebba7e221a107434ce4e7a233341c2a63ad9b52859ce1865d067edd.json</li><li>.codearbiter/.artifacts/receipts/f48e423bd299fa832ea023d60dd338d333e1c7b289eebc9b552d90b10b7ae1a1.json</li><li>.codearbiter/.artifacts/receipts/025cdb7fa13c253e2cc8aabbc0728aa453dced6d4ccfe5ba195293569aa68136.json</li><li>.codearbiter/.artifacts/receipts/e63e01b42faa117391532683da9feee9f809f7ab54d43fdd0b933d4cf4a4cdc7.json</li><li>.codearbiter/.artifacts/receipts/cc9b476ad636a9aee29d7cc5bdb2d6fd5ce26b590daaf05a1ec3f709b3a4bf29.json</li><li>.codearbiter/.artifacts/receipts/1273be1eb8e36fb6ca5693f396bb2b2431c68aa1bfbb25d24d822d3c7bb3c105.json</li><li>.codearbiter/.artifacts/receipts/7f9be8bd7aa1cd40def5d4f0826001de6525290d862c03d9dfa979fee82ce4bc.json</li><li>.codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json</li><li>.codearbiter/.artifacts/receipts/3f75fa8df34c8f94701a851e55a96f16f3ef5e9c27bd6ee1e22a1a4db423183d.json</li><li>.codearbiter/.artifacts/receipts/9d30309e3fbfebff44e66e68f07c2ce19a975749e2c634b3e3d4a1463e89a3fb.json</li><li>.codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json</li><li>.codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json</li><li>.codearbiter/.artifacts/receipts/2ce9a89afbb3e7ed90bb359fb32ffdaf3640de267640a30e3dca463381d0de95.json</li><li>.codearbiter/.artifacts/receipts/fbcc3f07c4c8158336bc6bed7943e6aac2b9d34a5737c6529be5d61f896261c5.json</li><li>.codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json</li><li>.codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json</li><li>.codearbiter/.artifacts/receipts/f9cc832f557421295c34ee61633e2a153a892c3df0c9236daf3385c8c3723788.json</li><li>.codearbiter/.artifacts/receipts/bd9e5123765f32f7a81a557b55a9bbffecddc91c233a00cfe21a4ceb8048ac50.json</li><li>.codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json</li><li>.codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json</li><li>.codearbiter/.artifacts/receipts/d127fcd77c2e65f05e057e750abbb4e811cb8474cebb64bcd7e5de5a4244fa11.json</li><li>.codearbiter/.artifacts/receipts/3867986e4c3b18636cdd7ee0f645e8c4a26c107c455e05d06952a18d34b284fa.json</li><li>.codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json</li><li>.codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json</li><li>.codearbiter/.artifacts/receipts/dc6539059d0975248aa20577de7b48418b9cf22cecede2abc7836ccc4cce0b3d.json</li><li>.codearbiter/.artifacts/receipts/b97d9e981e1c06a5f2a83b1a4b646ae272a0510b110ef5f4cbcfe42e11af0bf0.json</li><li>.codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json</li><li>.codearbiter/.artifacts/receipts/4dd7a65518f59678576ba7701a42c569466d546081c391bf6c113aca917dce4e.json</li><li>.codearbiter/.artifacts/receipts/660bdf6ebee1d9059a6a6e04f9a70c4c3d14148801334966c5438e1f9da1cf6e.json</li><li>.codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-02 -->
+
+<!-- CA:BEGIN:T-03 -->
+<article class="record" id="T-03" data-ca-symbol="T-03" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-03">T-03</a><h3>Fixed gate-events.log exemption</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-03">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-03</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All five pass; removing the exemption fails the gate-events case and widening it to overrides.log fails the overrides case.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-05">SRC-05</a></li><li><a href="#SRC-08">SRC-08</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add TestSnapshotGateEventsAppendExempt, TestSnapshotOverridesAppendCounts, TestSnapshotPlanCannotExcludeCodearbiter TestSnapshotGateEventsExemptWithoutGit and TestSnapshotGateEventsExplicitRootExempt, with wrapper methods test_gate_events_append_exempt, test_overrides_append_counts, test_plan_cannot_exclude_codearbiter, test_gate_events_exempt_without_git, test_gate_events_explicit_root_exempt.</li><li>Add an engine constant for exactly .codearbiter/gate-events.log and skip it in both membership modes, as an explicit root and in the coverage check; keep the guard that rejects a plan exclude naming .codearbiter.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The exemption mutant pair and the policy guard pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_gate_events_append_exempt</li><li>test_overrides_append_counts</li><li>test_plan_cannot_exclude_codearbiter</li><li>test_gate_events_exempt_without_git</li><li>test_gate_events_explicit_root_exempt</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/e2e676cd5a3838d2986627d1364c013c1477c2db8e91915c3bc664792f79f2c3.json</li><li>.codearbiter/.artifacts/receipts/a5eedba825f99841de5734c8533c877e3a435cfe5da46794052f3a4d39ad4a14.json</li><li>.codearbiter/.artifacts/receipts/5172a99f5c19d27c2b0e6cda515b1e353d85f876e1fc2d08da67e28a30cc63e0.json</li><li>.codearbiter/.artifacts/receipts/793e36bacd8a5229db2bc58d6aea067e8e8a466e77c1b04a241cfea73d64713e.json</li><li>.codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json</li><li>.codearbiter/.artifacts/receipts/87b31f9082298bed5f3f479473812b2636c97dade52eaba27a2733b332999349.json</li><li>.codearbiter/.artifacts/receipts/a703cdb9773b3b66afe692cdcad6d6b1cd0f2b309a06660f370cdedb9e435144.json</li><li>.codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json</li><li>.codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json</li><li>.codearbiter/.artifacts/receipts/929865b7488766ccd31839dd55225fe6adc190d803b8e5358d72a33b045ee839.json</li><li>.codearbiter/.artifacts/receipts/d2842779ebb4fbdca737b4b84a5d08ccc6b441082960e639b798d5998e30a394.json</li><li>.codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json</li><li>.codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json</li><li>.codearbiter/.artifacts/receipts/a1d5b088c360b95f9959cf501e307513f86facb19d7b90deccba52a87a49940c.json</li><li>.codearbiter/.artifacts/receipts/4edb11b626a812873bc258a744c87ffd8de6a61eb8af77a67fe69d4957b6b762.json</li><li>.codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json</li><li>.codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json</li><li>.codearbiter/.artifacts/receipts/2fa4f84171f74cafd0630ea2adb79c4330502d5521a9fab76a1f7398ccca2b3f.json</li><li>.codearbiter/.artifacts/receipts/4bf3bda87c1e6ba9556f15c2dbad7ae757a8db980b91f1bfa5f02ec6ee5c9eb1.json</li><li>.codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json</li><li>.codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json</li><li>.codearbiter/.artifacts/receipts/8b74965945ec9c37c862fbbfa4640b2d58b3cd151c337ecbc8dd56fc1d282ba7.json</li><li>.codearbiter/.artifacts/receipts/45f06be75811c9546ad4216c4ac815fbc1e359bd5ddda5b286ac4176f95982fe.json</li><li>.codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json</li><li>.codearbiter/.artifacts/receipts/013fc94d2c4d17f94d5c03b12ac29b2793b16a909961dc2ea3f2f6ae0504d9a4.json</li><li>.codearbiter/.artifacts/receipts/f7fe806448407a2dfc046e542a1c5dffb5fb092c005549bced58635518af4963.json</li><li>.codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-03 -->
+
+<!-- CA:BEGIN:T-04 -->
+<article class="record" id="T-04" data-ca-symbol="T-04" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-04">T-04</a><h3>Non-git fallback and fail-closed probe errors</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-07">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-07</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both pass; a mutant that falls back on probe failure fails the test.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-02">SRC-02</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add TestSnapshotNonGitRootFilesystemMembership and TestSnapshotGitProbeFailureFailsClosed (stub probe failure on a git root), with wrapper methods test_non_git_root_filesystem_membership, test_git_probe_failure_fails_closed.</li><li>Classify a root as a git work tree by the presence of its .git entry, independently of the membership probe; record membership git_ship_set or filesystem in the manifest; a plain directory keeps the existing walk; a probe error (or an uninspectable .git) on a git root returns an error and never falls back.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Both fallback Go tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_non_git_root_filesystem_membership</li><li>test_git_probe_failure_fails_closed</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/e89aeb1b22628229b69269799996665f26640196a150dc139a183f34100c58e7.json</li><li>.codearbiter/.artifacts/receipts/485189801c8d1b31354ed5757680766fb62a81a9cc62c0246f013d522a3afef5.json</li><li>.codearbiter/.artifacts/receipts/8a76d1ef9c47aa29408f7de9f1bb7b9c962db112d96782771d9bff79d10b228a.json</li><li>.codearbiter/.artifacts/receipts/9bb4daa84b106633aa21f509f33391dc7a0e76fdd483f9da953e69a9654834e7.json</li><li>.codearbiter/.artifacts/receipts/31650c2c6adc6e7a84c39f733c321015e46f52c9fbf0a738cd33bf74034ce87b.json</li><li>.codearbiter/.artifacts/receipts/b4e8c2c871321edf22275642e95b4cd676d1907d930797f10481d729b22f1b2d.json</li><li>.codearbiter/.artifacts/receipts/21c8730a22e85cafe0bcb4cd202eecbe0e38adc93a8baa64a4bea15217c3f697.json</li><li>.codearbiter/.artifacts/receipts/d7927f29a96888782b031abc707846f6ebe70c474a369c8675c15df707df7141.json</li><li>.codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json</li><li>.codearbiter/.artifacts/receipts/bccc97c30a48aeab0d83f7504a61348ce9ece6b0dbc6472785bd5dbc292c6a5d.json</li><li>.codearbiter/.artifacts/receipts/a2b84aa19ec0b7dbaeac31a46c69394886ce656cdc6aeb2e3ab31532d917bfa7.json</li><li>.codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json</li><li>.codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json</li><li>.codearbiter/.artifacts/receipts/801e6513f650ccce37d00ce8b277c7a3f773a75fcf225fdac4639df38c830bf6.json</li><li>.codearbiter/.artifacts/receipts/22b786c5af819f97bf22ce20d1cc5dfde6df93eef98ce1902f2fc320ef2f45a8.json</li><li>.codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json</li><li>.codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json</li><li>.codearbiter/.artifacts/receipts/2c2d2602e849e5801265b97ac8806cd4857daffa880ffec56ba08d83775c4d41.json</li><li>.codearbiter/.artifacts/receipts/1471067311c3f750b28312df4bba5125f2213846573a6b58107cc99de0d6bb6a.json</li><li>.codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json</li><li>.codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json</li><li>.codearbiter/.artifacts/receipts/5883675e11a85f46953c2e223f678665541a639072897d3be1b0b7fda3d989d5.json</li><li>.codearbiter/.artifacts/receipts/fc45d8022cb36926081211aa46d8a0cb649fbe4462fa8181cedf2eac71ad9fe9.json</li><li>.codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json</li><li>.codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json</li><li>.codearbiter/.artifacts/receipts/082f120bf95a58265d00cf9ab2d669e7e701256baef7ba5c10037de12a8c7041.json</li><li>.codearbiter/.artifacts/receipts/1ab2a17c2f80daa7fc813f0a8198295e791a1816bca837531a50ca920aef7506.json</li><li>.codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json</li><li>.codearbiter/.artifacts/receipts/ab88445c428b8722e2a9e495b47e78d5b17e5770266e6549cc41069bf79696e8.json</li><li>.codearbiter/.artifacts/receipts/0c0661d247345caf868431493b0d32b5fb8ddfe99b641be7186c136a5403ac96.json</li><li>.codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-04 -->
+
+<!-- CA:BEGIN:T-05 -->
+<article class="record" id="T-05" data-ca-symbol="T-05" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-05">T-05</a><h3>Plan-policy compatibility and normative hashing</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-04">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-04</a></li><li><a href="../specs/ship-set-evidence-inputs.html#AC-05">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-05</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All three pass; a mutant rejecting redundant excludes fails, and hashing raw plan bytes fails the progress case.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add TestSnapshotRedundantIgnoredExcludeAccepted, TestSnapshotExcludesNarrowShipSet and TestSnapshotProgressOnlyUpdateKeepsIdentity, with wrapper methods test_redundant_ignored_exclude_accepted, test_excludes_narrow_ship_set, test_progress_only_update_keeps_identity.</li><li>Keep exclude_directories narrowing the ship set; accept an exclude naming an already-ignored directory; keep spec/plan HTML contributing their normative hash.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The policy and normative-hash Go tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_redundant_ignored_exclude_accepted</li><li>test_excludes_narrow_ship_set</li><li>test_progress_only_update_keeps_identity</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/81963ac7861198a75a57c46906647da342fc3076ae5b2545caddb1bf3395fd81.json</li><li>.codearbiter/.artifacts/receipts/03cc50e783a0cb767d47df80844a38654ded5d71a91395a2f1fd0786f9187701.json</li><li>.codearbiter/.artifacts/receipts/e2b34fef8851d484055e26737970c9ac9ab526df005472e17181e548ca0d63c5.json</li><li>.codearbiter/.artifacts/receipts/a2d10dcd6beb93364d5af3e394a1b4a1b50efbe2215298ab01715a877debdb83.json</li><li>.codearbiter/.artifacts/receipts/cfaab35f1c0349b9b11df77f750d66df6d5df71236edd0125027e044ea99d391.json</li><li>.codearbiter/.artifacts/receipts/1faef65601d827fd06e10d55645e3ca9fe996a9e3106c38a1e86c2f46b6d3321.json</li><li>.codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json</li><li>.codearbiter/.artifacts/receipts/555e145e6bdafc1f72ada6190f383a3100513ef635d2196d452b7a0448079238.json</li><li>.codearbiter/.artifacts/receipts/e9e717b3fb699ed4e684e2977a4e4300d7658f05b4a0a7700540654943ae4dfe.json</li><li>.codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json</li><li>.codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json</li><li>.codearbiter/.artifacts/receipts/8995a0aa979f50fa01ece981d9eb292d790583993d59c7519e229cce4c5039ca.json</li><li>.codearbiter/.artifacts/receipts/ee151b2726e33c8652f456cd1c1ab90dcb2eb412aaa85065ca559bac5b5969d3.json</li><li>.codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json</li><li>.codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json</li><li>.codearbiter/.artifacts/receipts/e1f46d007d17264fbc380ba6bed963bde8c093605b095fc07cf37b5e39f93392.json</li><li>.codearbiter/.artifacts/receipts/b472535c72e2d627bf950919f30e499b2d5a527de3bd703f44fef06971312560.json</li><li>.codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json</li><li>.codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json</li><li>.codearbiter/.artifacts/receipts/d288f32a7173bc66962fe4360bbb6e4f303a14bd217c8510b2d95bf1fe9ea6ed.json</li><li>.codearbiter/.artifacts/receipts/fa632c54d3bc1447ac74d58339f23eb28e8886af881115c6c4668d371fc2bacf.json</li><li>.codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json</li><li>.codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json</li><li>.codearbiter/.artifacts/receipts/b9aee4be4236c2545f1485669054d05aa995661715df352e16a9b26dfc12d48d.json</li><li>.codearbiter/.artifacts/receipts/12434f096153ef2a5436cc5eb3ce214800dba4bf410103800d51436a443680e8.json</li><li>.codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json</li><li>.codearbiter/.artifacts/receipts/47167339d9d00dda8d8bb567985ef1569f96273bfc774b8688996c1872f7493e.json</li><li>.codearbiter/.artifacts/receipts/25932c7d576873e384ae4cc843ae555aa3497280f1e5a6af67bae8b20e4430c5.json</li><li>.codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-05 -->
+
+<!-- CA:BEGIN:T-06 -->
+<article class="record" id="T-06" data-ca-symbol="T-06" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-06">T-06</a><h3>Manifest 0.2.0; 0.1.0 receipts read as stale</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-06">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-06</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-04">T-04</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both pass; a mutant comparing the formats as equal fails the stale case.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract_test.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/engine_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add TestContractAcceptsLegacyManifestFormat (observation) and TestEligibleReadsLegacyManifestAsStale (operations, fixture receipt bound to a 0.1.0 identity), with wrapper methods test_contract_accepts_legacy_manifest_format, test_legacy_manifest_receipt_reads_stale.</li><li>Emit codearbiter.verification-inputs/0.2.0; let the observation contract accept both formats; ensure eligible/task-review report the old evidence stale (current_evidence false / STALE_EVIDENCE), not a schema error.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The legacy-manifest Go tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_contract_accepts_legacy_manifest_format</li><li>test_legacy_manifest_receipt_reads_stale</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/edaee35bec7e69c54e7ea1ddf83b8c6d79f1b408ebb9f0b40f846d1c0cc1f8ec.json</li><li>.codearbiter/.artifacts/receipts/7ab3d1ec3573a46c0e7f2ec31ce6411d53478842494c9e5f527642eb52378861.json</li><li>.codearbiter/.artifacts/receipts/d9c6266004beea579ecc4a079e08bd20723b85d680dcb8a350f3dafd53afea38.json</li><li>.codearbiter/.artifacts/receipts/2e6e372e67e3210b48a98f9bf6edbefca2279db2c2496f80f8ef7dfb277c483c.json</li><li>.codearbiter/.artifacts/receipts/6d52c512fb3b57728bae06e64ae2540408a1538bc5a40e7c258d782cf032cfed.json</li><li>.codearbiter/.artifacts/receipts/63e7a4c706209632e34c2494295a8e4d42219b3526b9276ea08629bfc035de4a.json</li><li>.codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json</li><li>.codearbiter/.artifacts/receipts/ce78e037e018f2cc970df472e2cd6eb6f396cebcff30e15c45280d4599ceeca7.json</li><li>.codearbiter/.artifacts/receipts/780ee07eee8f125c513787ca5936b4a64b89f6b47c13e264d48a891f2f52bbb7.json</li><li>.codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json</li><li>.codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json</li><li>.codearbiter/.artifacts/receipts/a58cdbb5e2212f1b65089629a1b1ee00567cec37f5a19f6cd24c14ef83e574d1.json</li><li>.codearbiter/.artifacts/receipts/36f00fcb9638effadc47f6de9ad0334c6c0709413bef0073c1bdb3e576e09c07.json</li><li>.codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json</li><li>.codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json</li><li>.codearbiter/.artifacts/receipts/daa1aa3df611c6a493b7fcac727ddd6da146383f236a4fd13ef652431ab6f44a.json</li><li>.codearbiter/.artifacts/receipts/03443c32fa59770821cf570a36d203611fddd579dd34e8b8cf34b7c2d895360e.json</li><li>.codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json</li><li>.codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json</li><li>.codearbiter/.artifacts/receipts/77d7b2047d486fd23b9771dd43921b08b82ba7266bb940690cb74f8b49fdee4c.json</li><li>.codearbiter/.artifacts/receipts/0cd3cce030939d4e7955f29f6c10da92aa54723fd5d0800e140351fcdc8d585d.json</li><li>.codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json</li><li>.codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json</li><li>.codearbiter/.artifacts/receipts/95ccb1306883402983d4f67c285fe941cc56d8fade4812116f8003ad8e0a4c53.json</li><li>.codearbiter/.artifacts/receipts/595c10b06061f5c7d15e5b779169c14ea4b9b80190569660652dd0173d628295.json</li><li>.codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json</li><li>.codearbiter/.artifacts/receipts/4e9b1522b3a4c660accd530aa4aa07bf102dc876daa23a2d460c007f5b3f1bb8.json</li><li>.codearbiter/.artifacts/receipts/2633b4d038f81a4fbe6589f57a4bfe3457f8d5f1834548ada383f225687347f6.json</li><li>.codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-06 -->
+
+<!-- CA:BEGIN:T-07 -->
+<article class="record" id="T-07" data-ca-symbol="T-07" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-07">T-07</a><h3>Walk-relative reads with bounded handle opens</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-08">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-08</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-06">T-06</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The test passes; restoring the per-file ancestor check fails the count.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/store/fs_portable.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/store/fs_linux.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/store/fs_other.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/store/openstats.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/store/entryname.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/store/store_test.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/evidence/snapshot_bounds_test.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/authority/receipt.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li><li><a href="#SRC-04">SRC-04</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add an open-counting seam (store/openstats.go; anchor, listing, file and ancestor-check counters) and TestPortableSnapshotOpensBounded in evidence/snapshot_bounds_test.go over a tree with files at depth 1 to 6: one scan makes at most one anchor open and one listing open per visited directory, at most one open per input file, and no per-file ancestor Lstat. Wrapper method test_portable_snapshot_opens_bounded. The test is untagged: on Linux it measures the fs_linux backend; the portable-store proof comes from the Windows and macOS CI runs.</li><li>Read input files relative to an already-validated directory handle; take size, mode and identity from the opened file; drop the per-file ancestor re-check.</li><li>Validate reserved-output receipts from the bytes the scan already read (receipt, event, observation, evidence context and authority source), with no second root-relative read; extend TestPortableSnapshotOpensBounded with real receipt chains so file opens and ancestor checks stay bounded as receipts grow. Both backends compare file identity (SameFile) after a read.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The open-counting Go test passes by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_portable_snapshot_opens_bounded</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/c8d2cfbf9190eff445bd27596a9dc53792eddf26ebff1d3a88a1325e1281092f.json</li><li>.codearbiter/.artifacts/receipts/00a1dc9ac638affc522ac00a00efd44369088b1dd4affc518b86d0f25f3124a1.json</li><li>.codearbiter/.artifacts/receipts/a5bae44a54f852cb8f418817948432c7f34463aab0bd20be37840ff7ef992595.json</li><li>.codearbiter/.artifacts/receipts/79f3731aac5f2d83086460ffaab59f6ccfb309b4d8808562429d81696e5482ad.json</li><li>.codearbiter/.artifacts/receipts/54a8ad6ae003cc891809ca43e1185f0319399abee21457def880d67a4bf25f8d.json</li><li>.codearbiter/.artifacts/receipts/b7f29f8f1f8de01a8bd9b51224d4f4bd4bcf3d41fc4d352d551051b21523330e.json</li><li>.codearbiter/.artifacts/receipts/27e30df38f14e2816755e45b6cd4aa477ae18456607f276f4863a5402256ffd3.json</li><li>.codearbiter/.artifacts/receipts/1efa26a6efa6aaa5aa832b2b05118de5213fe73ec11aa9cf0b3616ddfed961c0.json</li><li>.codearbiter/.artifacts/receipts/9d33ed6705f11730128638cc2b32e973714f2fc54984ecb2a6f1e890d3aeac11.json</li><li>.codearbiter/.artifacts/receipts/79536992c909134fd81079f503e00dad13a4ed2ca839b2d2bfec925c49b1088d.json</li><li>.codearbiter/.artifacts/receipts/92c9684226e161d4a7c3e3f558759c930b2823e361e4bab72886a900c875fcdf.json</li><li>.codearbiter/.artifacts/receipts/e095db7993b70b7acf6e30bc6087b6d261ce3e4f9eb178c5f276d9e1fd87b4b3.json</li><li>.codearbiter/.artifacts/receipts/bdcc2402e87863738485cf3ae777eedf08c9c71b11fa6c900826381a18280482.json</li><li>.codearbiter/.artifacts/receipts/916af42797c5b57d70df8a6460d81043bab6f62a794cc2abd57f712bb47c7ac6.json</li><li>.codearbiter/.artifacts/receipts/c57500c4869a0d09a409c1c4db034e4a7d932a8f02ac36c8ec4e671b52935e2b.json</li><li>.codearbiter/.artifacts/receipts/19d9a61f1e6d19af3d2e5aa7000e93e2c7d8042e353614db5a7e38deaa961143.json</li><li>.codearbiter/.artifacts/receipts/b60c71ce70e3538c116f6d054c4429dce9cd0937fde4ba8543ba8329c8b9ccdf.json</li><li>.codearbiter/.artifacts/receipts/b7420b109b2bc9dbea9e4c947ca47671ebdb6044023c3010318ac93d5f1a7235.json</li><li>.codearbiter/.artifacts/receipts/df0792442a6d8f6dda5fa3946fd2f75dd24c2f7fad558c7f0f88825ea0254e1a.json</li><li>.codearbiter/.artifacts/receipts/f652dfbb810355234fa69041326bc886c778f75c5fe36b7a54e670164af81d61.json</li><li>.codearbiter/.artifacts/receipts/97f776eb675eb68cc6c18735c5a9c148827cb2712efdc97a97d8bcb2a1138cb4.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-07 -->
+
+<!-- CA:BEGIN:T-08 -->
+<article class="record" id="T-08" data-ca-symbol="T-08" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-08">T-08</a><h3>Safety preserved and engine module regression</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-08">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-08</a></li><li><a href="../specs/ship-set-evidence-inputs.html#AC-09">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-09</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All pass; removing the after-read SameFile check fails the mid-read case.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/store/store_test.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add TestPortableReadRefusesSymlink, TestPortableReadDetectsMidReadChange and TestSnapshotRejectsDifferingScans, with wrapper methods for each. The mid-read case must include an identity-only change (same size and mtime) so removing the after-read SameFile check fails it.</li><li>Add wrapper method test_artifacts_module_passes, which runs go test -json ./... in core/artifacts and fails on any fail event or nonzero exit. No -race locally (CGO_ENABLED=0 on this host); CI&#39;s -race job covers it.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The safety Go tests and the whole engine module pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_portable_read_refuses_symlink</li><li>test_portable_read_detects_mid_read_change</li><li>test_snapshot_rejects_differing_scans</li><li>test_artifacts_module_passes</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/54a8ad6ae003cc891809ca43e1185f0319399abee21457def880d67a4bf25f8d.json</li><li>.codearbiter/.artifacts/receipts/fbd2c6c2e7dd04f025106d893c0ef9b06f2f388bb26c04fd07c33509753e492e.json</li><li>.codearbiter/.artifacts/receipts/73d81dfd182de31a271e0646095d71146570ba7e5cc275a9f80b5271db0ac680.json</li><li>.codearbiter/.artifacts/receipts/1efa26a6efa6aaa5aa832b2b05118de5213fe73ec11aa9cf0b3616ddfed961c0.json</li><li>.codearbiter/.artifacts/receipts/2591f7e8a674d9ed1155890bc9dc76b29f97f604a89b35cf9ae453fecd8cb691.json</li><li>.codearbiter/.artifacts/receipts/cbe8570f7a28d44caa85bd015d7d15b22de44e59be97e36dba72e7cc7ba8c066.json</li><li>.codearbiter/.artifacts/receipts/92c9684226e161d4a7c3e3f558759c930b2823e361e4bab72886a900c875fcdf.json</li><li>.codearbiter/.artifacts/receipts/e67120250320e749ecad8db678b7a68b998f956554c866c920760908687cdff2.json</li><li>.codearbiter/.artifacts/receipts/2b1c070673c282818ecee7fa75aa3e336b8b5bb7bd56c8f640a26f736a9bd1d3.json</li><li>.codearbiter/.artifacts/receipts/7dd4e0476fcdd311c974cf7a88f4420f798cca2122785d9dc000b2d65158c6a9.json</li><li>.codearbiter/.artifacts/receipts/49f5c35eafb96e69a0b6d6c391f4deac8eae607b842b6dd7eca51dca5aa65497.json</li><li>.codearbiter/.artifacts/receipts/916af42797c5b57d70df8a6460d81043bab6f62a794cc2abd57f712bb47c7ac6.json</li><li>.codearbiter/.artifacts/receipts/c57500c4869a0d09a409c1c4db034e4a7d932a8f02ac36c8ec4e671b52935e2b.json</li><li>.codearbiter/.artifacts/receipts/61973779c2bde3e15fb628248a328d34f7bd0118df095c6bfb4f2ba865f53d89.json</li><li>.codearbiter/.artifacts/receipts/a0bc231d183c456fc9dc67f79e897ced192c89607b58ee908f7f345d6f3100e9.json</li><li>.codearbiter/.artifacts/receipts/b7420b109b2bc9dbea9e4c947ca47671ebdb6044023c3010318ac93d5f1a7235.json</li><li>.codearbiter/.artifacts/receipts/8e48d9d295619994cfe16f34b661957c611759a21bd1c0b29b51be4a3af0c3b0.json</li><li>.codearbiter/.artifacts/receipts/3452191d3179c94766c7993b541abbb04cefd2981cc1164acc083034b3239ad2.json</li><li>.codearbiter/.artifacts/receipts/97f776eb675eb68cc6c18735c5a9c148827cb2712efdc97a97d8bcb2a1138cb4.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-08 -->
+
+<!-- CA:BEGIN:T-09 -->
+<article class="record" id="T-09" data-ca-symbol="T-09" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-09">T-09</a><h3>600-second prompt-submit timeout for Claude and Codex</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-10">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-10</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>All three pass; deleting either timeout fails its test.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>plugins/ca/hooks/hooks.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/hooks/hooks.json</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/check_codex_static_package.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/check_codex_skill_resources.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_codex_skill_resources.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_codex_static_package.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-01">SRC-01</a></li><li><a href="#SRC-09">SRC-09</a></li><li><a href="#SRC-10">SRC-10</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add test_claude_prompt_submit_timeout, test_codex_prompt_submit_timeout, test_other_registrations_unchanged parsing both hooks.json files.</li><li>Set &#34;timeout&#34;: 600 on every UserPromptSubmit prompt-submit.py entry (Claude adds it; Codex changes 30 to 600); leave PreCompact and all other entries unchanged.</li><li>Update the Codex approved hook-manifest hash pin (a deliberate reviewed pin) to include the new canonical digest of plugins/ca-codex/hooks/hooks.json, keeping historical digests accepted, and pin the non-timeout registration shape as fixed data rather than comparing to git HEAD.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The registration tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_claude_prompt_submit_timeout</li><li>test_codex_prompt_submit_timeout</li><li>test_other_registrations_unchanged</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/b3a404b392dce36eb4ca4d8c3673e07e070f202d2955bf4b138878ca2bd78077.json</li><li>.codearbiter/.artifacts/receipts/b5eefa47b5250492a72ebdd24372c4826e8435201b260f33197d032cd31972fd.json</li><li>.codearbiter/.artifacts/receipts/223edd1be8616fd38f168dbfa6bc82496858bb9a911885fee021ec29443469d1.json</li><li>.codearbiter/.artifacts/receipts/c34ab2c40c04dd4a04ac19bf9a222c671f65b0e91b525e50ae156d4c1b93ef2c.json</li><li>.codearbiter/.artifacts/receipts/e4726585a07bbb95b08c1b74d8ec94c9621cb92564f82bc2ff88f87ced45e81b.json</li><li>.codearbiter/.artifacts/receipts/bda430eb23f98c622e9a9b46d00981926cd9ff8ccb645355ab22c9af203b295b.json</li><li>.codearbiter/.artifacts/receipts/0377ae49eae03b4d62afea08e55c43ebf1feeda46210f67523ce49c1a3889817.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-09 -->
+
+<!-- CA:BEGIN:T-10 -->
+<article class="record" id="T-10" data-ca-symbol="T-10" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-10">T-10</a><h3>Protocol and authoring docs describe the ship-set rule</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-11">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-11</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-06">T-06</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both tests pass and build-surface --check is clean.</li><li>Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>docs/artifacts/PROTOCOL.md</code></td></tr><tr><td>modify</td><td><code>core/surface/includes/artifacts.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca/includes/artifacts.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/includes/artifacts.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/includes/artifacts.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-06">SRC-06</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: add test_protocol_describes_ship_set, test_artifacts_include_describes_ship_set asserting ship-set membership, the fixed gate-events exemption and the non-git fallback are stated, and that the sentence saying .gitignore does not define the policy is gone.</li><li>Edit PROTOCOL.md and core/surface/includes/artifacts.md; regenerate host copies with python tools/build-surface.py.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Both docs tests pass by name.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_protocol_describes_ship_set</li><li>test_artifacts_include_describes_ship_set</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-surface.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Generated include copies match the canonical source.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/b3a404b392dce36eb4ca4d8c3673e07e070f202d2955bf4b138878ca2bd78077.json</li><li>.codearbiter/.artifacts/receipts/b5eefa47b5250492a72ebdd24372c4826e8435201b260f33197d032cd31972fd.json</li><li>.codearbiter/.artifacts/receipts/c98008851a3236760fd98d7698d0c11084bc349444ea8ea9ff7c34b55f138e59.json</li><li>.codearbiter/.artifacts/receipts/872d93ac8e07cc79c88bad76c6f8943cf226abdbbff9fbce745c3fa34bfee960.json</li><li>.codearbiter/.artifacts/receipts/9c94466c5a0f1ba7202a03624c4b3f5e9bc8b4d4ddac62d97e79ef05b5f5f43d.json</li><li>.codearbiter/.artifacts/receipts/04b4fc8e558b41fec418cd18956b065f5c01b0da057741beb9713a943a86ae81.json</li><li>.codearbiter/.artifacts/receipts/0377ae49eae03b4d62afea08e55c43ebf1feeda46210f67523ce49c1a3889817.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-10 -->
+
+<!-- CA:BEGIN:T-11 -->
+<article class="record" id="T-11" data-ca-symbol="T-11" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-11">T-11</a><h3>CI wiring and version advance</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-03</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-10">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-10</a></li><li><a href="../specs/ship-set-evidence-inputs.html#AC-11">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-11</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The wiring test and the surface/version gates pass.</li><li>test_suite_wired_into_ci is run against a mutant that removes the wiring (the CI step, a filter path or the job gate) and fails; the mutant is reverted.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-03</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/workflows/ci.yml</code></td></tr><tr><td>modify</td><td><code>plugins/ca/.claude-plugin/plugin.json</code></td></tr><tr><td>modify</td><td><code>CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/.codex-plugin/plugin.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>README.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr><tr><td>modify</td><td><code>.github/ci-impact-map.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/package.json</code></td></tr><tr><td>modify</td><td><code>package.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/package.json</code></td></tr><tr><td>modify</td><td><code>core/pysrc/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca/hooks/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/hooks/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/hooks/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca/hooks/_host.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/hooks/_host.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/hooks/_host.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-09">SRC-09</a></li><li><a href="#SRC-10">SRC-10</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add test_suite_wired_into_ci; wire test_ship_set_inputs.py into the CI job whose impact filter covers core/artifacts and the hooks.json files (resolve the enclosing job and filter first).</li><li>Advance ca, ca-codex and ca-pi (ca-pi ships the engine and the changed includes): manifest, CHANGELOG top, README badge and the generated root package.json together with plugins/ca-pi/package.json; the adapter_version literals in core/pysrc/hostapi.py, its generated copies and each host&#39;s _host.py must equal the manifest. Versions must be strictly above the latest tag, origin/main and every open PR.</li><li>Add an explicit .github/ci-impact-map.json entry for test_ship_set_inputs.py modelled on test_artifact_native.py.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The new suite is reachable from CI&#39;s impact filter and job.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_suite_wired_into_ci</li></ul></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_build_surface.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Surface and version gates pass.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/b3a404b392dce36eb4ca4d8c3673e07e070f202d2955bf4b138878ca2bd78077.json</li><li>.codearbiter/.artifacts/receipts/b5eefa47b5250492a72ebdd24372c4826e8435201b260f33197d032cd31972fd.json</li><li>.codearbiter/.artifacts/receipts/be5a576958ca0ea85e66a1d42162bbd8b06d27dae98d5250b556598fa62aaf1c.json</li><li>.codearbiter/.artifacts/receipts/ed8bc902019ff00cfb6830f3758cc605004b0d7d1029121fb547c19b2344735e.json</li><li>.codearbiter/.artifacts/receipts/682f0e82bb76688a0cc731526033f6f7cfd015be3776d91c8509b8cd41387429.json</li><li>.codearbiter/.artifacts/receipts/b661ebaffa619116246bceb01f161f41f241586993362efcaa779f0447ccb713.json</li><li>.codearbiter/.artifacts/receipts/0377ae49eae03b4d62afea08e55c43ebf1feeda46210f67523ce49c1a3889817.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-11 -->
+
+<!-- CA:BEGIN:T-12 -->
+<article class="record" id="T-12" data-ca-symbol="T-12" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-12">T-12</a><h3>Evidence objects read once per operation</h3><span class="badge">ACCEPTED</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/ship-set-evidence-inputs.html#AC-12">SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-12</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-07">T-07</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>TestEvidenceObjectsReadOnce passes: root-relative loads and validations per evidence object stay at most one per operation, and scan passes per operation are the same for both fixture sizes.</li><li>Each mutant named in the steps fails a test and is reverted; the whole engine module still passes.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/store/fs_portable.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/store/fs_linux.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/store/fs_other.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/store/memo.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/engine.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/authority/reuse.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/authority/receipt.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/observation/contract_test.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/completion.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/completion_workspace.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/evidence/snapshot.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/operations/evidence_reads_test.go</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_ship_set_inputs.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the task&#39;s changes.</div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-03">SRC-03</a></li></ul></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Red first: TestEvidenceObjectsReadOnce in operations/evidence_reads_test.go over a smaller and a larger fixture of real receipt chains. Count root-relative loads with the open-counting seam, schema validations with a test counter, and scan passes, across snapshot, read, index, task-review and accept-scope. Assert at most one root-relative load and one validation per object per operation, and the same number of scan passes for both sizes. Wrapper method test_evidence_objects_read_once.</li><li>Add per-operation reuse of validated evidence objects, keyed by content hash and scoped to one store handle. Keep only fully validated objects; never cache an error or an absence. authority.Inspect, Load, LoadSource, Vector, InspectionVector and observation.Inspect, Load and LoadContext use it, and Load keeps its extra 0.2.0 and producer checks on the reused object.</li><li>Compute each workspace root&#39;s completion state at most once per operation and reuse it, so task-review and accept-scope scan passes do not grow with task count. The snapshot keeps its two-pass change check.</li><li>The snapshot reads every reserved output directory first, then validates receipt chains from those bytes, retaining only receipts and referenced objects under a total byte cap. A referenced object missing from the scan fails closed, with no fallback to a root-relative read.</li><li>Update the observation test that re-reads a mutated object: the same handle keeps the validated object and a fresh handle rejects the mutation.</li><li>Mutation proof: disabling reuse, restoring the snapshot&#39;s second receipt read, recomputing a workspace root per task, or caching an error or absence each fails a test; revert each mutant.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;-m&#34;,&#34;unittest&#34;,&#34;-v&#34;,&#34;test_ship_set_inputs&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Evidence objects are read and validated at most once per engine operation.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.github/scripts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_evidence_objects_read_once</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><ul class="items"><li>.codearbiter/.artifacts/receipts/1efa26a6efa6aaa5aa832b2b05118de5213fe73ec11aa9cf0b3616ddfed961c0.json</li><li>.codearbiter/.artifacts/receipts/92c9684226e161d4a7c3e3f558759c930b2823e361e4bab72886a900c875fcdf.json</li><li>.codearbiter/.artifacts/receipts/c0170cde7b0240f33f8135ab974caf916ff77af534d86d8c82911ed11c83e31e.json</li><li>.codearbiter/.artifacts/receipts/b1f89224a32513a37dad193b76da0a333257cfa71a03ac015fb3536ba756b8d9.json</li><li>.codearbiter/.artifacts/receipts/50e0cf8a59a01c1adc4e7dcdb5ed2a1cf3a24c6c4901b7426f5ce71e9ce3516c.json</li><li>.codearbiter/.artifacts/receipts/e29f02efd6baccf5327024577a4427af94fc998e4b90e3214628205818ec42a9.json</li><li>.codearbiter/.artifacts/receipts/916af42797c5b57d70df8a6460d81043bab6f62a794cc2abd57f712bb47c7ac6.json</li><li>.codearbiter/.artifacts/receipts/c57500c4869a0d09a409c1c4db034e4a7d932a8f02ac36c8ec4e671b52935e2b.json</li><li>.codearbiter/.artifacts/receipts/b194f4f564f4c31af9695e6e3df7392389ecc77e7e3164ffea9674519a06b1cd.json</li><li>.codearbiter/.artifacts/receipts/4909cf728a4e550817db3e7e24b6f73a7730a2486eafe73db605202506a5cff4.json</li><li>.codearbiter/.artifacts/receipts/b7420b109b2bc9dbea9e4c947ca47671ebdb6044023c3010318ac93d5f1a7235.json</li><li>.codearbiter/.artifacts/receipts/c6e325afab6c1a66603feba7a58a847992c363eaa4f8de7fb9b2ce7860aae7db.json</li><li>.codearbiter/.artifacts/receipts/6e74b9e0a623894e84ae355b3c106cb5fa334b638e12a4241542d69e3d22a47a.json</li><li>.codearbiter/.artifacts/receipts/97f776eb675eb68cc6c18735c5a9c148827cb2712efdc97a97d8bcb2a1138cb4.json</li></ul></div><div class="field"><span class="label">Reason</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">State</span>ACCEPTED</div></div></details></article>
+<!-- CA:END:T-12 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-01 -->
+<article class="record" id="CP-01" data-ca-symbol="CP-01" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-01">CP-01</a><h3>MVP: ship-set identity in the engine</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>All CP-01 tasks accepted: ship-set membership, edges, the gate-events exemption, the non-git fallback, policy compatibility and the 0.2.0 manifest are pinned by mutant-proven tests.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-01">T-01</a></li><li><a href="#T-02">T-02</a></li><li><a href="#T-03">T-03</a></li><li><a href="#T-04">T-04</a></li><li><a href="#T-05">T-05</a></li><li><a href="#T-06">T-06</a></li></ul></div></article>
+<!-- CA:END:CP-01 -->
+
+<!-- CA:BEGIN:CP-02 -->
+<article class="record" id="CP-02" data-ca-symbol="CP-02" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-02">CP-02</a><h3>Bounded handle opens and evidence reads with safety preserved</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-01">CP-01</a></li></ul></div><div class="field"><span class="label">Exit</span>All CP-02 tasks accepted: opens per scan are bounded, evidence objects are read once per operation, every safety check still fires and the engine module passes.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-07">T-07</a></li><li><a href="#T-08">T-08</a></li><li><a href="#T-12">T-12</a></li></ul></div></article>
+<!-- CA:END:CP-02 -->
+
+<!-- CA:BEGIN:CP-03 -->
+<article class="record" id="CP-03" data-ca-symbol="CP-03" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-03">CP-03</a><h3>Hook timeouts, docs, CI and versions</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-01">CP-01</a></li></ul></div><div class="field"><span class="label">Exit</span>All CP-03 tasks accepted: timeouts registered, docs regenerated, suite wired into CI and versions advanced.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-09">T-09</a></li><li><a href="#T-10">T-10</a></li><li><a href="#T-11">T-11</a></li></ul></div></article>
+<!-- CA:END:CP-03 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-NEGATIVE -->
+<article class="record" id="SEC-NEGATIVE" data-ca-symbol="SEC-NEGATIVE" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-NEGATIVE">SEC-NEGATIVE</a><h3>Negative-judgment check</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>If every criterion passed and nothing else changed, what would still be broken? The observation contract pins the manifest format as a constant, so 0.1.0 receipts would fail schema validation instead of reading stale; T-06 covers it under AC-06. The gate-events exemption must also hold for non-git roots; T-03 tests both modes. Installed plugin caches keep the old engine until release, so SMARTS needs a fresh round on the new version; that is follow-up work, not a missing criterion.</p><div class="refs">References: <a href="#SRC-01">SRC-01</a> </div></div></div></article>
+<!-- CA:END:SEC-NEGATIVE -->
+
+<!-- CA:BEGIN:SEC-PROOF -->
+<article class="record" id="SEC-PROOF" data-ca-symbol="SEC-PROOF" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-PROOF">SEC-PROOF</a><h3>Proof limits of this plan</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><ul class="items"><li>The installed collector cannot name Go tests, so Go rules are attested through the unittest wrapper test_ship_set_inputs.py, which passes each method only on a named Go &#39;pass&#39; event.</li><li>AC-08 is proven by an open-counting seam, not wall-clock time; the store test runs where fs_portable.go builds (Windows and macOS CI).</li><li>This plan executes on the installed 2.25.0 engine, which still uses the filesystem walk; scratch files live under the excluded tmp directory.</li></ul><div class="refs">References: <a href="#SRC-01">SRC-01</a> </div></div></div></article>
+<!-- CA:END:SEC-PROOF -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-01 -->
+<article class="record" id="SRC-01" data-ca-symbol="SRC-01" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-01">SRC-01</a><h3>Approved ship-set spec</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/specs/ship-set-evidence-inputs.html</div><div class="field"><span class="label">Note</span>Approved at revision 2; criterion IDs are consumed as-is.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-01 -->
+
+<!-- CA:BEGIN:SRC-02 -->
+<article class="record" id="SRC-02" data-ca-symbol="SRC-02" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-02">SRC-02</a><h3>Snapshot implementation</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/evidence/snapshot.go</div><div class="field"><span class="label">Note</span>snapshotOnce, Snapshot, internalOutputs, manifest format.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/snapshot.go</div></article>
+<!-- CA:END:SRC-02 -->
+
+<!-- CA:BEGIN:SRC-03 -->
+<article class="record" id="SRC-03" data-ca-symbol="SRC-03" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-03">SRC-03</a><h3>Portable rooted store</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/store/fs_portable.go</div><div class="field"><span class="label">Note</span>check() runs a rooted Lstat per ancestor on every Read and Stat.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/store/fs_portable.go</div></article>
+<!-- CA:END:SRC-03 -->
+
+<!-- CA:BEGIN:SRC-04 -->
+<article class="record" id="SRC-04" data-ca-symbol="SRC-04" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-04">SRC-04</a><h3>Snapshot profile 2026-10-08</h3></div><div class="field"><span class="label">Locator</span>tmp/HANDOFF-ship-set-evidence-inputs.md</div><div class="field"><span class="label">Note</span>74% of CPU in NtCreateFile handle opens; hashing the ship set takes 0.4 s.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-04 -->
+
+<!-- CA:BEGIN:SRC-05 -->
+<article class="record" id="SRC-05" data-ca-symbol="SRC-05" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-05">SRC-05</a><h3>ADR-0042</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/decisions/0042-ship-set-evidence-input-identity.md</div><div class="field"><span class="label">Note</span>Accepted 2026-10-08.</div><div class="field"><span class="label">Type</span>local_document</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-05 -->
+
+<!-- CA:BEGIN:SRC-06 -->
+<article class="record" id="SRC-06" data-ca-symbol="SRC-06" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-06">SRC-06</a><h3>Artifact protocol</h3></div><div class="field"><span class="label">Locator</span>docs/artifacts/PROTOCOL.md</div><div class="field"><span class="label">Note</span>Input identity and output-exclusion rules.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/docs/artifacts/PROTOCOL.md</div></article>
+<!-- CA:END:SRC-06 -->
+
+<!-- CA:BEGIN:SRC-07 -->
+<article class="record" id="SRC-07" data-ca-symbol="SRC-07" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-07">SRC-07</a><h3>Hardened completion git probes</h3></div><div class="field"><span class="label">Locator</span>core/artifacts/internal/evidence/completion_workspace.go</div><div class="field"><span class="label">Note</span>completionGitIndex and completionGitUntracked.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/completion_workspace.go</div></article>
+<!-- CA:END:SRC-07 -->
+
+<!-- CA:BEGIN:SRC-08 -->
+<article class="record" id="SRC-08" data-ca-symbol="SRC-08" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-08">SRC-08</a><h3>Durable gate-event sink (#186)</h3></div><div class="field"><span class="label">Locator</span>#186</div><div class="field"><span class="label">Note</span>Why gate-events.log stays tracked.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/issues/186</div></article>
+<!-- CA:END:SRC-08 -->
+
+<!-- CA:BEGIN:SRC-09 -->
+<article class="record" id="SRC-09" data-ca-symbol="SRC-09" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-09">SRC-09</a><h3>Claude hook registration</h3></div><div class="field"><span class="label">Locator</span>plugins/ca/hooks/hooks.json</div><div class="field"><span class="label">Note</span>UserPromptSubmit prompt-submit.py has no timeout (#931).</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca/hooks/hooks.json</div></article>
+<!-- CA:END:SRC-09 -->
+
+<!-- CA:BEGIN:SRC-10 -->
+<article class="record" id="SRC-10" data-ca-symbol="SRC-10" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-10">SRC-10</a><h3>Codex hook registration</h3></div><div class="field"><span class="label">Locator</span>plugins/ca-codex/hooks/hooks.json</div><div class="field"><span class="label">Note</span>prompt-submit declares timeout 30.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span>https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca-codex/hooks/hooks.json</div></article>
+<!-- CA:END:SRC-10 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>9496cff6332fe0b97195b7ebe67b73f62f30e5b3</div><div class="field"><span class="label">Observed date</span>2026-10-08</div><div class="field"><span class="label">Repository</span>https://github.com/arbiterForge/codeArbiter</div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group" id="group-verification_inputs"><a class="back" href="#main-content">Top</a><h2>Verification inputs</h2><div class="fields"><div class="field"><span class="label">Exclude directories</span><ul class="items"><li>site/node_modules</li><li>site/dist</li><li>site/.astro</li><li>tmp</li><li>.github/scripts/__pycache__</li><li>core/pysrc/__pycache__</li><li>plugins/ca/hooks/__pycache__</li><li>plugins/ca/hooks/tests/__pycache__</li><li>plugins/ca-codex/hooks/__pycache__</li><li>plugins/ca-pi/hooks/__pycache__</li><li>tools/__pycache__</li></ul></div><div class="field"><span class="label">Roots</span><ul class="items"><li>.</li></ul></div></div></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Execution must verify current receipt sources and binding.</p><div class="fields"><div class="field"><span class="label">Approvals</span><div class="fields"><div class="field"><span class="label">Artifact id</span>PLAN-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>5cc6bd5f5ed0ad8a771a646ec2cab64d630822877af022c6d9e08ba76a045d5f</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/278da033df3a06004155edc19993b306bccb1eefa37dc5b17911ce020d25d68a.json</div><div class="field"><span class="label">Source sha256</span>278da033df3a06004155edc19993b306bccb1eefa37dc5b17911ce020d25d68a</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>PLAN-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>f7516d5a366a572e7f560f4580a0643f7e5d4c1cd4d917fd6d0c6b5f43a49dbd</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/1be3d6355024b0d6adee8cd9ea2575816c9c72698cecb7c356aada7634576b49.json</div><div class="field"><span class="label">Source sha256</span>1be3d6355024b0d6adee8cd9ea2575816c9c72698cecb7c356aada7634576b49</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>PLAN-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>c554e9e41033ea130f6cbaf92945f3d706277a592506bdde6752fbdc2f575684</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/e8eaf025ce657a9f46a3ce4d4202de79d30d447cf927bed451e9d5d4691f1cc9.json</div><div class="field"><span class="label">Source sha256</span>e8eaf025ce657a9f46a3ce4d4202de79d30d447cf927bed451e9d5d4691f1cc9</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>PLAN-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>7813f36f3d6ac4b0846c206ea03f30d0a06fb59ff928d37da2dc1e8d3a2d713c</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/7226378a6086fed22d4031d8991adabf37440dab37914d9d4d5c3b886d27388b.json</div><div class="field"><span class="label">Source sha256</span>7226378a6086fed22d4031d8991adabf37440dab37914d9d4d5c3b886d27388b</div></div><div class="fields"><div class="field"><span class="label">Artifact id</span>PLAN-SHIP-SET-EVIDENCE-INPUTS</div><div class="field"><span class="label">Attestation level</span>workflow_attested</div><div class="field"><span class="label">Authority kind</span>user_workflow</div><div class="field"><span class="label">Normative sha256</span>b4cc6d01e021649acbec7ab10118d5e2b16cdb4ba06e9d7353de44d245310c80</div><div class="field"><span class="label">Source ref</span>.codearbiter/.artifacts/receipts/06960355f0e36983433044230f700a942bf66bdce9bacf62e9185d2eff287d20.json</div><div class="field"><span class="label">Source sha256</span>06960355f0e36983433044230f700a942bf66bdce9bacf62e9185d2eff287d20</div></div></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>approved</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: b4cc6d01e021649acbec7ab10118d5e2b16cdb4ba06e9d7353de44d245310c80<br>Model SHA-256: f504b932f5a635191112e0687c621886f62e9fd4ba8df4e6f84d370d13139413</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-SHIP-SET-EVIDENCE-INPUTS",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {
+      "CP-01": {
+        "base_input_sha256": "8aa5481068b3f7442a14e6da1c256550644245bf94a34afc1a7fa2e84b63c797",
+        "plan_sha256": "b4cc6d01e021649acbec7ab10118d5e2b16cdb4ba06e9d7353de44d245310c80"
+      },
+      "CP-02": {
+        "base_input_sha256": "8aa5481068b3f7442a14e6da1c256550644245bf94a34afc1a7fa2e84b63c797",
+        "plan_sha256": "b4cc6d01e021649acbec7ab10118d5e2b16cdb4ba06e9d7353de44d245310c80"
+      },
+      "CP-03": {
+        "base_input_sha256": "8aa5481068b3f7442a14e6da1c256550644245bf94a34afc1a7fa2e84b63c797",
+        "plan_sha256": "b4cc6d01e021649acbec7ab10118d5e2b16cdb4ba06e9d7353de44d245310c80"
+      }
+    },
+    "tasks": {
+      "T-01": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/5b4868aea999da0657e03309670b954194de2cfc9d723b00df34057e2ac3b4e9.json",
+          ".codearbiter/.artifacts/receipts/bada5ee552273d8a85a1f3c0167763a809cf3bcdc83ee29b20ac6cb644b807d5.json",
+          ".codearbiter/.artifacts/receipts/7e865bf14b7cd46733103dc39eedab937a10624d201c4372d57e4e0aaae75883.json",
+          ".codearbiter/.artifacts/receipts/37569e12cbffc12621f4b6807656b40f57c1c98285773f0163eb4299f313dfe9.json",
+          ".codearbiter/.artifacts/receipts/73c857f32018e99f0c64561a58189204158c71aa308538e5f0e844179db8ba38.json",
+          ".codearbiter/.artifacts/receipts/d01f32efbe9ab0f422b6e5f040f6d1b640e1d387d2dfcb2b527af015e8a530dc.json",
+          ".codearbiter/.artifacts/receipts/160b25e147a2e33368ddb077c7309590c457eb63b862ee691614397772d9c023.json",
+          ".codearbiter/.artifacts/receipts/dbee37dcea1da421c2ad23440457e684fa18e09e89becb4e0a9a9ece398bfa2f.json",
+          ".codearbiter/.artifacts/receipts/09844fc7b5fef847c0b759d12cef2b28cb15833555c409ff95d7147dfb4f82e4.json",
+          ".codearbiter/.artifacts/receipts/70046b087c1ac8935c3f78e7e8b6a011776191b7ecea829e3104ca9273466887.json",
+          ".codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json",
+          ".codearbiter/.artifacts/receipts/66f1eee3fe31a9c3b982b0b580366f8f15240f8bbe6e42817fc6fb49492f84ec.json",
+          ".codearbiter/.artifacts/receipts/768e43926da9cad9143366155de033846998189fa546c348b78780693b31f0f5.json",
+          ".codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json",
+          ".codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json",
+          ".codearbiter/.artifacts/receipts/d36568af4170dd2eea7d0ffacaadaba68d8c804f440608a185713cb8ff631ecb.json",
+          ".codearbiter/.artifacts/receipts/82d24269ae17bd3ef632f08deb99aac69aa1b0aa92c156ec8c860e0543a9d9e1.json",
+          ".codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json",
+          ".codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json",
+          ".codearbiter/.artifacts/receipts/cc10618f3b3867c40e4a42ea5d1b7048d834510a30453567e9485353fc7c5d12.json",
+          ".codearbiter/.artifacts/receipts/d2e36d82d74cbddece2b32343cc959329f00d78999b0cb05fcecb418f1276faa.json",
+          ".codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json",
+          ".codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json",
+          ".codearbiter/.artifacts/receipts/82ab54f4e991d119cd94eb5680201eeffeb135b20b464d52d425a2a9f7cf26a2.json",
+          ".codearbiter/.artifacts/receipts/ce602e31543437c5ee428f887d2f18245f9bd2206d3c9a5ccb6645570277b061.json",
+          ".codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json",
+          ".codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json",
+          ".codearbiter/.artifacts/receipts/b3a57762723b2977e47ecbfc27da902c38c6d0898ed850290674304194cbcd45.json",
+          ".codearbiter/.artifacts/receipts/acad59a4a571c3e0579922bfa7858bd67e76853b704b08d62bb8e5cc672fe1c9.json",
+          ".codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json",
+          ".codearbiter/.artifacts/receipts/b7d71c6f8dadc727973154812dd5c017a17d31304c7921941f3f8ff29cb18801.json",
+          ".codearbiter/.artifacts/receipts/450ac51f36966c6066ddb207fd4a912c583ba9e9474e9e991a72652bfef85b10.json",
+          ".codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-02": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/f093f6f3da5d866d3b0277fda246d61b7f307ca09f0896bbd59abb66c0199998.json",
+          ".codearbiter/.artifacts/receipts/b60c48e06ebba7e221a107434ce4e7a233341c2a63ad9b52859ce1865d067edd.json",
+          ".codearbiter/.artifacts/receipts/f48e423bd299fa832ea023d60dd338d333e1c7b289eebc9b552d90b10b7ae1a1.json",
+          ".codearbiter/.artifacts/receipts/025cdb7fa13c253e2cc8aabbc0728aa453dced6d4ccfe5ba195293569aa68136.json",
+          ".codearbiter/.artifacts/receipts/e63e01b42faa117391532683da9feee9f809f7ab54d43fdd0b933d4cf4a4cdc7.json",
+          ".codearbiter/.artifacts/receipts/cc9b476ad636a9aee29d7cc5bdb2d6fd5ce26b590daaf05a1ec3f709b3a4bf29.json",
+          ".codearbiter/.artifacts/receipts/1273be1eb8e36fb6ca5693f396bb2b2431c68aa1bfbb25d24d822d3c7bb3c105.json",
+          ".codearbiter/.artifacts/receipts/7f9be8bd7aa1cd40def5d4f0826001de6525290d862c03d9dfa979fee82ce4bc.json",
+          ".codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json",
+          ".codearbiter/.artifacts/receipts/3f75fa8df34c8f94701a851e55a96f16f3ef5e9c27bd6ee1e22a1a4db423183d.json",
+          ".codearbiter/.artifacts/receipts/9d30309e3fbfebff44e66e68f07c2ce19a975749e2c634b3e3d4a1463e89a3fb.json",
+          ".codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json",
+          ".codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json",
+          ".codearbiter/.artifacts/receipts/2ce9a89afbb3e7ed90bb359fb32ffdaf3640de267640a30e3dca463381d0de95.json",
+          ".codearbiter/.artifacts/receipts/fbcc3f07c4c8158336bc6bed7943e6aac2b9d34a5737c6529be5d61f896261c5.json",
+          ".codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json",
+          ".codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json",
+          ".codearbiter/.artifacts/receipts/f9cc832f557421295c34ee61633e2a153a892c3df0c9236daf3385c8c3723788.json",
+          ".codearbiter/.artifacts/receipts/bd9e5123765f32f7a81a557b55a9bbffecddc91c233a00cfe21a4ceb8048ac50.json",
+          ".codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json",
+          ".codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json",
+          ".codearbiter/.artifacts/receipts/d127fcd77c2e65f05e057e750abbb4e811cb8474cebb64bcd7e5de5a4244fa11.json",
+          ".codearbiter/.artifacts/receipts/3867986e4c3b18636cdd7ee0f645e8c4a26c107c455e05d06952a18d34b284fa.json",
+          ".codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json",
+          ".codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json",
+          ".codearbiter/.artifacts/receipts/dc6539059d0975248aa20577de7b48418b9cf22cecede2abc7836ccc4cce0b3d.json",
+          ".codearbiter/.artifacts/receipts/b97d9e981e1c06a5f2a83b1a4b646ae272a0510b110ef5f4cbcfe42e11af0bf0.json",
+          ".codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json",
+          ".codearbiter/.artifacts/receipts/4dd7a65518f59678576ba7701a42c569466d546081c391bf6c113aca917dce4e.json",
+          ".codearbiter/.artifacts/receipts/660bdf6ebee1d9059a6a6e04f9a70c4c3d14148801334966c5438e1f9da1cf6e.json",
+          ".codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-03": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/e2e676cd5a3838d2986627d1364c013c1477c2db8e91915c3bc664792f79f2c3.json",
+          ".codearbiter/.artifacts/receipts/a5eedba825f99841de5734c8533c877e3a435cfe5da46794052f3a4d39ad4a14.json",
+          ".codearbiter/.artifacts/receipts/5172a99f5c19d27c2b0e6cda515b1e353d85f876e1fc2d08da67e28a30cc63e0.json",
+          ".codearbiter/.artifacts/receipts/793e36bacd8a5229db2bc58d6aea067e8e8a466e77c1b04a241cfea73d64713e.json",
+          ".codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json",
+          ".codearbiter/.artifacts/receipts/87b31f9082298bed5f3f479473812b2636c97dade52eaba27a2733b332999349.json",
+          ".codearbiter/.artifacts/receipts/a703cdb9773b3b66afe692cdcad6d6b1cd0f2b309a06660f370cdedb9e435144.json",
+          ".codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json",
+          ".codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json",
+          ".codearbiter/.artifacts/receipts/929865b7488766ccd31839dd55225fe6adc190d803b8e5358d72a33b045ee839.json",
+          ".codearbiter/.artifacts/receipts/d2842779ebb4fbdca737b4b84a5d08ccc6b441082960e639b798d5998e30a394.json",
+          ".codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json",
+          ".codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json",
+          ".codearbiter/.artifacts/receipts/a1d5b088c360b95f9959cf501e307513f86facb19d7b90deccba52a87a49940c.json",
+          ".codearbiter/.artifacts/receipts/4edb11b626a812873bc258a744c87ffd8de6a61eb8af77a67fe69d4957b6b762.json",
+          ".codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json",
+          ".codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json",
+          ".codearbiter/.artifacts/receipts/2fa4f84171f74cafd0630ea2adb79c4330502d5521a9fab76a1f7398ccca2b3f.json",
+          ".codearbiter/.artifacts/receipts/4bf3bda87c1e6ba9556f15c2dbad7ae757a8db980b91f1bfa5f02ec6ee5c9eb1.json",
+          ".codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json",
+          ".codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json",
+          ".codearbiter/.artifacts/receipts/8b74965945ec9c37c862fbbfa4640b2d58b3cd151c337ecbc8dd56fc1d282ba7.json",
+          ".codearbiter/.artifacts/receipts/45f06be75811c9546ad4216c4ac815fbc1e359bd5ddda5b286ac4176f95982fe.json",
+          ".codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json",
+          ".codearbiter/.artifacts/receipts/013fc94d2c4d17f94d5c03b12ac29b2793b16a909961dc2ea3f2f6ae0504d9a4.json",
+          ".codearbiter/.artifacts/receipts/f7fe806448407a2dfc046e542a1c5dffb5fb092c005549bced58635518af4963.json",
+          ".codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-04": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/e89aeb1b22628229b69269799996665f26640196a150dc139a183f34100c58e7.json",
+          ".codearbiter/.artifacts/receipts/485189801c8d1b31354ed5757680766fb62a81a9cc62c0246f013d522a3afef5.json",
+          ".codearbiter/.artifacts/receipts/8a76d1ef9c47aa29408f7de9f1bb7b9c962db112d96782771d9bff79d10b228a.json",
+          ".codearbiter/.artifacts/receipts/9bb4daa84b106633aa21f509f33391dc7a0e76fdd483f9da953e69a9654834e7.json",
+          ".codearbiter/.artifacts/receipts/31650c2c6adc6e7a84c39f733c321015e46f52c9fbf0a738cd33bf74034ce87b.json",
+          ".codearbiter/.artifacts/receipts/b4e8c2c871321edf22275642e95b4cd676d1907d930797f10481d729b22f1b2d.json",
+          ".codearbiter/.artifacts/receipts/21c8730a22e85cafe0bcb4cd202eecbe0e38adc93a8baa64a4bea15217c3f697.json",
+          ".codearbiter/.artifacts/receipts/d7927f29a96888782b031abc707846f6ebe70c474a369c8675c15df707df7141.json",
+          ".codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json",
+          ".codearbiter/.artifacts/receipts/bccc97c30a48aeab0d83f7504a61348ce9ece6b0dbc6472785bd5dbc292c6a5d.json",
+          ".codearbiter/.artifacts/receipts/a2b84aa19ec0b7dbaeac31a46c69394886ce656cdc6aeb2e3ab31532d917bfa7.json",
+          ".codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json",
+          ".codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json",
+          ".codearbiter/.artifacts/receipts/801e6513f650ccce37d00ce8b277c7a3f773a75fcf225fdac4639df38c830bf6.json",
+          ".codearbiter/.artifacts/receipts/22b786c5af819f97bf22ce20d1cc5dfde6df93eef98ce1902f2fc320ef2f45a8.json",
+          ".codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json",
+          ".codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json",
+          ".codearbiter/.artifacts/receipts/2c2d2602e849e5801265b97ac8806cd4857daffa880ffec56ba08d83775c4d41.json",
+          ".codearbiter/.artifacts/receipts/1471067311c3f750b28312df4bba5125f2213846573a6b58107cc99de0d6bb6a.json",
+          ".codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json",
+          ".codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json",
+          ".codearbiter/.artifacts/receipts/5883675e11a85f46953c2e223f678665541a639072897d3be1b0b7fda3d989d5.json",
+          ".codearbiter/.artifacts/receipts/fc45d8022cb36926081211aa46d8a0cb649fbe4462fa8181cedf2eac71ad9fe9.json",
+          ".codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json",
+          ".codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json",
+          ".codearbiter/.artifacts/receipts/082f120bf95a58265d00cf9ab2d669e7e701256baef7ba5c10037de12a8c7041.json",
+          ".codearbiter/.artifacts/receipts/1ab2a17c2f80daa7fc813f0a8198295e791a1816bca837531a50ca920aef7506.json",
+          ".codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json",
+          ".codearbiter/.artifacts/receipts/ab88445c428b8722e2a9e495b47e78d5b17e5770266e6549cc41069bf79696e8.json",
+          ".codearbiter/.artifacts/receipts/0c0661d247345caf868431493b0d32b5fb8ddfe99b641be7186c136a5403ac96.json",
+          ".codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-05": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/81963ac7861198a75a57c46906647da342fc3076ae5b2545caddb1bf3395fd81.json",
+          ".codearbiter/.artifacts/receipts/03cc50e783a0cb767d47df80844a38654ded5d71a91395a2f1fd0786f9187701.json",
+          ".codearbiter/.artifacts/receipts/e2b34fef8851d484055e26737970c9ac9ab526df005472e17181e548ca0d63c5.json",
+          ".codearbiter/.artifacts/receipts/a2d10dcd6beb93364d5af3e394a1b4a1b50efbe2215298ab01715a877debdb83.json",
+          ".codearbiter/.artifacts/receipts/cfaab35f1c0349b9b11df77f750d66df6d5df71236edd0125027e044ea99d391.json",
+          ".codearbiter/.artifacts/receipts/1faef65601d827fd06e10d55645e3ca9fe996a9e3106c38a1e86c2f46b6d3321.json",
+          ".codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json",
+          ".codearbiter/.artifacts/receipts/555e145e6bdafc1f72ada6190f383a3100513ef635d2196d452b7a0448079238.json",
+          ".codearbiter/.artifacts/receipts/e9e717b3fb699ed4e684e2977a4e4300d7658f05b4a0a7700540654943ae4dfe.json",
+          ".codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json",
+          ".codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json",
+          ".codearbiter/.artifacts/receipts/8995a0aa979f50fa01ece981d9eb292d790583993d59c7519e229cce4c5039ca.json",
+          ".codearbiter/.artifacts/receipts/ee151b2726e33c8652f456cd1c1ab90dcb2eb412aaa85065ca559bac5b5969d3.json",
+          ".codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json",
+          ".codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json",
+          ".codearbiter/.artifacts/receipts/e1f46d007d17264fbc380ba6bed963bde8c093605b095fc07cf37b5e39f93392.json",
+          ".codearbiter/.artifacts/receipts/b472535c72e2d627bf950919f30e499b2d5a527de3bd703f44fef06971312560.json",
+          ".codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json",
+          ".codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json",
+          ".codearbiter/.artifacts/receipts/d288f32a7173bc66962fe4360bbb6e4f303a14bd217c8510b2d95bf1fe9ea6ed.json",
+          ".codearbiter/.artifacts/receipts/fa632c54d3bc1447ac74d58339f23eb28e8886af881115c6c4668d371fc2bacf.json",
+          ".codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json",
+          ".codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json",
+          ".codearbiter/.artifacts/receipts/b9aee4be4236c2545f1485669054d05aa995661715df352e16a9b26dfc12d48d.json",
+          ".codearbiter/.artifacts/receipts/12434f096153ef2a5436cc5eb3ce214800dba4bf410103800d51436a443680e8.json",
+          ".codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json",
+          ".codearbiter/.artifacts/receipts/47167339d9d00dda8d8bb567985ef1569f96273bfc774b8688996c1872f7493e.json",
+          ".codearbiter/.artifacts/receipts/25932c7d576873e384ae4cc843ae555aa3497280f1e5a6af67bae8b20e4430c5.json",
+          ".codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-06": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/edaee35bec7e69c54e7ea1ddf83b8c6d79f1b408ebb9f0b40f846d1c0cc1f8ec.json",
+          ".codearbiter/.artifacts/receipts/7ab3d1ec3573a46c0e7f2ec31ce6411d53478842494c9e5f527642eb52378861.json",
+          ".codearbiter/.artifacts/receipts/d9c6266004beea579ecc4a079e08bd20723b85d680dcb8a350f3dafd53afea38.json",
+          ".codearbiter/.artifacts/receipts/2e6e372e67e3210b48a98f9bf6edbefca2279db2c2496f80f8ef7dfb277c483c.json",
+          ".codearbiter/.artifacts/receipts/6d52c512fb3b57728bae06e64ae2540408a1538bc5a40e7c258d782cf032cfed.json",
+          ".codearbiter/.artifacts/receipts/63e7a4c706209632e34c2494295a8e4d42219b3526b9276ea08629bfc035de4a.json",
+          ".codearbiter/.artifacts/receipts/b9698e24cd385c7d68e03ad4d34a1cec0a262ff61302dc122a8acc1801a32e0e.json",
+          ".codearbiter/.artifacts/receipts/ce78e037e018f2cc970df472e2cd6eb6f396cebcff30e15c45280d4599ceeca7.json",
+          ".codearbiter/.artifacts/receipts/780ee07eee8f125c513787ca5936b4a64b89f6b47c13e264d48a891f2f52bbb7.json",
+          ".codearbiter/.artifacts/receipts/a2bcd6496c0e6cb48e4a7b233ab518617e656fe0f2abc86064c9f5db5cda0ad8.json",
+          ".codearbiter/.artifacts/receipts/1fd64aa710db3d3a70bb25fe58989ec8e1cd1136855f8d1851a13cf86778ec91.json",
+          ".codearbiter/.artifacts/receipts/a58cdbb5e2212f1b65089629a1b1ee00567cec37f5a19f6cd24c14ef83e574d1.json",
+          ".codearbiter/.artifacts/receipts/36f00fcb9638effadc47f6de9ad0334c6c0709413bef0073c1bdb3e576e09c07.json",
+          ".codearbiter/.artifacts/receipts/24dd362ec3f92950b4e4e952182e6c5970440332cb5d9104406f5d08fbaecb08.json",
+          ".codearbiter/.artifacts/receipts/b0e6d922f2f882a8a944c23aaa3a14848c7ebe5a9dca0ddbe1f56151f96b8c12.json",
+          ".codearbiter/.artifacts/receipts/daa1aa3df611c6a493b7fcac727ddd6da146383f236a4fd13ef652431ab6f44a.json",
+          ".codearbiter/.artifacts/receipts/03443c32fa59770821cf570a36d203611fddd579dd34e8b8cf34b7c2d895360e.json",
+          ".codearbiter/.artifacts/receipts/3c873f5648c426fd6de90278b6c1319f36196bb20c68e1fe28ec9e09b1d06ed6.json",
+          ".codearbiter/.artifacts/receipts/6eafd630de2b375e4ca57cb7142c1a6d7cb0324d8139bcd02273c8795299e7a9.json",
+          ".codearbiter/.artifacts/receipts/77d7b2047d486fd23b9771dd43921b08b82ba7266bb940690cb74f8b49fdee4c.json",
+          ".codearbiter/.artifacts/receipts/0cd3cce030939d4e7955f29f6c10da92aa54723fd5d0800e140351fcdc8d585d.json",
+          ".codearbiter/.artifacts/receipts/224c0fe27680742f14548cc4c4e2d6a3ae745b0ff3976b67b8354c6612275c9c.json",
+          ".codearbiter/.artifacts/receipts/4947692e20d623d97094a6144329084cb7b4c41cec6a2d3ad2e4acf9046e82bd.json",
+          ".codearbiter/.artifacts/receipts/95ccb1306883402983d4f67c285fe941cc56d8fade4812116f8003ad8e0a4c53.json",
+          ".codearbiter/.artifacts/receipts/595c10b06061f5c7d15e5b779169c14ea4b9b80190569660652dd0173d628295.json",
+          ".codearbiter/.artifacts/receipts/b7bf9360ce143e41cc2484f5d95693007a5fd9872976d0f005314887b46ed928.json",
+          ".codearbiter/.artifacts/receipts/4e9b1522b3a4c660accd530aa4aa07bf102dc876daa23a2d460c007f5b3f1bb8.json",
+          ".codearbiter/.artifacts/receipts/2633b4d038f81a4fbe6589f57a4bfe3457f8d5f1834548ada383f225687347f6.json",
+          ".codearbiter/.artifacts/receipts/b8d4a901c4d193faaba3858f7b9c7b2e3ceac7b117067af2802b23cbbd5f3802.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-07": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/c8d2cfbf9190eff445bd27596a9dc53792eddf26ebff1d3a88a1325e1281092f.json",
+          ".codearbiter/.artifacts/receipts/00a1dc9ac638affc522ac00a00efd44369088b1dd4affc518b86d0f25f3124a1.json",
+          ".codearbiter/.artifacts/receipts/a5bae44a54f852cb8f418817948432c7f34463aab0bd20be37840ff7ef992595.json",
+          ".codearbiter/.artifacts/receipts/79f3731aac5f2d83086460ffaab59f6ccfb309b4d8808562429d81696e5482ad.json",
+          ".codearbiter/.artifacts/receipts/54a8ad6ae003cc891809ca43e1185f0319399abee21457def880d67a4bf25f8d.json",
+          ".codearbiter/.artifacts/receipts/b7f29f8f1f8de01a8bd9b51224d4f4bd4bcf3d41fc4d352d551051b21523330e.json",
+          ".codearbiter/.artifacts/receipts/27e30df38f14e2816755e45b6cd4aa477ae18456607f276f4863a5402256ffd3.json",
+          ".codearbiter/.artifacts/receipts/1efa26a6efa6aaa5aa832b2b05118de5213fe73ec11aa9cf0b3616ddfed961c0.json",
+          ".codearbiter/.artifacts/receipts/9d33ed6705f11730128638cc2b32e973714f2fc54984ecb2a6f1e890d3aeac11.json",
+          ".codearbiter/.artifacts/receipts/79536992c909134fd81079f503e00dad13a4ed2ca839b2d2bfec925c49b1088d.json",
+          ".codearbiter/.artifacts/receipts/92c9684226e161d4a7c3e3f558759c930b2823e361e4bab72886a900c875fcdf.json",
+          ".codearbiter/.artifacts/receipts/e095db7993b70b7acf6e30bc6087b6d261ce3e4f9eb178c5f276d9e1fd87b4b3.json",
+          ".codearbiter/.artifacts/receipts/bdcc2402e87863738485cf3ae777eedf08c9c71b11fa6c900826381a18280482.json",
+          ".codearbiter/.artifacts/receipts/916af42797c5b57d70df8a6460d81043bab6f62a794cc2abd57f712bb47c7ac6.json",
+          ".codearbiter/.artifacts/receipts/c57500c4869a0d09a409c1c4db034e4a7d932a8f02ac36c8ec4e671b52935e2b.json",
+          ".codearbiter/.artifacts/receipts/19d9a61f1e6d19af3d2e5aa7000e93e2c7d8042e353614db5a7e38deaa961143.json",
+          ".codearbiter/.artifacts/receipts/b60c71ce70e3538c116f6d054c4429dce9cd0937fde4ba8543ba8329c8b9ccdf.json",
+          ".codearbiter/.artifacts/receipts/b7420b109b2bc9dbea9e4c947ca47671ebdb6044023c3010318ac93d5f1a7235.json",
+          ".codearbiter/.artifacts/receipts/df0792442a6d8f6dda5fa3946fd2f75dd24c2f7fad558c7f0f88825ea0254e1a.json",
+          ".codearbiter/.artifacts/receipts/f652dfbb810355234fa69041326bc886c778f75c5fe36b7a54e670164af81d61.json",
+          ".codearbiter/.artifacts/receipts/97f776eb675eb68cc6c18735c5a9c148827cb2712efdc97a97d8bcb2a1138cb4.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-08": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/54a8ad6ae003cc891809ca43e1185f0319399abee21457def880d67a4bf25f8d.json",
+          ".codearbiter/.artifacts/receipts/fbd2c6c2e7dd04f025106d893c0ef9b06f2f388bb26c04fd07c33509753e492e.json",
+          ".codearbiter/.artifacts/receipts/73d81dfd182de31a271e0646095d71146570ba7e5cc275a9f80b5271db0ac680.json",
+          ".codearbiter/.artifacts/receipts/1efa26a6efa6aaa5aa832b2b05118de5213fe73ec11aa9cf0b3616ddfed961c0.json",
+          ".codearbiter/.artifacts/receipts/2591f7e8a674d9ed1155890bc9dc76b29f97f604a89b35cf9ae453fecd8cb691.json",
+          ".codearbiter/.artifacts/receipts/cbe8570f7a28d44caa85bd015d7d15b22de44e59be97e36dba72e7cc7ba8c066.json",
+          ".codearbiter/.artifacts/receipts/92c9684226e161d4a7c3e3f558759c930b2823e361e4bab72886a900c875fcdf.json",
+          ".codearbiter/.artifacts/receipts/e67120250320e749ecad8db678b7a68b998f956554c866c920760908687cdff2.json",
+          ".codearbiter/.artifacts/receipts/2b1c070673c282818ecee7fa75aa3e336b8b5bb7bd56c8f640a26f736a9bd1d3.json",
+          ".codearbiter/.artifacts/receipts/7dd4e0476fcdd311c974cf7a88f4420f798cca2122785d9dc000b2d65158c6a9.json",
+          ".codearbiter/.artifacts/receipts/49f5c35eafb96e69a0b6d6c391f4deac8eae607b842b6dd7eca51dca5aa65497.json",
+          ".codearbiter/.artifacts/receipts/916af42797c5b57d70df8a6460d81043bab6f62a794cc2abd57f712bb47c7ac6.json",
+          ".codearbiter/.artifacts/receipts/c57500c4869a0d09a409c1c4db034e4a7d932a8f02ac36c8ec4e671b52935e2b.json",
+          ".codearbiter/.artifacts/receipts/61973779c2bde3e15fb628248a328d34f7bd0118df095c6bfb4f2ba865f53d89.json",
+          ".codearbiter/.artifacts/receipts/a0bc231d183c456fc9dc67f79e897ced192c89607b58ee908f7f345d6f3100e9.json",
+          ".codearbiter/.artifacts/receipts/b7420b109b2bc9dbea9e4c947ca47671ebdb6044023c3010318ac93d5f1a7235.json",
+          ".codearbiter/.artifacts/receipts/8e48d9d295619994cfe16f34b661957c611759a21bd1c0b29b51be4a3af0c3b0.json",
+          ".codearbiter/.artifacts/receipts/3452191d3179c94766c7993b541abbb04cefd2981cc1164acc083034b3239ad2.json",
+          ".codearbiter/.artifacts/receipts/97f776eb675eb68cc6c18735c5a9c148827cb2712efdc97a97d8bcb2a1138cb4.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-09": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/b3a404b392dce36eb4ca4d8c3673e07e070f202d2955bf4b138878ca2bd78077.json",
+          ".codearbiter/.artifacts/receipts/b5eefa47b5250492a72ebdd24372c4826e8435201b260f33197d032cd31972fd.json",
+          ".codearbiter/.artifacts/receipts/223edd1be8616fd38f168dbfa6bc82496858bb9a911885fee021ec29443469d1.json",
+          ".codearbiter/.artifacts/receipts/c34ab2c40c04dd4a04ac19bf9a222c671f65b0e91b525e50ae156d4c1b93ef2c.json",
+          ".codearbiter/.artifacts/receipts/e4726585a07bbb95b08c1b74d8ec94c9621cb92564f82bc2ff88f87ced45e81b.json",
+          ".codearbiter/.artifacts/receipts/bda430eb23f98c622e9a9b46d00981926cd9ff8ccb645355ab22c9af203b295b.json",
+          ".codearbiter/.artifacts/receipts/0377ae49eae03b4d62afea08e55c43ebf1feeda46210f67523ce49c1a3889817.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-10": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/b3a404b392dce36eb4ca4d8c3673e07e070f202d2955bf4b138878ca2bd78077.json",
+          ".codearbiter/.artifacts/receipts/b5eefa47b5250492a72ebdd24372c4826e8435201b260f33197d032cd31972fd.json",
+          ".codearbiter/.artifacts/receipts/c98008851a3236760fd98d7698d0c11084bc349444ea8ea9ff7c34b55f138e59.json",
+          ".codearbiter/.artifacts/receipts/872d93ac8e07cc79c88bad76c6f8943cf226abdbbff9fbce745c3fa34bfee960.json",
+          ".codearbiter/.artifacts/receipts/9c94466c5a0f1ba7202a03624c4b3f5e9bc8b4d4ddac62d97e79ef05b5f5f43d.json",
+          ".codearbiter/.artifacts/receipts/04b4fc8e558b41fec418cd18956b065f5c01b0da057741beb9713a943a86ae81.json",
+          ".codearbiter/.artifacts/receipts/0377ae49eae03b4d62afea08e55c43ebf1feeda46210f67523ce49c1a3889817.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-11": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/b3a404b392dce36eb4ca4d8c3673e07e070f202d2955bf4b138878ca2bd78077.json",
+          ".codearbiter/.artifacts/receipts/b5eefa47b5250492a72ebdd24372c4826e8435201b260f33197d032cd31972fd.json",
+          ".codearbiter/.artifacts/receipts/be5a576958ca0ea85e66a1d42162bbd8b06d27dae98d5250b556598fa62aaf1c.json",
+          ".codearbiter/.artifacts/receipts/ed8bc902019ff00cfb6830f3758cc605004b0d7d1029121fb547c19b2344735e.json",
+          ".codearbiter/.artifacts/receipts/682f0e82bb76688a0cc731526033f6f7cfd015be3776d91c8509b8cd41387429.json",
+          ".codearbiter/.artifacts/receipts/b661ebaffa619116246bceb01f161f41f241586993362efcaa779f0447ccb713.json",
+          ".codearbiter/.artifacts/receipts/0377ae49eae03b4d62afea08e55c43ebf1feeda46210f67523ce49c1a3889817.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      },
+      "T-12": {
+        "evidence_refs": [
+          ".codearbiter/.artifacts/receipts/1efa26a6efa6aaa5aa832b2b05118de5213fe73ec11aa9cf0b3616ddfed961c0.json",
+          ".codearbiter/.artifacts/receipts/92c9684226e161d4a7c3e3f558759c930b2823e361e4bab72886a900c875fcdf.json",
+          ".codearbiter/.artifacts/receipts/c0170cde7b0240f33f8135ab974caf916ff77af534d86d8c82911ed11c83e31e.json",
+          ".codearbiter/.artifacts/receipts/b1f89224a32513a37dad193b76da0a333257cfa71a03ac015fb3536ba756b8d9.json",
+          ".codearbiter/.artifacts/receipts/50e0cf8a59a01c1adc4e7dcdb5ed2a1cf3a24c6c4901b7426f5ce71e9ce3516c.json",
+          ".codearbiter/.artifacts/receipts/e29f02efd6baccf5327024577a4427af94fc998e4b90e3214628205818ec42a9.json",
+          ".codearbiter/.artifacts/receipts/916af42797c5b57d70df8a6460d81043bab6f62a794cc2abd57f712bb47c7ac6.json",
+          ".codearbiter/.artifacts/receipts/c57500c4869a0d09a409c1c4db034e4a7d932a8f02ac36c8ec4e671b52935e2b.json",
+          ".codearbiter/.artifacts/receipts/b194f4f564f4c31af9695e6e3df7392389ecc77e7e3164ffea9674519a06b1cd.json",
+          ".codearbiter/.artifacts/receipts/4909cf728a4e550817db3e7e24b6f73a7730a2486eafe73db605202506a5cff4.json",
+          ".codearbiter/.artifacts/receipts/b7420b109b2bc9dbea9e4c947ca47671ebdb6044023c3010318ac93d5f1a7235.json",
+          ".codearbiter/.artifacts/receipts/c6e325afab6c1a66603feba7a58a847992c363eaa4f8de7fb9b2ce7860aae7db.json",
+          ".codearbiter/.artifacts/receipts/6e74b9e0a623894e84ae355b3c106cb5fa334b638e12a4241542d69e3d22a47a.json",
+          ".codearbiter/.artifacts/receipts/97f776eb675eb68cc6c18735c5a9c148827cb2712efdc97a97d8bcb2a1138cb4.json"
+        ],
+        "reason": null,
+        "state": "ACCEPTED"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [
+      {
+        "artifact_id": "PLAN-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "5cc6bd5f5ed0ad8a771a646ec2cab64d630822877af022c6d9e08ba76a045d5f",
+        "source_ref": ".codearbiter/.artifacts/receipts/278da033df3a06004155edc19993b306bccb1eefa37dc5b17911ce020d25d68a.json",
+        "source_sha256": "278da033df3a06004155edc19993b306bccb1eefa37dc5b17911ce020d25d68a"
+      },
+      {
+        "artifact_id": "PLAN-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "f7516d5a366a572e7f560f4580a0643f7e5d4c1cd4d917fd6d0c6b5f43a49dbd",
+        "source_ref": ".codearbiter/.artifacts/receipts/1be3d6355024b0d6adee8cd9ea2575816c9c72698cecb7c356aada7634576b49.json",
+        "source_sha256": "1be3d6355024b0d6adee8cd9ea2575816c9c72698cecb7c356aada7634576b49"
+      },
+      {
+        "artifact_id": "PLAN-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "c554e9e41033ea130f6cbaf92945f3d706277a592506bdde6752fbdc2f575684",
+        "source_ref": ".codearbiter/.artifacts/receipts/e8eaf025ce657a9f46a3ce4d4202de79d30d447cf927bed451e9d5d4691f1cc9.json",
+        "source_sha256": "e8eaf025ce657a9f46a3ce4d4202de79d30d447cf927bed451e9d5d4691f1cc9"
+      },
+      {
+        "artifact_id": "PLAN-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "7813f36f3d6ac4b0846c206ea03f30d0a06fb59ff928d37da2dc1e8d3a2d713c",
+        "source_ref": ".codearbiter/.artifacts/receipts/7226378a6086fed22d4031d8991adabf37440dab37914d9d4d5c3b886d27388b.json",
+        "source_sha256": "7226378a6086fed22d4031d8991adabf37440dab37914d9d4d5c3b886d27388b"
+      },
+      {
+        "artifact_id": "PLAN-SHIP-SET-EVIDENCE-INPUTS",
+        "attestation_level": "workflow_attested",
+        "authority_kind": "user_workflow",
+        "normative_sha256": "b4cc6d01e021649acbec7ab10118d5e2b16cdb4ba06e9d7353de44d245310c80",
+        "source_ref": ".codearbiter/.artifacts/receipts/06960355f0e36983433044230f700a942bf66bdce9bacf62e9185d2eff287d20.json",
+        "source_sha256": "06960355f0e36983433044230f700a942bf66bdce9bacf62e9185d2eff287d20"
+      }
+    ],
+    "review_notes": [],
+    "state": "approved"
+  },
+  "integrity": {
+    "model_sha256": "f504b932f5a635191112e0687c621886f62e9fd4ba8df4e6f84d370d13139413",
+    "normative_sha256": "b4cc6d01e021649acbec7ab10118d5e2b16cdb4ba06e9d7353de44d245310c80",
+    "symbol_count": 27
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "9496cff6332fe0b97195b7ebe67b73f62f30e5b3",
+      "observed_date": "2026-10-08",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "All CP-01 tasks accepted: ship-set membership, edges, the gate-events exemption, the non-git fallback, policy compatibility and the 0.2.0 manifest are pinned by mutant-proven tests.",
+        "id": "CP-01",
+        "tasks": [
+          "T-01",
+          "T-02",
+          "T-03",
+          "T-04",
+          "T-05",
+          "T-06"
+        ],
+        "title": "MVP: ship-set identity in the engine"
+      },
+      {
+        "depends_on": [
+          "CP-01"
+        ],
+        "exit": "All CP-02 tasks accepted: opens per scan are bounded, evidence objects are read once per operation, every safety check still fires and the engine module passes.",
+        "id": "CP-02",
+        "tasks": [
+          "T-07",
+          "T-08",
+          "T-12"
+        ],
+        "title": "Bounded handle opens and evidence reads with safety preserved"
+      },
+      {
+        "depends_on": [
+          "CP-01"
+        ],
+        "exit": "All CP-03 tasks accepted: timeouts registered, docs regenerated, suite wired into CI and versions advanced.",
+        "id": "CP-03",
+        "tasks": [
+          "T-09",
+          "T-10",
+          "T-11"
+        ],
+        "title": "Hook timeouts, docs, CI and versions"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-01"
+            ],
+            "text": "If every criterion passed and nothing else changed, what would still be broken? The observation contract pins the manifest format as a constant, so 0.1.0 receipts would fail schema validation instead of reading stale; T-06 covers it under AC-06. The gate-events exemption must also hold for non-git roots; T-03 tests both modes. Installed plugin caches keep the old engine until release, so SMARTS needs a fresh round on the new version; that is follow-up work, not a missing criterion.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-NEGATIVE",
+        "title": "Negative-judgment check"
+      },
+      {
+        "blocks": [
+          {
+            "items": [
+              "The installed collector cannot name Go tests, so Go rules are attested through the unittest wrapper test_ship_set_inputs.py, which passes each method only on a named Go 'pass' event.",
+              "AC-08 is proven by an open-counting seam, not wall-clock time; the store test runs where fs_portable.go builds (Windows and macOS CI).",
+              "This plan executes on the installed 2.25.0 engine, which still uses the filesystem walk; scratch files live under the excluded tmp directory."
+            ],
+            "refs": [
+              "SRC-01"
+            ],
+            "type": "list"
+          }
+        ],
+        "id": "SEC-PROOF",
+        "title": "Proof limits of this plan"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-01",
+        "locator": ".codearbiter/specs/ship-set-evidence-inputs.html",
+        "note": "Approved at revision 2; criterion IDs are consumed as-is.",
+        "title": "Approved ship-set spec",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-02",
+        "locator": "core/artifacts/internal/evidence/snapshot.go",
+        "note": "snapshotOnce, Snapshot, internalOutputs, manifest format.",
+        "title": "Snapshot implementation",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/snapshot.go"
+      },
+      {
+        "id": "SRC-03",
+        "locator": "core/artifacts/internal/store/fs_portable.go",
+        "note": "check() runs a rooted Lstat per ancestor on every Read and Stat.",
+        "title": "Portable rooted store",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/store/fs_portable.go"
+      },
+      {
+        "id": "SRC-04",
+        "locator": "tmp/HANDOFF-ship-set-evidence-inputs.md",
+        "note": "74% of CPU in NtCreateFile handle opens; hashing the ship set takes 0.4 s.",
+        "title": "Snapshot profile 2026-10-08",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-05",
+        "locator": ".codearbiter/decisions/0042-ship-set-evidence-input-identity.md",
+        "note": "Accepted 2026-10-08.",
+        "title": "ADR-0042",
+        "type": "local_document",
+        "url": null
+      },
+      {
+        "id": "SRC-06",
+        "locator": "docs/artifacts/PROTOCOL.md",
+        "note": "Input identity and output-exclusion rules.",
+        "title": "Artifact protocol",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/docs/artifacts/PROTOCOL.md"
+      },
+      {
+        "id": "SRC-07",
+        "locator": "core/artifacts/internal/evidence/completion_workspace.go",
+        "note": "completionGitIndex and completionGitUntracked.",
+        "title": "Hardened completion git probes",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/core/artifacts/internal/evidence/completion_workspace.go"
+      },
+      {
+        "id": "SRC-08",
+        "locator": "#186",
+        "note": "Why gate-events.log stays tracked.",
+        "title": "Durable gate-event sink (#186)",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/issues/186"
+      },
+      {
+        "id": "SRC-09",
+        "locator": "plugins/ca/hooks/hooks.json",
+        "note": "UserPromptSubmit prompt-submit.py has no timeout (#931).",
+        "title": "Claude hook registration",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca/hooks/hooks.json"
+      },
+      {
+        "id": "SRC-10",
+        "locator": "plugins/ca-codex/hooks/hooks.json",
+        "note": "prompt-submit declares timeout 30.",
+        "title": "Codex hook registration",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/plugins/ca-codex/hooks/hooks.json"
+      }
+    ],
+    "spec_ref": {
+      "artifact_id": "SPEC-SHIP-SET-EVIDENCE-INPUTS",
+      "binding_mode": "approved_source",
+      "normative_sha256": "d99fa300740eb111276f27d0e0238d868c26accf424e142aabb7ec1e999f03ee"
+    },
+    "summary": "Eleven tasks in three checkpoints: ship-set identity in the engine first, then bounded handle opens, then hook timeouts, docs, CI and versions.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-01"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "The test passes; a mutant that also includes ignored files fails the ignored-file case.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-01",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/evidence/snapshot_test.go"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-05",
+          "SRC-07"
+        ],
+        "steps": [
+          "Red first: add Go test TestSnapshotShipSetMembership over a temporary git repository with a tracked file, an untracked non-ignored file and an ignored file; changing either of the first two changes the identity, changing or creating the ignored file does not. Create the wrapper suite with method test_ship_set_membership. Each wrapper method runs its Go test by exact name (go test -json -buildvcs=false -run '^Name$' \u003cpkg\u003e in core/artifacts) and passes only on that test's named 'pass' event, following test_artifact_native.py.",
+          "In a git work tree, build membership from completionGitIndex (ls-files --stage -z) entries present on disk plus completionGitUntracked (ls-files --others --exclude-standard -z), then apply plan roots, exclude_directories and engine-output exclusion. Reuse the existing hardened probes; derive no git argv from artifact content."
+        ],
+        "title": "Ship-set membership from the hardened git probes",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The ship-set membership Go test passes by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_ship_set_membership"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-02"
+        ],
+        "depends_on": [
+          "T-01"
+        ],
+        "done_when": [
+          "All three pass; a mutant hashing submodule contents fails the gitlink case.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-02",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-07"
+        ],
+        "steps": [
+          "Red first: add TestSnapshotDeletedIndexEntryAbsent, TestSnapshotGitlinkPointerOnly (nested submodule: edits inside it leave identity unchanged, moving its HEAD changes it) and TestSnapshotExecutableFromIndexMode, with wrapper methods test_deleted_index_entry_absent, test_gitlink_pointer_only, test_executable_from_index_mode.",
+          "Drop index entries missing on disk; record a 160000 gitlink as the submodule's checked-out HEAD commit (the index pointer only when the submodule is not checked out) without descending; take the tracked executable flag from the index mode."
+        ],
+        "title": "Index and submodule edges",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The three index-edge Go tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_deleted_index_entry_absent",
+              "test_gitlink_pointer_only",
+              "test_executable_from_index_mode"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-03"
+        ],
+        "depends_on": [
+          "T-01"
+        ],
+        "done_when": [
+          "All five pass; removing the exemption fails the gate-events case and widening it to overrides.log fails the overrides case.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-03",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-05",
+          "SRC-08"
+        ],
+        "steps": [
+          "Red first: add TestSnapshotGateEventsAppendExempt, TestSnapshotOverridesAppendCounts, TestSnapshotPlanCannotExcludeCodearbiter TestSnapshotGateEventsExemptWithoutGit and TestSnapshotGateEventsExplicitRootExempt, with wrapper methods test_gate_events_append_exempt, test_overrides_append_counts, test_plan_cannot_exclude_codearbiter, test_gate_events_exempt_without_git, test_gate_events_explicit_root_exempt.",
+          "Add an engine constant for exactly .codearbiter/gate-events.log and skip it in both membership modes, as an explicit root and in the coverage check; keep the guard that rejects a plan exclude naming .codearbiter."
+        ],
+        "title": "Fixed gate-events.log exemption",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The exemption mutant pair and the policy guard pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_gate_events_append_exempt",
+              "test_overrides_append_counts",
+              "test_plan_cannot_exclude_codearbiter",
+              "test_gate_events_exempt_without_git",
+              "test_gate_events_explicit_root_exempt"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-07"
+        ],
+        "depends_on": [
+          "T-01"
+        ],
+        "done_when": [
+          "Both pass; a mutant that falls back on probe failure fails the test.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-04",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-02"
+        ],
+        "steps": [
+          "Red first: add TestSnapshotNonGitRootFilesystemMembership and TestSnapshotGitProbeFailureFailsClosed (stub probe failure on a git root), with wrapper methods test_non_git_root_filesystem_membership, test_git_probe_failure_fails_closed.",
+          "Classify a root as a git work tree by the presence of its .git entry, independently of the membership probe; record membership git_ship_set or filesystem in the manifest; a plain directory keeps the existing walk; a probe error (or an uninspectable .git) on a git root returns an error and never falls back."
+        ],
+        "title": "Non-git fallback and fail-closed probe errors",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "Both fallback Go tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_non_git_root_filesystem_membership",
+              "test_git_probe_failure_fails_closed"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-04",
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-05"
+        ],
+        "depends_on": [
+          "T-01"
+        ],
+        "done_when": [
+          "All three pass; a mutant rejecting redundant excludes fails, and hashing raw plan bytes fails the progress case.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-05",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-06"
+        ],
+        "steps": [
+          "Red first: add TestSnapshotRedundantIgnoredExcludeAccepted, TestSnapshotExcludesNarrowShipSet and TestSnapshotProgressOnlyUpdateKeepsIdentity, with wrapper methods test_redundant_ignored_exclude_accepted, test_excludes_narrow_ship_set, test_progress_only_update_keeps_identity.",
+          "Keep exclude_directories narrowing the ship set; accept an exclude naming an already-ignored directory; keep spec/plan HTML contributing their normative hash."
+        ],
+        "title": "Plan-policy compatibility and normative hashing",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The policy and normative-hash Go tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_redundant_ignored_exclude_accepted",
+              "test_excludes_narrow_ship_set",
+              "test_progress_only_update_keeps_identity"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-06"
+        ],
+        "depends_on": [
+          "T-04"
+        ],
+        "done_when": [
+          "Both pass; a mutant comparing the formats as equal fails the stale case.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-06",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract_test.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/engine_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-06"
+        ],
+        "steps": [
+          "Red first: add TestContractAcceptsLegacyManifestFormat (observation) and TestEligibleReadsLegacyManifestAsStale (operations, fixture receipt bound to a 0.1.0 identity), with wrapper methods test_contract_accepts_legacy_manifest_format, test_legacy_manifest_receipt_reads_stale.",
+          "Emit codearbiter.verification-inputs/0.2.0; let the observation contract accept both formats; ensure eligible/task-review report the old evidence stale (current_evidence false / STALE_EVIDENCE), not a schema error."
+        ],
+        "title": "Manifest 0.2.0; 0.1.0 receipts read as stale",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The legacy-manifest Go tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_contract_accepts_legacy_manifest_format",
+              "test_legacy_manifest_receipt_reads_stale"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-08"
+        ],
+        "depends_on": [
+          "T-06"
+        ],
+        "done_when": [
+          "The test passes; restoring the per-file ancestor check fails the count.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-07",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/fs_portable.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/fs_linux.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/fs_other.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/openstats.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/entryname.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/store_test.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/evidence/snapshot_bounds_test.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/authority/receipt.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-03",
+          "SRC-04"
+        ],
+        "steps": [
+          "Red first: add an open-counting seam (store/openstats.go; anchor, listing, file and ancestor-check counters) and TestPortableSnapshotOpensBounded in evidence/snapshot_bounds_test.go over a tree with files at depth 1 to 6: one scan makes at most one anchor open and one listing open per visited directory, at most one open per input file, and no per-file ancestor Lstat. Wrapper method test_portable_snapshot_opens_bounded. The test is untagged: on Linux it measures the fs_linux backend; the portable-store proof comes from the Windows and macOS CI runs.",
+          "Read input files relative to an already-validated directory handle; take size, mode and identity from the opened file; drop the per-file ancestor re-check.",
+          "Validate reserved-output receipts from the bytes the scan already read (receipt, event, observation, evidence context and authority source), with no second root-relative read; extend TestPortableSnapshotOpensBounded with real receipt chains so file opens and ancestor checks stay bounded as receipts grow. Both backends compare file identity (SameFile) after a read."
+        ],
+        "title": "Walk-relative reads with bounded handle opens",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The open-counting Go test passes by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_portable_snapshot_opens_bounded"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-08",
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-09"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "All pass; removing the after-read SameFile check fails the mid-read case.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-08",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/store_test.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-03"
+        ],
+        "steps": [
+          "Add TestPortableReadRefusesSymlink, TestPortableReadDetectsMidReadChange and TestSnapshotRejectsDifferingScans, with wrapper methods for each. The mid-read case must include an identity-only change (same size and mtime) so removing the after-read SameFile check fails it.",
+          "Add wrapper method test_artifacts_module_passes, which runs go test -json ./... in core/artifacts and fails on any fail event or nonzero exit. No -race locally (CGO_ENABLED=0 on this host); CI's -race job covers it."
+        ],
+        "title": "Safety preserved and engine module regression",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The safety Go tests and the whole engine module pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_portable_read_refuses_symlink",
+              "test_portable_read_detects_mid_read_change",
+              "test_snapshot_rejects_differing_scans",
+              "test_artifacts_module_passes"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-10"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "All three pass; deleting either timeout fails its test.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-09",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "plugins/ca/hooks/hooks.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/hooks/hooks.json"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/check_codex_static_package.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/check_codex_skill_resources.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_codex_skill_resources.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_codex_static_package.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-09",
+          "SRC-10"
+        ],
+        "steps": [
+          "Red first: add test_claude_prompt_submit_timeout, test_codex_prompt_submit_timeout, test_other_registrations_unchanged parsing both hooks.json files.",
+          "Set \"timeout\": 600 on every UserPromptSubmit prompt-submit.py entry (Claude adds it; Codex changes 30 to 600); leave PreCompact and all other entries unchanged.",
+          "Update the Codex approved hook-manifest hash pin (a deliberate reviewed pin) to include the new canonical digest of plugins/ca-codex/hooks/hooks.json, keeping historical digests accepted, and pin the non-timeout registration shape as fixed data rather than comparing to git HEAD."
+        ],
+        "title": "600-second prompt-submit timeout for Claude and Codex",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The registration tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_claude_prompt_submit_timeout",
+              "test_codex_prompt_submit_timeout",
+              "test_other_registrations_unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-11"
+        ],
+        "depends_on": [
+          "T-06"
+        ],
+        "done_when": [
+          "Both tests pass and build-surface --check is clean.",
+          "Each new test is run against a mutant that removes the rule it pins and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-10",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "docs/artifacts/PROTOCOL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/includes/artifacts.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/includes/artifacts.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/includes/artifacts.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/includes/artifacts.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-06"
+        ],
+        "steps": [
+          "Red first: add test_protocol_describes_ship_set, test_artifacts_include_describes_ship_set asserting ship-set membership, the fixed gate-events exemption and the non-git fallback are stated, and that the sentence saying .gitignore does not define the policy is gone.",
+          "Edit PROTOCOL.md and core/surface/includes/artifacts.md; regenerate host copies with python tools/build-surface.py."
+        ],
+        "title": "Protocol and authoring docs describe the ship-set rule",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "Both docs tests pass by name.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_protocol_describes_ship_set",
+              "test_artifacts_include_describes_ship_set"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              "tools/build-surface.py",
+              "--check"
+            ],
+            "assertion": "Generated include copies match the canonical source.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-10",
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-11"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "The wiring test and the surface/version gates pass.",
+          "test_suite_wired_into_ci is run against a mutant that removes the wiring (the CI step, a filter path or the job gate) and fails; the mutant is reverted."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-11",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/workflows/ci.yml"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/.claude-plugin/plugin.json"
+          },
+          {
+            "action": "modify",
+            "path": "CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/.codex-plugin/plugin.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "README.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/ci-impact-map.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/package.json"
+          },
+          {
+            "action": "modify",
+            "path": "package.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/package.json"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/hooks/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/hooks/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/hooks/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/hooks/_host.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/hooks/_host.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/hooks/_host.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-09",
+          "SRC-10"
+        ],
+        "steps": [
+          "Add test_suite_wired_into_ci; wire test_ship_set_inputs.py into the CI job whose impact filter covers core/artifacts and the hooks.json files (resolve the enclosing job and filter first).",
+          "Advance ca, ca-codex and ca-pi (ca-pi ships the engine and the changed includes): manifest, CHANGELOG top, README badge and the generated root package.json together with plugins/ca-pi/package.json; the adapter_version literals in core/pysrc/hostapi.py, its generated copies and each host's _host.py must equal the manifest. Versions must be strictly above the latest tag, origin/main and every open PR.",
+          "Add an explicit .github/ci-impact-map.json entry for test_ship_set_inputs.py modelled on test_artifact_native.py."
+        ],
+        "title": "CI wiring and version advance",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "The new suite is reachable from CI's impact filter and job.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_suite_wired_into_ci"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_build_surface.py"
+            ],
+            "assertion": "Surface and version gates pass.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-SHIP-SET-EVIDENCE-INPUTS#AC-12"
+        ],
+        "depends_on": [
+          "T-07"
+        ],
+        "done_when": [
+          "TestEvidenceObjectsReadOnce passes: root-relative loads and validations per evidence object stay at most one per operation, and scan passes per operation are the same for both fixture sizes.",
+          "Each mutant named in the steps fails a test and is reverted; the whole engine module still passes."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-12",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/fs_portable.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/fs_linux.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/store/fs_other.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/memo.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/engine.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/authority/reuse.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/authority/receipt.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/observation/contract_test.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/completion.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/completion_workspace.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/evidence/snapshot.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/evidence_reads_test.go"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ship_set_inputs.py"
+          }
+        ],
+        "rollback": "Revert the task's changes.",
+        "source_refs": [
+          "SRC-03"
+        ],
+        "steps": [
+          "Red first: TestEvidenceObjectsReadOnce in operations/evidence_reads_test.go over a smaller and a larger fixture of real receipt chains. Count root-relative loads with the open-counting seam, schema validations with a test counter, and scan passes, across snapshot, read, index, task-review and accept-scope. Assert at most one root-relative load and one validation per object per operation, and the same number of scan passes for both sizes. Wrapper method test_evidence_objects_read_once.",
+          "Add per-operation reuse of validated evidence objects, keyed by content hash and scoped to one store handle. Keep only fully validated objects; never cache an error or an absence. authority.Inspect, Load, LoadSource, Vector, InspectionVector and observation.Inspect, Load and LoadContext use it, and Load keeps its extra 0.2.0 and producer checks on the reused object.",
+          "Compute each workspace root's completion state at most once per operation and reuse it, so task-review and accept-scope scan passes do not grow with task count. The snapshot keeps its two-pass change check.",
+          "The snapshot reads every reserved output directory first, then validates receipt chains from those bytes, retaining only receipts and referenced objects under a total byte cap. A referenced object missing from the scan fails closed, with no fallback to a root-relative read.",
+          "Update the observation test that re-reads a mutated object: the same handle keeps the validated object and a fresh handle rejects the mutation.",
+          "Mutation proof: disabling reuse, restoring the snapshot's second receipt read, recomputing a workspace root per task, or caching an error or absence each fails a test; revert each mutant."
+        ],
+        "title": "Evidence objects read once per operation",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_ship_set_inputs"
+            ],
+            "assertion": "Evidence objects are read and validated at most once per engine operation.",
+            "availability": "proposed",
+            "cwd": ".github/scripts",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_evidence_objects_read_once"
+            ]
+          }
+        ]
+      }
+    ],
+    "title": "Ship-set evidence inputs — implementation plan",
+    "verification_inputs": {
+      "exclude_directories": [
+        "site/node_modules",
+        "site/dist",
+        "site/.astro",
+        "tmp",
+        ".github/scripts/__pycache__",
+        "core/pysrc/__pycache__",
+        "plugins/ca/hooks/__pycache__",
+        "plugins/ca/hooks/tests/__pycache__",
+        "plugins/ca-codex/hooks/__pycache__",
+        "plugins/ca-pi/hooks/__pycache__",
+        "tools/__pycache__"
+      ],
+      "roots": [
+        "."
+      ]
+    }
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/ship-set-evidence-inputs.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 126,
+  "schema_version": "0.3.1",
+  "slug": "ship-set-evidence-inputs"
+}
+</script>
+</body></html>
