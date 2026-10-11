@@ -10,6 +10,7 @@ const preflightReview = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 const nativeV2Review = '25980c292b529fca90c39f5f26d69a1c0674de44';
+const packetPreparationReview = '5e909cfab72e4e7793b3ffa7b62c2239632f80d1';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
@@ -112,7 +113,6 @@ describe('atlas source compatibility revalidation', () => {
   });
 
   it('binds only the reviewed native V2 owners and preserved changelog history', () => {
-    expect(REVALIDATED_AT).toBe(nativeV2Review);
     expect(changedProductInputs(completionReview, nativeV2Review)).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/includes/artifacts.md',
       'docs/hooks.md',
@@ -127,6 +127,22 @@ describe('atlas source compatibility revalidation', () => {
     }
     expect(retainsReviewedChangelog(git('show', `${nativeV2Review}:CHANGELOG.md`),
       git('show', `${completionReview}:CHANGELOG.md`))).toBe(true);
+  });
+
+  it('binds only the reviewed packet preparation and init prerequisites', () => {
+    expect(REVALIDATED_AT).toBe(packetPreparationReview);
+    expect(changedProductInputs(nativeV2Review, packetPreparationReview)).toEqual([
+      'CHANGELOG.md', 'core/surface/commands/init.md', 'core/surface/skills/debug/SKILL.md',
+    ]);
+    const reviewedBlobs = {
+      'core/surface/commands/init.md': 'c3de948de1617aa323e310eefee7fde2bd8a65fc',
+      'core/surface/skills/debug/SKILL.md': '6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
+    };
+    for (const [path, blob] of Object.entries(reviewedBlobs)) {
+      expect(git('rev-parse', `${packetPreparationReview}:${path}`).trim()).toBe(blob);
+    }
+    expect(retainsReviewedChangelog(git('show', `${packetPreparationReview}:CHANGELOG.md`),
+      git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
 
   it('preserves original geometry and source links independently of the compatibility review', () => {

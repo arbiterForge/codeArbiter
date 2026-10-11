@@ -27,7 +27,11 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // binding, steering refusal and frozen verification context references to those
 // owners and docs/hooks.md. Routes and authority boundaries remain compatible;
 // historical comparisons remain independently tested.
-export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
+// PR952 makes the existing brownfield host prerequisites explicit before
+// scaffolding and links debug packet preparation before one-shot validation.
+// The reviewed containment, handoff, authority and recovery routes still agree
+// with the maps; no host qualification or new runtime capability is implied.
+export const REVALIDATED_AT = '5e909cfab72e4e7793b3ffa7b62c2239632f80d1';
 
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
