@@ -12,6 +12,15 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.25.6] - 2026-10-11
+
+### Fixed
+
+- Explain debug packet shapes and link the trusted schema and a synthetic
+  unresolved example before one-shot validation (#951).
+- Document brownfield host prerequisites before scaffolding, preserving
+  containment, native approval and partial-state recovery gates (#950).
+
 ## [2.25.5] - 2026-10-10
 
 ### Fixed

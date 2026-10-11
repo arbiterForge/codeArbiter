@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.7] - 2026-10-11
+
+### Fixed
+
+- Explain debug packet shapes and link the trusted schema and a synthetic
+  unresolved example before one-shot validation (#951).
+- Document brownfield host prerequisites before scaffolding, preserving
+  containment, native approval and partial-state recovery gates (#950).
+
 ## [0.17.6] - 2026-10-10
 
 ### Fixed

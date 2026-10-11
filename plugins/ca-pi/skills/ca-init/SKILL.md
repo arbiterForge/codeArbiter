@@ -29,6 +29,13 @@ keeps its initial-population lock.
 
 ### Brownfield host prerequisites
 
+For repositories with existing source, every scaffold and populator step in
+the Procedure below is conditional on observing these prerequisites first.
+This applies to both `--brownfield` and the default auto-detection route.
+When qualification is unavailable or unknown, stop here and issue the handoff
+described below. Do not execute the later Procedure steps or enter brownfield
+population through the When NOT to use section.
+
 Scaffolding enables governance and may install Git hooks before population.
 It does not qualify the host for context extraction. Before selecting
 `--brownfield` or automatically routing existing source to brownfield
@@ -58,11 +65,12 @@ population readiness. Do not fabricate a profile, receipt, context document
 or initialization sentinel to pass the later gates.
 
 The two flags are mutually exclusive and neither may combine with `--check`. `--stage N` may
-accompany one only while `.codearbiter/CONTEXT.md` is absent: scaffold at that stage, then enter the
+accompany one only while `.codearbiter/CONTEXT.md` is absent: after any required brownfield preflight,
+scaffold at that stage, then enter the
 selected workflow. When an uninitialized stub already exists, skip the refusing scaffolder and enter
 the selected workflow directly. An initialized marker or source-shape mismatch retains the selected
 legacy workflow's BLOCK. Without an explicit strategy, continue with the unchanged auto-detection
-procedure below.
+procedure below only after any required brownfield preflight.
 <!-- catalog-command-modes:end -->
 
 ## Procedure
