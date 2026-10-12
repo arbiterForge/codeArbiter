@@ -25,6 +25,12 @@ import (
 // to instrument that handle. Production never reassigns it.
 var openStore = store.Open
 
+// The existing-store observation capability is Windows-only. A portable
+// interface keeps other native backends on their unchanged locking path.
+type existingStoreObservationLocker interface {
+	ObservationLock(bool, time.Duration) (func(), error)
+}
+
 type Engine struct {
 	FS          *store.FS
 	Catalog     *repository.Catalog
@@ -84,7 +90,16 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	defer f.Close()
-	unlock, e := f.Lock(!sharedObservation(op, r), 2*time.Second)
+	var unlock func()
+	if runtime.GOOS == "windows" && (op == "index" || sharedObservation(op, r)) {
+		locker, ok := any(f).(existingStoreObservationLocker)
+		if !ok {
+			return nil, fault.New("LOCK_FAILED", "existing repository lock is unavailable")
+		}
+		unlock, e = locker.ObservationLock(!sharedObservation(op, r), 2*time.Second)
+	} else {
+		unlock, e = f.Lock(!sharedObservation(op, r), 2*time.Second)
+	}
 	if e != nil {
 		return nil, e
 	}

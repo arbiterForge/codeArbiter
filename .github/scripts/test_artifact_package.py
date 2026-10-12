@@ -785,7 +785,7 @@ class PackageTests(unittest.TestCase):
             output=stage, required_platforms=[native_platform],
             source_commit=source_commit,
         )
-        secret = "npm-child-secret-sentinel"
+        sentinel = "npm-child-secret-sentinel"
         secret_names = {
             "NPMJS_TOKEN", "NODE_AUTH_TOKEN", "GH_TOKEN", "GITHUB_TOKEN",
             "FARM_API_KEY", "UNDECLARED_BUILD_SECRET",
@@ -798,7 +798,7 @@ class PackageTests(unittest.TestCase):
                 captured.append(kwargs.get("env"))
             return real_run(argv, **kwargs)
 
-        injected = {name: f"{secret}-{name}" for name in secret_names}
+        injected = {name: f"{sentinel}-{name}" for name in secret_names}
         output = self.base / "npm-env-packages"
         with mock.patch.dict(os.environ, injected), mock.patch.object(
             PACKAGER.subprocess, "run", side_effect=record
@@ -825,7 +825,7 @@ class PackageTests(unittest.TestCase):
             self.assertIsInstance(child_environment, dict)
             self.assertTrue(set(child_environment) <= allowed_environment)
             self.assertTrue(secret_names.isdisjoint(child_environment))
-            self.assertNotIn(secret, "\n".join(child_environment.values()))
+            self.assertNotIn(sentinel, "\n".join(child_environment.values()))
             self.assertNotEqual(os.environ.get("HOME"), child_environment["HOME"])
             for key in (
                 "npm_config_userconfig", "npm_config_globalconfig",
@@ -836,7 +836,7 @@ class PackageTests(unittest.TestCase):
         def fail_pack(argv, **kwargs):
             if Path(argv[0]) == self.npm_executable and "pack" in argv:
                 return subprocess.CompletedProcess(
-                    argv, 19, stdout="", stderr=f"failure relayed {secret}"
+                    argv, 19, stdout="", stderr=f"failure relayed {sentinel}"
                 )
             return real_run(argv, **kwargs)
 
@@ -853,12 +853,12 @@ class PackageTests(unittest.TestCase):
                     npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
                     production=False,
                 )
-        self.assertNotIn(secret, str(failure.exception))
+        self.assertNotIn(sentinel, str(failure.exception))
         self.assertFalse(failed_output.exists())
 
         def fail_identity(argv, **kwargs):
             return subprocess.CompletedProcess(
-                argv, 23, stdout="", stderr=f"identity relayed {secret}"
+                argv, 23, stdout="", stderr=f"identity relayed {sentinel}"
             )
 
         with mock.patch.object(PACKAGER.subprocess, "run", side_effect=fail_identity):
@@ -868,7 +868,7 @@ class PackageTests(unittest.TestCase):
                     package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
                     production=False,
                 )
-        self.assertNotIn(secret, str(identity_failure.exception))
+        self.assertNotIn(sentinel, str(identity_failure.exception))
 
         ambient_npm = Path(shutil.which("npm.cmd") or shutil.which("npm"))
         for name, executable, integrity in (
@@ -1239,6 +1239,79 @@ class PackageTests(unittest.TestCase):
                 "strings"
             )
 
+            // Each exception pins reviewed syntax, imports, masks and callers at
+            // one path. No DLL/procedure name or whole file is an exemption.
+            type nativeReview struct {
+                path, pkg, resolver string
+                pins map[string]string
+                references map[string][]string
+            }
+            const fixtureResolver = "var:fixtureAdvapi"
+            var nativeReviews = []nativeReview{
+                {
+                    path: "internal/store/fs_lock_windows.go", pkg: "store", resolver: "var:kernel32",
+                    pins: map[string]string{
+                        "import": "31889e21e8824c2a702e8ea0adea196b1c8567bc28fcd28422d554f882762980",
+                        "const:lockfileFailImmediately": "73e0ced7882abf312ca2087c68c562ef2a8a27b90820267a83dd1b379cf262dc",
+                        "var:kernel32": "95f41ac7dd598bda3aabf4d302c2f4a26ca09e32ae0bb33c07b4e7cf7a7795cf",
+                        "type:lockUnicodeString": "eefcd0ada80cf87e3c6229f4936ad4b56f4f228f1223c18ec442be185efd6441",
+                        "type:lockObjectAttributes": "9730c8ce433e5639691fdc907fbd9aae0168b6e37af477d9cdb59961443f7299",
+                        "type:lockIOStatus": "52adcce39fcd1f8c1b3a955286c9af5fc6950c3b65c206c771ac6929fd7c2ada",
+                        "func:*FS.nativeLock": "4257871b4f5aefb0d58d26bcd93a25765f42d7accebdfcc6aed6b7327e922f78",
+                        "func:*FS.ObservationLock": "c312af695e1311316c01218a19866c68425fc42dcdd0d630eb0bfb383fd94ea3",
+                        "func:pinLockObject": "2cfc594a3c76ba879f90ce71c5cd42fb7fac8c48fd4e019699cc6183b421c377",
+                        "func:*FS.windowsLock": "a3efeaf347472e06b99dcebaafe83bf1942fbc5f9fa65df9132a7115fab3b88c",
+                    },
+                    references: map[string][]string{
+                        "kernel32": {"var:kernel32"},
+                        "procLockFileEx": {"var:kernel32", "func:*FS.windowsLock"},
+                        "procUnlockFileEx": {"var:kernel32", "func:*FS.windowsLock"},
+                        "procReOpenFile": {"var:kernel32", "func:pinLockObject", "func:*FS.windowsLock"},
+                        "procNtCreateFile": {"var:kernel32", "func:pinLockObject", "func:*FS.windowsLock"},
+                        "pinLockObject": {"func:pinLockObject", "func:*FS.windowsLock"},
+                        "windowsLock": {"func:*FS.windowsLock", "func:*FS.nativeLock", "func:*FS.ObservationLock"},
+                    },
+                },
+                {
+                    path: "internal/testutil/readonly_windows.go", pkg: "testutil", resolver: fixtureResolver,
+                    pins: map[string]string{
+                        "import": "8e3ae269f7f3c708600a4d84636e1c7828066e740f6054d5fe20f2df53c40b59",
+                        fixtureResolver: "e92f9018a58070d6f7f83aac002b32f5ac5efabec699b480e9a730e2253315bf",
+                        "func:ReadOnlyFixture": "2e97b8d20f870bf47fbb72d56face7da8aa174f9816979384115d7bf77ad1c4d",
+                    },
+                    references: map[string][]string{
+                        "fixtureAdvapi": {"var:fixtureAdvapi"},
+                        "fixtureGetSecurity": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                        "fixtureSetSecurity": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                        "fixtureConvertSecurity": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                        "fixtureSecurityControl": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                    },
+                },
+            }
+            func nativeKey(declaration ast.Decl) string {
+                switch value := declaration.(type) {
+                case *ast.FuncDecl:
+                    name := value.Name.Name
+                    if value.Recv != nil {
+                        var receiver bytes.Buffer
+                        if err := format.Node(&receiver, token.NewFileSet(), value.Recv.List[0].Type); err != nil { panic(err) }
+                        name = receiver.String()+"."+name
+                    }
+                    return "func:"+name
+                case *ast.GenDecl:
+                    if value.Tok == token.IMPORT { return "import" }
+                    if len(value.Specs) == 0 { return "" }
+                    switch spec := value.Specs[0].(type) {
+                    case *ast.TypeSpec: return "type:"+spec.Name.Name
+                    case *ast.ValueSpec:
+                        if len(spec.Names) > 0 { return value.Tok.String()+":"+spec.Names[0].Name }
+                    }
+                }
+                return ""
+            }
+            func inside(node ast.Node, declaration ast.Decl) bool {
+                return declaration != nil && node.Pos() >= declaration.Pos() && node.End() <= declaration.End()
+            }
             func main() {
                 if len(os.Args) != 2 { panic("expected production Go root") }
                 findings := []string{}
@@ -1262,6 +1335,75 @@ class PackageTests(unittest.TestCase):
                             digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
                             if digest == "bda95669da96ff24e4c7560bea7cf8b147b7bc320775a1267fb7d51f930b9ab5" { reviewedGit = fn
                             } else { findings = append(findings, path+" has unreviewed Git probe "+digest) }
+                        }
+                    }
+                    reviewedResolvers := map[*ast.CallExpr]bool{}
+                    protectedNative := false
+                    comments := token.NewFileSet()
+                    commented, err := parser.ParseFile(comments, path, nil, parser.ParseComments)
+                    if err != nil { return err }
+                    for _, review := range nativeReviews {
+                        samePath := filepath.ToSlash(relative) == review.path
+                        declarations := map[string]ast.Decl{}
+                        valid := samePath && parsed.Name.Name == review.pkg
+                        if samePath {
+                            counts := map[string]int{}
+                            for _, declaration := range parsed.Decls {
+                                key := nativeKey(declaration)
+                                expected, selected := review.pins[key]
+                                if !selected { continue }
+                                counts[key]++
+                                var normalized bytes.Buffer
+                                if err := format.Node(&normalized, positions, declaration); err != nil { return err }
+                                digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
+                                if digest != expected { valid = false }
+                                declarations[key] = declaration
+                            }
+                            for key := range review.pins { if counts[key] != 1 { valid = false } }
+                            // Normalization omits comments; compiler directives must
+                            // not change an otherwise identical admitted body.
+                            builds := 0
+                            for _, group := range commented.Comments {
+                                for _, comment := range group.List {
+                                    directive := strings.TrimSpace(comment.Text)
+                                    if strings.HasPrefix(directive, "//go:") || strings.HasPrefix(directive, "//line ") || strings.HasPrefix(directive, "/*line ") {
+                                        if directive == "//go:build windows" && comments.Position(comment.Pos()).Line == 1 { builds++
+                                        } else { valid = false; findings = append(findings, path+" has unreviewed native directive") }
+                                    }
+                                }
+                            }
+                            if builds != 1 { valid = false }
+                            if !valid { findings = append(findings, path+" has unreviewed native pin") }
+                            protectedNative = true
+                            if valid {
+                                ast.Inspect(declarations[review.resolver], func(node ast.Node) bool {
+                                    if call, ok := node.(*ast.CallExpr); ok {
+                                        if selector, ok := call.Fun.(*ast.SelectorExpr); ok && (selector.Sel.Name == "NewProc" || selector.Sel.Name == "NewLazyDLL") { reviewedResolvers[call] = true }
+                                    }
+                                    return true
+                                })
+                            }
+                        }
+                        if !samePath {
+                            for _, group := range commented.Comments { for _, comment := range group.List {
+                                if !strings.HasPrefix(comment.Text, "//go:linkname ") && !strings.HasPrefix(comment.Text, "//go:linknamestd ") { continue }
+                                for name := range review.references {
+                                    if strings.Contains(comment.Text, name) { findings = append(findings, path+" has unreviewed native directive") }
+                                }
+                            } }
+                        }
+                        // Private globals are visible across files in the same
+                        // package: method values, aliases and reassignments count.
+                        if parsed.Name.Name == review.pkg {
+                            ast.Inspect(parsed, func(node ast.Node) bool {
+                                identifier, ok := node.(*ast.Ident)
+                                if !ok { return true }
+                                scopes, tracked := review.references[identifier.Name]
+                                if !tracked { return true }
+                                if valid { for _, key := range scopes { if inside(identifier, declarations[key]) { return true } } }
+                                findings = append(findings, path+" has native reference outside reviewed scope: "+identifier.Name)
+                                return true
+                            })
                         }
                     }
                     sensitive := map[string]map[string]bool{}
@@ -1296,6 +1438,11 @@ class PackageTests(unittest.TestCase):
                             selector, ok := call.Fun.(*ast.SelectorExpr)
                             if !ok { return true }
                             qualifier, ok := selector.X.(*ast.Ident)
+                            if reviewedResolvers[call] { return false }
+                            if protectedNative && (selector.Sel.Name == "NewProc" || selector.Sel.Name == "NewLazyDLL") {
+                                findings = append(findings, path+" has native resolver outside reviewed declaration")
+                                return false
+                            }
                             if ok && processImports[qualifier.Name] {
                                 if reviewedGit != nil && qualifier.Name == "exec" && selector.Sel.Name == "CommandContext" && call.Pos() >= reviewedGit.Pos() && call.End() <= reviewedGit.End() { return false }
                                 findings = append(findings, fmt.Sprintf("%s calls unreviewed process %s.%s", path, qualifier.Name, selector.Sel.Name))
@@ -1395,6 +1542,97 @@ class PackageTests(unittest.TestCase):
         target.write_text(probe.read_text(encoding="utf-8").replace(
             '"protocol.allow=never"', '"protocol.allow=always"'), encoding="utf-8")
         self.assertTrue(any("unreviewed Git probe" in item for item in run_guard(bounded)))
+
+        # Exact reviewed native seams are data for the scanner, never executed.
+        # Each mutation starts from the same passing two-file snapshot.
+        native_sources = {
+            "internal/store/fs_lock_windows.go": (
+                REPO / "core/artifacts/internal/store/fs_lock_windows.go").read_text(encoding="utf-8"),
+            "internal/testutil/readonly_windows.go": (
+                REPO / "core/artifacts/internal/testutil/readonly_windows.go").read_text(encoding="utf-8"),
+        }
+        native = self.base / "native-guard-controls"
+        def reset_native():
+            if native.exists():
+                self.assertEqual(self.base.resolve(), native.resolve().parent)
+                shutil.rmtree(native)
+            for relative, content in native_sources.items():
+                path = native / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+        reset_native()
+        self.assertEqual([], run_guard(native), "reviewed native snapshot must be admitted")
+        store_path, fixture_path = native_sources
+        mutations = (
+            ("wrong-store-dll", store_path, '"ntdll.dll"', '"wininet.dll"'),
+            ("wrong-store-procedure", store_path, '"NtCreateFile"', '"WinExec"'),
+            ("wrong-fixture-dll", fixture_path, '"advapi32.dll"', '"wininet.dll"'),
+            ("wrong-fixture-procedure", fixture_path, '"GetFileSecurityW"', '"URLDownloadToFileW"'),
+            ("changed-access-mask", store_path, "0x120089", "0x12019f"),
+            ("changed-native-layout", store_path, "Length, MaximumLength uint16", "Length, MaximumLength uint32"),
+            ("missing-native-layout", store_path, "type lockIOStatus struct{ Status, Information uintptr }", ""),
+            ("duplicate-native-layout", store_path, "type lockIOStatus struct{ Status, Information uintptr }", "type lockIOStatus struct{ Status, Information uintptr }\ntype lockIOStatus struct{ Status, Information uintptr }"),
+            ("changed-share-flags", store_path, "syscall.FILE_SHARE_READ|syscall.FILE_SHARE_WRITE", "syscall.FILE_SHARE_READ|syscall.FILE_SHARE_WRITE|syscall.FILE_SHARE_DELETE"),
+            ("changed-caller", store_path, "f.windowsLock(exclusive, timeout, true)", "f.windowsLock(exclusive, timeout, false)"),
+            ("changed-fixture-root", fixture_path, "root := Root(t)", "root := t.TempDir()"),
+            ("changed-fixture-acl", fixture_path, "0x00010156", "0x00010157"),
+            ("import-origin", store_path, '"syscall"', 'syscall "attacker.invalid/syscall"'),
+            ("import-alias", fixture_path, '"syscall"', 'sx "syscall"'),
+            ("wrong-store-package", store_path, "package store", "package other"),
+            ("wrong-fixture-package", fixture_path, "package testutil", "package other"),
+            ("missing-resolver", store_path, '\tprocReOpenFile   = kernel32.NewProc("ReOpenFile")\n', ""),
+            ("moved-caller", store_path, "func pinLockObject(", "func unreviewedPinLockObject("),
+        )
+        for name, relative, before, after in mutations:
+            with self.subTest(native_mutation=name):
+                reset_native()
+                self.assertIn(before, native_sources[relative])
+                (native / relative).write_text(native_sources[relative].replace(before, after), encoding="utf-8")
+                self.assertTrue(any("unreviewed native pin" in item for item in run_guard(native)), name)
+        escapes = (
+            ("extra-store-resolution", store_path, 'var extra = syscall.NewLazyDLL("kernel32.dll").NewProc("LockFileEx")', "native resolver outside"),
+            ("extra-fixture-resolution", fixture_path, 'var extra = syscall.NewLazyDLL("kernel32.dll").NewProc("LockFileEx")', "native resolver outside"),
+            ("direct-procedure", store_path, 'func escape() { procNtCreateFile.Call(0) }', "native reference outside"),
+            ("aliased-procedure", store_path, 'var escapeAlias = procNtCreateFile\nfunc escape() { escapeAlias.Call(0) }', "native reference outside"),
+            ("method-value", store_path, 'var resolve = kernel32.NewProc', "native reference outside"),
+            ("reassignment", store_path, 'func escape() { procNtCreateFile = nil }', "native reference outside"),
+            ("fixture-alias", fixture_path, 'var escapeAlias = fixtureSetSecurity\nfunc escape() { escapeAlias.Call(0) }', "native reference outside"),
+            ("compiler-directive", store_path, '//go:linkname escape other.Native\nfunc escape() {}', "unreviewed native directive"),
+        )
+        for name, relative, extra, finding in escapes:
+            with self.subTest(native_escape=name):
+                reset_native()
+                (native / relative).write_text(native_sources[relative] + "\n" + extra + "\n", encoding="utf-8")
+                self.assertTrue(any(finding in item for item in run_guard(native)), name)
+        for relative, extra in (
+                (store_path, 'var escapeAlias = procNtCreateFile\nfunc escape() { escapeAlias.Call(0) }'),
+                (fixture_path, 'var escapeAlias = fixtureSetSecurity\nfunc escape() { escapeAlias.Call(0) }')):
+            with self.subTest(native_cross_file=relative):
+                reset_native()
+                other = (native / relative).with_name("escape.go")
+                package = "store" if relative == store_path else "testutil"
+                other.write_text("package " + package + "\n" + extra + "\n", encoding="utf-8")
+                self.assertTrue(any("native reference outside" in item for item in run_guard(native)))
+        reset_native()
+        (native / "internal/store/linked.go").write_text(
+            'package store\nimport _ "unsafe"\n//go:linkname alias local/store.procNtCreateFile\nvar alias uintptr\n',
+            encoding="utf-8")
+        self.assertTrue(any("unreviewed native directive" in item for item in run_guard(native)))
+        reset_native()
+        (native / "internal/store/linked-standard.go").write_text(
+            'package store\nimport _ "unsafe"\n//go:linknamestd alias github.com/arbiterForge/codeArbiter/core/artifacts/internal/store.procNtCreateFile\nvar alias uintptr\n',
+            encoding="utf-8")
+        self.assertTrue(any("unreviewed native directive" in item for item in run_guard(native)))
+        for relative in native_sources:
+            with self.subTest(native_moved_path=relative):
+                reset_native()
+                source = native / relative
+                source.rename(source.with_name("moved.go"))
+                self.assertTrue(any("native reference outside" in item for item in run_guard(native)))
+        reset_native()
+        duplicate = native_sources[store_path].split("var (", 1)[1].split("\n)", 1)[0]
+        (native / store_path).write_text(native_sources[store_path] + "\nvar (" + duplicate + "\n)\n", encoding="utf-8")
+        self.assertTrue(any("unreviewed native pin" in item for item in run_guard(native)))
 
     def test_release_packaging_rejects_missing_duplicate_and_mismatched_candidates(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))

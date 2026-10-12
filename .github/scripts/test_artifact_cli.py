@@ -73,6 +73,120 @@ class CliTests(unittest.TestCase):
         return {path.relative_to(self.root).as_posix(): path.read_bytes()
                 for path in self.root.rglob("*") if path.is_file()}
 
+    if os.name == "nt":
+        def test_windows_read_only_initialized_observations(self):
+            # This native cell exists only on Windows. It cannot silently skip
+            # an unavailable ACL fixture or count another platform as proof.
+            import ctypes as ct
+            from ctypes import wintypes as wt
+            import hashlib
+            import stat
+
+            advapi = ct.WinDLL("advapi32", use_last_error=True)
+            kernel = ct.WinDLL("kernel32", use_last_error=True)
+            advapi.OpenProcessToken.argtypes = [wt.HANDLE, wt.DWORD, ct.POINTER(wt.HANDLE)]
+            advapi.GetTokenInformation.argtypes = [wt.HANDLE, wt.DWORD, ct.c_void_p, wt.DWORD, ct.POINTER(wt.DWORD)]
+            advapi.ConvertSidToStringSidW.argtypes = [ct.c_void_p, ct.POINTER(wt.LPWSTR)]
+            advapi.ConvertStringSecurityDescriptorToSecurityDescriptorW.argtypes = [wt.LPCWSTR, wt.DWORD, ct.POINTER(ct.c_void_p), ct.c_void_p]
+            advapi.GetFileSecurityW.argtypes = [wt.LPCWSTR, wt.DWORD, ct.c_void_p, wt.DWORD, ct.POINTER(wt.DWORD)]
+            advapi.SetFileSecurityW.argtypes = [wt.LPCWSTR, wt.DWORD, ct.c_void_p]
+            advapi.GetSecurityDescriptorControl.argtypes = [ct.c_void_p, ct.POINTER(wt.WORD), ct.POINTER(wt.DWORD)]
+            kernel.GetCurrentProcess.restype = wt.HANDLE
+            kernel.CloseHandle.argtypes = [wt.HANDLE]
+            kernel.LocalFree.argtypes = [ct.c_void_p]
+            kernel.LocalFree.restype = ct.c_void_p
+
+            def checked(result):
+                if not result:
+                    raise ct.WinError(ct.get_last_error())
+
+            spec, plan = self.initial_draft_pair()
+            requests = [
+                ("index", {"kind": "spec"}),
+                ("identity", {"artifact_id": spec["artifact_id"]}),
+                ("snapshot", {"artifact_id": spec["artifact_id"]}),
+                ("outline", {"artifact_id": spec["artifact_id"]}),
+                ("read", {"artifact_id": spec["artifact_id"], "symbol": "AC-001", "mode": "exact"}),
+                ("read-batch", {"artifact_id": spec["artifact_id"], "symbols": ["AC-001"], "model_sha256": spec["model_sha256"]}),
+                ("plan-verification", {"artifact_id": plan["artifact_id"], "expected": {key: plan[key] for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")}}),
+            ]
+            expected = [self.successful(op, request) for op, request in requests]
+            token = wt.HANDLE()
+            checked(advapi.OpenProcessToken(kernel.GetCurrentProcess(), 8, ct.byref(token)))
+            try:
+                size = wt.DWORD()
+                advapi.GetTokenInformation(token, 1, None, 0, ct.byref(size))
+                self.assertGreater(size.value, 0)
+                self.assertLessEqual(size.value, 65536)
+                user = ct.create_string_buffer(size.value)
+                checked(advapi.GetTokenInformation(token, 1, user, size, ct.byref(size)))
+                sid = wt.LPWSTR()
+                checked(advapi.ConvertSidToStringSidW(ct.cast(user, ct.POINTER(ct.c_void_p))[0], ct.byref(sid)))
+                try:
+                    descriptor = ct.c_void_p()
+                    checked(advapi.ConvertStringSecurityDescriptorToSecurityDescriptorW(
+                        f"D:P(D;;0x00010156;;;{sid.value})(A;;FA;;;{sid.value})", 1, ct.byref(descriptor), None))
+                finally:
+                    kernel.LocalFree(ct.cast(sid, ct.c_void_p))
+            finally:
+                kernel.CloseHandle(token)
+
+            originals = []
+            try:
+                # self.root is created in setUp; accept no external root or links.
+                for path in [self.root, *sorted(self.root.rglob("*"))]:
+                    path.relative_to(self.root)
+                    identity = path.lstat()
+                    self.assertFalse(identity.st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+                    self.assertTrue(path.is_dir() or path.is_file())
+                    size = wt.DWORD()
+                    advapi.GetFileSecurityW(str(path), 4, None, 0, ct.byref(size))
+                    self.assertGreater(size.value, 0)
+                    self.assertLessEqual(size.value, 65536)
+                    saved = ct.create_string_buffer(size.value)
+                    checked(advapi.GetFileSecurityW(str(path), 4, saved, size, ct.byref(size)))
+                    control, revision = wt.WORD(), wt.DWORD()
+                    checked(advapi.GetSecurityDescriptorControl(saved, ct.byref(control), ct.byref(revision)))
+                    originals.append((path, identity, saved, control.value))
+                for path, _, _, _ in reversed(originals):
+                    checked(advapi.SetFileSecurityW(str(path), 4 | 0x80000000, descriptor))
+
+                lock = self.root / ".codearbiter/.artifacts/store.lock"
+                with self.assertRaises(PermissionError):
+                    with lock.open("r+b"):
+                        self.fail("same identity still has lock write access")
+                with self.assertRaises(PermissionError):
+                    with (lock.parent / "forbidden-create").open("xb"):
+                        self.fail("same identity still has store create access")
+                self.assertEqual(lock.read_bytes(), b"")
+
+                def tree():
+                    result = {}
+                    for path in [self.root, *self.root.rglob("*")]:
+                        info = path.lstat()
+                        digest = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+                        result[path.relative_to(self.root).as_posix()] = (info.st_mode, info.st_size, info.st_mtime_ns, digest)
+                    return result
+
+                before = tree()
+                for (op, request), want in zip(requests, expected, strict=True):
+                    with self.subTest(operation=op):
+                        self.assertEqual(self.successful(op, request), want)
+                        self.assertEqual(tree(), before)
+                self.assertEqual(tree(), before)
+            finally:
+                # Restore the original DACL/protection state only for the saved
+                # ordinary objects in this owned fixture, including partial setup.
+                try:
+                    for path, original, saved, control in reversed(originals):
+                        current = path.lstat()
+                        self.assertEqual((current.st_dev, current.st_ino), (original.st_dev, original.st_ino))
+                        self.assertFalse(current.st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+                        security_info = 4 | (0x80000000 if control & 0x1000 else 0x20000000)
+                        checked(advapi.SetFileSecurityW(str(path), security_info, saved))
+                finally:
+                    kernel.LocalFree(descriptor)
+
     def initial_draft_pair(self):
         from test_artifact_authoring import spec_normative, plan_normative
         spec = spec_normative()

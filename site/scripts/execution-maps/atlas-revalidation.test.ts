@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,6 +7,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
+import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const countReview = '81055792c71ba7aaeeaf5280e81ce2929bb25cc1';
@@ -14,7 +16,11 @@ const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 const nativeV2Review = '25980c292b529fca90c39f5f26d69a1c0674de44';
 const packetPreparationReview = '5e909cfab72e4e7793b3ffa7b62c2239632f80d1';
-const legacyDeliveryReview = 'a96877deb8e40e887112c6751b3f891341c96473';
+const packetPreparationMain = '4c2529e2f3804d38855094e1c11d36178067c826';
+// Main960 retains the exact two reviewed a968 guide blobs after its squash.
+const legacyDeliveryReview = 'd547f82777111bc20001a977719307d3d68fc13e';
+const packetInventoryHash = 'faee422cbe0747004b85660ce6c1bf54a730759c83435dd5d9c69469a06e0baf';
+const packetChangelogHash = '8d299cd300ea41b7dae51e89a8caa418eafff0066173ac8ab1ae55030772f7a4';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
@@ -36,6 +42,92 @@ beforeAll(() => {
 function changedProductInputs(from: string, to: string): string[] {
   return git('diff', '--name-only', from, to, '--')
     .trim().split('\n').filter(path => productInputs.has(path));
+}
+
+// The packet's original branch commit need not survive a squash. Retain its
+// entire actual input inventory and unique draft changelog as inert fixtures;
+// resolve every other blob through stable reviewed/main ancestors. No fetch,
+// object creation or current-main substitution supplies a missing historical read.
+function historicalBlobBatch(blobs: string[]): Buffer[] {
+  const response = execFileSync('git', ['--no-replace-objects', '--no-lazy-fetch', 'cat-file', '--batch'], {
+    cwd: root, input: blobs.map(blob => `${blob}\n`).join(''), maxBuffer: 4 * 1024 * 1024,
+  });
+  const result: Buffer[] = [];
+  let offset = 0;
+  for (const blob of blobs) {
+    const end = response.indexOf(10, offset);
+    const header = end < offset ? null : /^([0-9a-f]{40}) blob (\d+)$/.exec(response.subarray(offset, end).toString('utf8'));
+    if (!header || header[1] !== blob) throw new Error('Missing or invalid historical packet blob');
+    const size = Number(header[2]);
+    if (!Number.isSafeInteger(size) || size < 0 || end + 1 + size >= response.length || response[end + 1 + size] !== 10) {
+      throw new Error('Malformed historical packet blob batch');
+    }
+    result.push(response.subarray(end + 1, end + 1 + size));
+    offset = end + 2 + size;
+  }
+  if (offset !== response.length) throw new Error('Unexpected historical packet batch bytes');
+  return result;
+}
+
+function historicalChangelogFixture(
+  encoded = readFileSync(new URL('./atlas-data/packet-preparation-changelog.json', import.meta.url), 'utf8'),
+): Buffer {
+  const decoded: unknown = JSON.parse(encoded);
+  if (typeof decoded !== 'string') throw new Error('Historical packet changelog fixture must be a JSON string');
+  return Buffer.from(decoded, 'utf8');
+}
+
+function historicalPacketInputs(
+  review = packetPreparationSnapshot,
+  changelog = historicalChangelogFixture(),
+  readBlobs = historicalBlobBatch,
+): Map<string, string> {
+  const keys = ['format', 'source_commit', 'baseline_commit', 'evidence_kind', 'changed_paths', 'input_count', 'inputs', 'changelog_sha256'];
+  if (JSON.stringify(Object.keys(review).sort()) !== JSON.stringify(keys.sort()) ||
+    review.format !== 'codearbiter.atlas-historical-inputs/1' || review.source_commit !== packetPreparationReview ||
+    review.baseline_commit !== nativeV2Review || review.evidence_kind !== 'historical-draft-source-snapshot-not-publication' ||
+    review.input_count !== 71 || !Array.isArray(review.inputs) || review.inputs.length !== 71 ||
+    review.inputs.some(row => JSON.stringify(Object.keys(row).sort()) !== '["blob","path","sha256"]' ||
+      typeof row.path !== 'string' || typeof row.blob !== 'string' || !/^[0-9a-f]{40}$/.test(row.blob) ||
+      typeof row.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(row.sha256)) ||
+    JSON.stringify(review.inputs.map(row => row.path)) !== JSON.stringify([...productInputs].sort()) ||
+    createHash('sha256').update(JSON.stringify(review.inputs)).digest('hex') !== packetInventoryHash) {
+    throw new Error('Historical packet input inventory is missing, malformed or changed');
+  }
+  const changes = ['CHANGELOG.md', 'core/surface/commands/init.md', 'core/surface/skills/debug/SKILL.md'];
+  if (JSON.stringify(review.changed_paths) !== JSON.stringify(changes)) throw new Error('Historical packet changed-path scope changed');
+  if (review.changelog_sha256 !== packetChangelogHash || createHash('sha256').update(changelog).digest('hex') !== packetChangelogHash) {
+    throw new Error('Historical packet changelog SHA-256 changed');
+  }
+  const changed: string[] = [];
+  const result = new Map<string, string>();
+  const references = [...review.inputs.map(row => `${nativeV2Review}:${row.path}`),
+    ...Object.keys(BROWNFIELD_SOURCE_BLOBS).map(path => `${packetPreparationMain}:${path}`)];
+  const identities = git('--no-replace-objects', '--no-lazy-fetch', 'rev-parse', ...references).trim().split('\n');
+  if (identities.length !== references.length || identities.some(blob => !/^[0-9a-f]{40}$/.test(blob))) {
+    throw new Error('Historical packet ancestor inventory is incomplete');
+  }
+  const mainBlobs = new Map(Object.keys(BROWNFIELD_SOURCE_BLOBS).map((path, index) => [path, identities[71 + index]]));
+  const objects = readBlobs(review.inputs.filter(row => row.path !== 'CHANGELOG.md').map(row => row.blob));
+  if (objects.length !== 70) throw new Error('Historical packet blob inventory is incomplete');
+  let objectIndex = 0;
+  for (const [index, row] of review.inputs.entries()) {
+    const before = identities[index];
+    if (row.blob !== before) changed.push(row.path);
+    const bytes = row.path === 'CHANGELOG.md' ? changelog : objects[objectIndex++];
+    if (createHash('sha256').update(bytes).digest('hex') !== row.sha256) throw new Error(`Historical packet blob changed: ${row.path}`);
+    if (row.path === 'CHANGELOG.md' && execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: bytes, encoding: 'utf8'}).trim() !== row.blob) {
+      throw new Error('Historical packet retained changelog blob identity changed');
+    }
+    if (row.path !== 'CHANGELOG.md') {
+      if ((mainBlobs.get(row.path) ?? before) !== row.blob) {
+        throw new Error(`Historical packet ancestor identity changed: ${row.path}`);
+      }
+    }
+    result.set(row.path, bytes.toString('utf8'));
+  }
+  if (JSON.stringify(changed) !== JSON.stringify(changes)) throw new Error('Historical packet exact three-path delta changed');
+  return result;
 }
 
 describe('atlas source compatibility revalidation', () => {
@@ -190,7 +282,9 @@ describe('atlas source compatibility revalidation', () => {
 
   it('binds only the reviewed packet preparation and init prerequisites', () => {
     expect(REVALIDATED_AT).toBe(nativeV2Review);
-    expect(changedProductInputs(nativeV2Review, packetPreparationReview)).toEqual([
+    const historical = historicalPacketInputs();
+    expect([...historical.keys()]).toHaveLength(71);
+    expect(packetPreparationSnapshot.changed_paths).toEqual([
       'CHANGELOG.md', 'core/surface/commands/init.md', 'core/surface/skills/debug/SKILL.md',
     ]);
     const reviewedBlobs = {
@@ -198,14 +292,55 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/debug/SKILL.md': '6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
     };
     for (const [path, blob] of Object.entries(reviewedBlobs)) {
-      expect(git('rev-parse', `${packetPreparationReview}:${path}`).trim()).toBe(blob);
+      expect(git('rev-parse', `${packetPreparationMain}:${path}`).trim()).toBe(blob);
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
-        .toBe(git('--no-replace-objects', 'cat-file', 'blob', `${packetPreparationReview}:${path}`));
+        .toBe(historical.get(path));
       expect(git('hash-object', '--', path).trim()).toBe(CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
-    expect(retainsReviewedChangelog(git('show', `${packetPreparationReview}:CHANGELOG.md`),
+    expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
+  });
+
+  it('refuses missing, malformed or changed historical packet inventories', () => {
+    const removed = structuredClone(packetPreparationSnapshot);
+    removed.inputs.pop();
+    const duplicate = structuredClone(packetPreparationSnapshot);
+    duplicate.inputs[1] = duplicate.inputs[0];
+    const changed = structuredClone(packetPreparationSnapshot);
+    changed.inputs[0].blob = '0'.repeat(40);
+    for (const review of [removed, duplicate, changed]) expect(() => historicalPacketInputs(review)).toThrow(/input inventory/);
+  });
+
+  it('strictly decodes the historical changelog JSON string without changing its bytes', () => {
+    const bytes = historicalChangelogFixture();
+    expect(bytes.length).toBe(185147);
+    expect(createHash('sha256').update(bytes).digest('hex')).toBe(packetChangelogHash);
+    expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: bytes, encoding: 'utf8'}).trim())
+      .toBe('0290d678905fd2853ff2132e0ce8151155129bd6');
+    // The original historical trailing space is data, preserved inside JSON.
+    expect(bytes.toString('utf8').split('\n')[2692]).toBe(
+      '## [2026-05-13] — token efficiency pass, added missing slash commands, added local context caching to decompose ',
+    );
+    expect(() => historicalChangelogFixture('{')).toThrow(SyntaxError);
+    for (const value of [null, false, 185147, {}, [], ['historical changelog']]) {
+      expect(() => historicalChangelogFixture(JSON.stringify(value))).toThrow(/must be a JSON string/);
+    }
+    expect(() => historicalPacketInputs(packetPreparationSnapshot, historicalChangelogFixture(JSON.stringify('changed snapshot'))))
+      .toThrow(/changelog SHA-256/);
+  });
+
+  it('refuses missing or changed historical packet blob bytes and scope', () => {
+    expect(() => historicalPacketInputs(packetPreparationSnapshot, Buffer.from('changed snapshot'))).toThrow(/changelog SHA-256/);
+    expect(() => historicalPacketInputs(packetPreparationSnapshot, undefined, () => { throw new Error('missing historical blob fixture'); }))
+      .toThrow(/missing historical blob/);
+    expect(() => historicalPacketInputs(packetPreparationSnapshot, undefined, blobs => blobs.map(() => Buffer.from('wrong blob')))).toThrow(/blob changed/);
+    const widened = structuredClone(packetPreparationSnapshot);
+    widened.changed_paths.push('core/surface/SPRINT.md');
+    expect(() => historicalPacketInputs(widened)).toThrow(/changed-path scope/);
+    // A real offline batch lookup of a nonexistent identity must refuse; it
+    // cannot fetch an object, synthesize one or treat the missing line as bytes.
+    expect(() => historicalBlobBatch(['0'.repeat(40)])).toThrow(/Missing or invalid historical packet blob/);
   });
 
   it('preserves original geometry and source links independently of the compatibility review', () => {

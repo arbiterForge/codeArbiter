@@ -20,6 +20,7 @@ with no args every known plugin is checked.
 
 Exits non-zero listing every broken reference.
 """
+import hashlib
 import os
 import re
 import subprocess
@@ -98,6 +99,7 @@ def read(p):
 PLUGIN_REF = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\s`\"')]+)")
 MD_LINK = re.compile(r"\]\(([^)]+)\)")
 CLAUDE_ROOT = "${CLAUDE_PLUGIN_ROOT}"
+ROOT_INSPECTION_NAME = "token"
 
 
 @dataclass(frozen=True)
@@ -124,6 +126,12 @@ _IMMUTABLE_HISTORY_FILES = {
     ".github/fixtures/tribunal/qualification/candidate-bundle.json",
     ".github/fixtures/tribunal/qualification/candidate-delivered-bundle.json",
     ".github/fixtures/tribunal/qualification/incumbent-bundle.json",
+}
+_IMMUTABLE_HISTORY_SHA256 = {
+    # This inert JSON string preserves exact historical changelog bytes. Both
+    # the path and the encoded whole file are pinned; neighbours remain active.
+    "site/scripts/execution-maps/atlas-data/packet-preparation-changelog.json":
+        "8b76eefcb04bfc62454eb6cc433844851498749815d275d631fde8ff19876d81",
 }
 _FIXTURE_INPUT_PREFIXES = (
     "site/scripts/generator/",
@@ -194,7 +202,7 @@ def _classify_claude_root_occurrence(
         "plugins/ca-pi/hooks/_artifactlib.py",
     }
     native_inspection = (
-        f'token = "{CLAUDE_ROOT}" if host == "claude" else "${{PLUGIN_ROOT}}"'
+        f'{ROOT_INSPECTION_NAME} = "{CLAUDE_ROOT}" if host == "claude" else "${{PLUGIN_ROOT}}"'
     )
     if relative in inspection_paths and line.strip() == native_inspection:
         return "claude-native"
@@ -236,13 +244,23 @@ def check_claude_root_inventory(repo: str | Path = REPO) -> tuple[list[str], lis
     errors: list[str] = []
     inventory: list[ClaudeRootOccurrence] = []
     for path in sorted(_inventory_paths(root)):
-        if not path.is_file() or "node_modules" in path.parts:
+        if "node_modules" in path.parts:
             continue
         relative = path.relative_to(root).as_posix()
+        if not path.is_file():
+            if relative in _IMMUTABLE_HISTORY_SHA256:
+                errors.append(f"{relative}: missing pinned historical fixture")
+            continue
         if not _inventory_candidate(relative):
             continue
+        encoded = path.read_bytes()
+        expected_digest = _IMMUTABLE_HISTORY_SHA256.get(relative)
+        pinned_history = expected_digest is not None
+        if pinned_history and hashlib.sha256(encoded).hexdigest() != expected_digest:
+            errors.append(f"{relative}: historical fixture SHA-256 mismatch")
+            continue
         try:
-            lines = path.read_text(encoding="utf-8").splitlines()
+            lines = encoded.decode("utf-8").splitlines()
         except UnicodeDecodeError:
             continue
         descriptor_host: str | None = None
@@ -252,7 +270,10 @@ def check_claude_root_inventory(repo: str | Path = REPO) -> tuple[list[str], lis
                 descriptor_host = name.group(1)
             if CLAUDE_ROOT not in line or _is_comment(relative, line):
                 continue
-            category = _classify_claude_root_occurrence(relative, line, descriptor_host)
+            category = (
+                "immutable-history" if pinned_history
+                else _classify_claude_root_occurrence(relative, line, descriptor_host)
+            )
             if category is None:
                 errors.append(
                     f"{relative}:{number}: unclassified portable/product use of "
