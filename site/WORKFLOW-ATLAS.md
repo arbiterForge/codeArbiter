@@ -181,7 +181,7 @@ input identity is computed, so their text, source links and geometry are
 unchanged. The cited line range stays valid: the paragraph is inserted inside
 S10's range and the other claims keep their order.
 
-`SHIP_SET_SOURCE_BLOBS` pins the S10 owner to its exact reviewed blob. The
+`DRAFT_PREVIEW_SOURCE_BLOBS` pins the S10 owner to its exact reviewed blob, which carries both the draft-preview and the ship-set text. The
 regression compares every current input with the reviewed revision, lists
 `core/surface/includes/artifacts.md` among the reviewed changes, requires the
 tracked file to hash to the pinned blob, and keeps every other mapped owner

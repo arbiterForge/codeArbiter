@@ -24,6 +24,20 @@ All notable changes to `ca-pi` are documented in this file.
   validation still happens once.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
+## [0.17.10] - 2026-10-12
+
+### Fixed
+
+- Carry the shared native engine draft-pair rebinding repair and generated workflow guidance. This payload update does not enable Pi verification or review authority.
+
+## [0.17.9] - 2026-10-12
+
+### Fixed
+
+- Recognize normal verbose unittest rows for fully qualified required test
+  identities. Preserve exact identity matching and refusal of duplicate,
+  skipped, failed or missing required results (#955).
+
 ## [0.17.8] - 2026-10-12
 
 ### Fixed

@@ -218,6 +218,18 @@ func RequestSchema(op string) (object, error) {
 		cas()
 		add("spec_id", idType(), true)
 		add("changes", changesType(), false)
+		// The ordinary approved-source request is unchanged. Draft rebinding
+		// is a separate closed shape with explicit source compare-and-swap.
+		approvedProperties := object{}
+		for key, value := range p {
+			approvedProperties[key] = value
+		}
+		approved := closed(approvedProperties, required...)
+		add("binding_mode", enum("draft_preview"), true)
+		add("spec_expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		request := closed(p)
+		request["oneOf"] = []any{approved, closed(p, required...)}
+		return request, nil
 	case "eligible":
 		artifact()
 	case "task-start":

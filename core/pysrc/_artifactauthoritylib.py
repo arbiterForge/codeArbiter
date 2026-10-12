@@ -1735,7 +1735,14 @@ def _unittest_collector(stdout: bytes, stderr: bytes, required: list[str]) -> li
     text = (stdout + b"\n" + stderr).decode("utf-8", "replace")
     results = []
     for name in required:
-        pattern = re.compile(r"(?m)^" + re.escape(name) + r"(?:[ \t]+\([^\r\n]*\))?[ \t]+\.\.\.[ \t]+([^\r\n]+)\r?$")
+        identity = re.escape(name)
+        prefix = identity + r"(?:[ \t]+\([^\r\n]*\))?"
+        if "." in name:
+            # Ordinary verbose rows put the full identity in parentheses.
+            # Match both forms together so mixed rows still count as duplicates.
+            prefix = (r"(?:" + prefix + r"|" + re.escape(name.rsplit(".", 1)[1])
+                      + r"[ \t]+\(" + identity + r"\))")
+        pattern = re.compile(r"(?m)^" + prefix + r"[ \t]+\.\.\.[ \t]+([^\r\n]+)\r?$")
         matches = pattern.findall(text)
         if not matches:
             raise AuthorityError("MISSING_TEST_RESULT", f"required test did not pass: {name}")

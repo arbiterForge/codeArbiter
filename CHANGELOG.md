@@ -32,6 +32,20 @@ predate the plugin rewrite and are grouped by date.
   validation still happens once.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
+## [2.25.9] - 2026-10-12
+
+### Fixed
+
+- Rebind a revised initial draft specification and plan through an explicit, same-pair operation with exact source and plan checks. Keep both artifacts unapproved and refuse execution evidence; ordinary approved-source binding and later combined approval remain required.
+
+## [2.25.8] - 2026-10-12
+
+### Fixed
+
+- Recognize normal verbose unittest rows for fully qualified required test
+  identities. Preserve exact identity matching and refusal of duplicate,
+  skipped, failed or missing required results (#955).
+
 ## [2.25.7] - 2026-10-12
 
 ### Fixed

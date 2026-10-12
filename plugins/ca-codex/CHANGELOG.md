@@ -26,6 +26,20 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   validation still happens once.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
+## [0.16.9] - 2026-10-12
+
+### Fixed
+
+- Repair initial draft-pair revision with an explicit authority-free rebind. Require both current source and plan identities, pending unevidenced tasks and an unchanged pair; preserve normal approval and native-host qualification gates.
+
+## [0.16.8] - 2026-10-12
+
+### Fixed
+
+- Recognize normal verbose unittest rows for fully qualified required test
+  identities. Preserve exact identity matching and refusal of duplicate,
+  skipped, failed or missing required results (#955).
+
 ## [0.16.7] - 2026-10-12
 
 ### Fixed

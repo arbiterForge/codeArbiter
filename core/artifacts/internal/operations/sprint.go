@@ -21,36 +21,60 @@ func equalValue(a, b any) bool {
 	return e == nil && f == nil && x == y
 }
 
+// initialDraftPair is the shared non-authorizing boundary for current-source
+// draft rebinding and the later initial combined approval preview.
+func initialDraftPair(plan, spec *model.Document) error {
+	if plan.Kind() != "plan" || spec.Kind() != "spec" {
+		return fault.New("WRONG_KIND", "initial pair requires a plan and its specification")
+	}
+	ref := model.M(plan.Norm()["spec_ref"])
+	if spec.ID() != model.S(ref["artifact_id"]) || model.S(spec.Data["slug"]) != model.S(plan.Data["slug"]) {
+		return fault.New("PAIR_MISMATCH", "initial sprint must name the exact canonical same-slug pair")
+	}
+	for _, d := range []*model.Document{spec, plan} {
+		g := model.M(d.Data["governance"])
+		if model.S(g["state"]) != "draft" || len(model.A(g["approvals"])) != 0 {
+			return fault.New("INITIAL_APPROVAL_ONLY", "initial pair cannot replace an existing delegation or approval")
+		}
+	}
+	if model.S(ref["binding_mode"]) != "draft_preview" {
+		return fault.New("DRAFT_BINDING", "initial preview must retain its draft source binding")
+	}
+	ex := model.M(plan.Data["execution"])
+	for _, v := range model.M(ex["tasks"]) {
+		st := model.M(v)
+		_, completionReceipt := st["completion_review_receipt"]
+		_, completionHash := st["completion_sha256"]
+		if model.S(st["state"]) != "PENDING" || len(model.A(st["evidence_refs"])) != 0 || completionReceipt || completionHash {
+			return fault.New("INITIAL_APPROVAL_ONLY", "initial pair cannot contain started, reviewed or evidenced work")
+		}
+	}
+	if len(model.M(ex["prerequisite_evidence"])) != 0 || len(model.M(ex["scopes"])) != 0 {
+		return fault.New("INITIAL_APPROVAL_ONLY", "initial pair cannot contain prerequisite or scope evidence")
+	}
+	for _, state := range model.M(ex["prerequisites"]) {
+		if model.S(state) != "not_satisfied" {
+			return fault.New("INITIAL_APPROVAL_ONLY", "initial pair prerequisites must remain unsatisfied")
+		}
+	}
+	return nil
+}
+
 // initialPair projects only the binding change. Neither document acquires
 // authority before the one host-observed reply commits both approvals.
 func (e *Engine) initialPair(plan repository.Entry, specID string, delegate bool) (repository.Entry, *model.Document, object, error) {
-	bad := func(code, msg string) (repository.Entry, *model.Document, object, error) {
-		return repository.Entry{}, nil, nil, fault.New(code, msg)
-	}
 	if plan.Doc.Kind() != "plan" {
-		return bad("WRONG_KIND", "combined approval requires a plan and its specification")
+		return repository.Entry{}, nil, nil, fault.New("WRONG_KIND", "combined approval requires a plan and its specification")
 	}
 	spec, err := e.Catalog.Spec(plan.Doc)
 	if err != nil {
 		return repository.Entry{}, nil, nil, err
 	}
-	if spec.Doc.ID() != specID || model.S(spec.Doc.Data["slug"]) != model.S(plan.Doc.Data["slug"]) {
-		return bad("PAIR_MISMATCH", "initial sprint must name the exact canonical same-slug pair")
+	if spec.Doc.ID() != specID {
+		return repository.Entry{}, nil, nil, fault.New("PAIR_MISMATCH", "initial sprint must name the exact canonical same-slug pair")
 	}
-	for _, d := range []*model.Document{spec.Doc, plan.Doc} {
-		g := model.M(d.Data["governance"])
-		if model.S(g["state"]) != "draft" || len(model.A(g["approvals"])) != 0 {
-			return bad("INITIAL_APPROVAL_ONLY", "combined initial approval cannot replace an existing delegation or approval")
-		}
-	}
-	if model.S(model.M(plan.Doc.Norm()["spec_ref"])["binding_mode"]) != "draft_preview" {
-		return bad("DRAFT_BINDING", "initial preview must retain its draft source binding")
-	}
-	for _, v := range model.M(model.M(plan.Doc.Data["execution"])["tasks"]) {
-		st := model.M(v)
-		if model.S(st["state"]) != "PENDING" || len(model.A(st["evidence_refs"])) != 0 {
-			return bad("INITIAL_APPROVAL_ONLY", "initial pair cannot contain started or reviewed work")
-		}
+	if err = initialDraftPair(plan.Doc, spec.Doc); err != nil {
+		return repository.Entry{}, nil, nil, err
 	}
 	if err = validate.Error(validate.Ready(spec.Doc, nil)); err != nil {
 		return repository.Entry{}, nil, nil, err

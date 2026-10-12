@@ -720,6 +720,30 @@ def canonical_hash(value: object) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def refusal_only_model_container(rendered: bytes, mutate) -> bytes:
+    """Construct inert adverse state input for an owned disposable CLI fixture.
+
+    This helper preserves the symbol graph and writes no files, events,
+    observations or receipts. The caller uses the actual engine's explicit
+    repair renderer to materialize this source-only refusal fixture. A claimed
+    approval/state in this data has no authority and must never be reused in a
+    live repository or as approval, review or qualification proof.
+    """
+    start = b'<script id="ca-artifact-model" type="application/json">\n'
+    data = json.loads(rendered.split(start, 1)[1].split(b"\n</script>", 1)[0])
+    mutate(data)
+    normative = {key: data[key] for key in (
+        "format_version", "kind", "schema_version", "artifact_id", "normative",
+    )}
+    model = {key: value for key, value in data.items() if key != "integrity"}
+    data["integrity"] = {
+        "normative_sha256": canonical_hash(normative),
+        "model_sha256": canonical_hash(model),
+        "symbol_count": data["integrity"]["symbol_count"],
+    }
+    return start + json.dumps(data, ensure_ascii=False).encode() + b"\n</script>"
+
+
 def spec_normative() -> dict:
     return {
         "title": "Configuration precedence",
