@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 
@@ -133,6 +133,36 @@ describe('atlas source compatibility revalidation', () => {
       git('show', `${completionReview}:CHANGELOG.md`))).toBe(true);
   });
 
+  it('binds the exact draft-preview documents and the complete combined product input set', () => {
+    const inputs = new Set(productInputs);
+    for (const command of originalAtlas().commands) commandMetadata(command.name, path => {
+      inputs.add(path);
+      return readFileSync(resolve(root, path), 'utf8');
+    });
+    const current = (path: string): string => readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n');
+    const changed = [...inputs].sort().filter(path => current(path) !==
+      git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:${path}`));
+    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
+      'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
+      'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
+      'core/surface/skills/finishing-a-development-branch/SKILL.md']);
+    expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
+      'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
+      'core/surface/includes/artifacts.md': '6f813e208ec6dad8c38b83b7d62ccf8cd28717e6',
+    });
+    for (const [path, blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS)) {
+      // The canonical tracked file retains this blob through a squash; no PR
+      // commit has to remain reachable in a subsequent main-only clone.
+      expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
+      expect(execFileSync('git', ['hash-object', '--stdin'], {
+        cwd: root, input: current(path), encoding: 'utf8',
+      }).trim()).toBe(blob);
+      expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
+    }
+    expect(retainsReviewedChangelog(current('CHANGELOG.md'),
+      git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
+  });
+
   it('binds the reviewed unittest collector and exact combined source changes', () => {
     expect(UNITTEST_COLLECTOR_BLOB).toBe('76a2998f4bd5b6f441f5fd162bbe810b2de2ee93');
     expect(productInputs.size).toBe(71);
@@ -144,7 +174,8 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
-      'core/surface/commands/init.md', 'core/surface/skills/commit-gate/SKILL.md',
+      'core/surface/SPRINT.md', 'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
+      'core/surface/skills/commit-gate/SKILL.md',
       'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
     ]);
@@ -182,7 +213,7 @@ describe('atlas source compatibility revalidation', () => {
     expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
   });
 
-  it('binds the complete current input set to the reviewed unittest, brownfield and legacy delivery owners', () => {
+  it('binds the complete current input set to the reviewed draft-preview, unittest, brownfield and legacy delivery owners', () => {
     const inputs = new Set(productInputs);
     for (const command of originalAtlas().commands) commandMetadata(command.name, path => {
       inputs.add(path);
@@ -209,7 +240,8 @@ describe('atlas source compatibility revalidation', () => {
       offset = end + 2 + size;
     }
     expect(offset).toBe(reviewed.length);
-    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/commands/init.md',
+    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
+      'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md']);
     expect(BROWNFIELD_SOURCE_BLOBS).toEqual({
@@ -220,7 +252,7 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/commit-gate/SKILL.md': '8818ab0ae6230aafcc42b48f72190e0e4ec9adcb',
       'core/surface/skills/finishing-a-development-branch/SKILL.md': '7e495efd47875a05560c34634c46b59b71838ee5',
     });
-    for (const [path, blob] of Object.entries({...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
+    for (const [path, blob] of Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB})) {
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
       expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: current(path), encoding: 'utf8'}).trim()).toBe(blob);

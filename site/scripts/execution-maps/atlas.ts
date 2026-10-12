@@ -53,6 +53,15 @@ export const LEGACY_CODE_MAP_SOURCE_BLOBS:Readonly<Record<string,string>>=Object
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'7e495efd47875a05560c34634c46b59b71838ee5',
 });
 
+// #959 adds an authority-free initial draft-preview rebind. S07/S10 still
+// require genuine combined approval before sprint execution and preserve the
+// ordinary approved-source feature path. Bind only these reviewed canonical
+// file blobs, which the tracked documents retain through a squash/main clone.
+export const DRAFT_PREVIEW_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/SPRINT.md':'c3c47d38028fb3a8141fe1235957e827031acd43',
+  'core/surface/includes/artifacts.md':'6f813e208ec6dad8c38b83b7d62ccf8cd28717e6',
+});
+
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
@@ -119,7 +128,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
   const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');

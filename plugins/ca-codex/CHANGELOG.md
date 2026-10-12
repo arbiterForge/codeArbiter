@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.9] - 2026-10-12
+
+### Fixed
+
+- Repair initial draft-pair revision with an explicit authority-free rebind. Require both current source and plan identities, pending unevidenced tasks and an unchanged pair; preserve normal approval and native-host qualification gates.
+
 ## [0.16.8] - 2026-10-12
 
 ### Fixed

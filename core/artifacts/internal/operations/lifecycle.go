@@ -98,8 +98,22 @@ func (e *Engine) bind(r object, entry repository.Entry) (any, error) {
 	if s.Doc.Kind() != "spec" {
 		return nil, fault.New("WRONG_KIND", "binding target is not a specification")
 	}
-	if _, err = e.guards(s.Doc); err != nil {
-		return nil, err
+	draft := model.S(r["binding_mode"]) == "draft_preview"
+	if draft {
+		expected := model.M(r["spec_expected"])
+		if model.I(expected["revision"]) != s.Doc.Revision() || model.S(expected["model_sha256"]) != s.Doc.Hash() {
+			return nil, fault.New("REVISION_CONFLICT", "expected source revision AND model identity must match the current specification")
+		}
+		if err = initialDraftPair(d, s.Doc); err != nil {
+			return nil, err
+		}
+		if err = validate.Error(validate.Ready(s.Doc, nil)); err != nil {
+			return nil, err
+		}
+	} else {
+		if _, err = e.guards(s.Doc); err != nil {
+			return nil, err
+		}
 	}
 	next, err := d.Clone()
 	if err != nil {
@@ -111,14 +125,22 @@ func (e *Engine) bind(r object, entry repository.Entry) (any, error) {
 			return nil, err
 		}
 	}
-	next.Norm()["spec_ref"] = object{"artifact_id": s.Doc.ID(), "normative_sha256": s.Doc.NormHash(), "binding_mode": "approved_source"}
+	mode := "approved_source"
+	if draft {
+		mode = "draft_preview"
+	}
+	next.Norm()["spec_ref"] = object{"artifact_id": s.Doc.ID(), "normative_sha256": s.Doc.NormHash(), "binding_mode": mode}
 	model.M(next.Data["governance"])["state"] = "draft"
 	next.Data["revision"] = d.Revision() + 1
 	next, err = render.Prepare(next.Data)
 	if err != nil {
 		return nil, err
 	}
-	if err = validate.Error(validate.Binding(next, s.Doc)); err != nil {
+	diagnostics := validate.Binding(next, s.Doc)
+	if draft {
+		diagnostics = validate.Ready(next, s.Doc)
+	}
+	if err = validate.Error(diagnostics); err != nil {
 		return nil, err
 	}
 	return e.save(r, entry, next)
