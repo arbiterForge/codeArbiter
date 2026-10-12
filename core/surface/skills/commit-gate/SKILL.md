@@ -114,6 +114,31 @@ Run an **incremental re-scout for each affected document**, scoped to its select
 - **Claim still holds → silently re-baseline only that document's provenance record.** Call `_provenancelib.rebaseline(doc_provenance, selected_current_hashes)` where `selected_current_hashes` contains current hashes only for the selected staged paths whose claims in that document were inspected and still hold. Do not re-baseline a path whose claim changed or was not inspected. Stage only `.codearbiter/.provenance/<doc>.json` by explicit path so the re-baselined record rides THIS commit (ADR-0008 ride-along pattern — nothing is surfaced to the user). After staging, re-run the secrets scan from `tech-stack.md` over the newly-staged path(s) — any file staged after Phase 4 must still pass the automated secrets scan before the commit proceeds. A missing current hash (deletion or rename) cannot be silently re-baselined; surface it in Phase 6 for review.
 - **Claim changed → route to the existing Phase 6 diff-review.** Propose only the affected doc or code-map edit required to reflect its changed claim. The user reviews that edit in the normal diff, and Phase 7 stages approved paths explicitly; do not silently rewrite or add unrelated documentation.
 
+For reviewed legacy code-map metadata, use the shipped fixed-target helper at
+`{{PLUGIN_ROOT}}/hooks/resolve-context-conflict.py`. Run `--root "{{PROJECT_DIR}}"
+inspect-claims`, then `--root "{{PROJECT_DIR}}" refresh-claims --expected <binding>
+--claims <json-array>` with one to four reviewed records containing exactly
+`field`, `before`, and `after`. The supported existing fields are `ca_version`,
+`codex_version`, `pi_version`, and `metadata_date`. Use the inspection's exact
+current claim as `before`; a version's `after` must match its fixed source
+manifest, and the date must match `inspection_date`. Select the interpreter once
+by presence and use it for both calls; never retry a failed operation under
+another interpreter.
+
+This operation requires resolved, tracked legacy schema-1 document/provenance
+and no native or uncertain journal ownership. It binds document, provenance,
+Git/index, source manifest bytes and date, preserves all unselected bytes, and
+does not stage, rebaseline, adopt, enroll or create a native receipt. Inspect the
+worktree diff for `.codearbiter/code-map.md`, selectively stage that explicit
+path, and re-run the normal secrets scan over the newly staged Markdown before
+Phase 6. Treat it as a heal-proposed doc/code-map edit in Phase 6 review, never as
+a silent rebaseline, and retain its explicit inclusion in Phase 7. Provenance
+rebaseline remains separately scoped by Phase 5.5. Unsupported
+claims or refused preimages stop the edit; do not substitute a direct write or
+native adoption. A codeArbiter contributor may exercise the tested and
+independently reviewed canonical helper under `core/pysrc/` with live enforcement
+intact, never a copied script, installed-cache edit or hook/trust change.
+
 ## Phase 6 — Diff review · gate: BLOCK
 
 Read the complete staged diff (`git diff --cached`). Flag as blocking:

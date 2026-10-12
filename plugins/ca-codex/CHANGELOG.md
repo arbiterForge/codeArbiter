@@ -6,6 +6,19 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.16.7] - 2026-10-12
+
+### Fixed
+
+- Restore reviewed legacy code-map metadata updates and explicit per-block Git
+  conflict resolution with bounded helpers, preserving native ownership,
+  stale-input checks, unselected text and the Git index (#967).
+- Explain debug packet shapes and link the trusted schema and a synthetic
+  unresolved example before one-shot validation (#951).
+- Document brownfield host prerequisites before scaffolding, preserving
+  containment, native approval and partial-state recovery gates. Unrestricted
+  Codex desktop/Windows agents remain unqualified for context extraction (#950).
+
 ## [0.16.6] - 2026-10-10
 
 ### Fixed
