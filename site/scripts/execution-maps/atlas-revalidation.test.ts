@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 
@@ -14,6 +14,7 @@ const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 const nativeV2Review = '25980c292b529fca90c39f5f26d69a1c0674de44';
 const packetPreparationReview = '5e909cfab72e4e7793b3ffa7b62c2239632f80d1';
+const legacyDeliveryReview = 'a96877deb8e40e887112c6751b3f891341c96473';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
@@ -199,7 +200,9 @@ describe('atlas source compatibility revalidation', () => {
     for (const [path, blob] of Object.entries(reviewedBlobs)) {
       expect(git('rev-parse', `${packetPreparationReview}:${path}`).trim()).toBe(blob);
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
-      expect(git('hash-object', '--', path).trim()).toBe(blob);
+      expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
+        .toBe(git('--no-replace-objects', 'cat-file', 'blob', `${packetPreparationReview}:${path}`));
+      expect(git('hash-object', '--', path).trim()).toBe(CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(git('show', `${packetPreparationReview}:CHANGELOG.md`),
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
@@ -211,6 +214,14 @@ describe('atlas source compatibility revalidation', () => {
     expect(atlas.scope).toContain(REVALIDATED_AT);
     expect(atlas.sources).toEqual(original.sources);
     expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
+  });
+
+  it('retains the exact historical legacy delivery documents separately from current maintenance', () => {
+    for (const [path, blob] of Object.entries(LEGACY_CODE_MAP_SOURCE_BLOBS)) {
+      expect(git('rev-parse', `${legacyDeliveryReview}:${path}`).trim()).toBe(blob);
+      expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
+        .toBe(git('--no-replace-objects', 'cat-file', 'blob', `${legacyDeliveryReview}:${path}`));
+    }
   });
 
   it('binds the complete current input set to the reviewed draft-preview, unittest, brownfield and legacy delivery owners', () => {
@@ -252,7 +263,13 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/commit-gate/SKILL.md': '8818ab0ae6230aafcc42b48f72190e0e4ec9adcb',
       'core/surface/skills/finishing-a-development-branch/SKILL.md': '7e495efd47875a05560c34634c46b59b71838ee5',
     });
+    expect(CONTEXT_MAINTENANCE_SOURCE_BLOBS).toEqual({
+      'core/surface/commands/init.md': '83afa327833ff6f76379389b6d1b80c4978f332b',
+      'core/surface/skills/commit-gate/SKILL.md': 'bbfc5054fe7ac94309ded7b8cdd6073b3ad65c9d',
+      'core/surface/skills/finishing-a-development-branch/SKILL.md': 'c9b8bc36934e5b79f0e4ec72c35c69997519378f',
+    });
     for (const [path, blob] of Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
+      ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB})) {
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
       expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: current(path), encoding: 'utf8'}).trim()).toBe(blob);

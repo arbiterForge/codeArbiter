@@ -52,8 +52,9 @@ a qualified host.
 When these prerequisites are unavailable or unknown, report the missing
 capability before invoking the scaffolder. Keep a fresh repository unactivated
 and retain every byte of any existing partial state. Name the loaded package,
-actual host limitation, selected population route and next missing prerequisite
-in the handoff; leave unobserved qualification and prior operation identities
+observed host limitation or explicitly unknown qualification, selected
+population route and next missing prerequisite in the handoff; leave
+unobserved qualification and prior operation identities
 unknown. Resume on a host only after fresh containment and writer qualification,
 using the existing interrupted-population recovery procedure. No supported
 destination is implied by this guidance.

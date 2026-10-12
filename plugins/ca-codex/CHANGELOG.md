@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-10-12
+
+### Fixed
+
+- Reproduce normal ORT histogram conflicts in guarded legacy block resolution while preserving exact rendering and index/CAS controls (#968).
+- Clarify unknown host qualification and complete the repository-scoped maintenance commands.
+
+
 ## [0.17.0] - 2026-10-10
 
 ### Changed

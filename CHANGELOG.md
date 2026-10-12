@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.26.1] - 2026-10-12
+
+### Fixed
+
+- Reproduce normal ORT histogram conflicts in guarded legacy block resolution while preserving exact rendering and index/CAS controls (#968).
+- Clarify unknown host qualification and complete the repository-scoped maintenance commands.
+
+
 ## [2.26.0] - 2026-10-10
 
 ### Changed

@@ -1964,7 +1964,7 @@ class WorkflowContractTest(unittest.TestCase):
         # image - a config whose sole waiver was
         # `paths = ['''^test_hooklib\\.py$''']` (condition = "AND", plus a regex
         # matching nothing) reported `scanned ~189 bytes` and missed a freshly
-        # planted `aws_secret_access_key = "kR3m..."` in that file.  So every
+        # planted an AWS credential assignment in that file. So every
         # waiver here must be a VALUE waiver naming one fixed adversarial
         # literal, which leaves every file fully scanned.
         self.assertTrue(GITLEAKS_CONFIG.is_file(), "no .gitleaks.toml in the repo root")

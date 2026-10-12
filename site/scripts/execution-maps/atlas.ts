@@ -64,6 +64,16 @@ export const DRAFT_PREVIEW_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.f
   'core/surface/includes/artifacts.md':'8a834b919fb81c77213086a1b1661d16b5290bbe',
 });
 
+// #968 clarifies observed/unknown host qualification, the fixed manifest layout
+// and complete same-interpreter helper calls. These three reviewed document
+// blobs preserve the existing routes and gates; earlier review objects remain
+// historical evidence rather than being relabelled as this clarification.
+export const CONTEXT_MAINTENANCE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/commands/init.md':'83afa327833ff6f76379389b6d1b80c4978f332b',
+  'core/surface/skills/commit-gate/SKILL.md':'bbfc5054fe7ac94309ded7b8cdd6073b3ad65c9d',
+  'core/surface/skills/finishing-a-development-branch/SKILL.md':'c9b8bc36934e5b79f0e4ec72c35c69997519378f',
+});
+
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
@@ -130,7 +140,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
   const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
