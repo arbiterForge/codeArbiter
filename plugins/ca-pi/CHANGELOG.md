@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.18.2] - 2026-10-12
+
+### Fixed
+
+- Allow initialized Windows artifact stores to be observed without write access (#971).
+- Pin the repository, metadata directories, and lock file against replacement while preserving reader/writer exclusion. Missing or unsafe lock state refuses without initialization.
+
 ## [0.18.1] - 2026-10-12
 
 ### Fixed
