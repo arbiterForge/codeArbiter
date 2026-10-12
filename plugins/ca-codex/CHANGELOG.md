@@ -6,13 +6,21 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.16.7] - 2026-10-11
+## [0.16.8] - 2026-10-12
 
 ### Fixed
 
 - Recognize normal verbose unittest rows for fully qualified required test
   identities. Preserve exact identity matching and refusal of duplicate,
   skipped, failed or missing required results (#955).
+
+## [0.16.6] - 2026-10-10
+
+### Fixed
+
+- Use the shared bounded verification projection for typed-plan approval
+  preflight, preserving full identity freshness, command and snapshot diagnostics,
+  validation order and refusal before approval arming on incomplete delivery.
 
 ## [0.16.5] - 2026-10-10
 

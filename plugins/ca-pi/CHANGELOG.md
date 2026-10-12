@@ -4,13 +4,21 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.17.8] - 2026-10-11
+## [0.17.9] - 2026-10-12
 
 ### Fixed
 
 - Recognize normal verbose unittest rows for fully qualified required test
   identities. Preserve exact identity matching and refusal of duplicate,
   skipped, failed or missing required results (#955).
+
+## [0.17.7] - 2026-10-10
+
+### Fixed
+
+- Carry the shared bounded verification projection and approval preflight checks,
+  retaining complete command definitions, source snapshot ordering and full plan
+  identity freshness. Pi verification and review authority remain unsupported.
 
 ## [0.17.6] - 2026-10-10
 
