@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
 // hostResolves reports whether this host resolves rel under root to a real path.
@@ -118,7 +119,7 @@ func TestSnapshotUnreadableDotGitFailsClosed(t *testing.T) {
 		t.Fatalf("baseline: %v", err)
 	}
 	// A plain directory (no .git at all) is still the filesystem walk.
-	plain := t.TempDir()
+	plain := testutil.Root(t)
 	completionWrite(t, plain, "a.txt", []byte("a\n"))
 	if _, _, err := snapshotTry(t, plain, nil); err != nil {
 		t.Fatalf("non-git root: %v", err)
