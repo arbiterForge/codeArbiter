@@ -10,6 +10,7 @@ const preflightReview = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 const nativeV2Review = '25980c292b529fca90c39f5f26d69a1c0674de44';
+const shipSetReview = '7976153cb05d6ed033cb5292878c8208e3ec2c1a';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
@@ -112,7 +113,6 @@ describe('atlas source compatibility revalidation', () => {
   });
 
   it('binds only the reviewed native V2 owners and preserved changelog history', () => {
-    expect(REVALIDATED_AT).toBe(nativeV2Review);
     expect(changedProductInputs(completionReview, nativeV2Review)).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/includes/artifacts.md',
       'docs/hooks.md',
@@ -127,6 +127,17 @@ describe('atlas source compatibility revalidation', () => {
     }
     expect(retainsReviewedChangelog(git('show', `${nativeV2Review}:CHANGELOG.md`),
       git('show', `${completionReview}:CHANGELOG.md`))).toBe(true);
+  });
+
+  it('binds only the reviewed ship-set artifacts owner and preserved changelog history', () => {
+    expect(REVALIDATED_AT).toBe(shipSetReview);
+    expect(changedProductInputs(nativeV2Review, shipSetReview)).toEqual([
+      'CHANGELOG.md', 'core/surface/includes/artifacts.md',
+    ]);
+    expect(git('rev-parse', `${shipSetReview}:core/surface/includes/artifacts.md`).trim())
+      .toBe('604133e67b8452640865cc14c725e5cd760c2f3e');
+    expect(retainsReviewedChangelog(git('show', `${shipSetReview}:CHANGELOG.md`),
+      git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
 
   it('preserves original geometry and source links independently of the compatibility review', () => {

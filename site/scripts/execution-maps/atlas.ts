@@ -25,9 +25,11 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // completion closure and bounded context retention. Their routes and authority
 // boundaries agree with the maps. PR945 adds the exact native V2 activity/child
 // binding, steering refusal and frozen verification context references to those
-// owners and docs/hooks.md. Routes and authority boundaries remain compatible;
-// historical comparisons remain independently tested.
-export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
+// owners and docs/hooks.md. Routes and authority boundaries remain compatible.
+// PR961 (ADR-0042) adds ship-set input identity to the artifacts owner; no route
+// reads or depends on that identity. Historical comparisons remain independently
+// tested.
+export const REVALIDATED_AT = '7976153cb05d6ed033cb5292878c8208e3ec2c1a';
 
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};

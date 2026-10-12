@@ -166,6 +166,27 @@ in merged history; do not substitute the latest main or relax the drift check.
 This source compatibility review does not certify an installed Codex host or a
 completed native V2 workflow.
 
+## Ship-set input identity compatibility review
+
+PR961 (ADR-0042) changes one mapped owner: `core/surface/includes/artifacts.md`
+(S10). It states that verification-input identity is git ship-set membership
+(index entries present on disk plus untracked non-ignored files, with one fixed
+`gate-events.log` exemption), that the manifest format is
+`codearbiter.verification-inputs/0.2.0`, and that evidence objects are read and
+validated at most once per operation. It also replaces the sentence saying
+`.gitignore` does not define the exclusion policy. The feature, sprint, review,
+commit and diagnostic nodes were compared with that text. They name fresh
+verification, current review receipts and scope acceptance but never describe how
+input identity is computed, so their text, source links and geometry are
+unchanged. The cited line range stays valid: the paragraph is inserted inside
+S10's range and the other claims keep their order.
+
+`REVALIDATED_AT` binds the reviewed source. The regression retains every earlier
+comparison, pins the exact S10 blob, and requires every other mapped owner to
+remain unchanged except for release notes inserted above preserved changelog
+history. Keep that review commit in merged history (the PR must land as a true
+merge commit) and do not substitute the latest main or relax the drift check.
+
 ## Theme and exports
 
 `src/styles/design-system.css` remains the only product token owner.
