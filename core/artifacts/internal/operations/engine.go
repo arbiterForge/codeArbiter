@@ -21,6 +21,10 @@ import (
 	"time"
 )
 
+// openStore opens the store handle for one engine operation; tests may wrap it
+// to instrument that handle. Production never reassigns it.
+var openStore = store.Open
+
 type Engine struct {
 	FS          *store.FS
 	Catalog     *repository.Catalog
@@ -75,7 +79,7 @@ func Run(root, op string, input object) (any, error) {
 			return schema.Get(model.S(r["name"]), model.S(r["fragment"]))
 		}
 	}
-	f, e := store.Open(root)
+	f, e := openStore(root)
 	if e != nil {
 		return nil, e
 	}

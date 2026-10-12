@@ -2155,3 +2155,28 @@ Scalable and Available: independent observations can overlap without waiting for
 Use the existing shared-lock support in the native store backends and keep this fix in the existing performance PR. No daemon, persistent index, new dependency, machine configuration, CI runner requirement or project-state migration is authorized by this decision.
 
 ---
+
+## DECISION-0075 — adr-0042-ship-set-evidence-inputs — Bind structured-artifact evidence inputs to the git ship set; exempt gate-events.log
+
+**Date:** 2026-10-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — "My biggest thing is I don't want a random append by another agent that is part of a file that isn't getting sent to remote"; chose "Keep tracked, exempt" for gate-events.log; approved SPEC-SHIP-SET-EVIDENCE-INPUTS (`approve 93WT`).
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** docs/artifacts/PROTOCOL.md and includes/artifacts.md define evidence inputs as a filesystem walk of the plan roots; `.gitignore` does not define the policy.
+- **Scaffold position:** A hook append to the tracked gate-events.log staled all 20 SMARTS round-2 receipts, and the per-file walk took 16–28 s (past the 30 s UserPromptSubmit limit, #931).
+- **Status type:** divergent
+
+### Decision
+Evidence input identity is the git ship set: index entries present on disk plus untracked non-ignored files, within plan roots minus plan excludes. Gitlinks contribute their pointer only. `.codearbiter/gate-events.log` stays tracked but is a fixed runtime path that never counts as input. Non-git roots fall back to the filesystem walk, labelled `membership: filesystem`; a failed git probe fails closed. The manifest advances to 0.2.0, and 0.1.0 receipts read as stale.
+
+### SMARTS rationale
+Reliable: unrelated runtime appends no longer stale evidence or stall a round. Securable: the audit log stays tracked, the exemption is a single fixed path that plans cannot widen, and probe failures fail closed. Maintainable: membership reuses the existing hardened git probes.
+
+### Implementation implication
+ADR-0042. Changes core/artifacts/internal/evidence/snapshot.go and store/fs_portable.go (bounded handle opens), plus docs/artifacts/PROTOCOL.md and core/surface/includes/artifacts.md. Rides with the #931 prompt-submit timeout fix.
+
+---

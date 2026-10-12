@@ -148,7 +148,7 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/finishing-a-development-branch/SKILL.md']);
     expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
       'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
-      'core/surface/includes/artifacts.md': '6f813e208ec6dad8c38b83b7d62ccf8cd28717e6',
+      'core/surface/includes/artifacts.md': '8a834b919fb81c77213086a1b1661d16b5290bbe',
     });
     for (const [path, blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS)) {
       // The canonical tracked file retains this blob through a squash; no PR

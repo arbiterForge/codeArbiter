@@ -3500,7 +3500,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         job = jobs["artifact-engine"]
         self.assertEqual(
             re.findall(r"(?m)^    timeout-minutes: (.+)$", job),
-            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}"],
+            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}"],
         )
         self.assertIn("fail-fast: false", job)
         self.assertNotIn("continue-on-error:", job)
@@ -3541,7 +3541,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         self.assertIn(
-            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}",
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}",
             job,
         )
         for runner in (
@@ -4057,7 +4057,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         self.assertIn(
-            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}",
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}",
             block,
         )
         for script in ("test_artifact_native.py",

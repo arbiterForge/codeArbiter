@@ -160,6 +160,10 @@
       "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
+      "glob": ".github/scripts/test_ship_set_inputs.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
       "glob": ".github/scripts/test_artifact_cli.py",
       "checks": ["artifact-engine", "artifact-package-cold"]
     },

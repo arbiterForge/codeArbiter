@@ -25,6 +25,18 @@ type FS struct {
 	root   *os.File
 	Root   string
 	Inject func(string) error
+	// Stats is the test-only open-counting seam (nil in production).
+	Stats *OpenStats
+	// memo holds one engine operation's fully validated evidence objects (DEC-07).
+	// Open creates it; it is reachable only through Memo and ends with the handle.
+	// Nil (a hand-built FS) disables reuse.
+	memo *Memo
+	// readHook is a test-only seam (nil in production); see SetReadHook.
+	readHook func(rel string, anchored bool)
+	// afterRead is a test-only seam (nil in production) run after a file's bytes
+	// are read and before the closing identity check, so a test can change the
+	// file at exactly that point. It receives the name that was read.
+	afterRead func(name string)
 }
 
 const NativeWrites = true
@@ -39,7 +51,7 @@ func Open(root string) (*FS, error) {
 	if e != nil {
 		return nil, fault.New("UNSAFE_ROOT", "repository root must be an existing real directory")
 	}
-	return &FS{root: os.NewFile(uintptr(fd), a), Root: a}, nil
+	return &FS{root: os.NewFile(uintptr(fd), a), Root: a, memo: newMemo()}, nil
 }
 func (f *FS) Close() error { return f.root.Close() }
 func (f *FS) Lock(exclusive bool, timeout time.Duration) (func(), error) {
@@ -70,11 +82,13 @@ func (f *FS) dir(rel string, create bool) (*os.File, error) {
 	if e != nil {
 		return nil, e
 	}
+	f.Stats.dirOpen()
 	cur := os.NewFile(uintptr(fd), f.Root)
 	if rel == "." {
 		return cur, nil
 	}
 	for _, part := range strings.Split(rel, "/") {
+		f.Stats.ancestor()
 		n, e := syscall.Openat(int(cur.Fd()), part, syscall.O_RDONLY|syscall.O_DIRECTORY|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
 		if e == syscall.ENOENT && create {
 			if e = syscall.Mkdirat(int(cur.Fd()), part, 0755); e != nil && e != syscall.EEXIST {
@@ -106,44 +120,83 @@ func (f *FS) parent(rel string, create bool) (*os.File, string, error) {
 	return d, path.Base(rel), e
 }
 func (f *FS) Read(rel string, limit int64) ([]byte, error) {
+	if f.readHook != nil {
+		f.readHook(rel, false)
+	}
 	d, n, e := f.parent(rel, false)
 	if e != nil {
 		return nil, e
 	}
 	defer d.Close()
+	b, _, e := f.readAt(d, n, limit)
+	return b, e
+}
+
+// readAt opens name relative to the directory descriptor d exactly once and
+// reads it under the size limit, returning the identity of the opened handle.
+func (f *FS) readAt(d *os.File, n string, limit int64) ([]byte, os.FileInfo, error) {
+	f.Stats.fileOpen()
 	fd, e := syscall.Openat(int(d.Fd()), n, syscall.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK|syscall.O_CLOEXEC, 0)
 	if e != nil {
 		if e == syscall.ENOENT {
-			return nil, os.ErrNotExist
+			return nil, nil, os.ErrNotExist
 		}
-		return nil, fault.New("UNSAFE_PATH", "file is not a safe readable regular file")
+		return nil, nil, fault.New("UNSAFE_PATH", "file is not a safe readable regular file")
 	}
 	file := os.NewFile(uintptr(fd), n)
 	defer file.Close()
 	before, e := file.Stat()
 	if e != nil || !before.Mode().IsRegular() {
-		return nil, fault.New("UNSAFE_PATH", "only regular files can be read")
+		return nil, nil, fault.New("UNSAFE_PATH", "only regular files can be read")
 	}
 	if before.Size() > limit {
-		return nil, fault.New("MAX_BYTES", "file exceeds operation limit")
+		return nil, nil, fault.New("MAX_BYTES", "file exceeds operation limit")
 	}
 	b, e := io.ReadAll(io.LimitReader(file, limit+1))
 	if e != nil {
-		return nil, e
+		return nil, nil, e
 	}
 	if int64(len(b)) > limit {
-		return nil, fault.New("MAX_BYTES", "file exceeds operation limit")
+		return nil, nil, fault.New("MAX_BYTES", "file exceeds operation limit")
+	}
+	if f.afterRead != nil {
+		f.afterRead(n)
 	}
 	after, e := file.Stat()
 	if e != nil {
-		return nil, e
+		return nil, nil, e
 	}
 	bs, as := before.Sys().(*syscall.Stat_t), after.Sys().(*syscall.Stat_t)
 	if before.Size() != after.Size() || bs.Mtim != as.Mtim || bs.Ctim != as.Ctim {
-		return nil, fault.New("CONCURRENT_CHANGE", "file changed while being read")
+		return nil, nil, fault.New("CONCURRENT_CHANGE", "file changed while being read")
 	}
-	return b, nil
+	// The handle alone cannot show a replacement: its descriptor always names the
+	// file that was opened. Identity (device and inode) is therefore read from the
+	// name, without following links, and must still be the opened file's.
+	f.Stats.entryCheck()
+	if !sameNamedFile(d, n, bs) {
+		return nil, nil, fault.New("CONCURRENT_CHANGE", "file changed while being read")
+	}
+	return b, before, nil
 }
+
+// oPath is Linux O_PATH, which package syscall does not name; its value is the
+// same on every architecture Go supports for Linux.
+const oPath = 0x200000
+
+// sameNamedFile reports whether name, resolved relative to d without following a
+// link, is the file whose identity is want. O_PATH yields a descriptor for the
+// name itself (a replacing symlink included) without opening the file's data.
+func sameNamedFile(d *os.File, name string, want *syscall.Stat_t) bool {
+	fd, e := syscall.Openat(int(d.Fd()), name, oPath|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
+	if e != nil {
+		return false
+	}
+	defer syscall.Close(fd)
+	var named syscall.Stat_t
+	return syscall.Fstat(fd, &named) == nil && named.Dev == want.Dev && named.Ino == want.Ino
+}
+
 func (f *FS) Exists(rel string) (bool, error) {
 	d, n, e := f.parent(rel, false)
 	if e != nil {
@@ -173,6 +226,10 @@ func (f *FS) ListUnfollowed(rel string) ([]os.DirEntry, error) {
 		return nil, e
 	}
 	defer d.Close()
+	return sortedEntries(d)
+}
+
+func sortedEntries(d *os.File) ([]os.DirEntry, error) {
 	out, e := d.ReadDir(100001)
 	if e != nil && e != io.EOF {
 		return nil, e
@@ -182,6 +239,94 @@ func (f *FS) ListUnfollowed(rel string) ([]os.DirEntry, error) {
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Name() < out[j].Name() })
 	return out, nil
+}
+
+// Dir is a scan-scoped directory anchor (ADR-0042 AC-08). OpenDir resolves the
+// path from the repository root once; everything below an anchored directory is
+// opened relative to its descriptor with O_NOFOLLOW, so opening a child costs
+// one open and no ancestor re-check. The same descriptor is enumerated, so a
+// directory is opened exactly once.
+type Dir struct {
+	f   *FS
+	fd  *os.File
+	rel string
+}
+
+// OpenDir anchors the real directory at rel.
+func (f *FS) OpenDir(rel string) (*Dir, error) {
+	fd, e := f.dir(rel, false)
+	if e != nil {
+		return nil, e
+	}
+	return &Dir{f: f, fd: fd, rel: rel}, nil
+}
+
+func (d *Dir) Close() error { return d.fd.Close() }
+
+// Entries lists the directory without dereferencing any entry, sorted by name.
+// The anchoring descriptor is rewound first, so a repeated call lists the same
+// entries again instead of continuing from the previous end of directory.
+func (d *Dir) Entries() ([]os.DirEntry, error) {
+	if _, e := d.fd.Seek(0, io.SeekStart); e != nil {
+		return nil, e
+	}
+	return sortedEntries(d.fd)
+}
+
+// OpenSub anchors a child directory named by a listed entry. Anything that the
+// listing did not report as a real directory is refused.
+func (d *Dir) OpenSub(entry os.DirEntry) (*Dir, error) {
+	if !entry.IsDir() {
+		return nil, fault.New("UNSAFE_PATH", "only real directories can be descended")
+	}
+	if e := entryName(entry.Name()); e != nil {
+		return nil, e
+	}
+	d.f.Stats.dirOpen()
+	fd, e := syscall.Openat(int(d.fd.Fd()), entry.Name(), syscall.O_RDONLY|syscall.O_DIRECTORY|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
+	if e != nil {
+		if e == syscall.ENOENT {
+			return nil, os.ErrNotExist
+		}
+		return nil, fault.New("UNSAFE_PATH", "directory is not a safe real directory")
+	}
+	return &Dir{f: d.f, fd: os.NewFile(uintptr(fd), entry.Name()), rel: d.rel + "/" + entry.Name()}, nil
+}
+
+// ReadEntry opens a listed regular file once and returns its bytes together
+// with the identity of the opened handle. Anything not reported as a plain
+// regular file by the listing is refused; O_NOFOLLOW backs that at open time.
+func (d *Dir) ReadEntry(entry os.DirEntry, limit int64) ([]byte, os.FileInfo, error) {
+	if entry.Type() != 0 {
+		return nil, nil, fault.New("UNSAFE_PATH", "only regular files can be read")
+	}
+	if e := entryName(entry.Name()); e != nil {
+		return nil, nil, e
+	}
+	if d.f.readHook != nil {
+		d.f.readHook(d.rel+"/"+entry.Name(), true)
+	}
+	return d.f.readAt(d.fd, entry.Name(), limit)
+}
+
+// Has reports whether name exists in the directory under any spelling the
+// platform resolves, without following it. It exists only to tell a missing
+// path from a non-canonical spelling of an existing one.
+func (d *Dir) Has(name string) (bool, error) {
+	if e := entryName(name); e != nil {
+		return false, e
+	}
+	fd, e := syscall.Openat(int(d.fd.Fd()), name, oPath|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
+	switch e {
+	case nil:
+		syscall.Close(fd)
+		return true, nil
+	case syscall.ENOENT:
+		return false, nil
+	case syscall.ELOOP:
+		return true, nil // a symlink: it exists, and is never followed
+	}
+	return false, e
 }
 
 // List is the strict catalog/infrastructure scan: any symlink is an error.
@@ -314,6 +459,7 @@ func (f *FS) Stat(rel string) (os.FileInfo, error) {
 		return nil, e
 	}
 	defer d.Close()
+	f.Stats.fileOpen()
 	fd, e := syscall.Openat(int(d.Fd()), n, syscall.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK|syscall.O_CLOEXEC, 0)
 	if e != nil {
 		return nil, e

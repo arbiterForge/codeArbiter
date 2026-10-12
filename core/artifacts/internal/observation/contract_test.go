@@ -79,7 +79,8 @@ func TestLoadRejectsMutatedContentAddressedObservation(t *testing.T) {
 	if err = os.WriteFile(p, b, 0600); err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err = Load(f, Ref(h), h); err != nil {
+	original, originalBytes, err := Load(f, Ref(h), h)
+	if err != nil {
 		t.Fatalf("valid content-addressed observation rejected: %v", err)
 	}
 	modelResult := obs["producer_result"].(map[string]any)
@@ -88,8 +89,26 @@ func TestLoadRejectsMutatedContentAddressedObservation(t *testing.T) {
 	if err = os.WriteFile(p, b, 0600); err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err = Load(f, Ref(h), h); fault.Code(err) != "OBSERVATION_UNVERIFIED" {
-		t.Fatalf("mutated producer result did not break observation identity: %v", err)
+	// Within one operation (one handle) the object that was validated is the one
+	// served: the mutated bytes are neither read nor trusted.
+	again, againBytes, err := Load(f, Ref(h), h)
+	if err != nil {
+		t.Fatalf("the handle that validated the observation did not serve it again: %v", err)
+	}
+	if string(againBytes) != string(originalBytes) || canonical.BytesHash(againBytes) != h {
+		t.Fatal("the same handle returned bytes other than the originally validated object")
+	}
+	if got, want := model.S(model.M(again["producer_result"])["environment_sha256"]), model.S(model.M(original["producer_result"])["environment_sha256"]); got != want {
+		t.Fatalf("the same handle returned the mutated producer result %s; want the validated %s", got, want)
+	}
+	// A new handle is a new operation: it reads the file and rejects the mutation.
+	fresh, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fresh.Close()
+	if _, _, err = Load(fresh, Ref(h), h); fault.Code(err) != "OBSERVATION_UNVERIFIED" {
+		t.Fatalf("mutated producer result did not break observation identity on a fresh handle: %v", err)
 	}
 }
 
@@ -156,6 +175,43 @@ func TestContextAndObservationSchemasAreClosed(t *testing.T) {
 	obs["verdict"] = "passed"
 	if es := schema.ValidateWith(Schema(), obs); len(es) == 0 {
 		t.Fatal("caller-selected observation verdict accepted")
+	}
+}
+
+func TestContractAcceptsLegacyManifestFormat(t *testing.T) {
+	const legacy = "codearbiter.verification-inputs/0.1.0"
+	const current = "codearbiter.verification-inputs/0.2.0"
+	withManifest := func(format string, membership any) map[string]any {
+		context := verificationContext()
+		manifest := model.M(context["input_manifest"])
+		manifest["format"] = format
+		if membership != nil {
+			manifest["membership"] = membership
+		}
+		return context
+	}
+	// Historical 0.1.0 records stay readable without membership, and exactly as
+	// strict as before: membership belongs to 0.2.0 only.
+	if es := schema.ValidateWith(ContextSchema(), withManifest(legacy, nil)); len(es) != 0 {
+		t.Fatalf("legacy 0.1.0 manifest without membership rejected: %v", es)
+	}
+	if es := schema.ValidateWith(ContextSchema(), withManifest(legacy, "filesystem")); len(es) == 0 {
+		t.Fatal("legacy 0.1.0 manifest carrying membership was accepted")
+	}
+	// 0.2.0 is valid only with a closed membership value.
+	for _, membership := range []string{"git_ship_set", "filesystem"} {
+		if es := schema.ValidateWith(ContextSchema(), withManifest(current, membership)); len(es) != 0 {
+			t.Fatalf("current 0.2.0 manifest with %s rejected: %v", membership, es)
+		}
+	}
+	if es := schema.ValidateWith(ContextSchema(), withManifest(current, nil)); len(es) == 0 {
+		t.Fatal("0.2.0 manifest without membership accepted")
+	}
+	if es := schema.ValidateWith(ContextSchema(), withManifest(current, "invented")); len(es) == 0 {
+		t.Fatal("0.2.0 manifest with an unknown membership accepted")
+	}
+	if es := schema.ValidateWith(ContextSchema(), withManifest("codearbiter.verification-inputs/0.3.0", "filesystem")); len(es) == 0 {
+		t.Fatal("unknown manifest format accepted")
 	}
 }
 
