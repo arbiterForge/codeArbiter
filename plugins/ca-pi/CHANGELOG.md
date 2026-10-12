@@ -4,11 +4,19 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.17.9] - 2026-10-11
+## [0.17.10] - 2026-10-12
 
 ### Fixed
 
 - Carry the shared native engine draft-pair rebinding repair and generated workflow guidance. This payload update does not enable Pi verification or review authority.
+
+## [0.17.7] - 2026-10-10
+
+### Fixed
+
+- Carry the shared bounded verification projection and approval preflight checks,
+  retaining complete command definitions, source snapshot ordering and full plan
+  identity freshness. Pi verification and review authority remain unsupported.
 
 ## [0.17.6] - 2026-10-10
 

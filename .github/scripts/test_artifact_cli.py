@@ -496,6 +496,64 @@ class CliTests(unittest.TestCase):
                 self.assert_error(result, envelope, code)
                 self.assertNotIn("result", envelope)
 
+    def test_native_plan_verification_projection(self):
+        from test_artifact_authoring import plan_normative
+        spec = self.batch_spec()
+        normative = plan_normative("SPEC-BATCH", spec["normative_sha256"])
+        template = normative["tasks"][0]
+        normative["tasks"] = []
+        commands = [dict(template["verification"][0], assertion="λ" * 600)]
+        for task_id in ("T-003", "T-002", "T-001"):
+            task = json.loads(json.dumps(template))
+            task.update(id=task_id, steps=["Unrelated prose λ" * 500],
+                        verification=[] if task_id == "T-003" else commands * 2)
+            normative["tasks"].append(task)
+        normative["checkpoints"][0]["tasks"] = [task["id"] for task in normative["tasks"]]
+        result, envelope = self.invoke("create", {
+            "operation_id": "cli-verification-create", "artifact_id": "PLAN-BATCH", "kind": "plan",
+            "slug": "batch", "spec_id": "SPEC-BATCH", "title": normative["title"],
+            "summary": normative["summary"], "normative": normative,
+        })
+        self.assertEqual(result.returncode, 0, envelope)
+        result, envelope = self.invoke("identity", {"artifact_id": "PLAN-BATCH"})
+        self.assertEqual(result.returncode, 0, envelope)
+        expected = {key: envelope["result"][key] for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")}
+        request = {"artifact_id": "PLAN-BATCH", "expected": expected, "budget": 4096}
+        before = {str(path.relative_to(self.root)): path.read_bytes()
+                  for path in self.root.rglob("*") if path.is_file()}
+        seen, pages = [], 0
+        while True:
+            result, envelope = self.invoke("plan-verification", request)
+            self.assertEqual(result.returncode, 0, envelope)
+            self.assertLessEqual(len(result.stdout), 4096)
+            page = envelope["result"]
+            self.assertEqual(set(page), set(expected) | {"context_complete", "offset", "total", "tasks", "next_offset"})
+            self.assertEqual({key: page[key] for key in expected}, expected)
+            self.assertIs(page["context_complete"], False)
+            self.assertEqual(page["offset"], len(seen))
+            self.assertEqual(page["total"], 3)
+            for task in page["tasks"]:
+                self.assertEqual(set(task), {"id", "verification"})
+                self.assertEqual(task["verification"], [] if task["id"] == "T-003" else commands * 2)
+                seen.append(task["id"])
+            pages += 1
+            if page["next_offset"] is None:
+                break
+            self.assertEqual(page["next_offset"], len(seen))
+            self.assertLess(pages, 3)
+            request["offset"] = page["next_offset"]
+        self.assertEqual(seen, ["T-001", "T-002", "T-003"])
+        self.assertGreater(pages, 1)
+        for changed, code in (({"expected": {**expected, "revision": expected["revision"] + 1}}, "STALE_CURSOR"),
+                              ({"expected": {key: value for key, value in expected.items() if key != "normative_sha256"}}, "INVALID_MODEL"),
+                              ({"offset": 3}, "INVALID_OFFSET"), ({"context_ticket": "forged"}, "INVALID_MODEL")):
+            with self.subTest(changed=changed):
+                result, envelope = self.invoke("plan-verification", {**request, **changed})
+                self.assert_error(result, envelope, code)
+                self.assertNotIn("result", envelope)
+        self.assertEqual(before, {str(path.relative_to(self.root)): path.read_bytes()
+                                  for path in self.root.rglob("*") if path.is_file()})
+
 
 def main() -> int:
     global BINARY, COUNTERS

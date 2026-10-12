@@ -12,11 +12,20 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.25.8] - 2026-10-11
+## [2.25.9] - 2026-10-12
 
 ### Fixed
 
 - Rebind a revised initial draft specification and plan through an explicit, same-pair operation with exact source and plan checks. Keep both artifacts unapproved and refuse execution evidence; ordinary approved-source binding and later combined approval remain required.
+
+## [2.25.6] - 2026-10-10
+
+### Fixed
+
+- Read complete task verification definitions through a bounded native projection
+  during typed-plan approval preflight. Preserve command validation, source
+  snapshot and final identity ordering, aggregated diagnostics and refusal before
+  approval arming when any page is malformed, incomplete or stale.
 
 ## [2.25.5] - 2026-10-10
 

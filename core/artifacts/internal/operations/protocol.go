@@ -48,7 +48,7 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -165,6 +165,11 @@ func RequestSchema(op string) (object, error) {
 		artifact()
 		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		add("model_sha256", digestType(), false)
+		budget()
+	case "plan-verification":
+		artifact()
+		add("expected", closed(object{"artifact_id": idType(), "revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType(), "normative_sha256": digestType()}, "artifact_id", "revision", "model_sha256", "normative_sha256"), true)
+		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		budget()
 	case "identity":
 		artifact()
