@@ -16,6 +16,9 @@ import (
 func (e *Engine) evidenceContext(r object, entry repository.Entry) (any, error) {
 	plan := entry.Doc
 	activity, recordID := model.S(r["activity"]), model.S(r["record_id"])
+	if r["verification_command_bindings"] != nil && activity != "verification" {
+		return nil, fault.New("INVALID_REQUEST", "verification command bindings apply only to verification")
+	}
 	if (r["completion_selection"] != nil || r["completion_context_ref"] != nil || r["completion_context_sha256"] != nil) && activity != "spec_review" && activity != "quality_review" {
 		return nil, fault.New("INVALID_COMPLETION_SELECTION", "completion evidence applies only to reviews")
 	}
@@ -44,6 +47,13 @@ func (e *Engine) evidenceContext(r object, entry repository.Entry) (any, error) 
 		return nil, err
 	}
 	result := object{"context_ref": observation.ContextRef(h), "context_sha256": h, "activity": activity, "subject": context["subject"], "input_sha256": context["input_sha256"]}
+	if r["verification_command_bindings"] != nil {
+		closure, closureErr := evidence.CompletionWorkspaces(e.FS, model.A(r["verification_command_bindings"]), true)
+		if closureErr != nil {
+			return nil, closureErr
+		}
+		result["completion_workspace_after"] = closure
+	}
 	if context["completion_sha256"] != nil {
 		result["completion_sha256"] = context["completion_sha256"]
 	}

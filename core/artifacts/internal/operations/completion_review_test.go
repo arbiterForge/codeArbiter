@@ -19,6 +19,33 @@ import (
 
 // Completion fixtures exercise the real engine with explicitly synthetic
 // producers. They do not claim a real host or verification command ran.
+func TestCompletionPublicationClosureRetainsIntegrity(t *testing.T) {
+	for _, mutation := range []string{"unchanged", "source", "unknown-output", "malformed-output", "tamper"} {
+		t.Run(mutation, func(t *testing.T) {
+			h, _ := completionHarness(t)
+			writeFixture(t, h.root, ".gitignore", nil)
+			startNativeV1FixtureTask(t, h, "T-001")
+			verification := completionVerification(t, h, "T-001", h.root, mutation)
+			switch mutation {
+			case "source":
+				writeFixture(t, h.root, "src/stage1.go", []byte("ordinary source changed\n"))
+			case "unknown-output":
+				writeFixture(t, h.root, ".codearbiter/.artifacts/unknown.txt", []byte("unknown bytes"))
+			case "malformed-output":
+				writeFixture(t, h.root, ".codearbiter/.artifacts/observations/"+mustHashFixture(t, "bad")+".json", []byte("malformed"))
+			}
+			_, err := h.request("evidence-context", object{"artifact_id": "PLAN-EXAMPLE", "activity": "spec_review", "record_id": "T-001", "completion_selection": object{"verification_receipts": []any{verification}, "supporting_files": []any{}}})
+			if mutation == "unchanged" {
+				if err != nil {
+					t.Fatalf("native publication invalidated normalized closure: %v", err)
+				}
+			} else if err == nil {
+				t.Fatalf("%s was accepted as fresh completion evidence", mutation)
+			}
+		})
+	}
+}
+
 func TestCompletionReviewRejectsDefinitionOnlyReceipt(t *testing.T) {
 	h := newFarmHarness(t)
 	h.createPair()

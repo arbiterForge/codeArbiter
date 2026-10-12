@@ -357,11 +357,36 @@ Atomic zero-byte Start/Stop claims precede the marker lock, so a timed-out first
 event cannot disappear and be replaced later. A retained failure claim blocks
 the UUID even before Post can associate it with a request.
 
-The exact flattened `collaborationspawn_agent` name is registered for default V2
-refusal only because its task-path result cannot bind the lifecycle UUID. The
-finite `multi_agent_v1send_input`, `multi_agent_v1resume_agent` and
-`multi_agent_v1close_agent` names deny steering or termination of an active
-review; no arbitrary namespace or suffix is accepted. Successful authority
+Codex 0.162.0-alpha.2 V2 uses the separate closed profile
+`codex-native-v2/0.162.0-alpha.2`, selected explicitly with `native-v2` at arming.
+Its exact envelope is `message`, `task_name` and `fork_turns:"none"`, with the
+implicit default role. Pre pins the hook-owned parent native file identity,
+metadata and bounded prefix anchor at its current offset. Post reads only a new
+suffix capped at eight MiB and requires one native `item_completed` containing
+`SubAgentActivity` with the exact parent thread/turn/call, canonical task path
+and child UUID. A JSON-string task-path result alone supplies no UUID proof.
+The child's Start metadata independently qualifies 0.162.0-alpha.2 and its
+parent/session/path/UUID; an older parent birth version does not describe the
+current host. Canonical native activity, its digest and the qualified child
+identity/metadata digest are retained in the producer result. Verdict capture
+still comes only from that UUID's actual first Stop and child turn. Duplicate,
+malformed, linked, missing, transplanted, stale or oversized evidence fails closed.
+Distinct concurrent V2 calls are disambiguated by direct native identity; V1's
+existing parent-turn ambiguity rule is unchanged. Older/profileless V2 is refused.
+The first Post is correlated by persisted parent session, turn and call before
+classifying its message. Missing, altered or malformed authority markers thus
+terminally reject that launch; a later valid replacement cannot complete it.
+Unrelated ordinary Post events pass through without acquiring authority.
+V2 completion reviews preserve qualified V1's full immutable private-context
+reference, eight MiB context limit, one MiB mutable-state limit and reserved
+lifecycle/result capacity. Selected evidence drift and unknown profiles refuse.
+
+The finite `multi_agent_v1send_input`, `multi_agent_v1resume_agent`,
+`multi_agent_v1close_agent`, `collaborationsend_message`,
+`collaborationfollowup_task` and `collaborationinterrupt_agent` names deny
+steering or termination of an active review; V2 canonical or caller-relative
+task paths and UUID targets are denied before and after Post association.
+No arbitrary namespace or suffix is accepted. Successful authority
 hooks are silent, including verifier authorization and SubagentStop. The latter
 has no `additionalContext` output in the native closed schema.
 Steering targets alone normalize the exact UUID forms accepted by Codex's pinned

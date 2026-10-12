@@ -97,9 +97,18 @@ class FakeClient:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(raw)
-            return {"context_ref": relative.as_posix(), "context_sha256": digest,
+            result = {"context_ref": relative.as_posix(), "context_sha256": digest,
                     "activity": self.context["activity"], "subject": self.context["subject"],
                     "input_sha256": self.context["input_sha256"]}
+            if "verification_command_bindings" in request:
+                # A fixed synthetic engine response; real normalization is
+                # exercised by ClaudeEndToEndTest with the native executable.
+                result["completion_workspace_after"] = [{
+                    "root": binding["workspace_root"], "filesystem_id": binding["workspace_filesystem_id"],
+                    "git_common_dir": binding["git_common_dir"], "git_common_filesystem_id": binding["git_common_filesystem_id"],
+                    "head": "fixture", "status_sha256": "7" * 64, "content_sha256": "8" * 64,
+                } for binding in request["verification_command_bindings"]]
+            return result
         if operation == "capture-observation":
             return {"receipt": self.receipt, "receipt_sha256": "9" * 64}
         raise AssertionError(operation)
@@ -111,7 +120,9 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
+        # OS temp roots may be aliases (macOS /var -> /private/var). Normal
+        # transcript fixtures use real paths; linked-path tests add their own links.
+        self.root = Path(self.temp.name).resolve()
         (self.root / ".codearbiter").mkdir()
         git_run(["git", "init", "--quiet", str(self.root)], check=True)
         git_run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
@@ -132,6 +143,10 @@ class AuthorityAdapterTest(unittest.TestCase):
             git_run(["git", "-C", str(self.root), "worktree", "remove", "--force", str(self.linked)], check=False)
         self.adapter.REGISTRY_PARENT = self.original_registry_parent
         self.temp.cleanup()
+
+    def test_engine_digest_rejects_non_native_values_as_invalid_authority_state(self):
+        with self.assertRaisesRegex(RuntimeError, "^INVALID_AUTHORITY_STATE:"):
+            self.adapter._engine_digest({"unsupported_number": 0.5})
 
     def test_fixture_git_commands_ignore_inherited_repository_location(self):
         environment = dict(os.environ)
@@ -376,6 +391,59 @@ class AuthorityAdapterTest(unittest.TestCase):
         with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_EVIDENCE_CONTEXT"):
             read(native_bytes + b"\n")
 
+    def test_large_verification_context_is_referenced_and_rehydrated(self):
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 << 20)}
+        context_bytes = self.adapter._canonical(self.client.context)
+        self.assertGreater(len(context_bytes), self.adapter.MAX_STATE)
+        self.assertLess(len(context_bytes), self.adapter.MAX_EVIDENCE_CONTEXT)
+
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="request-nonce-large-verification",
+        )
+        state_bytes = Path(armed["request_path"]).read_bytes()
+        stored = json.loads(state_bytes)
+        self.assertLessEqual(len(state_bytes), self.adapter.MAX_STATE)
+        self.assertEqual(stored["context"], {
+            "format": "codearbiter.evidence-context-reference/0.1.0",
+        })
+        self.assertEqual((self.root / stored["context_ref"]).read_bytes(), context_bytes)
+
+        loaded = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(loaded["state"], "ARMED")
+        self.assertEqual(loaded["context"], self.client.context)
+        self.assertEqual(loaded["command_bindings"], stored["command_bindings"])
+        self.assertEqual(len(loaded["command_bindings"]), 1)
+        binding = loaded["command_bindings"][0]
+        self.assertEqual(binding["definition_sha256"], self.client.context["commands"][0]["definition_sha256"])
+        self.assertEqual(binding["argv"][1:], ["-m", "unittest", "tests.test_config", "-v"])
+        self.assertTrue(Path(binding["argv"][0]).is_absolute())
+        self.assertEqual(binding["cwd"], str(self.root))
+
+    def test_verification_result_without_lifecycle_reserve_refuses_before_registration(self):
+        self.client.context["commands"][0]["definition"]["required_tests"] = [
+            f"test_capacity_{index:04d}_" + "x" * 220 for index in range(4800)
+        ]
+        self.assertLess(
+            len(self.adapter._canonical(self.client.context)), self.adapter.MAX_EVIDENCE_CONTEXT,
+        )
+        spool = self.adapter._spool_root(self.root)
+        registry = self.adapter._registry_root()
+        before_spool = {path.name: path.read_bytes() for path in spool.glob("*.json")}
+        before_registry = {path.name: path.read_bytes() for path in registry.glob("*.json")}
+
+        with self.assertRaisesRegex(
+            self.adapter.AuthorityError,
+            "^INVALID_AUTHORITY_STATE: verification result has no bounded lifecycle reserve$",
+        ):
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="request-nonce-oversized-verification",
+            )
+
+        self.assertEqual({path.name: path.read_bytes() for path in spool.glob("*.json")}, before_spool)
+        self.assertEqual({path.name: path.read_bytes() for path in registry.glob("*.json")}, before_registry)
+
     def test_verifier_executes_engine_argv_without_shell_and_publishes_observation(self):
         armed = self.adapter.arm_request(
             self.root,
@@ -421,7 +489,8 @@ class AuthorityAdapterTest(unittest.TestCase):
             "payload_sha256", "producer_profile", "producer_run_id",
             "producer_result", "producer_result_sha256",
         })
-        self.assertEqual(observation["producer_profile"], "declared-command/0.2.0")
+        self.assertEqual(observation["producer_profile"], "declared-command/0.3.0")
+        self.assertTrue(observation["producer_result"]["completion_workspace_after"])
         canonical_result = json.dumps(
             observation["producer_result"], ensure_ascii=True, allow_nan=False,
             sort_keys=True, separators=(",", ":"),
@@ -3771,6 +3840,9 @@ class ClaudeEndToEndTest(unittest.TestCase):
 
     def test_completion_native_hook_allows_canonical_bookkeeping_and_rejects_source_drift(self):
         """Actual native validation; host hook events remain labeled synthetic fixtures."""
+        # Native publication must remain fresh even when its complete evidence
+        # history is visible to Git, as it is in real governed workspaces.
+        (self.root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
         bridge = self.host.load_bridge(self.plugin)
         workflow = self.host.Workflow(bridge, self.root, self.installation, "completion", "claude", self.plugin)
         client = workflow.client
@@ -4349,7 +4421,7 @@ class CodexNativeV1HookTest(unittest.TestCase):
     def test_native_v1_unknown_profiles_and_legacy_relabel_fail_closed(self):
         self.client.context["activity"] = "spec_review"
         self.client.context.pop("commands", None)
-        for profile in ("v1", "native-v2", "", "native-v1-extra"):
+        for profile in ("v1", "native-v2-extra", "", "native-v1-extra"):
             with self.subTest(profile=profile), self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_REQUEST"):
                 self.adapter.arm_request(
                     self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
@@ -4898,11 +4970,11 @@ class CompletionReviewTransportTest(unittest.TestCase):
         current_client.start()
         self.addCleanup(current_client.stop)
 
-    def _arm_completion(self):
+    def _arm_completion(self, profile="native-v1"):
         try:
             return self.adapter.arm_request(
                 self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
-                request_nonce="completion-review-transport", codex_review_profile="native-v1",
+                request_nonce="completion-review-transport", codex_review_profile=profile,
                 completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)],
             )
         except RuntimeError as exc:
@@ -4973,7 +5045,7 @@ class CompletionReviewTransportTest(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION|INCOMPLETE_REVIEW"):
                     self.adapter._parse_decision(json.dumps(invalid), request)
 
-    def _complete_native(self, armed):
+    def _complete_native(self, armed, *, decision_json=None):
         parent = {"session_id": "completion-fixture-parent", "turn_id": "completion-parent-turn",
                   "tool_name": "spawn_agent", "tool_use_id": "completion-call", "tool_input": armed["launch_envelope"]}
         child = {"session_id": parent["session_id"], "turn_id": "01900000-0000-7000-8000-000000000002",
@@ -4983,7 +5055,7 @@ class CompletionReviewTransportTest(unittest.TestCase):
             {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"agent_id": child["agent_id"], "nickname": None})},
             {**child, "hook_event_name": "SubagentStart"},
             {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
-             "last_assistant_message": json.dumps(self._decision(armed))},
+             "last_assistant_message": decision_json if decision_json is not None else json.dumps(self._decision(armed))},
         ):
             result = self.adapter.observe_codex_hook(self.root, event)
         self.assertEqual(result["state"], "COMPLETED")
@@ -5004,6 +5076,121 @@ class CompletionReviewTransportTest(unittest.TestCase):
         request = self.adapter._load(self.root, armed["request_id"])
         self.assertEqual(resumes[-1]["completion_context_ref"], request["context_ref"])
         self.assertEqual(resumes[-1]["completion_context_sha256"], request["context_sha256"])
+
+    def test_codex_native_review_retains_completion_near_request_budget(self):
+        self._fixture()
+        small = self._arm_completion()
+        baseline = self.adapter._load(self.root, small["request_id"])
+        padding = self.adapter.MAX_STATE - len(self.adapter._canonical(baseline)) - 2048
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * padding}
+        armed = self._arm_completion()
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertLess(len(self.adapter._canonical(request)), self.adapter.MAX_STATE)
+        decision = self._decision(armed)
+        decision["assessment"] = "Bounded independent fixture assessment. " * 200
+        self.assertLess(len(json.dumps(decision).encode()), self.adapter.MAX_DECISION)
+        with mock.patch.object(self, "_decision", return_value=decision):
+            self._complete_native(armed)
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["state"], "COMPLETED")
+        self.assertEqual(completed["context"], self.client.context)
+        self.assertEqual(completed["payload"]["assessment"], decision["assessment"])
+        published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "CAPTURED")
+
+    def test_completion_dispatch_fields_and_obligations_match_closed_parser(self):
+        self._fixture()
+        armed = self._arm_completion()
+        prompt = armed["dispatch_prompt"]
+        field_list = prompt.split(". Fields: ", 1)[1]
+        self.assertIn("completion_sha256", field_list)
+        self.assertIn("completion_assessment", field_list)
+        for obligation in ("criterion:AC-001", "criterion:AC-002", "step:1", "done_when:1"):
+            self.assertIn(json.dumps(obligation), prompt)
+
+    def test_native_completion_unicode_result_preserves_decision_and_state_bounds(self):
+        self._fixture()
+        small = self._arm_completion()
+        baseline = self.adapter._load(self.root, small["request_id"])
+        self.client.context["input_manifest"] = {
+            "fixture_padding": "p" * (self.adapter.MAX_STATE - len(self.adapter._canonical(baseline)) - 2048)}
+        armed = self._arm_completion()
+        decision = self._decision(armed)
+        decision["assessment"] = "\U0001f600" * 15000
+        raw = json.dumps(decision, ensure_ascii=False)
+        self.assertGreater(len(raw.encode()), self.adapter.MAX_DECISION - 8192)
+        self.assertLess(len(raw.encode()), self.adapter.MAX_DECISION)
+        self.assertGreater(len(self.adapter._canonical(decision)), self.adapter.MAX_DECISION)
+        self._complete_native(armed, decision_json=raw)
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["payload"]["assessment"], decision["assessment"])
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "CAPTURED")
+
+    def test_native_completion_overbudget_base_rejects_before_registration(self):
+        self._fixture()
+        self.client.context["task"]["criterion_refs"] = [f"AC-{index:06d}-" + "x" * 240 for index in range(650)]
+        with self.assertRaisesRegex(RuntimeError, "review result has no bounded lifecycle reserve"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v1", completion_receipts=[self.receipt_ref],
+                supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), [])
+
+    def test_native_completion_full_context_uses_native_budget_not_mutable_state_budget(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 * self.adapter.MAX_STATE)}
+        armed = self._arm_completion()
+        self.assertGreater(len(self.adapter._native_context_canonical(self.client.context)), self.adapter.MAX_STATE)
+        self._complete_native(armed)
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["context"], self.client.context)
+        self.assertEqual(completed["state"], "CAPTURED")
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+
+    def test_native_completion_context_over_native_budget_cannot_arm(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (8 << 20)}
+        with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v1", completion_receipts=[self.receipt_ref],
+                supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), [])
+
+    def test_native_completion_private_context_reference_fails_closed(self):
+        self._fixture()
+        armed = self._arm_completion()
+        state_path = Path(armed["request_path"])
+        original = json.loads(state_path.read_bytes())
+        self.assertEqual(original["context"], self.adapter.CONTEXT_REFERENCE)
+        context_path = self.root / original["context_ref"]
+        context_bytes = context_path.read_bytes()
+        for mutation in ("missing", "tampered", "wrong-kind", "unknown-storage", "missing-storage"):
+            with self.subTest(mutation=mutation):
+                state = copy.deepcopy(original)
+                if mutation == "missing":
+                    context_path.unlink()
+                elif mutation == "tampered":
+                    context_path.write_bytes(context_bytes + b" ")
+                elif mutation == "wrong-kind":
+                    context = copy.deepcopy(self.client.context)
+                    context["activity"] = "verification"
+                    raw = self.adapter._native_context_canonical(context)
+                    digest = hashlib.sha256(raw).hexdigest()
+                    state.update(context_ref=f".codearbiter/.artifacts/evidence-contexts/{digest}.json", context_sha256=digest)
+                    (self.root / state["context_ref"]).write_bytes(raw)
+                elif mutation == "unknown-storage":
+                    state["context_storage"] = "unbounded/0.1.0"
+                else:
+                    del state["context_storage"]
+                state["integrity_sha256"] = self.adapter._integrity(state)
+                state_path.write_bytes(self.adapter._canonical(state))
+                with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT|INVALID_AUTHORITY_STATE"):
+                    self.adapter._load(self.root, armed["request_id"])
+                context_path.write_bytes(context_bytes)
+                state_path.write_bytes(self.adapter._canonical(original))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "ARMED")
 
     def test_completed_native_review_cannot_publish_after_selected_material_drift(self):
         self._fixture()
@@ -5070,14 +5257,554 @@ class CompletionReviewTransportTest(unittest.TestCase):
                        completion_sha256=hashlib.sha256(self.adapter._canonical(context["completion"])).hexdigest())
         context["subject"]["record_id"] = "CP-001"
         armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "CP-001", "quality_review",
+            codex_review_profile="native-v1",
             completion_receipts=[self.receipt_ref, other_verification["receipt_ref"]], supporting_files=[str(self.material)])
         decision = self._decision(armed)
         decision["completion_assessment"].extend([
             dict(row, task_id="T-002", evidence_refs=[other_verification["receipt_ref"]])
             for row in decision["completion_assessment"]])
-        decision["completion_assessment"][0]["evidence_refs"] = [other_verification["receipt_ref"]]
+        invalid = copy.deepcopy(decision)
+        invalid["completion_assessment"][0]["evidence_refs"] = [other_verification["receipt_ref"]]
         with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_REVIEW_DECISION"):
-            self.adapter._parse_decision(json.dumps(decision), self.adapter._load(self.root, armed["request_id"]))
+            self.adapter._parse_decision(json.dumps(invalid), self.adapter._load(self.root, armed["request_id"]))
+        self._complete_native(armed, decision_json=json.dumps(decision))
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        captured = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(captured["state"], "CAPTURED")
+        self.assertEqual(captured["context"], context)
+        self.assertEqual(captured["payload"]["task_hashes"], context["task_hashes"])
+        self.assertEqual(captured["payload"]["completion_assessment"], decision["completion_assessment"])
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+        self.assertEqual(json.loads(Path(armed["request_path"]).read_bytes())["context"], self.adapter.CONTEXT_REFERENCE)
+
+
+
+class CodexNativeV2HookTest(unittest.TestCase):
+    """0.162.0-alpha.2 source-derived fixtures, never live host authority."""
+
+    setUp = AuthorityAdapterTest.setUp
+    tearDown = AuthorityAdapterTest.tearDown
+    _hook = CodexV2NativeHookTest._hook
+    _no_authority = CodexNativeV1HookTest._no_authority
+    _observe = CodexNativeV1HookTest._observe
+    PROFILE = "codex-native-v2/0.162.0-alpha.2"
+    PARENT = "01900000-0000-7000-8000-000000000001"
+
+    def _fixture(self, suffix="main", activity="spec_review"):
+        self.client = FakeClient(self.root)
+        self.client.context["activity"] = activity
+        self.client.context.pop("commands", None)
+        if activity == "quality_review":
+            self.client.context["subject"]["record_id"] = "SCOPE-001"
+            self.client.context["base_input_sha256"] = "7" * 64
+            self.client.context["task_hashes"] = {"T-001": "5" * 64}
+            self.client.context["tasks"] = [self.client.context["task"]]
+        try:
+            armed = self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", self.client.context["subject"]["record_id"],
+                activity, request_nonce="native-v2-" + suffix, codex_review_profile="native-v2",
+            )
+        except self.adapter.AuthorityError as exc:
+            self.fail("qualified native V2 review rejected before exact activity/UUID binding: " + str(exc))
+        return armed, *self._native_events(armed, suffix)
+
+    def _native_events(self, armed, suffix):
+        self.sequence = getattr(self, "sequence", 0) + 1
+        transcript = self.root / ("parent-" + suffix + ".jsonl")
+        # Parent birth metadata may predate an in-place desktop update.
+        metadata = {"id": self.PARENT, "session_id": self.PARENT, "cli_version": "0.160.0"}
+        transcript.write_text(json.dumps({"type": "session_meta", "payload": metadata}) + "\n", encoding="utf-8")
+        parent = {"session_id": self.PARENT, "turn_id": "01900000-0000-7000-8000-000000000002",
+                  "tool_name": "collaborationspawn_agent", "tool_use_id": "call-v2-" + suffix,
+                  "tool_input": armed["launch_envelope"], "transcript_path": str(transcript)}
+        child = {"session_id": self.PARENT, "turn_id": "01900000-0000-7000-8000-000000000003",
+                 "agent_id": f"01900000-0000-7000-8000-{self.sequence + 16:012x}", "agent_type": "default"}
+        path = "/root/" + armed["launch_envelope"]["task_name"]
+        child_transcript = self.root / ("child-" + suffix + ".jsonl")
+        child_transcript.write_text(json.dumps({"type": "session_meta", "payload": {
+            "id": child["agent_id"], "parent_thread_id": self.PARENT, "session_id": self.PARENT,
+            "agent_path": path, "cli_version": "0.162.0-alpha.2"}}) + "\n", encoding="utf-8")
+        child["transcript_path"] = str(child_transcript)
+        native = {"type": "item_completed", "thread_id": self.PARENT, "turn_id": parent["turn_id"],
+                  "item": {"type": "SubAgentActivity", "id": parent["tool_use_id"], "kind": "started",
+                           "agent_thread_id": child["agent_id"], "agent_path": path},
+                  "started_at_ms": 1791601481147, "completed_at_ms": 1791601481147}
+        decision = {"format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+                    "target_sha256": "3" * 64, "contract_sha256": armed["review_contract_sha256"],
+                    "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
+                    "assessment": "Isolated V2 fixture binds the full immutable target."}
+        events = {"pre": {**parent, "hook_event_name": "PreToolUse"},
+                  "post": {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"task_name": path})},
+                  "start": {**child, "hook_event_name": "SubagentStart"},
+                  "stop": {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+                           "last_assistant_message": json.dumps(decision)}}
+        return events, native
+
+    def _append(self, events, *activities):
+        with Path(events["pre"]["transcript_path"]).open("a", encoding="utf-8") as stream:
+            for activity in activities:
+                stream.write(json.dumps({"type": "event_msg", "payload": activity}) + "\n")
+
+    def _complete(self, suffix="valid", activity="spec_review"):
+        armed, events, native = self._fixture(suffix, activity)
+        self._observe(events["pre"])
+        self._append(events, native)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "COMPLETED")
+        return armed, events, native
+
+    def test_native_v2_exact_activity_uuid_binding_completes_both_hook_orders(self):
+        for activity in ("spec_review", "quality_review"):
+            for order in (("start", "post"), ("post", "start")):
+                with self.subTest(activity=activity, order=order):
+                    armed, events, native = self._fixture(activity + "-" + order[0], activity)
+                    self.assertEqual(armed["launch_envelope"], {"message": armed["dispatch_prompt"],
+                                     "task_name": "authority_" + armed["request_id"][:12], "fork_turns": "none"})
+                    result = self._hook(events["pre"])
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self._append(events, native)
+                    for key in (*order, "stop"):
+                        result = self._hook(events[key])
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["state"], "COMPLETED")
+                    launch = request["launch"]
+                    self.assertEqual(launch["agent_id"], events["start"]["agent_id"])
+                    self.assertEqual(launch["child_turn_id"], events["start"]["turn_id"])
+                    self.assertEqual(launch["native_activity"], native)
+                    self.assertEqual(launch["native_activity_sha256"], self.adapter._engine_digest(native))
+                    self.assertEqual(launch["task_name"], native["item"]["agent_path"])
+                    self.assertEqual(launch["native_child"]["cli_version"], "0.162.0-alpha.2")
+                    self.assertEqual(launch["native_child"]["thread_id"], launch["agent_id"])
+                    self.assertIs(launch["first_stop"], True)
+                    observed = json.loads((self.root / request["observation_ref"]).read_text("utf-8"))
+                    self.assertEqual(observed["producer_profile"], self.PROFILE)
+                    self.assertEqual(observed["producer_result"]["launch"], launch)
+                    self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
+    def test_native_v2_activity_jsonl_preserves_unicode_line_separators(self):
+        armed, events, native = self._fixture("unicode-jsonl")
+        self._observe(events["pre"])
+        unrelated = {"type": "event_msg", "payload": {
+            "type": "agent_message", "message": "first\u0085second\u2028third\u2029last",
+        }}
+        with Path(events["pre"]["transcript_path"]).open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps(unrelated, ensure_ascii=False) + "\n")
+        self._append(events, native)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(request["state"], "COMPLETED")
+        self.assertEqual(request["launch"]["native_activity"], native)
+
+    def test_native_v2_activity_and_response_negative_controls(self):
+        self._complete("activity-witness")
+        cases = {"parent": lambda n, e: n.update(thread_id="01900000-0000-7000-8000-000000000099"),
+                 "turn": lambda n, e: n.update(turn_id="other-turn"),
+                 "call": lambda n, e: n["item"].update(id="other-call"),
+                 "path": lambda n, e: n["item"].update(agent_path="/root/other"),
+                 "uuid": lambda n, e: n["item"].update(agent_thread_id="not-a-uuid"),
+                 "kind": lambda n, e: n["item"].update(kind="stopped"),
+                 "extra": lambda n, e: n["item"].update(verdict="pass"),
+                 "model-result": lambda n, e: e["post"].update(tool_response='{"task_name":"/root/other"}'),
+                 "object-result": lambda n, e: e["post"].update(tool_response=json.loads(e["post"]["tool_response"])),
+                 "wrong-tool": lambda n, e: e["post"].update(tool_name="spawn_agent"),
+                 "input": lambda n, e: e["post"]["tool_input"].update(fork_turns="all")}
+        for suffix, mutate in cases.items():
+            with self.subTest(case=suffix):
+                armed, events, native = self._fixture("negative-" + suffix)
+                self._observe(events["pre"])
+                mutate(native, events)
+                self._append(events, native)
+                with self.assertRaises(RuntimeError):
+                    self._observe(events["post"])
+                self._no_authority(armed)
+        for suffix in ("missing", "duplicate", "old", "replace", "oversized", "invalid-json"):
+            with self.subTest(case=suffix):
+                armed, events, native = self._fixture("trace-" + suffix)
+                path = Path(events["pre"]["transcript_path"])
+                if suffix == "old":
+                    self._append(events, native)
+                self._observe(events["pre"])
+                if suffix == "duplicate":
+                    self._append(events, native, native)
+                elif suffix == "replace":
+                    path.unlink()
+                    path.write_text(json.dumps({"type": "event_msg", "payload": native}) + "\n", encoding="utf-8")
+                elif suffix in ("oversized", "invalid-json"):
+                    with path.open("a", encoding="utf-8") as stream:
+                        stream.write(" " * (self.adapter.MAX_OUTPUT + 1) if suffix == "oversized" else "not JSON\n")
+                with self.assertRaises(RuntimeError):
+                    self._observe(events["post"])
+                self._no_authority(armed)
+
+    def test_native_v2_first_stop_context_and_cas_remain_fail_closed(self):
+        self._complete("lifecycle-witness")
+        for suffix in ("early", "bad-stop", "wrong-stop", "double-start", "context", "cas"):
+            with self.subTest(case=suffix):
+                armed, events, native = self._fixture("life-" + suffix)
+                self._observe(events["pre"])
+                self._append(events, native)
+                if suffix == "early":
+                    self._observe(events["start"])
+                    self._observe(events["stop"])
+                else:
+                    self._observe(events["post"])
+                    self._observe(events["start"])
+                if suffix == "bad-stop":
+                    events["stop"]["last_assistant_message"] = "not JSON"
+                elif suffix == "wrong-stop":
+                    events["stop"]["turn_id"] = events["pre"]["turn_id"]
+                elif suffix == "context":
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    (self.root / request["context_ref"]).write_text("{}", encoding="utf-8")
+                elif suffix == "cas":
+                    stale = self.adapter._load(self.root, armed["request_id"])
+                    current = self.adapter._load(self.root, armed["request_id"])
+                    current["state"] = "REJECTED"
+                    self.adapter._save(self.root, current)
+                    with self.assertRaisesRegex(RuntimeError, "STALE_AUTHORITY_REQUEST"):
+                        self.adapter._save(self.root, stale)
+                try:
+                    self._observe(events["start"] if suffix == "double-start" else events["post"] if suffix == "early" else events["stop"])
+                except RuntimeError:
+                    pass
+                self._no_authority(armed)
+
+    def test_native_v2_child_runtime_and_parent_trace_safety_are_qualified(self):
+        self._complete("safety-witness")
+        for field, value in (("cli_version", "0.145.0"), ("id", self.PARENT),
+                             ("parent_thread_id", "01900000-0000-7000-8000-000000000099"),
+                             ("agent_path", "/root/other"), ("session_id", "other-session")):
+            armed, events, native = self._fixture("child-" + field)
+            self._observe(events["pre"])
+            self._append(events, native)
+            self._observe(events["post"])
+            path = Path(events["start"]["transcript_path"])
+            meta = json.loads(path.read_text("utf-8"))
+            meta["payload"][field] = value
+            path.write_text(json.dumps(meta) + "\n", encoding="utf-8")
+            for key in ("start", "stop"):
+                try:
+                    self._observe(events[key])
+                except RuntimeError:
+                    pass
+            self._no_authority(armed)
+        for suffix in ("relative", "directory", "malformed-meta", "wrong-session"):
+            armed, events, _ = self._fixture("unsafe-" + suffix)
+            if suffix == "relative":
+                events["pre"]["transcript_path"] = "parent.jsonl"
+            elif suffix == "directory":
+                events["pre"]["transcript_path"] = str(self.root)
+            else:
+                Path(events["pre"]["transcript_path"]).write_text(
+                    "bad JSON\n" if suffix == "malformed-meta" else json.dumps({"type": "session_meta", "payload": {"id": self.PARENT, "session_id": "other"}}) + "\n", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                self._observe(events["pre"])
+            self._no_authority(armed)
+
+    def test_native_v2_linked_transcript_ancestors_are_rejected(self):
+        def directory_fixture(suffix):
+            armed, events, native = self._fixture("linked-ancestor-" + suffix)
+            directory = self.root / ("native-transcripts-" + suffix)
+            directory.mkdir()
+            for keys in (("pre", "post"), ("start", "stop")):
+                original = Path(events[keys[0]]["transcript_path"])
+                direct = directory / original.name
+                shutil.copyfile(original, direct)
+                for key in keys:
+                    events[key]["transcript_path"] = str(direct)
+            return armed, events, native, directory
+
+        def directory_link(linked, target):
+            try:
+                if os.name == "nt":
+                    subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(target)],
+                                   check=True, capture_output=True)
+                else:
+                    linked.symlink_to(target, target_is_directory=True)
+            except (OSError, subprocess.CalledProcessError) as exc:
+                self.skipTest("native transcript directory-link creation is unavailable: " + type(exc).__name__)
+            self.assertTrue(linked.is_symlink() or getattr(linked.lstat(), "st_file_attributes", 0) & 0x400)
+            self.assertEqual(linked.resolve(), target.resolve())
+
+        for start_first in (False, True):
+            with self.subTest(witness=True, start_first=start_first):
+                armed, events, native, _ = directory_fixture("witness-" + str(start_first))
+                self._observe(events["pre"])
+                self._append(events, native)
+                for key in (("start", "post", "stop") if start_first else ("post", "start", "stop")):
+                    self._observe(events[key])
+                request = self.adapter._load(self.root, armed["request_id"])
+                self.assertEqual(request["state"], "COMPLETED")
+                self.assertEqual(request["launch"]["agent_id"], events["start"]["agent_id"])
+
+        for boundary in ("parent-pre", "parent-post", "child-before-post", "child-after-post"):
+            with self.subTest(boundary=boundary):
+                armed, events, native, direct = directory_fixture(boundary)
+                linked = self.root / ("linked-transcripts-" + boundary)
+                directory_link(linked, direct)
+                if boundary == "parent-pre":
+                    events["pre"]["transcript_path"] = str(linked / Path(events["pre"]["transcript_path"]).name)
+                    with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                        self._observe(events["pre"])
+                    # Pre refuses before a launch is persisted or a child runs.
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["state"], "ARMED")
+                    self.assertIsNone(request["launch"])
+                    self._no_authority(armed)
+                    continue
+
+                self._observe(events["pre"])
+                self._append(events, native)
+                if boundary == "parent-post":
+                    # Preserve the exact locator and file inode while replacing
+                    # only its previously direct ancestor with native indirection.
+                    stored = direct.with_name(direct.name + "-stored")
+                    self.assertTrue(direct.resolve().is_relative_to(self.root))
+                    self.assertTrue(stored.resolve().is_relative_to(self.root))
+                    direct.rename(stored)
+                    directory_link(direct, stored)
+                    with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                        self._observe(events["post"])
+                    if os.name == "nt":
+                        direct.rmdir()
+                    else:
+                        direct.unlink()
+                    stored.rename(direct)
+                else:
+                    valid_start = copy.deepcopy(events["start"])
+                    events["start"]["transcript_path"] = str(linked / Path(valid_start["transcript_path"]).name)
+                    if boundary == "child-before-post":
+                        self.assertIsNone(self._observe(events["start"]))
+                        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                            self._observe(events["post"])
+                    else:
+                        self._observe(events["post"])
+                        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                            self._observe(events["start"])
+                    events["start"] = valid_start
+
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+                self._no_authority(armed)
+                for key in ("post", "start", "stop"):
+                    try:
+                        self._observe(events[key])
+                    except RuntimeError:
+                        pass
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+                self._no_authority(armed)
+
+    def test_native_v2_steering_paths_and_uuid_before_and_after_post_are_denied(self):
+        self._complete("steering-witness")
+        for tool in ("collaborationsend_message", "collaborationfollowup_task", "collaborationinterrupt_agent"):
+            for before in (True, False):
+                for form in ("absolute", "relative", "uuid"):
+                    armed, events, native = self._fixture(tool + str(before) + form)
+                    self._observe(events["pre"])
+                    self._append(events, native)
+                    self._observe(events["start"])
+                    if not before:
+                        self._observe(events["post"])
+                    target = native["item"]["agent_path"] if form == "absolute" else armed["launch_envelope"]["task_name"] if form == "relative" else events["start"]["agent_id"]
+                    with self.assertRaises(RuntimeError):
+                        self._observe({**events["pre"], "tool_name": tool, "tool_input": {"target": target}})
+                    self._no_authority(armed)
+
+    def test_native_v2_relative_steering_requires_transcript_only_for_active_session(self):
+        event = {"hook_event_name": "PreToolUse", "session_id": self.PARENT,
+                 "tool_name": "collaborationsend_message", "tool_input": {"target": "ordinary"}}
+        transcripts = (None, str(self.root / "missing-transcript.jsonl"), str(self.root))
+        armed = None
+        for state in ("none", "armed", "other-session"):
+            if state == "armed":
+                armed, events, _ = self._fixture("steering-transcript-scope")
+            elif state == "other-session":
+                self._observe(events["pre"])
+                event["session_id"] = "01900000-0000-7000-8000-000000000099"
+            before = Path(armed["request_path"]).read_bytes() if armed else None
+            for transcript in transcripts:
+                with self.subTest(state=state, transcript=transcript):
+                    self.assertIsNone(self._observe({**event, "transcript_path": transcript}))
+            if armed:
+                self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+
+        # An active request in this session must still block relative steering
+        # when the caller identity cannot be resolved from its transcript.
+        event["session_id"] = self.PARENT
+        before = Path(armed["request_path"]).read_bytes()
+        for transcript in transcripts:
+            with self.subTest(state="active", transcript=transcript):
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                    self._observe({**event, "transcript_path": transcript})
+        self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+        self._no_authority(armed)
+
+    def test_native_v2_concurrent_launches_join_exact_call_identity(self):
+        armed, events, native = self._fixture("concurrent")
+        self._observe({**events["pre"], "tool_input": {"message": "ordinary author", "task_name": "ordinary", "fork_turns": "none"}, "tool_use_id": "ordinary-call"})
+        self._observe(events["pre"])
+        other = copy.deepcopy(native)
+        other["item"].update(id="ordinary-call", agent_path="/root/ordinary", agent_thread_id="01900000-0000-7000-8000-000000000077")
+        self._append(events, other, native)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "COMPLETED")
+
+    def test_native_v2_first_correlated_invalid_post_is_terminal(self):
+        self._complete("first-post-validity-witness")
+        unrelated = {"hook_event_name": "PostToolUse", "session_id": self.PARENT,
+                     "turn_id": "01900000-0000-7000-8000-000000000002",
+                     "tool_use_id": "unrelated-call", "tool_name": "collaborationspawn_agent",
+                     "tool_input": {"message": "ordinary unrelated work"}}
+        self.assertIsNone(self._observe(unrelated))
+        cases = ("absent-input", "nonobject-input", "absent-message", "null", "nonstring",
+                 "ordinary", "malformed", "unknown", "other-request", "real-hook")
+        for start_first in (False, True):
+            for case in cases:
+                with self.subTest(start_first=start_first, case=case):
+                    armed, events, native = self._fixture("first-post-" + str(start_first) + case)
+                    other, _, _ = self._fixture("other-marker-" + str(start_first) + case)
+                    self._observe(events["pre"])
+                    self._append(events, native)
+                    if start_first:
+                        self._observe(events["start"])
+                    invalid = copy.deepcopy(events["post"])
+                    if case == "absent-input":
+                        invalid.pop("tool_input")
+                    elif case == "nonobject-input":
+                        invalid["tool_input"] = []
+                    elif case == "absent-message":
+                        invalid["tool_input"].pop("message")
+                    else:
+                        invalid["tool_input"]["message"] = {
+                            "null": None, "nonstring": {}, "ordinary": "changed ordinary message",
+                            "malformed": "[CODEARBITER_AUTHORITY_REQUEST:malformed]\n",
+                            "unknown": "[CODEARBITER_AUTHORITY_REQUEST:" + "f" * 64 + "]\n",
+                            "other-request": other["launch_envelope"]["message"],
+                            "real-hook": "changed ordinary message from real hook fixture",
+                        }[case]
+                    if case == "real-hook":
+                        result = self._hook(invalid)
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(result.stdout, b"")
+                    else:
+                        try:
+                            self._observe(invalid)
+                        except RuntimeError:
+                            pass
+                    first_state = self.adapter._load(self.root, armed["request_id"])["state"]
+                    for key in (("post", "stop") if start_first else ("post", "start", "stop")):
+                        try:
+                            self._observe(events[key])
+                        except RuntimeError:
+                            pass
+                    final_state = self.adapter._load(self.root, armed["request_id"])["state"]
+                    self.assertEqual(first_state, "REJECTED", (first_state, final_state))
+                    self.assertEqual(final_state, "REJECTED")
+                    self._no_authority(armed)
+
+
+
+class CodexNativeV2CompletionTransportTest(unittest.TestCase):
+    """Synthetic V2 completion transport; genuine native receipt tests remain separate."""
+
+    setUp = CompletionReviewTransportTest.setUp
+    _fixture = CompletionReviewTransportTest._fixture
+    _decision = CompletionReviewTransportTest._decision
+    _native_events = CodexNativeV2HookTest._native_events
+    _append = CodexNativeV2HookTest._append
+    _observe = CodexNativeV1HookTest._observe
+    PARENT = CodexNativeV2HookTest.PARENT
+
+    def _arm_completion(self):
+        return CompletionReviewTransportTest._arm_completion(self, "native-v2")
+
+    def _complete_native(self, armed, *, order=("post", "start"), decision_json=None):
+        events, native = self._native_events(armed, "completion-" + str(getattr(self, "sequence", 0)))
+        events["stop"]["last_assistant_message"] = decision_json or json.dumps(self._decision(armed))
+        self._observe(events["pre"])
+        self._append(events, native)
+        for key in (*order, "stop"):
+            result = self._observe(events[key])
+        self.assertEqual(result["state"], "COMPLETED")
+        return events
+
+    def test_native_v2_full_referenced_completion_both_orders_and_reviews(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 * self.adapter.MAX_STATE)}
+        for activity in ("spec_review", "quality_review"):
+            self.client.context["activity"] = activity
+            if activity == "quality_review":
+                self.client.context["subject"]["record_id"] = "SCOPE-001"
+                self.client.context.update(base_input_sha256="7" * 64, task_hashes={"T-001": "5" * 64},
+                                           tasks=[self.client.context["task"]])
+            for order in (("start", "post"), ("post", "start")):
+                with self.subTest(activity=activity, order=order):
+                    # A distinct immutable request is required for each launch.
+                    self.client.context["input_manifest"]["order"] = order[0]
+                    armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE",
+                        self.client.context["subject"]["record_id"], activity,
+                        request_nonce="v2-completion-" + activity + order[0], codex_review_profile="native-v2",
+                        completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    stored = json.loads(Path(armed["request_path"]).read_bytes())
+                    self.assertEqual(stored["context"], self.adapter.CONTEXT_REFERENCE)
+                    self.assertEqual(stored["context_storage"], self.adapter.CONTEXT_STORAGE)
+                    self.assertEqual(request["context"], self.client.context)
+                    context_raw = (self.root / request["context_ref"]).read_bytes()
+                    self.assertGreater(len(context_raw), self.adapter.MAX_STATE)
+                    self.assertEqual(hashlib.sha256(context_raw).hexdigest(), request["context_sha256"])
+                    for binding in (request["context_ref"], request["context_sha256"],
+                                    self.client.context["completion_sha256"], self.receipt_ref):
+                        self.assertIn(binding, armed["dispatch_prompt"])
+                    allowed = json.loads(armed["dispatch_prompt"].split("Exact allowed evidence_refs by task_id (JSON):\n", 1)[1].split("\n", 1)[0])
+                    self.assertIn(str(self.material), allowed["T-001"])
+                    self._complete_native(armed, order=order)
+                    published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                    complete = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(complete["state"], "CAPTURED")
+                    self.assertEqual(complete["context"], self.client.context)
+                    self.assertEqual(complete["payload"]["completion_assessment"], self._decision(armed)["completion_assessment"])
+                    observed = json.loads((self.root / complete["observation_ref"]).read_bytes())
+                    self.assertEqual(observed["producer_profile"], self.adapter.CODEX_NATIVE_V2)
+                    self.assertTrue(observed["producer_result"]["launch"]["first_stop"])
+                    self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+
+    test_native_v2_private_reference_controls = CompletionReviewTransportTest.test_native_completion_private_context_reference_fails_closed
+    test_native_v2_material_drift_at_publication = CompletionReviewTransportTest.test_completed_native_review_cannot_publish_after_selected_material_drift
+    test_native_v2_workspace_drift_at_publication = CompletionReviewTransportTest.test_completed_native_review_cannot_publish_after_mapped_content_drift
+    test_native_v2_completion_decision_controls = CompletionReviewTransportTest.test_completion_decision_requires_all_obligations_and_selected_references
+    test_native_v2_unicode_result_reserve = CompletionReviewTransportTest.test_native_completion_unicode_result_preserves_decision_and_state_bounds
+
+    def test_native_v2_reference_remains_closed_and_bounded(self):
+        self._fixture()
+        armed = self._arm_completion()
+        state_path = Path(armed["request_path"])
+        baseline = json.loads(state_path.read_bytes())
+        for profile in ("codex-native-v2/0.162.0-alpha.3", "codex-native-v3/1.0", "codex-review/0.1.0"):
+            with self.subTest(profile=profile):
+                state = copy.deepcopy(baseline)
+                state["codex_review_profile"] = profile
+                state["integrity_sha256"] = self.adapter._integrity(state)
+                state_path.write_bytes(self.adapter._canonical(state))
+                with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+                    self.adapter._load(self.root, armed["request_id"])
+                state_path.write_bytes(self.adapter._canonical(baseline))
+        # The native context allowance and lifecycle reserve remain independent limits.
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (8 << 20)}
+        before = list(self.adapter._registered_requests())
+        with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v2", completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), before)
+        self.client.context.pop("input_manifest")
+        self.client.context["task"]["criterion_refs"] = [f"AC-{index:06d}-" + "x" * 240 for index in range(650)]
+        with self.assertRaisesRegex(RuntimeError, "review result has no bounded lifecycle reserve"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v2", completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), before)
 
 
 if __name__ == "__main__":

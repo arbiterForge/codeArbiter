@@ -52,8 +52,8 @@ def main(argv=None) -> int:
         default="opus", help="Claude reviewer model pinned into the launch envelope",
     )
     arm.add_argument(
-        "--codex-review-profile", choices=("native-v1",), default=None,
-        help="select only after qualifying the actual registered native V1 UUID interface",
+        "--codex-review-profile", choices=("native-v1", "native-v2"), default=None,
+        help="select only after qualifying the actual registered native interface and lifecycle",
     )
     context_arm = sub.add_parser("arm-context")
     context_arm.add_argument("--root", required=True)
@@ -80,7 +80,8 @@ def main(argv=None) -> int:
         print(json.dumps(_artifactauthoritylib.cancel_context_preview(root, args.document_id), sort_keys=True))
         return 0
     client = _artifactlib.ArtifactClient(
-        root, _artifactlib.helper_installation(__file__)
+        root, _artifactlib.helper_installation(__file__),
+        timeout=_artifactauthoritylib.EVIDENCE_ENGINE_TIMEOUT_SECONDS,
     )
     if args.command == "arm":
         workspaces = _workspace_map(args.workspace)
@@ -93,7 +94,7 @@ def main(argv=None) -> int:
                 and args.codex_review_profile is None):
             raise _artifactauthoritylib.AuthorityError(
                 "UNSUPPORTED_HOST_SEAM",
-                "Codex review requires explicit --codex-review-profile native-v1 after live interface qualification",
+                "Codex review requires an explicit native-v1 or native-v2 profile after live interface qualification",
             )
         result = _artifactauthoritylib.arm_request(
             root, client, args.artifact_id, args.record_id, args.activity,

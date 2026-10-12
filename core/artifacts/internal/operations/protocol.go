@@ -90,6 +90,7 @@ func RequestSchema(op string) (object, error) {
 		add("completion_selection", closed(object{"verification_receipts": object{"type": "array", "items": text(), "minItems": int64(1), "maxItems": int64(128)}, "supporting_files": object{"type": "array", "items": text(), "maxItems": int64(16)}}, "verification_receipts", "supporting_files"), false)
 		add("completion_context_ref", text(), false)
 		add("completion_context_sha256", digestType(), false)
+		add("verification_command_bindings", observation.QualifiedCommandBindingsSchema(), false)
 	case "context-evidence-context":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("mode", enum("create", "adopt", "update"), true)

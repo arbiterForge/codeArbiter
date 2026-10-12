@@ -23,6 +23,26 @@ All notable changes to `ca-pi` are documented in this file.
   retained-byte budget, which can cause repeat reads but never skips validation.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
+## [0.17.6] - 2026-10-10
+
+### Fixed
+
+- Preserve the shared engine's Codex native V2 review bindings and bounded
+  verification context storage. Pi verification and review authority remain
+  unsupported; this shared payload update does not enable those host seams.
+
+## [0.17.5] - 2026-10-10
+
+### Fixed
+
+- Preserve the shared adapter's bounded native completion-review context
+  references and complete review-result prompt contract (#921).
+- Fingerprint complete completion-review workspaces up to 1 GiB independently
+  of the 256 MiB selected verification-input budget. Preserve full content
+  hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.
+- Preserve the shared engine's distinct fresh-verification completion profile
+  and historical receipt validation. Pi verification and review authority remain
+  unsupported; this shared payload change does not enable those host seams.
 
 ## [0.17.4] - 2026-10-09
 

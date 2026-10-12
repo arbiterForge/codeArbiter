@@ -447,7 +447,8 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
     tools = ("Bash", "Agent") if host == "claude" else (
         "Bash", "shell_command", "exec_command", "unified_exec", "spawn_agent",
         "collaborationspawn_agent", "multi_agent_v1send_input", "multi_agent_v1resume_agent",
-        "multi_agent_v1close_agent")
+        "multi_agent_v1close_agent", "collaborationsend_message", "collaborationfollowup_task",
+        "collaborationinterrupt_agent")
     required += [(event, tool, "artifact-authority-hook.py")
                  for event in ("PreToolUse", "PostToolUse") for tool in tools]
     required += [(event, None, "artifact-authority-hook.py")

@@ -1316,7 +1316,8 @@ class TestCodexHooksJson(unittest.TestCase):
     def test_independent_review_authority_hooks_are_registered(self):
         review_matcher = (
             "spawn_agent|collaborationspawn_agent|multi_agent_v1send_input|"
-            "multi_agent_v1resume_agent|multi_agent_v1close_agent"
+            "multi_agent_v1resume_agent|multi_agent_v1close_agent|"
+            "collaborationsend_message|collaborationfollowup_task|collaborationinterrupt_agent"
         )
         for event in ("PreToolUse", "PostToolUse"):
             self.assertTrue(any(

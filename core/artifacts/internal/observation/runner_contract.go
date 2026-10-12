@@ -11,6 +11,21 @@ import (
 // The older profile remains separate so retained evidence is not reinterpreted.
 const QualifiedCommandProfile = "declared-command/0.2.0"
 
+// CompletionCommandProfile also binds the engine-normalized closure before
+// native evidence publication. Older producer results retain their raw semantics.
+const CompletionCommandProfile = "declared-command/0.3.0"
+
+func QualifiedCommandBindingsSchema() map[string]any {
+	return map[string]any{"type": "array", "items": commandBindingSchema(true), "minItems": int64(1), "maxItems": int64(256)}
+}
+
+func completionVerificationResultSchema() map[string]any {
+	contract := verificationResultSchema(true)
+	model.M(contract["properties"])["completion_workspace_after"] = map[string]any{"type": "array", "items": workspaceSchema(), "minItems": int64(1), "maxItems": int64(256)}
+	contract["required"] = append(model.A(contract["required"]), "completion_workspace_after")
+	return contract
+}
+
 func launchFileSchema() map[string]any {
 	return closed(map[string]any{
 		"path": text(), "sha256": hash(), "filesystem_id": text(),

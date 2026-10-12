@@ -94,7 +94,7 @@ REGISTRATION_DIGESTS = {
     "plugins/ca/hooks/hooks.json":
         "795a2c483fc89579e8a209e635cebd668542da19483f063b2d48427e97b47721",
     "plugins/ca-codex/hooks/hooks.json":
-        "6f4ae51a2c5631d0c99e20afb0482c007e8424d09498363630f9a42bb94691c5",
+        "b946af8f60516120a0b59732618b34f0399e8db609f1b311cac53c4b3a4b32b6",
 }
 
 
