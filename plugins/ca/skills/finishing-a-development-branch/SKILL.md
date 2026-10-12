@@ -169,9 +169,20 @@ qualification remains unchanged. Re-run the current-head review and CI
 requirements after integration; previous green evidence does not bind new code.
 
 For an explicitly selected per-block resolution, use the same shipped helper
-with `--root "${CLAUDE_PROJECT_DIR}" inspect-blocks`, then `--root "${CLAUDE_PROJECT_DIR}"
-resolve-blocks --expected <binding> --choices <json-array>`. Review each block
-and supply exactly one `"ours"` or `"theirs"` choice in its displayed order. The
+and the interpreter already selected by presence:
+
+```sh
+"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py" --root "${CLAUDE_PROJECT_DIR}" inspect-blocks
+```
+
+Pass the returned `binding` to the same helper and interpreter:
+
+```sh
+"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py" --root "${CLAUDE_PROJECT_DIR}" resolve-blocks --expected '<binding>' --choices '<json-array>'
+```
+
+Review each block and supply exactly one `"ours"` or `"theirs"` choice in its
+displayed order. The
 inspection returns the block count and side hashes; read the conflict document
 to review the actual text. This is a separate operation: `restore-head` keeps
 its original single-block exact-HEAD contract.

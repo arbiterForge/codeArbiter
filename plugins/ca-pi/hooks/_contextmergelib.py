@@ -366,18 +366,23 @@ def _git_conflict_blocks(root, current, base, ours, theirs):
         for path, raw in zip(paths, (ours, base, theirs)):
             path.write_bytes(raw)
         for name, flag in modes:
-            args = [git_executable(), "--no-pager", "--no-lazy-fetch", "-c", "core.fsmonitor=false",
-                    "-c", "core.untrackedCache=false", "-c", "merge.conflictStyle=merge",
-                    "merge-file", "--stdout", "--marker-size=" + str(size)]
-            if flag:
-                args.append(flag)
-            for label in labels:
-                args.extend(("-L", label.decode("utf-8", "strict")))
-            result = subprocess.run([*args, *(str(path) for path in paths)], cwd=root, env=env,
-                                    capture_output=True, shell=False, timeout=30)
-            _require(len(result.stdout) <= MAX_BYTES, "Git conflict rendering is oversized")
-            if 1 <= result.returncode <= 127 and result.stdout.replace(b"\r\n", b"\n") == current.replace(b"\r\n", b"\n"):
-                return payload, name
+            # Retain merge-file's historical default and reproduce ORT's
+            # histogram alignment, still requiring the complete exact rendering.
+            for algorithm in (None, "histogram"):
+                args = [git_executable(), "--no-pager", "--no-lazy-fetch", "-c", "core.fsmonitor=false",
+                        "-c", "core.untrackedCache=false", "-c", "merge.conflictStyle=merge",
+                        "merge-file", "--stdout", "--marker-size=" + str(size)]
+                if flag:
+                    args.append(flag)
+                if algorithm:
+                    args.append("--diff-algorithm=" + algorithm)
+                for label in labels:
+                    args.extend(("-L", label.decode("utf-8", "strict")))
+                result = subprocess.run([*args, *(str(path) for path in paths)], cwd=root, env=env,
+                                        capture_output=True, shell=False, timeout=30)
+                _require(len(result.stdout) <= MAX_BYTES, "Git conflict rendering is oversized")
+                if 1 <= result.returncode <= 127 and result.stdout.replace(b"\r\n", b"\n") == current.replace(b"\r\n", b"\n"):
+                    return payload, name
     raise ResolutionError("worktree is not Git's current three-stage rendering")
 
 

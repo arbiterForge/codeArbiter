@@ -114,16 +114,33 @@ Run an **incremental re-scout for each affected document**, scoped to its select
 - **Claim still holds → silently re-baseline only that document's provenance record.** Call `_provenancelib.rebaseline(doc_provenance, selected_current_hashes)` where `selected_current_hashes` contains current hashes only for the selected staged paths whose claims in that document were inspected and still hold. Do not re-baseline a path whose claim changed or was not inspected. Stage only `.codearbiter/.provenance/<doc>.json` by explicit path so the re-baselined record rides THIS commit (ADR-0008 ride-along pattern — nothing is surfaced to the user). After staging, re-run the secrets scan from `tech-stack.md` over the newly-staged path(s) — any file staged after Phase 4 must still pass the automated secrets scan before the commit proceeds. A missing current hash (deletion or rename) cannot be silently re-baselined; surface it in Phase 6 for review.
 - **Claim changed → route to the existing Phase 6 diff-review.** Propose only the affected doc or code-map edit required to reflect its changed claim. The user reviews that edit in the normal diff, and Phase 7 stages approved paths explicitly; do not silently rewrite or add unrelated documentation.
 
-For reviewed legacy code-map metadata, use the shipped fixed-target helper at
-`${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py`. Run `--root "${CLAUDE_PROJECT_DIR}"
-inspect-claims`, then `--root "${CLAUDE_PROJECT_DIR}" refresh-claims --expected <binding>
---claims <json-array>` with one to four reviewed records containing exactly
+For reviewed legacy code-map metadata in codeArbiter's source layout, use the
+shipped fixed-target helper at `${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py`.
+This claim-refresh lane reads all three fixed source manifests:
+`plugins/ca/.claude-plugin/plugin.json`,
+`plugins/ca-codex/.codex-plugin/plugin.json`, and `plugins/ca-pi/package.json`,
+even for a date-only refresh. Other repository layouts and arbitrary manifest
+claims are unsupported.
+
+Resolve the interpreter once by presence, then inspect:
+
+```sh
+PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python
+"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py" --root "${CLAUDE_PROJECT_DIR}" inspect-claims
+```
+
+Pass the returned `binding` to the same helper and interpreter:
+
+```sh
+"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/resolve-context-conflict.py" --root "${CLAUDE_PROJECT_DIR}" refresh-claims --expected '<binding>' --claims '<json-array>'
+```
+
+Supply one to four reviewed records containing exactly
 `field`, `before`, and `after`. The supported existing fields are `ca_version`,
 `codex_version`, `pi_version`, and `metadata_date`. Use the inspection's exact
 current claim as `before`; a version's `after` must match its fixed source
-manifest, and the date must match `inspection_date`. Select the interpreter once
-by presence and use it for both calls; never retry a failed operation under
-another interpreter.
+manifest, and the date must match `inspection_date`. Use the selected interpreter
+for both calls; never retry a failed operation under another interpreter.
 
 This operation requires resolved, tracked legacy schema-1 document/provenance
 and no native or uncertain journal ownership. It binds document, provenance,

@@ -344,6 +344,59 @@ class ContextMergeTests(unittest.TestCase):
                 self.assertEqual(self.state(), {**before, TARGET: expected.replace(b"\n", b"\r\n")})
                 self.assertEqual((self.root / ".git/index").read_bytes(), index)
 
+    def test_real_ort_histogram_alignment_preserves_unconflicted_rows(self):
+        base = b"# Code map\n\nrow 0\nrow 1\n"
+        ours = b"# Code map\n\nrow 1\ntail\n"
+        theirs = b"# Code map\n\nrow 1\nrow 0\nrow 4\nrow 1\nrow 3\n"
+        for style in ("merge", "diff3", "zdiff3"):
+            for algorithm in ("default", "myers"):
+                with self.subTest(style=style, algorithm=algorithm):
+                    self.git("merge", "--abort")
+                    self.git("config", "merge.conflictStyle", style)
+                    self.write(TARGET, base)
+                    self.commit("repeated-row alignment base")
+                    self.git("branch", "-f", "incoming", "HEAD")
+                    self.write(TARGET, ours)
+                    self.commit("current row deletion and tail")
+                    self.git("checkout", "-q", "incoming")
+                    self.write(TARGET, theirs)
+                    self.commit("incoming repeated rows")
+                    self.git("checkout", "-q", "current")
+                    options = [] if algorithm == "default" else ["-Xdiff-algorithm=myers"]
+                    merged = self.git("merge", "--no-commit", *options, "incoming", check=False)
+                    self.assertEqual(merged.returncode, 1, merged.stderr)
+                    self.assertEqual(len(self.git("ls-files", "-u", "--", TARGET).stdout.splitlines()), 3)
+                    before = self.state()
+                    index = (self.root / ".git/index").read_bytes()
+                    prefix = b"# Code map\n\n" + (b"row 1\n" if algorithm == "default" else b"")
+                    self.assertEqual(before[TARGET].split(b"<<<<<<< HEAD\n")[0], prefix,
+                                     "use the real selected Git algorithm's conflict boundaries")
+                    try:
+                        inspected = _contextmergelib.inspect_blocks(self.root)
+                    except _contextmergelib.ResolutionError as error:
+                        self.fail("genuine Git rendering refused: " + str(error))
+                    blocks = 2 if algorithm == "myers" and style != "merge" else 1
+                    self.assertEqual(inspected["blocks"], blocks)
+                    self.assertEqual(self.state(), before)
+                    self.assertEqual((self.root / ".git/index").read_bytes(), index)
+                    for foreign in (before[TARGET].replace(b"# Code map\n", b"# Code map\nhuman note\n"),
+                                    before[TARGET].replace(b"tail\n", b"human changed tail\n")):
+                        self.write(TARGET, foreign)
+                        with self.assertRaisesRegex(_contextmergelib.ResolutionError,
+                                                    "not Git's current three-stage rendering"):
+                            _contextmergelib.inspect_blocks(self.root)
+                        self.assertEqual(self.state(), {**before, TARGET: foreign})
+                        self.assertEqual((self.root / ".git/index").read_bytes(), index)
+                    self.write(TARGET, before[TARGET])
+                    resolved = self.invoke("resolve-blocks", "--expected", inspected["binding"],
+                                           "--choices", json.dumps(["theirs"] * blocks))
+                    self.assertEqual(resolved.returncode, 0, resolved.stderr)
+                    self.assertEqual(self.state(), {**before, TARGET: theirs})
+                    self.assertEqual((self.root / ".git/index").read_bytes(), index)
+                    self.assertEqual(len(self.git("ls-files", "-u", "--", TARGET).stdout.splitlines()), 3)
+                    self.assertFalse((self.root / ".git/index.lock").exists())
+                    self.assertFalse((self.root / ".codearbiter/.artifacts").exists())
+
     def test_multi_block_refusals_preserve_foreign_edits_and_index(self):
         self.prepare_blocks()
         inspected = self.invoke("inspect-blocks")

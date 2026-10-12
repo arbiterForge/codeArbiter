@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.11] - 2026-10-12
+
+### Fixed
+
+- Reproduce normal ORT histogram conflicts in guarded legacy block resolution while preserving exact rendering and index/CAS controls (#968).
+- Clarify unknown host qualification and complete the repository-scoped maintenance commands.
+
 ## [0.17.10] - 2026-10-12
 
 ### Fixed
