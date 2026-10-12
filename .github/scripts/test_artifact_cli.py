@@ -59,6 +59,310 @@ class CliTests(unittest.TestCase):
         self.assertEqual(envelope["error"]["code"], code)
         self.assertIn(code.encode(), result.stderr)
 
+    def successful(self, operation, request):
+        result, envelope = self.invoke(operation, request)
+        self.assertEqual(result.returncode, 0, envelope)
+        self.assertTrue(envelope["ok"], envelope)
+        return envelope["result"]
+
+    @staticmethod
+    def expected(identity):
+        return {key: identity[key] for key in ("revision", "model_sha256")}
+
+    def files(self):
+        return {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in self.root.rglob("*") if path.is_file()}
+
+    def initial_draft_pair(self):
+        from test_artifact_authoring import spec_normative, plan_normative
+        spec = spec_normative()
+        self.successful("create", {
+            "operation_id": "cli-initial-spec", "artifact_id": "SPEC-INITIAL",
+            "kind": "spec", "slug": "initial", "title": spec["title"],
+            "summary": spec["summary"], "normative": spec,
+        })
+        spec = self.successful("identity", {"artifact_id": "SPEC-INITIAL"})
+        plan = plan_normative(spec["artifact_id"], spec["normative_sha256"])
+        self.successful("create", {
+            "operation_id": "cli-initial-plan", "artifact_id": "PLAN-INITIAL",
+            "kind": "plan", "slug": "initial", "title": plan["title"],
+            "summary": plan["summary"], "normative": plan,
+            "spec_id": spec["artifact_id"],
+        })
+        plan = self.successful("identity", {"artifact_id": "PLAN-INITIAL"})
+        for identity in (spec, plan):
+            self.assertTrue(self.successful("validate", {
+                "artifact_id": identity["artifact_id"], "gate": "ready",
+            })["valid"])
+        return spec, plan
+
+    def draft_bind_request(self, spec, plan):
+        return {"artifact_id": plan["artifact_id"], "spec_id": spec["artifact_id"],
+                "operation_id": "cli-draft-rebind", "expected": self.expected(plan),
+                "binding_mode": "draft_preview", "spec_expected": self.expected(spec)}
+
+    def test_initial_draft_pair_can_rebind_after_spec_revision(self):
+        spec, plan = self.initial_draft_pair()
+        self.successful("apply", {
+            "artifact_id": spec["artifact_id"], "operation_id": "cli-revise-spec",
+            "expected": self.expected(spec), "changes": [{"op": "header.update", "fields": {
+                "summary": "Typed draft correction before the initial combined approval.",
+            }}],
+        })
+        spec = self.successful("identity", {"artifact_id": spec["artifact_id"]})
+        self.assertTrue(self.successful("validate", {
+            "artifact_id": spec["artifact_id"], "gate": "ready",
+        })["valid"])
+        result, envelope = self.invoke("validate", {
+            "artifact_id": plan["artifact_id"], "gate": "ready",
+        })
+        self.assertEqual(result.returncode, 2, envelope)
+        self.assertEqual([row["code"] for row in envelope["result"]["diagnostics"]],
+                         ["STALE_SPEC"])
+        request = self.draft_bind_request(spec, plan)
+        default = {key: value for key, value in request.items()
+                   if key not in ("binding_mode", "spec_expected")}
+        before = self.files()
+        result, envelope = self.invoke("plan-bind", default)
+        self.assert_error(result, envelope, "AUTHORITY_UNVERIFIED")
+        self.assertEqual(self.files(), before)
+
+        result, envelope = self.invoke("plan-bind", request)
+        self.assertEqual(result.returncode, 0, envelope)
+        rebound = envelope["result"]
+        self.assertEqual(rebound["artifact_id"], plan["artifact_id"])
+        self.assertEqual(rebound["path"], plan["path"])
+        self.assertEqual(rebound["revision"], plan["revision"] + 1)
+        self.assertEqual(self.successful("identity", {"artifact_id": spec["artifact_id"]}), spec)
+        for identity in (spec, rebound):
+            ready = self.successful("validate", {
+                "artifact_id": identity["artifact_id"], "gate": "ready",
+            })
+            self.assertTrue(ready["valid"], ready)
+            self.assertFalse(ready["authority"]["authority_verified"], ready)
+
+        preview = self.successful("sprint-approval-context", {
+            "artifact_id": plan["artifact_id"], "spec_id": spec["artifact_id"],
+            "delegate_methods": False, "prompt_sha256": "a" * 64,
+        })
+        self.assertFalse(preview["canonical_changed"])
+        self.assertEqual(preview["pair"]["plan"]["artifact_id"], plan["artifact_id"])
+        page = self.successful("read", {
+            "artifact_id": plan["artifact_id"], "symbol": "T-001", "mode": "contextual",
+        })
+        headers = {row["artifact_id"]: row["record"] for row in page["items"]
+                   if row["kind"] == "document_context"}
+        self.assertEqual(headers[plan["artifact_id"]]["spec_ref"], {
+            "artifact_id": spec["artifact_id"],
+            "normative_sha256": spec["normative_sha256"], "binding_mode": "draft_preview",
+        })
+        for header in headers.values():
+            self.assertEqual(header["governance"]["state"], "draft")
+            self.assertEqual(header["governance"]["approvals"], [])
+        result, envelope = self.invoke("eligible", {"artifact_id": plan["artifact_id"]})
+        self.assert_error(result, envelope, "DRAFT_BINDING")
+        after = self.files()
+        replay = self.successful("plan-bind", request)
+        self.assertTrue(replay["transaction"]["replay"])
+        self.assertEqual(self.files(), after)
+
+    def test_draft_rebind_schema_is_closed_and_requires_exact_source_cas(self):
+        spec, plan = self.initial_draft_pair()
+        request = self.draft_bind_request(spec, plan)
+        cases = [
+            {"binding_mode": "approved_source"}, {"binding_mode": True},
+            {"spec_expected": {"revision": spec["revision"]}},
+            {"spec_expected": {**self.expected(spec), "extra": True}},
+            {"spec_expected": {**self.expected(spec), "revision": True}},
+            {"spec_expected": {**self.expected(spec), "revision": 0}},
+            {"spec_expected": {**self.expected(spec), "model_sha256": "bad"}},
+            {"unexpected": True},
+        ]
+        requests = [{**request, **changed} for changed in cases]
+        requests.extend({key: value for key, value in request.items() if key != omitted}
+                        for omitted in ("binding_mode", "spec_expected"))
+        for candidate in requests:
+            with self.subTest(candidate=candidate):
+                before = self.files()
+                result, envelope = self.invoke("plan-bind", candidate)
+                self.assert_error(result, envelope, "INVALID_MODEL")
+                self.assertEqual(self.files(), before)
+
+    def test_draft_rebind_checks_both_members_revision_and_hash(self):
+        spec, plan = self.initial_draft_pair()
+        request = self.draft_bind_request(spec, plan)
+        for member in ("expected", "spec_expected"):
+            for changed in ({"revision": 2}, {"model_sha256": "0" * 64}):
+                with self.subTest(member=member, changed=changed):
+                    candidate = {**request, member: {**request[member], **changed}}
+                    before = self.files()
+                    result, envelope = self.invoke("plan-bind", candidate)
+                    self.assert_error(result, envelope, "REVISION_CONFLICT")
+                    self.assertEqual(self.files(), before)
+
+    def test_draft_rebind_rejects_cross_spec_selection(self):
+        from test_artifact_authoring import spec_normative
+        spec, plan = self.initial_draft_pair()
+        normative = spec_normative()
+        other = self.successful("create", {
+            "operation_id": "cli-other-spec", "artifact_id": "SPEC-OTHER",
+            "kind": "spec", "slug": "other", "title": normative["title"],
+            "summary": normative["summary"], "normative": normative,
+        })
+        before = self.files()
+        result, envelope = self.invoke("plan-bind", self.draft_bind_request(other, plan))
+        self.assert_error(result, envelope, "PAIR_MISMATCH")
+        self.assertEqual(self.files(), before)
+
+    def test_draft_rebind_runs_full_ready_and_keeps_invalid_changes_atomic(self):
+        from test_artifact_authoring import spec_normative
+        spec, plan = self.initial_draft_pair()
+        valid_change = [{"op": "record.update", "symbol": "T-001", "fields": {
+            "steps": ["Retain the original negative oracle.", "Apply the typed correction."],
+        }}]
+        invalid_changes = [
+            [{"op": "header.update", "fields": {"summary": " "}}],
+            [{"op": "record.update", "symbol": "T-001", "fields": {"steps": []}}],
+            [{"op": "record.update", "symbol": "T-001", "fields": {"criterion_refs": ["SPEC-INITIAL#AC-001", "SPEC-INITIAL#AC-MISSING"]}}],
+        ]
+        for number, changes in enumerate(invalid_changes):
+            with self.subTest(changes=changes):
+                before = self.files()
+                result, envelope = self.invoke("plan-bind", {
+                    **self.draft_bind_request(spec, plan), "changes": changes,
+                })
+                self.assertNotEqual(result.returncode, 0, envelope)
+                self.assertIn(envelope["error"]["code"], {"NOT_READY", "INVALID_CRITERION_REF"})
+                self.assertEqual(self.files(), before)
+
+        self.successful("apply", {
+            "artifact_id": spec["artifact_id"], "operation_id": "cli-not-ready-spec",
+            "expected": self.expected(spec), "changes": [{"op": "header.update", "fields": {"summary": " "}}],
+        })
+        spec = self.successful("identity", {"artifact_id": spec["artifact_id"]})
+        before = self.files()
+        result, envelope = self.invoke("plan-bind", self.draft_bind_request(spec, plan))
+        self.assert_error(result, envelope, "NOT_READY")
+        self.assertEqual(self.files(), before)
+
+        self.successful("apply", {
+            "artifact_id": spec["artifact_id"], "operation_id": "cli-ready-spec-again",
+            "expected": self.expected(spec), "changes": [{"op": "header.update", "fields": {
+                "summary": spec_normative()["summary"],
+            }}],
+        })
+        spec = self.successful("identity", {"artifact_id": spec["artifact_id"]})
+        rebound = self.successful("plan-bind", {
+            **self.draft_bind_request(spec, plan), "changes": valid_change,
+        })
+        task = self.successful("read", {"artifact_id": plan["artifact_id"], "symbol": "T-001", "mode": "exact"})
+        self.assertEqual(task["record"]["steps"], valid_change[0]["fields"]["steps"])
+        self.assertTrue(self.successful("validate", {"artifact_id": rebound["artifact_id"], "gate": "ready"})["valid"])
+
+    def test_draft_rebind_revisions_keep_old_approval_context_obsolete(self):
+        spec, plan = self.initial_draft_pair()
+        old_context = self.successful("sprint-approval-context", {
+            "artifact_id": plan["artifact_id"], "spec_id": spec["artifact_id"],
+            "delegate_methods": False, "prompt_sha256": "a" * 64,
+        })
+        original_plan = plan
+        for revision in range(2):
+            self.successful("apply", {
+                "artifact_id": spec["artifact_id"], "operation_id": f"cli-fresh-spec-{revision}",
+                "expected": self.expected(spec), "changes": [{"op": "header.update", "fields": {
+                    "summary": f"Typed correction {revision} before genuine approval.",
+                }}],
+            })
+            spec = self.successful("identity", {"artifact_id": spec["artifact_id"]})
+            plan = self.successful("plan-bind", {
+                **self.draft_bind_request(spec, plan), "operation_id": f"cli-fresh-bind-{revision}",
+            })
+            before = self.files()
+            result, envelope = self.invoke("plan-bind", {
+                **self.draft_bind_request(spec, original_plan), "operation_id": f"cli-stale-bind-{revision}",
+            })
+            self.assert_error(result, envelope, "REVISION_CONFLICT")
+            self.assertEqual(self.files(), before)
+            current = self.successful("sprint-approval-context", {
+                "artifact_id": plan["artifact_id"], "spec_id": spec["artifact_id"],
+                "delegate_methods": False, "prompt_sha256": "a" * 64,
+            })
+            self.assertNotEqual(current["pair"], old_context["pair"])
+            self.assertNotEqual(current["spec_context"]["context_sha256"], old_context["spec_context"]["context_sha256"])
+            self.assertNotEqual(current["plan_context"]["context_sha256"], old_context["plan_context"]["context_sha256"])
+            self.assertFalse(self.successful("identity", {"artifact_id": plan["artifact_id"]})["authority"]["authority_verified"])
+
+    def test_draft_rebind_rejects_authority_and_execution_source_fixtures(self):
+        from test_artifact_authoring import refusal_only_model_container
+        spec, plan = self.initial_draft_pair()
+        # Add the prerequisite through the real typed API before constructing
+        # inert adverse states. No event, observation, receipt or approval is issued.
+        self.successful("apply", {
+            "artifact_id": plan["artifact_id"], "operation_id": "cli-add-prerequisite",
+            "expected": self.expected(plan), "changes": [{"op": "record.add", "collection": "prerequisites", "record": {
+                "id": "GATE-01", "title": "Retain the prerequisite", "requirement": "Genuine prerequisite proof required.", "source_refs": [],
+            }}],
+        })
+        spec_path = self.root / spec["path"]
+        plan_path = self.root / plan["path"]
+        spec_bytes, plan_bytes = spec_path.read_bytes(), plan_path.read_bytes()
+        approval_claim = {
+            "authority_kind": "user_workflow", "source_ref": "missing-refusal-only-source",
+            "normative_sha256": "0" * 64, "attestation_level": "workflow_attested",
+            "source_sha256": "0" * 64, "artifact_id": "SPEC-INITIAL",
+        }
+        cases = []
+        for member in ("spec", "plan"):
+            for state in ("ready", "approved", "superseded"):
+                cases.append((f"{member}-{state}", member, "INITIAL_APPROVAL_ONLY",
+                              lambda data, state=state: data["governance"].update(state=state)))
+            cases.append((f"{member}-approval-claim", member, "INITIAL_APPROVAL_ONLY",
+                          lambda data: data["governance"].update(approvals=[approval_claim])))
+        for state in ("IN_PROGRESS", "REVIEW", "ACCEPTED", "BLOCKED", "STALE"):
+            cases.append((f"task-{state}", "plan", "INITIAL_APPROVAL_ONLY",
+                          lambda data, state=state: data["execution"]["tasks"]["T-001"].update(state=state)))
+        for key, value in (("evidence_refs", ["missing-refusal-only-evidence"]),
+                           ("completion_review_receipt", "missing-refusal-only-review"),
+                           ("completion_sha256", "0" * 64)):
+            cases.append((key, "plan", "INITIAL_APPROVAL_ONLY",
+                          lambda data, key=key, value=value: data["execution"]["tasks"]["T-001"].update({key: value})))
+        cases.extend([
+            ("prerequisite-evidence", "plan", "INITIAL_APPROVAL_ONLY",
+             lambda data: data["execution"]["prerequisite_evidence"].update({"GATE-01": ["missing-refusal-only-evidence"]})),
+            ("satisfied-prerequisite", "plan", "INITIAL_APPROVAL_ONLY",
+             lambda data: (data["execution"]["prerequisites"].update({"GATE-01": "satisfied"}),
+                           data["execution"]["prerequisite_evidence"].update({"GATE-01": ["missing-refusal-only-evidence"]}))),
+            ("scope-evidence", "plan", "INITIAL_APPROVAL_ONLY",
+             lambda data: data["execution"]["scopes"].update({"CP-01": {"base_input_sha256": "0" * 64, "plan_sha256": "0" * 64}})),
+            ("approved-source-binding", "plan", "DRAFT_BINDING",
+             lambda data: data["normative"]["spec_ref"].update(binding_mode="approved_source")),
+            ("different-slug", "spec", "PAIR_MISMATCH", lambda data: data.update(slug="other")),
+            ("different-spec-ref-id", "plan", "PAIR_MISMATCH",
+             lambda data: data["normative"]["spec_ref"].update(artifact_id="SPEC-OTHER")),
+        ])
+        for number, (name, member, code, mutate) in enumerate(cases):
+            with self.subTest(case=name):
+                spec_path.write_bytes(spec_bytes)
+                plan_path.write_bytes(plan_bytes)
+                path, original = (spec_path, spec_bytes) if member == "spec" else (plan_path, plan_bytes)
+                path.write_bytes(refusal_only_model_container(original, mutate))
+                relative = path.relative_to(self.root).as_posix()
+                repair = self.successful("repair-preview", {"path": relative})
+                self.successful("repair-apply", {
+                    "path": relative, "operation_id": f"cli-refusal-render-{number}",
+                    "expected_bytes_sha256": repair["expected_bytes_sha256"], "preview_sha256": repair["preview_sha256"],
+                })
+                current_spec = self.successful("identity", {"artifact_id": "SPEC-INITIAL"})
+                current_plan = self.successful("identity", {"artifact_id": "PLAN-INITIAL"})
+                before = self.files()
+                result, envelope = self.invoke("plan-bind", {
+                    **self.draft_bind_request(current_spec, current_plan), "operation_id": f"cli-refusal-bind-{number}",
+                })
+                self.assert_error(result, envelope, code)
+                self.assertEqual(self.files(), before)
+                self.assertFalse(any("/authority-sources/" in path or "/observations/" in path or "/receipts/" in path
+                                     for path in before))
+
     def test_default_and_help_report_capabilities(self):
         for operation in (None, "capabilities", "--version", "--help", "help"):
             with self.subTest(operation=operation):

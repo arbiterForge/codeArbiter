@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.17.9] - 2026-10-11
+
+### Fixed
+
+- Carry the shared native engine draft-pair rebinding repair and generated workflow guidance. This payload update does not enable Pi verification or review authority.
+
 ## [0.17.6] - 2026-10-10
 
 ### Fixed

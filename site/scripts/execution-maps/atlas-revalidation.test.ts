@@ -1,7 +1,10 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS } from './atlas';
+import { commandMetadata } from './atlas-command';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -127,6 +130,33 @@ describe('atlas source compatibility revalidation', () => {
     }
     expect(retainsReviewedChangelog(git('show', `${nativeV2Review}:CHANGELOG.md`),
       git('show', `${completionReview}:CHANGELOG.md`))).toBe(true);
+  });
+
+  it('binds the complete current product input set to only the exact draft-preview documents', () => {
+    const inputs = new Set(productInputs);
+    for (const command of originalAtlas().commands) commandMetadata(command.name, path => {
+      inputs.add(path);
+      return readFileSync(resolve(root, path), 'utf8');
+    });
+    const current = (path: string): string => readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n');
+    const changed = [...inputs].sort().filter(path => current(path) !==
+      git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:${path}`));
+    expect(changed).toEqual(['CHANGELOG.md', 'core/surface/SPRINT.md', 'core/surface/includes/artifacts.md']);
+    expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
+      'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
+      'core/surface/includes/artifacts.md': '6f813e208ec6dad8c38b83b7d62ccf8cd28717e6',
+    });
+    for (const [path, blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS)) {
+      // The canonical tracked file retains this blob through a squash; no PR
+      // commit has to remain reachable in a subsequent main-only clone.
+      expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
+      expect(execFileSync('git', ['hash-object', '--stdin'], {
+        cwd: root, input: current(path), encoding: 'utf8',
+      }).trim()).toBe(blob);
+      expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
+    }
+    expect(retainsReviewedChangelog(current('CHANGELOG.md'),
+      git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
 
   it('preserves original geometry and source links independently of the compatibility review', () => {

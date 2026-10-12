@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT} from './atlas';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS} from './atlas';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
@@ -102,6 +102,10 @@ describe('atlas source and original-composition regression contract',()=>{
       });
       git(['clone','--quiet','--shared','--no-checkout',fileURLToPath(root),dir]);
       git(['restore',`--source=${REVALIDATED_AT}`,'--worktree','--',...inputs]);
+      // Restore only the two reviewed canonical doc blobs in this negative
+      // fixture; its replacement-ref and roster rejection assertions stay intact.
+      for(const [path,blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS))writeFileSync(join(dir,path),
+        execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       pin=git(['hash-object','-w','--stdin'],'reviewed source\n');
       const replacement=git(['hash-object','-w','--stdin'],'changed source\n');
       git(['replace',pin,replacement]);
@@ -114,6 +118,13 @@ describe('atlas source and original-composition regression contract',()=>{
     it('ignores replacement refs for reviewed blobs and lens rosters',()=>{
       expect.soft(()=>checkReviewedSource(dir,'core/source.md',pin)).toThrow(/Atlas source changed/);
       expect(loadAtlas(dir).lensCount).toBe(13);
+    });
+    it.each(Object.keys(DRAFT_PREVIEW_SOURCE_BLOBS))('refuses further drift of the exact reviewed document %s',path=>{
+      const file=join(dir,path),reviewed=readFileSync(file);
+      try{
+        writeFileSync(file,Buffer.concat([reviewed,Buffer.from('\nUnreviewed change.\n')]));
+        expect(()=>loadAtlas(dir)).toThrow(`Atlas source changed: ${path}`);
+      }finally{writeFileSync(file,reviewed);}
     });
   });
   it('exports the same spatial SVGs and source identity, without font payloads',()=>{
