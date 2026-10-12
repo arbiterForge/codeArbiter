@@ -25,11 +25,36 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // completion closure and bounded context retention. Their routes and authority
 // boundaries agree with the maps. PR945 adds the exact native V2 activity/child
 // binding, steering refusal and frozen verification context references to those
-// owners and docs/hooks.md. Routes and authority boundaries remain compatible.
-// PR961 (ADR-0042) adds ship-set input identity to the artifacts owner; no route
-// reads or depends on that identity. Historical comparisons remain independently
-// tested.
-export const REVALIDATED_AT = 'a75ec01c94a59f63820b633665ada015a01fc928';
+// owners and docs/hooks.md. Routes and authority boundaries remain compatible;
+// historical comparisons remain independently tested.
+// PR952 makes the existing brownfield host prerequisites explicit before
+// scaffolding and links debug packet preparation before one-shot validation.
+// The reviewed containment, handoff, authority and recovery routes still agree
+// with the maps; no host qualification or new runtime capability is implied.
+export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
+
+// These exact tracked owner blobs retain the packet-preparation review through
+// changelog integration and a squash/main clone. All other owners retain the
+// historical native V2 binding; later release notes remain unreviewed additions.
+export const BROWNFIELD_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/commands/init.md':'c3de948de1617aa323e310eefee7fde2bd8a65fc',
+  'core/surface/skills/debug/SKILL.md':'6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
+});
+
+// #967 supplies bounded legacy metadata maintenance and a separate explicitly
+// selected per-block resolver. Commit review/staging and the displayed original
+// exact-HEAD recovery retain their gates; neither operation grants native ownership.
+export const LEGACY_CODE_MAP_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/skills/commit-gate/SKILL.md':'8818ab0ae6230aafcc42b48f72190e0e4ec9adcb',
+  'core/surface/skills/finishing-a-development-branch/SKILL.md':'7e495efd47875a05560c34634c46b59b71838ee5',
+});
+
+// PR961 (ADR-0042) adds ship-set input identity to the artifacts owner. No route
+// reads or depends on that identity, so the owner is pinned to its exact reviewed
+// blob while every other owner keeps the historical binding.
+export const SHIP_SET_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/includes/artifacts.md':'a8a673034289f26b6792ef27d93a6f1baf62ad8a',
+});
 
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
@@ -97,7 +122,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
   const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin);checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??SHIP_SET_SOURCE_BLOBS[path]);checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');

@@ -32,6 +32,18 @@ predate the plugin rewrite and are grouped by date.
   validation still happens once.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
+## [2.25.7] - 2026-10-12
+
+### Fixed
+
+- Restore reviewed legacy code-map metadata updates and explicit per-block Git
+  conflict resolution with bounded helpers, preserving native ownership,
+  stale-input checks, unselected text and the Git index (#967).
+- Explain debug packet shapes and link the trusted schema and a synthetic
+  unresolved example before one-shot validation (#951).
+- Document brownfield host prerequisites before scaffolding, preserving
+  containment, native approval and partial-state recovery gates (#950).
+
 ## [2.25.6] - 2026-10-10
 
 ### Fixed

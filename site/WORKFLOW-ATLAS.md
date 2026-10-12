@@ -181,11 +181,12 @@ input identity is computed, so their text, source links and geometry are
 unchanged. The cited line range stays valid: the paragraph is inserted inside
 S10's range and the other claims keep their order.
 
-`REVALIDATED_AT` binds the reviewed source. The regression retains every earlier
-comparison, pins the exact S10 blob, and requires every other mapped owner to
-remain unchanged except for release notes inserted above preserved changelog
-history. Keep that review commit in merged history (the PR must land as a true
-merge commit) and do not substitute the latest main or relax the drift check.
+`SHIP_SET_SOURCE_BLOBS` pins the S10 owner to its exact reviewed blob. The
+regression compares every current input with the reviewed revision, lists
+`core/surface/includes/artifacts.md` among the reviewed changes, requires the
+tracked file to hash to the pinned blob, and keeps every other mapped owner
+unchanged except for release notes inserted above preserved changelog history.
+Do not substitute the latest main or relax the drift check.
 
 ## Theme and exports
 
