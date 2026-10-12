@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# codeArbiter — sanctioned fixed-target legacy context conflict recovery.
+# codeArbiter — sanctioned fixed-target legacy recovery and metadata refresh.
 
 from _contextmergelib import main
 

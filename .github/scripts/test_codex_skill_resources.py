@@ -1969,6 +1969,12 @@ class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase)
     def install_authority_hooks(self):
         path = self.package / "hooks" / "hooks.json"
         manifest = json.loads(path.read_text(encoding="utf-8"))
+        # The shipped UserPromptSubmit timeout is 600 (#931). The historical
+        # digests below pin the earlier 30s inventory, so reconstruct that.
+        for group in manifest["hooks"].get("UserPromptSubmit", []):
+            for hook in group["hooks"]:
+                if "prompt-submit.py" in hook.get("command", "") and hook.get("timeout") == 600:
+                    hook["timeout"] = 30
         canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
         if hashlib.sha256(canonical.encode("utf-8")).hexdigest() == (
             "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47"
@@ -2039,6 +2045,7 @@ class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase)
                 "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
                 "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
                 "7343a38841e254ff07a35b0ba8f0a1115112f52490c8e33aee9f3a98a1678046",
+                "985a5e1fed19169661a42b978d1dfa07e0dfcef727bdc87b0738a679afbd0597",
                 "aeb0954ac97529e7e6eb2f6670f5578380956341dd39c52c5e8269b1af5c9cc3",
                 "e6f12eb10c7c9cee0abd549d4cbe4dc9c2146d2651a758ae4c4ea92e57719784",
             )),

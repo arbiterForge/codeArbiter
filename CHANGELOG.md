@@ -18,6 +18,26 @@ predate the plugin rewrite and are grouped by date.
 
 - Rebind a revised initial draft specification and plan through an explicit, same-pair operation with exact source and plan checks. Keep both artifacts unapproved and refuse execution evidence; ordinary approved-source binding and later combined approval remain required.
 
+## [2.25.8] - 2026-10-12
+
+### Fixed
+
+- Recognize normal verbose unittest rows for fully qualified required test
+  identities. Preserve exact identity matching and refusal of duplicate,
+  skipped, failed or missing required results (#955).
+
+## [2.25.7] - 2026-10-12
+
+### Fixed
+
+- Restore reviewed legacy code-map metadata updates and explicit per-block Git
+  conflict resolution with bounded helpers, preserving native ownership,
+  stale-input checks, unselected text and the Git index (#967).
+- Explain debug packet shapes and link the trusted schema and a synthetic
+  unresolved example before one-shot validation (#951).
+- Document brownfield host prerequisites before scaffolding, preserving
+  containment, native approval and partial-state recovery gates (#950).
+
 ## [2.25.6] - 2026-10-10
 
 ### Fixed

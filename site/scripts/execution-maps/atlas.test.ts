@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS} from './atlas';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS} from './atlas';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
@@ -106,6 +106,9 @@ describe('atlas source and original-composition regression contract',()=>{
       // fixture; its replacement-ref and roster rejection assertions stay intact.
       for(const [path,blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS))writeFileSync(join(dir,path),
         execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
+      writeFileSync(join(dir,'core/pysrc/_artifactauthoritylib.py'),execFileSync('git',
+        ['--no-replace-objects','cat-file','blob',UNITTEST_COLLECTOR_BLOB],{cwd:dir,env:fixtureEnv}));
+      for(const [path,blob] of Object.entries({...BROWNFIELD_SOURCE_BLOBS,...LEGACY_CODE_MAP_SOURCE_BLOBS}))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       pin=git(['hash-object','-w','--stdin'],'reviewed source\n');
       const replacement=git(['hash-object','-w','--stdin'],'changed source\n');
       git(['replace',pin,replacement]);
