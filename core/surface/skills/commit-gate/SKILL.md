@@ -129,8 +129,11 @@ This operation requires resolved, tracked legacy schema-1 document/provenance
 and no native or uncertain journal ownership. It binds document, provenance,
 Git/index, source manifest bytes and date, preserves all unselected bytes, and
 does not stage, rebaseline, adopt, enroll or create a native receipt. Inspect the
-resulting diff and continue the existing Phase 6/7 review and explicit staging
-lane; provenance rebaseline remains separately scoped by Phase 5.5. Unsupported
+worktree diff for `.codearbiter/code-map.md`, selectively stage that explicit
+path, and re-run the normal secrets scan over the newly staged Markdown before
+Phase 6. Treat it as a heal-proposed doc/code-map edit in Phase 6 review, never as
+a silent rebaseline, and retain its explicit inclusion in Phase 7. Provenance
+rebaseline remains separately scoped by Phase 5.5. Unsupported
 claims or refused preimages stop the edit; do not substitute a direct write or
 native adoption. A codeArbiter contributor may exercise the tested and
 independently reviewed canonical helper under `core/pysrc/` with live enforcement

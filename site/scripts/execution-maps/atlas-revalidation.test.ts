@@ -193,7 +193,7 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/debug/SKILL.md': '6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
     });
     expect(LEGACY_CODE_MAP_SOURCE_BLOBS).toEqual({
-      'core/surface/skills/commit-gate/SKILL.md': 'e77dee991b50bf1dd3e30717edc06639ead93b40',
+      'core/surface/skills/commit-gate/SKILL.md': '8818ab0ae6230aafcc42b48f72190e0e4ec9adcb',
       'core/surface/skills/finishing-a-development-branch/SKILL.md': '7e495efd47875a05560c34634c46b59b71838ee5',
     });
     for (const [path, blob] of Object.entries({...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS})) {

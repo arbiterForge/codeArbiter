@@ -45,7 +45,7 @@ export const BROWNFIELD_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.free
 // selected per-block resolver. Commit review/staging and the displayed original
 // exact-HEAD recovery retain their gates; neither operation grants native ownership.
 export const LEGACY_CODE_MAP_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
-  'core/surface/skills/commit-gate/SKILL.md':'e77dee991b50bf1dd3e30717edc06639ead93b40',
+  'core/surface/skills/commit-gate/SKILL.md':'8818ab0ae6230aafcc42b48f72190e0e4ec9adcb',
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'7e495efd47875a05560c34634c46b59b71838ee5',
 });
 
