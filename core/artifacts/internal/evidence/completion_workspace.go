@@ -34,22 +34,63 @@ const MaxCompletionWorkspaceTotal = 1 << 30
 // normalizes only validated canonical artifacts and validated derived outputs
 // in the artifact root. Other worktrees retain the full producer byte closure.
 // As with Snapshot, two passes detect ordinary concurrent edits, not hostile ABA.
+//
+// CompletionWorkspaces always observes the workspaces afresh. The engine's own
+// completion checks use completionWorkspacesReused, which serves a root already
+// observed identically by both passes earlier in the same operation.
 func CompletionWorkspaces(f *store.FS, bindings []any, normalize bool) ([]any, error) {
+	return completionWorkspaces(f, bindings, normalize, false)
+}
+
+func completionWorkspacesReused(f *store.FS, bindings []any, normalize bool) ([]any, error) {
+	return completionWorkspaces(f, bindings, normalize, true)
+}
+
+func completionWorkspaces(f *store.FS, bindings []any, normalize, reuse bool) ([]any, error) {
 	if f == nil || len(bindings) == 0 || len(bindings) > 256 {
 		return nil, fault.New("WORKSPACE_DRIFT", "completion command bindings are missing or exceed bounds")
 	}
-	a, err := completionWorkspacesOnce(f, bindings, normalize)
+	a, _, err := completionWorkspacesOnce(f, bindings, normalize, reuse)
 	if err != nil {
 		return nil, err
 	}
-	b, err := completionWorkspacesOnce(f, bindings, normalize)
+	b, computed, err := completionWorkspacesOnce(f, bindings, normalize, reuse)
 	if err != nil {
 		return nil, err
 	}
 	if !reflect.DeepEqual(a, b) {
 		return nil, fault.New("CONCURRENT_CHANGE", "completion workspaces changed during collection")
 	}
+	// Only a state observed identically by both passes is kept for the rest of the
+	// operation; an error or a changed state is never recorded.
+	for key, snapshot := range computed {
+		if !reuse {
+			break
+		}
+		f.Memo().KeepValue(completionWorkspaceKind, key, snapshot)
+	}
 	return b, nil
+}
+
+// completionWorkspaceKind is the memo kind of a workspace root's completion state.
+// The state of one root (its Git status, index and member bytes, and for the
+// artifact root the normalized view) is observed twice by the first call that
+// needs it and then reused by every later call of the same operation, so the cost
+// of the scans behind it is independent of how many tasks or receipts name the
+// root. Raw and normalized states are separate keys.
+const completionWorkspaceKind = "completion-workspaces"
+
+// The normalized state also depends on internalOutputs(f) and the catalog's norm
+// hashes, which this key does not name: computing either is a repository scan,
+// and keying on them would put a scan back into every task's lookup, the cost
+// this reuse removes. So a normalized entry is valid only while nothing writes the
+// catalog or the internal outputs between the check that recorded it and the last
+// check that reuses it. The reusing callers are the completion checks in
+// completion.go; an operation that writes the catalog or outputs and then checks
+// again must call CompletionWorkspaces, which never reuses, or add a key component
+// computed once per operation.
+func completionWorkspaceKey(binding map[string]any, root string, normalize bool) string {
+	return strings.Join([]string{root, model.S(binding["workspace_filesystem_id"]), model.S(binding["git_common_dir"]), model.S(binding["git_common_filesystem_id"]), fmt.Sprint(normalize)}, "\x00")
 }
 
 func completionSamePath(a, b string) bool {
@@ -281,54 +322,55 @@ func completionResolvedGitPath(root string, probe completionGitProbe) (string, e
 	return filepath.EvalSymlinks(path)
 }
 
-func completionWorkspacesOnce(f *store.FS, bindings []any, normalize bool) ([]any, error) {
+func completionWorkspacesOnce(f *store.FS, bindings []any, normalize, reuse bool) ([]any, map[string]map[string]any, error) {
 	artifactCommon, err := completionResolvedGitPath(f.Root, completionGitCommon)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	unique := map[string]any{}
+	computed := map[string]map[string]any{}
 	for _, value := range bindings {
 		binding := model.M(value)
 		root, cwd, common := model.S(binding["workspace_root"]), model.S(binding["cwd"]), model.S(binding["git_common_dir"])
 		for _, pair := range [][2]string{{root, model.S(binding["workspace_filesystem_id"])}, {cwd, model.S(binding["cwd_filesystem_id"])}, {common, model.S(binding["git_common_filesystem_id"])}} {
 			if err := completionDirectory(pair[0], pair[1]); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 		}
 		top, err := completionResolvedGitPath(cwd, completionGitTop)
 		if err != nil || !completionSamePath(top, root) {
-			return nil, fault.New("WORKSPACE_DRIFT", "command cwd no longer belongs to its mapped worktree")
+			return nil, nil, fault.New("WORKSPACE_DRIFT", "command cwd no longer belongs to its mapped worktree")
 		}
 		actualCommon, err := completionResolvedGitPath(root, completionGitCommon)
 		if err != nil || !completionSamePath(actualCommon, common) || !completionSamePath(common, artifactCommon) {
-			return nil, fault.New("WORKSPACE_DRIFT", "mapped workspace Git common directory changed")
+			return nil, nil, fault.New("WORKSPACE_DRIFT", "mapped workspace Git common directory changed")
 		}
 		argv := model.A(binding["argv"])
 		if len(argv) == 0 {
-			return nil, fault.New("WORKSPACE_DRIFT", "command executable binding is missing")
+			return nil, nil, fault.New("WORKSPACE_DRIFT", "command executable binding is missing")
 		}
 		executable, err := CompletionReadFile(model.S(argv[0]), 512<<20)
 		if err != nil || canonical.BytesHash(executable) != model.S(binding["executable_sha256"]) {
-			return nil, fault.New("WORKSPACE_DRIFT", "command executable identity changed")
+			return nil, nil, fault.New("WORKSPACE_DRIFT", "command executable identity changed")
 		}
 		launchFiles, ok := binding["launch_files"].([]any)
 		if !ok || len(launchFiles) == 0 || len(launchFiles) > 32 {
-			return nil, fault.New("WORKSPACE_DRIFT", "command launch file bindings are unavailable")
+			return nil, nil, fault.New("WORKSPACE_DRIFT", "command launch file bindings are unavailable")
 		}
 		for _, v := range launchFiles {
 			item := model.M(v)
 			original := model.S(item["path"])
 			path, err := completionLaunchPath(original)
 			if err != nil || !completionIdentityMatches(path, model.S(item["filesystem_id"])) {
-				return nil, fault.New("WORKSPACE_DRIFT", "command launch file identity changed")
+				return nil, nil, fault.New("WORKSPACE_DRIFT", "command launch file identity changed")
 			}
 			data, err := CompletionReadFile(path, 512<<20)
 			if err != nil || canonical.BytesHash(data) != model.S(item["sha256"]) {
-				return nil, fault.New("WORKSPACE_DRIFT", "command launch file bytes changed")
+				return nil, nil, fault.New("WORKSPACE_DRIFT", "command launch file bytes changed")
 			}
 			after, err := completionLaunchPath(original)
 			if err != nil || !completionSamePath(path, after) || !completionIdentityMatches(after, model.S(item["filesystem_id"])) {
-				return nil, fault.New("WORKSPACE_DRIFT", "command launch file identity changed while reading")
+				return nil, nil, fault.New("WORKSPACE_DRIFT", "command launch file identity changed while reading")
 			}
 		}
 		key := filepath.Clean(root)
@@ -338,9 +380,22 @@ func completionWorkspacesOnce(f *store.FS, bindings []any, normalize bool) ([]an
 		if _, ok := unique[key]; ok {
 			continue
 		}
-		snapshot, err := completionWorkspace(f, binding, normalize && completionSamePath(root, f.Root))
+		effective := normalize && completionSamePath(root, f.Root)
+		memoKey := completionWorkspaceKey(binding, root, effective)
+		if held, ok := f.Memo().Held(completionWorkspaceKind, memoKey); ok && reuse {
+			if frozen, ok := held.(map[string]any); ok {
+				if copied, err := canonical.Clone(frozen); err == nil {
+					unique[key] = copied
+					continue
+				}
+			}
+		}
+		snapshot, err := completionWorkspace(f, binding, effective)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
+		}
+		if frozen, err := canonical.Clone(snapshot); err == nil {
+			computed[memoKey] = frozen
 		}
 		unique[key] = snapshot
 	}
@@ -352,7 +407,7 @@ func completionWorkspacesOnce(f *store.FS, bindings []any, normalize bool) ([]an
 	sort.Slice(result, func(i, j int) bool {
 		return model.S(model.M(result[i])["root"]) < model.S(model.M(result[j])["root"])
 	})
-	return result, nil
+	return result, computed, nil
 }
 
 func completionWorkspace(f *store.FS, binding map[string]any, normalize bool) (map[string]any, error) {

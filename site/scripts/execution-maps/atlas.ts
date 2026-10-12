@@ -57,9 +57,11 @@ export const LEGACY_CODE_MAP_SOURCE_BLOBS:Readonly<Record<string,string>>=Object
 // require genuine combined approval before sprint execution and preserve the
 // ordinary approved-source feature path. Bind only these reviewed canonical
 // file blobs, which the tracked documents retain through a squash/main clone.
+// PR961 (ADR-0042) adds ship-set input identity to the artifacts include; no route
+// reads or depends on that identity, so the same pin carries the combined text.
 export const DRAFT_PREVIEW_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/SPRINT.md':'c3c47d38028fb3a8141fe1235957e827031acd43',
-  'core/surface/includes/artifacts.md':'6f813e208ec6dad8c38b83b7d62ccf8cd28717e6',
+  'core/surface/includes/artifacts.md':'8a834b919fb81c77213086a1b1661d16b5290bbe',
 });
 
 // #968 clarifies observed/unknown host qualification, the fixed manifest layout

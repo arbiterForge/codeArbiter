@@ -28,14 +28,30 @@ func closed(properties map[string]any, required ...string) map[string]any {
 func subjectSchema() map[string]any {
 	return closed(map[string]any{"artifact_id": text(), "normative_sha256": hash(), "record_id": text()}, "artifact_id", "normative_sha256", "record_id")
 }
+
+// manifestSchema accepts the current 0.2.0 manifest, which must declare its
+// membership, and the historical 0.1.0 manifest, which predates membership.
+// 0.1.0 stays readable so older evidence is judged stale by input identity
+// rather than rejected as malformed; the two formats never hash equal.
 func manifestSchema() map[string]any {
-	return closed(map[string]any{
-		"format": map[string]any{"const": "codearbiter.verification-inputs/0.1.0"},
-		"engine": text(), "platform": text(), "engine_toolchain": text(),
-		"roots":               map[string]any{"type": "array", "items": text()},
-		"exclude_directories": map[string]any{"type": "array", "items": text()},
-		"entries":             map[string]any{"type": "object"},
-	}, "format", "engine", "platform", "engine_toolchain", "roots", "exclude_directories", "entries")
+	manifest := func(format string, required ...string) map[string]any {
+		props := map[string]any{
+			"format": map[string]any{"const": format},
+			"engine": text(), "platform": text(), "engine_toolchain": text(),
+			"roots":               map[string]any{"type": "array", "items": text()},
+			"exclude_directories": map[string]any{"type": "array", "items": text()},
+			"entries":             map[string]any{"type": "object"},
+		}
+		if len(required) > 0 {
+			// Only 0.2.0 carries membership; 0.1.0 stays exactly as strict as it was.
+			props["membership"] = map[string]any{"enum": []any{"git_ship_set", "filesystem"}}
+		}
+		return closed(props, append([]string{"format", "engine", "platform", "engine_toolchain", "roots", "exclude_directories", "entries"}, required...)...)
+	}
+	return map[string]any{"oneOf": []any{
+		manifest("codearbiter.verification-inputs/0.1.0"),
+		manifest("codearbiter.verification-inputs/0.2.0", "membership"),
+	}}
 }
 
 // ContextSchema describes the exact engine-calculated material a producer is
@@ -241,12 +257,59 @@ func refHash(p, sub string) (string, error) {
 	return h, nil
 }
 
-func load(f *store.FS, p, expected, sub string, contract map[string]any) (map[string]any, []byte, error) {
+// Reader returns the bytes stored at a repository-relative reference, refusing
+// anything larger than limit. It is the only way the validators in this package
+// and in authority reach evidence objects, so a caller that has already read the
+// objects (a snapshot scan) supplies them from memory, while every other caller
+// reads them through the repository. A Reader reports an object it does not hold
+// as an error; the validators map that to their fail-closed unverified codes and
+// never fall back to another source.
+type Reader func(ref string, limit int64) ([]byte, error)
+
+// FSReader reads references through the repository, one root-relative read each.
+func FSReader(f *store.FS) Reader {
+	return func(ref string, limit int64) ([]byte, error) { return ReadRecorded(f, ref, limit) }
+}
+
+// ReadRecorded is f.Read that serves an earlier read of the same object in this
+// operation, and records a successful read. The memo keeps only bytes whose
+// content hash is their name (evidence objects are content addressed) and only
+// within its byte budget, and it keeps and serves its own copies; bytes that do
+// not hash to their name are returned to this caller but never served again, so
+// the next read goes to disk and a transient corruption heals. A failed read is
+// never recorded.
+func ReadRecorded(f *store.FS, ref string, limit int64) ([]byte, error) {
+	if b, ok := Recorded(f, ref, limit); ok {
+		return b, nil
+	}
+	b, err := f.Read(ref, limit)
+	if err == nil {
+		f.Memo().KeepRaw(ref, b)
+	}
+	return b, err
+}
+
+// Recorded returns a copy of the bytes an earlier ReadRecorded of ref verified in
+// this operation, if they fit limit. Bytes that failed verification are not held.
+func Recorded(f *store.FS, ref string, limit int64) ([]byte, bool) {
+	return f.Memo().Raw(ref, limit)
+}
+
+// Memo is the store-owned record of one operation's fully validated evidence
+// objects; see store.Memo. A nil *Memo, the value for a hand-built FS or a direct
+// *With call, reuses nothing.
+type Memo = store.Memo
+
+// MemoFor returns the reuse memo of the operation that owns f, or nil.
+func MemoFor(f *store.FS) *Memo { return f.Memo() }
+
+func load(m *Memo, read Reader, p, expected, sub string, contract map[string]any) (map[string]any, []byte, error) {
 	h, err := refHash(p, sub)
 	if err != nil || h != expected {
 		return nil, nil, fault.New("OBSERVATION_UNVERIFIED", "observation locator and digest do not agree")
 	}
-	b, err := f.Read(p, canonical.MaxBytes)
+	_, validated := m.Held(sub, expected)
+	b, err := read(p, canonical.MaxBytes)
 	if err != nil || canonical.BytesHash(b) != expected {
 		return nil, nil, fault.New("OBSERVATION_UNVERIFIED", "observation bytes are unavailable or changed")
 	}
@@ -254,20 +317,48 @@ func load(f *store.FS, p, expected, sub string, contract map[string]any) (map[st
 	if err != nil {
 		return nil, nil, fault.New("OBSERVATION_UNVERIFIED", "observation bytes are not canonical JSON")
 	}
-	if es := schema.ValidateWith(contract, v); len(es) > 0 {
-		return nil, nil, &es[0]
+	if !validated {
+		m.Count(sub, expected)
+		if es := schema.ValidateWith(contract, v); len(es) > 0 {
+			return nil, nil, &es[0]
+		}
 	}
+	m.Mark(sub, expected)
 	return v, b, nil
 }
 
 func LoadContext(f *store.FS, p, expected string) (map[string]any, []byte, error) {
-	return load(f, p, expected, "evidence-contexts", ContextSchema())
+	return LoadContextMemo(MemoFor(f), FSReader(f), p, expected)
+}
+func LoadContextWith(read Reader, p, expected string) (map[string]any, []byte, error) {
+	return LoadContextMemo(nil, read, p, expected)
+}
+
+// LoadContextMemo is LoadContextWith that reuses and records validation in m.
+func LoadContextMemo(m *Memo, read Reader, p, expected string) (map[string]any, []byte, error) {
+	return load(m, read, p, expected, "evidence-contexts", ContextSchema())
 }
 func Inspect(f *store.FS, p, expected string) (map[string]any, []byte, error) {
-	return load(f, p, expected, "observations", InspectionSchema())
+	return InspectMemo(MemoFor(f), FSReader(f), p, expected)
+}
+func InspectWith(read Reader, p, expected string) (map[string]any, []byte, error) {
+	return InspectMemo(nil, read, p, expected)
+}
+
+// InspectMemo is InspectWith that reuses and records validation in m.
+func InspectMemo(m *Memo, read Reader, p, expected string) (map[string]any, []byte, error) {
+	return load(m, read, p, expected, "observations", InspectionSchema())
 }
 func Load(f *store.FS, p, expected string) (map[string]any, []byte, error) {
-	v, b, err := Inspect(f, p, expected)
+	return LoadMemo(MemoFor(f), FSReader(f), p, expected)
+}
+func LoadWith(read Reader, p, expected string) (map[string]any, []byte, error) {
+	return LoadMemo(nil, read, p, expected)
+}
+
+// LoadMemo is LoadWith that reuses and records validation in m.
+func LoadMemo(m *Memo, read Reader, p, expected string) (map[string]any, []byte, error) {
+	v, b, err := InspectMemo(m, read, p, expected)
 	if err != nil {
 		return nil, nil, err
 	}

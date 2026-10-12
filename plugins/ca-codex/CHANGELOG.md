@@ -6,13 +6,34 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.16.10] - 2026-10-12
+## [0.17.1] - 2026-10-12
 
 ### Fixed
 
 - Reproduce normal ORT histogram conflicts in guarded legacy block resolution while preserving exact rendering and index/CAS controls (#968).
 - Clarify unknown host qualification and complete the repository-scoped maintenance commands.
 
+
+## [0.17.0] - 2026-10-10
+
+### Changed
+
+- Identify verification inputs by ship-set membership (ADR-0042): git index
+  entries present on disk plus untracked non-ignored files within the plan roots,
+  minus excludes. Outside git, membership comes from the filesystem; a failed git
+  probe fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE`, and an unmerged index
+  fails closed until resolved.
+- Exempt exactly `.codearbiter/gate-events.log` from snapshots. It is never
+  counted and stays tracked as the audit trail; every other `.codearbiter` path,
+  including `overrides.log`, still counts.
+- Advance the verification-input manifest to `codearbiter.verification-inputs/0.2.0`.
+  Receipts bound to a 0.1.0 manifest read as stale and must be re-verified.
+- Open snapshot files through bounded handle opens and validate each evidence
+  object at most once per operation. Raw reads are reused only up to a 64 MiB
+  per-operation retained-byte budget, so past it an object can be read again;
+  validation still happens once.
+- Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
+  longer times out the prompt seam (#931).
 ## [0.16.9] - 2026-10-12
 
 ### Fixed

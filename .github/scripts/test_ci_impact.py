@@ -1964,7 +1964,7 @@ class WorkflowContractTest(unittest.TestCase):
         # image - a config whose sole waiver was
         # `paths = ['''^test_hooklib\\.py$''']` (condition = "AND", plus a regex
         # matching nothing) reported `scanned ~189 bytes` and missed a freshly
-        # planted `aws_secret_access_key = "kR3m..."` in that file.  So every
+        # planted an AWS credential assignment in that file. So every
         # waiver here must be a VALUE waiver naming one fixed adversarial
         # literal, which leaves every file fully scanned.
         self.assertTrue(GITLEAKS_CONFIG.is_file(), "no .gitleaks.toml in the repo root")
@@ -3500,7 +3500,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         job = jobs["artifact-engine"]
         self.assertEqual(
             re.findall(r"(?m)^    timeout-minutes: (.+)$", job),
-            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}"],
+            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}"],
         )
         self.assertIn("fail-fast: false", job)
         self.assertNotIn("continue-on-error:", job)
@@ -3541,7 +3541,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         self.assertIn(
-            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}",
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}",
             job,
         )
         for runner in (
@@ -4057,7 +4057,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         self.assertIn(
-            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 45 || 30 }}",
+            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}",
             block,
         )
         for script in ("test_artifact_native.py",

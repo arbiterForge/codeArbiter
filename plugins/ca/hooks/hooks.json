@@ -95,8 +95,8 @@
       },
       {
         "hooks": [
-          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/prompt-submit.py\"" },
-          { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prompt-submit.py\"" }
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/prompt-submit.py\"", "timeout": 600 },
+          { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prompt-submit.py\"", "timeout": 600 }
         ]
       }
     ],

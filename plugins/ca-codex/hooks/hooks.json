@@ -145,7 +145,7 @@
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/prompt-submit.py\"",
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/prompt-submit.py\"",
-            "timeout": 240,
+            "timeout": 600,
             "statusMessage": "codeArbiter: mode plane",
             "additionalContextLimit": 8000
           }
