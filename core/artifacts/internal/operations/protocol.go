@@ -222,7 +222,9 @@ func RequestSchema(op string) (object, error) {
 		approved := closed(approvedProperties, required...)
 		add("binding_mode", enum("draft_preview"), true)
 		add("spec_expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
-		return object{"oneOf": []any{approved, closed(p, required...)}}, nil
+		request := closed(p)
+		request["oneOf"] = []any{approved, closed(p, required...)}
+		return request, nil
 	case "eligible":
 		artifact()
 	case "task-start":
