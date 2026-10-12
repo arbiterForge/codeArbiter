@@ -3,7 +3,7 @@
 Coarse concern → path → role orientation, synthesized from Scout C (architecture)
 evidence per `context-creation` Phase 5, against the tree as of the
 `fix/mode-write-clobber` merge with `origin/main` (2026-09-15), with plugin version
-metadata refreshed on 2026-10-09. Module/concern
+metadata refreshed on 2026-10-10. Module/concern
 granularity only — not a file listing. Kept in sync via `.provenance/code-map.json`.
 
 ## Shared hook library (core/pysrc)
@@ -11,6 +11,7 @@ granularity only — not a file listing. Kept in sync via `.provenance/code-map.
 - `core/pysrc/session-start.py` — SessionStart hook; detects an arbiter-enabled repo, injects the ORCHESTRATOR persona and live project state
 - `core/pysrc/prompt-submit.py`, `pre-write.py`, `pre-edit.py`, `pre-read.py`, `pre-bash.py`, `babysit.py` — the remaining hook entry points, each a thin dispatcher into the shared libraries below
 - `core/pysrc/_hooklib.py` — hook dispatch kernel; host DI seam, gate evaluation, marker/project-root resolution
+- `core/pysrc/_approvallib.py` — host-owned structured-artifact approval capture; typed-plan preflight validates bounded `plan-verification` pages and command definitions before source snapshot and final identity checks
 - `core/pysrc/_bashguardlib.py`, `_protectedstatelib.py`, `_provenancelib.py`, `_sensitivelib.py`, `_releaselib.py`, `_taskboardlib.py`, `_modelib.py`, `_adrlifecycle.py`, `_appendonlyconflictlib.py`, etc. — one domain library per module (shell guarding, protected-state registry, provenance/drift, crypto/secret detection, release orchestration, task board, mode state, ADR lifecycle, sanctioned append-only-conflict resolution)
 
 ## Host registry and generated-kernel build (ADR-0031)
@@ -31,9 +32,9 @@ granularity only — not a file listing. Kept in sync via `.provenance/code-map.
 
 ## Plugin implementations (four sibling plugins)
 
-- `plugins/ca/` (v2.25.5) — the Claude Code plugin; `.claude-plugin/plugin.json` manifest, `hooks/*.py` (vendored from `core/pysrc`), `skills/`/`commands/`/`agents/`/`generated/` (generated from `core/surface`+`core/hosts.json`)
-- `plugins/ca-codex/` (v0.16.5) — the Codex CLI plugin; `.codex-plugin/plugin.json` manifest; commands render as `skills/ca-codex/SKILL.md`-style dispatch entries (no native slash commands)
-- `plugins/ca-pi/` (v0.17.6, npm-published as `@arbiterforge/ca-pi`) — the Pi governance plugin; `package.json` manifest declares JS `extensions/codearbiter.js` (bundled) plus `skills/`; skills carry a `ca-` name prefix
+- `plugins/ca/` (v2.25.6) — the Claude Code plugin; `.claude-plugin/plugin.json` manifest, `hooks/*.py` (vendored from `core/pysrc`), `skills/`/`commands/`/`agents/`/`generated/` (generated from `core/surface`+`core/hosts.json`)
+- `plugins/ca-codex/` (v0.16.6) — the Codex CLI plugin; `.codex-plugin/plugin.json` manifest; commands render as `skills/ca-codex/SKILL.md`-style dispatch entries (no native slash commands)
+- `plugins/ca-pi/` (v0.17.7, npm-published as `@arbiterforge/ca-pi`) — the Pi governance plugin; `package.json` manifest declares JS `extensions/codearbiter.js` (bundled) plus `skills/`; skills carry a `ca-` name prefix
 - `plugins/ca-sandbox/` (v0.1.6) — infrastructure/testing plugin; Docker-based untrusted-code isolation, ephemeral containers, no persistent `.codearbiter/` inside the container
 
 ## Release provenance and tag immutability (ADR-0029, ADR-0032, ADR-0034)

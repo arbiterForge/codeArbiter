@@ -247,6 +247,58 @@ func ExactBatch(d *model.Document, ids []string, offset, budget int) (map[string
 	return out, nil
 }
 
+// PlanVerification projects complete command definitions without delivering task
+// context or authority. Check every active task before returning any page.
+func PlanVerification(d *model.Document, offset, budget int) (map[string]any, error) {
+	if d.Kind() != "plan" {
+		return nil, fault.New("WRONG_KIND", "verification projection requires an implementation plan")
+	}
+	ids := []string{}
+	for id, record := range d.Symbols.ByID {
+		if record.Kind == "tasks" && !record.Retired {
+			ids = append(ids, id)
+		}
+	}
+	sort.Strings(ids)
+	if offset < 0 || offset > len(ids) || offset == len(ids) && offset != 0 {
+		return nil, fault.New("INVALID_OFFSET", "verification offset outside active task selection")
+	}
+	items := make([]any, 0, len(ids))
+	for _, id := range ids {
+		verification, ok := d.Symbols.ByID[id].Value["verification"].([]any)
+		if !ok {
+			return nil, fault.At("INVALID_MODEL", id, "verification", "task must declare a verification array")
+		}
+		item := map[string]any{"id": id, "verification": verification}
+		b, _ := json.Marshal(item)
+		if len(b)+1024 > budget {
+			return nil, fault.At("RECORD_TOO_LARGE", id, "verification", "whole verification array does not fit response budget; no partial projection returned")
+		}
+		items = append(items, item)
+	}
+	out := map[string]any{"artifact_id": d.ID(), "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "context_complete": false, "offset": int64(offset), "total": int64(len(ids)), "tasks": []any{}, "next_offset": nil}
+	selected := []any{}
+	next := offset
+	for next < len(items) {
+		candidate := append(append([]any{}, selected...), items[next])
+		out["tasks"] = candidate
+		b, _ := json.Marshal(out)
+		if len(b)+512 > budget {
+			break
+		}
+		selected = candidate
+		next++
+	}
+	if len(selected) == 0 && next < len(items) {
+		return nil, fault.New("RECORD_TOO_LARGE", "whole verification array exceeds this page budget")
+	}
+	out["tasks"] = selected
+	if next < len(items) {
+		out["next_offset"] = int64(next)
+	}
+	return out, nil
+}
+
 func Page(f *store.FS, c *repository.Catalog, d *model.Document, id, cursor string, budget int) (map[string]any, error) {
 	if budget < 4096 || budget > MaxBudget {
 		return nil, fault.New("INVALID_BUDGET", "response budget must be 4096..65536 bytes")
