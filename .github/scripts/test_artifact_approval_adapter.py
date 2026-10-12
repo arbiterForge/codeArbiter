@@ -603,14 +603,29 @@ class _PlanClient(_FakeClient):
         self.bad_next_offset = False
         self.outline_page_size = 1
         self.batch_page_size = 128
+        self.projection_page_size = 128
+        self.projection_error = None
+        self.projection_deliveries = []
 
     def call(self, operation, request=None, **kwargs):
         request = dict(request or {})
-        if operation not in {"outline", "read", "read-batch", "snapshot"}:
+        if operation not in {"outline", "read", "read-batch", "plan-verification", "snapshot"}:
             return super().call(operation, request, **kwargs)
         self.calls.append((operation, request))
         identity = dict(self.identity)
-        if operation == "outline":
+        if operation == "plan-verification":
+            if self.projection_error:
+                raise self.projection_error
+            offset = request.get("offset", 0)
+            tasks = self.tasks[offset:offset + self.projection_page_size]
+            end = offset + len(tasks)
+            result = {**identity, "context_complete": False,
+                      "offset": offset, "total": len(self.tasks),
+                      "tasks": json.loads(json.dumps(tasks)),
+                      "next_offset": offset if self.bad_next_offset else
+                      (end if end < len(self.tasks) else None)}
+            self.projection_deliveries.extend(task["id"] for task in tasks)
+        elif operation == "outline":
             offset = request.get("offset", 0)
             tasks = self.tasks[offset:offset + self.outline_page_size]
             end = offset + len(tasks)
@@ -636,7 +651,8 @@ class _PlanClient(_FakeClient):
                 raise self.snapshot_error
             result = {"sha256": "8" * 64, "entry_count": 1,
                       "platform": "fixture", "roots": ["."], "exclude_directories": []}
-        if operation == self.drift_after or operation == "read-batch" and self.drift_after == "read":
+        if (operation == self.drift_after
+                or operation in {"read-batch", "plan-verification"} and self.drift_after == "read"):
             self.identity["model_sha256"] = "9" * 64
         return result
 
@@ -658,40 +674,266 @@ class PlanApprovalPreflightTest(unittest.TestCase):
             self.root, self.client, "PLAN-EXAMPLE", token="plan-preflight-token"
         )
 
+    def test_projection_preserves_validation_order(self):
+        client = self.plan()
+        first = client.tasks[0]["verification"][0]
+        second = {**first, "argv": ["python", "-m", "unittest", "-v", "tests.future_other"],
+                  "required_tests": ["test_future_other"]}
+        client.tasks = [{"id": task, "verification": [first, second]}
+                        for task in ("T-001", "T-002")]
+        client.projection_page_size = 1
+        events, definitions = [], []
+        source = self.root / "validated-input.txt"
+        original_call = client.call
+        original_validate = self.adapter._artifactauthoritylib.validate_command_definition
+
+        def observed_call(operation, request=None, **kwargs):
+            events.append(operation)
+            result = original_call(operation, request, **kwargs)
+            if operation == "snapshot":
+                result["sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+            return result
+
+        def observed_validation(definition, **kwargs):
+            events.append("command-validation")
+            definitions.append(definition)
+            source.write_text(str(len(definitions)), encoding="utf-8")
+            return original_validate(definition, **kwargs)
+
+        with mock.patch.object(client, "call", side_effect=observed_call), \
+                mock.patch.object(self.adapter._artifactauthoritylib, "validate_command_definition",
+                                  side_effect=observed_validation):
+            result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(events, ["plan-verification", "command-validation", "command-validation",
+                                  "plan-verification", "command-validation", "command-validation",
+                                  "snapshot", "identity"])
+        self.assertEqual(definitions, [first, second, first, second])
+        self.assertEqual(result["command_count"], 4)
+        self.assertEqual(result["snapshot"]["sha256"], hashlib.sha256(b"4").hexdigest())
+
+    def test_projection_reduces_engine_calls(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 11)]
+        client.outline_page_size = 128
+        result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(result["command_count"], 10)
+        self.assertEqual([operation for operation, _ in client.calls],
+                         ["plan-verification", "snapshot", "identity"])
+        client.calls.clear()
+        self.arm()
+        self.assertEqual([operation for operation, _ in client.calls],
+                         ["identity", "validate", "plan-verification", "snapshot", "identity"])
+
+    def test_projection_pages_refuse_malformed_or_incomplete_delivery(self):
+        faults = {
+            "context complete": lambda page: page.update(context_complete=True),
+            "missing completeness": lambda page: page.pop("context_complete"),
+            "integer completeness": lambda page: page.update(context_complete=0),
+            "missing tasks": lambda page: page.pop("tasks"),
+            "null tasks": lambda page: page.update(tasks=None),
+            "empty page": lambda page: page.update(tasks=[]),
+            "negative total": lambda page: page.update(total=-1),
+            "boolean total": lambda page: page.update(total=True),
+            "missing total": lambda page: page.pop("total"),
+            "short total": lambda page: page.update(total=1),
+            "wrong offset": lambda page: page.update(offset=1),
+            "boolean offset": lambda page: page.update(offset=False),
+            "missing offset": lambda page: page.pop("offset"),
+            "missing next offset": lambda page: page.pop("next_offset"),
+            "boolean next offset": lambda page: page.update(next_offset=True),
+            "early end": lambda page: page.update(next_offset=None),
+            "skipped row": lambda page: page.update(next_offset=3),
+            "no progress": lambda page: page.update(next_offset=0),
+            "string next offset": lambda page: page.update(next_offset="2"),
+            "non-object task": lambda page: page["tasks"].__setitem__(0, None),
+            "missing task id": lambda page: page["tasks"][0].pop("id"),
+            "non-string task id": lambda page: page["tasks"][0].update(id=1),
+            "empty task id": lambda page: page["tasks"][0].update(id=""),
+            "missing verification": lambda page: page["tasks"][0].pop("verification"),
+            "non-array verification": lambda page: page["tasks"][0].update(verification={}),
+            "empty verification": lambda page: page["tasks"][0].update(verification=[]),
+            "duplicate row": lambda page: page["tasks"].__setitem__(1, page["tasks"][0]),
+            "descending rows": lambda page: page["tasks"].reverse(),
+        }
+        for label, corrupt in faults.items():
+            with self.subTest(label=label):
+                client = self.plan()
+                client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+                client.projection_page_size = 2
+                original = client.call
+
+                def damaged(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "plan-verification":
+                        corrupt(page)
+                    return page
+
+                with mock.patch.object(client, "call", side_effect=damaged):
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                        self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_continuations_keep_full_identity_and_whole_definitions(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 6)]
+        client.projection_page_size = 2
+        expected = {key: client.identity[key]
+                    for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")}
+        validator = self.adapter._artifactauthoritylib.validate_command_definition
+        with mock.patch.object(self.adapter._artifactauthoritylib, "validate_command_definition",
+                               wraps=validator) as validated:
+            result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        projections = [request for operation, request in client.calls if operation == "plan-verification"]
+        self.assertEqual([request["offset"] for request in projections], [0, 2, 4])
+        for request in projections:
+            self.assertEqual(request, {"artifact_id": "PLAN-EXAMPLE", "expected": expected,
+                                       "offset": request["offset"], "budget": 16384})
+        self.assertEqual(client.projection_deliveries, [task["id"] for task in client.tasks])
+        self.assertEqual([call.args[0] for call in validated.call_args_list],
+                         [task["verification"][0] for task in client.tasks])
+        self.assertEqual(result["command_count"], 5)
+
+    def test_projection_continuations_reject_count_and_order_drift(self):
+        faults = {
+            "changed total": lambda page: page.update(total=5),
+            "duplicate across pages": lambda page: page["tasks"][0].update(id="T-002"),
+            "descending across pages": lambda page: page["tasks"][0].update(id="T-000"),
+            "extra final count": lambda page: page.update(total=3),
+            "final continuation": lambda page: page.update(next_offset=4),
+        }
+        for label, corrupt in faults.items():
+            with self.subTest(label=label):
+                client = self.plan()
+                client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+                client.projection_page_size = 2
+                original = client.call
+
+                def damaged(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "plan-verification" and request["offset"]:
+                        corrupt(page)
+                    return page
+
+                with mock.patch.object(client, "call", side_effect=damaged):
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                        self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_refuses_stale_full_identity_before_arming(self):
+        for key, changed in (("artifact_id", "PLAN-OTHER"), ("revision", 8),
+                             ("model_sha256", "3" * 64), ("normative_sha256", "4" * 64)):
+            with self.subTest(key=key):
+                client = self.plan()
+                original = client.call
+
+                def stale(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "plan-verification":
+                        page[key] = changed
+                    return page
+
+                with mock.patch.object(client, "call", side_effect=stale):
+                    with self.assertRaisesRegex(RuntimeError, "STALE_PLAN_PREFLIGHT"):
+                        self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_translates_only_native_stale_cursor(self):
+        for native, expected in (("STALE_CURSOR", "STALE_PLAN_PREFLIGHT"),
+                                 ("RECORD_TOO_LARGE", "RECORD_TOO_LARGE"),
+                                 ("INVALID_REQUEST", "INVALID_REQUEST")):
+            with self.subTest(native=native):
+                client = self.plan()
+                client.projection_error = self.adapter._artifactlib.ArtifactError(native, "native refusal")
+                with self.assertRaisesRegex(RuntimeError, expected):
+                    self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_rejects_boolean_revision(self):
+        client = self.plan()
+        client.identity["revision"] = 1
+        original = client.call
+
+        def damaged(operation, request=None, **kwargs):
+            page = original(operation, request, **kwargs)
+            if operation == "plan-verification":
+                page["revision"] = True
+            return page
+
+        with mock.patch.object(client, "call", side_effect=damaged):
+            with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                self.arm()
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_snapshot_diagnostic_still_rechecks_full_identity(self):
+        for key, changed in (("artifact_id", "PLAN-OTHER"), ("revision", 8),
+                             ("model_sha256", "3" * 64), ("normative_sha256", "4" * 64)):
+            with self.subTest(key=key):
+                client = self.plan()
+                client.snapshot_error = self.adapter._artifactlib.ArtifactError("MAX_BYTES", "oversized input")
+                original = client.call
+
+                def changed_after_snapshot(operation, request=None, **kwargs):
+                    if operation == "snapshot":
+                        client.identity[key] = changed
+                    return original(operation, request, **kwargs)
+
+                with mock.patch.object(client, "call", side_effect=changed_after_snapshot):
+                    with self.assertRaisesRegex(RuntimeError, "STALE_PLAN_PREFLIGHT"):
+                        self.arm()
+                self.assertEqual([operation for operation, _ in client.calls],
+                                 ["identity", "validate", "plan-verification", "snapshot", "identity"])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_does_not_execute_import_or_discover_declared_tests(self):
+        client = self.plan()
+        self.assertFalse((self.root / "tests/future_test.py").exists())
+        with mock.patch("subprocess.Popen", side_effect=AssertionError("preflight executed a process")), \
+                mock.patch("importlib.import_module", side_effect=AssertionError("preflight imported a test")), \
+                mock.patch.object(unittest.TestLoader, "discover",
+                                  side_effect=AssertionError("preflight discovered tests")):
+            result = self.arm()
+        self.assertEqual(result["artifact_id"], "PLAN-EXAMPLE")
+        self.assertEqual([operation for operation, _ in client.calls],
+                         ["identity", "validate", "plan-verification", "snapshot", "identity"])
+
     def test_preflight_batches_task_reads(self):
         client = self.plan()
         client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 11)]
         client.outline_page_size = 128
         result = self.adapter._preflight_plan_verification(client, dict(client.identity))
         self.assertEqual(result["command_count"], 10)
-        self.assertLessEqual(len(client.calls), 5, "ten small tasks need one outline, one batch, two identities and a snapshot")
+        self.assertEqual(len(client.calls), 3, "ten small tasks need one projection, one snapshot and the final identity")
         self.assertEqual([operation for operation, _ in client.calls].count("snapshot"), 1)
 
     def test_batch_pages_reject_malformed_or_incomplete_delivery(self):
         faults = {
             "context complete": lambda page: page.update(context_complete=True),
-            "wrong mode": lambda page: page.update(mode="contextual"),
+            "wrong mode": lambda page: page.update(context_complete="contextual"),
             "wrong total": lambda page: page.update(total=3),
             "wrong offset": lambda page: page.update(offset=1),
             "boolean offset": lambda page: page.update(offset=False),
             "early end": lambda page: page.update(next_offset=None),
             "skipped row": lambda page: page.update(next_offset=3),
             "no progress": lambda page: page.update(next_offset=0),
-            "foreign task": lambda page: page["records"][0].update(id="T-999"),
-            "wrong kind": lambda page: page["records"][0].update(kind="checkpoints"),
-            "retired task": lambda page: page["records"][0].update(retired=True),
-            "wrong record": lambda page: page["records"][0].update(record={"id": "T-999"}),
-            "duplicate row": lambda page: page["records"].__setitem__(1, page["records"][0]),
+            "foreign task": lambda page: page["tasks"][0].update(id="T-999"),
+            "wrong kind": lambda page: page["tasks"][0].update(kind="checkpoints"),
+            "retired task": lambda page: page["tasks"][0].update(retired=True),
+            "wrong record": lambda page: page["tasks"][0].update(record={"id": "T-999"}),
+            "duplicate row": lambda page: page["tasks"].__setitem__(1, page["tasks"][0]),
         }
         for label, corrupt in faults.items():
             with self.subTest(label=label):
                 client = self.plan()
                 client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
-                client.outline_page_size, client.batch_page_size = 128, 2
+                client.projection_page_size = 2
                 original = client.call
                 def damaged(operation, request=None, **kwargs):
                     page = original(operation, request, **kwargs)
-                    if operation == "read-batch":
+                    if operation == "plan-verification":
                         corrupt(page)
                     return page
                 with mock.patch.object(client, "call", side_effect=damaged):
@@ -702,15 +944,16 @@ class PlanApprovalPreflightTest(unittest.TestCase):
     def test_batch_continuation_keeps_selection_and_model_pin(self):
         client = self.plan()
         client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
-        client.outline_page_size, client.batch_page_size = 128, 2
+        client.projection_page_size = 2
         result = self.adapter._preflight_plan_verification(client, dict(client.identity))
         self.assertEqual(result["command_count"], 4)
-        batches = [request for operation, request in client.calls if operation == "read-batch"]
+        batches = [request for operation, request in client.calls if operation == "plan-verification"]
         self.assertEqual(len(batches), 2)
         self.assertEqual([request["offset"] for request in batches], [0, 2])
         for request in batches:
-            self.assertEqual(request["symbols"], [task["id"] for task in client.tasks])
-            self.assertEqual(request["model_sha256"], client.identity["model_sha256"])
+            self.assertEqual(request["expected"], {key: client.identity[key]
+                for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")})
+        self.assertEqual(client.projection_deliveries, [task["id"] for task in client.tasks])
 
     def test_reports_all_commands_and_snapshot_before_pending_approval(self):
         client = self.plan()
@@ -726,10 +969,7 @@ class PlanApprovalPreflightTest(unittest.TestCase):
             self.arm()
         for detail in ("T-001", "T-002", "unsupported-one", "unsupported-two", "pagefind.exe", "MAX_BYTES"):
             self.assertIn(detail, str(caught.exception))
-        inspected = [symbol for operation, request in client.calls
-                     for symbol in ([request["symbol"]] if operation == "read" else
-                                    request["symbols"] if operation == "read-batch" else [])]
-        self.assertEqual(inspected, ["T-001", "T-002"])
+        self.assertEqual(client.projection_deliveries, ["T-001", "T-002"])
         self.assertFalse((self.root / self.adapter.PENDING).exists())
 
     def test_snapshot_failure_alone_blocks_plan_approval(self):
@@ -852,6 +1092,59 @@ class SprintPairIntegrationTest(unittest.TestCase):
     def decision(self):
         lenses = {k: {"verdict": "Adequate", "reason": "The recorded contract and bounded verification remain unchanged."} for k in ("Scalable", "Maintainable", "Available", "Reliable", "Testable", "Securable")}
         return {"task_id": "T-001", "options": [{"label": "Explicit precedence table", "steps": ["Retain the negative oracle.", "Implement precedence with a bounded table lookup."], "lenses": lenses}], "selected": 0, "strength": "moderate", "rationale": "The recorded spec requires environment precedence. This method conforms without changing paths, criteria or verification."}
+
+    def test_native_plan_verification_projection(self):
+        client = self.h.client
+        self.assertIn("plan-verification", client.call("capabilities")["operations"])
+        template = client.call("read", {"artifact_id": "PLAN-FLOW", "symbol": "T-001", "mode": "exact"})["record"]
+        commands = [dict(template["verification"][0], assertion="λ" * 450),
+                    dict(template["verification"][0], expected_exit=1, assertion="Exact negative result λ" * 40)]
+        changes = [{"op": "record.update", "symbol": "T-001", "fields": {
+            "steps": ["Unrelated task prose λ" * 400], "verification": commands}}]
+        for task_id in ("T-003", "T-002", "T-RETIRED"):
+            task = json.loads(json.dumps(template))
+            task.update(id=task_id, verification=[] if task_id == "T-003" else commands)
+            changes.append({"op": "record.add", "collection": "tasks", "record": task})
+        changes.append({"op": "record.update", "symbol": "CP-01", "fields": {
+            "tasks": ["T-001", "T-003", "T-002", "T-RETIRED"]}})
+        self.h.mutate("apply", "PLAN-FLOW", changes=changes)
+        self.h.mutate("apply", "PLAN-FLOW", changes=[
+            {"op": "record.update", "symbol": "CP-01", "fields": {"tasks": ["T-001", "T-003", "T-002"]}},
+            {"op": "record.retire", "symbol": "T-RETIRED", "reason": "Synthetic retired task."}])
+        identity = client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        expected = {key: identity[key] for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")}
+        request = {"artifact_id": "PLAN-FLOW", "expected": expected, "offset": 0, "budget": 4096}
+        before = {str(path.relative_to(self.root)): path.read_bytes()
+                  for path in self.root.rglob("*") if path.is_file()}
+        seen, pages = [], 0
+        while True:
+            page = client.call("plan-verification", request)
+            self.assertEqual(set(page), set(expected) | {"context_complete", "offset", "total", "tasks", "next_offset"})
+            self.assertEqual({key: page[key] for key in expected}, expected)
+            self.assertIs(page["context_complete"], False)
+            self.assertEqual(page["offset"], len(seen))
+            self.assertEqual(page["total"], 3)
+            for task in page["tasks"]:
+                self.assertEqual(set(task), {"id", "verification"})
+                exact = client.call("read", {"artifact_id": "PLAN-FLOW", "symbol": task["id"], "mode": "exact", "budget": 65536})
+                self.assertEqual(task["verification"], exact["record"]["verification"])
+                self.assertEqual(task["verification"], [] if task["id"] == "T-003" else commands)
+                seen.append(task["id"])
+            pages += 1
+            if page["next_offset"] is None:
+                break
+            self.assertEqual(page["next_offset"], len(seen))
+            self.assertLess(pages, 3)
+            request["offset"] = page["next_offset"]
+        self.assertGreater(pages, 1)
+        self.assertEqual(seen, ["T-001", "T-002", "T-003"])
+        for key, value in (("artifact_id", "PLAN-OTHER"), ("revision", identity["revision"] + 1),
+                           ("model_sha256", "0" * 64), ("normative_sha256", "0" * 64)):
+            with self.subTest(stale=key), self.assertRaisesRegex(self.lib.ArtifactError, "STALE_CURSOR"):
+                client.call("plan-verification", {**request, "expected": {**expected, key: value}})
+        self.assertEqual(before, {str(path.relative_to(self.root)): path.read_bytes()
+                                  for path in self.root.rglob("*") if path.is_file()})
+        self.assertFalse((self.root / self.approval.PENDING).exists())
 
     def test_unsupported_runner_blocks_pair_before_any_pending_approval(self):
         command = {"availability": "proposed", "cwd": ".", "argv": ["unsupported-pair", "test"],

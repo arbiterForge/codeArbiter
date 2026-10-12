@@ -12,14 +12,26 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.25.6] - 2026-10-11
+## [2.25.7] - 2026-10-12
 
 ### Fixed
 
+- Restore reviewed legacy code-map metadata updates and explicit per-block Git
+  conflict resolution with bounded helpers, preserving native ownership,
+  stale-input checks, unselected text and the Git index (#967).
 - Explain debug packet shapes and link the trusted schema and a synthetic
   unresolved example before one-shot validation (#951).
 - Document brownfield host prerequisites before scaffolding, preserving
   containment, native approval and partial-state recovery gates (#950).
+
+## [2.25.6] - 2026-10-10
+
+### Fixed
+
+- Read complete task verification definitions through a bounded native projection
+  during typed-plan approval preflight. Preserve command validation, source
+  snapshot and final identity ordering, aggregated diagnostics and refusal before
+  approval arming when any page is malformed, incomplete or stale.
 
 ## [2.25.5] - 2026-10-10
 

@@ -1,8 +1,11 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
+import { commandMetadata } from './atlas-command';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const countReview = '81055792c71ba7aaeeaf5280e81ce2929bb25cc1';
@@ -130,7 +133,7 @@ describe('atlas source compatibility revalidation', () => {
   });
 
   it('binds only the reviewed packet preparation and init prerequisites', () => {
-    expect(REVALIDATED_AT).toBe(packetPreparationReview);
+    expect(REVALIDATED_AT).toBe(nativeV2Review);
     expect(changedProductInputs(nativeV2Review, packetPreparationReview)).toEqual([
       'CHANGELOG.md', 'core/surface/commands/init.md', 'core/surface/skills/debug/SKILL.md',
     ]);
@@ -140,6 +143,8 @@ describe('atlas source compatibility revalidation', () => {
     };
     for (const [path, blob] of Object.entries(reviewedBlobs)) {
       expect(git('rev-parse', `${packetPreparationReview}:${path}`).trim()).toBe(blob);
+      expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
+      expect(git('hash-object', '--', path).trim()).toBe(blob);
     }
     expect(retainsReviewedChangelog(git('show', `${packetPreparationReview}:CHANGELOG.md`),
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
@@ -151,5 +156,52 @@ describe('atlas source compatibility revalidation', () => {
     expect(atlas.scope).toContain(REVALIDATED_AT);
     expect(atlas.sources).toEqual(original.sources);
     expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
+  });
+
+  it('binds the complete current input set to only the reviewed brownfield and legacy delivery owners', () => {
+    const inputs = new Set(productInputs);
+    for (const command of originalAtlas().commands) commandMetadata(command.name, path => {
+      inputs.add(path);
+      return readFileSync(resolve(root, path), 'utf8');
+    });
+    const current = (path: string): string => readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n');
+    const ordered = [...inputs].sort();
+    const reviewed = execFileSync('git', ['--no-replace-objects', 'cat-file', '--batch'], {
+      cwd: root, input: ordered.map(path => `${nativeV2Review}:${path}\n`).join(''), maxBuffer: 4 * 1024 * 1024,
+    });
+    const changed: string[] = [];
+    let offset = 0;
+    for (const path of ordered) {
+      const end = reviewed.indexOf(10, offset);
+      expect(end).toBeGreaterThanOrEqual(offset);
+      const header = /^([0-9a-f]{40}) blob (\d+)$/.exec(reviewed.subarray(offset, end).toString('utf8'));
+      if (!header) throw new Error(`Missing or invalid reviewed source object: ${path}`);
+      const size = Number(header[2]);
+      expect(Number.isSafeInteger(size)).toBe(true);
+      const bytes = reviewed.subarray(end + 1, end + 1 + size);
+      expect(bytes.length).toBe(size);
+      expect(reviewed[end + 1 + size]).toBe(10);
+      if (current(path) !== bytes.toString('utf8')) changed.push(path);
+      offset = end + 2 + size;
+    }
+    expect(offset).toBe(reviewed.length);
+    expect(changed).toEqual(['CHANGELOG.md', 'core/surface/commands/init.md',
+      'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
+      'core/surface/skills/finishing-a-development-branch/SKILL.md']);
+    expect(BROWNFIELD_SOURCE_BLOBS).toEqual({
+      'core/surface/commands/init.md': 'c3de948de1617aa323e310eefee7fde2bd8a65fc',
+      'core/surface/skills/debug/SKILL.md': '6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
+    });
+    expect(LEGACY_CODE_MAP_SOURCE_BLOBS).toEqual({
+      'core/surface/skills/commit-gate/SKILL.md': 'e77dee991b50bf1dd3e30717edc06639ead93b40',
+      'core/surface/skills/finishing-a-development-branch/SKILL.md': '7e495efd47875a05560c34634c46b59b71838ee5',
+    });
+    for (const [path, blob] of Object.entries({...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS})) {
+      expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
+      expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: current(path), encoding: 'utf8'}).trim()).toBe(blob);
+      expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
+    }
+    expect(retainsReviewedChangelog(current('CHANGELOG.md'),
+      git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
 });

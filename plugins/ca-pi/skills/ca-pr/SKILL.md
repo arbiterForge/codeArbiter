@@ -168,6 +168,23 @@ cache edit or hook/trust change is permitted. Native context writer/adoption
 qualification remains unchanged. Re-run the current-head review and CI
 requirements after integration; previous green evidence does not bind new code.
 
+For an explicitly selected per-block resolution, use the same shipped helper
+with `--root "<project-root>" inspect-blocks`, then `--root "<project-root>"
+resolve-blocks --expected <binding> --choices <json-array>`. Review each block
+and supply exactly one `"ours"` or `"theirs"` choice in its displayed order. The
+inspection returns the block count and side hashes; read the conflict document
+to review the actual text. This is a separate operation: `restore-head` keeps
+its original single-block exact-HEAD contract.
+
+The explicit resolver binds the actual current merge and all three index
+stages, and requires Git to reproduce the complete worktree rendering in merge,
+diff3 or zdiff3 form. It supports at most 32 blocks and preserves every
+unconflicted byte, including incoming rows. Changed or foreign worktree text,
+native/uncertain ownership, malformed choices and unsupported renderings refuse
+without staging or changing other files. It leaves every index entry untouched;
+review the result and stage through the existing lane. The same interpreter,
+contributor-source, native-qualification and no-bypass requirements above apply.
+
 ### Open-PR procedure
 
 Run this procedure only for the selected open-PR or merge-via-PR action, after the
