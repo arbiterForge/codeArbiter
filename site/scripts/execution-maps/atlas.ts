@@ -29,7 +29,7 @@ import tribunal from './atlas-data/tribunal-lifecycle.json';
 // PR961 (ADR-0042) adds ship-set input identity to the artifacts owner; no route
 // reads or depends on that identity. Historical comparisons remain independently
 // tested.
-export const REVALIDATED_AT = '7976153cb05d6ed033cb5292878c8208e3ec2c1a';
+export const REVALIDATED_AT = 'd8edb2b03d0cb06168bbc0a210f0612ab2947abf';
 
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};

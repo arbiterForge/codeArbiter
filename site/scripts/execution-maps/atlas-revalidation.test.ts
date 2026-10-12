@@ -10,7 +10,7 @@ const preflightReview = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 const nativeV2Review = '25980c292b529fca90c39f5f26d69a1c0674de44';
-const shipSetReview = '7976153cb05d6ed033cb5292878c8208e3ec2c1a';
+const shipSetReview = 'd8edb2b03d0cb06168bbc0a210f0612ab2947abf';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
