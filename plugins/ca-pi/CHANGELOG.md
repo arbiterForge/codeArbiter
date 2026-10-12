@@ -12,6 +12,18 @@ All notable changes to `ca-pi` are documented in this file.
   identities. Preserve exact identity matching and refusal of duplicate,
   skipped, failed or missing required results (#955).
 
+## [0.17.8] - 2026-10-12
+
+### Fixed
+
+- Restore reviewed legacy code-map metadata updates and explicit per-block Git
+  conflict resolution with bounded helpers, preserving native ownership,
+  stale-input checks, unselected text and the Git index (#967).
+- Explain debug packet shapes and link the trusted schema and a synthetic
+  unresolved example before one-shot validation (#951).
+- Document brownfield host prerequisites before scaffolding, preserving
+  containment, native approval and partial-state recovery gates (#950).
+
 ## [0.17.7] - 2026-10-10
 
 ### Fixed
