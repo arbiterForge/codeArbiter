@@ -1883,12 +1883,16 @@ def _command_name(value: str) -> str:
     return value.replace("\\", "/").rsplit("/", 1)[-1].casefold()
 
 
-def _command_tokens(command: str) -> list[str]:
+def _command_lexer(command: str) -> shlex.shlex:
     lexer = shlex.shlex(command, posix=True)
     lexer.whitespace_split = True
     lexer.commenters = ""
     lexer.escape = ""  # Native Windows paths retain backslashes inside both quotes.
-    return list(lexer)
+    return lexer
+
+
+def _command_tokens(command: str) -> list[str]:
+    return list(_command_lexer(command))
 
 
 def _npm_package(manifest: Path) -> dict[str, Any]:
@@ -2695,6 +2699,17 @@ def _model_id(value: Any, field: str) -> str:
     return value
 
 
+def _verification_wrapper_start(tokens: list[str]) -> bool:
+    return (
+        len(tokens) >= 2
+        and _command_name(tokens[0]) in {
+            "python", "python.exe", "python3", "python3.exe", "py", "py.exe",
+        }
+        and _command_name(tokens[1]) == "artifact-authority.py"
+        and (len(tokens) == 2 or tokens[2] == "verify")
+    )
+
+
 def _verification_selector(event: dict[str, Any]) -> tuple[str, Path, str] | None:
     """Recognize only the closed wrapper selector, never caller-authored child argv."""
     if event.get("tool_name") not in {
@@ -2708,21 +2723,19 @@ def _verification_selector(event: dict[str, Any]) -> tuple[str, Path, str] | Non
     if not isinstance(command, str):
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "exec command is absent")
     compound = any(marker in command for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$"))
+    tokens: list[str] = []
+    lexer = _command_lexer(command)
     try:
-        tokens = _command_tokens(command)
+        tokens.extend(lexer)
     except ValueError as exc:
-        # An ordinary command with unbalanced quoting is not ours to deny.
-        if "artifact-authority" not in command.casefold():
+        # Retain the parsed selector prefix even when a later argument is
+        # malformed. A filename in ordinary shell source selects no authority.
+        if len(tokens) == 1:
+            tokens.append(lexer.token)  # An unfinished quoted script still refuses.
+        if not _verification_wrapper_start(tokens):
             return None
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is malformed") from exc
-    wrapper_start = (
-        len(tokens) >= 2
-        and _command_name(tokens[0]) in {
-            "python", "python.exe", "python3", "python3.exe", "py", "py.exe",
-        }
-        and _command_name(tokens[1]) == "artifact-authority.py"
-        and (len(tokens) == 2 or tokens[2] == "verify")
-    )
+    wrapper_start = _verification_wrapper_start(tokens)
     if compound:
         if wrapper_start:
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is compound")

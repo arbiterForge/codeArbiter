@@ -161,13 +161,13 @@
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.18.2, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.18.3, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "96aea33b7feb83e19cc36cd28e1fbd8dffa53b5c",
+      "hash": "133094926241c390b40b8df5ff2c91900e15fe04",
       "path": "plugins/ca-pi/package.json"
     },
     {

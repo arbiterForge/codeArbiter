@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.17.3] - 2026-10-12
+
+### Fixed
+
+- Distinguish inert PowerShell evidence from actual verifier wrapper calls (#970).
+- Preserve refusal of selected malformed and compound wrappers and exact authorization/corroboration checks.
+
 ## [0.17.2] - 2026-10-12
 
 ### Fixed
