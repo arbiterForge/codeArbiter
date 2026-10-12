@@ -89,8 +89,9 @@ repository-relative paths. Exclusions are directory paths, not globs or basename
 matches and not relative to an individual root. For root `site`, a generated
 dependency exclusion is `site/node_modules`, not `node_modules`. Review each
 excluded output directory explicitly: the plan's roots and exclusions narrow
-the git ship set, and `.gitignore` already keeps untracked ignored files out of
-it.
+the ship set. In a git work tree `.gitignore` already keeps untracked ignored
+files out of it; outside git nothing is filtered, so exclude generated
+directories explicitly.
 An exclusion outside all selected roots is rejected as ineffective. Overlapping
 roots cannot reinclude an excluded directory. Roots must exist before execution;
 use an existing containing directory for a planned new file so its creation
@@ -104,13 +105,14 @@ within the plan's roots, minus its excludes. The one fixed exemption is
 `.codearbiter/gate-events.log`: it is never counted, whatever the plan says, and
 stays tracked as the audit trail; every other `.codearbiter` path still counts.
 Outside git, membership is read from the filesystem (`membership: filesystem`);
-a failed git probe fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE`. An unmerged
+the root must be the top level of its work tree, so a subdirectory root counts as
+outside git. A failed git probe fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE`. An unmerged
 git index (conflicted paths) makes a snapshot fail closed until it is resolved.
 The manifest format is `codearbiter.verification-inputs/0.2.0`; receipts bound to
-a 0.1.0 manifest read as stale. Each evidence object is read and validated at
-most once per operation and scans are bounded; reuse is dropped past a 64 MiB
-per-operation retained-byte budget, which can cause repeat reads but never skips
-validation.
+a 0.1.0 manifest read as stale. Each evidence object is validated at most once
+per operation and scans are bounded; raw reads are reused only up to a 64 MiB
+per-operation retained-byte budget, past which an object can be read again, but
+validation is never skipped.
 
 The existing user, SMARTS, reviewer, or verification boundary must first persist
 its actual policy-owned workflow event as canonical JSON in the reserved

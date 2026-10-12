@@ -26,9 +26,10 @@ predate the plugin rewrite and are grouped by date.
   including `overrides.log`, still counts.
 - Advance the verification-input manifest to `codearbiter.verification-inputs/0.2.0`.
   Receipts bound to a 0.1.0 manifest read as stale and must be re-verified.
-- Open snapshot files through bounded handle opens and read each evidence object
-  at most once per operation. Reuse is dropped past a 64 MiB per-operation
-  retained-byte budget, which can cause repeat reads but never skips validation.
+- Open snapshot files through bounded handle opens and validate each evidence
+  object at most once per operation. Raw reads are reused only up to a 64 MiB
+  per-operation retained-byte budget, so past it an object can be read again;
+  validation still happens once.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
 ## [2.25.6] - 2026-10-10
