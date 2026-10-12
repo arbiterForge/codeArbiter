@@ -117,8 +117,8 @@ Run an **incremental re-scout for each affected document**, scoped to its select
 For reviewed legacy code-map metadata in codeArbiter's source layout, use the
 shipped fixed-target helper at `{{PLUGIN_ROOT}}/hooks/resolve-context-conflict.py`.
 This claim-refresh lane reads all three fixed source manifests:
-`plugins/ca/.claude-plugin/plugin.json`,
-`plugins/ca-codex/.codex-plugin/plugin.json`, and `plugins/ca-pi/package.json`,
+`{{PROJECT_DIR}}/plugins/ca/.claude-plugin/plugin.json`,
+`{{PROJECT_DIR}}/plugins/ca-codex/.codex-plugin/plugin.json`, and `{{PROJECT_DIR}}/plugins/ca-pi/package.json`,
 even for a date-only refresh. Other repository layouts and arbitrary manifest
 claims are unsupported.
 
