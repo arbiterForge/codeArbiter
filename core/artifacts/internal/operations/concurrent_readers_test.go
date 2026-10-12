@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -36,12 +37,49 @@ func concurrentReaderFixture(t *testing.T) (string, object, []observationRequest
 		t.Fatal(err)
 	}
 	id := model.M(identity)
+	pn := model.M(testutil.Plan(testutil.Seal(t, testutil.Spec()))["normative"])
+	_, err = Run(root, "create", object{"protocol": Protocol, "operation_id": "reader-plan-fixture", "artifact_id": "PLAN-EXAMPLE", "kind": "plan", "slug": "example", "spec_id": "SPEC-EXAMPLE", "title": pn["title"], "summary": pn["summary"], "normative": pn})
+	if err != nil {
+		t.Fatal(err)
+	}
+	plan, err := Run(root, "identity", object{"protocol": Protocol, "artifact_id": "PLAN-EXAMPLE"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	planID := model.M(plan)
+	expected := object{"artifact_id": planID["artifact_id"], "revision": planID["revision"], "model_sha256": planID["model_sha256"], "normative_sha256": planID["normative_sha256"]}
 	return root, id, []observationRequest{
 		{"identity", object{"protocol": Protocol, "artifact_id": "SPEC-EXAMPLE"}},
 		{"snapshot", object{"protocol": Protocol, "artifact_id": "SPEC-EXAMPLE"}},
 		{"outline", object{"protocol": Protocol, "artifact_id": "SPEC-EXAMPLE"}},
 		{"read", object{"protocol": Protocol, "artifact_id": "SPEC-EXAMPLE", "symbol": "AC-001", "mode": "exact"}},
 		{"read-batch", object{"protocol": Protocol, "artifact_id": "SPEC-EXAMPLE", "symbols": model.List("AC-001"), "model_sha256": id["model_sha256"]}},
+		{"plan-verification", object{"protocol": Protocol, "artifact_id": "PLAN-EXAMPLE", "expected": expected}},
+	}
+}
+
+func TestPlanVerificationSharedClassification(t *testing.T) {
+	if !slices.Contains(Names(), "plan-verification") || !sharedObservation("plan-verification", object{}) || JournaledMutation("plan-verification") {
+		t.Fatal("plan-verification must be an explicitly shared, non-journaled operation")
+	}
+	if sharedObservation("unclassified-observation", object{}) || sharedObservation("read", object{}) || sharedObservation("read", object{"mode": "contextual"}) {
+		t.Fatal("adding verification widened the shared-operation allowlist")
+	}
+}
+
+func TestPlanVerificationWriterExclusion(t *testing.T) {
+	root, _, requests := concurrentReaderFixture(t)
+	request := requests[len(requests)-1]
+	f, release := holdRepositoryLock(t, root, true)
+	if out, err := Run(root, request.op, request.input); fault.Code(err) != "LOCK_TIMEOUT" || out != nil {
+		t.Fatalf("verification overlapped exclusive writer: %#v %v", out, err)
+	}
+	if pending, err := f.Pending(); err != nil || len(pending) != 0 {
+		t.Fatalf("blocked observation created pending work: %v %v", pending, err)
+	}
+	release()
+	if _, err := Run(root, request.op, request.input); err != nil {
+		t.Fatalf("verification failed after writer release: %v", err)
 	}
 }
 
