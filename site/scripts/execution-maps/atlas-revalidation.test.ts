@@ -10,7 +10,7 @@ const preflightReview = '97a2ea0fb1dd2983f2757f680cfb9a359cbf69aa';
 const piReview = '6a243348a0e74b0a50c37eccf4d61520129a5c1c';
 const completionReview = '0192dc314817ffab18219d6485c11ac1531bbc5c';
 const nativeV2Review = '25980c292b529fca90c39f5f26d69a1c0674de44';
-const shipSetReview = 'd8edb2b03d0cb06168bbc0a210f0612ab2947abf';
+const shipSetReview = 'a75ec01c94a59f63820b633665ada015a01fc928';
 const git = (...args: string[]): string => execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
@@ -135,7 +135,7 @@ describe('atlas source compatibility revalidation', () => {
       'CHANGELOG.md', 'core/surface/includes/artifacts.md',
     ]);
     expect(git('rev-parse', `${shipSetReview}:core/surface/includes/artifacts.md`).trim())
-      .toBe('604133e67b8452640865cc14c725e5cd760c2f3e');
+      .toBe('a8a673034289f26b6792ef27d93a6f1baf62ad8a');
     expect(retainsReviewedChangelog(git('show', `${shipSetReview}:CHANGELOG.md`),
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
