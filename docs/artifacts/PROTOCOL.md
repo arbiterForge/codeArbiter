@@ -20,7 +20,7 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 | Family | Operations |
 |---|---|
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity` |
-| Content | `create`, `apply`, `diff`, `read`, `validate`, `rebrand`, `export` |
+| Content | `create`, `apply`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
 | Authority | `capture`, `approve`, `plan-bind`, `prerequisite`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
 | Execution ledger | `snapshot`, `eligible`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
@@ -60,6 +60,39 @@ For mutations, fetch `identity` immediately before preparing the request. A conf
 ## Retrieval and bounded context
 
 `index` pages a unique validated catalog. `outline` returns stable IDs and summaries, bound to a model identity. Exact `read` returns the requested whole record and `context_complete: false`.
+
+`plan-verification` is an internal observation for approval preflight. Every page
+request supplies `artifact_id`, `expected: {artifact_id, revision, model_sha256,
+normative_sha256}`, `offset` and `budget`; the host uses a 16384-byte budget.
+The expected identity quartet is required on the first page and every continuation.
+A changed identity returns `STALE_CURSOR`, which the approval bridge reports as
+`STALE_PLAN_PREFLIGHT`. Other native failures retain their codes.
+
+The result carries the same identity quartet, `context_complete: false`, `offset`,
+the stable nonnegative active-task `total`, `tasks` and `next_offset`. Each task
+contains exactly `id` and its complete `verification` array. Active task IDs are
+strictly ascending and unique across pages; retired tasks and unrelated task prose
+are excluded. Offsets, totals and revisions are integers, never booleans. A
+continuation equals the current offset plus the number of whole tasks delivered;
+the final page has `next_offset: null` and reaches the exact total. An empty
+selection returns an empty final page at offset zero. A whole verification array
+that cannot fit the requested budget returns `RECORD_TOO_LARGE`, without truncation.
+The native projection preserves empty verification arrays; host preflight refuses
+an active task with no definitions.
+
+The bridge checks every projected command with the existing Python cwd and
+command-definition validator, then collects the source-input snapshot, then
+rechecks the full plan identity. Command diagnostics and snapshot diagnostics are
+aggregated; a snapshot diagnostic still requires the final identity check. This
+path executes no declared command, imports no declared test and performs no test
+discovery. A valid single-page preflight uses projection, snapshot and identity
+(three native calls); ordinary approval arming adds its existing ready identity
+and validation (five calls). Malformed, incomplete or stale delivery refuses
+before any pending approval is written.
+
+This operation joins only the existing shared-observation allowlist under the
+unchanged two-second lock timeout. It creates no context ticket, authority source,
+receipt or artifact, and retains writer exclusion and existing admission checks.
 
 Contextual `read` includes the selected record, applicable dependencies and governing context from the contributing documents. Follow every `next_cursor` until `context_complete: true`. Cursor identity includes contributing model and receipt/event bytes, not just the requested plan. A record is never silently cut in half; an oversized indivisible record fails with a specific diagnostic. The final context ticket is required by `task-start` and becomes stale when its contributing context changes. Delivery of context is not proof the model understood it.
 

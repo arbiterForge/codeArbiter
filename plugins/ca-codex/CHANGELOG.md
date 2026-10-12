@@ -25,6 +25,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   retained-byte budget, which can cause repeat reads but never skips validation.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
+## [0.16.6] - 2026-10-10
+
+### Fixed
+
+- Use the shared bounded verification projection for typed-plan approval
+  preflight, preserving full identity freshness, command and snapshot diagnostics,
+  validation order and refusal before approval arming on incomplete delivery.
+
 ## [0.16.5] - 2026-10-10
 
 ### Fixed

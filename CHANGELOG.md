@@ -31,6 +31,15 @@ predate the plugin rewrite and are grouped by date.
   retained-byte budget, which can cause repeat reads but never skips validation.
 - Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
   longer times out the prompt seam (#931).
+## [2.25.6] - 2026-10-10
+
+### Fixed
+
+- Read complete task verification definitions through a bounded native projection
+  during typed-plan approval preflight. Preserve command validation, source
+  snapshot and final identity ordering, aggregated diagnostics and refusal before
+  approval arming when any page is malformed, incomplete or stale.
+
 ## [2.25.5] - 2026-10-10
 
 ### Fixed

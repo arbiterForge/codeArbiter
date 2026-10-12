@@ -35,7 +35,7 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
@@ -241,6 +241,20 @@ func Run(root, op string, input object) (any, error) {
 			return nil, fault.New("STALE_CURSOR", "outline continuation requires the same model identity")
 		}
 		return reads.Outline(d, offset, budget)
+	case "plan-verification":
+		expected := model.M(r["expected"])
+		if model.S(expected["artifact_id"]) != d.ID() || model.I(expected["revision"]) != d.Revision() || model.S(expected["model_sha256"]) != d.Hash() || model.S(expected["normative_sha256"]) != d.NormHash() {
+			return nil, fault.New("STALE_CURSOR", "plan verification requires the same full artifact identity")
+		}
+		offset, ok := model.NativeInt(model.I(r["offset"]))
+		if !ok {
+			return nil, fault.New("INVALID_OFFSET", "verification offset is outside the native integer range")
+		}
+		out, err := reads.PlanVerification(d, offset, budget)
+		if err != nil {
+			return nil, err
+		}
+		return out, nil
 	case "validate":
 		gate := model.S(r["gate"])
 		es := validate.Structural(d)

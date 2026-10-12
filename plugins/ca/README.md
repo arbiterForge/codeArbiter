@@ -9,6 +9,11 @@ Full documentation, install instructions, and the command catalog live in the
 [repository README](https://github.com/arbiterForge/codeArbiter) and in [`COMMANDS.md`](./COMMANDS.md)
 (`/ca:commands` in-session).
 
+Typed-plan approval preflight reads bounded task verification definitions, checks
+all declared commands, collects the source snapshot and rechecks plan identity
+before arming approval. Proposed tests can be absent; preflight executes no
+declared command or test discovery.
+
 ## The short version
 
 - **Install:** `/plugin marketplace add arbiterForge/codeArbiter` → `/plugin install ca@codearbiter`.
