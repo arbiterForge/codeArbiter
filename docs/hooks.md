@@ -357,17 +357,23 @@ Atomic zero-byte Start/Stop claims precede the marker lock, so a timed-out first
 event cannot disappear and be replaced later. A retained failure claim blocks
 the UUID even before Post can associate it with a request.
 
-Codex 0.162.0-alpha.2 V2 uses the separate closed profile
-`codex-native-v2/0.162.0-alpha.2`, selected explicitly with `native-v2` at arming.
+New Codex review CLI requests default to the stable evidence protocol
+`codex-native-collaboration/1.0.0` (`native`). That version names codeArbiter's
+protocol, not a Codex release. Arming does not qualify the host: actual observed
+launch, activity, child identity and first Stop are required before authority.
+The explicit legacy `native-v2` option retains the original closed
+`codex-native-v2/0.162.0-alpha.2` contract and exact child runtime constraint;
+existing requests and receipts cannot be relabelled into the new profile.
 Its exact envelope is `message`, `task_name` and `fork_turns:"none"`, with the
 implicit default role. Pre pins the hook-owned parent native file identity,
 metadata and bounded prefix anchor at its current offset. Post reads only a new
 suffix capped at eight MiB and requires one native `item_completed` containing
 `SubAgentActivity` with the exact parent thread/turn/call, canonical task path
 and child UUID. A JSON-string task-path result alone supplies no UUID proof.
-The child's Start metadata independently qualifies 0.162.0-alpha.2 and its
-parent/session/path/UUID; an older parent birth version does not describe the
-current host. Canonical native activity, its digest and the qualified child
+The child's Start metadata independently binds parent/session/path/UUID. The
+stable profile records a bounded runtime version as provenance, with no host
+release allowlist or inferred minimum capability. An older parent birth version
+does not describe the current host. Canonical native activity, its digest and the bound child
 identity/metadata digest are retained in the producer result. Verdict capture
 still comes only from that UUID's actual first Stop and child turn. Duplicate,
 malformed, linked, missing, transplanted, stale or oversized evidence fails closed.
@@ -380,6 +386,17 @@ Unrelated ordinary Post events pass through without acquiring authority.
 V2 completion reviews preserve qualified V1's full immutable private-context
 reference, eight MiB context limit, one MiB mutable-state limit and reserved
 lifecycle/result capacity. Selected evidence drift and unknown profiles refuse.
+
+The stable adapter projects required native activity fields into its closed
+evidence shape and ignores additive display metadata in bounded spawn results.
+Optional response child/parent UUIDs must agree with the independent native
+activity; required fields, types, duplicate JSON rejection, digests and all
+identity joins remain strict. Legacy profiles preserve their original closed
+raw shapes. The [Codex hooks contract](https://learn.chatgpt.com/docs/hooks)
+does not promise a stable transcript format. A release change alone is therefore
+not an admission decision; a missing or changed required protocol capability
+still refuses with a diagnostic. Preserve rejected requests and use a fresh
+request after the capability is restored, never a synthetic or relabelled receipt.
 
 The finite `multi_agent_v1send_input`, `multi_agent_v1resume_agent`,
 `multi_agent_v1close_agent`, `collaborationsend_message`,
