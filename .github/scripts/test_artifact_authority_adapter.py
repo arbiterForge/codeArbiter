@@ -4030,8 +4030,8 @@ class CodexV2NativeHookTest(unittest.TestCase):
                     self.assertNotIn(unknown, names)
 
     def test_codex_v2_pretool_entrypoint_refuses_unjoinable_native_profile(self):
-        # Supersedes the initial v2-positive expectation after the authority
-        # assessment: v2 supplies no direct task-path/child-UUID association.
+        # This historical profileless request cannot acquire collaboration
+        # authority by changing its launch or reusing the new native interface.
         armed = self._arm_review("codex-v2-native-pre")
         event = {
             "hook_event_name": "PreToolUse", "session_id": "codex-v2-parent-session",
@@ -4050,7 +4050,10 @@ class CodexV2NativeHookTest(unittest.TestCase):
         self.assertTrue(result.stdout.strip(), "unsupported v2 authority launch was silently admitted")
         output = json.loads(result.stdout)
         self.assertEqual(output["decision"], "block")
-        self.assertIn("native-v1", output["reason"])
+        self.assertIn("UNSUPPORTED_HOST_SEAM", output["reason"])
+        self.assertIn("fresh native protocol request", output["reason"])
+        self.assertIn("direct activity UUID binding", output["reason"])
+        self.assertIn("historical requests cannot be relabelled", output["reason"])
         self.assertEqual((self.root / armed["request_path"]).read_bytes(), before)
 
     def test_codex_stop_entrypoint_uses_the_native_closed_output_schema(self):
