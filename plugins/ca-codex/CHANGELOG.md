@@ -6,12 +6,18 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.17.3] - 2026-10-12
+## [0.17.4] - 2026-10-13
 
 ### Fixed
 
 - Distinguish inert PowerShell evidence from actual verifier wrapper calls (#970).
 - Preserve refusal of selected malformed and compound wrappers and exact authorization/corroboration checks.
+
+## [0.17.3] - 2026-10-13
+
+### Fixed
+
+- Validate new Codex native reviews against their evidence protocol instead of an exact host release. Accept additive host metadata while retaining identity checks and historical receipt contracts.
 
 ## [0.17.2] - 2026-10-12
 

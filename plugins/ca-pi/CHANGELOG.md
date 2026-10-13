@@ -4,12 +4,18 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.18.3] - 2026-10-12
+## [0.18.4] - 2026-10-13
 
 ### Fixed
 
 - Distinguish inert PowerShell evidence from actual verifier wrapper calls (#970).
 - Preserve refusal of selected malformed and compound wrappers and exact authorization/corroboration checks.
+
+## [0.18.3] - 2026-10-13
+
+### Fixed
+
+- Synchronize the shared authority adapter with the Codex runtime compatibility repair while preserving Pi's existing host contract.
 
 ## [0.18.2] - 2026-10-12
 

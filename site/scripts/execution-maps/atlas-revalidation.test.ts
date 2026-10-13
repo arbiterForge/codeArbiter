@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, INERT_VERIFIER_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, INERT_VERIFIER_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, INTEGRATED_AUTHORITY_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -19,6 +19,8 @@ const packetPreparationReview = '5e909cfab72e4e7793b3ffa7b62c2239632f80d1';
 const packetPreparationMain = '4c2529e2f3804d38855094e1c11d36178067c826';
 // Main960 retains the exact two reviewed a968 guide blobs after its squash.
 const legacyDeliveryReview = 'd547f82777111bc20001a977719307d3d68fc13e';
+const runtimeCompatibilityBaseline = 'e33bb87b30d4a3ac3286378ad9ec5bff70140392';
+const runtimeCompatibilityReview = '0e96f44ac68b2d17d5bb8b4a75a72ea35e41193e';
 const packetInventoryHash = 'faee422cbe0747004b85660ce6c1bf54a730759c83435dd5d9c69469a06e0baf';
 const packetChangelogHash = '8d299cd300ea41b7dae51e89a8caa418eafff0066173ac8ab1ae55030772f7a4';
 const git = (...args: string[]): string => execFileSync('git', args, {
@@ -238,19 +240,21 @@ describe('atlas source compatibility revalidation', () => {
     expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
       'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
-      'core/surface/skills/finishing-a-development-branch/SKILL.md']);
+      'core/surface/skills/finishing-a-development-branch/SKILL.md', 'docs/hooks.md']);
     expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
       'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
       'core/surface/includes/artifacts.md': '8a834b919fb81c77213086a1b1661d16b5290bbe',
     });
     for (const [path, blob] of Object.entries(DRAFT_PREVIEW_SOURCE_BLOBS)) {
+      expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(blob);
+      const currentBlob = RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path] ?? blob;
       // The canonical tracked file retains this blob through a squash; no PR
       // commit has to remain reachable in a subsequent main-only clone.
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
       expect(execFileSync('git', ['hash-object', '--stdin'], {
         cwd: root, input: current(path), encoding: 'utf8',
-      }).trim()).toBe(blob);
-      expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
+      }).trim()).toBe(currentBlob);
+      expect(git('--no-replace-objects', 'cat-file', 'blob', currentBlob)).toBe(current(path));
     }
     expect(retainsReviewedChangelog(current('CHANGELOG.md'),
       git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
@@ -272,9 +276,14 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/commit-gate/SKILL.md',
       'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
+      'docs/hooks.md',
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
-    expect(git('hash-object', '--', path).trim()).toBe(INERT_VERIFIER_COLLECTOR_BLOB);
+    expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
+    expect(INTEGRATED_AUTHORITY_SOURCE_BLOBS).toEqual({
+      [path]: '2469eb2f26b46228e335e73035299cd86d765b10',
+    });
+    expect(git('hash-object', '--', path).trim()).toBe(INTEGRATED_AUTHORITY_SOURCE_BLOBS[path]);
     expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
       .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
     expect(git('cat-file', 'blob', INERT_VERIFIER_COLLECTOR_BLOB).split('\n').slice(0, 190))
@@ -354,6 +363,31 @@ describe('atlas source compatibility revalidation', () => {
     expect(atlas.views.map(geometryRecord)).toEqual(original.views.map(geometryRecord));
   });
 
+  it('binds only the three reviewed runtime compatibility owners and preserves cited document ranges', () => {
+    expect(RUNTIME_COMPATIBILITY_SOURCE_BLOBS).toEqual({
+      'core/surface/includes/artifacts.md': 'c10c13162e63699c3748809f3ef2448bc8b07fb9',
+      'core/pysrc/_artifactauthoritylib.py': '8dbbfdbae637e79dea52181b01e328a21efe3a06',
+      'docs/hooks.md': 'd4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
+    });
+    expect(changedProductInputs(runtimeCompatibilityBaseline, runtimeCompatibilityReview)).toEqual([
+      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
+      'core/surface/includes/artifacts.md', 'docs/hooks.md',
+    ]);
+    for (const [path, blob] of Object.entries(RUNTIME_COMPATIBILITY_SOURCE_BLOBS)) {
+      expect(git('rev-parse', `${runtimeCompatibilityReview}:${path}`).trim()).toBe(blob);
+    }
+    // S10 and S17 cite these unchanged historical ranges. The Codex protocol
+    // clarification is later in each owner; source review, not these slices,
+    // establishes compatibility of the authority claims that refer to them.
+    for (const [path, start, end] of [
+      ['core/surface/includes/artifacts.md', 0, 210], ['docs/hooks.md', 34, 150],
+    ] as const) {
+      const before = git('show', `${runtimeCompatibilityBaseline}:${path}`).split('\n');
+      const current = readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n').split('\n');
+      expect(current.slice(start, end)).toEqual(before.slice(start, end));
+    }
+  });
+
   it('retains the exact historical legacy delivery documents separately from current maintenance', () => {
     for (const [path, blob] of Object.entries(LEGACY_CODE_MAP_SOURCE_BLOBS)) {
       expect(git('rev-parse', `${legacyDeliveryReview}:${path}`).trim()).toBe(blob);
@@ -362,7 +396,7 @@ describe('atlas source compatibility revalidation', () => {
     }
   });
 
-  it('binds the complete current input set to the reviewed draft-preview, unittest, brownfield and legacy delivery owners', () => {
+  it('binds the complete current input set to the reviewed historical and runtime compatibility owners', () => {
     const inputs = new Set(productInputs);
     for (const command of originalAtlas().commands) commandMetadata(command.name, path => {
       inputs.add(path);
@@ -392,7 +426,7 @@ describe('atlas source compatibility revalidation', () => {
     expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
       'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
-      'core/surface/skills/finishing-a-development-branch/SKILL.md']);
+      'core/surface/skills/finishing-a-development-branch/SKILL.md', 'docs/hooks.md']);
     expect(BROWNFIELD_SOURCE_BLOBS).toEqual({
       'core/surface/commands/init.md': 'c3de948de1617aa323e310eefee7fde2bd8a65fc',
       'core/surface/skills/debug/SKILL.md': '6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
@@ -408,7 +442,8 @@ describe('atlas source compatibility revalidation', () => {
     });
     for (const [path, blob] of Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
-      'core/pysrc/_artifactauthoritylib.py': INERT_VERIFIER_COLLECTOR_BLOB})) {
+      'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
+      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...INTEGRATED_AUTHORITY_SOURCE_BLOBS})) {
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
       expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: current(path), encoding: 'utf8'}).trim()).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
