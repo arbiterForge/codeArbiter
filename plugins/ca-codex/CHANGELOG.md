@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.17.3] - 2026-10-13
+
+### Fixed
+
+- Validate new Codex native reviews against their evidence protocol instead of an exact host release. Accept additive host metadata while retaining identity checks and historical receipt contracts.
+
 ## [0.17.2] - 2026-10-12
 
 ### Fixed

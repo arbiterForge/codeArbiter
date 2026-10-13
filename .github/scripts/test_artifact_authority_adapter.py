@@ -4189,6 +4189,48 @@ class CodexNativeV1HookTest(unittest.TestCase):
         self.assertNotIn("authority_source", request)
         self.assertFalse((self.root / ".codearbiter/.artifacts/authority-sources").exists())
 
+    def test_native_v1_native_metadata_without_collaboration_path_remains_compatible(self):
+        for order in (("start", "post"), ("post", "start")):
+            armed, events = self._arm_native("v1-metadata-" + order[0])
+            transcript = self.root / ("v1-child-" + order[0] + ".jsonl")
+            transcript.write_text(json.dumps({"type": "session_meta", "payload": {
+                "id": events["start"]["agent_id"], "cli_version": "0.145.0",
+                "parent_thread_id": "01900000-0000-7000-8000-000000000099",
+            }}) + "\n", encoding="utf-8")
+            events["start"]["transcript_path"] = str(transcript)
+            self._observe(events["pre"])
+            for key in (*order, "stop"):
+                self._observe(events[key])
+            request = self.adapter._load(self.root, armed["request_id"])
+            self.assertEqual(request["state"], "COMPLETED")
+            self.assertNotIn("native_child", request["launch"])
+            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
+    def test_native_v1_optional_collaboration_metadata_cannot_add_prerequisites(self):
+        for case in ("null-path", "null-session", "invalid-parent", "wrong-child", "wrong-session", "wrong-path"):
+            for order in (("start", "post"), ("post", "start")):
+                with self.subTest(case=case, order=order):
+                    armed, events = self._arm_native("optional-meta-" + case + order[0])
+                    metadata = {"id": events["start"]["agent_id"], "cli_version": "0.145.0",
+                                "parent_thread_id": "01900000-0000-7000-8000-000000000099",
+                                "session_id": events["start"]["session_id"], "agent_path": "/root/ordinary"}
+                    field, value = {"null-path": ("agent_path", None), "null-session": ("session_id", None),
+                                    "invalid-parent": ("parent_thread_id", "not-a-uuid"),
+                                    "wrong-child": ("id", metadata["parent_thread_id"]),
+                                    "wrong-session": ("session_id", "different-session"),
+                                    "wrong-path": ("agent_path", "not-a-path")}[case]
+                    metadata[field] = value
+                    transcript = self.root / ("optional-meta-" + case + order[0] + ".jsonl")
+                    transcript.write_text(json.dumps({"type": "session_meta", "payload": metadata}) + "\n", encoding="utf-8")
+                    events["start"]["transcript_path"] = str(transcript)
+                    self._observe(events["pre"])
+                    for key in (*order, "stop"):
+                        self._observe(events[key])
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["state"], "COMPLETED")
+                    self.assertNotIn("native_child", request["launch"])
+                    self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
     def test_native_v1_profile_pins_fresh_exact_envelope_and_distinct_identity(self):
         armed, _ = self._arm_native()
         request = self.adapter._load(self.root, armed["request_id"])
@@ -4735,7 +4777,7 @@ class CodexNativeV1HookTest(unittest.TestCase):
             self._observe(events["post"])
         self._no_authority(armed)
 
-    def test_native_v1_cli_requires_explicit_profile_selection(self):
+    def test_native_cli_defaults_to_protocol_and_retains_explicit_legacy(self):
         # The CLI prepends its source directory and imports hostapi. Keep those
         # bindings local so later installed-package fixtures use their own host.
         with mock.patch.dict(sys.modules), mock.patch.object(sys, "path", sys.path[:]):
@@ -4748,9 +4790,11 @@ class CodexNativeV1HookTest(unittest.TestCase):
                     "--record-id", "T-001", "--activity", "spec_review", "--host", "codex"]
             with mock.patch.object(cli._artifactlib, "ArtifactClient", return_value=self.client), \
                     mock.patch.object(cli._artifactlib, "helper_installation", return_value=None):
-                with self.assertRaisesRegex(RuntimeError, "native-v1"):
-                    cli.main(argv)
-                self.assertEqual(self.client.calls, [])
+                default_output = io.StringIO()
+                with contextlib.redirect_stdout(default_output):
+                    self.assertEqual(cli.main(argv), 0)
+                self.assertEqual(json.loads(default_output.getvalue())["codex_review_profile"],
+                                 "codex-native-collaboration/1.0.0")
                 output = io.StringIO()
                 with contextlib.redirect_stdout(output):
                     self.assertEqual(cli.main(argv + ["--codex-review-profile", "native-v1"]), 0)
@@ -5288,6 +5332,9 @@ class CodexNativeV2HookTest(unittest.TestCase):
     _no_authority = CodexNativeV1HookTest._no_authority
     _observe = CodexNativeV1HookTest._observe
     PROFILE = "codex-native-v2/0.162.0-alpha.2"
+    PROFILE_ARG = "native-v2"
+    RUNTIME = "0.162.0-alpha.2"
+    REJECTED_RUNTIME = "0.145.0"
     PARENT = "01900000-0000-7000-8000-000000000001"
 
     def _fixture(self, suffix="main", activity="spec_review"):
@@ -5302,7 +5349,7 @@ class CodexNativeV2HookTest(unittest.TestCase):
         try:
             armed = self.adapter.arm_request(
                 self.root, self.client, "PLAN-EXAMPLE", self.client.context["subject"]["record_id"],
-                activity, request_nonce="native-v2-" + suffix, codex_review_profile="native-v2",
+                activity, request_nonce="native-v2-" + suffix, codex_review_profile=self.PROFILE_ARG,
             )
         except self.adapter.AuthorityError as exc:
             self.fail("qualified native V2 review rejected before exact activity/UUID binding: " + str(exc))
@@ -5323,7 +5370,7 @@ class CodexNativeV2HookTest(unittest.TestCase):
         child_transcript = self.root / ("child-" + suffix + ".jsonl")
         child_transcript.write_text(json.dumps({"type": "session_meta", "payload": {
             "id": child["agent_id"], "parent_thread_id": self.PARENT, "session_id": self.PARENT,
-            "agent_path": path, "cli_version": "0.162.0-alpha.2"}}) + "\n", encoding="utf-8")
+            "agent_path": path, "cli_version": getattr(self, "RUNTIME", "0.162.0-alpha.2")}}) + "\n", encoding="utf-8")
         child["transcript_path"] = str(child_transcript)
         native = {"type": "item_completed", "thread_id": self.PARENT, "turn_id": parent["turn_id"],
                   "item": {"type": "SubAgentActivity", "id": parent["tool_use_id"], "kind": "started",
@@ -5375,7 +5422,7 @@ class CodexNativeV2HookTest(unittest.TestCase):
                     self.assertEqual(launch["native_activity"], native)
                     self.assertEqual(launch["native_activity_sha256"], self.adapter._engine_digest(native))
                     self.assertEqual(launch["task_name"], native["item"]["agent_path"])
-                    self.assertEqual(launch["native_child"]["cli_version"], "0.162.0-alpha.2")
+                    self.assertEqual(launch["native_child"]["cli_version"], self.RUNTIME)
                     self.assertEqual(launch["native_child"]["thread_id"], launch["agent_id"])
                     self.assertIs(launch["first_stop"], True)
                     observed = json.loads((self.root / request["observation_ref"]).read_text("utf-8"))
@@ -5411,6 +5458,8 @@ class CodexNativeV2HookTest(unittest.TestCase):
                  "object-result": lambda n, e: e["post"].update(tool_response=json.loads(e["post"]["tool_response"])),
                  "wrong-tool": lambda n, e: e["post"].update(tool_name="spawn_agent"),
                  "input": lambda n, e: e["post"]["tool_input"].update(fork_turns="all")}
+        if self.PROFILE_ARG == "native":
+            cases.pop("extra")  # Stable protocol ignores additive raw host fields.
         for suffix, mutate in cases.items():
             with self.subTest(case=suffix):
                 armed, events, native = self._fixture("negative-" + suffix)
@@ -5474,7 +5523,7 @@ class CodexNativeV2HookTest(unittest.TestCase):
 
     def test_native_v2_child_runtime_and_parent_trace_safety_are_qualified(self):
         self._complete("safety-witness")
-        for field, value in (("cli_version", "0.145.0"), ("id", self.PARENT),
+        for field, value in (("cli_version", self.REJECTED_RUNTIME), ("id", self.PARENT),
                              ("parent_thread_id", "01900000-0000-7000-8000-000000000099"),
                              ("agent_path", "/root/other"), ("session_id", "other-session")):
             armed, events, native = self._fixture("child-" + field)
@@ -5707,6 +5756,114 @@ class CodexNativeV2HookTest(unittest.TestCase):
 
 
 
+class CodexNativeProtocolHookTest(CodexNativeV2HookTest):
+    """Protocol fixtures across release identities; not live host qualification."""
+
+    PROFILE = "codex-native-collaboration/1.0.0"
+    PROFILE_ARG = "native"
+    RUNTIME = "0.162.0-alpha.17.2"
+    REJECTED_RUNTIME = ""
+
+    def test_native_protocol_collects_version_as_provenance(self):
+        # Exercise the exact defective metadata seam independently of arming.
+        self.PROFILE_ARG = "native-v2"
+        _, events, _ = self._fixture("metadata-provenance")
+        identity = self.adapter._codex_v2_child(events["start"])
+        self.assertIsInstance(identity, dict)
+        self.assertEqual(identity["cli_version"], "0.162.0-alpha.17.2")
+        self.assertEqual(identity["thread_id"], events["start"]["agent_id"])
+
+    def test_native_protocol_accepts_changed_release_identity_without_requalification(self):
+        for index, version in enumerate(("0.162.0-alpha.17.2", "1.0.0", "27.4.19-preview.9+build.42")):
+            for order in (("start", "post"), ("post", "start")):
+                with self.subTest(version=version, order=order):
+                    self.RUNTIME = version
+                    armed, events, native = self._fixture("runtime-" + str(index) + order[0])
+                    self._observe(events["pre"])
+                    self._append(events, native)
+                    for key in (*order, "stop"):
+                        self._observe(events[key])
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["state"], "COMPLETED")
+                    self.assertEqual(request["launch"]["native_child"]["cli_version"], version)
+                    self.assertEqual(request["launch"]["codex_review_profile"], self.PROFILE)
+                    self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
+    def test_native_protocol_projects_additive_host_fields_into_closed_evidence(self):
+        armed, events, native = self._fixture("additive-host-fields")
+        self._observe(events["pre"])
+        extended = copy.deepcopy(native)
+        extended["future_host_status"] = {"detail": "non-authoritative"}
+        extended["item"]["nickname"] = "optional host display data"
+        self._append(events, extended)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(request["state"], "COMPLETED")
+        self.assertEqual(request["launch"]["native_activity"], native)
+        self.assertEqual(request["launch"]["native_activity_sha256"], self.adapter._engine_digest(native))
+
+    def test_native_protocol_projects_additive_response_metadata_and_binds_optional_uuid(self):
+        for field in ("agent_id", "thread_id", "parent_thread_id"):
+            armed, events, native = self._fixture("response-projection-" + field)
+            self._observe(events["pre"])
+            self._append(events, native)
+            identity = self.PARENT if field == "parent_thread_id" else events["start"]["agent_id"]
+            response = {"task_name": native["item"]["agent_path"], "display_status": "running", field: identity}
+            events["post"]["tool_response"] = json.dumps(response)
+            for key in ("post", "start", "stop"):
+                self._observe(events[key])
+            self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "COMPLETED")
+            armed, events, native = self._fixture("response-conflict-" + field)
+            self._observe(events["pre"])
+            self._append(events, native)
+            response = {"task_name": native["item"]["agent_path"], field: "01900000-0000-7000-8000-000000000099"}
+            events["post"]["tool_response"] = json.dumps(response)
+            with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                self._observe(events["post"])
+            self._no_authority(armed)
+
+    def test_native_protocol_duplicate_raw_json_keys_never_gain_authority(self):
+        self._complete("duplicate-json-witness")
+        for boundary in ("activity", "response"):
+            for field_kind in ("required", "ignored"):
+                with self.subTest(boundary=boundary, field_kind=field_kind):
+                    armed, events, native = self._fixture("duplicate-" + boundary + field_kind)
+                    self._observe(events["pre"])
+                    response = {"task_name": native["item"]["agent_path"]}
+                    value = native if boundary == "activity" else response
+                    raw = json.dumps(value)
+                    field = "type" if boundary == "activity" else "task_name"
+                    if field_kind == "ignored":
+                        duplicate = '\"display_metadata\": 1, \"display_metadata\": 2'
+                    else:
+                        duplicate = json.dumps(field) + ": " + json.dumps(value[field])
+                    raw = raw[:-1] + ", " + duplicate + "}"
+                    if boundary == "activity":
+                        with Path(events["pre"]["transcript_path"]).open("a", encoding="utf-8") as stream:
+                            stream.write('{"type":"event_msg","payload":' + raw + "}\n")
+                    else:
+                        self._append(events, native)
+                        events["post"]["tool_response"] = raw
+                    with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                        self._observe(events["post"])
+                    self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+                    self._no_authority(armed)
+
+    def test_native_protocol_malformed_runtime_identity_refuses_without_authority(self):
+        self._complete("runtime-witness")
+        for index, version in enumerate((None, 17, "", " ", "invalid", "0.162", "0.162.0\n", "1.0.0+" + "a" * 128)):
+            with self.subTest(version=version):
+                self.RUNTIME = version
+                armed, events, native = self._fixture("bad-runtime-" + str(index))
+                self._observe(events["pre"])
+                self._append(events, native)
+                self._observe(events["post"])
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                    self._observe(events["start"])
+                self._no_authority(armed)
+
+
 class CodexNativeV2CompletionTransportTest(unittest.TestCase):
     """Synthetic V2 completion transport; genuine native receipt tests remain separate."""
 
@@ -5717,9 +5874,11 @@ class CodexNativeV2CompletionTransportTest(unittest.TestCase):
     _append = CodexNativeV2HookTest._append
     _observe = CodexNativeV1HookTest._observe
     PARENT = CodexNativeV2HookTest.PARENT
+    PROFILE_ARG = "native-v2"
+    PROFILE = "codex-native-v2/0.162.0-alpha.2"
 
     def _arm_completion(self):
-        return CompletionReviewTransportTest._arm_completion(self, "native-v2")
+        return CompletionReviewTransportTest._arm_completion(self, self.PROFILE_ARG)
 
     def _complete_native(self, armed, *, order=("post", "start"), decision_json=None):
         events, native = self._native_events(armed, "completion-" + str(getattr(self, "sequence", 0)))
@@ -5746,7 +5905,7 @@ class CodexNativeV2CompletionTransportTest(unittest.TestCase):
                     self.client.context["input_manifest"]["order"] = order[0]
                     armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE",
                         self.client.context["subject"]["record_id"], activity,
-                        request_nonce="v2-completion-" + activity + order[0], codex_review_profile="native-v2",
+                        request_nonce="v2-completion-" + activity + order[0], codex_review_profile=self.PROFILE_ARG,
                         completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
                     request = self.adapter._load(self.root, armed["request_id"])
                     stored = json.loads(Path(armed["request_path"]).read_bytes())
@@ -5768,7 +5927,7 @@ class CodexNativeV2CompletionTransportTest(unittest.TestCase):
                     self.assertEqual(complete["context"], self.client.context)
                     self.assertEqual(complete["payload"]["completion_assessment"], self._decision(armed)["completion_assessment"])
                     observed = json.loads((self.root / complete["observation_ref"]).read_bytes())
-                    self.assertEqual(observed["producer_profile"], self.adapter.CODEX_NATIVE_V2)
+                    self.assertEqual(observed["producer_profile"], self.PROFILE)
                     self.assertTrue(observed["producer_result"]["launch"]["first_stop"])
                     self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
 
@@ -5797,14 +5956,22 @@ class CodexNativeV2CompletionTransportTest(unittest.TestCase):
         before = list(self.adapter._registered_requests())
         with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
             self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
-                codex_review_profile="native-v2", completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+                codex_review_profile=self.PROFILE_ARG, completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
         self.assertEqual(list(self.adapter._registered_requests()), before)
         self.client.context.pop("input_manifest")
         self.client.context["task"]["criterion_refs"] = [f"AC-{index:06d}-" + "x" * 240 for index in range(650)]
         with self.assertRaisesRegex(RuntimeError, "review result has no bounded lifecycle reserve"):
             self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
-                codex_review_profile="native-v2", completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+                codex_review_profile=self.PROFILE_ARG, completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
         self.assertEqual(list(self.adapter._registered_requests()), before)
+
+
+class CodexNativeProtocolCompletionTransportTest(CodexNativeV2CompletionTransportTest):
+    """The stable protocol retains full completion context and refusal controls."""
+
+    PROFILE_ARG = "native"
+    PROFILE = "codex-native-collaboration/1.0.0"
+    RUNTIME = "0.162.0-alpha.17.2"
 
 
 if __name__ == "__main__":

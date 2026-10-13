@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.26.3] - 2026-10-13
+
+### Fixed
+
+- Validate new Codex native reviews against their evidence protocol instead of an exact host release. Accept additive host metadata while retaining identity checks and historical receipt contracts.
+
 ## [2.26.2] - 2026-10-12
 
 ### Fixed

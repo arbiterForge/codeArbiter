@@ -380,7 +380,15 @@ reviewer's judgment; schema validation does not prove that every file was read
 or every conclusion is correct. Preserve the unchanged launch envelope and
 genuine host capture throughout this path.
 {{IF:codex}}
-Codex review requires an explicitly qualified native interface. For V1, before arming,
+New Codex CLI review requests default to `native`, using the stable evidence
+protocol `codex-native-collaboration/1.0.0`. Its version identifies the protocol,
+not a Codex release. Inspect the registered `collaboration.spawn_agent` interface
+and steering hooks, then pass exactly the returned `message`, `task_name` and
+`fork_turns:"none"` envelope. Arming is not capability proof: authority requires
+the actual launch, native activity, child metadata and first Stop described below.
+A changed host release alone neither rejects nor qualifies a review.
+
+For legacy V1, before arming,
 inspect the actual registered `multi_agent_v1.spawn_agent` tool: it must expose
 `message` and `fork_context`, and its native result must carry the child UUID.
 Model names, cached metadata and disabling `multi_agent_v2` alone do not prove
@@ -398,23 +406,36 @@ before association rejects the request once associated; no later result replaces
 it. Do not send input, resume or close the reviewer. These operations invalidate
 an active review even if their host hook fails to prevent the operation.
 
-For Codex 0.162.0-alpha.2 V2, qualify the actual registered `collaboration.spawn_agent`
-and all three native steering guards, then arm a fresh request with
-`--codex-review-profile native-v2`. Pass exactly the returned `message`,
-`task_name` and `fork_turns:"none"` envelope; omit role, model and other inputs.
-The distinct profile is `codex-native-v2/0.162.0-alpha.2`. The model-facing task
+The legacy `--codex-review-profile native-v2` option retains the historical
+`codex-native-v2/0.162.0-alpha.2` contract, including its exact child runtime.
+Do not select it for new collaboration reviews after a host update. Existing
+requests and receipts retain their original profiles; never relabel them.
+
+The stable collaboration protocol and legacy V2 both omit role, model and other
+inputs from the launch envelope. The model-facing task
 path supplies no UUID authority. Pre binds the hook-owned parent transcript's
 identity and offset; Post reads a bounded new native suffix and requires exactly
 one `item_completed/SubAgentActivity` binding parent thread, turn, call,
 canonical task path and child UUID. The child Start's hook-owned native metadata
-must qualify the current runtime and the same parent/session/path/UUID. Parent
-birth metadata may describe an older desktop version. Both native identities and
+must bind the same parent/session/path/UUID. The stable profile retains a bounded
+runtime version as provenance without a release allowlist; legacy V2 retains its
+exact version constraint. Parent birth metadata may describe an older desktop
+version. Both native identities and
 their digests are retained with the closed observation. The verdict remains the
 actual first `SubagentStop.last_assistant_message` from that child's own turn.
 The first Post correlated by persisted parent session, turn and call consumes
 that launch even when its message or authority marker is absent or malformed.
 A later corrected Post cannot replace the rejected evidence. An unrelated
 ordinary Post remains outside the authority request.
+
+Stable-profile capture projects the required fields from bounded raw activity
+records, so additive host metadata does not change the closed evidence schema.
+Extra spawn-result display fields are inert; optional child or parent UUIDs must
+agree with native activity. Duplicate JSON keys, changed required fields, missing
+identity joins and unknown protocol profiles still refuse. Codex's transcript
+format is not a stable public API: missing or changed required capabilities need
+an adapter update, not an invented receipt or a release-number substitution.
+Preserve the rejected request and arm a fresh one after the capability is restored.
 
 Native V2 completion reviews retain the full immutable context through the same
 bounded private reference as qualified V1. The eight MiB native context limit,
@@ -425,7 +446,7 @@ V2 supports distinct concurrent calls through their direct native identities;
 V1 retains its parent-turn ambiguity refusal. Do not send messages, follow-up work
 or interrupts to a running reviewer, by task path or UUID. These operations
 invalidate its review before or after Post association. Missing, unsafe, stale,
-oversized or ambiguous native evidence fails closed. Unqualified V2 and historical
+oversized or ambiguous native evidence fails closed. Unsupported protocol and historical
 profileless requests remain refused; never relabel a receipt or substitute a
 coordinator message, wait result, transcript assistant text or synthesized event.
 {{END}}

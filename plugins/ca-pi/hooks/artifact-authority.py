@@ -52,8 +52,8 @@ def main(argv=None) -> int:
         default="opus", help="Claude reviewer model pinned into the launch envelope",
     )
     arm.add_argument(
-        "--codex-review-profile", choices=("native-v1", "native-v2"), default=None,
-        help="select only after qualifying the actual registered native interface and lifecycle",
+        "--codex-review-profile", choices=("native", "native-v1", "native-v2"), default=None,
+        help="Codex reviews default to the collaboration evidence protocol; legacy profiles are explicit",
     )
     context_arm = sub.add_parser("arm-context")
     context_arm.add_argument("--root", required=True)
@@ -92,10 +92,7 @@ def main(argv=None) -> int:
             )
         if (host == "codex" and args.activity in _artifactauthoritylib.REVIEW_ACTIVITIES
                 and args.codex_review_profile is None):
-            raise _artifactauthoritylib.AuthorityError(
-                "UNSUPPORTED_HOST_SEAM",
-                "Codex review requires an explicit native-v1 or native-v2 profile after live interface qualification",
-            )
+            args.codex_review_profile = "native"
         result = _artifactauthoritylib.arm_request(
             root, client, args.artifact_id, args.record_id, args.activity,
             workspace_roots=workspaces or None, host=host,

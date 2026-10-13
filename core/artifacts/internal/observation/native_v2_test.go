@@ -51,6 +51,11 @@ func TestCodexNativeV2ReviewProfile(t *testing.T) {
 
 func TestCodexNativeV2RejectsUnboundActivityAndProfileRelabeling(t *testing.T) {
 	base, event, context, hash := nativeV2ReviewFixture(t, "spec_review")
+	rejectUnboundNativeReview(t, base, event, context, hash)
+}
+
+func rejectUnboundNativeReview(t *testing.T, base, event, context map[string]any, hash string) {
+	t.Helper()
 	requireNativeV2Review(t, base, event, context, hash)
 	mutations := map[string]func(map[string]any){
 		"run UUID":         func(o map[string]any) { o["producer_run_id"] = "e0123456-789b-4cde-8123-456789abcdef" },
@@ -111,5 +116,53 @@ func TestCodexNativeV2RejectsUnboundActivityAndProfileRelabeling(t *testing.T) {
 	old["producer_profile"] = "codex-native-v2/0.162.0-alpha.2"
 	if len(schema.ValidateWith(Schema(), old)) == 0 && ValidateLink(e, old, c, ContextRef(h), h) == nil {
 		t.Fatal("V1 receipt relabeled as V2")
+	}
+}
+
+func nativeProtocolReviewFixture(t *testing.T, kind, version string) (map[string]any, map[string]any, map[string]any, string) {
+	t.Helper()
+	o, e, c, h := nativeV2ReviewFixture(t, kind)
+	o["producer_profile"] = "codex-native-collaboration/1.0.0"
+	l := model.M(model.M(o["producer_result"])["launch"])
+	l["codex_review_profile"] = o["producer_profile"]
+	model.M(l["native_child"])["cli_version"] = version
+	o["producer_result_sha256"] = testValueHash(t, o["producer_result"])
+	return o, e, c, h
+}
+
+func TestCodexNativeProtocolReviewProfile(t *testing.T) {
+	for _, version := range []string{"0.162.0-alpha.17.2", "1.0.0", "27.4.19-preview.9+build.42"} {
+		for _, kind := range []string{"spec_review", "quality_review"} {
+			t.Run(version+"/"+kind, func(t *testing.T) {
+				o, e, c, h := nativeProtocolReviewFixture(t, kind, version)
+				requireNativeV2Review(t, o, e, c, h)
+			})
+		}
+	}
+}
+
+func TestCodexNativeProtocolRejectsUnboundEvidence(t *testing.T) {
+	o, e, c, h := nativeProtocolReviewFixture(t, "spec_review", "0.162.0-alpha.17.2")
+	rejectUnboundNativeReview(t, o, e, c, h)
+	for _, version := range []any{nil, int64(17), "", " ", "invalid", "0.162", "0.162.0\n"} {
+		bad, _ := canonical.Clone(o)
+		model.M(model.M(model.M(bad["producer_result"])["launch"])["native_child"])["cli_version"] = version
+		bad["producer_result_sha256"] = testValueHash(t, bad["producer_result"])
+		if len(schema.ValidateWith(Schema(), bad)) == 0 {
+			t.Fatalf("malformed runtime identity accepted: %v", version)
+		}
+	}
+	for _, profile := range []string{CodexNativeV2ReviewProfile, CodexNativeV1ReviewProfile, CodexReviewProfile} {
+		bad, _ := canonical.Clone(o)
+		bad["producer_profile"] = profile
+		if len(schema.ValidateWith(Schema(), bad)) == 0 && ValidateLink(e, bad, c, ContextRef(h), h) == nil {
+			t.Fatalf("stable evidence relabeled as %s", profile)
+		}
+	}
+	legacy, le, lc, lh := nativeV2ReviewFixture(t, "spec_review")
+	model.M(model.M(model.M(legacy["producer_result"])["launch"])["native_child"])["cli_version"] = "0.162.0-alpha.17.2"
+	legacy["producer_result_sha256"] = testValueHash(t, legacy["producer_result"])
+	if len(schema.ValidateWith(Schema(), legacy)) == 0 && ValidateLink(le, legacy, lc, ContextRef(lh), lh) == nil {
+		t.Fatal("historical V2 profile silently widened")
 	}
 }

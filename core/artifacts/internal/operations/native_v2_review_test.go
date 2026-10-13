@@ -42,11 +42,34 @@ func nativeV2ReviewSource(t *testing.T, h *farmHarness, record, kind string, con
 }
 
 func TestCodexNativeV2CaptureAndPublication(t *testing.T) {
+	nativeReviewCaptureAndPublication(t, nativeV2ReviewSource)
+}
+
+func nativeProtocolReviewSource(t *testing.T, h *farmHarness, record, kind string, contexts ...object) (object, object) {
+	t.Helper()
+	source, payload := nativeV2ReviewSource(t, h, record, kind, contexts...)
+	event := h.derived(model.S(source["source_ref"]))
+	observed := h.derived(model.S(event["observation_ref"]))
+	observed["producer_profile"] = "codex-native-collaboration/1.0.0"
+	launch := model.M(model.M(observed["producer_result"])["launch"])
+	launch["codex_review_profile"] = observed["producer_profile"]
+	model.M(launch["native_child"])["cli_version"] = "0.162.0-alpha.17.2"
+	observed["producer_result_sha256"] = mustHashFixture(t, observed["producer_result"])
+	event["observation_ref"], event["observation_sha256"] = h.forge("observations", observed), mustHashFixture(t, observed)
+	return object{"source_ref": h.forge("authority-sources", event), "source_sha256": mustHashFixture(t, event)}, payload
+}
+
+func TestCodexNativeProtocolCaptureAndPublication(t *testing.T) {
+	nativeReviewCaptureAndPublication(t, nativeProtocolReviewSource)
+}
+
+func nativeReviewCaptureAndPublication(t *testing.T, sourceFor func(*testing.T, *farmHarness, string, string, ...object) (object, object)) {
+	t.Helper()
 	h := newFarmHarness(t)
 	h.createPair()
 	for _, id := range []string{"T-001", "T-002"} {
 		startNativeV1FixtureTask(t, h, id)
-		source, payload := nativeV2ReviewSource(t, h, id, "spec_review")
+		source, payload := sourceFor(t, h, id, "spec_review")
 		capture := h.run("capture-observation", source)
 		reviewReceipt := model.S(capture["receipt"])
 		if reviewReceipt == "" || capture["artifact_approval_changed"] != false {
@@ -72,7 +95,7 @@ func TestCodexNativeV2CaptureAndPublication(t *testing.T) {
 			t.Fatal("native-v2 task review was not published")
 		}
 	}
-	qualitySource, _ := nativeV2ReviewSource(t, h, "CP-01", "quality_review")
+	qualitySource, _ := sourceFor(t, h, "CP-01", "quality_review")
 	qualityReceipt := h.run("capture-observation", qualitySource)["receipt"]
 	h.mutate("accept-scope", "PLAN-EXAMPLE", object{"scope": "CP-01", "receipt": qualityReceipt})
 	for _, id := range []string{"T-001", "T-002"} {
