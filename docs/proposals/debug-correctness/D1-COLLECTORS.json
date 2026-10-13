@@ -1,0 +1,4127 @@
+{
+  "format": "codearbiter.debug-d1-collectors/1",
+  "boundary": "Local source runner/collector observations and pure declaration admission. No native verification/approval event, product result, future-run acceptance or host qualification.",
+  "installed_authority_sha256": "71cd49dc2182a2eeb0f375c38e74c365bea12f4901da37bd49f2579378ee0969",
+  "reproduced_before": {
+    "identity": {
+      "artifact_id": "PLAN-DEBUG-CORRECTNESS-001",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "kind": "plan",
+      "model_sha256": "fe580887069b862c2511b29123971728b0643bd76e95e3db1ca29925b7890bcc",
+      "normative_sha256": "7d7f26d29a1a2e11712ee6c5c3dcfc4bc4deba038b8e4cfdfe704775d7eef10c",
+      "path": ".codearbiter/plans/debug-correctness.html",
+      "revision": 2,
+      "symbol_count": 142
+    },
+    "verification_rows": 150,
+    "rejected": 150,
+    "admitted": 0,
+    "representative_T005": {
+      "task": "T-005",
+      "row": 0,
+      "code": "UNSUPPORTED_COLLECTOR",
+      "argv": [
+        "python",
+        "-B",
+        "docs/proposals/debug-correctness/check-d1.py"
+      ],
+      "required_tests": [
+        "Source preparation coverage/profile checks pass. This command does not prove native readiness, independent review, approval, or product behavior."
+      ]
+    }
+  },
+  "native_plan": {
+    "artifact_id": "PLAN-DEBUG-CORRECTNESS-001",
+    "authority": {
+      "authority_verified": false,
+      "diagnostic": "AUTHORITY_UNVERIFIED",
+      "state": "draft",
+      "trust_model": "cooperative workflow attestation"
+    },
+    "diagnostics": null,
+    "gate": "ready",
+    "kind": "plan",
+    "model_sha256": "388d4b341f1f2ace5fbe8447c8bf05d9d8298f0caee981dceea7864b7002d97a",
+    "normative_sha256": "f9c925c835517268a7a23e4a7c40e57191137d4bdcc2a8327de07d40a92d50af",
+    "path": ".codearbiter/plans/debug-correctness.html",
+    "revision": 3,
+    "symbol_count": 142,
+    "valid": true
+  },
+  "verification_rows": 150,
+  "admitted": 150,
+  "rejected": 0,
+  "profiles": {
+    "python-unittest-text/0.1.0": 141,
+    "exit-only/0.1.0": 9
+  },
+  "availability": {
+    "existing": 31,
+    "proposed": 119
+  },
+  "declarations": [
+    {
+      "task": "T-001",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ]
+    },
+    {
+      "task": "T-002",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ]
+    },
+    {
+      "task": "T-003",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ]
+    },
+    {
+      "task": "T-004",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ]
+    },
+    {
+      "task": "T-005",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ]
+    },
+    {
+      "task": "T-006",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ]
+    },
+    {
+      "task": "T-007",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_handoff.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_original_examples_keep_shape_and_semantic_classification",
+        "test_zero_selected_assertions_fail"
+      ]
+    },
+    {
+      "task": "T-008",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_handoff.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_full_string_ids_reject_trailing_controls",
+        "test_exact_numeric_timestamp_and_unicode_profiles",
+        "test_import_creates_no_effects"
+      ]
+    },
+    {
+      "task": "T-009",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_handoff.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_utf8_byte_and_depth_limits_accept_exact_boundaries",
+        "test_duplicate_keys_nonfinite_numbers_and_lone_surrogates_reject"
+      ]
+    },
+    {
+      "task": "T-010",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_handoff.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_duplicate_and_dangling_references_reject",
+        "test_planned_checks_cannot_prove_reproduction",
+        "test_conflicting_evidence_cannot_confirm_a_cause"
+      ]
+    },
+    {
+      "task": "T-011",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_handoff.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_five_outcomes_enforce_distinct_cross_field_obligations",
+        "test_actionable_next_steps_and_existing_regression_identity_are_required",
+        "test_fingerprint_and_recipe_are_paired"
+      ]
+    },
+    {
+      "task": "T-012",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_handoff.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_private_entry_enforces_exit_codes_and_bounded_result",
+        "test_validation_has_no_files_process_network_or_authority_effects",
+        "test_rejected_values_never_enter_diagnostics"
+      ]
+    },
+    {
+      "task": "T-013",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_handoff.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_projection_is_deterministic_and_stale_output_rejects",
+        "test_schema_shape_and_runtime_semantics_keep_distinct_oracles",
+        "test_projection_agrees_on_exact_number_and_format_profiles"
+      ]
+    },
+    {
+      "task": "T-014",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_real_consumer_receives_actual_validated_handoff_fields",
+        "test_direct_fix_diagnostic_prerequisite_returns_once",
+        "test_malformed_handoff_cannot_fall_back_to_unvalidated_repair"
+      ]
+    },
+    {
+      "task": "T-015",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_unknown_trigger_enters_scoped_investigation_without_invented_repro",
+        "test_current_expectation_and_optional_context_map_are_used",
+        "test_missing_context_blocks_dependent_action_without_onboarding"
+      ]
+    },
+    {
+      "task": "T-016",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_hypothesis_breadth_follows_real_discriminators",
+        "test_partial_capture_cannot_refute_an_expected_event",
+        "test_source_and_runtime_binding_detects_relevant_drift"
+      ]
+    },
+    {
+      "task": "T-017",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_diagnostic_actions_require_assessed_effects_and_authority",
+        "test_untrusted_logs_and_secret_canaries_stay_outside_model_actions",
+        "test_needed_instrumentation_does_not_confirm_a_cause"
+      ]
+    },
+    {
+      "task": "T-018",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_each_outcome_preserves_its_evidence_and_continuation_boundary",
+        "test_failed_replay_cannot_become_no_action",
+        "test_unavailable_discriminator_returns_actionable_unresolved"
+      ]
+    },
+    {
+      "task": "T-019",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_validated_transfer_preserves_evidence_without_duplicate_questions",
+        "test_capacity_and_lost_context_are_reported_without_silent_evidence_loss",
+        "test_legacy_summary_normalization_never_invents_facts_or_state"
+      ]
+    },
+    {
+      "task": "T-020",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_real_fix_rechecks_caller_authority_and_current_evidence",
+        "test_internal_debug_prerequisite_returns_without_public_recursion",
+        "test_diagnosis_only_intent_never_authorizes_repair"
+      ]
+    },
+    {
+      "task": "T-021",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_bug_origin_carries_regression_obligation_without_feature_artifacts",
+        "test_feature_refactor_and_adr_authority_remain_intact"
+      ]
+    },
+    {
+      "task": "T-022",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_adequate_existing_target_red_is_named_and_reused",
+        "test_unrelated_and_setup_failures_cannot_count_as_target_red"
+      ]
+    },
+    {
+      "task": "T-023",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_repair_requires_target_red_then_fresh_green_with_unchanged_assertions",
+        "test_material_fixture_changes_require_renewed_red",
+        "test_intermittent_oracles_retain_stochastic_limits"
+      ]
+    },
+    {
+      "task": "T-024",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_no_action_and_design_results_do_not_write_tasks_or_adrs",
+        "test_authorized_followups_use_the_real_writer_once",
+        "test_board_sync_unittest_exposure_preserves_existing_cli_checks",
+        "test_board_sync_cli_rejects_empty_selection"
+      ]
+    },
+    {
+      "task": "T-024",
+      "row": 1,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        ".github/scripts/check_routing_index_parity.py"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-024",
+      "row": 2,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_board_sync.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_done_flip_retained",
+        "test_context_creation_board_route",
+        "test_debug_uses_helper",
+        "test_task_doc_states_commit_colocation",
+        "test_commit_gate_phase6_board_edit_exemption",
+        "test_commit_gate_phase7_stages_board_edit_by_path",
+        "test_commit_gate_harvest_pre_commit",
+        "test_harvest_md_commit_gate_pre_commit",
+        "test_standup_advisory_board_sweep",
+        "test_decompose_intent_only",
+        "test_standup_archival_sweep_routes_through_chore"
+      ]
+    },
+    {
+      "task": "T-025",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_helper_invocation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_subprocess_fixtures_capture_real_helper_attempts_and_literal_argv",
+        "test_fixture_records_owned_scratch_and_observed_effects"
+      ]
+    },
+    {
+      "task": "T-026",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_helper_invocation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_installed_resource_resolution_handles_absent_tokens_and_arbitrary_cwd",
+        "test_missing_helper_never_falls_back_to_source_or_cache_search"
+      ]
+    },
+    {
+      "task": "T-027",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_helper_invocation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_interpreter_is_validated_before_helper_invocation",
+        "test_helper_failure_preserves_original_error_without_second_attempt"
+      ]
+    },
+    {
+      "task": "T-028",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_helper_invocation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_quotes_hyphens_metacharacters_and_unicode_remain_literal",
+        "test_options_precede_separator_and_stdin_remains_bounded"
+      ]
+    },
+    {
+      "task": "T-029",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_helper_invocation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_actual_installed_validator_has_no_write_network_or_child_effects",
+        "test_actual_validator_invocation_enforces_limits_status_and_no_retry"
+      ]
+    },
+    {
+      "task": "T-030",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_helper_invocation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_actual_writer_targets_the_intended_worktree_once",
+        "test_actual_writer_preserves_literal_input_lock_refusal_and_atomicity"
+      ]
+    },
+    {
+      "task": "T-031",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-031",
+      "row": 1,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_build_surface.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_all_hosts_receive_literal_sidecars_for_their_installed_routes",
+        "test_codex_entry_skill_paths_survive_the_routines_rewrite",
+        "test_two_renders_are_byte_identical",
+        "test_check_flags_modified_missing_and_orphan"
+      ]
+    },
+    {
+      "task": "T-031",
+      "row": 2,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_host_descriptors.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_pi_ac_02_generation_is_clean_on_second_run",
+        "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+        "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+        "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned"
+      ]
+    },
+    {
+      "task": "T-031",
+      "row": 3,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_command_route_compatibility.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_registry_has_the_verified_taxonomy_and_only_safe_replacements",
+        "test_mode_markers_and_notices_close_over_each_safe_replacement",
+        "test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice"
+      ]
+    },
+    {
+      "task": "T-031",
+      "row": 4,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        ".github/scripts/check_routing_index_parity.py"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-031",
+      "row": 5,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_codex_skill_resources.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_actual_codex_package_passes_candidate_contract_preflight",
+        "test_rejects_missing_hook_target",
+        "test_rejects_hook_command_with_appended_shell_payload",
+        "test_template_destinations_reject_unknown_embedded_and_unrouted_placeholders"
+      ]
+    },
+    {
+      "task": "T-031",
+      "row": 6,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_artifact_surface.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_no_added_discovery",
+        "test_eager_schema_negative_control",
+        "test_reviewed_startup_content_still_rejects_drift_and_eager_schema",
+        "test_pi_prompt_approval_is_explicitly_unsupported"
+      ]
+    },
+    {
+      "task": "T-032",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_ci_impact.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_unknown_path_expands_to_the_broad_lane",
+        "test_every_suite_is_reachable",
+        "test_ci_runs_impact_planner_without_replacing_existing_job_conditions",
+        "test_no_committed_pi_test_is_disabled_by_a_static_skip_todo_or_only"
+      ]
+    },
+    {
+      "task": "T-033",
+      "row": 0,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-033",
+      "row": 1,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_build_surface.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_all_hosts_receive_literal_sidecars_for_their_installed_routes",
+        "test_codex_entry_skill_paths_survive_the_routines_rewrite",
+        "test_two_renders_are_byte_identical",
+        "test_check_flags_modified_missing_and_orphan"
+      ]
+    },
+    {
+      "task": "T-033",
+      "row": 2,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_host_descriptors.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_pi_ac_02_generation_is_clean_on_second_run",
+        "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+        "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+        "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned"
+      ]
+    },
+    {
+      "task": "T-033",
+      "row": 3,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_command_route_compatibility.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_registry_has_the_verified_taxonomy_and_only_safe_replacements",
+        "test_mode_markers_and_notices_close_over_each_safe_replacement",
+        "test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice"
+      ]
+    },
+    {
+      "task": "T-033",
+      "row": 4,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        ".github/scripts/check_routing_index_parity.py"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-033",
+      "row": 5,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_board_sync.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_done_flip_retained",
+        "test_context_creation_board_route",
+        "test_debug_uses_helper",
+        "test_task_doc_states_commit_colocation",
+        "test_commit_gate_phase6_board_edit_exemption",
+        "test_commit_gate_phase7_stages_board_edit_by_path",
+        "test_commit_gate_harvest_pre_commit",
+        "test_harvest_md_commit_gate_pre_commit",
+        "test_standup_advisory_board_sweep",
+        "test_decompose_intent_only",
+        "test_standup_archival_sweep_routes_through_chore"
+      ]
+    },
+    {
+      "task": "T-033",
+      "row": 6,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_codex_skill_resources.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_actual_codex_package_passes_candidate_contract_preflight",
+        "test_rejects_missing_hook_target",
+        "test_rejects_hook_command_with_appended_shell_payload",
+        "test_template_destinations_reject_unknown_embedded_and_unrouted_placeholders"
+      ]
+    },
+    {
+      "task": "T-033",
+      "row": 7,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_ci_impact.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_unknown_path_expands_to_the_broad_lane",
+        "test_every_suite_is_reachable",
+        "test_ci_runs_impact_planner_without_replacing_existing_job_conditions",
+        "test_no_committed_pi_test_is_disabled_by_a_static_skip_todo_or_only"
+      ]
+    },
+    {
+      "task": "T-033",
+      "row": 8,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_artifact_surface.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_no_added_discovery",
+        "test_eager_schema_negative_control",
+        "test_reviewed_startup_content_still_rejects_drift_and_eager_schema",
+        "test_pi_prompt_approval_is_explicitly_unsupported"
+      ]
+    },
+    {
+      "task": "T-034",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_package.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_exact_candidate_inventory_binds_commit_tree_and_payload_digest",
+        "test_cold_layout_resolves_actual_resources_without_source_checkout",
+        "test_partial_install_rejects_without_rescue"
+      ]
+    },
+    {
+      "task": "T-035",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_package.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_host_journey_record_binds_exact_cold_package_and_resource_paths",
+        "test_source_rescue_or_wrong_payload_invalidates_host_evidence"
+      ]
+    },
+    {
+      "task": "T-035",
+      "row": 1,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_workflow.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_host_trace_records_real_consumer_call_return_and_tdd_obligations",
+        "test_host_trace_cannot_claim_authority_from_packet_intent"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V01",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v01_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v01_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V03",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v03_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v03_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V04",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v04_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v04_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V05",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v05_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v05_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V06",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v06_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v06_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V15",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v15_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v15_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V17",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v17_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v17_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V19",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v19_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v19_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V21",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v21_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v21_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V22",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v22_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v22_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V23",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v23_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v23_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V24",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v24_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v24_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V25",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v25_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v25_claude_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v25_claude_cell_requires_every_authority_or_baseline_variant"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V26",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v26_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v26_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V27",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v27_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v27_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V28",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v28_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v28_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V29",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v29_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v29_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V31",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v31_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v31_claude_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v31_claude_cell_requires_every_authority_or_baseline_variant"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V33",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v33_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v33_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V34",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v34_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v34_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V36",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v36_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v36_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V38",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v38_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v38_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V40",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v40_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v40_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-035-CLAUDE-V41",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v41_claude_cell_requires_declared_layers_outcome_and_trace",
+        "test_v41_claude_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-036",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_qualification_record_requires_exact_cell_and_permission_fields",
+        "test_missing_stale_cancelled_or_zero_selected_evidence_cannot_pass",
+        "test_unknown_metering_remains_unknown",
+        "test_hidden_oracle_is_outside_solver_access"
+      ]
+    },
+    {
+      "task": "T-037",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_paired_trials_require_all_fourteen_cases_and_three_runs_per_arm",
+        "test_candidate_safety_trials_require_v05_v06_v22_three_times",
+        "test_all_failures_variants_and_aggregate_costs_are_retained",
+        "test_wrong_model_host_or_payload_cannot_close_another_cell"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V01",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v01_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v01_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v01_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V02",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v02_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v02_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V03",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v03_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v03_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V04",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v04_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v04_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V05",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v05_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v05_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v05_declared_cell_requires_three_candidate_runs"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V06",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v06_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v06_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v06_declared_cell_requires_three_candidate_runs"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V07",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v07_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v07_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v07_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V08",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v08_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v08_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v08_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V09",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v09_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v09_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V10",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v10_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v10_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V11",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v11_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v11_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v11_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V12",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v12_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v12_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v12_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V13",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v13_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v13_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V14",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v14_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v14_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V15",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v15_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v15_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v15_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V16",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v16_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v16_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V17",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v17_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v17_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v17_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V18",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v18_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v18_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v18_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V21",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v21_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v21_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v21_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V22",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v22_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v22_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v22_declared_cell_requires_three_candidate_runs"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V23",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v23_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v23_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v23_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V24",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v24_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v24_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v24_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V25",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v25_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v25_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v25_declared_cell_requires_three_runs_per_arm_and_all_variants",
+        "test_v25_declared_cell_requires_every_authority_or_baseline_variant"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V26",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v26_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v26_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v26_declared_cell_requires_three_runs_per_arm_and_all_variants"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V27",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v27_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v27_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V30",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v30_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v30_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V31",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v31_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v31_declared_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v31_declared_cell_requires_three_runs_per_arm_and_all_variants",
+        "test_v31_declared_cell_requires_every_authority_or_baseline_variant"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V34",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v34_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v34_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V35",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v35_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v35_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V36",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v36_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v36_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V37",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v37_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v37_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-037-DECLARED-V41",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v41_declared_cell_requires_declared_layers_outcome_and_trace",
+        "test_v41_declared_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_package.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_host_journey_record_binds_exact_cold_package_and_resource_paths",
+        "test_source_rescue_or_wrong_payload_invalidates_host_evidence"
+      ]
+    },
+    {
+      "task": "T-038",
+      "row": 1,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_helper_invocation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_codex_invocation_records_actual_helper_paths_and_literal_argv",
+        "test_codex_evidence_cannot_inherit_another_host_result"
+      ]
+    },
+    {
+      "task": "T-038",
+      "row": 2,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_codex_and_pi_cells_keep_distinct_supported_proof_layers",
+        "test_unqualified_or_pending_host_cells_cannot_report_readiness"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V03",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v03_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v03_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V04",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v04_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v04_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V05",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v05_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v05_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V06",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v06_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v06_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V15",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v15_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v15_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V17",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v17_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v17_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V19",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v19_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v19_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V21",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v21_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v21_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V22",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v22_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v22_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V23",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v23_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v23_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V24",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v24_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v24_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V25",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v25_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v25_codex_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v25_codex_cell_requires_every_authority_or_baseline_variant"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V26",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v26_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v26_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V27",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v27_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v27_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V28",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v28_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v28_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V29",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v29_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v29_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V31",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v31_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v31_codex_cell_rejects_missing_wrong_cell_or_stale_evidence",
+        "test_v31_codex_cell_requires_every_authority_or_baseline_variant"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V33",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v33_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v33_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V34",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v34_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v34_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V36",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v36_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v36_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V38",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v38_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v38_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V40",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v40_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v40_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-CODEX-V41",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v41_codex_cell_requires_declared_layers_outcome_and_trace",
+        "test_v41_codex_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-PI-V32",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v32_pi_cell_requires_declared_layers_outcome_and_trace",
+        "test_v32_pi_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-PI-V32",
+      "row": 1,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-038-PI-V32",
+      "row": 2,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_host_descriptors.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_pi_ac_02_generation_is_clean_on_second_run",
+        "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+        "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+        "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned"
+      ]
+    },
+    {
+      "task": "T-038-PI-V33",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v33_pi_cell_requires_declared_layers_outcome_and_trace",
+        "test_v33_pi_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-PI-V33",
+      "row": 1,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-038-PI-V33",
+      "row": 2,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_host_descriptors.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_pi_ac_02_generation_is_clean_on_second_run",
+        "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+        "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+        "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned"
+      ]
+    },
+    {
+      "task": "T-038-PI-V35",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v35_pi_cell_requires_declared_layers_outcome_and_trace",
+        "test_v35_pi_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-PI-V35",
+      "row": 1,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-038-PI-V35",
+      "row": 2,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_host_descriptors.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_pi_ac_02_generation_is_clean_on_second_run",
+        "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+        "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+        "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned"
+      ]
+    },
+    {
+      "task": "T-038-PI-V36",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_v36_pi_cell_requires_declared_layers_outcome_and_trace",
+        "test_v36_pi_cell_rejects_missing_wrong_cell_or_stale_evidence"
+      ]
+    },
+    {
+      "task": "T-038-PI-V36",
+      "row": 1,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "exit-only/0.1.0",
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required_tests": []
+    },
+    {
+      "task": "T-038-PI-V36",
+      "row": 2,
+      "availability": "existing",
+      "evidence_kind": "OBSERVED_EXISTING_SOURCE",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_host_descriptors.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_pi_ac_02_generation_is_clean_on_second_run",
+        "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+        "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+        "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned"
+      ]
+    },
+    {
+      "task": "T-039",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_every_criterion_has_current_evidence_at_each_required_layer",
+        "test_pending_external_cells_prevent_readiness_claims",
+        "test_corrected_failures_require_fresh_affected_evidence"
+      ]
+    },
+    {
+      "task": "T-040",
+      "row": 0,
+      "availability": "proposed",
+      "evidence_kind": "PLANNED_NOT_EXECUTED",
+      "profile": "python-unittest-text/0.1.0",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_debug_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "required_tests": [
+        "test_release_handoff_binds_exact_artifact_cells_and_smoke_prerequisite",
+        "test_coupled_rollback_preserves_history_and_independent_consolidation",
+        "test_handoff_does_not_imply_merge_or_publication_authority"
+      ]
+    }
+  ],
+  "existing_source_observations": {
+    "D1": {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "test_adjacent_links (check-d1.D1DesignTest.test_adjacent_links) ... ok\r\ntest_native_adoption_not_fabricated (check-d1.D1DesignTest.test_native_adoption_not_fabricated) ... ok\r\ntest_original_examples_retained (check-d1.D1DesignTest.test_original_examples_retained) ... ok\r\ntest_plan_coverage_and_graph (check-d1.D1DesignTest.test_plan_coverage_and_graph) ... ok\r\ntest_profile_vectors (check-d1.D1DesignTest.test_profile_vectors) ... ok\r\ntest_scenario_inventory_and_oracles (check-d1.D1DesignTest.test_scenario_inventory_and_oracles) ... ok\r\ntest_semantic_matrix (check-d1.D1DesignTest.test_semantic_matrix) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.016s\r\n\r\nOK\r\n",
+      "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+      "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+      "environment_variable_names": [
+        "APPDATA",
+        "COMSPEC",
+        "LANG",
+        "LC_ALL",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "environment_settings": {
+        "PYTHONDONTWRITEBYTECODE": null,
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+      },
+      "observed_at_utc": "2026-09-26T03:57:27.327074+00:00",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "fc167d1a3c80940c1bf9dc98093ad551b64013d09b7c49677a74fb8ba85036db",
+      "interpreter_resolution_observation": {
+        "argv": [
+          "python",
+          "-c",
+          "import json,sys; print(json.dumps({\"executable\":sys.executable,\"version\":sys.version}))"
+        ],
+        "cwd": "docs/proposals/debug-correctness",
+        "exit": 0,
+        "stdout": "{\"executable\": \"C:\\\\Python314\\\\python.exe\", \"version\": \"3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]\"}\r\n",
+        "stderr": "",
+        "environment_source": "Unmodified installed _artifactauthoritylib._minimal_environment(); no added interpreter flags or environment overrides.",
+        "environment_sha256": "8c14fff09d3d1053b83750856f94bd1fd569a5ef8baf702f9570102a34813496",
+        "environment_variable_names": [
+          "APPDATA",
+          "COMSPEC",
+          "LANG",
+          "LC_ALL",
+          "LOCALAPPDATA",
+          "PATH",
+          "PATHEXT",
+          "SystemRoot",
+          "TEMP",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "environment_settings": {
+          "PYTHONDONTWRITEBYTECODE": null,
+          "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+          "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp"
+        },
+        "observed_at_utc": "2026-09-26T03:57:27.355843+00:00",
+        "stdout_sha256": "695c900f5949b0a9945ea983797a52618c4f49b722b3e10fe6ec850acbecab31",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ],
+      "collector_results": [
+        {
+          "name": "test_adjacent_links",
+          "status": "pass"
+        },
+        {
+          "name": "test_native_adoption_not_fabricated",
+          "status": "pass"
+        },
+        {
+          "name": "test_original_examples_retained",
+          "status": "pass"
+        },
+        {
+          "name": "test_plan_coverage_and_graph",
+          "status": "pass"
+        },
+        {
+          "name": "test_profile_vectors",
+          "status": "pass"
+        },
+        {
+          "name": "test_scenario_inventory_and_oracles",
+          "status": "pass"
+        },
+        {
+          "name": "test_semantic_matrix",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "native_plan": {
+        "artifact_id": "PLAN-DEBUG-CORRECTNESS-001",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "kind": "plan",
+        "model_sha256": "388d4b341f1f2ace5fbe8447c8bf05d9d8298f0caee981dceea7864b7002d97a",
+        "normative_sha256": "f9c925c835517268a7a23e4a7c40e57191137d4bdcc2a8327de07d40a92d50af",
+        "path": ".codearbiter/plans/debug-correctness.html",
+        "revision": 3,
+        "symbol_count": 142
+      },
+      "task": "T-005",
+      "verification_row": 0,
+      "boundary": "Exact engine-read source-preparation command and qualified collector only. No native verification event, product journey, approval, or acceptance.",
+      "emitted_test_count": 7,
+      "skipped_test_count": 0
+    },
+    "C2": {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_build_surface.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_all_hosts_receive_literal_sidecars_for_their_installed_routes",
+        "test_codex_entry_skill_paths_survive_the_routines_rewrite",
+        "test_two_renders_are_byte_identical",
+        "test_check_flags_modified_missing_and_orphan"
+      ],
+      "collector_results": [
+        {
+          "name": "test_all_hosts_receive_literal_sidecars_for_their_installed_routes",
+          "status": "pass"
+        },
+        {
+          "name": "test_codex_entry_skill_paths_survive_the_routines_rewrite",
+          "status": "pass"
+        },
+        {
+          "name": "test_two_renders_are_byte_identical",
+          "status": "pass"
+        },
+        {
+          "name": "test_check_flags_modified_missing_and_orphan",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "emitted_test_count": 82,
+      "skipped_test_count": 1,
+      "stdout_sha256": "7175725d856243677a6ea89a19371c3e37eb58c8dc3ed5d4386f56ba94f68273",
+      "stderr_sha256": "4c93ec660108404b4aeaf3c13be29791f393b0974218553130c67c22368bf1dd",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    },
+    "C3": {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_host_descriptors.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_pi_ac_02_generation_is_clean_on_second_run",
+        "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+        "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+        "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned"
+      ],
+      "collector_results": [
+        {
+          "name": "test_pi_ac_02_generation_is_clean_on_second_run",
+          "status": "pass"
+        },
+        {
+          "name": "test_pi_ac_03_shared_python_is_byte_identical_for_every_host",
+          "status": "pass"
+        },
+        {
+          "name": "test_pi_ac_04_pi_governance_bodies_are_generated_only",
+          "status": "pass"
+        },
+        {
+          "name": "test_pi_permission_policy_surfaces_are_exact_and_descriptor_owned",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "emitted_test_count": 21,
+      "skipped_test_count": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0067680a8aefbcb017d2e9c76c18a11eb7595a6318d93b628e7e4cff0b781108",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    },
+    "C4": {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_command_route_compatibility.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_registry_has_the_verified_taxonomy_and_only_safe_replacements",
+        "test_mode_markers_and_notices_close_over_each_safe_replacement",
+        "test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice"
+      ],
+      "collector_results": [
+        {
+          "name": "test_registry_has_the_verified_taxonomy_and_only_safe_replacements",
+          "status": "pass"
+        },
+        {
+          "name": "test_mode_markers_and_notices_close_over_each_safe_replacement",
+          "status": "pass"
+        },
+        {
+          "name": "test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "emitted_test_count": 10,
+      "skipped_test_count": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "360faad988ff6f28bdbe95fd40377773c638619cde79b37c2504817fb49ff802",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    },
+    "C7": {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_codex_skill_resources.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_actual_codex_package_passes_candidate_contract_preflight",
+        "test_rejects_missing_hook_target",
+        "test_rejects_hook_command_with_appended_shell_payload",
+        "test_template_destinations_reject_unknown_embedded_and_unrouted_placeholders"
+      ],
+      "collector_results": [
+        {
+          "name": "test_actual_codex_package_passes_candidate_contract_preflight",
+          "status": "pass"
+        },
+        {
+          "name": "test_rejects_missing_hook_target",
+          "status": "pass"
+        },
+        {
+          "name": "test_rejects_hook_command_with_appended_shell_payload",
+          "status": "pass"
+        },
+        {
+          "name": "test_template_destinations_reject_unknown_embedded_and_unrouted_placeholders",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "emitted_test_count": 149,
+      "skipped_test_count": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "63d280dcbe8b9d1ade4a1ef668122a159e280d93961981595a6c11bafb48fdbd",
+      "environment_source": "installed _artifactauthoritylib._minimal_environment; normal OS temporary directory",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    },
+    "C8": {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_ci_impact.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_unknown_path_expands_to_the_broad_lane",
+        "test_every_suite_is_reachable",
+        "test_ci_runs_impact_planner_without_replacing_existing_job_conditions",
+        "test_no_committed_pi_test_is_disabled_by_a_static_skip_todo_or_only"
+      ],
+      "collector_results": [
+        {
+          "name": "test_unknown_path_expands_to_the_broad_lane",
+          "status": "pass"
+        },
+        {
+          "name": "test_every_suite_is_reachable",
+          "status": "pass"
+        },
+        {
+          "name": "test_ci_runs_impact_planner_without_replacing_existing_job_conditions",
+          "status": "pass"
+        },
+        {
+          "name": "test_no_committed_pi_test_is_disabled_by_a_static_skip_todo_or_only",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "emitted_test_count": 85,
+      "skipped_test_count": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0ddf20a45e8668a9f2bc3c9b5366b3fd8df1c35cd6ad5b24b64376fa7b3ba73a",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    },
+    "C9": {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_artifact_surface.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_no_added_discovery",
+        "test_eager_schema_negative_control",
+        "test_reviewed_startup_content_still_rejects_drift_and_eager_schema",
+        "test_pi_prompt_approval_is_explicitly_unsupported"
+      ],
+      "collector_results": [
+        {
+          "name": "test_no_added_discovery",
+          "status": "pass"
+        },
+        {
+          "name": "test_eager_schema_negative_control",
+          "status": "pass"
+        },
+        {
+          "name": "test_reviewed_startup_content_still_rejects_drift_and_eager_schema",
+          "status": "pass"
+        },
+        {
+          "name": "test_pi_prompt_approval_is_explicitly_unsupported",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "emitted_test_count": 13,
+      "skipped_test_count": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "31c7988df8cc00a87b8d2bd77c52b6be54826b3fc1ff3fda89f7f26b870167a5",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    },
+    "C1": {
+      "argv": [
+        "python",
+        "tools/build-surface.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "exit-only/0.1.0",
+      "required_tests": [],
+      "collector_results": [],
+      "collector_success": true,
+      "emitted_test_count": null,
+      "skipped_test_count": 0,
+      "stdout_sha256": "be554a87075161b2f853f74b33c62ea73e50e8c6752f46aeb1cf028cc3d364e1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    },
+    "C5": {
+      "argv": [
+        "python",
+        ".github/scripts/check_routing_index_parity.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "profile": "exit-only/0.1.0",
+      "required_tests": [],
+      "collector_results": [],
+      "collector_success": true,
+      "emitted_test_count": null,
+      "skipped_test_count": 0,
+      "stdout_sha256": "266b08e54d09e694eddad81eade0b489d1597c7b555891e71f690165448565be",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    }
+  },
+  "planned_status": "All proposed unittest runners/test names are unexecuted obligations; profile admission is not proof that a runner or test exists.",
+  "legacy_board_sync_observation": {
+    "argv": [
+      "python",
+      ".github/scripts/test_board_sync.py"
+    ],
+    "exit": 0,
+    "emitted_registered_names": [
+      "test_done_flip_retained",
+      "test_context_creation_board_route",
+      "test_debug_uses_helper",
+      "test_task_doc_states_commit_colocation",
+      "test_commit_gate_phase6_board_edit_exemption",
+      "test_commit_gate_phase7_stages_board_edit_by_path",
+      "test_commit_gate_harvest_pre_commit",
+      "test_harvest_md_commit_gate_pre_commit",
+      "test_standup_advisory_board_sweep",
+      "test_decompose_intent_only",
+      "test_standup_archival_sweep_routes_through_chore"
+    ],
+    "profile_status": "Original custom runner unsupported; future standard unittest exposure required at T24 before T24/T33 C6 capture.",
+    "implementation_performed": false
+  },
+  "negative_controls": [
+    {
+      "control": "missing_actual_named_result",
+      "result": "MISSING_TEST_RESULT",
+      "boundary": "Mutation of observed source output; not a product test or authority receipt."
+    },
+    {
+      "control": "duplicate_actual_named_result",
+      "result": "DUPLICATE_TEST_RESULT",
+      "boundary": "Mutation of observed source output; not a product test or authority receipt."
+    },
+    {
+      "control": "empty_output_for_each_proposed_declaration",
+      "result": "MISSING_TEST_RESULT",
+      "checked_rows": 119,
+      "boundary": "Pure collector rejection; no future runner was executed."
+    }
+  ],
+  "retained_failed_attempts": [
+    {
+      "path": "tmp/d1-collector-observations/D1-discovery-zero-selected.json",
+      "exit": 5,
+      "reason": "Unittest discovery skips the hyphenated check-d1 module; the corrected declaration explicitly loads it from its own cwd."
+    },
+    {
+      "path": "tmp/d1-collector-observations/C7-inside-repository-temp-failure.json",
+      "exit": 1,
+      "reason": "Two source fixture checks correctly rejected a repository-internal TEMP directory; rerun used the installed minimal environment and ordinary OS TEMP. No assertion was changed."
+    }
+  ],
+  "preserved_structure": {
+    "criteria": 28,
+    "scenarios": 41,
+    "parent_tasks": 40,
+    "qualification_children": 83,
+    "dependencies_and_criterion_refs_unchanged": true,
+    "spec_binding_unchanged": true
+  },
+  "historical_source_preparation_observations": [
+    {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "-v",
+        "check-d1"
+      ],
+      "cwd": "docs/proposals/debug-correctness",
+      "exit": 0,
+      "profile": "python-unittest-text/0.1.0",
+      "required_tests": [
+        "test_adjacent_links",
+        "test_native_adoption_not_fabricated",
+        "test_original_examples_retained",
+        "test_plan_coverage_and_graph",
+        "test_profile_vectors",
+        "test_scenario_inventory_and_oracles",
+        "test_semantic_matrix"
+      ],
+      "collector_results": [
+        {
+          "name": "test_adjacent_links",
+          "status": "pass"
+        },
+        {
+          "name": "test_native_adoption_not_fabricated",
+          "status": "pass"
+        },
+        {
+          "name": "test_original_examples_retained",
+          "status": "pass"
+        },
+        {
+          "name": "test_plan_coverage_and_graph",
+          "status": "pass"
+        },
+        {
+          "name": "test_profile_vectors",
+          "status": "pass"
+        },
+        {
+          "name": "test_scenario_inventory_and_oracles",
+          "status": "pass"
+        },
+        {
+          "name": "test_semantic_matrix",
+          "status": "pass"
+        }
+      ],
+      "collector_success": true,
+      "emitted_test_count": 7,
+      "skipped_test_count": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "ccc34461babb434780079a611cb1ed8e9f943134b8f93c580f43116d7a505b3a",
+      "environment_source": "Inherited source-test environment with TEMP/TMP directed to an owned scratch directory; not a host-authority run.",
+      "boundary": "Observed existing source command and qualified output collector only. Full suite exit remains required; named assertions supplement it. No native authority event or product qualification."
+    }
+  ],
+  "engine_readback": {
+    "criteria": 28,
+    "scenarios": 41,
+    "parent_tasks": 40,
+    "all_parent_criterion_mappings_match": true,
+    "original_dependency_edges_preserved": true,
+    "all_criteria_covered": true,
+    "context_pages_completed": 3,
+    "context_complete": true,
+    "original_draft_identity_unchanged": true,
+    "qualification_children": 83,
+    "verification_rows": 150,
+    "installed_collector_admissions": 150,
+    "collector_declarations_match_engine": true,
+    "behavioral_assertions_and_qualification_steps_preserved": true
+  },
+  "exact_T005_evidence": {
+    "read": "tmp/d1-collector-observations/T005-final-engine-read.json",
+    "output": "tmp/d1-collector-observations/T005-final-execution.json",
+    "canonical_read_method": "Pinned installed ArtifactClient.read exact",
+    "execution_method": "Literal declared argv/cwd with unmodified installed minimal environment; installed profile and collector applied to actual bytes.",
+    "authority_events_created": 0
+  }
+}

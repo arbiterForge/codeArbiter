@@ -83,8 +83,8 @@ import sys
 from _hooklib import (
     ADR_LIFECYCLE_LOG_BASENAME, AUDIT_LOG_BASENAMES, AUDIT_LOG_FLAT_BASENAMES,
     AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_AUDIT_LOG_NAMES, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
-    GATE_MARKER_NAMES, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
-    content_digest, is_migration_path, line_digest, marker_fresh, security_scan_diff,
+    GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
+    content_digest, is_migration_path, line_digest, security_scan_diff,
 )
 from _gitexec import git_executable
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
@@ -96,6 +96,7 @@ import _protectedstatelib  # H-22's shell flank (T-08, #564) — imported as a
                             # attribute lookup at import time, never a
                             # snapshotted name binding.
 from _protectedstatelib import ProtectedPolicy, marker_gated_write_admitted
+from _artifactlib import _CONTEXT_TARGETS  # inert candidate names; qualification is lazy
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
 # block message. "git unavailable or timed out" alone cost a session of root-
@@ -773,6 +774,12 @@ def _build_state_write_res(registry):
 # after the fact — this tuple would not see that (it is a one-time
 # import-time snapshot, by design).
 _STATE_WRITE_RES = _build_state_write_res(_protectedstatelib.REGISTRY)
+# Candidate regexes are inert at import. Actual context policy is resolved only
+# after a shell command names one of these paths; no package or repository probe
+# runs while importing a hook, and legacy registry rows retain their old path.
+_CONTEXT_STATE_WRITE_RES = _build_state_write_res({
+    path: ProtectedPolicy.HELPER_ONLY for path in _CONTEXT_TARGETS.values()
+})
 
 
 def git_cwd(cmd, root):
@@ -1485,6 +1492,13 @@ def _check_h22_state(cmd, root):
                           f"policy={policy.value}) — shell redirects and write/delete verbs "
                           f"naming it are prohibited outright; there is no marker path for "
                           f"this policy. Use the sanctioned helper.")
+    for rel_path, _policy, redirect_re, write_re, git_restore_re, interp_re in _CONTEXT_STATE_WRITE_RES:
+        if not (redirect_re.search(cmd) or write_re.search(verb_scan_cmd)
+                or git_restore_re.search(cmd) or interp_re.search(cmd)):
+            continue
+        if _protectedstatelib.lookup_policy(rel_path, root=root) == ProtectedPolicy.HELPER_ONLY:
+            block("H-22", f"'{rel_path}' is protected context state — direct shell replacement "
+                          "is prohibited; use the qualified context writer.")
 
 
 def _marker_root(root):
@@ -1508,11 +1522,12 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
     """H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     a recorded security-gate pass. The crypto-compliance / secret-handling skills
     record the pass via hooks/security-pass.py — a marker holding the digest of
-    every sensitive line the gate approved. Two checks, both required:
-    freshness (< 30 min) AND coverage (every sensitive line being committed is
-    in the approved set). Coverage is what closes the TOCTOU window: a pass
-    minted for one diff can no longer launder a different diff committed inside
-    the freshness window. Scans the staged diff, plus the worktree diff when
+    every sensitive line the gate approved. Two checks, both required: a pass
+    is recorded AND it covers every sensitive line being committed. Coverage is
+    by line digest with no time window (as H-14 binds migrations by content): a
+    pass stays valid for exactly the lines it reviewed, and any new or changed
+    sensitive line is uncovered and blocks, so a pass for one diff can never
+    launder a different one. Scans the staged diff, plus the worktree diff when
     the commit uses -a/--all or the same command stages files."""
     if not commit:
         return
@@ -1541,7 +1556,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
         marker = os.path.join(_marker_root(root), ".codearbiter", ".markers", "security-gate-passed")
-        if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
+        if not os.path.isfile(marker):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (.codearbiter/.markers/security-gate-passed). Run the "
                        f"{skill} gate (it records the pass), then commit. To bypass a "

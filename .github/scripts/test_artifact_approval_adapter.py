@@ -110,6 +110,54 @@ class ApprovalAdapterTest(unittest.TestCase):
                 host="claude", session_id="session-lenient",
             )
 
+    def test_pi_generic_prompt_label_cannot_approve(self):
+        """A transformed Pi input event is not original native dialog input."""
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="synthetic-pi-token")
+        with self.assertRaisesRegex(self.adapter.ApprovalError, "INVALID_HOST_CONTEXT"):
+            self.adapter.consume_user_approval(
+                self.root, self.client, armed["reply"], host="pi",
+                session_id="f04b8659-e0f5-4c77-a382-2b8bd7d1e214",
+            )
+        self.assertFalse(any(operation == "capture-observation" for operation, _ in self.client.calls))
+        self.assertTrue((self.root / self.adapter.PENDING).exists())
+
+    def test_pi_native_dialog_keeps_exact_text_and_session_generation(self):
+        """Synthetic component event only; this does not qualify human input."""
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="synthetic-pi-token")
+        session = "f04b8659-e0f5-4c77-a382-2b8bd7d1e214:a77d6932-3eb9-4720-b1bf-d201bed22a98"
+        pending_hash = hashlib.sha256(self.adapter._canonical(self.adapter._load_pending(self.root))).hexdigest()
+        try:
+            result = self.adapter.consume_user_approval(
+                self.root, self.client, armed["reply"], host="pi",
+                session_id=session, seam="PiNativeInput", expected_pending_sha256=pending_hash,
+            )
+        except (self.adapter.ApprovalError, TypeError) as error:
+            result = {"approved": False, "error": getattr(error, "code", "UNSUPPORTED_BINDING")}
+        self.assertTrue(result.get("approved"), result)
+        source = json.loads((self.root / result["authority_source"]).read_text(encoding="utf-8"))
+        self.assertEqual(source["source_text"], armed["reply"])
+        self.assertEqual(source["origin"], f"pi:PiNativeInput:{session}")
+        replay = self.adapter.consume_user_approval(
+            self.root, self.client, armed["reply"], host="pi",
+            session_id=session, seam="PiNativeInput", expected_pending_sha256=pending_hash,
+        )
+        self.assertEqual(replay, {"matched": False, "approved": False})
+
+    def test_pi_native_dialog_refuses_a_rearmed_request_before_capture(self):
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="synthetic-pi-token")
+        try:
+            self.adapter.consume_user_approval(
+                self.root, self.client, armed["reply"], host="pi", seam="PiNativeInput",
+                session_id="f04b8659-e0f5-4c77-a382-2b8bd7d1e214:a77d6932-3eb9-4720-b1bf-d201bed22a98",
+                expected_pending_sha256="0" * 64,
+            )
+            code = "APPROVED"
+        except (self.adapter.ApprovalError, TypeError) as error:
+            code = getattr(error, "code", "UNSUPPORTED_BINDING")
+        self.assertEqual(code, "STALE_APPROVAL")
+        self.assertFalse(any(operation == "capture-observation" for operation, _ in self.client.calls))
+        self.assertTrue((self.root / self.adapter.PENDING).exists())
+
     def test_short_code_from_hook_approves_and_records_the_full_reply(self):
         armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-short")
         self.assertRegex(armed["code"], r"^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{4}$")
@@ -553,29 +601,58 @@ class _PlanClient(_FakeClient):
         self.snapshot_error = None
         self.drift_after = None
         self.bad_next_offset = False
+        self.outline_page_size = 1
+        self.batch_page_size = 128
+        self.projection_page_size = 128
+        self.projection_error = None
+        self.projection_deliveries = []
 
     def call(self, operation, request=None, **kwargs):
         request = dict(request or {})
-        if operation not in {"outline", "read", "snapshot"}:
+        if operation not in {"outline", "read", "read-batch", "plan-verification", "snapshot"}:
             return super().call(operation, request, **kwargs)
         self.calls.append((operation, request))
         identity = dict(self.identity)
-        if operation == "outline":
+        if operation == "plan-verification":
+            if self.projection_error:
+                raise self.projection_error
             offset = request.get("offset", 0)
-            task = self.tasks[offset]
-            result = {**identity, "offset": offset, "total": len(self.tasks),
-                      "records": [{"id": task["id"], "kind": "tasks", "retired": False}],
+            tasks = self.tasks[offset:offset + self.projection_page_size]
+            end = offset + len(tasks)
+            result = {**identity, "context_complete": False,
+                      "offset": offset, "total": len(self.tasks),
+                      "tasks": json.loads(json.dumps(tasks)),
                       "next_offset": offset if self.bad_next_offset else
-                      (offset + 1 if offset + 1 < len(self.tasks) else None)}
+                      (end if end < len(self.tasks) else None)}
+            self.projection_deliveries.extend(task["id"] for task in tasks)
+        elif operation == "outline":
+            offset = request.get("offset", 0)
+            tasks = self.tasks[offset:offset + self.outline_page_size]
+            end = offset + len(tasks)
+            result = {**identity, "offset": offset, "total": len(self.tasks),
+                      "records": [{"id": task["id"], "kind": "tasks", "retired": False} for task in tasks],
+                      "next_offset": offset if self.bad_next_offset else
+                      (end if end < len(self.tasks) else None)}
         elif operation == "read":
             result = {**identity, "mode": "exact", "context_complete": False,
                       "record": next(task for task in self.tasks if task["id"] == request["symbol"])}
+        elif operation == "read-batch":
+            offset = request.get("offset", 0)
+            selected = request["symbols"][offset:offset + self.batch_page_size]
+            end = offset + len(selected)
+            result = {**identity, "mode": "exact", "context_complete": False,
+                      "offset": offset, "total": len(request["symbols"]),
+                      "records": [{"id": symbol, "kind": "tasks", "retired": False,
+                                   "record": next(task for task in self.tasks if task["id"] == symbol)}
+                                  for symbol in selected],
+                      "next_offset": end if end < len(request["symbols"]) else None}
         else:
             if self.snapshot_error:
                 raise self.snapshot_error
             result = {"sha256": "8" * 64, "entry_count": 1,
                       "platform": "fixture", "roots": ["."], "exclude_directories": []}
-        if operation == self.drift_after:
+        if (operation == self.drift_after
+                or operation in {"read-batch", "plan-verification"} and self.drift_after == "read"):
             self.identity["model_sha256"] = "9" * 64
         return result
 
@@ -597,6 +674,287 @@ class PlanApprovalPreflightTest(unittest.TestCase):
             self.root, self.client, "PLAN-EXAMPLE", token="plan-preflight-token"
         )
 
+    def test_projection_preserves_validation_order(self):
+        client = self.plan()
+        first = client.tasks[0]["verification"][0]
+        second = {**first, "argv": ["python", "-m", "unittest", "-v", "tests.future_other"],
+                  "required_tests": ["test_future_other"]}
+        client.tasks = [{"id": task, "verification": [first, second]}
+                        for task in ("T-001", "T-002")]
+        client.projection_page_size = 1
+        events, definitions = [], []
+        source = self.root / "validated-input.txt"
+        original_call = client.call
+        original_validate = self.adapter._artifactauthoritylib.validate_command_definition
+
+        def observed_call(operation, request=None, **kwargs):
+            events.append(operation)
+            result = original_call(operation, request, **kwargs)
+            if operation == "snapshot":
+                result["sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+            return result
+
+        def observed_validation(definition, **kwargs):
+            events.append("command-validation")
+            definitions.append(definition)
+            source.write_text(str(len(definitions)), encoding="utf-8")
+            return original_validate(definition, **kwargs)
+
+        with mock.patch.object(client, "call", side_effect=observed_call), \
+                mock.patch.object(self.adapter._artifactauthoritylib, "validate_command_definition",
+                                  side_effect=observed_validation):
+            result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(events, ["plan-verification", "command-validation", "command-validation",
+                                  "plan-verification", "command-validation", "command-validation",
+                                  "snapshot", "identity"])
+        self.assertEqual(definitions, [first, second, first, second])
+        self.assertEqual(result["command_count"], 4)
+        self.assertEqual(result["snapshot"]["sha256"], hashlib.sha256(b"4").hexdigest())
+
+    def test_projection_reduces_engine_calls(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 11)]
+        client.outline_page_size = 128
+        result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(result["command_count"], 10)
+        self.assertEqual([operation for operation, _ in client.calls],
+                         ["plan-verification", "snapshot", "identity"])
+        client.calls.clear()
+        self.arm()
+        self.assertEqual([operation for operation, _ in client.calls],
+                         ["identity", "validate", "plan-verification", "snapshot", "identity"])
+
+    def test_projection_pages_refuse_malformed_or_incomplete_delivery(self):
+        faults = {
+            "context complete": lambda page: page.update(context_complete=True),
+            "missing completeness": lambda page: page.pop("context_complete"),
+            "integer completeness": lambda page: page.update(context_complete=0),
+            "missing tasks": lambda page: page.pop("tasks"),
+            "null tasks": lambda page: page.update(tasks=None),
+            "empty page": lambda page: page.update(tasks=[]),
+            "negative total": lambda page: page.update(total=-1),
+            "boolean total": lambda page: page.update(total=True),
+            "missing total": lambda page: page.pop("total"),
+            "short total": lambda page: page.update(total=1),
+            "wrong offset": lambda page: page.update(offset=1),
+            "boolean offset": lambda page: page.update(offset=False),
+            "missing offset": lambda page: page.pop("offset"),
+            "missing next offset": lambda page: page.pop("next_offset"),
+            "boolean next offset": lambda page: page.update(next_offset=True),
+            "early end": lambda page: page.update(next_offset=None),
+            "skipped row": lambda page: page.update(next_offset=3),
+            "no progress": lambda page: page.update(next_offset=0),
+            "string next offset": lambda page: page.update(next_offset="2"),
+            "non-object task": lambda page: page["tasks"].__setitem__(0, None),
+            "missing task id": lambda page: page["tasks"][0].pop("id"),
+            "non-string task id": lambda page: page["tasks"][0].update(id=1),
+            "empty task id": lambda page: page["tasks"][0].update(id=""),
+            "missing verification": lambda page: page["tasks"][0].pop("verification"),
+            "non-array verification": lambda page: page["tasks"][0].update(verification={}),
+            "empty verification": lambda page: page["tasks"][0].update(verification=[]),
+            "duplicate row": lambda page: page["tasks"].__setitem__(1, page["tasks"][0]),
+            "descending rows": lambda page: page["tasks"].reverse(),
+        }
+        for label, corrupt in faults.items():
+            with self.subTest(label=label):
+                client = self.plan()
+                client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+                client.projection_page_size = 2
+                original = client.call
+
+                def damaged(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "plan-verification":
+                        corrupt(page)
+                    return page
+
+                with mock.patch.object(client, "call", side_effect=damaged):
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                        self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_continuations_keep_full_identity_and_whole_definitions(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 6)]
+        client.projection_page_size = 2
+        expected = {key: client.identity[key]
+                    for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")}
+        validator = self.adapter._artifactauthoritylib.validate_command_definition
+        with mock.patch.object(self.adapter._artifactauthoritylib, "validate_command_definition",
+                               wraps=validator) as validated:
+            result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        projections = [request for operation, request in client.calls if operation == "plan-verification"]
+        self.assertEqual([request["offset"] for request in projections], [0, 2, 4])
+        for request in projections:
+            self.assertEqual(request, {"artifact_id": "PLAN-EXAMPLE", "expected": expected,
+                                       "offset": request["offset"], "budget": 16384})
+        self.assertEqual(client.projection_deliveries, [task["id"] for task in client.tasks])
+        self.assertEqual([call.args[0] for call in validated.call_args_list],
+                         [task["verification"][0] for task in client.tasks])
+        self.assertEqual(result["command_count"], 5)
+
+    def test_projection_continuations_reject_count_and_order_drift(self):
+        faults = {
+            "changed total": lambda page: page.update(total=5),
+            "duplicate across pages": lambda page: page["tasks"][0].update(id="T-002"),
+            "descending across pages": lambda page: page["tasks"][0].update(id="T-000"),
+            "extra final count": lambda page: page.update(total=3),
+            "final continuation": lambda page: page.update(next_offset=4),
+        }
+        for label, corrupt in faults.items():
+            with self.subTest(label=label):
+                client = self.plan()
+                client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+                client.projection_page_size = 2
+                original = client.call
+
+                def damaged(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "plan-verification" and request["offset"]:
+                        corrupt(page)
+                    return page
+
+                with mock.patch.object(client, "call", side_effect=damaged):
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                        self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_refuses_stale_full_identity_before_arming(self):
+        for key, changed in (("artifact_id", "PLAN-OTHER"), ("revision", 8),
+                             ("model_sha256", "3" * 64), ("normative_sha256", "4" * 64)):
+            with self.subTest(key=key):
+                client = self.plan()
+                original = client.call
+
+                def stale(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "plan-verification":
+                        page[key] = changed
+                    return page
+
+                with mock.patch.object(client, "call", side_effect=stale):
+                    with self.assertRaisesRegex(RuntimeError, "STALE_PLAN_PREFLIGHT"):
+                        self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_translates_only_native_stale_cursor(self):
+        for native, expected in (("STALE_CURSOR", "STALE_PLAN_PREFLIGHT"),
+                                 ("RECORD_TOO_LARGE", "RECORD_TOO_LARGE"),
+                                 ("INVALID_REQUEST", "INVALID_REQUEST")):
+            with self.subTest(native=native):
+                client = self.plan()
+                client.projection_error = self.adapter._artifactlib.ArtifactError(native, "native refusal")
+                with self.assertRaisesRegex(RuntimeError, expected):
+                    self.arm()
+                self.assertNotIn("snapshot", [operation for operation, _ in client.calls])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_rejects_boolean_revision(self):
+        client = self.plan()
+        client.identity["revision"] = 1
+        original = client.call
+
+        def damaged(operation, request=None, **kwargs):
+            page = original(operation, request, **kwargs)
+            if operation == "plan-verification":
+                page["revision"] = True
+            return page
+
+        with mock.patch.object(client, "call", side_effect=damaged):
+            with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                self.arm()
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_snapshot_diagnostic_still_rechecks_full_identity(self):
+        for key, changed in (("artifact_id", "PLAN-OTHER"), ("revision", 8),
+                             ("model_sha256", "3" * 64), ("normative_sha256", "4" * 64)):
+            with self.subTest(key=key):
+                client = self.plan()
+                client.snapshot_error = self.adapter._artifactlib.ArtifactError("MAX_BYTES", "oversized input")
+                original = client.call
+
+                def changed_after_snapshot(operation, request=None, **kwargs):
+                    if operation == "snapshot":
+                        client.identity[key] = changed
+                    return original(operation, request, **kwargs)
+
+                with mock.patch.object(client, "call", side_effect=changed_after_snapshot):
+                    with self.assertRaisesRegex(RuntimeError, "STALE_PLAN_PREFLIGHT"):
+                        self.arm()
+                self.assertEqual([operation for operation, _ in client.calls],
+                                 ["identity", "validate", "plan-verification", "snapshot", "identity"])
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_projection_does_not_execute_import_or_discover_declared_tests(self):
+        client = self.plan()
+        self.assertFalse((self.root / "tests/future_test.py").exists())
+        with mock.patch("subprocess.Popen", side_effect=AssertionError("preflight executed a process")), \
+                mock.patch("importlib.import_module", side_effect=AssertionError("preflight imported a test")), \
+                mock.patch.object(unittest.TestLoader, "discover",
+                                  side_effect=AssertionError("preflight discovered tests")):
+            result = self.arm()
+        self.assertEqual(result["artifact_id"], "PLAN-EXAMPLE")
+        self.assertEqual([operation for operation, _ in client.calls],
+                         ["identity", "validate", "plan-verification", "snapshot", "identity"])
+
+    def test_preflight_batches_task_reads(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 11)]
+        client.outline_page_size = 128
+        result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(result["command_count"], 10)
+        self.assertEqual(len(client.calls), 3, "ten small tasks need one projection, one snapshot and the final identity")
+        self.assertEqual([operation for operation, _ in client.calls].count("snapshot"), 1)
+
+    def test_batch_pages_reject_malformed_or_incomplete_delivery(self):
+        faults = {
+            "context complete": lambda page: page.update(context_complete=True),
+            "wrong mode": lambda page: page.update(context_complete="contextual"),
+            "wrong total": lambda page: page.update(total=3),
+            "wrong offset": lambda page: page.update(offset=1),
+            "boolean offset": lambda page: page.update(offset=False),
+            "early end": lambda page: page.update(next_offset=None),
+            "skipped row": lambda page: page.update(next_offset=3),
+            "no progress": lambda page: page.update(next_offset=0),
+            "foreign task": lambda page: page["tasks"][0].update(id="T-999"),
+            "wrong kind": lambda page: page["tasks"][0].update(kind="checkpoints"),
+            "retired task": lambda page: page["tasks"][0].update(retired=True),
+            "wrong record": lambda page: page["tasks"][0].update(record={"id": "T-999"}),
+            "duplicate row": lambda page: page["tasks"].__setitem__(1, page["tasks"][0]),
+        }
+        for label, corrupt in faults.items():
+            with self.subTest(label=label):
+                client = self.plan()
+                client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+                client.projection_page_size = 2
+                original = client.call
+                def damaged(operation, request=None, **kwargs):
+                    page = original(operation, request, **kwargs)
+                    if operation == "plan-verification":
+                        corrupt(page)
+                    return page
+                with mock.patch.object(client, "call", side_effect=damaged):
+                    with self.assertRaisesRegex(RuntimeError, "INVALID_RESPONSE"):
+                        self.adapter._preflight_plan_verification(client, dict(client.identity))
+                self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+    def test_batch_continuation_keeps_selection_and_model_pin(self):
+        client = self.plan()
+        client.tasks = [{**client.tasks[0], "id": f"T-{number:03d}"} for number in range(1, 5)]
+        client.projection_page_size = 2
+        result = self.adapter._preflight_plan_verification(client, dict(client.identity))
+        self.assertEqual(result["command_count"], 4)
+        batches = [request for operation, request in client.calls if operation == "plan-verification"]
+        self.assertEqual(len(batches), 2)
+        self.assertEqual([request["offset"] for request in batches], [0, 2])
+        for request in batches:
+            self.assertEqual(request["expected"], {key: client.identity[key]
+                for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")})
+        self.assertEqual(client.projection_deliveries, [task["id"] for task in client.tasks])
+
     def test_reports_all_commands_and_snapshot_before_pending_approval(self):
         client = self.plan()
         client.tasks = [
@@ -611,7 +969,7 @@ class PlanApprovalPreflightTest(unittest.TestCase):
             self.arm()
         for detail in ("T-001", "T-002", "unsupported-one", "unsupported-two", "pagefind.exe", "MAX_BYTES"):
             self.assertIn(detail, str(caught.exception))
-        self.assertEqual([r[1]["symbol"] for r in client.calls if r[0] == "read"], ["T-001", "T-002"])
+        self.assertEqual(client.projection_deliveries, ["T-001", "T-002"])
         self.assertFalse((self.root / self.adapter.PENDING).exists())
 
     def test_snapshot_failure_alone_blocks_plan_approval(self):
@@ -734,6 +1092,59 @@ class SprintPairIntegrationTest(unittest.TestCase):
     def decision(self):
         lenses = {k: {"verdict": "Adequate", "reason": "The recorded contract and bounded verification remain unchanged."} for k in ("Scalable", "Maintainable", "Available", "Reliable", "Testable", "Securable")}
         return {"task_id": "T-001", "options": [{"label": "Explicit precedence table", "steps": ["Retain the negative oracle.", "Implement precedence with a bounded table lookup."], "lenses": lenses}], "selected": 0, "strength": "moderate", "rationale": "The recorded spec requires environment precedence. This method conforms without changing paths, criteria or verification."}
+
+    def test_native_plan_verification_projection(self):
+        client = self.h.client
+        self.assertIn("plan-verification", client.call("capabilities")["operations"])
+        template = client.call("read", {"artifact_id": "PLAN-FLOW", "symbol": "T-001", "mode": "exact"})["record"]
+        commands = [dict(template["verification"][0], assertion="λ" * 450),
+                    dict(template["verification"][0], expected_exit=1, assertion="Exact negative result λ" * 40)]
+        changes = [{"op": "record.update", "symbol": "T-001", "fields": {
+            "steps": ["Unrelated task prose λ" * 400], "verification": commands}}]
+        for task_id in ("T-003", "T-002", "T-RETIRED"):
+            task = json.loads(json.dumps(template))
+            task.update(id=task_id, verification=[] if task_id == "T-003" else commands)
+            changes.append({"op": "record.add", "collection": "tasks", "record": task})
+        changes.append({"op": "record.update", "symbol": "CP-01", "fields": {
+            "tasks": ["T-001", "T-003", "T-002", "T-RETIRED"]}})
+        self.h.mutate("apply", "PLAN-FLOW", changes=changes)
+        self.h.mutate("apply", "PLAN-FLOW", changes=[
+            {"op": "record.update", "symbol": "CP-01", "fields": {"tasks": ["T-001", "T-003", "T-002"]}},
+            {"op": "record.retire", "symbol": "T-RETIRED", "reason": "Synthetic retired task."}])
+        identity = client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        expected = {key: identity[key] for key in ("artifact_id", "revision", "model_sha256", "normative_sha256")}
+        request = {"artifact_id": "PLAN-FLOW", "expected": expected, "offset": 0, "budget": 4096}
+        before = {str(path.relative_to(self.root)): path.read_bytes()
+                  for path in self.root.rglob("*") if path.is_file()}
+        seen, pages = [], 0
+        while True:
+            page = client.call("plan-verification", request)
+            self.assertEqual(set(page), set(expected) | {"context_complete", "offset", "total", "tasks", "next_offset"})
+            self.assertEqual({key: page[key] for key in expected}, expected)
+            self.assertIs(page["context_complete"], False)
+            self.assertEqual(page["offset"], len(seen))
+            self.assertEqual(page["total"], 3)
+            for task in page["tasks"]:
+                self.assertEqual(set(task), {"id", "verification"})
+                exact = client.call("read", {"artifact_id": "PLAN-FLOW", "symbol": task["id"], "mode": "exact", "budget": 65536})
+                self.assertEqual(task["verification"], exact["record"]["verification"])
+                self.assertEqual(task["verification"], [] if task["id"] == "T-003" else commands)
+                seen.append(task["id"])
+            pages += 1
+            if page["next_offset"] is None:
+                break
+            self.assertEqual(page["next_offset"], len(seen))
+            self.assertLess(pages, 3)
+            request["offset"] = page["next_offset"]
+        self.assertGreater(pages, 1)
+        self.assertEqual(seen, ["T-001", "T-002", "T-003"])
+        for key, value in (("artifact_id", "PLAN-OTHER"), ("revision", identity["revision"] + 1),
+                           ("model_sha256", "0" * 64), ("normative_sha256", "0" * 64)):
+            with self.subTest(stale=key), self.assertRaisesRegex(self.lib.ArtifactError, "STALE_CURSOR"):
+                client.call("plan-verification", {**request, "expected": {**expected, key: value}})
+        self.assertEqual(before, {str(path.relative_to(self.root)): path.read_bytes()
+                                  for path in self.root.rglob("*") if path.is_file()})
+        self.assertFalse((self.root / self.approval.PENDING).exists())
 
     def test_unsupported_runner_blocks_pair_before_any_pending_approval(self):
         command = {"availability": "proposed", "cwd": ".", "argv": ["unsupported-pair", "test"],
@@ -1031,6 +1442,112 @@ class SprintPairIntegrationTest(unittest.TestCase):
             self.pair.cancel(self.root, original)
         self.assertFalse(self.consume("approve-sprint SPEC-FLOW PLAN-FLOW delegate-methods synthetic-pair-token")["matched"])
         self.assertTrue(self.consume(new["reply"])["approved"])
+
+
+class PiNativeApprovalTest(unittest.TestCase):
+    """Real-engine fixtures with synthetic replies, never human authority."""
+    @classmethod
+    def setUpClass(cls):
+        from test_artifact_authoring import build_installation
+        cls.owner, cls.installation = build_installation()
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.owner is not None:
+            cls.owner.cleanup()
+
+    def setUp(self):
+        from test_artifact_authoring import physical_test_directory, WorkflowHarness
+        self.approval = importlib.import_module("_approvallib")
+        self.routes = importlib.import_module("_artifactpromptlib")
+        self.replies = importlib.import_module("_replylib")
+        spec = importlib.util.spec_from_file_location("pi_native_approval", REPO / "plugins/ca-pi/hooks/pi-approval.py")
+        self.bridge = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.bridge)
+        self.temp = tempfile.TemporaryDirectory(prefix="ca-pi-native-approval-fixture-")
+        self.addCleanup(self.temp.cleanup)
+        self.root = physical_test_directory(self.temp.name) / "repo"
+        self.root.mkdir()
+        for module in (self.routes, self.replies):
+            old = module.REGISTRY_PARENT
+            module.REGISTRY_PARENT = self.root.parent
+            self.addCleanup(setattr, module, "REGISTRY_PARENT", old)
+        self.h = WorkflowHarness(self.root, self.installation)
+        self.h.create_spec()
+        self.armed = self.approval.arm_user_approval(self.root, self.h.client, "SPEC-FLOW", token="synthetic-native-pi-token")
+        self.inspect = {"version": 1, "event": "native_approval_inspect", "cwd": str(self.root)}
+        self.snapshot = self.bridge.handle(self.inspect, self.h.client)["resultPatch"]
+        self.request = {"version": 1, "event": "native_approval_consume", "cwd": str(self.root),
+                        "sessionId": "f04b8659-e0f5-4c77-a382-2b8bd7d1e214",
+                        "input": {"reply": self.armed["reply"], "pending_sha256": self.snapshot["pending_sha256"],
+                                  "generation": "a77d6932-3eb9-4720-b1bf-d201bed22a98"}}
+
+    def sources(self):
+        return list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+
+    def test_inspect_is_inert_and_binds_the_exact_pending_request(self):
+        self.assertEqual(self.snapshot["pending_sha256"], hashlib.sha256(
+            self.approval._canonical(self.approval._load_pending(self.root))).hexdigest())
+        self.assertEqual(self.sources(), [])
+        self.assertEqual(self.snapshot["artifact_id"], "SPEC-FLOW")
+
+    def test_exact_synthetic_native_reply_reaches_the_real_engine_once(self):
+        result = self.bridge.handle(self.request, self.h.client)["resultPatch"]
+        self.assertTrue(result["approved"])
+        validated = self.h.client.call("validate", {"artifact_id": "SPEC-FLOW", "gate": "approved"})
+        self.assertTrue(validated["valid"])
+        source = json.loads(self.sources()[0].read_text(encoding="utf-8"))
+        self.assertEqual(source["source_text"], self.armed["reply"])
+        self.assertEqual(source["origin"], "pi:PiNativeInput:" + self.request["sessionId"] + ":" + self.request["input"]["generation"])
+        replay = self.bridge.handle(self.request, self.h.client)["resultPatch"]
+        self.assertEqual(replay, {"matched": False, "approved": False})
+        self.assertEqual(len(self.sources()), 1)
+
+    def test_wrong_token_artifact_padding_and_denial_never_capture(self):
+        for reply in ("yes", "deny", self.armed["reply"] + " ",
+                      self.armed["reply"].replace("SPEC-FLOW", "SPEC-OTHER"),
+                      "approve SPEC-FLOW wrong-token-value"):
+            with self.subTest(reply=reply):
+                request = {**self.request, "input": {**self.request["input"], "reply": reply}}
+                self.assertFalse(self.bridge.handle(request, self.h.client)["resultPatch"]["approved"])
+        self.assertEqual(self.sources(), [])
+
+    def test_changed_artifact_refuses_before_capture(self):
+        self.h.mutate("apply", "SPEC-FLOW", changes=[{"op": "header.update", "fields": {"summary": "Changed while dialog was open."}}])
+        with self.assertRaisesRegex(self.approval.ApprovalError, "STALE_APPROVAL"):
+            self.bridge.handle(self.request, self.h.client)
+        self.assertEqual(self.sources(), [])
+
+    def test_rearming_same_artifact_invalidates_the_old_dialog_snapshot(self):
+        self.approval.cancel_user_approval(self.root, "SPEC-FLOW")
+        new = self.approval.arm_user_approval(self.root, self.h.client, "SPEC-FLOW", token="synthetic-different-pi-token")
+        request = {**self.request, "input": {**self.request["input"], "reply": new["reply"]}}
+        with self.assertRaisesRegex(self.approval.ApprovalError, "STALE_APPROVAL"):
+            self.bridge.handle(request, self.h.client)
+        self.assertEqual(self.sources(), [])
+
+    def test_cancellation_and_new_client_do_not_restore_authority(self):
+        self.approval.cancel_user_approval(self.root, "SPEC-FLOW")
+        from test_artifact_authoring import WorkflowHarness
+        resumed = WorkflowHarness(self.root, self.installation)
+        self.assertEqual(self.bridge.handle(self.request, resumed.client)["resultPatch"], {"matched": False, "approved": False})
+        self.assertEqual(self.sources(), [])
+
+    def test_closed_input_shape_and_native_session_generation_are_required(self):
+        bad = [{**self.request, "host": "pi"}, {**self.request, "source": "interactive"},
+               {**self.request, "sessionId": "caller-asserted-session"},
+               {**self.request, "input": {**self.request["input"], "generation": "old"}},
+               {**self.request, "input": {**self.request["input"], "originalText": self.armed["reply"]}},
+               {**self.request, "input": {**self.request["input"], "reply": "x" * 513}}]
+        for request in bad:
+            with self.subTest(request=request), self.assertRaises(ValueError):
+                self.bridge.handle(request, self.h.client)
+        self.assertEqual(self.sources(), [])
+
+    def test_duplicate_json_fields_are_refused(self):
+        with self.assertRaises(ValueError):
+            json.loads('{"reply":"deny","reply":"approve"}', object_pairs_hook=self.bridge.unique_object)
+
 
 
 if __name__ == "__main__":

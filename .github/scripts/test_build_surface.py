@@ -376,6 +376,50 @@ class TokenTest(_RepoCase):
 
 
 class ReviewFeedbackRegressionTest(unittest.TestCase):
+    def test_tribunal_usage_schema_contract_survives_in_memory_projection(self):
+        for host, identity, source in (("claude", "agent_id", "claude-subagent-transcript"),
+                                       ("codex", "agent_thread_id", "codex-session-transcript-best-effort")):
+            folder = "skills" if host == "claude" else "routines"
+            rendered = B.render_all(REPO_ROOT, host)
+            schema = rendered[folder + "/tribunal/references/schemas.md"].decode()
+            with self.subTest(host=host):
+                self.assertIn('"' + identity + '"', schema)
+                self.assertIn('"tokens_source":"' + source + '"', schema)
+                self.assertIn('"tokens_status":"observed|unavailable"', schema)
+                telemetry = rendered[folder + "/tribunal/references/telemetry.md"].decode()
+                if host == "codex":
+                    self.assertIn('"tokens_actual_status":"complete|partial|unavailable"', telemetry)
+                else:
+                    self.assertNotIn("tokens_actual_status", telemetry)
+
+    def test_tribunal_profiles_render_without_provider_or_registration_assumptions(self):
+        for host in ("claude", "codex", "pi"):
+            rendered = B.render_all(REPO_ROOT, host)
+            folder = "skills" if host == "claude" else "routines"
+            text = rendered[folder + "/tribunal/references/cost-and-models.md"].decode()
+            with self.subTest(host=host):
+                for obsolete in ("Opus 4.8", "Sonnet 5", "Haiku 4.5", "claude-opus", "claude-fable", "repo_tokens"):
+                    self.assertNotIn(obsolete, text)
+                for required in ("fresh_threads", "model_override", "reasoning_override", "packet_bytes",
+                                 "semantic-contract", "change-closure", "does not reduce total tokens"):
+                    self.assertIn(required, text)
+                reviewer = rendered["agents/tribunal-lens-reviewer.md"].decode()
+                self.assertNotIn("Bash", _frontmatter(reviewer))
+                self.assertIn("MODE: review | verify", reviewer)
+
+    def test_tribunal_helper_examples_render_to_executable_host_paths(self):
+        for host in ("claude", "codex", "pi"):
+            folder = "skills" if host == "claude" else "routines"
+            text = B.render_all(REPO_ROOT, host)[folder + "/tribunal/references/schemas.md"].decode()
+            with self.subTest(host=host):
+                self.assertIn('hooks/tribunal.py" --root', text)
+                self.assertIn("resume-status", text)
+                self.assertIn("filing-skipped", text)
+                self.assertIn("telemetry-skipped", text)
+                self.assertIn("run-completed", text)
+                self.assertNotIn("{{", text)
+                self.assertNotIn("[hooks/tribunal.py]", text)
+
     def test_surface_readme_describes_active_codex_agent_output(self):
         text = (REPO_ROOT / "core" / "surface" / "README.md").read_text(
             encoding="utf-8"
@@ -423,9 +467,9 @@ class ReviewFeedbackRegressionTest(unittest.TestCase):
         pi = B.render_all(REPO_ROOT, "pi")[
             "agents/tribunal-lens-reviewer.md"
         ].decode()
-        self.assertIn("under skills/tribunal/references/lenses/", pi)
+        self.assertIn("under routines/tribunal/references/lenses/", pi)
         self.assertIn(
-            "names a card under skills/tribunal/references/lenses/", pi
+            "names a card under routines/tribunal/references/lenses/", pi
         )
 
 class ExtractionInversionTest(_RepoCase):
@@ -1618,13 +1662,45 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
 
 
     def test_debug_entry_preserves_investigation_and_board_writer(self):
-        """The complete entry diagnoses without editing code or inventing evidence."""
-        for host, target in (('claude', 'commands/debug.md'), ('codex', 'skills/ca-debug/SKILL.md'), ('pi', 'skills/ca-debug/SKILL.md')):
+        """Debug stays evidence-led; only an authorized task owner writes the board."""
+        def assert_contract(entry):
+            hypothesis = entry.split('## Phase 2 — Hypothesis generation', 1)[1].split('## Phase 3', 1)[0]
+            handoff = entry.split('## Phase 5 — Handoff', 1)[1].split('## Hard rules', 1)[0]
+            self.assertIn('a real distinguishing observation for each', hypothesis)
+            self.assertIn('There is no fixed minimum or maximum count of hypotheses.', hypothesis)
+            self.assertIn('do not pad a narrow case', hypothesis)
+            self.assertNotIn('three distinct hypotheses', hypothesis)
+            for outcome in ('confirmed_code_defect', 'confirmed_noncode_cause',
+                            'design_question', 'no_action', 'unresolved'):
+                self.assertIn(outcome, entry)
+            for obligation in ('regression obligation', '[NEEDS-TRIAGE]',
+                               'owned and user-attributed', 'MUST NOT modify, refactor'):
+                self.assertIn(obligation, entry)
+            for obligation in ('Make no default board write, task transition',
+                               'If a separately authorized concrete follow-up is needed',
+                               'to the existing `/task` owner', '`taskwrite.py` helper',
+                               'The writer applies its normal gates, never by appending to the file.'):
+                self.assertIn(obligation, handoff)
+            self.assertNotIn('symptom and rationale appended to', handoff)
+
+        for host, target in (('claude', 'commands/debug.md'),
+                             ('codex', 'skills/ca-debug/SKILL.md'),
+                             ('pi', 'skills/ca-debug/SKILL.md')):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[target].decode()
-                for obligation in ('## Phase 5', 'regression test obligation', 'through the board helper, never by appending', 'taskwrite.py', '[NEEDS-TRIAGE]', 'user attribution', 'three distinct hypotheses', 'MUST NOT modify, refactor'):
-                    self.assertIn(obligation, entry)
-                self.assertNotIn('symptom and rationale appended to', entry)
+                assert_contract(entry)
+                fixed_count = entry.replace(
+                    'There is no fixed minimum or maximum count of hypotheses.',
+                    'Require three distinct hypotheses before continuing.')
+                self.assertNotEqual(fixed_count, entry)
+                with self.assertRaises(AssertionError):
+                    assert_contract(fixed_count)
+                default_board = entry.replace(
+                    'Make no default board write, task transition',
+                    'Append a default board note and task transition')
+                self.assertNotEqual(default_board, entry)
+                with self.assertRaises(AssertionError):
+                    assert_contract(default_board)
 
     def test_refactor_entry_preserves_scope_and_parity_gates(self):
         """Single ownership does not weaken approval, parity or verification."""
@@ -1646,19 +1722,35 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
                 self.assertNotIn('only permitted entry', skill)
 
     def test_entry_boundary_distinctions_survive_direct_owner_routing(self):
-        """Cycle prevention and non-mutating intents live with their procedure."""
+        """Direct owner routing keeps one bounded internal fix diagnostic return."""
         debug = (REPO_ROOT / 'core/surface/skills/debug/SKILL.md').read_text()
         refactor = (REPO_ROOT / 'core/surface/skills/refactor/SKILL.md').read_text()
         routing = (REPO_ROOT / 'core/surface/includes/routing-table.md').read_text()
         for owner in ('debug', 'refactor', 'commit-gate'):
             self.assertIn('{{PLUGIN_ROOT}}/skills/' + owner + '/SKILL.md', routing)
-        self.assertIn('Do not re-enter from an active', debug)
-        self.assertIn('known bug with a named regression test', debug)
+
+        def assert_debug_boundary(body):
+            boundary = body.split('## Entry boundaries', 1)[1].split('## Pre-flight', 1)[0]
+            self.assertIn('known bug with a named regression test', boundary)
+            self.assertIn('A cited failure with an unknown trigger', boundary)
+            self.assertIn('diagnosis-only requests within diagnosis', boundary)
+            self.assertIn('An active `/fix` may use one bounded internal diagnostic', boundary)
+            self.assertIn('prerequisite and return to the same caller', boundary)
+            self.assertIn('do not recursively route public', boundary)
+            self.assertNotIn('Do not re-enter from an active', boundary)
+
+        assert_debug_boundary(debug)
+        recursive = debug.replace(
+            'An active `/fix` may use one bounded internal diagnostic\n'
+            '  prerequisite and return to the same caller; do not recursively route public\n'
+            '  `/fix` and `/debug` entries.',
+            'An active `/fix` must route publicly to `/debug` and invoke public `/fix` again.')
+        self.assertNotEqual(recursive, debug)
+        with self.assertRaises(AssertionError):
+            assert_debug_boundary(recursive)
         self.assertIn('already-completed refactor', refactor)
         self.assertIn('{{PLUGIN_ROOT}}/skills/commit-gate/SKILL.md', refactor)
         self.assertIn('No commit, push, or PR is implied', refactor)
-
-
 
 
 class RemovedSkillAuthorTest(unittest.TestCase):
@@ -1780,7 +1872,7 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
 
     def test_drift_and_cleanup_operational_bodies_are_preserved(self):
         import hashlib
-        expected = {'context-check': '0e71c154f4d22f3f109edd4e3e95040e533ecd57d1c4687e3a7a47c6966f7198', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
+        expected = {'context-check': '06be2a22d9b9ddc28e4826fed24b9d6edad44deab2c241a5e20c02c41d343954', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
         for command, digest in expected.items():
             owner = self.OWNERS[command]
             text = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')

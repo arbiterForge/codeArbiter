@@ -134,6 +134,10 @@ def validate_catalog(value: object) -> dict:
             files.update(edits)
         _files([{'path': p, 'text': t, 'sha256': hashlib.sha256(t.encode()).hexdigest()}
                 for p, t in files.items()], initial=True)
+        visible = {f['path'] for f in case['files']}
+        if case['setup'] == 'sparse':
+            visible = {p for p in visible if '/' not in p or p.startswith('app/')}
+        visible.update(f['path'] for f in case['staged_edits'] + case['working_edits'])
         initial = {f['path']: f['sha256'] for f in case['files']}
         if canonical_digest(initial) != case['snapshot_sha256']:
             raise FixtureError('fixture snapshot identity mismatch')
@@ -156,6 +160,8 @@ def validate_catalog(value: object) -> dict:
         for path in oracle['preserve_paths']:
             if _path(path) not in files:
                 raise FixtureError('preservation path is not a fixture file')
+        if case['task']['kind'] == 'review' and set(oracle['preserve_paths']) != visible:
+            raise FixtureError('review preservation must cover complete visible solver inventory')
         if type(oracle['checks']) is not list or not 1 <= len(oracle['checks']) <= 16:
             raise FixtureError('invalid evaluator checks')
         for check in oracle['checks']:
@@ -267,6 +273,8 @@ def materialize(catalog: dict, case_id: str, destination: str | Path) -> dict:
     if case['setup'] != 'unborn':
         call('commit', '--quiet', '-m', 'Create deterministic context fixture')
     if case['setup'] == 'linked':
+        call('update-ref', 'refs/remotes/upstream/fixture', 'HEAD')
+        call('update-ref', 'refs/remotes/origin/fixture', 'HEAD')
         call('worktree', 'add', '--quiet', '--detach', str(solver), 'HEAD')
     elif case['setup'] == 'detached':
         call('checkout', '--quiet', '--detach', 'HEAD')

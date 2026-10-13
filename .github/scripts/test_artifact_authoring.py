@@ -279,6 +279,26 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
     def test_admission_refuses_pi_before_any_new_full_lane_artifact(self):
         self.refused(self.client("ca-pi"))
 
+    def test_admission_identifies_scoped_pi_package_without_enabling_workflow(self):
+        client = self.client("ca-pi")
+        manifest = self.plugin / "package.json"
+        original = json.loads(manifest.read_bytes())
+        status = client.workflow_preflight()
+        self.assertEqual(status["host"], "pi")
+        self.assertEqual(status["adapter_version"], original["version"])
+        self.assertEqual(status["missing"], ["Pi production prompt, verification and review authority"])
+        self.assertFalse(status["resources_available"])
+        self.assertFalse(status["live_host_verified"])
+        self.refused(client)
+        for wrong_name in ("ca-pi", "@arbiterforge/unrelated"):
+            with self.subTest(name=wrong_name):
+                manifest.write_text(json.dumps({**original, "name": wrong_name}), encoding="utf-8")
+                status = client.workflow_preflight()
+                self.assertIsNone(status["host"])
+                self.assertEqual(status["missing"], ["matching installed host identity"])
+                self.assertFalse(status["resources_available"])
+                self.refused(client)
+
     def test_admission_refuses_missing_producers_and_host_helpers(self):
         client = self.client()
         for name in ("_approvallib.py", "_prerequisitelib.py", "_sprintapprovallib.py",
@@ -698,6 +718,30 @@ def canonical_hash(value: object) -> str:
         separators=(",", ":"),
     ).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
+
+
+def refusal_only_model_container(rendered: bytes, mutate) -> bytes:
+    """Construct inert adverse state input for an owned disposable CLI fixture.
+
+    This helper preserves the symbol graph and writes no files, events,
+    observations or receipts. The caller uses the actual engine's explicit
+    repair renderer to materialize this source-only refusal fixture. A claimed
+    approval/state in this data has no authority and must never be reused in a
+    live repository or as approval, review or qualification proof.
+    """
+    start = b'<script id="ca-artifact-model" type="application/json">\n'
+    data = json.loads(rendered.split(start, 1)[1].split(b"\n</script>", 1)[0])
+    mutate(data)
+    normative = {key: data[key] for key in (
+        "format_version", "kind", "schema_version", "artifact_id", "normative",
+    )}
+    model = {key: value for key, value in data.items() if key != "integrity"}
+    data["integrity"] = {
+        "normative_sha256": canonical_hash(normative),
+        "model_sha256": canonical_hash(model),
+        "symbol_count": data["integrity"]["symbol_count"],
+    }
+    return start + json.dumps(data, ensure_ascii=False).encode() + b"\n</script>"
 
 
 def spec_normative() -> dict:

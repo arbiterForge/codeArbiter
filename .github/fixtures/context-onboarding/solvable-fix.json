@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "campaign": "exercise-ready-brownfield",
+  "oracle_state": "proposed",
+  "cases": [
+    {
+      "id": "falsy-override-fix",
+      "tags": [
+        "tiny",
+        "instructed"
+      ],
+      "setup": "committed",
+      "files": [
+        {
+          "path": "README.md",
+          "text": "# Configuration selection\nRun `python -m unittest discover -s tests -v` from the repository root.\nA present override wins; otherwise use the default value.\n",
+          "sha256": "3e91d78487ef5f11040da736793cfbd8a329e6a3fba5f967612d1fedb3aa6bc2"
+        },
+        {
+          "path": "CLAUDE.md",
+          "text": "# Repository instructions\nKeep this file and README.md unchanged. Reuse existing regression tests and preserve unrelated behavior. No dependencies or network are needed.\n",
+          "sha256": "37d7aa81f116c0f93fbe4ca47eda5e082513b59387956c0c551ac22cf6ecad07"
+        },
+        {
+          "path": "app.py",
+          "text": "def choose_value(key, overrides, defaults):\n    return overrides.get(key) or defaults.get(key)\n",
+          "sha256": "a3b1550a32a7952c4540ed2fbfc9399457fc3712288c3d62cc1d3f448ca146f8"
+        },
+        {
+          "path": "tests/test_app.py",
+          "text": "import unittest\nfrom app import choose_value\n\nclass ChoiceTest(unittest.TestCase):\n    def test_present_override(self):\n        self.assertEqual(choose_value(\"port\", {\"port\": 8080}, {\"port\": 80}), 8080)\n\n    def test_absent_override(self):\n        self.assertEqual(choose_value(\"port\", {}, {\"port\": 80}), 80)\n\n    def test_false_override(self):\n        self.assertIs(choose_value(\"enabled\", {\"enabled\": False}, {\"enabled\": True}), False)\n",
+          "sha256": "8900585c202c393a5aaddb21568130beb97abfc7a393a85cd3fe1459ef4779a9"
+        }
+      ],
+      "staged_edits": [],
+      "working_edits": [],
+      "task": {
+        "kind": "fix",
+        "prompt": "Fix choose_value so a present override wins even when its value is falsy. Preserve fallback for an absent key. Reuse the failing test_false_override and extend the regression coverage; keep the existing guidance unchanged."
+      },
+      "oracle": {
+        "disposition": "task_possible",
+        "default_new_instruction_files": 0,
+        "preserve_paths": [
+          "CLAUDE.md",
+          "README.md"
+        ],
+        "checks": [
+          "Present False, zero, empty string and None overrides remain their exact values; missing keys use defaults.",
+          "Both input mappings remain unchanged, including unrelated keys.",
+          "Retain the three ordinary baseline test methods and verify the named false-override regression fails before the fix and passes after it.",
+          "Do not modify human guidance, create native instruction files, install dependencies or use the network."
+        ]
+      },
+      "oracle_sha256": "8ff26d48eb22214556213fc4bd3fd0fc99a3145d84e7a31eec675b989b4f3369",
+      "snapshot_sha256": "1d2e70e92a8fa90b7c1d85118c9b4c5b359dae6387bada53f7fb16ff72ba74a9"
+    }
+  ]
+}

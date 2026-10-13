@@ -1,15 +1,15 @@
 ---
 title: Investigate and Fix a Defect
-description: "Capture a reproducible symptom, compare cited evidence, choose the debug exit, and turn a confirmed defect into a regression-first fix."
+description: "Capture a cited symptom, compare applicable evidence, choose one of five debug results, and verify a confirmed code defect with target red before repair."
 journey:
   level: Practitioner
   time: "Depends on the evidence"
-  outcome: "A cited diagnosis and named regression obligation, followed by a verified correction or an explicit decision not to change code."
+  outcome: "One evidence-backed diagnosis or unresolved result, with an authorized repair verified through target red when a code defect is confirmed."
   prerequisites:
     - An initialized repository open in a supported host
-    - Observed and expected behavior, plus a reproduction or intermittent-trigger profile
-    - Access to the project's declared evidence sources and test tooling
-  proof: "The regression fails for the reported defect before the fix and passes afterward, or the investigation records a justified alternative exit."
+    - An identifiable symptom or cited failure; an unknown trigger can remain unknown
+    - Available expectation and evidence sources, with any missing access named
+  proof: "One supported debug disposition with cited limits; an authorized code repair separately observes target red and fresh green."
 ---
 
 import ReaderJourney from '../../../components/ReaderJourney.astro';
@@ -18,30 +18,31 @@ Use this guide when **your application's behavior is wrong**. If codeArbiter its
 a hook fails to load, or a host cannot find its package, begin with
 [installation troubleshooting](/guides/troubleshooting/) instead.
 
-`debug` investigates an unknown cause without changing application code. `fix` carries a confirmed
-defect through regression-first development. Neither a plausible explanation nor a passing test
-alone proves that the reported problem was corrected.
+`debug` investigates an unknown cause without changing application code. It may begin with a cited
+failure whose trigger is unknown. `fix` carries an authorized, confirmed code defect through
+regression-first development. Neither a plausible explanation nor a passing test alone proves
+that the reported problem was corrected. A diagnosis is not permission to repair.
 
 <ReaderJourney
   id="defect-investigation-map"
   title="Symptom → evidence → regression → handoff"
-  boundary="Investigation is separate from implementation. A design ambiguity or justified no-action close is a valid alternative to fixing code. The map is not a captured execution."
+  boundary="Investigation is separate from implementation. Its five results can recommend a next action but cannot authorize it. This map is not a captured execution."
   steps={[
-    { actor: 'You describe the failure', title: 'Make it reproducible',
-      artifact: 'Observed and expected behavior, the input and environment, and a minimal repro or intermittent trigger.',
-      review: 'Separate what happened from your suspected cause. Missing facts must stay visible.',
+    { actor: 'You describe the failure', title: 'Identify the symptom',
+      artifact: 'Observed behavior, available expectation, evidence source, reproduction state, and any limits or unknown trigger.',
+      review: 'Separate what happened from your suspected cause. A cited failure can support scoped investigation before replay succeeds.',
       href: '/reference/commands/debug/', linkLabel: 'Check investigation entry' },
     { actor: 'codeArbiter investigates', title: 'Compare the evidence',
-      artifact: 'At least three distinct hypotheses and a cited CONFIRMED, REFUTED or INCONCLUSIVE assessment for each.',
-      review: 'Require confirming and refuting signals. Reading evidence does not permit instrumentation edits or a trial fix.',
+      artifact: 'Plausible mechanisms with real discriminators and a cited CONFIRMED, REFUTED or INCONCLUSIVE assessment for each.',
+      review: 'Check capture limits and source or runtime identity. The evidence sets the hypothesis count; no diagnostic edit or trial fix is implied.',
       href: '/reference/skills/debug/', linkLabel: 'Inspect the debug contract' },
-    { actor: 'The fix lane verifies the defect', title: 'See the regression fail',
-      artifact: 'A named test tied to the reproduction, its expected failure, then the minimum correction and passing result.',
-      review: 'An import failure is not the defect. Keep the assertion intact between red and green.',
+    { actor: 'The fix owner verifies a code defect', title: 'See target red',
+      artifact: 'A concrete regression obligation, an observed target failure, then the minimum correction and fresh passing result.',
+      review: 'Confirm original caller authority. Reuse an adequate existing target-red test; an import or unrelated failure does not count.',
       href: '/reference/commands/fix/', linkLabel: 'Inspect regression-first repair' },
-    { actor: 'You inspect the handoff', title: 'Separate fixed from shipped',
-      artifact: 'Changed paths, current test and review results, remaining uncertainty and the next delivery action.',
-      review: 'Local green is not a merged PR or a release. Preserve the applicable host-authority and delivery boundaries.',
+    { actor: 'You inspect the result', title: 'Keep the continuation in scope',
+      artifact: 'The selected disposition, citations and limits, owner, authority needs, and next or resume action where applicable.',
+      review: 'A debug result cannot start repair, mutate an ADR or board, merge a PR, or establish a release.',
       href: '/guides/review-and-ship/', linkLabel: 'Review and deliver the correction' },
   ]}
 />
@@ -50,9 +51,9 @@ alone proves that the reported problem was corrected.
 
 | What you know | Entry | Expected output |
 |---|---|---|
-| The symptom is reproducible but the cause is unknown | `debug` | A diagnosis with cited evidence and exactly one named exit |
-| The bug and regression obligation are already known | `fix` | A failing regression before correction, then the remaining test-first gates |
-| The behavior is as specified but the requirement is disputed | `adr` | An attributed decision, not an unapproved implementation change |
+| An identifiable symptom or cited failure has an unknown cause, even if its trigger is unknown | `debug` | One of five evidence-backed dispositions, including `unresolved` when a discriminator is blocked |
+| A code defect is supported and repair is authorized | `fix` | An observed target-red regression before correction, then the remaining test-first gates |
+| The behavior is as specified but the requirement is disputed | `adr` under its own attributed owner | An authorized decision, not an unapproved implementation change |
 | You are asking how something works, with no defect | Ask a read-only question | An explanation rather than a repair lane |
 
 In Claude Code the entries are `/ca:debug` and `/ca:fix`; Codex uses `$ca-debug` and `$ca-fix`;
@@ -60,16 +61,22 @@ Pi uses `/ca-debug` and `/ca-fix`. Enter them in the coding host, not the native
 Include the symptom or confirmed bug after the entry. A supported spelling does not prove
 that every advanced capability is available in your installed adapter.
 
+An active authorized `fix` may use one bounded internal diagnostic prerequisite and return to
+the same caller. That is not public command recursion. The debug result retains the original
+caller scope and cannot convert a diagnosis-only request into repair authority.
+
 For a specifically requested one-time inspection tool, use the
 [bounded dependency path](/guides/adding-a-dependency/#one-time-inspection-nothing-adopted).
 Temporary use still requires a pinned command and confirmation; adopting a tool is a different decision.
 
 ## 2. Supply the symptom, not just a theory
 
-Describe the affected checkout and current source revision, expected behavior, actual behavior,
-exact action and input, environment, frequency, and recent changes. Preserve a minimal failing
-input where it is safe to do so. For an intermittent problem, record its trigger conditions and
-both failing and successful observations instead of claiming it happens every time.
+Describe the affected checkout and current source revision, expected behavior where established,
+actual behavior, and the source of the reported failure. Record the action, input, environment,
+frequency, and recent changes where known. Name the reproduction state: `reproduced`,
+`intermittent`, `not_yet_reproduced`, `unsafe_to_replay`, or `unavailable`. Preserve a minimal
+failing input where it is safe to do so. A cited failure with an unknown trigger can enter scoped
+investigation as `not_yet_reproduced`; neither a failed replay nor missing trigger disproves it.
 
 A useful request could read:
 
@@ -88,9 +95,10 @@ commit. These commands do not establish what the application did; pair them with
 error or result. Preserve unrelated changes.
 
 The investigation reads `.codearbiter/tech-stack.md` for log locations, trace tools and runner
-conventions, and `CONTEXT.md` for domain and stage. Missing entries are a request for information,
-not a reason to invent a log path or test command. Review security controls when the failure
-crosses an authentication, cryptographic or other security boundary.
+conventions, and `CONTEXT.md` for domain and stage. Missing entries limit dependent action; they
+are not a reason to invent a log path or test command. Safe available reads may continue, with
+the gap reported. Review security controls when the failure crosses an authentication,
+cryptographic or other security boundary.
 
 Before sharing diagnostics, redact tokens, credentials, personal data, private URLs and sensitive
 payloads. Keep the error class, relevant time, source revision and a safe correlation identifier
@@ -98,10 +106,12 @@ so the evidence still explains the failure. Do not dump all environment variable
 
 ## 3. Inspect the hypothesis and evidence ledger
 
-The debug skill considers at least three distinct mechanisms, including an ordinary environmental,
-configuration or dependency explanation. For each, it names what would confirm it, what would
-refute it, and where that evidence can be read. Investigation does not edit source, add logging,
-refactor or try a fix to test a suspicion.
+The debug skill considers distinct plausible mechanisms and an observation that could
+distinguish each. There is no fixed hypothesis count. Ordinary environmental, configuration,
+or dependency explanations belong in the set when they fit the symptom, not to fill a quota.
+For each candidate, name what would confirm or refute it and where that evidence can be read.
+Before running a diagnostic action, assess its effects, resource bounds, and authority.
+Investigation does not edit source, add logging, refactor, or try a fix to test a suspicion.
 
 | Ledger field | What you should receive |
 |---|---|
@@ -112,38 +122,50 @@ refactor or try a fix to test a suspicion.
 | Missing evidence | The specific observation still needed and its owner or location |
 
 **INCONCLUSIVE remains INCONCLUSIVE.** The absence of an error in an incomplete log is not proof
-that a subsystem worked. If every hypothesis remains inconclusive, the lane returns to evidence
-gathering or surfaces the unresolved behavior/decision through the ambiguity exit. It cannot
-silently convert uncertainty into a confirmed bug or a no-action conclusion.
+that a subsystem worked. Compare evidence against its capture range and source or runtime
+identity before treating it as current. Preserve multiple supported contributors. If a new safe
+discriminator is available, gather it; otherwise return `unresolved` with the missing
+discriminator, next action, and resume condition. Missing diagnostic access is not a design
+question. Uncertainty cannot become a confirmed cause or no-action conclusion by repetition.
 
 The summary is an output of the investigation. The contract does not promise a new, fixed-path
 `debug.md` report or a dedicated persisted evidence-ledger file. Retain the actual summary and
 citations needed for the next handoff rather than assuming that a conversation created a file.
 
-## 4. Review the named exit
+## 4. Review the named result
 
-A **confirmed bug** routes to `fix` with its hypothesis, evidence and a named regression-test
-obligation. That obligation must reproduce the original condition. Debug does not pre-write the
-test; the fix lane owns that work.
+The investigation returns exactly one disposition for the case. That does not force one physical
+cause; several supported contributors can remain distinct in the evidence ledger.
 
-A **behavior or design ambiguity** carries the disputed requirement and evidence into `adr`.
-Authorship requires your attribution. Accepting a decision does not prove its implementation or
-verification; follow [Record an architecture decision](/guides/recording-adrs/).
+| Disposition | Evidence and continuation |
+|---|---|
+| `confirmed_code_defect` | A supported code cause, current expectation, cited trace or reproduction, and a concrete regression obligation. Recommend `fix`; the fix owner checks original caller authority and observes target red before repair. Debug does not pre-write the test. |
+| `confirmed_noncode_cause` | A supported operational, environmental, external, or deployed-configuration cause. Name its existing owner or say none is known, and retain any permission blocker. Do not force a source patch. |
+| `design_question` | Specific conflicting expectations and the decision they require. An ADR is optional and needs its own attributed owner; debug does not create one. |
+| `no_action` | Positive evidence that behavior is required by the applicable contract or already resolved in the applicable state, with no remaining work in scope. Non-reproduction alone is insufficient. Close without a default board write or other state change. |
+| `unresolved` | Established facts, the missing discriminator or prerequisite, blocked checks, next action, owner when known, and a resume condition. Do not invent a fix, ADR, or no-action verdict. |
 
-A **no-action close** requires a cited rationale, such as a demonstrated environmental event or
-an independently identified correction. This exit records a **queued board note through the task
-helper** so the symptom can be revisited. It does not edit application code, but it is not a
-zero-write operation: the board entry affects in-flight counts. Do not mark it complete merely
-because this investigation needs no code change.
+For a transient handoff packet, resolve the private `debug-handoff.py` validator from the loaded
+installed package, then send at most 65,536 UTF-8 bytes through stdin and close it. Invoke Python
+with `-B`, the absolute helper path, and literal `validate` once. Only exit 0 with `valid: true`
+and no errors permits packet transfer. A rejection or missing helper blocks validated transfer;
+do not retry a refusal through another interpreter. Validation checks packet structure, not
+evidence truth, freshness, or authority. The receiving owner rechecks applicability and the
+original caller scope. A separately authorized concrete task follow-up belongs to the existing
+`task` owner and installed writer. The debug result itself does not write the board.
 
 Out-of-scope findings remain `[NEEDS-TRIAGE]` items. They are not permission to expand the fix.
 
 ## 5. Verify the regression and minimum correction
 
-The fix path reproduces the bug, names the responsible code path, writes a regression, and checks
-that it fails for the right reason. Review that failure before the correction. A missing module,
-syntax error, test that never executes the affected behavior, or test that already passes cannot
-stand in for the reported defect.
+Under the original caller's repair authority, the fix owner checks the current causal evidence,
+names the responsible code path, and maps the bug-origin obligation into the existing TDD ledger.
+Compare the obligation with existing tests first. Reuse an adequate named test if it already
+fails on the broken source for the target reason; add a test only for an uncovered obligation.
+Observe that target red before correction. A missing module, syntax error, unrelated failure,
+test that never exercises the affected behavior, or merely proposed test cannot stand in for
+the reported defect. A material fixture or setup change requires renewed target red on the
+broken implementation.
 
 The minimum correction then makes the same assertion pass. The test-first skill checks mapped
 obligations, relevant existing tests, the project's coverage requirements, lint and type checks.
@@ -160,10 +182,11 @@ recorded debug session, an installed-host run, or evidence about your own applic
 
 ## 6. Hand off what is actually proved
 
-Ask for the original reproduction, confirmed cause and citations, regression name and failure,
-changed paths, fresh passing checks with their scope, remaining findings, and the next action.
-Keep the selected source identity visible. A result on one environment is not proof for every
-supported platform.
+Ask for the disposition, observed symptom and expectation, reproduction state and limits,
+supported and inconclusive causes, evidence citations, relevant source and runtime binding,
+owner, authority needs, and next or resume action. For an authorized repair, also ask for the
+target-red test identity and failure, changed paths, fresh passing checks with their scope, and
+remaining findings. A result on one environment is not proof for every supported platform.
 
 Use [Review and ship a change](/guides/review-and-ship/) for commit, PR and merge boundaries.
 Existing typed work still needs its supported
@@ -174,7 +197,8 @@ acceptance evidence. A debug summary or passing local regression does not create
 
 | Observation | Next safe action |
 |---|---|
-| No repeatable repro or intermittent-trigger profile | Ask for the missing input, state or timing evidence before choosing a cause |
+| Cited failure with an unknown trigger | Start scoped safe investigation as `not_yet_reproduced`; keep the trigger unknown and seek a useful discriminator |
+| No safe useful discriminator or required access | Return `unresolved` with the blocker, next action, and resume condition |
 | Evidence would require changing instrumentation | Keep the diagnosis boundary explicit and scope the needed change separately |
 | The test fails for an unrelated reason | Repair the test setup, then demonstrate the defect before writing fix code |
 | A proposed fix changes an agreed behavior | Surface the requirement or decision instead of relabelling it a bug |

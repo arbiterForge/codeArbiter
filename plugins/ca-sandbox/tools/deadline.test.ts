@@ -223,9 +223,10 @@ realDocker("#394 — a real hung command terminates within its deadline", () => 
       // AC: no targeted process is left running in the container. The
       // escalation stops the box, so the container itself is gone (--rm).
       const alive = await defaultDockerRun(["ps", "-q", "--filter", `name=${name}`]);
-      expect(alive.stdout.trim()).toBe("");
+      expect(alive.code, alive.stderr).toBe(0);
+      expect(alive.stdout.trim(), result.stderr).toBe("");
     } finally {
-      defaultDockerRun(["rm", "-f", id || name]);
+      await defaultDockerRun(["rm", "-f", id || name]);
     }
   }, 120_000);
 });

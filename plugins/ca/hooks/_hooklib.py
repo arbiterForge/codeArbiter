@@ -46,7 +46,7 @@
 #                                         own checkout — the root gate MARKERS
 #                                         (.codearbiter/.markers/) live under (#604)
 #   repo_rel(fpath, root) -> str         repo-relative POSIX path, or "" if outside root
-#   line_digest(line) -> str             sha256 hex of one diff line (H-09b/H-10b gate)
+#   line_digest(line, path=None) -> str  path-bound sha256 of one diff line (H-09b/H-10b gate)
 #   content_digest(text) -> str          sha256 hex of a whole file's content (H-14 gate)
 #   migration_globs(root) -> tuple[list, list]   (includes, excludes) for migration detection
 #   scope_globs(root, defaults, decl_re) -> tuple[list, list]   generic glob scope resolver
@@ -144,6 +144,7 @@ from _activationlib import (  # noqa: F401
     arbiter_active,
     frontmatter_enabled,
     frontmatter_enabled_text,
+    initialized_body_text,
     get_host,
     marker_root,
     project_root,

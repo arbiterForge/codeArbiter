@@ -123,6 +123,8 @@ import json
 import math
 import os
 import re
+import tempfile
+import time
 import unicodedata
 
 import _provenancelib
@@ -791,10 +793,22 @@ def governing_docs(rel, index, runner=None):
         # paths.  This is git-free.  A non-provenance Read exits here with zero
         # git calls.
         entry_paths = set()
+        v2_docs = []
         if isinstance(provenance, dict):
-            for record in provenance.values():
+            for doc_name, record in provenance.items():
                 try:
                     if not isinstance(record, dict):
+                        continue
+                    if record.get("schema") == _provenancelib.V2_SCHEMA_VERSION:
+                        if not _provenancelib.valid_provenance_record(record):
+                            continue
+                        cited = any(
+                            evidence.get("kind") == "content" and evidence.get("path") == rel
+                            for field in record["fields"] for claim in field["claims"]
+                            for evidence in claim["evidence"]
+                        )
+                        if cited or record["document"]["path"] == rel:
+                            v2_docs.append(doc_name)
                         continue
                     entries = record.get("entries")
                     if not isinstance(entries, list):
@@ -809,6 +823,13 @@ def governing_docs(rel, index, runner=None):
                             continue
                 except Exception:  # noqa: BLE001
                     continue
+
+        # A v2 content dependency is relevant advisory context, but its raw
+        # digest and semantic review cannot be proved by the legacy Git-hash
+        # gate. Point to the action-boundary audit without claiming freshness.
+        for doc_name in v2_docs:
+            result.append({"text": "{}.md context identity and semantic review unverified here -- run context-check".format(
+                _strip_context_controls(doc_name)), "tier": "standards"})
 
         # Step B: only call batch_hash when rel is a known provenance entry path.
         # Absence from entry_paths → SKIP; zero git calls.
@@ -1166,6 +1187,104 @@ def spec_pointers(rel, index):
 
 _artifact_legacy_compute_injection = compute_injection
 
+def _session_context_generation_path(root, session_id):
+    # One bounded value per session avoids a shared unbounded session map and
+    # lets unrelated sessions advance without a read/modify/write race.
+    return marker_path(root, session_id, 'compaction-generation',
+                       prefix='readinject-context-')
+
+
+def _linklike(path):
+    return os.path.islink(path) or getattr(os.path, 'isjunction', lambda _: False)(path)
+
+
+def _safe_context_generation_path(root, session_id):
+    if not isinstance(root, (str, os.PathLike)) or not os.path.isabs(root):
+        return None
+    path = _session_context_generation_path(root, session_id)
+    parent = os.path.dirname(path)
+    if (_linklike(root) or _linklike(os.path.join(root, '.codearbiter')) or _linklike(parent)
+            or _linklike(path) or _linklike(path + '.lock')):
+        return None
+    return path
+
+
+def read_context_generation(root, session_id):
+    """Read a bounded worktree-local epoch; None means corrupt/unsafe/unknown."""
+    try:
+        path = _safe_context_generation_path(root, session_id)
+        if path is None:
+            return None
+        with open(path, 'rb') as stream:
+            raw = stream.read(257)
+        if len(raw) > 256 or not raw or not raw.isdigit():
+            return None
+        value = int(raw)
+        return value if value <= 1_000_000_000 else None
+    except FileNotFoundError:
+        return 0
+    except Exception:  # noqa: BLE001 - advisory hook never blocks a read
+        return None
+
+
+def bump_context_generation(root, session_id):
+    """Invalidate surviving read markers after compaction, without a scan."""
+    if not session_id:
+        return False
+    lock = None
+    lock_acquired = False
+    temporary = None
+    try:
+        path = _safe_context_generation_path(root, session_id)
+        if path is None:
+            return False
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if _safe_context_generation_path(root, session_id) != path:
+            return False
+        lock = path + '.lock'
+        for _ in range(25):
+            try:
+                os.mkdir(lock)
+                lock_acquired = True
+                break
+            except FileExistsError:
+                time.sleep(0.01)
+        else:
+            return False
+        current = read_context_generation(root, session_id)
+        if current is None or current >= 1_000_000_000:
+            return False  # Corrupt bytes stay intact and force redelivery.
+        fd, temporary = tempfile.mkstemp(prefix='readinject-context-',
+                                          dir=os.path.dirname(path))
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(str(current + 1).encode('ascii'))
+        if _safe_context_generation_path(root, session_id) != path:
+            return False
+        os.replace(temporary, path)
+        temporary = None
+        return True
+    except Exception:  # noqa: BLE001 - task-time delivery remains the primary route
+        return False
+    finally:
+        if temporary is not None:
+            try:
+                os.unlink(temporary)
+            except OSError:
+                pass
+        if lock_acquired:
+            try:
+                os.rmdir(lock)
+            except OSError:
+                pass
+
+
+def _context_epoch_session(root, session_id):
+    generation = read_context_generation(root, session_id)
+    if generation is None:
+        return None
+    return (str(session_id) + '|context:' + str(generation)
+            if generation else session_id)
+
 
 def compute_injection(root, session_id, rel, runner=None):
     # Bind the injected pointers and dedup epoch to ONE validated HTML snapshot.
@@ -1173,8 +1292,19 @@ def compute_injection(root, session_id, rel, runner=None):
     # under B's marker, suppressing a later stable B read. HTML therefore builds
     # once before dedup; the same entries drive both context and epoch. This is
     # advisory identity only, never approval or execution authority.
+    # Preserve the legacy self-read zero-I/O path before any epoch lookup.
     if not isinstance(rel, str) or rel.replace("\\", "/").split("/", 1)[0] == ".codearbiter":
         return _artifact_legacy_compute_injection(root, session_id, rel, runner)
+    session_id = _context_epoch_session(root, session_id)
+    if session_id is None:
+        # Unknown/corrupt epoch: bounded advisory redelivery without writing
+        # a fresh marker for every read. The actor delivery planner owns its
+        # separate two-attempt accounting and action gap.
+        try:
+            index = build_index(root)
+            return assemble_context(governing_docs(rel, index, runner), budget=150)
+        except Exception:  # noqa: BLE001
+            return ""
     try:
         from _artifactlib import has_html
         if not has_html(root):

@@ -1,23 +1,61 @@
 # architecture — lens mandate
 
-Executed by `tribunal-lens-reviewer` under the `architecture` assignment. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `architecture` assignment.
+
+## Purpose / failure family
+Find structural choices with concrete consequences: unsafe coupling, failed
+change isolation, divergent policy ownership and unreachable production paths.
+
+## Applicability
+Assigned modules participate in an architectural boundary, shared policy,
+extension seam or canonical/generated ownership relationship.
+
+## Skip conditions
+No relevant relationship or consequence can be established. A preferred pattern
+or module-size threshold alone is not a reason to run a speculative redesign.
 
 ## Scope emphasis
-The assigned path slice plus the `inventory.md` import/caller map. Coupling, dead code, abstraction quality, module sizing.
+Module boundaries, real callers, policy owners and canonical-to-generated edges.
+Use the inventory map as a starting point, including dynamic entry points.
 
 ## Required reading
-- `<plugin-root>/routines/tribunal/references/ai-markers.md` — the structural thresholds the lens checklist cites.
-- `<project-root>/.codearbiter/coding-standards.md` — the conventions structure is judged against; `inventory.md` in the run dir — the import/caller map.
+- Finding record (`<plugin-root>/routines/tribunal/references/finding-record.md`) and review risk (`<plugin-root>/routines/tribunal/references/review-risk.md`).
+- `<project-root>/.codearbiter/coding-standards.md` — repository conventions;
+  applicable accepted architectural contracts and inventory import/caller map.
 
-## Checklist
-- Orphan/dead modules: zero active callers; a module tested but never called in production is dead code masquerading as live.
-- Pattern consistency: identify the primary pattern and verify it holds across all modules; deviating modules are typically later-added where context was lost.
-- Cosmetic abstractions: an interface/abstract class whose removal changes no behavior, or with a single implementation adding no isolation. The diagnostic is whether it *encapsulates* complexity or merely *relocates* it — relocation creates leaky layers that force consumers to know internals.
-- Dead code paths: unreachable branches, functions whose return is never consumed, imported symbols never referenced.
-- God modules, over-consumed shared dependencies — structural thresholds: `ai-markers.md`. Monolith accretion in oversized files.
+## Deterministic probes
+Inspect imports, exports, runtime registration, declared entry points and
+duplicated policy paths. Fan-in and module size route inspection only; static
+zero-caller results require checking plugin/reflection/configuration consumers.
 
-## Exposure
-Count of modules in the import/caller map (`inventory.md`).
+## Review questions
+- Does coupling force unsafe changes across a boundary that should isolate them?
+- Do duplicate policy owners already disagree, or permit a concrete invariant bypass?
+- Does an abstraction conceal complexity or expose internals callers must coordinate?
+- Is supposedly live code unreachable in the production registration/deploy path?
+- Is canonical/generated ownership ambiguous enough to ship inconsistent behavior?
+
+## False-positive guards / non-findings
+Numeric thresholds, import counts and naming/pattern differences are not findings.
+A one-implementation interface can provide useful isolation, an external boundary
+or a testing seam. Static unreferenced code may be a public API or dynamic entry
+point. Intentional variation under an accepted contract is not architecture drift.
+
+## Evidence requirements
+Show the relationship and concrete correctness, maintenance or change-isolation
+consequence; cite any violated repository-owned architectural contract. For dead
+code or missing ownership, state the search universe across direct callers,
+dynamic registration, public exports and generation/deployment consumers.
+
+## Exposure metric
+Count of module/policy ownership relationships traced, recording unresolved
+dynamic consumers separately.
+
+## Escalation / cross-lens handoff
+Route stale propagated surfaces to change-closure and wrong behavioral obligations
+to semantic-contract. Corroborate existing architecture-drift-reviewer evidence
+under one root cause; do not re-file the same accepted-ADR violation.
 
 ## Out of scope
-Conformance to accepted ADRs — that is `architecture-drift-reviewer`, a different agent. Do not re-flag ADR drift.
+Style-only redesign, numeric god-module findings, speculation about lost author
+context, and duplicate ADR compliance findings without a distinct consequence.

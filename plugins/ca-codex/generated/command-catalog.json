@@ -161,7 +161,7 @@
     },
     "debug": {
       "name": "debug",
-      "description": "Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff. A no-action close records a board note. Not for implementing a known fix, new features, or explanation-only questions.",
+      "description": "Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff, including a bounded unresolved result. Not for implementing a known fix, new features, or explanation-only questions.",
       "skillPath": "skills/ca-debug/SKILL.md",
       "visibility": "advanced",
       "workflow": "change",

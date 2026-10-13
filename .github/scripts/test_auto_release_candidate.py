@@ -65,6 +65,40 @@ class CandidateCheckTest(unittest.TestCase):
         with self.assertRaisesRegex(candidate_check.CandidateError, "does not bind"):
             candidate_check.evaluate_candidate(self.repo, later)
 
+    def test_declared_payload_exclusion_allows_tooling_only_continuation(self):
+        targets = self.repo / ".codearbiter/release-targets.md"
+        targets.write_text(
+            targets.read_text(encoding="utf-8").replace(
+                "<!-- /release-targets -->",
+                "manifest: package.json\ngenerated-manifest: package.json\n"
+                "payload-exclude: plugins/ca/tools/\n<!-- /release-targets -->",
+            ),
+            encoding="utf-8",
+        )
+        (self.repo / "package.json").write_text(
+            json.dumps({"version": "1.0.0"}), encoding="utf-8"
+        )
+        (self.repo / "plugins/ca/tools").mkdir()
+        tooling_path = "plugins/ca/tools/package.json"
+        (self.repo / tooling_path).write_text("{}\n", encoding="utf-8")
+        self.commit("declare tooling exclusion", "CHANGELOG.md", "# 1.0.0\n- fix\n")
+        tooling_candidate = self.commit(
+            "tooling dependency repair", tooling_path,
+            json.dumps({"devDependencies": {"source-map-js": "1.2.2"}}),
+        )
+        results = candidate_check.evaluate_candidate(self.repo, tooling_candidate)
+        self.assertTrue(results[0].eligible)
+
+        for path, content in (
+            ("plugins/ca/new.txt", "changed\n"),
+            ("package.json", json.dumps({"version": "1.0.0", "main": "changed.js"})),
+        ):
+            with self.subTest(path=path):
+                self.git("checkout", "--quiet", "--detach", tooling_candidate)
+                later = self.commit("release surface drift", path, content)
+                with self.assertRaisesRegex(candidate_check.CandidateError, "does not bind"):
+                    candidate_check.evaluate_candidate(self.repo, later)
+
     def test_unchanged_payload_continuation_is_authorized(self):
         later = self.commit("ci-only correction", ".github-note", "fixed\n")
         results = candidate_check.evaluate_candidate(self.repo, later)

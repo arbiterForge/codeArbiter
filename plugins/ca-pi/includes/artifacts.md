@@ -93,7 +93,10 @@ executable/workspace binding and fresh named-result evidence remain required.
 repository-relative paths. Exclusions are directory paths, not globs or basename
 matches and not relative to an individual root. For root `site`, a generated
 dependency exclusion is `site/node_modules`, not `node_modules`. Review each
-excluded output directory explicitly; `.gitignore` does not define this policy.
+excluded output directory explicitly: the plan's roots and exclusions narrow
+the ship set. In a git work tree `.gitignore` already keeps untracked ignored
+files out of it; outside git nothing is filtered, so exclude generated
+directories explicitly.
 An exclusion outside all selected roots is rejected as ineffective. Overlapping
 roots cannot reinclude an excluded directory. Roots must exist before execution;
 use an existing containing directory for a planned new file so its creation
@@ -101,12 +104,27 @@ changes the snapshot. An oversized included file is reported with its path and
 the 32 MiB per-file limit; revise the explicit policy rather than increasing the
 limit or excluding source/test/governance inputs needed for the task.
 
+Snapshot input identity is ship-set membership. In a git work tree the members
+are the git index entries present on disk, plus untracked non-ignored files
+within the plan's roots, minus its excludes. The one fixed exemption is
+`.codearbiter/gate-events.log`: it is never counted, whatever the plan says, and
+stays tracked as the audit trail; every other `.codearbiter` path still counts.
+Outside git, membership is read from the filesystem (`membership: filesystem`);
+the root must be the top level of its work tree, so a subdirectory root counts as
+outside git. A failed git probe fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE`. An unmerged
+git index (conflicted paths) makes a snapshot fail closed until it is resolved.
+The manifest format is `codearbiter.verification-inputs/0.2.0`; receipts bound to
+a 0.1.0 manifest read as stale. Each evidence object is validated at most once
+per operation and scans are bounded; raw reads are reused only up to a 64 MiB
+per-operation retained-byte budget, past which an object can be read again, but
+validation is never skipped.
+
 The existing user, SMARTS, reviewer, or verification boundary must first persist
 its actual policy-owned workflow event as canonical JSON in the reserved
 content-addressed authority-source store. Interactive prompt approval currently
-has production host seams in Claude Code and Codex. Pi 0.84.1 exposes no
-pre-model event carrying the user's exact prompt, so under Pi do not arm this
-adapter; the workflow remains blocked until a Pi-native authority adapter is
+has production host seams in Claude Code and Codex. Pi 1.0.0 exposes an `input`
+event, but codeArbiter has no Pi-native authority adapter. Under Pi do not arm this
+adapter; the workflow remains blocked until that adapter is
 implemented. On Claude Code or Codex, arm the exact current artifact immediately
 before asking the approval question:
 
@@ -154,6 +172,19 @@ combined HTML sprint review uses the explicit paired path below instead of separ
 A normative change invalidates its approval. Rebinding is explicit and preserves
 history; it does not waive coverage or permit silent reinterpretation.
 
+When adversarial review revises a ready initial draft spec after its draft plan exists,
+query both current identities. The installed engine's explicit `plan-bind` request with
+`binding_mode: draft_preview` requires the plan's existing `expected` CAS and the spec's
+`spec_expected` revision/model CAS. It rebinds only that same-ID, same-slug initial pair:
+both artifacts must remain unapproved drafts, tasks pending and unevidenced, prerequisites
+unsatisfied and unevidenced, and scopes empty. Optional typed plan corrections must leave
+both drafts fully ready. The binding remains `draft_preview`; this operation grants no
+approval, delegation, prerequisite satisfaction, execution or acceptance. Revalidate both
+current drafts, repeat the affected review and arm the exact combined approval afterward.
+Inspect the installed operation schema first. An engine without this explicit draft
+request reports a capability gap; never edit HTML, recreate the pair, substitute sequential
+approval or use ordinary approved-source `plan-bind` to repair it.
+
 ## Initial sprint pair and delegated methods
 
 Only when preparing initial combined approval, replaying an observed reply, or revising a task's
@@ -185,8 +216,9 @@ current approved plan and prerequisite:
 python "<plugin-root>/hooks/_prerequisitelib.py" arm --root "<project-root>" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
 ```
 
-Show the returned title, requirement, and review-packet digest, then require the
-returned `short_reply` (`satisfy-prerequisite <code>`) or the full `reply`, with
+Show the returned title, requirement, review-packet digest, and `expires_at_utc`
+deadline. The request and its reply code expire together 24 hours after arming.
+Require the returned `short_reply` (`satisfy-prerequisite <code>`) or the full `reply`, with
 the same tolerance and mismatch reporting as approval. The `UserPromptSubmit` hook
 durably records that observed decision before publishing its authority source,
 captures a prerequisite receipt, and applies the existing prerequisite CAS
@@ -216,7 +248,7 @@ python "<plugin-root>/hooks/_prerequisitelib.py" supersede --root "<project-root
 The adapter fixes `authority_kind: user_workflow` and `verdict: satisfied`;
 there is no caller-selected authority or bulk-satisfaction path. SMARTS prerequisite satisfaction remains unsupported; the plan-method producer below does not
 grant prerequisite, security, backend or publication authority. Pi has no
-qualified pre-model prompt seam and must remain blocked. Do not infer eligibility from one satisfied prerequisite:
+prerequisite-capture adapter and must remain blocked. Do not infer eligibility from one satisfied prerequisite:
 rerun `eligible`, and resolve each remaining record independently against the
 new current plan identity.
 
@@ -267,19 +299,35 @@ the filename, not a leaf-name alias. Named unittest commands require `-v` or
 Plain exit checks cannot attest named tests.
 
 Named npm commands support inspectable single-runner scripts, a contained
-repository-relative `--prefix`, and arguments forwarded after `--`. Compound
+repository-relative `--prefix`, and arguments forwarded after `--`. A root script
+may delegate once through `npm -w <name> run <script>` or
+`npm --workspace <name> run <script>` when the name resolves uniquely in an array
+of at most 32 explicit, contained workspace directories. The runner binds the root
+manifest and every inspected workspace manifest. Globs, linked directories,
+multiple workspace selectors and recursive npm delegation are unsupported.
+Workspace delegation uses the declared cwd; a non-dot `--prefix` is unsupported
+for this shape.
+Preserve both npm argument boundaries when adding a reporter: for a root
+`test:client` script containing `npm -w @example/client run test`, declare
+`npm run test:client -- -- --reporter=verbose` to forward the reporter to Vitest.
+The original root command still executes the full script. Compound
 scripts and pre/post lifecycle scripts require separately declared direct-runner
 commands; retain every check from the original suite when splitting commands.
 On Windows, only the qualified standard `npm.cmd` layout is adapted: the runner
 pins the wrapper, sibling `node.exe`, sibling `node_modules/npm/bin/npm-cli.js`,
 and script manifest. It deliberately selects that sibling CLI rather than the
 shim's optional global-prefix redirection. Unknown batch wrappers fail closed.
+For workspace delegation, it also pins `npm-prefix.js` and checks that the nested
+wrapper uses the same CLI, the default script shell, and no configured Node
+options. Local executables shadowing nested npm are rejected.
 Direct Node script entrypoints are also pinned. These launch-file bindings do
 not establish transitive dependency closure for deliberately excluded inputs.
 
-New observations use the closed `declared-command/0.2.0` producer profile to
-retain collector and launch-file identities. Historical `0.1.0` bindings remain
-separate and cannot be relabelled as qualified launch evidence.
+New observations use the closed `declared-command/0.3.0` producer profile to
+retain collector and launch-file identities plus an engine-produced normalized
+completion closure. Raw workspace fingerprints must still match before and
+after command execution. Historical `0.1.0` and `0.2.0` bindings retain their
+original contracts and cannot be relabelled as newer evidence.
 
 For `spec_review` or `quality_review`, arm the corresponding activity without
 workspace mappings and dispatch the returned `launch_envelope` unchanged to one
@@ -292,11 +340,65 @@ rewrite the returned envelope yourself.
 The host hooks bind the exact launch call, child start and
 the child's first stop; a pasted or coordinator-authored decision is not review
 authority.
+
+When reviewing completed work that relies on a verification run, linked
+worktrees or supporting evidence, explicitly select the completion path. Add
+`--completion-receipt <exact-published-receipt>` once per task and
+`--supporting-file <absolute-regular-file>` for each supporting document to the
+review `arm` command. A task review selects one verification receipt; a scope
+review selects the exact receipt for every member. Supporting files require a
+receipt selection. The existing review-before-verification path remains
+available; it does not satisfy an explicitly requested completion review.
+
+The native engine validates the selected published verification chain and
+derives the worktree mappings from its qualified observation. It retains the
+selected identities, worktree closure and supporting bytes in the immutable
+context. Supporting material is data for review, not authority. Selection is
+explicit: no newest-receipt search, directory import or attachment execution.
+At most 16 regular files are admitted, each at most 64 KiB and together at most
+256 KiB; links, reparse indirection, duplicate paths and changed content fail
+closed. Read canonical spec and plan artifacts through the native artifact API;
+they cannot be imported as supporting files. The generated prompt directs the reviewer to assess performed work
+against each criterion, step and `done_when` obligation, using selected evidence
+and source references. A consistent plan or an empty diff is insufficient.
+
+Use the returned `completion_sha256` in the native `task-review` or
+`accept-scope` request. The completed review and its exact verification run must
+agree; a definition-only review or a different successful run is rejected.
+The recorded task selection remains required by downstream freshness and scope
+acceptance. Scope review uses validated task completion bindings. If verification
+is rerun, obtain and record its completed task review before selecting that run
+for scope review; do not infer equivalence between receipts.
+
+Creating a completion context for a `0.3.0` verification recomputes the normalized
+worktree closure bound during that verification. Only validated native outputs
+and execution bookkeeping are normalized; their publication must not invalidate
+unchanged source. Historical `0.2.0` verification retains its initial exact raw
+fingerprint comparison. Later freshness checks allow native task-status and
+execution bookkeeping updates in validated canonical artifacts while retaining
+their normative content hashes.
+Changes to task definitions, other HTML or other governance files still affect
+freshness under the normal snapshot policy. The closure covers
+tracked working-tree bytes and non-ignored untracked files, not ignored
+dependencies or outputs. The completion assessment is still an independent
+reviewer's judgment; schema validation does not prove that every file was read
+or every conclusion is correct. Preserve the unchanged launch envelope and
+genuine host capture throughout this path.
 Publish the completed request through the same `publish` command. `task-review`
 records the separate verification and spec-review receipts. After every task in
 the scope reaches `REVIEW`, reverify against one current source snapshot, run the
 combined quality review, and use `accept-scope` once. Do not accept tasks
 individually.
+
+Current Codex native V1 completion reviews retain the full frozen context in
+its immutable, content-addressed file and keep only its closed reference in
+mutable request state. Loading validates the exact context locator, hash,
+canonical bytes and review kind. The native context budget remains 8 MiB;
+mutable request state remains bounded at 1 MiB. Before dispatch, the adapter
+reserves the exact fixed result identities, six times the 64 KiB decision
+budget for canonical JSON escaping, and 32 bounded 256-byte lifecycle slots.
+A request without that capacity is refused before child launch. Historical
+inline requests retain their existing limits and abandonment-only recovery.
 
 An ARMED review that never launched can be abandoned through the adapter:
 

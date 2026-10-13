@@ -64,6 +64,7 @@ def claude_main() -> int:
             _artifactauthoritylib.observe_verifier_hook(root, payload, host="claude")
         elif (
             (event in {"PreToolUse", "PostToolUse"} and tool == "Agent")
+            or (event == "PostToolUse" and tool == _artifactauthoritylib.CLAUDE_HANDBACK_TOOL)
             or (event == "PreToolUse" and tool == "SendMessage")
             or event in {"SubagentStart", "SubagentStop"}
         ):

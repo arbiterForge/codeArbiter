@@ -27,6 +27,7 @@ const fixturePluginDir = join(here, "..", "fixtures", "plugin");
 const LENS_ROSTER = [
   "appsec",
   "architecture",
+  "change-closure",
   "coverage",
   "infra",
   "migration",
@@ -34,6 +35,7 @@ const LENS_ROSTER = [
   "performance",
   "reliability",
   "secrets-supply",
+  "semantic-contract",
   "test-fidelity",
   "typesafety",
 ];
@@ -175,6 +177,37 @@ describe("generate — tribunal-lens collection wiring", () => {
     const indexContent = readFileSync(join(outDir, "index.md"), "utf8");
     expect(indexContent).toContain("## Tribunal lenses");
     expect(indexContent).toContain("[appsec](./tribunal-lenses/appsec/)");
+  });
+
+  it("publishes the shipped roster and links the new lenses from the command and index", () => {
+    const curatedDir = join(here, "..", "..", "src", "curated");
+    const result = generate(realPluginDir, outDir, undefined, curatedDir);
+    expect(result.lensPages.map((page) => page.slug)).toEqual(LENS_ROSTER);
+    const index = readFileSync(join(outDir, "index.md"), "utf8");
+    const command = readFileSync(join(outDir, "commands", "tribunal.md"), "utf8");
+
+    for (const slug of ["semantic-contract", "change-closure"]) {
+      const page = readFileSync(join(outDir, "tribunal-lenses", `${slug}.md`), "utf8");
+      expect(page).toContain(`title: ${slug} lens`);
+      expect(page).toContain("## Evidence requirements");
+      expect(page).toContain("## False-positive guards / non-findings");
+      expect(page).toContain("(/reference/commands/tribunal/)");
+      expect(index).toContain(`[${slug}](./tribunal-lenses/${slug}/)`);
+      expect(command).toContain(`(/reference/tribunal-lenses/${slug}/)`);
+    }
+  });
+
+  it("preserves the eleven historical agent redirects and their lens pages", () => {
+    const config = readFileSync(join(here, "..", "..", "astro.config.mjs"), "utf8");
+    const result = generate(realPluginDir, outDir);
+    const historical = LENS_ROSTER.filter(
+      (slug) => !["semantic-contract", "change-closure"].includes(slug),
+    );
+    expect(historical).toHaveLength(11);
+    for (const slug of historical) {
+      expect(config).toContain(`"/reference/agents/tribunal-${slug}-reviewer": \`\${BASE}/reference/tribunal-lenses/${slug}\``);
+      expect(result.lensPages.some((page) => page.slug === slug)).toBe(true);
+    }
   });
 
   it("cleans stale lens pages out of outDir before writing", () => {

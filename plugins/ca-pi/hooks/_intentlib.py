@@ -239,18 +239,18 @@ def main(argv):
             from _artifactlib import resolve_spec_file, helper_installation
             client, entry = resolve_spec_file(positional[0], helper_installation(__file__))
             result = client.call("validate", {"artifact_id": entry["artifact_id"], "gate": "ready"}, permit_invalid=True)
-            # Native success uses null for an empty diagnostic slice. Normalize
-            # only that documented absence, never arbitrary falsey malformed data.
             if (result.get("artifact_id") != entry["artifact_id"]
                     or result.get("gate") != "ready"
                     or type(result.get("valid")) is not bool
-                    or not re.fullmatch(r"[0-9a-f]{64}", result.get("model_sha256", ""))):
+                    or not isinstance(result.get("model_sha256"), str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", result["model_sha256"])
+                    or "diagnostics" not in result):
                 raise RuntimeError("malformed HTML validation result")
             diagnostics = result.get("diagnostics")
             if diagnostics is None:
                 diagnostics = []
             if not isinstance(diagnostics, list):
-                raise RuntimeError("HTML validation diagnostics must be a list or null")
+                raise ValueError("HTML validation diagnostics must be a list or null")
             findings = []
             for item in diagnostics:
                 if (not isinstance(item, dict)
@@ -272,7 +272,7 @@ def main(argv):
                         findings.append("[UNCOVERED-CHECKBOX] " + box)
             fresh = client.call("identity", {"artifact_id": entry["artifact_id"]})
             if (fresh.get("artifact_id") != entry["artifact_id"]
-                    or fresh["model_sha256"] != result["model_sha256"]):
+                    or fresh.get("model_sha256") != result["model_sha256"]):
                 raise RuntimeError("HTML spec changed during intent verification; retry a fresh read")
             for finding in findings:
                 print(finding)

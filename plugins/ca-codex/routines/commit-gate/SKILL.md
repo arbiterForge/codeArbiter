@@ -107,10 +107,54 @@ Gate: the change is proven to do what it claimed by fresh evidence — command o
 
 Compute the heal worklist from the staged set via `_provenancelib.heal_worklist(staged_paths, provenance, current_hashes)` — the subset of staged paths that are `drift_trigger:true` provenance entries whose recorded hash has diverged or is absent. **Empty worklist → skip this phase entirely; most commits pay nothing** (cost guarantee: ordinary commits touching no provenance source do zero re-scout work).
 
-Non-empty worklist → run an **incremental re-scout scoped to those paths only** (not the full repo). For each path, re-examine whether the claims in the backing doc still hold:
+Non-empty worklist → call `_provenancelib.compute_drift(provenance, current_hashes)` to retain the document/source mapping. For each stale document in that drift report, get its record as `doc_provenance` and call `_provenancelib.changed_scope(doc_provenance, drift)`. Intersect that document's drifted paths with the worklist; skip a document when the intersection is empty. The hash map can omit unstaged paths, so a missing entry outside the worklist must not broaden this commit's re-scout. Confirm that every selected worklist path maps to at least one stale document after this filtering; if a record is malformed or the mapping is incomplete, STOP and report the gap rather than treating the path as fresh.
 
-- **Claim still holds → silently re-baseline.** Call `_provenancelib.rebaseline` to update the stored hash in `.codearbiter/.provenance/<doc>.json` and stage that file by explicit path so the re-baselined record rides THIS commit (ADR-0008 ride-along pattern — nothing is surfaced to the user). After staging, re-run the secrets scan from `tech-stack.md` over the newly-staged path(s) — any file staged after Phase 4 must still pass the automated secrets scan before the commit proceeds.
-- **Claim changed → route to the existing Phase 6 diff-review.** The doc or code-map edit required to reflect the changed claim is proposed in diff review — the user reviews it as part of the normal diff; nothing is silently rewritten.
+Run an **incremental re-scout for each affected document**, scoped to its selected staged paths only (not the full repo). A fresh first document does not discharge a stale second document's claims for the same source. Resolve each selected document/path dependency independently:
+
+- **Claim still holds → silently re-baseline only that document's provenance record.** Call `_provenancelib.rebaseline(doc_provenance, selected_current_hashes)` where `selected_current_hashes` contains current hashes only for the selected staged paths whose claims in that document were inspected and still hold. Do not re-baseline a path whose claim changed or was not inspected. Stage only `.codearbiter/.provenance/<doc>.json` by explicit path so the re-baselined record rides THIS commit (ADR-0008 ride-along pattern — nothing is surfaced to the user). After staging, re-run the secrets scan from `tech-stack.md` over the newly-staged path(s) — any file staged after Phase 4 must still pass the automated secrets scan before the commit proceeds. A missing current hash (deletion or rename) cannot be silently re-baselined; surface it in Phase 6 for review.
+- **Claim changed → route to the existing Phase 6 diff-review.** Propose only the affected doc or code-map edit required to reflect its changed claim. The user reviews that edit in the normal diff, and Phase 7 stages approved paths explicitly; do not silently rewrite or add unrelated documentation.
+
+For reviewed legacy code-map metadata in codeArbiter's source layout, use the
+shipped fixed-target helper at [hooks/resolve-context-conflict.py](../../hooks/resolve-context-conflict.py).
+This claim-refresh lane reads all three fixed source manifests:
+`<project-root>/plugins/ca/.claude-plugin/plugin.json`,
+`<project-root>/plugins/ca-codex/.codex-plugin/plugin.json`, and `<project-root>/plugins/ca-pi/package.json`,
+even for a date-only refresh. Other repository layouts and arbitrary manifest
+claims are unsupported.
+
+Resolve the interpreter once by presence, then inspect:
+
+```sh
+PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python
+"$PY" "${PLUGIN_ROOT}/hooks/resolve-context-conflict.py" --root "<project-root>" inspect-claims
+```
+
+Pass the returned `binding` to the same helper and interpreter:
+
+```sh
+"$PY" "${PLUGIN_ROOT}/hooks/resolve-context-conflict.py" --root "<project-root>" refresh-claims --expected '<binding>' --claims '<json-array>'
+```
+
+Supply one to four reviewed records containing exactly
+`field`, `before`, and `after`. The supported existing fields are `ca_version`,
+`codex_version`, `pi_version`, and `metadata_date`. Use the inspection's exact
+current claim as `before`; a version's `after` must match its fixed source
+manifest, and the date must match `inspection_date`. Use the selected interpreter
+for both calls; never retry a failed operation under another interpreter.
+
+This operation requires resolved, tracked legacy schema-1 document/provenance
+and no native or uncertain journal ownership. It binds document, provenance,
+Git/index, source manifest bytes and date, preserves all unselected bytes, and
+does not stage, rebaseline, adopt, enroll or create a native receipt. Inspect the
+worktree diff for `.codearbiter/code-map.md`, selectively stage that explicit
+path, and re-run the normal secrets scan over the newly staged Markdown before
+Phase 6. Treat it as a heal-proposed doc/code-map edit in Phase 6 review, never as
+a silent rebaseline, and retain its explicit inclusion in Phase 7. Provenance
+rebaseline remains separately scoped by Phase 5.5. Unsupported
+claims or refused preimages stop the edit; do not substitute a direct write or
+native adoption. A codeArbiter contributor may exercise the tested and
+independently reviewed canonical helper under `core/pysrc/` with live enforcement
+intact, never a copied script, installed-cache edit or hook/trust change.
 
 ## Phase 6 — Diff review · gate: BLOCK
 

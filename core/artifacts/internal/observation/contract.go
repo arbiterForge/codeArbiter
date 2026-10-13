@@ -28,14 +28,30 @@ func closed(properties map[string]any, required ...string) map[string]any {
 func subjectSchema() map[string]any {
 	return closed(map[string]any{"artifact_id": text(), "normative_sha256": hash(), "record_id": text()}, "artifact_id", "normative_sha256", "record_id")
 }
+
+// manifestSchema accepts the current 0.2.0 manifest, which must declare its
+// membership, and the historical 0.1.0 manifest, which predates membership.
+// 0.1.0 stays readable so older evidence is judged stale by input identity
+// rather than rejected as malformed; the two formats never hash equal.
 func manifestSchema() map[string]any {
-	return closed(map[string]any{
-		"format": map[string]any{"const": "codearbiter.verification-inputs/0.1.0"},
-		"engine": text(), "platform": text(), "engine_toolchain": text(),
-		"roots":               map[string]any{"type": "array", "items": text()},
-		"exclude_directories": map[string]any{"type": "array", "items": text()},
-		"entries":             map[string]any{"type": "object"},
-	}, "format", "engine", "platform", "engine_toolchain", "roots", "exclude_directories", "entries")
+	manifest := func(format string, required ...string) map[string]any {
+		props := map[string]any{
+			"format": map[string]any{"const": format},
+			"engine": text(), "platform": text(), "engine_toolchain": text(),
+			"roots":               map[string]any{"type": "array", "items": text()},
+			"exclude_directories": map[string]any{"type": "array", "items": text()},
+			"entries":             map[string]any{"type": "object"},
+		}
+		if len(required) > 0 {
+			// Only 0.2.0 carries membership; 0.1.0 stays exactly as strict as it was.
+			props["membership"] = map[string]any{"enum": []any{"git_ship_set", "filesystem"}}
+		}
+		return closed(props, append([]string{"format", "engine", "platform", "engine_toolchain", "roots", "exclude_directories", "entries"}, required...)...)
+	}
+	return map[string]any{"oneOf": []any{
+		manifest("codearbiter.verification-inputs/0.1.0"),
+		manifest("codearbiter.verification-inputs/0.2.0", "membership"),
+	}}
 }
 
 // ContextSchema describes the exact engine-calculated material a producer is
@@ -51,6 +67,8 @@ func ContextSchema() map[string]any {
 	for k, v := range common {
 		taskProps[k] = v
 	}
+	taskProps["completion"] = CompletionSchema()
+	taskProps["completion_sha256"] = hash()
 	taskProps["activity"] = map[string]any{"enum": model.List("verification", "spec_review")}
 	taskProps["task_sha256"] = hash()
 	taskProps["task"] = map[string]any{"type": "object"}
@@ -60,6 +78,8 @@ func ContextSchema() map[string]any {
 	for k, v := range common {
 		scopeProps[k] = v
 	}
+	scopeProps["completion"] = CompletionSchema()
+	scopeProps["completion_sha256"] = hash()
 	scopeProps["activity"] = map[string]any{"const": "quality_review"}
 	scopeProps["base_input_sha256"] = hash()
 	scopeProps["task_hashes"] = map[string]any{"type": "object", "additionalProperties": hash()}
@@ -72,7 +92,17 @@ func ContextSchema() map[string]any {
 		"subject":  subjectSchema(), "input_sha256": hash(), "prompt_sha256": hash(),
 		"record_sha256": hash(), "record": map[string]any{"type": "object"},
 	}, "format", "activity", "subject", "input_sha256", "prompt_sha256", "record_sha256", "record")
-	return map[string]any{"oneOf": []any{task, scope, prompt}}
+	contextPrompt := closed(map[string]any{
+		"format":   map[string]any{"const": "codearbiter.evidence-context/0.1.0"},
+		"activity": map[string]any{"const": "context_approval"},
+		"subject":  subjectSchema(), "input_sha256": hash(), "prompt_sha256": hash(),
+		"record_sha256": hash(), "record": closed(map[string]any{"preview_binding_sha256": hash()}, "preview_binding_sha256"),
+		"preview": map[string]any{"type": "object"}, "preview_document": text(),
+		"after_document_sha256":    hash(),
+		"before_document_base64":   map[string]any{"oneOf": []any{map[string]any{"type": "string"}, map[string]any{"type": "null"}}},
+		"before_provenance_base64": map[string]any{"oneOf": []any{map[string]any{"type": "string"}, map[string]any{"type": "null"}}},
+	}, "format", "activity", "subject", "input_sha256", "prompt_sha256", "record_sha256", "record", "preview", "preview_document", "after_document_sha256", "before_document_base64", "before_provenance_base64")
+	return map[string]any{"oneOf": []any{task, scope, prompt, contextPrompt}}
 }
 
 func testResultSchema() map[string]any {
@@ -93,7 +123,9 @@ func commandBindingSchema(qualified bool) map[string]any {
 	if qualified {
 		properties := model.M(contract["properties"])
 		properties["collector_profile"] = map[string]any{"enum": model.List("python-unittest-text/0.1.0", "codearbiter-named-lines/0.1.0", "vitest-verbose/0.1.0", "playwright-json/0.1.0", "exit-only/0.1.0")}
-		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(4), "items": launchFileSchema()}
+		// Nested native npm has four launch files, one root manifest, and at most
+		// 32 inspected workspace manifests. Role-specific limits remain below.
+		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(37), "items": launchFileSchema()}
 		contract["required"] = append(model.A(contract["required"]), "collector_profile", "launch_files")
 	}
 	return contract
@@ -120,6 +152,7 @@ func verificationResultSchema(qualified bool) map[string]any {
 const (
 	CodexReviewProfile         = "codex-review/0.1.0"
 	CodexNativeV1ReviewProfile = "codex-native-v1/0.145.0"
+	CodexNativeV2ReviewProfile = "codex-native-v2/0.162.0-alpha.2"
 	ClaudeReviewProfile        = "claude-review/0.1.0"
 	// ClaudeReviewer is the plugin-shipped read-only reviewer agent a Claude
 	// review launch must pin.
@@ -132,6 +165,7 @@ func reviewDecisionSchema() map[string]any {
 		"format": map[string]any{"const": "codearbiter.review-decision/0.1.0"}, "request_id": hash(), "target_sha256": hash(), "contract_sha256": hash(),
 		"decision": map[string]any{"const": "pass"}, "coverage": map[string]any{"type": "array", "items": text(), "minItems": int64(1)},
 		"findings": map[string]any{"type": "array", "items": finding}, "assessment": text(),
+		"completion_sha256": hash(), "completion_assessment": CompletionAssessmentSchema(),
 	}, "format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")
 }
 func claudeReviewResultSchema() map[string]any {
@@ -162,8 +196,26 @@ func reviewResultSchema() map[string]any {
 		"format": map[string]any{"const": "codearbiter.review-decision/0.1.0"}, "request_id": hash(), "target_sha256": hash(), "contract_sha256": hash(),
 		"decision": map[string]any{"const": "pass"}, "coverage": map[string]any{"type": "array", "items": text(), "minItems": int64(1)},
 		"findings": map[string]any{"type": "array", "items": finding}, "assessment": text(),
+		"completion_sha256": hash(), "completion_assessment": CompletionAssessmentSchema(),
 	}, "format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")
 	return closed(map[string]any{"launch": launch, "decision": decision}, "launch", "decision")
+}
+func codexNativeV2ReviewResultSchema() map[string]any {
+	uuid := map[string]any{"type": "string", "pattern": `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`}
+	agentPath := map[string]any{"type": "string", "pattern": `^/root(/[a-z0-9_]+)+$`}
+	activity := closed(map[string]any{
+		"type": map[string]any{"const": "item_completed"}, "thread_id": uuid, "turn_id": uuid,
+		"item":          closed(map[string]any{"type": map[string]any{"const": "SubAgentActivity"}, "id": text(), "kind": map[string]any{"const": "started"}, "agent_thread_id": uuid, "agent_path": agentPath}, "type", "id", "kind", "agent_thread_id", "agent_path"),
+		"started_at_ms": map[string]any{"type": "integer", "minimum": int64(0)}, "completed_at_ms": map[string]any{"type": "integer", "minimum": int64(0)},
+	}, "type", "thread_id", "turn_id", "item", "started_at_ms", "completed_at_ms")
+	child := closed(map[string]any{"cli_version": map[string]any{"const": "0.162.0-alpha.2"}, "thread_id": uuid, "parent_thread_id": uuid, "session_id": text(), "agent_path": agentPath, "metadata_sha256": hash()}, "cli_version", "thread_id", "parent_thread_id", "session_id", "agent_path", "metadata_sha256")
+	launch := closed(map[string]any{
+		"parent_session_id": text(), "parent_turn_id": uuid, "parent_thread_id": uuid, "tool_use_id": text(), "post_confirmed": map[string]any{"const": true},
+		"agent_id": uuid, "agent_type": map[string]any{"const": "default"}, "codex_review_profile": map[string]any{"const": CodexNativeV2ReviewProfile},
+		"child_turn_id": uuid, "fork_turns": map[string]any{"const": "none"}, "first_stop": map[string]any{"const": true}, "task_name": agentPath,
+		"native_activity": activity, "native_activity_sha256": hash(), "native_child": child,
+	}, "parent_session_id", "parent_turn_id", "parent_thread_id", "tool_use_id", "post_confirmed", "agent_id", "agent_type", "codex_review_profile", "child_turn_id", "fork_turns", "first_stop", "task_name", "native_activity", "native_activity_sha256", "native_child")
+	return closed(map[string]any{"launch": launch, "decision": reviewDecisionSchema()}, "launch", "decision")
 }
 func promptResultSchema() map[string]any {
 	return closed(map[string]any{
@@ -172,16 +224,16 @@ func promptResultSchema() map[string]any {
 }
 func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
-		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")},
+		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", PairProfile, LegacySMARTSProfile, SMARTSProfileV2)},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", "host-user-context-preview/0.1.0", PairProfile, LegacySMARTSProfile, SMARTSProfileV2)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
 	if current {
 		profiles := model.M(base["producer_profile"])
-		profiles["enum"] = append(model.A(profiles["enum"]), CodexNativeV1ReviewProfile)
-		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), reviewResultSchema(), claudeReviewResultSchema(), codexNativeV1ReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
+		profiles["enum"] = append(model.A(profiles["enum"]), CodexNativeV1ReviewProfile, CodexNativeV2ReviewProfile, CompletionCommandProfile)
+		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(false), verificationResultSchema(true), completionVerificationResultSchema(), reviewResultSchema(), claudeReviewResultSchema(), codexNativeV1ReviewResultSchema(), codexNativeV2ReviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
 		required = append(required, "producer_result")
 	}
 	return closed(base, required...)
@@ -205,12 +257,59 @@ func refHash(p, sub string) (string, error) {
 	return h, nil
 }
 
-func load(f *store.FS, p, expected, sub string, contract map[string]any) (map[string]any, []byte, error) {
+// Reader returns the bytes stored at a repository-relative reference, refusing
+// anything larger than limit. It is the only way the validators in this package
+// and in authority reach evidence objects, so a caller that has already read the
+// objects (a snapshot scan) supplies them from memory, while every other caller
+// reads them through the repository. A Reader reports an object it does not hold
+// as an error; the validators map that to their fail-closed unverified codes and
+// never fall back to another source.
+type Reader func(ref string, limit int64) ([]byte, error)
+
+// FSReader reads references through the repository, one root-relative read each.
+func FSReader(f *store.FS) Reader {
+	return func(ref string, limit int64) ([]byte, error) { return ReadRecorded(f, ref, limit) }
+}
+
+// ReadRecorded is f.Read that serves an earlier read of the same object in this
+// operation, and records a successful read. The memo keeps only bytes whose
+// content hash is their name (evidence objects are content addressed) and only
+// within its byte budget, and it keeps and serves its own copies; bytes that do
+// not hash to their name are returned to this caller but never served again, so
+// the next read goes to disk and a transient corruption heals. A failed read is
+// never recorded.
+func ReadRecorded(f *store.FS, ref string, limit int64) ([]byte, error) {
+	if b, ok := Recorded(f, ref, limit); ok {
+		return b, nil
+	}
+	b, err := f.Read(ref, limit)
+	if err == nil {
+		f.Memo().KeepRaw(ref, b)
+	}
+	return b, err
+}
+
+// Recorded returns a copy of the bytes an earlier ReadRecorded of ref verified in
+// this operation, if they fit limit. Bytes that failed verification are not held.
+func Recorded(f *store.FS, ref string, limit int64) ([]byte, bool) {
+	return f.Memo().Raw(ref, limit)
+}
+
+// Memo is the store-owned record of one operation's fully validated evidence
+// objects; see store.Memo. A nil *Memo, the value for a hand-built FS or a direct
+// *With call, reuses nothing.
+type Memo = store.Memo
+
+// MemoFor returns the reuse memo of the operation that owns f, or nil.
+func MemoFor(f *store.FS) *Memo { return f.Memo() }
+
+func load(m *Memo, read Reader, p, expected, sub string, contract map[string]any) (map[string]any, []byte, error) {
 	h, err := refHash(p, sub)
 	if err != nil || h != expected {
 		return nil, nil, fault.New("OBSERVATION_UNVERIFIED", "observation locator and digest do not agree")
 	}
-	b, err := f.Read(p, canonical.MaxBytes)
+	_, validated := m.Held(sub, expected)
+	b, err := read(p, canonical.MaxBytes)
 	if err != nil || canonical.BytesHash(b) != expected {
 		return nil, nil, fault.New("OBSERVATION_UNVERIFIED", "observation bytes are unavailable or changed")
 	}
@@ -218,20 +317,48 @@ func load(f *store.FS, p, expected, sub string, contract map[string]any) (map[st
 	if err != nil {
 		return nil, nil, fault.New("OBSERVATION_UNVERIFIED", "observation bytes are not canonical JSON")
 	}
-	if es := schema.ValidateWith(contract, v); len(es) > 0 {
-		return nil, nil, &es[0]
+	if !validated {
+		m.Count(sub, expected)
+		if es := schema.ValidateWith(contract, v); len(es) > 0 {
+			return nil, nil, &es[0]
+		}
 	}
+	m.Mark(sub, expected)
 	return v, b, nil
 }
 
 func LoadContext(f *store.FS, p, expected string) (map[string]any, []byte, error) {
-	return load(f, p, expected, "evidence-contexts", ContextSchema())
+	return LoadContextMemo(MemoFor(f), FSReader(f), p, expected)
+}
+func LoadContextWith(read Reader, p, expected string) (map[string]any, []byte, error) {
+	return LoadContextMemo(nil, read, p, expected)
+}
+
+// LoadContextMemo is LoadContextWith that reuses and records validation in m.
+func LoadContextMemo(m *Memo, read Reader, p, expected string) (map[string]any, []byte, error) {
+	return load(m, read, p, expected, "evidence-contexts", ContextSchema())
 }
 func Inspect(f *store.FS, p, expected string) (map[string]any, []byte, error) {
-	return load(f, p, expected, "observations", InspectionSchema())
+	return InspectMemo(MemoFor(f), FSReader(f), p, expected)
+}
+func InspectWith(read Reader, p, expected string) (map[string]any, []byte, error) {
+	return InspectMemo(nil, read, p, expected)
+}
+
+// InspectMemo is InspectWith that reuses and records validation in m.
+func InspectMemo(m *Memo, read Reader, p, expected string) (map[string]any, []byte, error) {
+	return load(m, read, p, expected, "observations", InspectionSchema())
 }
 func Load(f *store.FS, p, expected string) (map[string]any, []byte, error) {
-	v, b, err := Inspect(f, p, expected)
+	return LoadMemo(MemoFor(f), FSReader(f), p, expected)
+}
+func LoadWith(read Reader, p, expected string) (map[string]any, []byte, error) {
+	return LoadMemo(nil, read, p, expected)
+}
+
+// LoadMemo is LoadWith that reuses and records validation in m.
+func LoadMemo(m *Memo, read Reader, p, expected string) (map[string]any, []byte, error) {
+	v, b, err := InspectMemo(m, read, p, expected)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -267,7 +394,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || IsSMARTSProfile(profile))) {
+	if kind == "verification" && profile != "declared-command/0.1.0" && profile != QualifiedCommandProfile && profile != CompletionCommandProfile || (kind == "spec_review" || kind == "quality_review") && profile != CodexReviewProfile && profile != ClaudeReviewProfile && profile != CodexNativeV1ReviewProfile && profile != CodexNativeV2ReviewProfile || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || IsSMARTSProfile(profile))) || kind == "context_approval" && profile != "host-user-context-preview/0.1.0" {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -295,11 +422,38 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 			if !validateReview(observed, event, context) {
 				return fail()
 			}
+		} else if kind == "context_approval" {
+			if !validateContextPrompt(observed, event, context) {
+				return fail()
+			}
 		} else if !validatePrompt(observed, event, context) {
 			return fail()
 		}
 	}
 	return nil
+}
+func validateContextPrompt(observed, event, context map[string]any) bool {
+	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
+	binding := model.S(context["input_sha256"])
+	subject := model.M(context["subject"])
+	preview := model.M(context["preview"])
+	recordHash, err := canonical.Hash(context["record"])
+	if err != nil {
+		return false
+	}
+	return model.S(event["authority_kind"]) == "user_workflow" &&
+		model.S(event["verdict"]) == "approved" && len(payload) == 1 &&
+		model.S(payload["preview_binding_sha256"]) == binding &&
+		model.S(model.M(context["record"])["preview_binding_sha256"]) == binding &&
+		model.S(context["record_sha256"]) == recordHash &&
+		canonical.BytesHash([]byte(model.S(context["preview_document"]))) == model.S(context["after_document_sha256"]) &&
+		model.S(subject["normative_sha256"]) == binding &&
+		model.S(subject["artifact_id"]) == "CONTEXT-"+strings.ToUpper(model.S(preview["document_id"])) &&
+		model.S(subject["record_id"]) == model.S(subject["artifact_id"]) &&
+		model.S(context["prompt_sha256"]) == canonical.BytesHash([]byte(model.S(event["source_text"]))) &&
+		model.S(result["prompt_sha256"]) == model.S(context["prompt_sha256"]) &&
+		model.S(event["origin"]) == model.S(result["host"])+":UserPromptSubmit:"+model.S(result["session_id"]) &&
+		model.S(observed["producer_run_id"]) == model.S(result["host"])+":"+model.S(result["session_id"])
 }
 func validatePrompt(observed, event, context map[string]any) bool {
 	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
@@ -345,6 +499,23 @@ func validateVerification(observed, event, context map[string]any) bool {
 	if !same(before, after) {
 		return false
 	}
+	if model.S(observed["producer_profile"]) == CompletionCommandProfile {
+		normalized := model.A(result["completion_workspace_after"])
+		if len(normalized) != len(after) {
+			return false
+		}
+		for i, value := range normalized {
+			workspace, raw := model.M(value), model.M(after[i])
+			for _, field := range []string{"root", "filesystem_id", "git_common_dir", "git_common_filesystem_id", "head"} {
+				if model.S(workspace[field]) != model.S(raw[field]) {
+					return false
+				}
+			}
+		}
+	} else if result["completion_workspace_after"] != nil {
+		// New normalized closure semantics cannot be attached to old profiles.
+		return false
+	}
 	workspaces := map[string]map[string]any{}
 	for _, value := range before {
 		workspace := model.M(value)
@@ -378,7 +549,7 @@ func validateVerification(observed, event, context map[string]any) bool {
 				return false
 			}
 		}
-		if model.S(observed["producer_profile"]) == QualifiedCommandProfile {
+		if model.S(observed["producer_profile"]) == QualifiedCommandProfile || model.S(observed["producer_profile"]) == CompletionCommandProfile {
 			if !validateQualifiedBinding(binding, definition) {
 				return false
 			}
@@ -422,8 +593,11 @@ func reviewCoverage(context map[string]any) []string {
 	sort.Strings(out)
 	return out
 }
-func reviewContractHash() string {
+func reviewContractHash(completion ...bool) string {
 	contract := map[string]any{"format": "codearbiter.review-decision/0.1.0", "decision": model.List("pass", "changes_requested"), "finding_severity": model.List("BLOCK", "WARN", "INFO"), "required_fields": model.List("format", "request_id", "target_sha256", "contract_sha256", "decision", "coverage", "findings", "assessment")}
+	if len(completion) > 0 && completion[0] {
+		contract["required_fields"] = append(model.A(contract["required_fields"]), "completion_sha256", "completion_assessment")
+	}
 	h, _ := canonical.Hash(contract)
 	return h
 }
@@ -444,6 +618,28 @@ func validateReview(observed, event, context map[string]any) bool {
 		if !codexShape || claudeShape || model.S(launch["codex_review_profile"]) != CodexNativeV1ReviewProfile || model.S(launch["child_turn_id"]) == model.S(launch["parent_turn_id"]) {
 			return false
 		}
+	case CodexNativeV2ReviewProfile:
+		activity, child := model.M(launch["native_activity"]), model.M(launch["native_child"])
+		item := model.M(activity["item"])
+		h, err := canonical.Hash(activity)
+		if !codexShape || claudeShape || model.S(launch["codex_review_profile"]) != CodexNativeV2ReviewProfile || model.S(launch["child_turn_id"]) == model.S(launch["parent_turn_id"]) || err != nil || h != model.S(launch["native_activity_sha256"]) || model.I(activity["completed_at_ms"]) < model.I(activity["started_at_ms"]) {
+			return false
+		}
+		for _, pair := range [][2]string{{"thread_id", "parent_thread_id"}, {"turn_id", "parent_turn_id"}} {
+			if model.S(activity[pair[0]]) != model.S(launch[pair[1]]) {
+				return false
+			}
+		}
+		for _, pair := range [][2]string{{"id", "tool_use_id"}, {"agent_thread_id", "agent_id"}, {"agent_path", "task_name"}} {
+			if model.S(item[pair[0]]) != model.S(launch[pair[1]]) {
+				return false
+			}
+		}
+		for _, pair := range [][2]string{{"thread_id", "agent_id"}, {"parent_thread_id", "parent_thread_id"}, {"session_id", "parent_session_id"}, {"agent_path", "task_name"}} {
+			if model.S(child[pair[0]]) != model.S(launch[pair[1]]) {
+				return false
+			}
+		}
 	case ClaudeReviewProfile:
 		if !claudeShape || codexShape || model.S(launch["agent_type"]) != ClaudeReviewer || model.S(launch["subagent_type"]) != ClaudeReviewer || launch["first_stop"] != true || launch["post_confirmed"] != true {
 			return false
@@ -451,7 +647,10 @@ func validateReview(observed, event, context map[string]any) bool {
 	default:
 		return false
 	}
-	if model.S(observed["producer_run_id"]) != model.S(launch["agent_id"]) || model.S(decision["target_sha256"]) != model.S(context["input_sha256"]) || model.S(decision["contract_sha256"]) != reviewContractHash() || model.S(decision["assessment"]) != model.S(payload["assessment"]) {
+	if model.S(observed["producer_run_id"]) != model.S(launch["agent_id"]) || model.S(decision["target_sha256"]) != model.S(context["input_sha256"]) || model.S(decision["contract_sha256"]) != reviewContractHash(context["completion"] != nil) || model.S(decision["assessment"]) != model.S(payload["assessment"]) {
+		return false
+	}
+	if !validateCompletionDecision(context, decision, payload) {
 		return false
 	}
 	want, got := reviewCoverage(context), model.Strings(decision["coverage"])

@@ -18,6 +18,7 @@ Run: python .github/scripts/test_board_sync.py
 """
 from pathlib import Path
 import sys
+import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -598,6 +599,54 @@ def main():
     print(f"\nOK: {len(selected)} check(s) green")
     return 0
 
+
+class BoardSyncUnittest(unittest.TestCase):
+    def shortDescription(self):
+        return None
+
+    def setUp(self):
+        _failures.clear()
+        missing = [path for path in REQUIRED_FILES if not (ROOT / path).exists()]
+        if missing:
+            self.fail("missing required file(s): " + ", ".join(missing))
+
+    def tearDown(self):
+        failures = list(_failures)
+        _failures.clear()
+        self.assertFalse(failures, "\n".join(failures))
+
+    def test_done_flip_retained(self):
+        test_done_flip_retained()
+
+    def test_context_creation_board_route(self):
+        test_context_creation_board_route()
+
+    def test_debug_uses_helper(self):
+        test_debug_uses_helper()
+
+    def test_task_doc_states_commit_colocation(self):
+        test_task_doc_states_commit_colocation()
+
+    def test_commit_gate_phase6_board_edit_exemption(self):
+        test_commit_gate_phase6_board_edit_exemption()
+
+    def test_commit_gate_phase7_stages_board_edit_by_path(self):
+        test_commit_gate_phase7_stages_board_edit_by_path()
+
+    def test_commit_gate_harvest_pre_commit(self):
+        test_commit_gate_harvest_pre_commit()
+
+    def test_harvest_md_commit_gate_pre_commit(self):
+        test_harvest_md_commit_gate_pre_commit()
+
+    def test_standup_advisory_board_sweep(self):
+        test_standup_advisory_board_sweep()
+
+    def test_decompose_intent_only(self):
+        test_decompose_intent_only()
+
+    def test_standup_archival_sweep_routes_through_chore(self):
+        test_standup_archival_sweep_routes_through_chore()
 
 if __name__ == "__main__":
     sys.exit(main())

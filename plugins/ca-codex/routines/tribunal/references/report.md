@@ -1,19 +1,43 @@
 # Report projection
 
-`report.md` is a projection of the logs, regenerated in Phase 4 — never hand-authored, never a source of truth. Rebuild it fully from `findings/*/*.json` + `triage.jsonl` on every run and on resume; it is deterministic from the logs. Task-list-structured, not prose.
+Regenerate report.md and manifest.yaml from source.json, findings, verification,
+leads/dispositions, triage.jsonl and run.jsonl after a successful source check.
+These are projections, never authority. Read only necessary records into context;
+malformed or incomplete evidence remains an explicit limitation.
+
+Fold triage by finding id while preserving earlier issue_ref values. Group by
+proved root_cause_key with all contributing lens/id/dedup identities. Also read
+issues-filed.detail.discussion_refs and local bodies/<id>.filing.json receipts;
+show their discussion URLs and any unresolved partial filing. This same union
+feeds duplicate suppression on resume. Never rewrite the underlying history.
 
 ## Structure
 
-- **Header** — run-id, scope, date, models used (from `run.jsonl`), the token estimate from Phase 0 vs. actuals (summed from `lens-completed` `tokens` in `run.jsonl` when present; best-effort, since the orchestrator cannot always observe subagent spend), including the `complete|partial|unavailable` status and unavailable reasons, and a launched/skipped-lens summary with the skip reason per lens.
-- **Findings** — grouped by **calibrated** `final_severity` (critical to low), then by lens/type within each severity. Each entry on one line: `id` · `path:line(s)` · one-line description · remediation shape · triage `decision` · link to `plans/phase-<n>.md`. Only `keep`/`combine` findings appear here.
-- **Decisions needed** — a separate section for `decision-required` findings, each as its question + options. These need a decision, not a fix; do not fold them into the severity list.
-- **Investigate appendix** — medium/low findings below the confidence gate after calibration (defined in `triage.md`; below-gate critical/high land in Decisions needed instead); `id` + `path:line` + one terse line each. Preserved, not filed.
-- **Blocking-severity note** — one line: critical/high should block shipping the affected code, but this lane is not a gate and blocks nothing.
+- Header: run id, source-binding status, finding/evidence scope, reviewed inputs,
+  models/profiles, execution and verification independence, estimate versus
+  observable usage, unavailable reasons and extraction limits.
+- Launched/skipped lenses: every card, applicability or skip reason, selected
+  targets, packet/expansion size, exposures and unresolved boundaries.
+- Kept work: calibrated severity then type, only keep/combine with plan_eligible
+  true and a passing confidence gate. List id, path:line, surviving claim,
+  remediation shape, verification outcome and phase-plan link.
+- Verification required: serious factual uncertainty, inconclusive or limited
+  verification, failed dispatch and costly inferential recommendations awaiting
+  proof. Show the strongest counterargument and next bounded verification.
+- Decisions needed: genuine decision-required design forks as questions/options,
+  with factual premises distinguished from unverified claims.
+- Investigate/refuted/deferred appendix: concise dispositions and rationale;
+  refuted serious claims never appear as confirmed defects.
+- Lead accounting: promoted/dismissed/deferred, owning finding or next action.
+- Follow-ups: filing and telemetry disposition and pending/terminal run state.
+  report-written alone is not completion.
 
-## Anti-slop
+Historical finding/v1 and unbound runs remain readable, labelled historical or
+legacy-unbound. Do not regenerate them as if their source were current.
+Report serious *confirmed* findings as work that should block shipping affected
+code, while stating Tribunal itself is an opt-in audit and blocks no workflow.
 
-Apply `core` (no em-dash sentence separators, no filler/AI cadence, no fabricated precision) and `medium-documents`. Every count comes from the logs — never invent a number to make the report "feel precise."
-
-## Relationship to `manifest.yaml`
-
-`manifest.yaml` is the machine-readable run snapshot (a projection of `run.jsonl`); `report.md` is the human view. Both regenerate from the logs; neither is edited by hand.
+Apply the anti-slop core and medium-documents guidance. Counts come from records,
+not estimates dressed as measurements. Raw findings are not unique defects.
+Actual usage includes complete/partial/unavailable status and fixed unavailable
+reasons from the usage aggregate; never turn missing usage into zero.

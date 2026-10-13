@@ -17,7 +17,7 @@ import sys
 import tarfile
 import tempfile
 import time
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 from urllib.parse import quote, urlsplit
 
@@ -25,11 +25,17 @@ from urllib.parse import quote, urlsplit
 PACKAGE = "@earendil-works/pi-coding-agent"
 REGISTRY = "https://registry.npmjs.org"
 REGISTRY_ARGS = (f"--registry={REGISTRY}", f"--@earendil-works:registry={REGISTRY}")
-SUPPORTED = ("0.84.1",)
+SUPPORTED = ("1.1.0",)
 LOCK_ROOT = Path(".github/fixtures/pi-hosts")
 VERSION = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 SOURCE_REPOSITORY = "https://github.com/earendil-works/pi"
 ZERO_AUDIT = {"info": 0, "low": 0, "moderate": 0, "high": 0, "critical": 0, "total": 0}
+# ADR-0041: a candidate may retain only advisories its baseline already carries,
+# each recorded by GHSA with a dated backstop no more than this far after review.
+SEVERITIES = ("info", "low", "moderate", "high", "critical")
+ADVISORY_FIELDS = {"ghsa", "package", "version", "severity", "reason", "baseline_version", "backstop"}
+MAX_ADVISORY_BACKSTOP_DAYS = 30
+GHSA = re.compile(r"^GHSA(?:-[23456789cfghjmpqrvwx]{4}){3}$")
 REVIEW_FIELDS = {
     "schema", "package", "version", "registry", "root_integrity", "lock_sha256", "config_sha256",
     "source_repository", "source_tag", "source_commit", "reviewed_at", "reviewer",
@@ -146,9 +152,15 @@ def _read_response_chunk(
     return chunk
 
 
-def _fetch_registry_packument(package_name: str, deadline: float) -> dict[str, Any]:
+def _fetch_registry_packument(package_name: str, deadline: float, version: str | None = None) -> dict[str, Any]:
     if PACKAGE_NAME.fullmatch(package_name) is None:
         raise ValueError(f"candidate registry metadata has an invalid package name: {package_name}")
+    if version is not None and VERSION.fullmatch(version) is None:
+        raise ValueError("candidate registry metadata version is invalid")
+    return _fetch_registry_json("/" + quote(package_name, safe="@") + (f"/{version}" if version else ""), deadline)
+
+
+def _fetch_registry_json(path: str, deadline: float) -> dict[str, Any]:
     last_error: OSError | http.client.HTTPException | None = None
     for attempt in range(3):
         remaining = deadline - time.monotonic()
@@ -160,7 +172,7 @@ def _fetch_registry_packument(package_name: str, deadline: float) -> dict[str, A
             )
             try:
                 connection.request(
-                    "GET", "/" + quote(package_name, safe="@"),
+                    "GET", path,
                     headers={
                         "Accept": "application/json",
                         "User-Agent": "codeArbiter-pi-host-lock/1",
@@ -203,6 +215,62 @@ def _fetch_registry_packument(package_name: str, deadline: float) -> dict[str, A
                 time.sleep(delay)
     assert last_error is not None
     raise last_error
+
+
+def _candidate_source_commit(metadata: dict[str, Any], version: str, deadline: float) -> str:
+    """Capture unverified source metadata; admission still requires provenance review."""
+    if metadata.get("repository.url") != SOURCE_REPOSITORY:
+        raise ValueError("candidate registry metadata has no approved source identity")
+    git_head = metadata.get("gitHead")
+    if git_head is not None:
+        if not isinstance(git_head, str) or re.fullmatch(r"[0-9a-f]{40}", git_head) is None:
+            raise ValueError("candidate registry metadata has no approved source identity")
+        return git_head
+
+    # Derive the fixed registry endpoint instead of following a metadata-supplied URL.
+    document = _fetch_registry_json("/-/npm/v1/attestations/" + quote(f"{PACKAGE}@{version}", safe="@"), deadline)
+    try:
+        attestations = document["attestations"]
+        if not isinstance(attestations, list) or not 1 <= len(attestations) <= 8:
+            raise ValueError("invalid attestation inventory")
+        if not all(isinstance(item, dict) for item in attestations):
+            raise ValueError("invalid attestation record")
+        matches = [item for item in attestations if item.get("predicateType") == "https://slsa.dev/provenance/v1"]
+        if len(matches) != 1:
+            raise ValueError("missing or ambiguous source metadata")
+        envelope = matches[0]["bundle"]["dsseEnvelope"]
+        if envelope["payloadType"] != "application/vnd.in-toto+json":
+            raise ValueError("invalid payload type")
+        statement = json.loads(base64.b64decode(envelope["payload"], validate=True))
+        integrity = metadata["dist.integrity"]
+        if not isinstance(integrity, str) or not integrity.startswith("sha512-"):
+            raise ValueError("invalid package integrity")
+        digest = base64.b64decode(integrity.removeprefix("sha512-"), validate=True)
+        if len(digest) != 64 or "sha512-" + base64.b64encode(digest).decode("ascii") != integrity:
+            raise ValueError("invalid package integrity")
+        expected_subject = [{"name": f"pkg:npm/%40earendil-works/pi-coding-agent@{version}",
+                             "digest": {"sha512": digest.hex()}}]
+        if (statement["_type"] != "https://in-toto.io/Statement/v1"
+                or statement["predicateType"] != "https://slsa.dev/provenance/v1"
+                or statement["subject"] != expected_subject):
+            raise ValueError("package subject mismatch")
+        definition = statement["predicate"]["buildDefinition"]
+        workflow = definition["externalParameters"]["workflow"]
+        tag = f"refs/tags/v{version}"
+        if (definition["buildType"] != "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1"
+                or workflow["repository"] != SOURCE_REPOSITORY or workflow["ref"] != tag):
+            raise ValueError("source repository or tag mismatch")
+        sources = definition["resolvedDependencies"]
+        if not isinstance(sources, list) or len(sources) != 1:
+            raise ValueError("missing or ambiguous source identity")
+        source = sources[0]
+        commit = source["digest"]["gitCommit"]
+        if (source["uri"] != f"git+{SOURCE_REPOSITORY}@{tag}"
+                or not isinstance(commit, str) or re.fullmatch(r"[0-9a-f]{40}", commit) is None):
+            raise ValueError("invalid immutable source identity")
+        return commit
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError("candidate provenance metadata does not bind the exact package and source") from error
 
 
 def _npm_semver_module(npm: str) -> Path:
@@ -260,7 +328,13 @@ def _run_registry_metadata(
     npm: str, package_name: str, specification: str,
     environment: dict[str, str], deadline: float,
 ) -> Any:
-    packument = _fetch_registry_packument(package_name, deadline)
+    if VERSION.fullmatch(specification):
+        record = _fetch_registry_packument(package_name, deadline, specification)
+        if record.get("name") != package_name or record.get("version") != specification:
+            raise ValueError("candidate exact registry record identity mismatch")
+        packument = {"versions": {specification: record}}
+    else:
+        packument = _fetch_registry_packument(package_name, deadline)
     selected = _select_registry_version(npm, specification, packument, environment, deadline)
     record = packument["versions"][selected]
     if not isinstance(record, dict) or not isinstance(record.get("dist"), dict):
@@ -428,8 +502,7 @@ def _download_registry_tarball(
                     alternate_metadata_members.append(member)
                 if member.isfile() and member.name == "package/npm-shrinkwrap.json":
                     shrinkwrap_members.append(member)
-                    if require_shrinkwrap:
-                        shrinkwrap = _read_archive_json(archive, member, deadline)
+                    shrinkwrap = _read_archive_json(archive, member, deadline)
                 elif (
                     member.isfile()
                     and member.name.count("/") == 1
@@ -442,13 +515,13 @@ def _download_registry_tarball(
                 raise ValueError("candidate tarball must contain exactly one canonical package manifest")
             if alternate_metadata_members:
                 raise ValueError("candidate tarball contains alternate package identity metadata")
-            if require_shrinkwrap and len(shrinkwrap_members) != 1:
+            if len(shrinkwrap_members) > 1 or require_shrinkwrap and len(shrinkwrap_members) != 1:
                 raise ValueError("candidate tarball must contain exactly one canonical npm shrinkwrap")
     except (tarfile.TarError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise ValueError("candidate tarball has no valid package identity") from error
     if not isinstance(manifest, dict) or manifest.get("name") != package_name or manifest.get("version") != version:
         raise ValueError("candidate tarball package identity does not match preflight metadata")
-    if require_shrinkwrap and (
+    if (require_shrinkwrap or shrinkwrap_members) and (
         not isinstance(shrinkwrap, dict)
         or shrinkwrap.get("name") != package_name
         or shrinkwrap.get("version") != version
@@ -460,6 +533,81 @@ def _download_registry_tarball(
     ):
         raise ValueError("candidate tarball shrinkwrap identity does not match preflight metadata")
     return {"manifest": manifest, "shrinkwrap": shrinkwrap}
+
+
+def _fetch_source_install_lock(source_commit: str, deadline: float) -> dict[str, Any]:
+    """Read inert managed-install data at the captured exact commit, never a moving ref."""
+    if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
+        raise ValueError("candidate source commit is invalid")
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise ValueError("candidate source lock exceeded the aggregate time budget")
+    connection = http.client.HTTPSConnection("raw.githubusercontent.com", timeout=min(MAX_METADATA_QUERY_SECONDS, remaining))
+    try:
+        connection.request("GET", f"/earendil-works/pi/{source_commit}/packages/coding-agent/install-lock/package-lock.json",
+                           headers={"User-Agent": "codeArbiter-pi-host-lock/1"})
+        response = connection.getresponse()
+        if response.status != 200:
+            raise ValueError(f"candidate source lock returned HTTP {response.status}")
+        length = response.getheader("Content-Length")
+        if length is not None and int(length) > MAX_METADATA_OUTPUT_BYTES:
+            raise ValueError("candidate source lock exceeded the output limit")
+        chunks = []
+        size = 0
+        while chunk := _read_response_chunk(response, deadline, MAX_METADATA_QUERY_SECONDS,
+                                           MAX_METADATA_OUTPUT_BYTES + 1 - size,
+                                           "candidate source lock exceeded the aggregate time budget"):
+            size += len(chunk)
+            if size > MAX_METADATA_OUTPUT_BYTES:
+                raise ValueError("candidate source lock exceeded the output limit")
+            chunks.append(chunk)
+        value = json.loads(b"".join(chunks).decode("utf-8"))
+        if not isinstance(value, dict):
+            raise ValueError("candidate source lock is not an object")
+        return value
+    finally:
+        connection.close()
+
+
+def _wrapper_lock_from_source_install_lock(
+    version: str, root_metadata: dict[str, Any], manifest: dict[str, Any], source: dict[str, Any],
+) -> dict[str, Any]:
+    packages = source.get("packages")
+    source_name = PACKAGE + "-install"
+    if (source.get("name") != source_name or source.get("version") != version
+            or source.get("lockfileVersion") != 3 or not isinstance(packages, dict)
+            or not isinstance(packages.get(""), dict)
+            or packages[""].get("name") != source_name or packages[""].get("version") != version
+            or packages[""].get("dependencies") != {PACKAGE: version}):
+        raise ValueError("candidate source lock root identity mismatch")
+    if len(packages) > MAX_METADATA_PACKAGES:
+        raise ValueError("candidate source lock exceeded the package count limit")
+    for key in packages:
+        if (not isinstance(key, str) or key and (
+                not key.startswith("node_modules/") or "\\" in key
+                or any(part in {"", ".", ".."} for part in key.split("/")))):
+            raise ValueError("candidate source lock has an unsafe package path")
+        if key.count("node_modules/") > MAX_METADATA_DEPTH:
+            raise ValueError("candidate source lock exceeded the depth limit")
+    agent = packages.get(f"node_modules/{PACKAGE}")
+    if (not isinstance(agent, dict) or agent.get("version") != version
+            or agent.get("resolved") != root_metadata["dist.tarball"]
+            or agent.get("integrity") not in {None, root_metadata["dist.integrity"]}):
+        raise ValueError("candidate source lock package identity mismatch")
+    if agent.get("hasShrinkwrap"):
+        raise ValueError("candidate source lock contradicts the absent published shrinkwrap")
+    for field in ("dependencies", "optionalDependencies", "peerDependencies", "peerDependenciesMeta", "engines", "bin"):
+        if agent.get(field, {}) != manifest.get(field, {}):
+            raise ValueError(f"candidate source lock differs from the verified tarball manifest: {field}")
+    lock = json.loads(json.dumps(source))
+    lock["name"] = f"@codearbiter/pi-host-{version}"
+    lock["version"] = "0.0.0"
+    lock["packages"][""] = {"name": lock["name"], "version": "0.0.0", "dependencies": {PACKAGE: version}}
+    # Upstream generates this lock before publication, so root integrity may be
+    # absent. Bind it to the independently downloaded, verified npm tarball.
+    lock["packages"][f"node_modules/{PACKAGE}"]["integrity"] = root_metadata["dist.integrity"]
+    _validate_locked_dependency_edges(lock["packages"])
+    return lock
 
 
 def _wrapper_lock_from_published_shrinkwrap(
@@ -535,10 +683,84 @@ def _lock_dir(root: Path, version: str) -> Path:
     return root.resolve() / LOCK_ROOT / version
 
 
-def _validate_review_receipt(review: dict[str, Any], version: str) -> None:
+def _locked_versions(packages: dict[str, Any], package: str) -> set[str]:
+    return {
+        value.get("version") for key, value in packages.items()
+        if isinstance(value, dict) and (key == f"node_modules/{package}" or key.endswith(f"/node_modules/{package}"))
+    }
+
+
+def _validate_accepted_advisories(
+    review: dict[str, Any], version: str, packages: dict[str, Any], directory: Path,
+) -> list[dict[str, Any]]:
+    """ADR-0041: every retained advisory is recorded, locked, baseline-present and dated."""
+    if "accepted_advisories" not in review:
+        return []
+    accepted = review["accepted_advisories"]
+    if not isinstance(accepted, list) or not accepted:
+        raise ValueError("accepted advisory record must be a non-empty list when present")
+    try:
+        reviewed = date.fromisoformat(str(review.get("reviewed_at", "")))
+    except ValueError as error:
+        raise ValueError("dependency review date is invalid") from error
+    seen = set()
+    for item in accepted:
+        if not isinstance(item, dict) or set(item) != ADVISORY_FIELDS:
+            raise ValueError("accepted advisory record is malformed")
+        if (
+            not isinstance(item["ghsa"], str) or GHSA.fullmatch(item["ghsa"]) is None
+            or not isinstance(item["package"], str) or PACKAGE_NAME.fullmatch(item["package"]) is None
+            or not isinstance(item["version"], str) or VERSION.fullmatch(item["version"]) is None
+            or item["severity"] not in SEVERITIES
+            or not isinstance(item["reason"], str) or not item["reason"].strip()
+            or not isinstance(item["baseline_version"], str) or VERSION.fullmatch(item["baseline_version"]) is None
+            or item["baseline_version"] == version
+        ):
+            raise ValueError("accepted advisory record is malformed")
+        key = (item["ghsa"], item["package"], item["version"])
+        if key in seen:
+            raise ValueError("accepted advisory record repeats an advisory")
+        seen.add(key)
+        try:
+            backstop = date.fromisoformat(str(item["backstop"]))
+        except ValueError as error:
+            raise ValueError("accepted advisory backstop is invalid") from error
+        if not reviewed <= backstop <= reviewed + timedelta(days=MAX_ADVISORY_BACKSTOP_DAYS):
+            raise ValueError("accepted advisory backstop is outside the review window")
+        if date.today() > backstop:
+            raise ValueError("accepted advisory backstop has passed; re-review or promote the clearing release")
+        if item["version"] not in _locked_versions(packages, item["package"]):
+            raise ValueError("accepted advisory does not match the reviewed lock")
+        baseline_lock = directory.parent / item["baseline_version"] / "package-lock.json"
+        try:
+            baseline_packages = _read_json(baseline_lock).get("packages")
+        except (OSError, ValueError) as error:
+            raise ValueError("accepted advisory baseline lock is unavailable") from error
+        if not isinstance(baseline_packages, dict) or item["version"] not in _locked_versions(baseline_packages, item["package"]):
+            raise ValueError("accepted advisory was not present in the baseline")
+    return accepted
+
+
+def _expected_audit(accepted: list[dict[str, Any]]) -> dict[str, int]:
+    """npm audit counts one finding per package at its highest advisory severity."""
+    worst: dict[str, int] = {}
+    for item in accepted:
+        rank = SEVERITIES.index(item["severity"])
+        worst[item["package"]] = max(rank, worst.get(item["package"], -1))
+    counts = dict(ZERO_AUDIT)
+    for rank in worst.values():
+        counts[SEVERITIES[rank]] += 1
+    counts["total"] = len(worst)
+    return counts
+
+
+def _validate_review_receipt(
+    review: dict[str, Any], version: str, accepted: list[dict[str, Any]] | None = None,
+) -> None:
     if review.get("result") != "PASS":
         raise ValueError("host lock is pending dependency review")
-    if set(review) != REVIEW_FIELDS or review.get("schema") != "codearbiter-pi-host-lock-review-v2":
+    fields = REVIEW_FIELDS | {"accepted_advisories"} if accepted else REVIEW_FIELDS
+    if set(review) != fields or review.get("schema") != "codearbiter-pi-host-lock-review-v2":
         raise ValueError("dependency review receipt has missing or unknown fields")
     if review.get("source_repository") != SOURCE_REPOSITORY or review.get("source_tag") != f"v{version}":
         raise ValueError("dependency review source identity mismatch")
@@ -558,7 +780,8 @@ def _validate_review_receipt(review: dict[str, Any], version: str) -> None:
     audits = review.get("audits")
     if not isinstance(audits, dict) or set(audits) != {"production", "all"}:
         raise ValueError("dependency review audit evidence is incomplete")
-    if audits.get("production") != ZERO_AUDIT or audits.get("all") != ZERO_AUDIT:
+    expected_audit = _expected_audit(accepted or [])
+    if audits.get("production") != expected_audit or audits.get("all") != expected_audit:
         raise ValueError("dependency review audit evidence did not pass")
     if review.get("lifecycle_scripts") != {
         "result": "PASS", "policy": "ignore-scripts", "transitive_hooks_present": True,
@@ -672,8 +895,11 @@ def _validate_directory(directory: Path, version: str, *, require_reviewed: bool
         raise ValueError("reviewed lock identity mismatch")
     if review.get("registry") != REGISTRY or review.get("root_integrity") != agent.get("integrity"):
         raise ValueError("reviewed root registry or integrity mismatch")
+    accepted: list[dict[str, Any]] = []
     if require_reviewed:
-        _validate_review_receipt(review, version)
+        if review.get("result") == "PASS":
+            accepted = _validate_accepted_advisories(review, version, packages, directory)
+        _validate_review_receipt(review, version, accepted)
     elif (
         set(review) != CANDIDATE_FIELDS
         or review.get("schema") != "codearbiter-pi-host-lock-review-v1"
@@ -682,7 +908,7 @@ def _validate_directory(directory: Path, version: str, *, require_reviewed: bool
         or re.fullmatch(r"[0-9a-f]{40}", str(review.get("source_commit", ""))) is None
     ):
         raise ValueError("captured candidate must remain an exact pending dependency review receipt")
-    return {"package": PACKAGE, "version": version, "lock_sha256": digest}
+    return {"package": PACKAGE, "version": version, "lock_sha256": digest, "accepted_advisories": accepted}
 
 
 def validate_host_lock(root: Path, version: str) -> dict[str, str]:
@@ -690,7 +916,7 @@ def validate_host_lock(root: Path, version: str) -> dict[str, str]:
 
 
 def install_plan(root: Path, version: str, prefix: Path) -> dict[str, Any]:
-    validate_host_lock(root, version)
+    validated = validate_host_lock(root, version)
     directory = _lock_dir(root, version)
     destination = prefix.resolve()
     cache = destination / ".npm-cache"
@@ -698,6 +924,10 @@ def install_plan(root: Path, version: str, prefix: Path) -> dict[str, Any]:
         "cwd": str(directory),
         "prefix": str(destination),
         "path_entry": str(destination / "node_modules" / ".bin"),
+        "accepted_advisories": [
+            {"ghsa": item["ghsa"], "package": item["package"], "version": item["version"]}
+            for item in validated["accepted_advisories"]
+        ],
         "command": [
             shutil.which("npm") or "npm", "ci", "--ignore-scripts", *REGISTRY_ARGS,
             "--cache", str(cache), "--prefix", str(destination),
@@ -719,7 +949,7 @@ def install(root: Path, version: str, prefix: Path) -> dict[str, Any]:
         shutil.copyfile(source / name, destination / name)
     npm_environment = _npm_environment(destination)
     subprocess.run(plan["command"], cwd=source, check=True, env=npm_environment)
-    _audit_install(destination, source, version)
+    _audit_install(destination, source, version, plan["accepted_advisories"])
     github_path = os.environ.get("GITHUB_PATH")
     if github_path:
         with Path(github_path).open("a", encoding="utf-8") as stream:
@@ -727,13 +957,72 @@ def install(root: Path, version: str, prefix: Path) -> dict[str, Any]:
     return plan
 
 
-def _audit_install(destination: Path, cwd: Path, version: str) -> None:
+def _installed_versions(destination: Path, nodes: object, name: str) -> set[str]:
+    """Versions actually installed at an audit entry's node paths; fail closed on any gap."""
+    if not isinstance(nodes, list) or not nodes:
+        raise ValueError(f"npm audit report names no installed node for {name}")
+    root = destination.resolve()
+    versions = set()
+    for node in nodes:
+        if not isinstance(node, str) or not node.startswith("node_modules/"):
+            raise ValueError(f"npm audit report node is malformed for {name}")
+        manifest = (destination / node / "package.json").resolve()
+        if not manifest.is_relative_to(root):
+            raise ValueError(f"npm audit report node escapes the install for {name}")
+        try:
+            installed = json.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise ValueError(f"installed package is unreadable at {node}") from error
+        if not isinstance(installed, dict) or installed.get("name") != name or not isinstance(installed.get("version"), str):
+            raise ValueError(f"installed package does not match the audit entry at {node}")
+        versions.add(installed["version"])
+    return versions
+
+
+def _check_audit_findings(stdout: str, accepted: set[tuple[str, str, str]], destination: Path) -> None:
+    """ADR-0041: an installed finding passes only when its GHSA, package and installed version are accepted."""
+    try:
+        report = json.loads(stdout)
+    except ValueError as error:
+        raise ValueError("npm audit report is unreadable") from error
+    vulnerabilities = report.get("vulnerabilities") if isinstance(report, dict) else None
+    if not isinstance(vulnerabilities, dict):
+        raise ValueError("npm audit report has no vulnerability inventory")
+    for name, entry in vulnerabilities.items():
+        via = entry.get("via") if isinstance(entry, dict) else None
+        if not isinstance(via, list):
+            raise ValueError(f"npm audit report entry is malformed at {name}")
+        for source in via:
+            if isinstance(source, str):
+                continue  # A transitive pointer to another inventory entry.
+            url = source.get("url") if isinstance(source, dict) else None
+            ghsa = url.rsplit("/", 1)[-1] if isinstance(url, str) else ""
+            package = source.get("name") if isinstance(source, dict) else None
+            if package != name:
+                raise ValueError(f"unaccepted audit finding {ghsa or '<unknown>'} in {package or name}")
+            # The record binds a version: every installed copy the advisory hits must be it.
+            for installed in _installed_versions(destination, entry.get("nodes"), name):
+                if (ghsa, name, installed) not in accepted:
+                    raise ValueError(f"unaccepted audit finding {ghsa} in {name}@{installed}")
+
+
+def _audit_install(
+    destination: Path, cwd: Path, version: str, accepted: list[dict[str, str]] | tuple = (),
+) -> None:
     npm = shutil.which("npm") or "npm"
     cache_args = [*REGISTRY_ARGS, "--cache", str(destination / ".npm-cache")]
     npm_environment = _npm_environment(destination)
+    allowed = {(item["ghsa"], item["package"], item["version"]) for item in accepted}
+    for scope in (["--omit=dev"], []):
+        # npm audit exits 1 whenever it reports findings; anything else is a failure.
+        completed = subprocess.run(
+            [npm, "audit", *scope, "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
+            cwd=cwd, check=False, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
+        )
+        if getattr(completed, "returncode", 0) not in (0, 1):
+            raise ValueError("npm audit did not complete")
+        _check_audit_findings(completed.stdout, allowed, destination)
     checks = [
-        [npm, "audit", "--omit=dev", "--audit-level=high", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
-        [npm, "audit", "--audit-level=high", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
         [npm, "audit", "signatures", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
         [npm, "ls", "--all", "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
     ]
@@ -778,10 +1067,7 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
     ))
     if root_metadata.get("version") != version:
         raise ValueError("candidate root metadata did not resolve the exact requested version")
-    if root_metadata.get("repository.url") != SOURCE_REPOSITORY or re.fullmatch(
-        r"[0-9a-f]{40}", str(root_metadata.get("gitHead", "")),
-    ) is None:
-        raise ValueError("candidate registry metadata has no approved source identity")
+    source_commit = _candidate_source_commit(root_metadata, version, metadata_deadline)
     for field in ("dependencies", "optionalDependencies", "peerDependencies"):
         dependencies = root_metadata.get(field, {}) or {}
         if not isinstance(dependencies, dict):
@@ -795,11 +1081,15 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
         verified_root = _download_registry_tarball(
             PACKAGE, version, root_metadata["dist.tarball"], root_metadata["dist.integrity"],
             root_archive, deadline=metadata_deadline, byte_budget=MAX_METADATA_CACHE_BYTES,
-            require_shrinkwrap=True,
         )
-        lock = _wrapper_lock_from_published_shrinkwrap(
-            version, root_metadata, verified_root["shrinkwrap"],
-        )
+        from_source = verified_root["shrinkwrap"] is None
+        if from_source:
+            lock = _wrapper_lock_from_source_install_lock(
+                version, root_metadata, verified_root["manifest"],
+                _fetch_source_install_lock(source_commit, metadata_deadline),
+            )
+        else:
+            lock = _wrapper_lock_from_published_shrinkwrap(version, root_metadata, verified_root["shrinkwrap"])
     lock_path = destination / "package-lock.json"
     lock_path.write_text(json.dumps(lock, indent=2) + "\n", encoding="utf-8", newline="\n")
     packages = lock.get("packages")
@@ -827,9 +1117,9 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
                 continue
             if not _approved_registry_url(resolved):
                 raise ValueError(f"candidate registry or integrity mismatch at {key}")
-            if isinstance(integrity, str) and integrity.startswith("sha512-"):
+            if not from_source and isinstance(integrity, str) and integrity.startswith("sha512-"):
                 continue
-            if integrity is not None or not isinstance(package_name, str) or PACKAGE_NAME.fullmatch(package_name) is None:
+            if (integrity is not None and not from_source) or not isinstance(package_name, str) or PACKAGE_NAME.fullmatch(package_name) is None:
                 raise ValueError(f"candidate registry or integrity mismatch at {key}")
             if not isinstance(package_version, str) or VERSION.fullmatch(package_version) is None:
                 raise ValueError(f"candidate registry or integrity mismatch at {key}")
@@ -839,6 +1129,14 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
             if metadata.get("version") != package_version or metadata.get("dist.tarball") != resolved:
                 raise ValueError(f"candidate registry metadata mismatch at {key}")
             expected_integrity = metadata["dist.integrity"]
+            if integrity is not None and integrity != expected_integrity:
+                raise ValueError(f"candidate registry metadata integrity mismatch at {key}")
+            if from_source:
+                for field in ("dependencies", "optionalDependencies", "peerDependencies", "peerDependenciesMeta"):
+                    if value.get(field, {}) != metadata.get(field, {}):
+                        raise ValueError(f"candidate source lock differs from registry metadata at {key}: {field}")
+                value["integrity"] = expected_integrity
+                continue
             archive = verify_root / f"{index}.tgz"
             _download_registry_tarball(
                 package_name, package_version, resolved, expected_integrity, archive,
@@ -858,7 +1156,7 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
         "lock_sha256": hashlib.sha256(lock_path.read_bytes()).hexdigest(),
         "config_sha256": hashlib.sha256((destination / ".npmrc").read_bytes()).hexdigest(),
         "source_repository": root_metadata.get("repository.url"),
-        "source_commit": root_metadata.get("gitHead"),
+        "source_commit": source_commit,
         "result": "PENDING_REVIEW",
     }
     (destination / "review.json").write_text(

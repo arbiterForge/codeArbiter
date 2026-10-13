@@ -546,6 +546,160 @@ class ArtifactProductionPilotTest(unittest.TestCase):
             ),
         }
 
+    def _apply_request(self, client) -> dict[str, object]:
+        request = self._request()
+        preview = client.call("migration-preview", request)
+        self.assertFalse(preview["semantic_mapping_verified"])
+        self.assertFalse(preview["old_approval_transferred"])
+        request.update({
+            "operation_id": "pilot-continuation-cutover",
+            "preview_sha256": preview["preview_sha256"],
+            "review": {
+                "actor": "automated safety fixture",
+                "origin": ".github/scripts/test_artifact_workflow.py",
+                "source_text": "Fixture-only line disposition; not implementation approval.",
+            },
+        })
+        return request
+
+    def _tree_bytes(self) -> dict[str, bytes]:
+        return {
+            path.relative_to(self.root).as_posix(): path.read_bytes()
+            for path in self.root.rglob("*") if path.is_file()
+        }
+
+    def _partial_cutover_fixture(self, request) -> None:
+        """Recreate a prepared partial state; this is not an observed crash."""
+        journal_path = self.root / (
+            ".codearbiter/.artifacts/transactions/" + request["operation_id"] + ".json"
+        )
+        journal = json.loads(journal_path.read_bytes())
+        for entry in journal["entries"]:
+            if "/plans/" not in entry["path"]:
+                continue
+            target = self.root / entry["path"]
+            if entry["after_sha256"] is not None:
+                (self.root / entry["stage"]).write_bytes(target.read_bytes())
+                target.unlink()
+            else:
+                target.write_bytes((self.root / entry["backup"]).read_bytes())
+        journal["state"] = "prepared"
+        journal_path.write_text(
+            json.dumps(journal, sort_keys=True, separators=(",", ":")), encoding="utf-8"
+        )
+
+    def test_incomplete_or_overlapping_mapping_preserves_legacy_pair(self) -> None:
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        client.call("migration-preview", self._request())
+        before = self._tree_bytes()
+        for defect, code in (("gap", "UNMAPPED_LEGACY"), ("overlap", "OVERLAPPING_MAPPING")):
+            with self.subTest(defect=defect):
+                request = self._request()
+                mapping = request["spec"]["mappings"]
+                if defect == "gap":
+                    mapping[0]["end_line"] -= 1
+                else:
+                    mapping.append(dict(mapping[0]))
+                with self.assertRaises(ArtifactError) as caught:
+                    client.call("migration-preview", request)
+                self.assertEqual(caught.exception.code, code)
+                self.assertEqual(self._tree_bytes(), before)
+
+    def test_stale_source_or_mapping_refuses_cutover_without_writes(self) -> None:
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        for changed in ("source", "mapping"):
+            with self.subTest(changed=changed):
+                request = self._apply_request(client)
+                if changed == "source":
+                    # Preserve the line count so the failure tests preview identity.
+                    self.paths["spec"].write_bytes(b"Changed " + self.original["spec"])
+                else:
+                    request["spec"]["mappings"][0]["reason"] = "Different fixture interpretation."
+                before = self._tree_bytes()
+                with self.assertRaises(ArtifactError) as caught:
+                    client.call("migration-apply", request)
+                self.assertEqual(caught.exception.code, "STALE_PREVIEW")
+                self.assertEqual(self._tree_bytes(), before)
+                self.paths["spec"].write_bytes(self.original["spec"])
+
+    def test_committed_cutover_replays_after_lost_reply_and_rejects_changed_request(self) -> None:
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        request = self._apply_request(client)
+        client.call("migration-apply", request)  # Deliberately discard the success reply.
+        before = self._tree_bytes()
+        recreated = _artifactlib.ArtifactClient(self.root, self.installation)
+        replayed = recreated.call("migration-apply", request)
+        self.assertTrue(replayed["transaction"]["replay"])
+        self.assertEqual(replayed["transaction"]["operation_id"], request["operation_id"])
+        self.assertEqual(replayed["state"], "draft")
+        self.assertFalse(replayed["old_approvals_transferred"])
+        self.assertEqual(replayed["preview_sha256"], request["preview_sha256"])
+        self.assertEqual(self._tree_bytes(), before)
+        request["review"]["source_text"] = "Changed fixture request reusing the same operation ID."
+        with self.assertRaises(ArtifactError) as caught:
+            recreated.call("migration-apply", request)
+        self.assertEqual(caught.exception.code, "OPERATION_ID_REUSE")
+        self.assertEqual(self._tree_bytes(), before)
+
+    def test_rollback_after_candidate_edit_refuses_and_preserves_forward_work(self) -> None:
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        request = self._apply_request(client)
+        client.call("migration-apply", request)
+        harness = WorkflowHarness(self.root, self.installation)
+        harness.mutate("apply", self.PLAN_ID, changes=[{
+            "op": "header.update", "fields": {"summary": "Work retained after cutover."},
+        }])
+        identity = client.call("identity", {"artifact_id": self.PLAN_ID})
+        self.assertEqual(identity["revision"], 2)
+        before = self._tree_bytes()
+        recreated = _artifactlib.ArtifactClient(self.root, self.installation)
+        with self.assertRaises(ArtifactError) as caught:
+            recreated.call("migration-rollback", {
+                "operation_id": "pilot-edited-rollback",
+                "cutover_operation_id": request["operation_id"],
+            })
+        self.assertEqual(caught.exception.code, "RECOVERY_CONFLICT")
+        self.assertEqual(self._tree_bytes(), before)
+        self.assertTrue(recreated.call("migration-apply", request)["transaction"]["replay"])
+        self.assertEqual(recreated.call("identity", {"artifact_id": self.PLAN_ID}), identity)
+        self.assertEqual(self._tree_bytes(), before)
+
+    def test_partial_cutover_rollback_restores_pair_and_refuses_old_operation_replay(self) -> None:
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        request = self._apply_request(client)
+        client.call("migration-apply", request)
+        self._partial_cutover_fixture(request)
+        recreated = _artifactlib.ArtifactClient(self.root, self.installation)
+        with self.assertRaises(ArtifactError) as caught:
+            recreated.call("identity", {"artifact_id": self.SPEC_ID})
+        self.assertEqual(caught.exception.code, "RECOVERY_REQUIRED")
+        recovered = recreated.call("recover", {
+            "operation_id": request["operation_id"], "mode": "rollback",
+        })
+        self.assertEqual(recovered["state"], "rolled_back")
+        self.assertEqual({kind: path.read_bytes() for kind, path in self.paths.items()}, self.original)
+        self.assertEqual(_artifactlib._resolve_workflow_pair(self.root, self.SLUG)["format"], "md")
+        before = self._tree_bytes()
+        with self.assertRaises(ArtifactError) as replay:
+            recreated.call("migration-apply", request)
+        self.assertEqual(replay.exception.code, "OPERATION_ROLLED_BACK")
+        self.assertEqual(self._tree_bytes(), before)
+
+    def test_partial_cutover_recovery_preserves_unrelated_edits_in_both_directions(self) -> None:
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        request = self._apply_request(client)
+        client.call("migration-apply", request)
+        self._partial_cutover_fixture(request)
+        self.paths["plan"].write_bytes(self.original["plan"] + b"\nLater human work.\n")
+        before = self._tree_bytes()
+        for mode in ("complete", "rollback"):
+            with self.subTest(mode=mode):
+                recreated = _artifactlib.ArtifactClient(self.root, self.installation)
+                with self.assertRaises(ArtifactError) as caught:
+                    recreated.call("recover", {"operation_id": request["operation_id"], "mode": mode})
+                self.assertEqual(caught.exception.code, "RECOVERY_CONFLICT")
+                self.assertEqual(self._tree_bytes(), before)
+
     def test_production_pair_cutover_survives_recreation_and_rolls_back_exactly(self) -> None:
         attributes = (REPO / ".gitattributes").read_text(encoding="utf-8")
         for kind in ("spec", "plan"):

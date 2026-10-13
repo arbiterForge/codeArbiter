@@ -64,6 +64,12 @@ def setUpModule():
 
 
 class PackageTests(unittest.TestCase):
+    def shortDescription(self):
+        if (self._testMethodName.startswith("test_t018_context_kind_package_admission_")
+                or self._testMethodName == "test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases"):
+            return None
+        return super().shortDescription()
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
@@ -227,6 +233,108 @@ class PackageTests(unittest.TestCase):
             required_platforms=required_platforms or [native_platform],
             repo=REPO,
         )
+
+    def test_t018_context_kind_package_admission_positive_controls(self):
+        """An installed native candidate contains the closed context kind and schema."""
+        repository = self.base / "context-kind-positive"
+        repository.mkdir()
+        client = ArtifactClient(repository, INSTALLATION)
+        capabilities = client.call("capabilities")
+        self.assertEqual(capabilities["repository_context"], {
+            "source_present": True,
+            "kind_registered": True,
+            "host_default_enabled": False,
+            "qualification": "package-required",
+            "mutation_available": True,
+        })
+        self.assertEqual(capabilities["public_registrations_added"], 0)
+        self.assertEqual(PACKAGER.ARTIFACT_PLATFORMS, BUILDER.QUALIFIED_CI_PLATFORMS)
+        for name in ("spec", "plan"):
+            with self.subTest(schema=name):
+                self.assertEqual(client.call("schema", {"name": name})["type"], "object")
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        staged = self.stage(output=self.base / "context-kind-stage",
+                            required_platforms=[native_platform])
+        self.assertEqual(staged["platforms"], [native_platform])
+        for plugin_dir in ("plugins/ca", "plugins/ca-codex", "plugins/ca-pi"):
+            with self.subTest(host=plugin_dir):
+                payload = self.base / "context-kind-stage" / plugin_dir / "helpers" / "artifacts"
+                self.assertEqual(json.loads((payload / "release.json").read_text(encoding="utf-8")),
+                                 manifest)
+                binary_name = manifest["binaries"][native_platform]["file"]
+                self.assertEqual((payload / binary_name).read_bytes(),
+                                 (INSTALLATION / binary_name).read_bytes())
+                installed = ArtifactClient(repository, payload).call("capabilities")
+                self.assertTrue(installed["repository_context"]["kind_registered"])
+                self.assertEqual(installed["repository_context"]["qualification"], "package-required")
+
+    def test_t018_context_kind_package_admission_negative_controls(self):
+        """Installed context remains unavailable; generic artifact routes cannot write it."""
+        repository = self.base / "context-kind-negative"
+        context_root = repository / ".codearbiter"
+        context_root.mkdir(parents=True)
+        targets = ("CONTEXT.md", "tech-stack.md", "coding-standards.md",
+                   "security-controls.md", "code-map.md")
+        for name in targets:
+            (context_root / name).write_bytes(("human " + name + "\n").encode("utf-8"))
+        before = {name: (context_root / name).read_bytes() for name in targets}
+        client = ArtifactClient(repository, INSTALLATION)
+        with mock.patch.object(client, "workflow_preflight", return_value={
+                "resources_available": True, "host": "codex"}):
+            with self.assertRaisesRegex(_artifactlib.ArtifactError,
+                                        "CONTEXT_WORKFLOW_UNAVAILABLE"):
+                client.call("context-evidence-context", {})
+        for operation, request in (
+                ("create", {"operation_id": "context-create-0001",
+                            "artifact_id": "CONTEXT-CONTEXT", "kind": "context",
+                            "slug": "context", "title": "context", "summary": "context"}),
+                ("index", {"kind": "context"}),
+                ("schema", {"name": "context"}),
+        ):
+            with self.subTest(operation=operation), self.assertRaises(
+                    _artifactlib.ArtifactError):
+                client.call(operation, request)
+        self.assertEqual({name: (context_root / name).read_bytes() for name in targets}, before)
+        self.assertFalse((context_root / "context.html").exists())
+
+    def test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases(self):
+        """Only exact protected named outcomes may create package context admission."""
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        unqualified = self.stage(output=self.base / "context-no-evidence",
+                                 required_platforms=[native_platform])
+        self.assertNotIn("context_qualification", json.loads((
+            self.base / "context-no-evidence" / "plugins/ca/helpers/artifacts/release.json"
+        ).read_text(encoding="utf-8")))
+        self.assertEqual(unqualified["platforms"], [native_platform])
+        receipt_path = self.qualification(destination=self.base / "context-receipt.json")
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        for name, observation in (
+            ("missing", {"format": "codearbiter.context-native-observation/0.1.0",
+                         "module_sha256": "0" * 64, "go_sha256": "0" * 64, "cases": []}),
+            ("stale", {"format": "codearbiter.context-native-observation/0.1.0",
+                       "module_sha256": "0" * 64, "go_sha256": "0" * 64,
+                       "cases": [{}] * len(PACKAGER.CONTEXT_NATIVE_CASES)}),
+        ):
+            with self.subTest(case=name):
+                receipt["context_native"] = observation
+                receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+                output = self.base / f"context-{name}-stage"
+                with self.assertRaisesRegex(ValueError, "context native qualification"):
+                    self.stage(output=output, required_platforms=[native_platform],
+                               qualification_receipts=[receipt_path])
+                self.assertFalse(output.exists())
+
+        copied = self.base / "malformed-context-payload"
+        copied.mkdir()
+        for name in ("release.json", manifest["binaries"][native_platform]["file"]):
+            shutil.copy2(INSTALLATION / name, copied / name)
+        broken = json.loads((copied / "release.json").read_text(encoding="utf-8"))
+        broken["context_qualification"] = {native_platform: {"source_commit": 42}}
+        (copied / "release.json").write_text(json.dumps(broken), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "context qualification binding"):
+            INSTALLER.load_payload(copied)
 
     def test_native_cold_install_operates_without_source_tree(self):
         consumer = self.base / "consumer"
@@ -677,7 +785,7 @@ class PackageTests(unittest.TestCase):
             output=stage, required_platforms=[native_platform],
             source_commit=source_commit,
         )
-        secret = "npm-child-secret-sentinel"
+        sentinel = "npm-child-secret-sentinel"
         secret_names = {
             "NPMJS_TOKEN", "NODE_AUTH_TOKEN", "GH_TOKEN", "GITHUB_TOKEN",
             "FARM_API_KEY", "UNDECLARED_BUILD_SECRET",
@@ -690,7 +798,7 @@ class PackageTests(unittest.TestCase):
                 captured.append(kwargs.get("env"))
             return real_run(argv, **kwargs)
 
-        injected = {name: f"{secret}-{name}" for name in secret_names}
+        injected = {name: f"{sentinel}-{name}" for name in secret_names}
         output = self.base / "npm-env-packages"
         with mock.patch.dict(os.environ, injected), mock.patch.object(
             PACKAGER.subprocess, "run", side_effect=record
@@ -717,7 +825,7 @@ class PackageTests(unittest.TestCase):
             self.assertIsInstance(child_environment, dict)
             self.assertTrue(set(child_environment) <= allowed_environment)
             self.assertTrue(secret_names.isdisjoint(child_environment))
-            self.assertNotIn(secret, "\n".join(child_environment.values()))
+            self.assertNotIn(sentinel, "\n".join(child_environment.values()))
             self.assertNotEqual(os.environ.get("HOME"), child_environment["HOME"])
             for key in (
                 "npm_config_userconfig", "npm_config_globalconfig",
@@ -728,7 +836,7 @@ class PackageTests(unittest.TestCase):
         def fail_pack(argv, **kwargs):
             if Path(argv[0]) == self.npm_executable and "pack" in argv:
                 return subprocess.CompletedProcess(
-                    argv, 19, stdout="", stderr=f"failure relayed {secret}"
+                    argv, 19, stdout="", stderr=f"failure relayed {sentinel}"
                 )
             return real_run(argv, **kwargs)
 
@@ -745,12 +853,12 @@ class PackageTests(unittest.TestCase):
                     npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
                     production=False,
                 )
-        self.assertNotIn(secret, str(failure.exception))
+        self.assertNotIn(sentinel, str(failure.exception))
         self.assertFalse(failed_output.exists())
 
         def fail_identity(argv, **kwargs):
             return subprocess.CompletedProcess(
-                argv, 23, stdout="", stderr=f"identity relayed {secret}"
+                argv, 23, stdout="", stderr=f"identity relayed {sentinel}"
             )
 
         with mock.patch.object(PACKAGER.subprocess, "run", side_effect=fail_identity):
@@ -760,7 +868,7 @@ class PackageTests(unittest.TestCase):
                     package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
                     production=False,
                 )
-        self.assertNotIn(secret, str(identity_failure.exception))
+        self.assertNotIn(sentinel, str(identity_failure.exception))
 
         ambient_npm = Path(shutil.which("npm.cmd") or shutil.which("npm"))
         for name, executable, integrity in (
@@ -1100,7 +1208,7 @@ class PackageTests(unittest.TestCase):
         dependencies = dict(line.rsplit("|", 1)
                             for line in completed.stdout.splitlines() if line)
         forbidden = sorted(package for package in dependencies
-                           if package in {"net", "os/exec"}
+                           if package == "net"
                            or package.startswith(("net/http", "net/rpc", "net/smtp",
                                                   "crypto/tls", "golang.org/x/net")))
         self.assertEqual([], forbidden, "network-capable Go dependency entered the binary")
@@ -1115,9 +1223,12 @@ class PackageTests(unittest.TestCase):
             package main
 
             import (
+                "bytes"
+                "crypto/sha256"
                 "encoding/json"
                 "fmt"
                 "go/ast"
+                "go/format"
                 "go/parser"
                 "go/token"
                 "io/fs"
@@ -1128,23 +1239,184 @@ class PackageTests(unittest.TestCase):
                 "strings"
             )
 
+            // Each exception pins reviewed syntax, imports, masks and callers at
+            // one path. No DLL/procedure name or whole file is an exemption.
+            type nativeReview struct {
+                path, pkg, resolver string
+                pins map[string]string
+                references map[string][]string
+            }
+            const fixtureResolver = "var:fixtureAdvapi"
+            var nativeReviews = []nativeReview{
+                {
+                    path: "internal/store/fs_lock_windows.go", pkg: "store", resolver: "var:kernel32",
+                    pins: map[string]string{
+                        "import": "31889e21e8824c2a702e8ea0adea196b1c8567bc28fcd28422d554f882762980",
+                        "const:lockfileFailImmediately": "73e0ced7882abf312ca2087c68c562ef2a8a27b90820267a83dd1b379cf262dc",
+                        "var:kernel32": "95f41ac7dd598bda3aabf4d302c2f4a26ca09e32ae0bb33c07b4e7cf7a7795cf",
+                        "type:lockUnicodeString": "eefcd0ada80cf87e3c6229f4936ad4b56f4f228f1223c18ec442be185efd6441",
+                        "type:lockObjectAttributes": "9730c8ce433e5639691fdc907fbd9aae0168b6e37af477d9cdb59961443f7299",
+                        "type:lockIOStatus": "52adcce39fcd1f8c1b3a955286c9af5fc6950c3b65c206c771ac6929fd7c2ada",
+                        "func:*FS.nativeLock": "4257871b4f5aefb0d58d26bcd93a25765f42d7accebdfcc6aed6b7327e922f78",
+                        "func:*FS.ObservationLock": "c312af695e1311316c01218a19866c68425fc42dcdd0d630eb0bfb383fd94ea3",
+                        "func:pinLockObject": "2cfc594a3c76ba879f90ce71c5cd42fb7fac8c48fd4e019699cc6183b421c377",
+                        "func:*FS.windowsLock": "a3efeaf347472e06b99dcebaafe83bf1942fbc5f9fa65df9132a7115fab3b88c",
+                    },
+                    references: map[string][]string{
+                        "kernel32": {"var:kernel32"},
+                        "procLockFileEx": {"var:kernel32", "func:*FS.windowsLock"},
+                        "procUnlockFileEx": {"var:kernel32", "func:*FS.windowsLock"},
+                        "procReOpenFile": {"var:kernel32", "func:pinLockObject", "func:*FS.windowsLock"},
+                        "procNtCreateFile": {"var:kernel32", "func:pinLockObject", "func:*FS.windowsLock"},
+                        "pinLockObject": {"func:pinLockObject", "func:*FS.windowsLock"},
+                        "windowsLock": {"func:*FS.windowsLock", "func:*FS.nativeLock", "func:*FS.ObservationLock"},
+                    },
+                },
+                {
+                    path: "internal/testutil/readonly_windows.go", pkg: "testutil", resolver: fixtureResolver,
+                    pins: map[string]string{
+                        "import": "8e3ae269f7f3c708600a4d84636e1c7828066e740f6054d5fe20f2df53c40b59",
+                        fixtureResolver: "e92f9018a58070d6f7f83aac002b32f5ac5efabec699b480e9a730e2253315bf",
+                        "func:ReadOnlyFixture": "2e97b8d20f870bf47fbb72d56face7da8aa174f9816979384115d7bf77ad1c4d",
+                    },
+                    references: map[string][]string{
+                        "fixtureAdvapi": {"var:fixtureAdvapi"},
+                        "fixtureGetSecurity": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                        "fixtureSetSecurity": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                        "fixtureConvertSecurity": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                        "fixtureSecurityControl": {"var:fixtureAdvapi", "func:ReadOnlyFixture"},
+                    },
+                },
+            }
+            func nativeKey(declaration ast.Decl) string {
+                switch value := declaration.(type) {
+                case *ast.FuncDecl:
+                    name := value.Name.Name
+                    if value.Recv != nil {
+                        var receiver bytes.Buffer
+                        if err := format.Node(&receiver, token.NewFileSet(), value.Recv.List[0].Type); err != nil { panic(err) }
+                        name = receiver.String()+"."+name
+                    }
+                    return "func:"+name
+                case *ast.GenDecl:
+                    if value.Tok == token.IMPORT { return "import" }
+                    if len(value.Specs) == 0 { return "" }
+                    switch spec := value.Specs[0].(type) {
+                    case *ast.TypeSpec: return "type:"+spec.Name.Name
+                    case *ast.ValueSpec:
+                        if len(spec.Names) > 0 { return value.Tok.String()+":"+spec.Names[0].Name }
+                    }
+                }
+                return ""
+            }
+            func inside(node ast.Node, declaration ast.Decl) bool {
+                return declaration != nil && node.Pos() >= declaration.Pos() && node.End() <= declaration.End()
+            }
             func main() {
                 if len(os.Args) != 2 { panic("expected production Go root") }
                 findings := []string{}
                 err := filepath.WalkDir(os.Args[1], func(path string, entry fs.DirEntry, walkErr error) error {
                     if walkErr != nil { return walkErr }
                     if entry.IsDir() || !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") { return nil }
-                    parsed, err := parser.ParseFile(token.NewFileSet(), path, nil, 0)
+                    positions := token.NewFileSet()
+                    parsed, err := parser.ParseFile(positions, path, nil, 0)
                     if err != nil { return err }
+                    // The process exception pins one reviewed fixed-probe function,
+                    // never a file/package. Any edit requires explicit re-review.
+                    var reviewedGit *ast.FuncDecl
+                    relative, err := filepath.Rel(os.Args[1], path)
+                    if err != nil { return err }
+                    if filepath.ToSlash(relative) == "internal/evidence/completion_workspace.go" {
+                        for _, declaration := range parsed.Decls {
+                            fn, ok := declaration.(*ast.FuncDecl)
+                            if !ok || fn.Name.Name != "completionGitText" { continue }
+                            var normalized bytes.Buffer
+                            if err := format.Node(&normalized, positions, fn); err != nil { return err }
+                            digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
+                            if digest == "bda95669da96ff24e4c7560bea7cf8b147b7bc320775a1267fb7d51f930b9ab5" { reviewedGit = fn
+                            } else { findings = append(findings, path+" has unreviewed Git probe "+digest) }
+                        }
+                    }
+                    reviewedResolvers := map[*ast.CallExpr]bool{}
+                    protectedNative := false
+                    comments := token.NewFileSet()
+                    commented, err := parser.ParseFile(comments, path, nil, parser.ParseComments)
+                    if err != nil { return err }
+                    for _, review := range nativeReviews {
+                        samePath := filepath.ToSlash(relative) == review.path
+                        declarations := map[string]ast.Decl{}
+                        valid := samePath && parsed.Name.Name == review.pkg
+                        if samePath {
+                            counts := map[string]int{}
+                            for _, declaration := range parsed.Decls {
+                                key := nativeKey(declaration)
+                                expected, selected := review.pins[key]
+                                if !selected { continue }
+                                counts[key]++
+                                var normalized bytes.Buffer
+                                if err := format.Node(&normalized, positions, declaration); err != nil { return err }
+                                digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
+                                if digest != expected { valid = false }
+                                declarations[key] = declaration
+                            }
+                            for key := range review.pins { if counts[key] != 1 { valid = false } }
+                            // Normalization omits comments; compiler directives must
+                            // not change an otherwise identical admitted body.
+                            builds := 0
+                            for _, group := range commented.Comments {
+                                for _, comment := range group.List {
+                                    directive := strings.TrimSpace(comment.Text)
+                                    if strings.HasPrefix(directive, "//go:") || strings.HasPrefix(directive, "//line ") || strings.HasPrefix(directive, "/*line ") {
+                                        if directive == "//go:build windows" && comments.Position(comment.Pos()).Line == 1 { builds++
+                                        } else { valid = false; findings = append(findings, path+" has unreviewed native directive") }
+                                    }
+                                }
+                            }
+                            if builds != 1 { valid = false }
+                            if !valid { findings = append(findings, path+" has unreviewed native pin") }
+                            protectedNative = true
+                            if valid {
+                                ast.Inspect(declarations[review.resolver], func(node ast.Node) bool {
+                                    if call, ok := node.(*ast.CallExpr); ok {
+                                        if selector, ok := call.Fun.(*ast.SelectorExpr); ok && (selector.Sel.Name == "NewProc" || selector.Sel.Name == "NewLazyDLL") { reviewedResolvers[call] = true }
+                                    }
+                                    return true
+                                })
+                            }
+                        }
+                        if !samePath {
+                            for _, group := range commented.Comments { for _, comment := range group.List {
+                                if !strings.HasPrefix(comment.Text, "//go:linkname ") && !strings.HasPrefix(comment.Text, "//go:linknamestd ") { continue }
+                                for name := range review.references {
+                                    if strings.Contains(comment.Text, name) { findings = append(findings, path+" has unreviewed native directive") }
+                                }
+                            } }
+                        }
+                        // Private globals are visible across files in the same
+                        // package: method values, aliases and reassignments count.
+                        if parsed.Name.Name == review.pkg {
+                            ast.Inspect(parsed, func(node ast.Node) bool {
+                                identifier, ok := node.(*ast.Ident)
+                                if !ok { return true }
+                                scopes, tracked := review.references[identifier.Name]
+                                if !tracked { return true }
+                                if valid { for _, key := range scopes { if inside(identifier, declarations[key]) { return true } } }
+                                findings = append(findings, path+" has native reference outside reviewed scope: "+identifier.Name)
+                                return true
+                            })
+                        }
+                    }
                     sensitive := map[string]map[string]bool{}
+                    processImports := map[string]bool{}
                     for _, imported := range parsed.Imports {
                         importPath, err := strconv.Unquote(imported.Path.Value)
                         if err != nil { return err }
                         alias := filepath.Base(importPath)
                         if imported.Name != nil { alias = imported.Name.Name }
-                        if importPath == "C" || importPath == "os/exec" {
+                        if importPath == "C" || importPath == "os/exec" && (reviewedGit == nil || alias != "exec") {
                             findings = append(findings, fmt.Sprintf("%s imports %s", path, importPath))
                         }
+                        if importPath == "os/exec" { processImports[alias] = true }
                         if importPath == "syscall" {
                             if alias == "." { findings = append(findings, path+" dot-imports syscall") }
                             sensitive[alias] = map[string]bool{
@@ -1166,11 +1438,21 @@ class PackageTests(unittest.TestCase):
                             selector, ok := call.Fun.(*ast.SelectorExpr)
                             if !ok { return true }
                             qualifier, ok := selector.X.(*ast.Ident)
+                            if reviewedResolvers[call] { return false }
+                            if protectedNative && (selector.Sel.Name == "NewProc" || selector.Sel.Name == "NewLazyDLL") {
+                                findings = append(findings, path+" has native resolver outside reviewed declaration")
+                                return false
+                            }
+                            if ok && processImports[qualifier.Name] {
+                                if reviewedGit != nil && qualifier.Name == "exec" && selector.Sel.Name == "CommandContext" && call.Pos() >= reviewedGit.Pos() && call.End() <= reviewedGit.End() { return false }
+                                findings = append(findings, fmt.Sprintf("%s calls unreviewed process %s.%s", path, qualifier.Name, selector.Sel.Name))
+                                return false
+                            }
                             if selector.Sel.Name == "NewProc" {
                                 if len(call.Args) == 1 {
                                     if literal, ok := call.Args[0].(*ast.BasicLit); ok {
                                         name, err := strconv.Unquote(literal.Value)
-                                        if err == nil && (name == "LockFileEx" || name == "UnlockFileEx") { return false }
+                                        if err == nil && (name == "LockFileEx" || name == "UnlockFileEx" || name == "GetFileInformationByHandleEx") { return false }
                                     }
                                 }
                                 findings = append(findings, fmt.Sprintf("%s resolves a non-locking Windows procedure", path))
@@ -1201,7 +1483,7 @@ class PackageTests(unittest.TestCase):
                             findings = append(findings, fmt.Sprintf("%s references NewProc outside a validated literal call", path))
                             return true
                         }
-                        if ok && sensitive[qualifier.Name][selector.Sel.Name] {
+                        if ok && (sensitive[qualifier.Name][selector.Sel.Name] || processImports[qualifier.Name]) {
                             findings = append(findings, fmt.Sprintf("%s references %s.%s", path, qualifier.Name, selector.Sel.Name))
                         }
                         return true
@@ -1247,6 +1529,110 @@ class PackageTests(unittest.TestCase):
         self.assertTrue(any("calls sx.NewLazyDLL" in item for item in negative_findings))
         self.assertTrue(any("non-locking Windows procedure" in item for item in negative_findings))
         self.assertTrue(any("NewProc outside a validated literal call" in item for item in negative_findings))
+
+        # An approved helper does not exempt another process call in its file,
+        # and changing even its fixed transport flags invalidates the exception.
+        probe = REPO / "core/artifacts/internal/evidence/completion_workspace.go"
+        bounded = self.base / "probe-negative-control"
+        target = bounded / "internal/evidence/completion_workspace.go"
+        target.parent.mkdir(parents=True)
+        target.write_text(probe.read_text(encoding="utf-8") +
+                          '\nfunc escape() { _ = exec.Command("downloader") }\n', encoding="utf-8")
+        self.assertTrue(any("unreviewed process" in item for item in run_guard(bounded)))
+        target.write_text(probe.read_text(encoding="utf-8").replace(
+            '"protocol.allow=never"', '"protocol.allow=always"'), encoding="utf-8")
+        self.assertTrue(any("unreviewed Git probe" in item for item in run_guard(bounded)))
+
+        # Exact reviewed native seams are data for the scanner, never executed.
+        # Each mutation starts from the same passing two-file snapshot.
+        native_sources = {
+            "internal/store/fs_lock_windows.go": (
+                REPO / "core/artifacts/internal/store/fs_lock_windows.go").read_text(encoding="utf-8"),
+            "internal/testutil/readonly_windows.go": (
+                REPO / "core/artifacts/internal/testutil/readonly_windows.go").read_text(encoding="utf-8"),
+        }
+        native = self.base / "native-guard-controls"
+        def reset_native():
+            if native.exists():
+                self.assertEqual(self.base.resolve(), native.resolve().parent)
+                shutil.rmtree(native)
+            for relative, content in native_sources.items():
+                path = native / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+        reset_native()
+        self.assertEqual([], run_guard(native), "reviewed native snapshot must be admitted")
+        store_path, fixture_path = native_sources
+        mutations = (
+            ("wrong-store-dll", store_path, '"ntdll.dll"', '"wininet.dll"'),
+            ("wrong-store-procedure", store_path, '"NtCreateFile"', '"WinExec"'),
+            ("wrong-fixture-dll", fixture_path, '"advapi32.dll"', '"wininet.dll"'),
+            ("wrong-fixture-procedure", fixture_path, '"GetFileSecurityW"', '"URLDownloadToFileW"'),
+            ("changed-access-mask", store_path, "0x120089", "0x12019f"),
+            ("changed-native-layout", store_path, "Length, MaximumLength uint16", "Length, MaximumLength uint32"),
+            ("missing-native-layout", store_path, "type lockIOStatus struct{ Status, Information uintptr }", ""),
+            ("duplicate-native-layout", store_path, "type lockIOStatus struct{ Status, Information uintptr }", "type lockIOStatus struct{ Status, Information uintptr }\ntype lockIOStatus struct{ Status, Information uintptr }"),
+            ("changed-share-flags", store_path, "syscall.FILE_SHARE_READ|syscall.FILE_SHARE_WRITE", "syscall.FILE_SHARE_READ|syscall.FILE_SHARE_WRITE|syscall.FILE_SHARE_DELETE"),
+            ("changed-caller", store_path, "f.windowsLock(exclusive, timeout, true)", "f.windowsLock(exclusive, timeout, false)"),
+            ("changed-fixture-root", fixture_path, "root := Root(t)", "root := t.TempDir()"),
+            ("changed-fixture-acl", fixture_path, "0x00010156", "0x00010157"),
+            ("import-origin", store_path, '"syscall"', 'syscall "attacker.invalid/syscall"'),
+            ("import-alias", fixture_path, '"syscall"', 'sx "syscall"'),
+            ("wrong-store-package", store_path, "package store", "package other"),
+            ("wrong-fixture-package", fixture_path, "package testutil", "package other"),
+            ("missing-resolver", store_path, '\tprocReOpenFile   = kernel32.NewProc("ReOpenFile")\n', ""),
+            ("moved-caller", store_path, "func pinLockObject(", "func unreviewedPinLockObject("),
+        )
+        for name, relative, before, after in mutations:
+            with self.subTest(native_mutation=name):
+                reset_native()
+                self.assertIn(before, native_sources[relative])
+                (native / relative).write_text(native_sources[relative].replace(before, after), encoding="utf-8")
+                self.assertTrue(any("unreviewed native pin" in item for item in run_guard(native)), name)
+        escapes = (
+            ("extra-store-resolution", store_path, 'var extra = syscall.NewLazyDLL("kernel32.dll").NewProc("LockFileEx")', "native resolver outside"),
+            ("extra-fixture-resolution", fixture_path, 'var extra = syscall.NewLazyDLL("kernel32.dll").NewProc("LockFileEx")', "native resolver outside"),
+            ("direct-procedure", store_path, 'func escape() { procNtCreateFile.Call(0) }', "native reference outside"),
+            ("aliased-procedure", store_path, 'var escapeAlias = procNtCreateFile\nfunc escape() { escapeAlias.Call(0) }', "native reference outside"),
+            ("method-value", store_path, 'var resolve = kernel32.NewProc', "native reference outside"),
+            ("reassignment", store_path, 'func escape() { procNtCreateFile = nil }', "native reference outside"),
+            ("fixture-alias", fixture_path, 'var escapeAlias = fixtureSetSecurity\nfunc escape() { escapeAlias.Call(0) }', "native reference outside"),
+            ("compiler-directive", store_path, '//go:linkname escape other.Native\nfunc escape() {}', "unreviewed native directive"),
+        )
+        for name, relative, extra, finding in escapes:
+            with self.subTest(native_escape=name):
+                reset_native()
+                (native / relative).write_text(native_sources[relative] + "\n" + extra + "\n", encoding="utf-8")
+                self.assertTrue(any(finding in item for item in run_guard(native)), name)
+        for relative, extra in (
+                (store_path, 'var escapeAlias = procNtCreateFile\nfunc escape() { escapeAlias.Call(0) }'),
+                (fixture_path, 'var escapeAlias = fixtureSetSecurity\nfunc escape() { escapeAlias.Call(0) }')):
+            with self.subTest(native_cross_file=relative):
+                reset_native()
+                other = (native / relative).with_name("escape.go")
+                package = "store" if relative == store_path else "testutil"
+                other.write_text("package " + package + "\n" + extra + "\n", encoding="utf-8")
+                self.assertTrue(any("native reference outside" in item for item in run_guard(native)))
+        reset_native()
+        (native / "internal/store/linked.go").write_text(
+            'package store\nimport _ "unsafe"\n//go:linkname alias local/store.procNtCreateFile\nvar alias uintptr\n',
+            encoding="utf-8")
+        self.assertTrue(any("unreviewed native directive" in item for item in run_guard(native)))
+        reset_native()
+        (native / "internal/store/linked-standard.go").write_text(
+            'package store\nimport _ "unsafe"\n//go:linknamestd alias github.com/arbiterForge/codeArbiter/core/artifacts/internal/store.procNtCreateFile\nvar alias uintptr\n',
+            encoding="utf-8")
+        self.assertTrue(any("unreviewed native directive" in item for item in run_guard(native)))
+        for relative in native_sources:
+            with self.subTest(native_moved_path=relative):
+                reset_native()
+                source = native / relative
+                source.rename(source.with_name("moved.go"))
+                self.assertTrue(any("native reference outside" in item for item in run_guard(native)))
+        reset_native()
+        duplicate = native_sources[store_path].split("var (", 1)[1].split("\n)", 1)[0]
+        (native / store_path).write_text(native_sources[store_path] + "\nvar (" + duplicate + "\n)\n", encoding="utf-8")
+        self.assertTrue(any("unreviewed native pin" in item for item in run_guard(native)))
 
     def test_release_packaging_rejects_missing_duplicate_and_mismatched_candidates(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))

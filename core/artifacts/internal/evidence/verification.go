@@ -5,6 +5,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
@@ -20,6 +21,10 @@ func textSchema() map[string]any { return map[string]any{"type": "string", "minL
 func PayloadSchema(kind string) map[string]any {
 	p := map[string]any{"input_sha256": hashSchema(), "spec_sha256": hashSchema()}
 	r := []string{"input_sha256", "spec_sha256"}
+	if kind == "spec_review" || kind == "quality_review" {
+		p["completion_sha256"] = hashSchema()
+		p["completion_assessment"] = observation.CompletionAssessmentSchema()
+	}
 	if kind == "quality_review" {
 		p["base_input_sha256"] = hashSchema()
 		p["task_hashes"] = map[string]any{"type": "object", "additionalProperties": hashSchema()}
@@ -98,6 +103,29 @@ func TaskPayload(r *authority.Receipt, plan, spec *model.Document, task map[stri
 }
 func TaskFresh(f *store.FS, plan, spec *model.Document, task map[string]any, inputHash string) error {
 	state := model.M(model.M(model.M(plan.Data["execution"])["tasks"])[model.S(task["id"])])
+	completion, err := LatestTaskCompletion(f, plan, model.S(task["id"]))
+	if err != nil {
+		return err
+	}
+	if completion != nil {
+		if err = TaskPayload(completion, plan, spec, task, inputHash); err != nil {
+			return err
+		}
+		if err = CompletionReview(f, completion, plan, spec, model.S(completion.Payload()["completion_sha256"]), ""); err != nil {
+			return err
+		}
+		context, err := ReviewContext(f, completion)
+		if err != nil {
+			return err
+		}
+		row := completedRow(context, model.S(task["id"]))
+		for _, ref := range model.Strings(state["evidence_refs"]) {
+			if ref == model.S(row["receipt_ref"]) {
+				return nil
+			}
+		}
+		return fault.New("COMPLETION_REQUIRED", "task state does not retain its exact selected verification")
+	}
 	found := map[string]bool{}
 	for _, p := range model.Strings(state["evidence_refs"]) {
 		r, e := authority.Load(f, p)
@@ -167,6 +195,9 @@ func AcceptedFresh(f *store.FS, plan, spec *model.Document, id, inputHash string
 		r, e := authority.Load(f, ref)
 		if e == nil && model.S(r.Data["kind"]) == "quality_review" {
 			if e = Quality(r, plan, spec, scope, inputHash); e == nil {
+				if e = QualityCompletion(f, r, plan, spec, scope, ""); e != nil {
+					continue
+				}
 				return nil
 			}
 		}

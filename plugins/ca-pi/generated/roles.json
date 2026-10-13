@@ -148,8 +148,7 @@
       "routines/tribunal/SKILL.md"
     ],
     "tools": [
-      "read",
-      "bash"
+      "read"
     ]
   },
   {
@@ -160,8 +159,7 @@
       "routines/tribunal/SKILL.md"
     ],
     "tools": [
-      "read",
-      "bash"
+      "read"
     ]
   },
   {
@@ -206,7 +204,6 @@
     ],
     "tools": [
       "read",
-      "bash",
       "write"
     ]
   },

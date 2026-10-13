@@ -931,6 +931,18 @@ class ActivationAndMarkerHelpersTest(unittest.TestCase):
                     (fixture["enabled"], fixture["malformed"]),
                 )
 
+    def test_unicode_whitespace_does_not_split_frontmatter_or_body_lines(self):
+        header = "\x1c---\x85\n\x1darbiter:\x85enabled\x1e\n\x1f---\x85\n"
+        for body, initialized in (
+            ("  <!-- INITIALIZED -->  \n", True),
+            ("```md\n<!--INITIALIZED-->\n```\n", False),
+            ("<!-- explanation:\n<!--INITIALIZED-->\n-->\n", False),
+        ):
+            with self.subTest(initialized=initialized, body=body):
+                text = header + body
+                self.assertEqual(_hooklib.frontmatter_enabled_text(text), (True, False))
+                self.assertEqual(_hooklib.initialized_body_text(text), initialized)
+
     @unittest.skipUnless(_sym_ok(), "symlink creation not permitted here")
     def test_classify_protected_resolves_symlink(self):
         with tempfile.TemporaryDirectory() as d:

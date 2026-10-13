@@ -12,11 +12,16 @@
 # Usage:
 #   python init-codearbiter.py [--root PATH] [--stage N]
 #   python init-codearbiter.py --check        # report state, create nothing
+#   python init-codearbiter.py --check --passive --root PATH  # external pre-session read
 #   python init-codearbiter.py --repair-lock-exclusion [--root PATH]
+#   python init-codearbiter.py --root PATH --context-request FILE  # bounded writer bridge, including initialized refresh
 
 import argparse
+import json
 import subprocess
 import os
+import re
+import stat
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +30,8 @@ from _taskboardlib import DONE_TASKS  # noqa: E402 — shared archive template (
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _hooklib  # noqa: E402 — set_host DI seam (#257)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
+from _activationlib import passive_activation_inventory  # noqa: E402
+import _artifactlib  # noqa: E402
 
 # NOTE: this stub deliberately does NOT contain the initialization sentinel
 # (an HTML comment wrapping the word INITIALIZED). The SessionStart hook greps
@@ -122,17 +129,132 @@ def project_root(opt):
     return os.path.abspath(os.getcwd())
 
 
+def _regular_scaffold_entry(path, *, directory):
+    """Reject aliases and reparse points before reading or creating scaffold state."""
+    try:
+        info = os.lstat(path)
+    except OSError:
+        return False
+    reparse = getattr(info, "st_file_attributes", 0) & getattr(
+        stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    return not reparse and (stat.S_ISDIR(info.st_mode) if directory
+                            else stat.S_ISREG(info.st_mode))
+
+
+def _scaffold_inventory(cad, ctx, requested_stage):
+    """Return absent scaffold names only when surviving state is safe to retain."""
+    names = ("CONTEXT.md", *FILES)
+    if os.path.lexists(cad) and not _regular_scaffold_entry(cad, directory=True):
+        raise SystemExit(f"REFUSING: {cad} is not a regular project-state directory.")
+    present = {name for name in names if os.path.lexists(os.path.join(cad, name))}
+    if not present:
+        if os.path.isdir(cad) and os.listdir(cad):
+            raise SystemExit(f"REFUSING: {cad} has existing state without a scaffold; inspect it first.")
+        return list(names), False
+    for name in present:
+        path = os.path.join(cad, name)
+        if not _regular_scaffold_entry(path, directory=False):
+            raise SystemExit(f"REFUSING: {path} is not a regular scaffold file.")
+    if "CONTEXT.md" not in present:
+        # A missing stub amid content/provenance may be an interrupted native
+        # transaction. Only the known scaffold prefix can be resumed here.
+        unexpected = set(os.listdir(cad)) - set(FILES)
+        if unexpected:
+            raise SystemExit(f"REFUSING: {ctx} is absent amid other project state; inspect prior write outcome.")
+    else:
+        try:
+            with open(ctx, encoding="utf-8") as handle:
+                body = handle.read()
+        except (OSError, UnicodeError) as exc:
+            raise SystemExit(f"REFUSING: cannot inspect {ctx}: {exc}") from None
+        enabled, malformed = _hooklib.frontmatter_enabled_text(body)
+        lines = body.splitlines()
+        boundary = next((index for index, line in enumerate(lines[1:], 1)
+                         if line.strip() == "---"), None)
+        stages = ([match.group(1) for line in lines[1:boundary]
+                   if (match := re.fullmatch(r"\s*stage:\s*([1-9][0-9]*)\s*", line))]
+                  if boundary is not None else [])
+        if (not enabled or malformed or len(stages) != 1 or
+                _hooklib.initialized_body_text(body)):
+            raise SystemExit(f"REFUSING: {ctx} is invalid or initialized; inspect before recovery.")
+        if requested_stage is not None and int(stages[0]) != requested_stage:
+            raise SystemExit(f"REFUSING: {ctx} stage differs from --stage; preserve existing context.")
+    headers = {"open-tasks.md": "# Open tasks", "done-tasks.md": "# Done tasks",
+               "open-questions.md": "# Open questions",
+               "overrides.log": "# codeArbiter override log"}
+    for name in present & headers.keys():
+        path = os.path.join(cad, name)
+        try:
+            with open(path, encoding="utf-8") as handle:
+                valid = handle.readline().rstrip("\r\n").startswith(headers[name])
+        except (OSError, UnicodeError):
+            valid = False
+        if not valid:
+            raise SystemExit(f"REFUSING: {path} has an unrecognized header; preserve it for review.")
+    if "last-checkpoint" in present:
+        try:
+            with open(os.path.join(cad, "last-checkpoint"), encoding="utf-8") as handle:
+                valid = bool(re.fullmatch(r"[0-9]+\s*", handle.read()))
+        except (OSError, UnicodeError):
+            valid = False
+        if not valid:
+            raise SystemExit("REFUSING: last-checkpoint is malformed; preserve it for review.")
+    return [name for name in names if name not in present], True
+
+
+def _create_scaffold_file(path, content, *, newline=None):
+    """Create once; a concurrent new file is a conflict, never an overwrite."""
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(path, flags, 0o666)
+    except FileExistsError:
+        raise SystemExit(f"REFUSING: {path} appeared during scaffold recovery.") from None
+    with os.fdopen(fd, "w", encoding="utf-8", newline=newline) as handle:
+        handle.write(content)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument("--root")
     ap.add_argument("--stage", type=int)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--passive", action="store_true", help=(
+        "inspect explicit root before host activation; no Git or network probes"))
+    ap.add_argument("--context-request", help=argparse.SUPPRESS)
     ap.add_argument("--repair-lock-exclusion", action="store_true", help=(
         "repair only Git-local info/exclude for an existing scaffold; retain the "
         "task-board OS lock, never rewrite project state (cannot combine with --check/--stage)"))
     args = ap.parse_args(argv)
+    if args.context_request:
+        if not args.root or args.stage is not None or args.check or args.passive or args.repair_lock_exclusion:
+            ap.error("--context-request requires --root and excludes scaffold flags")
+        try:
+            root = _artifactlib._trusted_directory(args.root, "UNSAFE_ROOT")
+            request = _artifactlib.read_context_preview_request(root, args.context_request)
+            operation, payload = _artifactlib.validate_context_writer_request(request)
+            client = _artifactlib.context_writer_client(root)
+            if operation == "preview":
+                from _artifactauthoritylib import arm_context_preview
+                result = arm_context_preview(root, client, payload)
+            else:
+                result = client.call("context-apply", payload)
+        except RuntimeError as exc:
+            raise SystemExit(f"REFUSING context request: {exc}") from None
+        print(json.dumps(result, sort_keys=True))
+        return
+    if args.passive:
+        if not args.check or not args.root or args.stage is not None or args.repair_lock_exclusion:
+            ap.error("--passive requires --check and --root; excludes --stage and repair")
+        try:
+            report = passive_activation_inventory(args.root)
+        except (OSError, UnicodeError, ValueError) as exc:
+            raise SystemExit(f"REFUSING passive inspection: {exc}") from None
+        print(json.dumps(report, sort_keys=True))
+        return
     if args.repair_lock_exclusion and (args.check or args.stage is not None):
         ap.error("--repair-lock-exclusion cannot combine with --check or --stage")
+    requested_stage = args.stage
     if args.stage is None:
         args.stage = 1
 
@@ -149,13 +271,17 @@ def main(argv=None):
     name = os.path.basename(root.rstrip("/\\")) or "project"
 
     if args.check:
+        if os.path.lexists(cad) and not _regular_scaffold_entry(cad, directory=True):
+            raise SystemExit(f"REFUSING: {cad} is not a regular project-state directory.")
+        if os.path.lexists(ctx) and not _regular_scaffold_entry(ctx, directory=False):
+            raise SystemExit(f"REFUSING: {ctx} is not a regular scaffold file.")
         if os.path.exists(ctx):
             print(f"ALREADY SCAFFOLDED: {ctx} exists.")
             with open(ctx, encoding="utf-8", errors="replace") as f:
                 text = f.read()
-            import re
-            initd = bool(re.search(r"(?m)^\s*<!--\s*INITIALIZED\s*-->\s*$", text))
-            print("arbiter: " + ("enabled" if re.search(r"(?m)^arbiter:\s*enabled\s*$", text) else "not enabled"))
+            initd = _hooklib.initialized_body_text(text)
+            enabled, _malformed = _hooklib.frontmatter_enabled_text(text)
+            print("arbiter: " + ("enabled" if enabled else "not enabled"))
             print("initialized body: " + ("yes" if initd else
                   "no (run " + _cc + " or " + _dc + ")"))
         else:
@@ -164,7 +290,8 @@ def main(argv=None):
 
     from _taskexcludelib import ensure_task_lock_excluded, TaskExclusionError
     if args.repair_lock_exclusion:
-        if not os.path.isfile(ctx) or os.path.islink(ctx):
+        if (not _regular_scaffold_entry(cad, directory=True) or
+                not _regular_scaffold_entry(ctx, directory=False)):
             raise SystemExit("REFUSING: task lock exclusion repair requires an existing scaffold.")
         try:
             result = ensure_task_lock_excluded(root, required=True)
@@ -173,7 +300,8 @@ def main(argv=None):
         print(f"task lock exclusion: {result}")
         return
 
-    if os.path.exists(ctx):
+    absent, recovering = _scaffold_inventory(cad, ctx, requested_stage)
+    if recovering and not absent:
         raise SystemExit(
             f"REFUSING: {ctx} already exists. .codearbiter/ is already scaffolded here. "
             f"To populate it, run {_cc} or {_dc}; to repair, edit by hand.")
@@ -187,19 +315,16 @@ def main(argv=None):
 
     os.makedirs(cad, exist_ok=True)
     created = []
-    if not os.path.exists(ctx):
-        with open(ctx, "w", encoding="utf-8") as f:
-            f.write(CONTEXT.format(stage=args.stage, name=name,
-                                   create_context=_cc, decompose=_dc))
+    if "CONTEXT.md" in absent:
+        _create_scaffold_file(ctx, CONTEXT.format(stage=args.stage, name=name,
+                              create_context=_cc, decompose=_dc))
         created.append("CONTEXT.md")
     for fname, content in FILES.items():
-        fp = os.path.join(cad, fname)
-        if not os.path.exists(fp):
+        if fname in absent:
             # Match taskwrite's LF output for this shared append-only template
             # on Windows too; other scaffold files retain their existing EOLs.
             newline = "\n" if fname == "done-tasks.md" else None
-            with open(fp, "w", encoding="utf-8", newline=newline) as f:
-                f.write(content)
+            _create_scaffold_file(os.path.join(cad, fname), content, newline=newline)
             created.append(fname)
 
     # #161: install the git-level enforcement backstop (pre-commit/pre-push) so
@@ -215,9 +340,12 @@ def main(argv=None):
     except Exception as e:  # noqa: BLE001
         print(f"git hooks: install skipped ({e})", file=sys.stderr)
 
-    print(f"SCAFFOLDED .codearbiter/ at {cad}")
+    print(f"{'RECOVERED' if recovering else 'SCAFFOLDED'} .codearbiter/ at {cad}")
     print("created: " + ", ".join(created))
-    print(f"arbiter: enabled (stage {args.stage}); CONTEXT.md is a stub (no <!--INITIALIZED--> sentinel).")
+    if recovering and "CONTEXT.md" not in created:
+        print("arbiter: enabled; existing uninitialized CONTEXT.md and history retained.")
+    else:
+        print(f"arbiter: enabled (stage {args.stage}); CONTEXT.md is a stub (no <!--INITIALIZED--> sentinel).")
     print(f"Next: run {_cc} (source exists) or {_dc} (greenfield) to populate.")
 
 

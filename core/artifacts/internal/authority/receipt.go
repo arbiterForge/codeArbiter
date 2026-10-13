@@ -32,7 +32,7 @@ func subjectSchema() map[string]any {
 	return obj(map[string]any{"artifact_id": str(), "normative_sha256": digestSchema(), "record_id": str()}, "artifact_id", "normative_sha256", "record_id")
 }
 func ReceiptSchema() map[string]any {
-	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.2.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema(), "authority_source_ref": str(), "authority_source_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256", "authority_source_ref", "authority_source_sha256")
+	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.2.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema(), "authority_source_ref": str(), "authority_source_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256", "authority_source_ref", "authority_source_sha256")
 }
 func legacyReceiptSchema() map[string]any {
 	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.1.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256")
@@ -49,7 +49,7 @@ func EventSchema() map[string]any {
 		observed[k] = v
 	}
 	observed["format"] = map[string]any{"const": "codearbiter.workflow-event/0.2.0"}
-	observed["kind"] = map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}
+	observed["kind"] = map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")}
 	observed["observation_ref"] = str()
 	observed["observation_sha256"] = digestSchema()
 	return map[string]any{"oneOf": []any{
@@ -83,11 +83,27 @@ func refHash(p, sub string) (string, error) {
 // read bytes. This remains a cooperative same-user filesystem boundary, not
 // cryptographic identity authentication.
 func LoadSource(f *store.FS, p, expected string) (map[string]any, []byte, error) {
+	return LoadSourceMemo(observation.MemoFor(f), observation.FSReader(f), p, expected)
+}
+
+// Reader supplies evidence-object bytes by reference; see observation.Reader.
+type Reader = observation.Reader
+
+// LoadSourceWith is LoadSource over an arbitrary Reader.
+func LoadSourceWith(read Reader, p, expected string) (map[string]any, []byte, error) {
+	return LoadSourceMemo(nil, read, p, expected)
+}
+
+// LoadSourceMemo is LoadSourceWith that reuses and records validation in m: an
+// authority source already read and validated in this operation is not read or
+// schema-checked again.
+func LoadSourceMemo(m *observation.Memo, read Reader, p, expected string) (map[string]any, []byte, error) {
 	h, err := refHash(p, "authority-sources")
 	if err != nil || h != expected {
 		return nil, nil, fault.New("AUTHORITY_UNVERIFIED", "authority source locator and digest do not agree")
 	}
-	b, err := f.Read(p, 1<<20)
+	_, validated := m.Held("authority-sources", expected)
+	b, err := read(p, 1<<20)
 	if err != nil || canonical.BytesHash(b) != expected {
 		return nil, nil, fault.New("AUTHORITY_UNVERIFIED", "authority source is unavailable or changed")
 	}
@@ -95,12 +111,16 @@ func LoadSource(f *store.FS, p, expected string) (map[string]any, []byte, error)
 	if err != nil {
 		return nil, nil, fault.New("AUTHORITY_UNVERIFIED", "authority source is not canonical workflow-event JSON")
 	}
-	if err = first(schema.ValidateWith(EventSchema(), ev)); err != nil {
-		return nil, nil, err
+	if !validated {
+		m.Count("authority-sources", expected)
+		if err = first(schema.ValidateWith(EventSchema(), ev)); err != nil {
+			return nil, nil, err
+		}
+		if err = validateEventRules(ev); err != nil {
+			return nil, nil, err
+		}
 	}
-	if err = ValidateEvent(ev); err != nil {
-		return nil, nil, err
-	}
+	m.Mark("authority-sources", expected)
 	return ev, b, nil
 }
 
@@ -118,8 +138,43 @@ func Inspect(f *store.FS, p string) (*Receipt, error) {
 	if e != nil {
 		return nil, e
 	}
-	b, e := f.Read(p, 1<<20)
+	m := observation.MemoFor(f)
+	if r := reuseReceipt(f, p, h); r != nil {
+		return r, nil
+	}
+	b, e := observation.ReadRecorded(f, p, 1<<20)
 	if e != nil {
+		return nil, fault.New("AUTHORITY_UNVERIFIED", "receipt is unavailable")
+	}
+	return inspectMemo(m, p, b, observation.FSReader(f), true)
+}
+
+// InspectWith validates the receipt at p whose bytes b the caller has already
+// read, taking its event, observation, evidence context and authority source from
+// read. It applies exactly the schema, hash, link and source checks of Inspect
+// (which delegates here), so the two cannot disagree. read must not cache errors
+// or absence: an object it cannot supply fails the receipt closed.
+func InspectWith(p string, b []byte, read Reader) (*Receipt, error) {
+	return InspectMemo(nil, p, b, read)
+}
+
+// InspectMemo is InspectWith that reuses and records validation in m. Pass a
+// Scan view when read serves a completed scan: presence still comes from read.
+//
+// Only Inspect, which reads through the repository itself, lets a validated chain
+// be reused as a whole. A caller-supplied Reader can record per-object schema
+// markers (the bytes they cover are hash-checked again on every use) but never a
+// chain, and no bytes at all, so it cannot make a later repository read skip disk.
+func InspectMemo(m *observation.Memo, p string, b []byte, read Reader) (*Receipt, error) {
+	return inspectMemo(m, p, b, read, false)
+}
+
+func inspectMemo(m *observation.Memo, p string, b []byte, read Reader, trusted bool) (*Receipt, error) {
+	h, e := refHash(p, "receipts")
+	if e != nil {
+		return nil, e
+	}
+	if len(b) > 1<<20 {
 		return nil, fault.New("AUTHORITY_UNVERIFIED", "receipt is unavailable")
 	}
 	if canonical.BytesHash(b) != h {
@@ -134,20 +189,28 @@ func Inspect(f *store.FS, p string) (*Receipt, error) {
 	if receiptFormat == "codearbiter.receipt/0.1.0" {
 		receiptSchema = legacyReceiptSchema()
 	}
-	if e = first(schema.ValidateWith(receiptSchema, r)); e != nil {
-		return nil, e
+	if _, done := m.Held("receipts", h); !done {
+		m.Count("receipts", h)
+		if e = first(schema.ValidateWith(receiptSchema, r)); e != nil {
+			return nil, e
+		}
 	}
-	ep := EventRef(model.S(r["event_sha256"]))
-	eb, e := f.Read(ep, 1<<20)
-	if e != nil || canonical.BytesHash(eb) != model.S(r["event_sha256"]) {
+	eh := model.S(r["event_sha256"])
+	ep := EventRef(eh)
+	_, eventValidated := m.Held("events", eh)
+	eb, e := read(ep, 1<<20)
+	if e != nil || canonical.BytesHash(eb) != eh {
 		return nil, fault.New("AUTHORITY_UNVERIFIED", "captured workflow event is absent or changed")
 	}
 	ev, e := canonical.Object(eb)
 	if e != nil {
 		return nil, e
 	}
-	if e = first(schema.ValidateWith(EventSchema(), ev)); e != nil {
-		return nil, e
+	if !eventValidated {
+		m.Count("events", eh)
+		if e = first(schema.ValidateWith(EventSchema(), ev)); e != nil {
+			return nil, e
+		}
 	}
 	for _, k := range []string{"kind", "authority_kind", "subject"} {
 		a, _ := canonical.Hash(r[k])
@@ -156,16 +219,19 @@ func Inspect(f *store.FS, p string) (*Receipt, error) {
 			return nil, fault.New("AUTHORITY_UNVERIFIED", "receipt disagrees with its captured workflow event")
 		}
 	}
-	if e = ValidateEvent(ev); e != nil {
-		return nil, e
+	if !eventValidated {
+		if e = validateEventRules(ev); e != nil {
+			return nil, e
+		}
 	}
+	m.Mark("events", eh)
 	if model.S(ev["format"]) == "codearbiter.workflow-event/0.2.0" {
-		observed, _, observedErr := observation.Inspect(f, model.S(ev["observation_ref"]), model.S(ev["observation_sha256"]))
+		observed, _, observedErr := observation.InspectMemo(m, read, model.S(ev["observation_ref"]), model.S(ev["observation_sha256"]))
 		if observedErr != nil {
 			return nil, observedErr
 		}
 		contextRef, contextHash := model.S(observed["context_ref"]), model.S(observed["context_sha256"])
-		context, _, contextErr := observation.LoadContext(f, contextRef, contextHash)
+		context, _, contextErr := observation.LoadContextMemo(m, read, contextRef, contextHash)
 		if contextErr != nil {
 			return nil, contextErr
 		}
@@ -174,10 +240,14 @@ func Inspect(f *store.FS, p string) (*Receipt, error) {
 		}
 	}
 	if receiptFormat == "codearbiter.receipt/0.2.0" {
-		_, sourceBytes, sourceErr := LoadSource(f, model.S(r["authority_source_ref"]), model.S(r["authority_source_sha256"]))
+		_, sourceBytes, sourceErr := LoadSourceMemo(m, read, model.S(r["authority_source_ref"]), model.S(r["authority_source_sha256"]))
 		if sourceErr != nil || !bytes.Equal(sourceBytes, eb) || model.S(r["authority_source_sha256"]) != model.S(r["event_sha256"]) {
 			return nil, fault.New("AUTHORITY_UNVERIFIED", "captured event no longer matches its policy-owned authority source")
 		}
+	}
+	m.Mark("receipts", h)
+	if trusted {
+		m.Mark(chainKind, h)
 	}
 	return &Receipt{r, ev, p, h, ep}, nil
 }
@@ -227,6 +297,42 @@ func (r *Receipt) Subject(d *model.Document, id, kind string) error {
 	return nil
 }
 func (r *Receipt) Payload() map[string]any { return model.M(r.Event["payload"]) }
+
+// ValidateContextPreview admits only a current host-observed reply for this
+// exact renderer preview. A receipt reference is a locator, never a grant by
+// itself; Load independently checks its source, event, observation and context.
+func ValidateContextPreview(f *store.FS, receiptRef, binding string) error {
+	if !digest.MatchString(binding) {
+		return fault.New("AUTHORITY_UNVERIFIED", "context preview binding is malformed")
+	}
+	r, err := Load(f, receiptRef)
+	if err != nil {
+		return err
+	}
+	if model.S(r.Data["kind"]) != "context_approval" || model.S(r.Data["authority_kind"]) != "user_workflow" || model.S(r.Event["verdict"]) != "approved" {
+		return fault.New("AUTHORITY_UNVERIFIED", "receipt is not a host-observed context preview approval")
+	}
+	payload := r.Payload()
+	if len(payload) != 1 || model.S(payload["preview_binding_sha256"]) != binding {
+		return fault.New("STALE_EVIDENCE", "context approval does not bind this preview")
+	}
+	observed, _, err := observation.Load(f, model.S(r.Event["observation_ref"]), model.S(r.Event["observation_sha256"]))
+	if err != nil || model.S(observed["producer_profile"]) != "host-user-context-preview/0.1.0" {
+		return fault.New("AUTHORITY_UNVERIFIED", "context approval lacks its supported host observation")
+	}
+	context, _, err := observation.LoadContext(f, model.S(observed["context_ref"]), model.S(observed["context_sha256"]))
+	if err != nil {
+		return err
+	}
+	preview := model.M(context["preview"])
+	documentID := model.S(preview["document_id"])
+	subjectID := "CONTEXT-" + strings.ToUpper(documentID)
+	subject := model.M(r.Data["subject"])
+	if documentID == "" || model.S(context["activity"]) != "context_approval" || model.S(context["input_sha256"]) != binding || model.S(model.M(context["record"])["preview_binding_sha256"]) != binding || model.S(subject["artifact_id"]) != subjectID || model.S(subject["record_id"]) != subjectID || model.S(subject["normative_sha256"]) != binding {
+		return fault.New("STALE_EVIDENCE", "context approval has the wrong kind, document or preview scope")
+	}
+	return nil
+}
 func Approved(f *store.FS, d *model.Document) (*Receipt, error) {
 	gov := model.M(d.Data["governance"])
 	if model.S(gov["state"]) != "approved" {
@@ -315,6 +421,12 @@ func ValidateEvent(ev map[string]any) error {
 	if es := schema.ValidateWith(EventSchema(), ev); len(es) > 0 {
 		return &es[0]
 	}
+	return validateEventRules(ev)
+}
+
+// validateEventRules is ValidateEvent after the schema check, for callers that
+// have already validated (and counted) the event against EventSchema.
+func validateEventRules(ev map[string]any) error {
 	kind, authority, verdict := model.S(ev["kind"]), model.S(ev["authority_kind"]), model.S(ev["verdict"])
 	switch kind {
 	case "approval":
@@ -341,6 +453,10 @@ func ValidateEvent(ev map[string]any) error {
 		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "approved" {
 			return fault.New("AUTHORITY_UNVERIFIED", "farm authorization requires current workflow authority")
 		}
+	case "context_approval":
+		if authority != "user_workflow" || verdict != "approved" {
+			return fault.New("AUTHORITY_UNVERIFIED", "context approval requires an observed user workflow reply")
+		}
 	}
 	return nil
 }
@@ -351,10 +467,16 @@ func ValidateEvent(ev map[string]any) error {
 func InspectionVector(f *store.FS, d *model.Document) map[string]any {
 	out := map[string]any{}
 	read := func(p string) []byte {
-		b, err := f.Read(p, 1<<20)
-		if err != nil {
-			out[p] = map[string]any{"unavailable": true}
-			return nil
+		// An object this operation already read (the catalog's own receipt checks,
+		// or another document's approval naming it) is fingerprinted from those
+		// bytes, not read again. A failed read is never recorded.
+		b, ok := observation.Recorded(f, p, 1<<20)
+		if !ok {
+			var err error
+			if b, err = observation.ReadRecorded(f, p, 1<<20); err != nil {
+				out[p] = map[string]any{"unavailable": true}
+				return nil
+			}
 		}
 		out[p] = canonical.BytesHash(b)
 		return b

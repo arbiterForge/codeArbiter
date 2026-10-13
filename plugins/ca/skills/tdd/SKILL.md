@@ -20,6 +20,43 @@ dispatch remains blocked.
 
 Test-first, or it does not ship. Routed to by `/feature` (after spec approval), `/fix`, and `/refactor`.
 
+For a feature author, including a confirmed small-lane feature, the owning
+coordinator selects task paths and obtains the current bounded map, provenance,
+scoped command records and collector observations, applicable constraint
+references, and host-effective instructions in native precedence order. Before
+the author mutates or executes a discovered command, compose the fresh child
+input with `_artifactpromptlib.compose_feature_actor_input` and send its
+returned `input` to that child. Bind the actual approved spec and plan IDs
+for full-lane work. For a confirmed small-lane feature, pass its mini-spec
+text as `confirmed_mini_spec` and leave both artifact IDs absent; do not invent
+a plan or bypass its existing gate. The packet
+is an orientation aid with `requires_actor_check`, not admission. Recheck
+worktree/source identity and resolve applicable critical constraints before a
+material action. Missing optional map detail permits bounded read-only source
+inspection, with full schema or document body read only when needed.
+Apply `_contextselectlib.prepare_actor_delivery` to that selected packet for
+the actual child, task, worktree and current source/host epochs. Send its
+`delivery_text` when requested and count the attempt before the material
+action; an unknown receipt or surviving session marker never proves delivery.
+Re-select on resume, compaction, scope or worktree change, and report a blocked
+delivery gap rather than assuming the child retained prior context.
+
+For a fix or targeted test-only change, use the caller that already owns the
+task. Before the author mutates or executes a discovered command, call
+`_contextselectlib.compose_fix_or_test_actor_input` with the current scoped
+sources, exact command cwd and collector evidence, then send its returned
+`input` to that actor. Use `route='fix'`, `caller='fix'`, and the confirmed
+bug-origin evidence and named regression for a fix. Use `route='test_change'`
+with the existing `fix`, `feature`, or `refactor` caller for a test-only change;
+do not create a feature spec pair merely to deliver context. The selected
+caller retains its own approval and TDD gates. Reuse an actual bug-origin RED
+when it already proves the named regression; for a targeted test change,
+validate the test against the real defect or an honest fault fixture. Never
+change production behavior merely to manufacture a failing test. If this
+conflicts with a required TDD gate, surface the conflict to that gate's owner;
+context delivery does not waive it. The packet remains reported evidence, not
+task admission.
+
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess a command or a threshold:
@@ -28,11 +65,19 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — test, coverage, and lint invocations; file layout; mock patterns.
 - `${CLAUDE_PLUGIN_ROOT}/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 3.
-- The authoritative approved spec selected by `/feature`. For HTML, read its
-  typed criterion records through the installed engine and confirm the paired
-  plan's exact binding; for legacy Markdown, read
-  `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`. It is the primary obligation
+- For `/feature`, the authoritative approved spec. For HTML, read its typed
+  criterion records through the installed engine and confirm the paired plan's
+  exact binding; for legacy Markdown, read
+  `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`. It is the feature obligation
   source.
+- For `/fix`, the bug-origin evidence: observed and expected behavior, the
+  current expectation and its citations, supported cause, and the regression
+  oracle with its cited evidence. If a validated debug handoff supplies these,
+  recheck its source binding and freshness in the actual worktree and the
+  original caller authority through the fix owner. A packet or its intent field
+  does not authorize repair. Do not create a feature artifact to enter TDD.
+- For `/refactor` backfill, the user-approved surface table and pre-existing
+  parity evidence owned by `/refactor`. It does not require a feature spec.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — only when the change touches a security boundary (auth, crypto, secrets, a trust boundary). Optional; absent on most changes.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/code-map.md` — if present, a coarse concern→path→role map to orient before writing tests and code. Absent is fine — it is read-on-demand, populated by context-creation or commit-gate heal.
 
@@ -44,27 +89,53 @@ test is `MISSING`. "We should test X" is not an obligation.
 
 Derive every obligation before any code is written, and record each as `ID · source · OPEN`:
 
-- **Spec** — one obligation per acceptance criterion in the approved spec. For
+- **Spec (`/feature`)** — one obligation per acceptance criterion in the approved spec. For
   HTML, cite the exact artifact ID and criterion ID returned by the engine;
   caller-supplied labels cannot manufacture obligations or widen the approved
   criterion set.
+- **Bug-origin regression (`/fix`)** — one obligation for each scoped wrong
+  behavior to repair. Cite the current expectation, observed defect and supported
+  cause, regression oracle and evidence, and relevant source binding. A validated
+  debug handoff supplies cited facts, not authority; derive these rows in the
+  existing ledger. Do not invent a feature artifact such as a spec, plan, or
+  mini-spec. The target regression must go red for the right reason before the
+  minimum implementation. If the expectation is unresolved or the proposed
+  behavior is new, stop and use the feature or decision owner.
+- **Refactor parity (`/refactor` backfill)** — cite the approved surface table
+  and the uncovered symbol or seam with its pre-existing behavior and parity
+  evidence. Do not turn a refactor into a feature or a bug fix.
 - **Contract** — API and input-validation invariants, error responses, boundary conditions.
 - **Security** — only when `security-controls.md` applies: the assertion that the security-relevant boundary holds.
 
-Gate: the obligation list is complete. **Auto-pass** when every obligation maps one-to-one onto the
-acceptance criteria of an already-approved spec (full-lane spec or small-lane mini-spec) — the user
-approved that list once; do not re-ask. **User review is required** only for obligations derived
-BEYOND the spec (Contract and Security rows): surface just those additions, not the whole list.
+Gate: the obligation list is complete. For `/feature`, **auto-pass** when every obligation maps
+one-to-one onto the acceptance criteria of an already-approved spec (full-lane spec or small-lane
+mini-spec) — the user approved that list once; do not re-ask. **User review is required** only for
+obligations derived BEYOND that spec (Contract and Security rows): surface just those additions.
+For `/fix`, the scoped bug-origin regression follows the original caller's repair authority and
+current evidence; the absence of a feature spec is not a block or permission to expand scope.
+Review any proposed obligation beyond that supported correction under its actual owner. An ADR
+remains a user-attributed decision through `/adr`; neither a handoff nor this ledger creates one.
+For `/refactor`, retain its user-approved surface table and parity gates; backfill only the named
+uncovered behavior or seam. The TDD checklist does not amend that table.
 Under `/sprint`, spec-derived obligations auto-pass the same way and beyond-spec additions are
 SMARTS-decided and logged like any other auto-decision. A partial list never passes either way.
 
 ## Phase 2 — Red · gate: BLOCK
 
-Write one or more failing tests per obligation. Bind each test ID to its obligation ID and move that
-obligation `OPEN → MAPPED`. Run the test command from `tech-stack.md`.
+Bind a failing test ID to each obligation and move that obligation `OPEN → MAPPED`.
+Run the test command from `tech-stack.md`. For `/fix`, first assess an existing failing
+test against target red: compare its assertion and regression oracle with the current
+target failure and evidence. Name the existing test ID in the obligation ledger and
+reuse that named existing target-red test when its oracle is adequate and it fails for
+the target reason. Do not duplicate a test solely because of its age or because it
+predates repair. Add tests only for uncovered obligations. Do not make a named target
+failure green before observing and recording its red result.
 
-- Every new test MUST fail, and fail **for the right reason** — the assertion, not an import error or a typo. A new test that passes with no implementation is wrong; fix it before continuing.
-- Every pre-existing test MUST stay green. One that breaks here is a conflict — stop and surface it.
+- Every newly written test MUST fail, and fail **for the right reason** — the assertion, not an import error or a typo. A new test that passes with no implementation is wrong; fix it before continuing.
+- Record unrelated existing failures in the baseline and report them; an unrelated failure is not target red. An import or setup error is not target red. Preserve each failure's identity and output. A newly broken pre-existing test is a conflict — stop and surface it.
+- Required commit gates remain blocked while required checks fail. Do not skip tests, suppress failures, or waive gates to proceed.
+
+Observe the target regression red on the broken source before repair or implementation. If a material fixture or setup change occurs after that observation, the earlier red no longer qualifies: repeat target red on the broken implementation with the changed fixture or setup before the minimum repair. For an intermittent or timing defect, prefer a faithful deterministic seam. If only repeated trials can exercise the mechanism, predeclare a finite trial bound and failure oracle; record the stochastic sample limit. Do not claim deterministic proof from a passing sample or retry until green. A failing trial must match the target mechanism, not merely fail intermittently.
 
 Reject the standard traps: asserting on a mock instead of behavior; a test that can never fail; a
 snapshot so broad it asserts nothing; coupling to an implementation detail instead of observable
@@ -80,8 +151,11 @@ never the license to waive it:
 | "The test would just restate the implementation." | Then it is aimed at the wrong seam — assert the observable behavior, not the wiring. A change with no observable behavior to assert is a design finding, not an exemption. |
 | "The existing suite already covers this." | Then the failing test is impossible to write — try it. If it genuinely cannot go red, the obligation is already COVERED and Phase 4 records exactly that; if it goes red, the claim was wrong and you are holding the proof. |
 
-Gate: the runner confirms new tests red (for the right reason) and existing tests green, with every
-obligation `MAPPED` to a failing test. No implementation code is written until this gate clears.
+Gate: the runner confirms each newly written test red for the right reason, or an
+adequate named existing target-red test red for that reason, with every obligation
+`MAPPED` to a failing test. Record unrelated existing failures separately; they
+cannot count as target red or clear later required checks. No implementation code
+is written until this gate clears.
 
 ## Phase 3 — Green · gate: BLOCK
 
@@ -91,8 +165,8 @@ gold-plating — to the conventions in `coding-standards.md`. Run the impact-bou
 pre-existing test is a regression: fix it. Exhaustive and cross-platform suites run on exact-head
 hosted CI before merge.
 
-Gate: the applicable local suite is green, reached by satisfying the Phase 2 tests — not by weakening them. A test's
-assertions MUST be unchanged between red and green; only fixtures and setup may move. A relaxed
+Gate: rerun the same named target test for fresh green on the repaired source, then rerun fresh affected-contract tests on that source. Record these results with the applicable coverage, lint, and type-check results; an old-head green is not repair proof. The applicable local suite is green, reached by satisfying the Phase 2 tests — not by weakening them. A test's
+assertions MUST be unchanged between red and green; only fixtures and setup may move, and a material change to either requires renewed target red on the broken implementation before this green. A relaxed
 assertion is a gate violation.
 
 ## Phase 4 — Obligation verify · gate: BLOCK

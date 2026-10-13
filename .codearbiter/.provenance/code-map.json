@@ -35,7 +35,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "ab4ed6852b736b882229451e434f7aa9666f0aab",
+      "hash": "4ee02473d7560ff1c6c90943ed28be9da741ab7f",
       "path": "core/hosts.json"
     },
     {
@@ -137,37 +137,37 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.23.1)",
+          "claim": "Claude Code plugin manifest for ca (v2.26.2)",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "f4182e98cc0aa4fc78a0d5981d192cfee8a4974f",
+      "hash": "abb074e0006c5988e5a1f02de78873875a0778d4",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.14.8), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.17.2), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "cc154f056bcd3fa8d703c73e4b6365a4802d58f6",
+      "hash": "35e70b98dbd5951617fc7a31f41b756ec2f8bf8d",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.15.8, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.18.2, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "8562792b53a653c4043d8e1c1c70278bf0c9a21f",
+      "hash": "96aea33b7feb83e19cc36cd28e1fbd8dffa53b5c",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -323,7 +323,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "2d40d2ab7b25d13208259218956bd4cd4c857775",
+      "hash": "063c0b2c5a16fb963f07fa8eb07eb06f9c7e45d9",
       "path": "site/package.json"
     },
     {
@@ -359,7 +359,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "0aead907e68d91cfa22619ddc63bd8eee2918e18",
+      "hash": "f1e26b65a98dff5f41f71dbff8b3a3387ae1d519",
       "path": ".codearbiter/security-controls.md"
     },
     {
@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "3e673ae7bb7bfbc0ec86d62c4523a42d3a559f95",
+      "hash": "b7d82d4f6a0091c6670ac0335d6d2aaf1b322447",
       "path": ".github/workflows/ci.yml"
     },
     {

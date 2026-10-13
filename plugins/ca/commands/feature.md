@@ -27,7 +27,7 @@ and the next plan must use the same extension. The workflow must not create, ren
 blocked. Small-lane behavior is unchanged: its confirmed mini-spec remains inline
 and does not create a spec artifact.
 
-**Orientation:** if `.codearbiter/code-map.md` is present, read it first — a coarse concern→path→role map that orients task authoring. Absent is fine; it is read-on-demand, populated by context-creation or commit-gate heal.
+**Orientation:** if `.codearbiter/code-map.md` is present, read it first — a coarse concern→path→role map that orients task authoring. Absent is fine; it is read-on-demand, populated by context-creation or commit-gate heal. At each actual author or independent reviewer dispatch, use the private `_artifactpromptlib.compose_feature_actor_input` contract described in `tdd` and `subagent-driven-development`; send its returned `input` to the fresh actor before mutation, execution of discovered commands, or a substantive review verdict. A coordinator's read alone is not delivery.
 
 ## Resume — an interrupted pipeline is re-entered, never restarted
 

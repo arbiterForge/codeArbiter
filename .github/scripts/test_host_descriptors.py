@@ -207,6 +207,16 @@ _SIDEBAR_PANEL_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/sidebar-window-contract.test.ts",
 })
 
+# Exact implementation and test artifacts of the private native approval
+# producer. Unlisted helpers, hooks, and tools still fail closed.
+_NATIVE_APPROVAL_NON_POLICY_ARTIFACTS = frozenset({
+    "helpers/approval-dialog.js",
+    "hooks/pi-approval.py",
+    "tools/src/approval-dialog.ts",
+    "tools/src/approval-entry.ts",
+    "tools/test/approval-dialog.test.ts",
+})
+
 
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -520,12 +530,10 @@ def _independent_expected_surfaces(descriptor, descriptors):
     return expected
 
 
-def _normalize_host_tokens_independently(data, descriptor):
-    text = data.decode("utf-8") if isinstance(data, bytes) else data
-    for token, value in sorted(
-        descriptor.tokens.items(), key=lambda item: len(item[1]), reverse=True
-    ):
-        text = text.replace(value, "{{" + token + "}}")
+def _materialize_host_tokens_independently(text, descriptor):
+    """Project template tokens only; literal rendered prose is left intact."""
+    for token, value in descriptor.tokens.items():
+        text = text.replace("{{" + token + "}}", value)
     return text
 
 
@@ -549,6 +557,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_ISSUE_464_NON_POLICY_ARTIFACTS)
         | set(_FOOTER_PARITY_NON_POLICY_ARTIFACTS)
         | set(_SIDEBAR_PANEL_NON_POLICY_ARTIFACTS)
+        | set(_NATIVE_APPROVAL_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
@@ -568,7 +577,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         rel = path.relative_to(plugin).as_posix()
         if rel in exact_exemptions:
             continue
-        actual[rel] = _normalize_host_tokens_independently(path.read_bytes(), pi_host)
+        actual[rel] = path.read_bytes().decode("utf-8")
     return actual, exact_exemptions
 
 
@@ -577,8 +586,11 @@ def _assert_pi_policy_matches_core(actual, expected):
         missing = sorted(set(expected) - set(actual))
         extra = sorted(set(actual) - set(expected))
         raise AssertionError(f"Pi policy path drift; missing={missing}, extra={extra}")
+    pi_host = _descriptors().host_descriptor("pi", str(REPO))
     for rel in sorted(expected):
-        if actual[rel] != expected[rel]:
+        rendered = (expected[rel] if rel in {"LICENSE", "THIRD_PARTY_NOTICES.md"}
+                    else _materialize_host_tokens_independently(expected[rel], pi_host))
+        if actual[rel] != rendered:
             raise AssertionError(f"Pi policy body differs from canonical source: {rel}")
 
 
@@ -670,7 +682,7 @@ class DescriptorContractTest(unittest.TestCase):
         module = _descriptors()
         pi = module.host_descriptor("pi", str(REPO))
         fingerprints = dict(pi.package["skill_expansion_fingerprints"])
-        self.assertEqual(set(fingerprints), {"0.84.1"})
+        self.assertEqual(set(fingerprints), {"1.1.0"})
         self.assertTrue(all(re.fullmatch(r"[a-f0-9]{64}", value) for value in fingerprints.values()))
         doctor_source = (REPO / "plugins/ca-pi/tools/src/doctor.ts").read_text(encoding="utf-8")
         for fingerprint in fingerprints.values():
@@ -857,7 +869,10 @@ class GenerationContractTest(unittest.TestCase):
             ["name", "description", "argument-hint"],
         )
 
-        mutated = dict(expected)
+        mutated = {
+            rel: (REPO / pi_host.plugin_dir / rel).read_bytes().decode("utf-8")
+            for rel in expected
+        }
         mutated_catalog = json.loads(mutated["generated/command-catalog.json"])
         mutated_catalog["commands"]["add-dep"]["visibility"] = "deprecated"
         mutated["generated/command-catalog.json"] = (
@@ -980,6 +995,37 @@ class GenerationContractTest(unittest.TestCase):
                 with self.subTest(notice=notice, mutation=mutation):
                     with self.assertRaisesRegex(AssertionError, re.escape(notice)):
                         _assert_pi_policy_matches_core(changed, expected)
+
+    def test_pi_ac_04_literal_root_prose_is_not_a_path_token(self):
+        """Raw rendered bytes keep literal root prose and reject unresolved tokens."""
+        expected = {
+            "includes/helper-invocation.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Execute {{PLUGIN_ROOT}}/hooks/taskwrite.py.\n"
+            ),
+            "includes/pi-host-notes.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Project path: {{PROJECT_DIR}}/data.\n"
+            ),
+        }
+        actual = {
+            "includes/helper-invocation.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Execute <plugin-root>/hooks/taskwrite.py.\n"
+            ),
+            "includes/pi-host-notes.md": (
+                "The literal spelling <plugin-root> is explanatory.\n"
+                "Project path: <project-root>/data.\n"
+            ),
+        }
+        _assert_pi_policy_matches_core(actual, expected)
+        unresolved = dict(actual)
+        unresolved["includes/helper-invocation.md"] = (
+            "The literal spelling <plugin-root> is explanatory.\n"
+            "Execute {{PLUGIN_ROOT}}/hooks/taskwrite.py.\n"
+        )
+        with self.assertRaisesRegex(AssertionError, "includes/helper-invocation.md"):
+            _assert_pi_policy_matches_core(unresolved, expected)
 
     def test_pi_ac_04_pi_governance_bodies_are_generated_only(self):
         module = _descriptors()

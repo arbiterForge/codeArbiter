@@ -28,15 +28,27 @@ func array(v any, min int64) object {
 func common(name string) object {
 	return object{"$ref": "urn:codearbiter:artifact:common:" + model.SchemaVersion + "#/$defs/" + name}
 }
+func activeArtifactKinds() []string {
+	codecs := kind.Codecs()
+	out := []string{}
+	for _, contract := range kind.All() {
+		codec, ok := codecs[contract.Name]
+		if ok && !codec.Optional && codec.Representation == kind.HTML && codec.Extension == ".html" {
+			out = append(out, contract.Name)
+		}
+	}
+	return out
+}
 func changesType() object {
 	add := closed(object{"op": enum("record.add"), "collection": text(), "parent_id": idType(), "record": object{"type": "object"}}, "op", "collection", "record")
 	update := closed(object{"op": enum("record.update"), "symbol": idType(), "fields": object{"type": "object"}, "retirement_reason": text()}, "op", "symbol", "fields")
 	retire := closed(object{"op": enum("record.retire"), "symbol": idType(), "reason": text(), "replacement_ref": text()}, "op", "symbol", "reason")
+	reorder := closed(object{"op": enum("record.reorder"), "collection": text(), "ids": array(idType(), 1)}, "op", "collection", "ids")
 	header := closed(object{"op": enum("header.update"), "fields": closed(object{"title": text(), "summary": text(), "governs": array(text(), 0), "baseline": common("baseline"), "verification_inputs": closed(object{"roots": array(text(), 1), "exclude_directories": array(text(), 0)}, "roots", "exclude_directories")})}, "op", "fields")
-	return array(object{"oneOf": []any{add, update, retire, header}}, 1)
+	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -75,6 +87,31 @@ func RequestSchema(op string) (object, error) {
 		add("activity", enum("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization"), true)
 		add("record_id", idType(), true)
 		add("prompt_sha256", digestType(), false)
+		add("completion_selection", closed(object{"verification_receipts": object{"type": "array", "items": text(), "minItems": int64(1), "maxItems": int64(128)}, "supporting_files": object{"type": "array", "items": text(), "maxItems": int64(16)}}, "verification_receipts", "supporting_files"), false)
+		add("completion_context_ref", text(), false)
+		add("completion_context_sha256", digestType(), false)
+		add("verification_command_bindings", observation.QualifiedCommandBindingsSchema(), false)
+	case "context-evidence-context":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("mode", enum("create", "adopt", "update"), true)
+		add("document_id", enum("CONTEXT", "tech-stack", "coding-standards", "security-controls", "code-map"), true)
+		add("target_path", text(), true)
+		add("typed", object{"type": "object"}, true)
+		add("selections", array(closed(object{"entry_id": text(), "anchor": text()}, "entry_id", "anchor"), 0), true)
+		maybeHash := object{"oneOf": []any{digestType(), object{"type": "null"}}}
+		add("expected_document_sha256", maybeHash, true)
+		add("expected_provenance_sha256", maybeHash, true)
+		add("proposed_provenance", object{"type": "object"}, true)
+		add("prompt_sha256", digestType(), true)
+	case "context-finalize-evidence-context":
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("mode", enum("finalize"), true)
+		add("document_id", enum("CONTEXT"), true)
+		add("target_path", enum(".codearbiter/CONTEXT.md"), true)
+		add("expected", object{"type": "object"}, true)
+		add("prompt_sha256", digestType(), true)
+	case "context-apply":
+		add("receipt", text(), true)
 	case "migration-preview", "migration-apply":
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")
@@ -92,7 +129,7 @@ func RequestSchema(op string) (object, error) {
 		add("target", text(), true)
 	case "capabilities":
 	case "schema":
-		schemaNames := append([]string{"common"}, kind.Names()...)
+		schemaNames := append([]string{"common"}, activeArtifactKinds()...)
 		schemaNames = append(schemaNames, "operation", "receipt", "event", "evidence_context", "observation", "verification", "spec_review", "quality_review")
 		add("name", enum(schemaNames...), true)
 		add("fragment", text(), false)
@@ -100,7 +137,7 @@ func RequestSchema(op string) (object, error) {
 	case "create":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		artifact()
-		add("kind", enum(kind.Names()...), true)
+		add("kind", enum(activeArtifactKinds()...), true)
 		add("slug", object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, true)
 		add("title", text(), true)
 		add("summary", text(), true)
@@ -116,10 +153,23 @@ func RequestSchema(op string) (object, error) {
 		add("mode", enum("exact", "contextual"), false)
 		add("cursor", text(), false)
 		budget()
+	case "read-batch":
+		artifact()
+		ids := array(idType(), 1)
+		ids["uniqueItems"] = true
+		add("symbols", ids, true)
+		add("model_sha256", digestType(), true)
+		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
+		budget()
 	case "outline":
 		artifact()
 		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		add("model_sha256", digestType(), false)
+		budget()
+	case "plan-verification":
+		artifact()
+		add("expected", closed(object{"artifact_id": idType(), "revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType(), "normative_sha256": digestType()}, "artifact_id", "revision", "model_sha256", "normative_sha256"), true)
+		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		budget()
 	case "identity":
 		artifact()
@@ -127,7 +177,7 @@ func RequestSchema(op string) (object, error) {
 		artifact()
 		add("gate", enum("structural", "ready", "approved"), false)
 	case "index":
-		add("kind", enum(kind.Names()...), false)
+		add("kind", enum(activeArtifactKinds()...), false)
 		add("offset", object{"type": "integer", "minimum": int64(0)}, false)
 		add("catalog_sha256", digestType(), false)
 		budget()
@@ -168,6 +218,18 @@ func RequestSchema(op string) (object, error) {
 		cas()
 		add("spec_id", idType(), true)
 		add("changes", changesType(), false)
+		// The ordinary approved-source request is unchanged. Draft rebinding
+		// is a separate closed shape with explicit source compare-and-swap.
+		approvedProperties := object{}
+		for key, value := range p {
+			approvedProperties[key] = value
+		}
+		approved := closed(approvedProperties, required...)
+		add("binding_mode", enum("draft_preview"), true)
+		add("spec_expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		request := closed(p)
+		request["oneOf"] = []any{approved, closed(p, required...)}
+		return request, nil
 	case "eligible":
 		artifact()
 	case "task-start":
@@ -179,6 +241,7 @@ func RequestSchema(op string) (object, error) {
 		add("task", idType(), true)
 		add("verification_receipt", text(), true)
 		add("review_receipt", text(), true)
+		add("completion_sha256", digestType(), false)
 	case "task-block":
 		cas()
 		add("task", idType(), true)
@@ -197,6 +260,7 @@ func RequestSchema(op string) (object, error) {
 		cas()
 		add("scope", idType(), true)
 		add("receipt", text(), true)
+		add("completion_sha256", digestType(), false)
 	case "prerequisite":
 		cas()
 		add("prerequisite", idType(), true)

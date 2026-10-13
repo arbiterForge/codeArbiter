@@ -146,9 +146,11 @@ type Integrity struct {
 	SymbolCount     int64  `json:"symbol_count"`
 }
 type TaskState struct {
-	State        string   `json:"state"`
-	EvidenceRefs []string `json:"evidence_refs"`
-	Reason       *string  `json:"reason"`
+	State                   string   `json:"state"`
+	EvidenceRefs            []string `json:"evidence_refs"`
+	Reason                  *string  `json:"reason"`
+	CompletionReviewReceipt string   `json:"completion_review_receipt,omitempty"`
+	CompletionSHA256        string   `json:"completion_sha256,omitempty"`
 }
 type Retired struct {
 	ID                string  `json:"id"`

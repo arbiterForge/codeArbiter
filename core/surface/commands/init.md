@@ -22,16 +22,74 @@ populating before normal operation.
 
 <!-- command-mode:--brownfield legacy-route:create-context -->
 `--brownfield` selects the exact `{{PLUGIN_ROOT}}/commands/create-context.md` workflow.
+An initialized refresh is routed through `{{CMD:status}} drift` and the existing
+`context-check` owner after an explicit scoped or full selection; `--brownfield`
+keeps its initial-population lock.
+
+### Brownfield host prerequisites
+
+For repositories with existing source, every scaffold and populator step in
+the Procedure below is conditional on observing these prerequisites first.
+This applies to both `--brownfield` and the default auto-detection route.
+When qualification is unavailable or unknown, stop here and issue the handoff
+described below. Do not execute the later Procedure steps or enter brownfield
+population through the When NOT to use section.
+
+Scaffolding enables governance and may install Git hooks before population.
+It does not qualify the host for context extraction. Before selecting
+`--brownfield` or automatically routing existing source to brownfield
+population, inspect the installed
+context-creation containment profile in
+`{{PLUGIN_ROOT}}/skills/context-creation/SKILL.md`, under that exact heading.
+The active host needs an observed context-specific child profile with enforced
+read-only containment and report delivery, plus the existing native context
+writer and approval support. Ordinary unrestricted collaboration agents on
+Codex desktop/Windows do not satisfy that requirement. The repository-only
+Claude preparation fixture is neither a shipped consumer route nor proof of
+a qualified host.
+
+When these prerequisites are unavailable or unknown, report the missing
+capability before invoking the scaffolder. Keep a fresh repository unactivated
+and retain every byte of any existing partial state. Name the loaded package,
+observed host limitation or explicitly unknown qualification, selected
+population route and next missing prerequisite in the handoff; leave
+unobserved qualification and prior operation identities
+unknown. Resume on a host only after fresh containment and writer qualification,
+using the existing interrupted-population recovery procedure. No supported
+destination is implied by this guidance.
+
+This is a workflow preflight. The low-level scaffolder has no native scout
+capability attestation input and does not enforce or prove this assessment.
+Its successful exit, `--check` inventory or enabled stub never establishes
+population readiness. Do not fabricate a profile, receipt, context document
+or initialization sentinel to pass the later gates.
 
 The two flags are mutually exclusive and neither may combine with `--check`. `--stage N` may
-accompany one only while `.codearbiter/CONTEXT.md` is absent: scaffold at that stage, then enter the
+accompany one only while `.codearbiter/CONTEXT.md` is absent: after any required brownfield preflight,
+scaffold at that stage, then enter the
 selected workflow. When an uninitialized stub already exists, skip the refusing scaffolder and enter
 the selected workflow directly. An initialized marker or source-shape mismatch retains the selected
 legacy workflow's BLOCK. Without an explicit strategy, continue with the unchanged auto-detection
-procedure below.
+procedure below only after any required brownfield preflight.
 <!-- catalog-command-modes:end -->
 
 ## Procedure
+
+Before opening an active host session in an unfamiliar repository, a trusted
+external process may inspect an explicit directory with
+`python "{{PLUGIN_ROOT}}/hooks/init-codearbiter.py" --check --passive --root PATH`.
+This bounded read checks only that directory's `.codearbiter/CONTEXT.md` activation
+marker and prints a JSON inventory for Git hooks/exclusions, background Git fetch,
+update refresh, and inference transport. Every effect is `performed: false`, with
+capability `unverified` and authorization `not_established`. The root is caller
+supplied and unverified; no Git command, repository script, network request,
+global setting edit, or model source read occurs. Sensitive/excluded source paths
+must be inventoried separately before any model read. If an active host session
+has already started, this inspection cannot undo its earlier startup effects.
+
+Activation is a separate step under the applicable host, network, repository-write,
+and inference permissions. The normal scaffold and active SessionStart behavior
+below remain in force for repositories that already opted in.
 
 1. Run the scaffolder against the repo's git toplevel (resolved by the script):
 

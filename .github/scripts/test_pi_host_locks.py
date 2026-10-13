@@ -16,12 +16,13 @@ import tempfile
 import unittest
 from unittest import mock
 from types import SimpleNamespace
+from datetime import date, timedelta
 
 
 REPO = Path(__file__).resolve().parents[2]
 HELPER = REPO / ".github" / "scripts" / "pi_host_locks.py"
 LOCK_ROOT = REPO / ".github" / "fixtures" / "pi-hosts"
-SUPPORTED_VERSION = "0.84.1"
+PACKAGE = "@earendil-works/pi-coding-agent"
 
 
 def load_helper():
@@ -37,7 +38,302 @@ def load_helper():
     return module
 
 
+# The one rolling reviewed version; promotion advances it in pi_host_locks.
+SUPPORTED_VERSION = load_helper().SUPPORTED[0]
+
+
 class PiHostLocksTest(unittest.TestCase):
+    @staticmethod
+    def _source_metadata_fixture():
+        # Unsigned structural test data, never a signature-verification receipt.
+        version, commit = "1.1.0", "a" * 40
+        digest = bytes(range(64))
+        metadata = {
+            "version": version, "repository.url": "https://github.com/earendil-works/pi",
+            "dist.tarball": "https://registry.npmjs.org/pi.tgz",
+            "dist.integrity": "sha512-" + base64.b64encode(digest).decode("ascii"),
+            "dependencies": {},
+        }
+        statement = {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [{"name": f"pkg:npm/%40earendil-works/pi-coding-agent@{version}",
+                         "digest": {"sha512": digest.hex()}}],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {"buildDefinition": {
+                "buildType": "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1",
+                "externalParameters": {"workflow": {"repository": metadata["repository.url"],
+                                                     "ref": f"refs/tags/v{version}"}},
+                "resolvedDependencies": [{"uri": f"git+{metadata['repository.url']}@refs/tags/v{version}",
+                                          "digest": {"gitCommit": commit}}],
+            }},
+        }
+        return metadata, statement
+
+    def _capture_source_metadata(self, metadata, statement, *, change_document=None, transport=None):
+        helper = load_helper()
+        version = metadata["version"]
+        document = {"attestations": [{
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "bundle": {"dsseEnvelope": {"payloadType": "application/vnd.in-toto+json",
+                "payload": base64.b64encode(json.dumps(statement).encode()).decode("ascii")}},
+        }]}
+        if change_document:
+            change_document(document)
+        body = io.BytesIO(json.dumps(document).encode())
+        clock = [0]
+        response = mock.Mock(status=302 if transport == "redirect" else 200)
+        response.getheader.return_value = str(helper.MAX_METADATA_OUTPUT_BYTES + 1) if transport == "header-limit" else None
+        def read(size):
+            if transport == "deadline":
+                clock[0] = helper.MAX_METADATA_WALK_SECONDS + 1
+            return body.read(size)
+        response.read1 = read
+        connection = mock.Mock()
+        connection.getresponse.return_value = response
+        manifest = {"name": PACKAGE, "version": version, "dependencies": {}}
+        source_lock = {"name": PACKAGE + "-install", "version": version, "lockfileVersion": 3, "packages": {
+            "": {"name": PACKAGE + "-install", "version": version, "dependencies": {PACKAGE: version}},
+            f"node_modules/{PACKAGE}": {"version": version, "resolved": metadata["dist.tarball"]},
+        }}
+        with tempfile.TemporaryDirectory(prefix="ca-pi-source-metadata-") as raw, \
+             mock.patch.object(helper, "_run_registry_metadata", return_value=metadata), \
+             mock.patch.object(helper, "_fetch_source_install_lock", return_value=source_lock) as source, \
+             mock.patch.object(helper, "_download_registry_tarball", return_value={"manifest": manifest, "shrinkwrap": None}) as download, \
+             mock.patch.object(helper.http.client, "HTTPSConnection", return_value=connection) as https, \
+             mock.patch.object(helper.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(helper, "MAX_METADATA_OUTPUT_BYTES", 16 if transport == "body-limit" else helper.MAX_METADATA_OUTPUT_BYTES), \
+             mock.patch.object(helper.subprocess, "run", side_effect=AssertionError("candidate execution is forbidden")):
+            destination = Path(raw) / "candidate"
+            try:
+                helper.capture_candidate(version, destination)
+            except ValueError:
+                download.assert_not_called()
+                source.assert_not_called()
+                self.assertFalse((destination / "review.json").exists())
+                raise
+            receipt = json.loads((destination / "review.json").read_text())
+            self.assertEqual(set(receipt), helper.CANDIDATE_FIELDS)
+            self.assertEqual(receipt["result"], "PENDING_REVIEW")
+            self.assertEqual(receipt["source_commit"], "a" * 40)
+            self.assertEqual(source.call_args.args[0], "a" * 40)
+            with self.assertRaisesRegex(ValueError, "pending"):
+                helper._validate_directory(destination, version, require_reviewed=True)
+            if metadata.get("gitHead") is not None:
+                https.assert_not_called()
+            else:
+                self.assertEqual(https.call_args.args[0], "registry.npmjs.org")
+                self.assertEqual(connection.request.call_args.args[:2], (
+                    "GET", "/-/npm/v1/attestations/@earendil-works%2Fpi-coding-agent@1.1.0"))
+                connection.close.assert_called_once()
+
+    def test_capture_missing_git_head_uses_exact_pending_provenance_metadata(self):
+        for present in (False, True):
+            with self.subTest(null_git_head=present):
+                metadata, statement = self._source_metadata_fixture()
+                if present:
+                    metadata["gitHead"] = None
+                self._capture_source_metadata(metadata, statement)
+        metadata, statement = self._source_metadata_fixture()
+        metadata["gitHead"] = "a" * 40
+        self._capture_source_metadata(metadata, statement)
+        for invalid in ("", "main", "b" * 39, 1, [], False):
+            with self.subTest(malformed_present_git_head=invalid):
+                metadata["gitHead"] = invalid
+                with self.assertRaisesRegex(ValueError, "source"):
+                    self._capture_source_metadata(metadata, statement)
+
+    def test_capture_provenance_metadata_rejects_mismatched_or_ambiguous_sources(self):
+        self._capture_source_metadata(*self._source_metadata_fixture())
+        mutations = (
+            ("statement-type", lambda s: s.__setitem__("_type", "unknown")),
+            ("subject-package", lambda s: s["subject"][0].__setitem__("name", "pkg:npm/other@1.1.0")),
+            ("subject-version", lambda s: s["subject"][0].__setitem__("name", "pkg:npm/%40earendil-works/pi-coding-agent@1.1.1")),
+            ("subject-digest", lambda s: s["subject"][0]["digest"].__setitem__("sha512", "0" * 128)),
+            ("multiple-subjects", lambda s: s["subject"].append(s["subject"][0])),
+            ("predicate", lambda s: s.__setitem__("predicateType", "unknown")),
+            ("build-type", lambda s: s["predicate"]["buildDefinition"].__setitem__("buildType", "unknown")),
+            ("repository", lambda s: s["predicate"]["buildDefinition"]["externalParameters"]["workflow"].__setitem__("repository", "https://github.com/other/pi")),
+            ("tag", lambda s: s["predicate"]["buildDefinition"]["externalParameters"]["workflow"].__setitem__("ref", "refs/heads/main")),
+            ("source-uri", lambda s: s["predicate"]["buildDefinition"]["resolvedDependencies"][0].__setitem__("uri", "git+https://github.com/other/pi@refs/tags/v1.1.0")),
+            ("source-commit", lambda s: s["predicate"]["buildDefinition"]["resolvedDependencies"][0]["digest"].__setitem__("gitCommit", "main")),
+            ("multiple-sources", lambda s: s["predicate"]["buildDefinition"]["resolvedDependencies"].append(s["predicate"]["buildDefinition"]["resolvedDependencies"][0])),
+            ("missing-source", lambda s: s["predicate"]["buildDefinition"].pop("resolvedDependencies")),
+            ("wrong-shape", lambda s: s.__setitem__("predicate", [])),
+        )
+        for name, mutate in mutations:
+            with self.subTest(binding=name):
+                metadata, statement = self._source_metadata_fixture()
+                mutate(statement)
+                with self.assertRaisesRegex(ValueError, "metadata"):
+                    self._capture_source_metadata(metadata, statement)
+        for field, value in (("dist.integrity", "sha512-invalid"), ("dist.integrity", "sha512-YQ=="),
+                             ("repository.url", "https://github.com/other/pi")):
+            with self.subTest(field=field, value=value):
+                metadata, statement = self._source_metadata_fixture()
+                metadata[field] = value
+                with self.assertRaisesRegex(ValueError, "metadata"):
+                    self._capture_source_metadata(metadata, statement)
+        for name, mutate in (
+            ("no-slsa", lambda d: d["attestations"][0].__setitem__("predicateType", "other")),
+            ("ambiguous-slsa", lambda d: d["attestations"].append(d["attestations"][0])),
+            ("invalid-base64", lambda d: d["attestations"][0]["bundle"]["dsseEnvelope"].__setitem__("payload", "%%%")),
+            ("payload-type", lambda d: d["attestations"][0]["bundle"]["dsseEnvelope"].__setitem__("payloadType", "text/plain")),
+            ("attestations-shape", lambda d: d.__setitem__("attestations", {})),
+            ("attestations-limit", lambda d: d.__setitem__("attestations", d["attestations"] * 9)),
+        ):
+            with self.subTest(document=name), self.assertRaisesRegex(ValueError, "metadata"):
+                self._capture_source_metadata(*self._source_metadata_fixture(), change_document=mutate)
+
+    def test_capture_provenance_metadata_fetch_preserves_registry_bounds(self):
+        self._capture_source_metadata(*self._source_metadata_fixture())
+        for case in ("redirect", "header-limit", "body-limit", "deadline"):
+            with self.subTest(transport=case), self.assertRaisesRegex(ValueError, "HTTP|limit|budget"):
+                self._capture_source_metadata(*self._source_metadata_fixture(), transport=case)
+
+    def test_source_install_lock_binds_tarball_and_rejects_mutations(self):
+        helper = load_helper()
+        metadata = {"dist.tarball": "https://registry.npmjs.org/pi.tgz", "dist.integrity": "sha512-root"}
+        manifest = {"name": helper.PACKAGE, "version": "1.0.2", "dependencies": {"child": "1.2.3"}}
+        source = {
+            "name": helper.PACKAGE + "-install", "version": "1.0.2", "lockfileVersion": 3,
+            "packages": {
+                "": {"name": helper.PACKAGE + "-install", "version": "1.0.2", "dependencies": {helper.PACKAGE: "1.0.2"}},
+                f"node_modules/{helper.PACKAGE}": {"version": "1.0.2", **manifest, "resolved": metadata["dist.tarball"], "integrity": metadata["dist.integrity"]},
+                "node_modules/child": {"version": "1.2.3", "resolved": "https://registry.npmjs.org/child.tgz", "integrity": "sha512-child"},
+            },
+        }
+        captured = helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, source)
+        self.assertEqual(captured["packages"][""]["dependencies"], {helper.PACKAGE: "1.0.2"})
+        self.assertNotIn("hasShrinkwrap", captured["packages"][f"node_modules/{helper.PACKAGE}"])
+        unpublished = json.loads(json.dumps(source))
+        unpublished["packages"][f"node_modules/{helper.PACKAGE}"].pop("integrity")
+        self.assertEqual(helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, unpublished), captured)
+        for location, field, value in (
+            (None, "name", "wrong-install"), (None, "version", "1.0.1"),
+            (None, "lockfileVersion", 2), (None, "packages", None),
+            ("", "name", "wrong-install"), ("", "version", "1.0.1"),
+            ("", "dependencies", {helper.PACKAGE: "1.0.1"}),
+        ):
+            with self.subTest(location=location, field=field):
+                modified = json.loads(json.dumps(source))
+                target = modified if location is None else modified["packages"][location]
+                target[field] = value
+                with self.assertRaisesRegex(ValueError, "root identity"):
+                    helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, modified)
+        for field, value in (("version", "1.0.1"), ("integrity", "sha512-other"), ("dependencies", {"unsafe": "file:../outside"}), ("hasShrinkwrap", True)):
+            with self.subTest(field=field):
+                modified = json.loads(json.dumps(source))
+                modified["packages"][f"node_modules/{helper.PACKAGE}"][field] = value
+                with self.assertRaisesRegex(ValueError, "identity|manifest|shrinkwrap"):
+                    helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, modified)
+        for key in ("../escape", "node_modules/../escape", "node_modules\\child"):
+            with self.subTest(key=key):
+                modified = json.loads(json.dumps(source))
+                modified["packages"][key] = modified["packages"].pop("node_modules/child")
+                with self.assertRaisesRegex(ValueError, "path"):
+                    helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, modified)
+        with mock.patch.object(helper, "MAX_METADATA_PACKAGES", 2):
+            with self.assertRaisesRegex(ValueError, "package count"):
+                helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, source)
+        deep = json.loads(json.dumps(source))
+        deep["packages"]["node_modules/parent/node_modules/child"] = deep["packages"].pop("node_modules/child")
+        with mock.patch.object(helper, "MAX_METADATA_DEPTH", 1):
+            with self.assertRaisesRegex(ValueError, "depth limit"):
+                helper._wrapper_lock_from_source_install_lock("1.0.2", metadata, manifest, deep)
+
+    def test_capture_without_shrinkwrap_remains_pending_and_checks_every_registry_identity(self):
+        helper = load_helper()
+        version = "1.0.2"
+        root = {"version": version, "dist.tarball": "https://registry.npmjs.org/pi.tgz", "dist.integrity": "sha512-root",
+                "repository.url": helper.SOURCE_REPOSITORY, "gitHead": "a" * 40, "dependencies": {"child": "1.2.3"}}
+        manifest = {"name": helper.PACKAGE, "version": version, "dependencies": root["dependencies"]}
+        source = {"name": helper.PACKAGE + "-install", "version": version, "lockfileVersion": 3, "packages": {
+            "": {"name": helper.PACKAGE + "-install", "version": version, "dependencies": {helper.PACKAGE: version}},
+            f"node_modules/{helper.PACKAGE}": {"version": version, "resolved": root["dist.tarball"], "dependencies": root["dependencies"]},
+            "node_modules/child": {"version": "1.2.3", "resolved": "https://registry.npmjs.org/child.tgz", "integrity": "sha512-child"},
+        }}
+        child = {"version": "1.2.3", "dist.tarball": "https://registry.npmjs.org/child.tgz", "dist.integrity": "sha512-child"}
+        for mutation in (None, "integrity", "dependencies"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as raw:
+                record = dict(child)
+                if mutation == "integrity":
+                    record["dist.integrity"] = "sha512-changed"
+                elif mutation == "dependencies":
+                    record["dependencies"] = {"unsafe": "file:../outside"}
+                with mock.patch.object(helper, "_run_registry_metadata", side_effect=[root, record]) as metadata, \
+                     mock.patch.object(helper, "_fetch_source_install_lock", return_value=source) as fetch, \
+                     mock.patch.object(helper, "_download_registry_tarball", return_value={"manifest": manifest, "shrinkwrap": None}), \
+                     mock.patch.object(helper.subprocess, "run", side_effect=AssertionError("candidate resolution or execution is forbidden")):
+                    destination = Path(raw) / "candidate"
+                    if mutation is not None:
+                        with self.assertRaisesRegex(ValueError, "metadata"):
+                            helper.capture_candidate(version, destination)
+                        self.assertFalse((destination / "review.json").exists())
+                    else:
+                        helper.capture_candidate(version, destination)
+                        receipt = json.loads((destination / "review.json").read_text())
+                        self.assertEqual(receipt["result"], "PENDING_REVIEW")
+                        with self.assertRaisesRegex(ValueError, "pending"):
+                            helper._validate_directory(destination, version, require_reviewed=True)
+                        self.assertEqual(metadata.call_count, 2)
+                        self.assertEqual(fetch.call_args.args[0], root["gitHead"])
+
+    def test_source_install_lock_fetch_is_commit_bound_bounded_and_refuses_redirects(self):
+        helper = load_helper()
+        for commit in ("main", "../escape", "a" * 39):
+            with self.assertRaisesRegex(ValueError, "source commit"):
+                helper._fetch_source_install_lock(commit, float("inf"))
+        class Response:
+            status = 302
+        connection = mock.Mock()
+        connection.getresponse.return_value = Response()
+        with mock.patch.object(helper.http.client, "HTTPSConnection", return_value=connection):
+            with self.assertRaisesRegex(ValueError, "HTTP 302"):
+                helper._fetch_source_install_lock("a" * 40, float("inf"))
+        self.assertEqual(connection.request.call_args.args[1], "/earendil-works/pi/" + "a" * 40 + "/packages/coding-agent/install-lock/package-lock.json")
+
+    def test_source_install_lock_fetch_rejects_expired_oversized_and_invalid_responses(self):
+        helper = load_helper()
+        with mock.patch.object(helper.time, "monotonic", return_value=2.0), \
+             mock.patch.object(helper.http.client, "HTTPSConnection") as connect:
+            with self.assertRaisesRegex(ValueError, "time budget"):
+                helper._fetch_source_install_lock("a" * 40, 1.0)
+            connect.assert_not_called()
+        for label, payload, declared, message in (
+            ("valid", b"{}", "2", None),
+            ("declared-oversized", b"{}", "17", "output limit"),
+            ("streamed-oversized", b"{\"long\":\"" + b"x" * 20 + b"\"}", None, "output limit"),
+            ("not-object", b"[]", None, "not an object"),
+            ("invalid-json", b"{", None, "Expecting"),
+        ):
+            with self.subTest(label=label):
+                stream = io.BytesIO(payload)
+                response = SimpleNamespace(status=200, getheader=lambda name: declared, read=stream.read)
+                connection = mock.Mock()
+                connection.getresponse.return_value = response
+                with mock.patch.object(helper, "MAX_METADATA_OUTPUT_BYTES", 16), \
+                     mock.patch.object(helper.http.client, "HTTPSConnection", return_value=connection):
+                    if message is None:
+                        self.assertEqual(helper._fetch_source_install_lock("a" * 40, float("inf")), {})
+                    else:
+                        with self.assertRaisesRegex(ValueError, message):
+                            helper._fetch_source_install_lock("a" * 40, float("inf"))
+                connection.close.assert_called_once()
+
+    def test_exact_registry_metadata_rejects_wrong_name_or_version(self):
+        helper = load_helper()
+        record = {"name": helper.PACKAGE, "version": "1.0.2", "dist": {
+            "tarball": "https://registry.npmjs.org/pi.tgz", "integrity": "sha512-root"}}
+        for field, value in (("name", "wrong-package"), ("version", "1.0.1")):
+            with self.subTest(field=field):
+                changed = {**record, field: value}
+                with mock.patch.object(helper, "_fetch_registry_packument", return_value=changed):
+                    with self.assertRaisesRegex(ValueError, "exact registry record identity"):
+                        helper._run_registry_metadata("npm", helper.PACKAGE, "1.0.2", {}, float("inf"))
+        with mock.patch.object(helper, "_fetch_registry_packument", return_value=record) as fetch:
+            self.assertEqual(helper._run_registry_metadata("npm", helper.PACKAGE, "1.0.2", {}, float("inf"))["version"], "1.0.2")
+            self.assertEqual(fetch.call_args.args, (helper.PACKAGE, float("inf"), "1.0.2"))
+
     def test_reviewed_fixture_bytes_are_forced_to_lf_on_every_checkout(self):
         fixtures = (
             ".github/fixtures/pi-hosts/0.84.1/package-lock.json",
@@ -280,7 +576,8 @@ class PiHostLocksTest(unittest.TestCase):
             "licenses", "audits", "lifecycle_scripts", "signatures", "provenance", "result",
         }
         review = json.loads(review_source.read_text(encoding="utf-8"))
-        self.assertEqual(set(review), required)
+        # ADR-0041: a host retaining baseline advisories records them; the field is otherwise absent.
+        self.assertEqual(set(review) - {"accepted_advisories"}, required)
         self.assertEqual(review["result"], "PASS")
 
         for label, mutate in {
@@ -294,21 +591,189 @@ class PiHostLocksTest(unittest.TestCase):
             "invalid-review-date": lambda value: value.__setitem__("reviewed_at", "not-a-date"),
             "wrong-reviewer": lambda value: value.__setitem__("reviewer", "untrusted-reviewer"),
             "failed-license": lambda value: value["licenses"].__setitem__("result", "FAIL"),
-            "nonzero-audit": lambda value: value["audits"]["all"].__setitem__("high", 1),
-            "nonzero-production-audit": lambda value: value["audits"]["production"].__setitem__("high", 1),
+            "extra-audit-finding": lambda value: value["audits"]["all"].update(
+                critical=value["audits"]["all"]["critical"] + 1, total=value["audits"]["all"]["total"] + 1),
+            "extra-production-audit-finding": lambda value: value["audits"]["production"].update(
+                critical=value["audits"]["production"]["critical"] + 1,
+                total=value["audits"]["production"]["total"] + 1),
             "wrong-lifecycle-policy": lambda value: value["lifecycle_scripts"].__setitem__("policy", "allow"),
             "failed-signatures": lambda value: value["signatures"].__setitem__("verified", 0),
             "failed-provenance": lambda value: value["provenance"].__setitem__("attestations_verified", 0),
         }.items():
             with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-review-") as raw:
                 root = Path(raw)
+                # Copy every reviewed host so an accepted advisory's baseline lock resolves.
+                shutil.copytree(LOCK_ROOT, root / ".github" / "fixtures" / "pi-hosts")
                 target = root / ".github" / "fixtures" / "pi-hosts" / SUPPORTED_VERSION
-                shutil.copytree(LOCK_ROOT / SUPPORTED_VERSION, target)
                 candidate = json.loads(json.dumps(review))
                 mutate(candidate)
                 (target / "review.json").write_text(json.dumps(candidate), encoding="utf-8")
                 with self.assertRaisesRegex(ValueError, "review|audit|source"):
                     helper.validate_host_lock(root, SUPPORTED_VERSION)
+
+    # -- ADR-0041: a strictly-safer host with recorded, dated advisories ----------
+    BRACE_ADVISORIES = (
+        ("GHSA-q2hr-2g5m-vwhr", "moderate"),
+        ("GHSA-qhr7-859c-m2p7", "high"),
+        ("GHSA-6j4f-fj2g-mc7p", "high"),
+    )
+
+    def _accepted_root(self, raw, version="1.0.0", baseline="0.84.1"):
+        root = Path(raw)
+        for name in (version, baseline):
+            shutil.copytree(LOCK_ROOT / name, root / ".github" / "fixtures" / "pi-hosts" / name)
+        target = root / ".github" / "fixtures" / "pi-hosts" / version
+        pending = json.loads((target / "review.json").read_text(encoding="utf-8"))
+        review = {
+            "schema": "codearbiter-pi-host-lock-review-v2",
+            "package": pending["package"], "version": version, "registry": pending["registry"],
+            "root_integrity": pending["root_integrity"], "lock_sha256": pending["lock_sha256"],
+            "config_sha256": pending["config_sha256"],
+            "source_repository": pending["source_repository"], "source_tag": f"v{version}",
+            "source_commit": pending["source_commit"],
+            "reviewed_at": date.today().isoformat(), "reviewer": "ca-add-dep:C019-DEPENDENCY",
+            "licenses": {"result": "PASS", "observed": ["MIT"]},
+            "audits": {
+                "production": {"info": 0, "low": 0, "moderate": 0, "high": 1, "critical": 0, "total": 1},
+                "all": {"info": 0, "low": 0, "moderate": 0, "high": 1, "critical": 0, "total": 1},
+            },
+            "lifecycle_scripts": {"result": "PASS", "policy": "ignore-scripts", "transitive_hooks_present": True},
+            "signatures": {"result": "PASS", "verified": 1},
+            "provenance": {"result": "PASS", "attestations_verified": 1},
+            "result": "PASS",
+            "accepted_advisories": [{
+                "ghsa": ghsa, "package": "brace-expansion", "version": "5.0.9", "severity": severity,
+                "reason": "Pinned by Pi's shrinkwrap; already present in the baseline; fixed upstream (pi#10288).",
+                "baseline_version": baseline,
+                "backstop": (date.today() + timedelta(days=14)).isoformat(),
+            } for ghsa, severity in self.BRACE_ADVISORIES],
+        }
+        return root, target, review
+
+    def _write_review(self, target, review):
+        (target / "review.json").write_text(json.dumps(review), encoding="utf-8")
+
+    def test_accepted_advisories_admit_a_strictly_safer_host(self):
+        helper = load_helper()
+        helper.SUPPORTED = ("1.0.0",)  # Historical fixture proof, never current admission.
+        with tempfile.TemporaryDirectory(prefix="ca-pi-accepted-") as raw:
+            root, target, review = self._accepted_root(raw)
+            self._write_review(target, review)
+            validated = helper.validate_host_lock(root, "1.0.0")
+            self.assertEqual(
+                {(item["ghsa"], item["package"]) for item in validated["accepted_advisories"]},
+                {(ghsa, "brace-expansion") for ghsa, _ in self.BRACE_ADVISORIES},
+            )
+            # The install plan carries each record's version through to the audit check.
+            plan = helper.install_plan(root, "1.0.0", root / "prefix")
+            self.assertEqual(
+                {(item["ghsa"], item["package"], item["version"]) for item in plan["accepted_advisories"]},
+                {(item["ghsa"], item["package"], item["version"]) for item in review["accepted_advisories"]},
+            )
+
+    def test_accepted_advisories_fail_closed(self):
+        helper = load_helper()
+        helper.SUPPORTED = ("1.0.0",)  # Keep the retained-advisory rejection contract exercised.
+        today = date.today()
+        mutations = {
+            "empty-list": lambda r: r.__setitem__("accepted_advisories", []),
+            "unknown-advisory-field": lambda r: r["accepted_advisories"][0].__setitem__("note", "x"),
+            "malformed-ghsa": lambda r: r["accepted_advisories"][0].__setitem__("ghsa", "CVE-2026-0001"),
+            "duplicate": lambda r: r["accepted_advisories"].append(dict(r["accepted_advisories"][0])),
+            "bad-severity": lambda r: r["accepted_advisories"][0].__setitem__("severity", "urgent"),
+            "empty-reason": lambda r: r["accepted_advisories"][0].__setitem__("reason", " "),
+            "version-not-in-lock": lambda r: r["accepted_advisories"][0].__setitem__("version", "5.0.8"),
+            "package-not-in-lock": lambda r: r["accepted_advisories"][0].__setitem__("package", "left-pad"),
+            "baseline-is-candidate": lambda r: [a.__setitem__("baseline_version", "1.0.0") for a in r["accepted_advisories"]],
+            "baseline-lacks-finding": lambda r: [a.__setitem__("baseline_version", "0.80.5") for a in r["accepted_advisories"]],
+            "backstop-passed": lambda r: (
+                r.__setitem__("reviewed_at", (today - timedelta(days=20)).isoformat()),
+                [a.__setitem__("backstop", (today - timedelta(days=1)).isoformat()) for a in r["accepted_advisories"]],
+            ),
+            "backstop-too-far": lambda r: [a.__setitem__("backstop", (today + timedelta(days=31)).isoformat()) for a in r["accepted_advisories"]],
+            "backstop-before-review": lambda r: [a.__setitem__("backstop", (today - timedelta(days=1)).isoformat()) for a in r["accepted_advisories"]],
+            "audit-exceeds-accepted": lambda r: r["audits"]["all"].update(critical=1, total=2),
+            "production-audit-exceeds-accepted": lambda r: r["audits"]["production"].update(moderate=1, total=2),
+            "audit-zero-with-accepted": lambda r: r["audits"].update(
+                production=dict(helper.ZERO_AUDIT), all=dict(helper.ZERO_AUDIT)),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-accepted-") as raw:
+                root, target, review = self._accepted_root(raw)
+                mutate(review)
+                self._write_review(target, review)
+                with self.assertRaisesRegex(ValueError, "advisor|audit|review"):
+                    helper.validate_host_lock(root, "1.0.0")
+
+    BRACE_NODE = "node_modules/@earendil-works/pi-coding-agent/node_modules/brace-expansion"
+
+    def _audit_report(self, advisories, nodes=None):
+        return json.dumps({
+            "auditReportVersion": 2,
+            "vulnerabilities": {"brace-expansion": {
+                "name": "brace-expansion", "severity": "high",
+                "nodes": [self.BRACE_NODE] if nodes is None else nodes,
+                "via": [{"source": 1, "name": "brace-expansion", "dependency": "brace-expansion",
+                         "url": f"https://github.com/advisories/{ghsa}", "severity": severity, "range": "<5.0.12"}
+                        for ghsa, severity in advisories],
+            }},
+            "metadata": {"vulnerabilities": {"high": 1, "total": 1}},
+        })
+
+    def _fake_npm(self, version, audit_stdout, audit_code=1):
+        inventory = json.dumps({"dependencies": {PACKAGE: {"version": version}}})
+
+        def run(command, **_kwargs):
+            if command[1] == "audit" and "--json" in command:
+                return SimpleNamespace(stdout=audit_stdout, returncode=audit_code)
+            if command[1:3] == ["ls", "--all"]:
+                return SimpleNamespace(stdout=inventory, returncode=0)
+            return SimpleNamespace(stdout="", returncode=0)
+        return run
+
+    def test_install_audit_admits_only_accepted_findings(self):
+        helper = load_helper()
+        accepted = [{"ghsa": ghsa, "package": "brace-expansion", "version": "5.0.9"} for ghsa, _ in self.BRACE_ADVISORIES]
+        report = self._audit_report(self.BRACE_ADVISORIES)
+        clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})
+        cases = {
+            # label: (stdout, npm exit, accepted, installed brace-expansion version or None, expected error)
+            "accepted": (report, 1, accepted, "5.0.9", None),
+            "clean": (clean, 0, [], None, None),
+            "unaccepted": (report, 1, accepted[:2], "5.0.9", "unaccepted"),
+            "nothing-accepted": (report, 1, [], "5.0.9", "unaccepted"),
+            # CodeRabbit #898: the receipt binds a version; another installed copy is not accepted.
+            "installed-version-not-accepted": (report, 1, accepted, "5.0.8", "unaccepted"),
+            "accepted-for-other-version": (
+                report, 1, [dict(item, version="5.0.8") for item in accepted], "5.0.9", "unaccepted"),
+            "node-not-installed": (report, 1, accepted, None, "unreadable"),
+            "installed-name-mismatch": (report, 1, accepted, "evil", "does not match"),
+            "advisory-names-another-package": (
+                report.replace('"name": "brace-expansion", "dependency"', '"name": "minimatch", "dependency"'),
+                1, accepted, "5.0.9", "unaccepted"),
+            "no-nodes": (self._audit_report(self.BRACE_ADVISORIES, nodes=[]), 1, accepted, "5.0.9", "node"),
+            "node-escapes-install": (
+                self._audit_report(self.BRACE_ADVISORIES, nodes=["node_modules/../../outside"]), 1, accepted, "5.0.9",
+                "escapes"),
+            "npm-failure": (report, 2, accepted, "5.0.9", "audit"),
+            "malformed-report": ("not json", 1, accepted, "5.0.9", "audit"),
+            "report-without-vulnerabilities": (json.dumps({"auditReportVersion": 2}), 1, accepted, "5.0.9", "audit"),
+        }
+        for label, (stdout, code, allowed, installed, error) in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-audit-") as raw, \
+                    mock.patch.object(helper.subprocess, "run", side_effect=self._fake_npm(SUPPORTED_VERSION, stdout, code)):
+                root = Path(raw)
+                if installed is not None:
+                    node = root / self.BRACE_NODE
+                    node.mkdir(parents=True)
+                    manifest = ({"name": "other-package", "version": "5.0.9"} if installed == "evil"
+                                else {"name": "brace-expansion", "version": installed})
+                    (node / "package.json").write_text(json.dumps(manifest), encoding="utf-8")
+                if error is None:
+                    helper._audit_install(root, root, SUPPORTED_VERSION, allowed)
+                else:
+                    with self.assertRaisesRegex(ValueError, error):
+                        helper._audit_install(root, root, SUPPORTED_VERSION, allowed)
 
     def test_capture_preflights_registry_metadata_before_lock_resolution_and_disables_scripts(self):
         helper = load_helper()
@@ -775,17 +1240,29 @@ class PiHostLocksTest(unittest.TestCase):
                     deadline=float("inf"), byte_budget=len(payload), require_shrinkwrap=True,
                 )
             self.assertEqual(result["shrinkwrap"], valid)
+            absent = archive_bytes([])
+            integrity = "sha512-" + base64.b64encode(hashlib.sha512(absent).digest()).decode("ascii")
+            with mock.patch.object(helper.http.client, "HTTPSConnection", connection_for(absent)):
+                result = helper._download_registry_tarball(
+                    helper.PACKAGE, SUPPORTED_VERSION,
+                    "https://registry.npmjs.org/root.tgz", integrity, destination,
+                    deadline=float("inf"), byte_budget=len(absent), require_shrinkwrap=False,
+                )
+            self.assertIsNone(result["shrinkwrap"])
             for label, (entries, message) in cases.items():
-                with self.subTest(label=label):
-                    payload = archive_bytes(entries)
-                    integrity = "sha512-" + base64.b64encode(hashlib.sha512(payload).digest()).decode("ascii")
-                    with mock.patch.object(helper.http.client, "HTTPSConnection", connection_for(payload)):
-                        with self.assertRaisesRegex(ValueError, message):
-                            helper._download_registry_tarball(
-                                helper.PACKAGE, SUPPORTED_VERSION,
-                                "https://registry.npmjs.org/root.tgz", integrity, destination,
-                                deadline=float("inf"), byte_budget=len(payload), require_shrinkwrap=True,
-                            )
+                for required in (True, False):
+                    if label == "missing" and not required:
+                        continue  # Genuine absence is the supported source-lock fallback.
+                    with self.subTest(label=label, require_shrinkwrap=required):
+                        payload = archive_bytes(entries)
+                        integrity = "sha512-" + base64.b64encode(hashlib.sha512(payload).digest()).decode("ascii")
+                        with mock.patch.object(helper.http.client, "HTTPSConnection", connection_for(payload)):
+                            with self.assertRaisesRegex(ValueError, message):
+                                helper._download_registry_tarball(
+                                    helper.PACKAGE, SUPPORTED_VERSION,
+                                    "https://registry.npmjs.org/root.tgz", integrity, destination,
+                                    deadline=float("inf"), byte_budget=len(payload), require_shrinkwrap=required,
+                                )
 
     def test_wrapper_lock_rejects_unsafe_published_paths(self):
         helper = load_helper()
@@ -1182,10 +1659,9 @@ class PiHostLocksTest(unittest.TestCase):
 
     def test_install_audit_rejects_wrong_installed_pi_version(self):
         helper = load_helper()
-        wrong = json.dumps({"dependencies": {helper.PACKAGE: {"version": "0.84.2"}}})
-        completed = SimpleNamespace(stdout=wrong)
+        clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})
         with tempfile.TemporaryDirectory(prefix="ca-pi-audit-") as raw, mock.patch.object(
-            helper.subprocess, "run", return_value=completed,
+            helper.subprocess, "run", side_effect=self._fake_npm("0.84.2", clean, 0),
         ):
             root = Path(raw)
             with self.assertRaisesRegex(ValueError, "exact reviewed version"):

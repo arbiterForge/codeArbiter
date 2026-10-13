@@ -62,6 +62,19 @@ bodies name *actions* — this file is where those actions map to this host.
   in-flight tasks) appears in the startup briefing instead.
 - **No transcript prune** — the prune engine is Claude-transcript-specific;
   audit-staleness warnings still fire on prompt submit.
+- **Private helper calls** — ordinary tool calls do not inherit the hook
+  runner's `PLUGIN_ROOT`. For the debug validator or authorized task-board
+  writer, load [helper-invocation.md](helper-invocation.md), derive the installed
+  root from the absolute path of the currently loaded `ca-debug` or `ca-task`
+  `SKILL.md`, check the exact installed helper, and run the card's PowerShell or
+  POSIX Python 3 selection block before invoking it. Select once by an executed
+  identity probe; a failed helper retains its original output and exit status
+  without a second-interpreter attempt. Pass task text as one literal argument
+  after `--`, with options before it. For validation, deliver one finite packet
+  of at most 65,536 bytes through the host tool's stdin using the card's direct
+  `validate` call. Keep the project working
+  directory for board writes. A missing helper is a failed operation, never a
+  reason to try a source checkout or plugin cache.
 - **No `--farm` backend** — the farm worker files (`tools/farm.js`,
   `tools/plan.schema.json`) are not vendored into this plugin yet (M5
   distribution decision). A `--farm` flag degrades to the normal

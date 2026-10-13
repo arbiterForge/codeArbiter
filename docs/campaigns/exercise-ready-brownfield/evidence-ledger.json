@@ -1,0 +1,684 @@
+{
+  "document_type": "assessment evidence ledger; not a codeArbiter authority receipt or release qualification",
+  "assessment_date": "2026-09-25",
+  "baseline": {
+    "repository": "arbiterForge/codeArbiter",
+    "default_branch": "main",
+    "revision": "d171126e71e48b78d242c3d95b218236fdd8f61d",
+    "tree": "a9569692369f5b53e2edf8ae78e0c4e67e93c3c3",
+    "archive_files": 2375,
+    "archive_sha256": "72b567c337dc6695a62dda8ceeac1e01ed271bc7d555afb9868979a6a421d070",
+    "main_rechecked_at_end": true
+  },
+  "boundaries": {
+    "production_repository_changes": false,
+    "consumer_instruction_writes": false,
+    "pull_requests_opened": false,
+    "installation_or_upgrade_performed": false,
+    "global_settings_changed": false,
+    "real_model_inference_performed": false,
+    "existing_source_files_changed_in_disposable_copy": [],
+    "temporary_fixture_cleanup_complete": true,
+    "local_synthetic_provider_stopped": true
+  },
+  "environment_observed": {
+    "platform": "windows/amd64",
+    "python": "3.14.5",
+    "claude_code": "2.1.282",
+    "codex_cli": "0.145.0",
+    "exercise_environment_match": "unknown",
+    "managed_policy_and_exercise_project_settings": "not inspected"
+  },
+  "installed_ca_observation": {
+    "version": "2.21.12",
+    "installation_commit": "29f84168ab7592a5d7bb0550cb1f25cf29608a9d",
+    "payload_location_relative_to_plugin": "helpers/artifacts",
+    "capabilities_exit": 0,
+    "capabilities": {
+      "binary": "ca-artifact",
+      "version": "0.1.0",
+      "protocol": "codearbiter.artifact-api/0.1.0",
+      "schema_version": "0.3.1",
+      "renderer": "codearbiter-html/0.1.0",
+      "platform": "windows/amd64",
+      "host_default_enabled": true,
+      "repository_operations_available": true,
+      "runtime_downloads": false,
+      "public_registrations_added": 0,
+      "storage_backend": "windows-osroot-lockfileex"
+    },
+    "scope_limit": "Read-only installed-bridge capability query. Does not establish installed workflow, hook trust, six-scout isolation, or contribution readiness."
+  },
+  "active_work": [
+    {
+      "pr": 870,
+      "state": "open",
+      "draft": false,
+      "head": "6434bf3b610dd2a3d17fb2d14d22eb20883b05c0",
+      "relevance": "actual patch redirects ca to binary-bearing ca-marketplace channel; cold install results are PR-author-reported, not reproduced in this assessment"
+    },
+    {
+      "pr": 854,
+      "state": "open",
+      "draft": true,
+      "head": "35a3cd18a327fe5aa306ba452cc21ae096a24b02",
+      "relevance": "workflow-owner consolidation includes remaining create-context/context-creation and context-check candidates; no instruction generation assumed implemented"
+    }
+  ],
+  "published_release_metadata_observed": [
+    {
+      "tag": "v2.21.16",
+      "published_at": "2026-09-25T12:08:49Z",
+      "draft": false,
+      "archive_sha256_reported_by_github": "32588a10eb5070b408443e5a0ef23453128725d33574c49a93f5edf5edf22fb8"
+    },
+    {
+      "tag": "ca-codex-v0.13.17",
+      "published_at": "2026-09-25T12:08:47Z",
+      "draft": false,
+      "archive_sha256_reported_by_github": "dcf2d458d2218ee1f1023f42a480dcd1d1fb82727965f45a7e5c4fbe36374d79"
+    }
+  ],
+  "executed_checks": [
+    {
+      "command": "python .github/scripts/test_provenancelib.py",
+      "passed": 125,
+      "exit": 0,
+      "wall_seconds": 0.71,
+      "reported_test_seconds": 0.535
+    },
+    {
+      "command": "python .github/scripts/test_readinjectlib.py",
+      "passed": 202,
+      "exit": 0,
+      "wall_seconds": 1.865,
+      "reported_test_seconds": 1.691
+    },
+    {
+      "command": "python .github/scripts/test_provenance_wiring.py",
+      "passed": 8,
+      "exit": 0,
+      "wall_seconds": 0.152,
+      "evidence_class": "primarily text and structural wiring checks, not end-to-end orchestration"
+    },
+    {
+      "command": "python tools/build-surface.py --check",
+      "exit": 0,
+      "output": "build-surface --check: OK (claude, codex, pi in sync)"
+    }
+  ],
+  "counterexamples_executed": [
+    {
+      "id": "C01",
+      "function": "compute_drift",
+      "input_summary": "code-map cites deleted src/app.py with drift_trigger=false",
+      "observed": {},
+      "interpretation": "Architecture-path disappearance is outside the current trigger contract; not proof of freshness."
+    },
+    {
+      "id": "C02",
+      "function": "heal_worklist",
+      "input_summary": "Empty interview-derived provenance, newly staged package.json",
+      "observed": [],
+      "interpretation": "First implementation does not bootstrap empty provenance through this selector."
+    },
+    {
+      "id": "C03",
+      "function": "compute_drift and heal_worklist",
+      "input_summary": "Two documents cite package.json with different hashes; first record matches current, second is stale",
+      "observed_drift": {
+        "second": [
+          {
+            "path": "package.json",
+            "kind": "changed"
+          }
+        ]
+      },
+      "observed_heal": [],
+      "interpretation": "First-occurrence hash selection suppresses required per-document healing."
+    },
+    {
+      "id": "C04",
+      "function": "lint_code_map",
+      "input_summary": "One recognized map bullet with a 100,000-character single-line role",
+      "observed": [],
+      "interpretation": "Entry-count and continuation-line lint is not a content-size bound."
+    }
+  ],
+  "host_loading_method": {
+    "profiles": "Separate temporary CLAUDE_CONFIG_DIR and CODEX_HOME. Dummy credentials and localhost synthetic provider. No credential files read for these probes.",
+    "claude_arguments": [
+      "-p",
+      "Reply AUDIT_OK only.",
+      "--model",
+      "sonnet",
+      "--tools",
+      "",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--setting-sources",
+      "project",
+      "--settings",
+      "{\"autoMemoryEnabled\":false}",
+      "--no-session-persistence",
+      "--output-format",
+      "json"
+    ],
+    "claude_initial_four_cases": "Also set disableAllHooks=true; subsequent controls did not. No --bare or --safe-mode was used.",
+    "codex_arguments": [
+      "exec",
+      "--ephemeral",
+      "--ignore-user-config",
+      "--json",
+      "-s",
+      "read-only",
+      "-m",
+      "audit-model",
+      "-c",
+      "model_provider=\"audit\"",
+      "-c",
+      "model_providers.audit.wire_api=\"responses\"",
+      "-c",
+      "model_providers.audit.requires_openai_auth=false"
+    ],
+    "capture": "Parsed outgoing request bodies at localhost, before inference. Fixed HTTP 400 stops each run. One scripted response requests only Read of two fixture-owned files; next outgoing request demonstrates lazy instruction inclusion.",
+    "expected_exit": 1,
+    "exit_interpretation": "Intentional provider stop. Not a successful application task or a passing behavior test.",
+    "codex_warning": "Temporary CODEX_HOME caused the CLI to refuse creation of PATH helper aliases. Instruction payloads were captured; full tool execution and sandbox operation were not qualified.",
+    "native_claude_agents_result": "Not observed in this isolated profile, including hooks-enabled and Git-root controls. Root cause was not established; do not infer universal lack of support.",
+    "bytes_definition": "UTF-8 lengths of complete captured text components containing the synthetic instruction markers, including client wrappers. Not whole request size, tokenizer counts, or a cross-host cost comparison.",
+    "model_tokens": null,
+    "monetary_cost": null,
+    "savings_estimate": null
+  },
+  "loader_runs": [
+    {
+      "host": "claude",
+      "case": "agents-only-root",
+      "exit": 1,
+      "wall_seconds": 3.54,
+      "request_indexes": [
+        0
+      ]
+    },
+    {
+      "host": "claude",
+      "case": "agents-only-nested-launch",
+      "exit": 1,
+      "wall_seconds": 3.36,
+      "request_indexes": [
+        1
+      ]
+    },
+    {
+      "host": "claude",
+      "case": "claude-and-agents-root-default",
+      "exit": 1,
+      "wall_seconds": 3.33,
+      "request_indexes": [
+        2
+      ]
+    },
+    {
+      "host": "claude",
+      "case": "explicit-claude-import",
+      "exit": 1,
+      "wall_seconds": 3.31,
+      "request_indexes": [
+        3
+      ]
+    },
+    {
+      "host": "claude",
+      "case": "agents-root-hooks-not-disabled",
+      "exit": 1,
+      "wall_seconds": 0.31,
+      "request_indexes": [
+        4
+      ]
+    },
+    {
+      "host": "codex",
+      "case": "agents-root",
+      "exit": 1,
+      "wall_seconds": 0.91,
+      "request_indexes": [
+        5
+      ]
+    },
+    {
+      "host": "codex",
+      "case": "agents-nested-launch",
+      "exit": 1,
+      "wall_seconds": 0.68,
+      "request_indexes": [
+        6
+      ]
+    },
+    {
+      "host": "codex",
+      "case": "nested-override",
+      "exit": 1,
+      "wall_seconds": 0.67,
+      "request_indexes": [
+        7
+      ]
+    },
+    {
+      "host": "claude",
+      "case": "agents-root-git-repository",
+      "exit": 1,
+      "wall_seconds": 0.35,
+      "request_indexes": [
+        8
+      ]
+    },
+    {
+      "host": "claude",
+      "case": "nested-claude-launch",
+      "exit": 1,
+      "wall_seconds": 0.36,
+      "request_indexes": [
+        9
+      ]
+    },
+    {
+      "host": "claude",
+      "case": "read-two-subtrees-scripted-provider",
+      "exit": 1,
+      "wall_seconds": 0.41,
+      "request_indexes": [
+        10,
+        11
+      ]
+    }
+  ],
+  "injection_observations": [
+    {
+      "request_index": 0,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 0,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": []
+    },
+    {
+      "request_index": 1,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 0,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": []
+    },
+    {
+      "request_index": 2,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 1,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": [
+        809
+      ]
+    },
+    {
+      "request_index": 3,
+      "marker_counts": {
+        "root_agents": 1,
+        "nested_agents": 0,
+        "root_claude": 1,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": [
+        1004
+      ]
+    },
+    {
+      "request_index": 4,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 0,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": []
+    },
+    {
+      "request_index": 5,
+      "marker_counts": {
+        "root_agents": 1,
+        "nested_agents": 0,
+        "root_claude": 0,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": [
+        170
+      ]
+    },
+    {
+      "request_index": 6,
+      "marker_counts": {
+        "root_agents": 1,
+        "nested_agents": 1,
+        "root_claude": 0,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": [
+        202
+      ]
+    },
+    {
+      "request_index": 7,
+      "marker_counts": {
+        "root_agents": 1,
+        "nested_agents": 0,
+        "root_claude": 0,
+        "nested_override": 1,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": [
+        197
+      ]
+    },
+    {
+      "request_index": 8,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 0,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": []
+    },
+    {
+      "request_index": 9,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 1,
+        "nested_override": 0,
+        "nested_claude": 1,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": [
+        997
+      ]
+    },
+    {
+      "request_index": 10,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 1,
+        "nested_override": 0,
+        "nested_claude": 0,
+        "other_claude": 0
+      },
+      "instruction_component_utf8_bytes": [
+        808
+      ]
+    },
+    {
+      "request_index": 11,
+      "marker_counts": {
+        "root_agents": 0,
+        "nested_agents": 0,
+        "root_claude": 1,
+        "nested_override": 0,
+        "nested_claude": 1,
+        "other_claude": 1
+      },
+      "instruction_component_utf8_bytes": [
+        808,
+        443
+      ]
+    }
+  ],
+  "not_executed": [
+    "Full onboarding with six actual model scouts",
+    "Real first-contribution tasks",
+    "Native Go and full conformance suites",
+    "Cold installation of the current releases",
+    "Installed Codex governance workflow qualification",
+    "Compaction/resume instruction delivery",
+    "Subagent instruction inheritance and containment",
+    "Codex root-launched cross-subtree reads",
+    "Other OS/provider/network-policy cells",
+    "A/B/C amortized token or monetary cost evaluation"
+  ],
+  "source_index": [
+    {
+      "id": "S01",
+      "path": "core/surface/commands/init.md",
+      "purpose": "entry route and scaffolding ownership",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/commands/init.md"
+    },
+    {
+      "id": "S02",
+      "path": "core/surface/commands/create-context.md",
+      "purpose": "one-time initialization and compatibility route",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/commands/create-context.md"
+    },
+    {
+      "id": "S03",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "purpose": "six scouts, synthesis, gap handling, output creation, initialization",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/skills/context-creation/SKILL.md"
+    },
+    {
+      "id": "S04",
+      "path": "core/surface/agents/scout.md",
+      "purpose": "tools, model, scope, report and confidence vocabulary",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/agents/scout.md"
+    },
+    {
+      "id": "S05",
+      "path": "core/surface/commands/context-check.md",
+      "purpose": "full rescan routing and explicit refresh consent",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/commands/context-check.md"
+    },
+    {
+      "id": "S06",
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "purpose": "re-scout, re-baseline, defer",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/skills/context-check/SKILL.md"
+    },
+    {
+      "id": "S07",
+      "path": "core/pysrc/init-codearbiter.py",
+      "purpose": "actual scaffold, refusal behavior, headers, local Git effects",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/init-codearbiter.py"
+    },
+    {
+      "id": "S08",
+      "path": "core/pysrc/_provenancelib.py",
+      "purpose": "drift, healing, rebaseline, bounded paths and map lint",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/_provenancelib.py"
+    },
+    {
+      "id": "S09",
+      "path": "core/pysrc/_readinjectlib.py",
+      "purpose": "advisory file-scoped retrieval, dedup, HTML identity",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/_readinjectlib.py"
+    },
+    {
+      "id": "S10",
+      "path": "core/pysrc/pre-read.py",
+      "purpose": "Read hook wiring and fail-open advisory boundary",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/pre-read.py"
+    },
+    {
+      "id": "S11",
+      "path": "core/pysrc/session-start.py",
+      "purpose": "startup summaries, hook installation, network refresh",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/session-start.py"
+    },
+    {
+      "id": "S12",
+      "path": "core/pysrc/prompt-submit.py",
+      "purpose": "persona compaction generation, separate from read-injection dedup",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/prompt-submit.py"
+    },
+    {
+      "id": "S13",
+      "path": "core/hosts.json",
+      "purpose": "canonical host descriptors and generation ownership",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/hosts.json"
+    },
+    {
+      "id": "S14",
+      "path": "core/surface/README.md",
+      "purpose": "source-to-generated layout",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/README.md"
+    },
+    {
+      "id": "S15",
+      "path": "tools/build-surface.py",
+      "purpose": "generation and Codex charter dispatch",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/tools/build-surface.py"
+    },
+    {
+      "id": "S16",
+      "path": "tools/build-host-packages.py",
+      "purpose": "package qualification and host metadata",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/tools/build-host-packages.py"
+    },
+    {
+      "id": "S17",
+      "path": "tools/build-artifacts.py",
+      "purpose": "offline native build and exact-host qualification",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/tools/build-artifacts.py"
+    },
+    {
+      "id": "S18",
+      "path": "core/pysrc/_artifactlib.py",
+      "purpose": "installed trusted payload bridge and preflight",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/_artifactlib.py"
+    },
+    {
+      "id": "S19",
+      "path": "core/surface/includes/artifacts.md",
+      "purpose": "typed artifact authority and installed capability contract",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/includes/artifacts.md"
+    },
+    {
+      "id": "S20",
+      "path": ".codearbiter/decisions/0037-extensible-structured-artifact-engine.md",
+      "purpose": "accepted architecture, per-kind rollout obligations",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/.codearbiter/decisions/0037-extensible-structured-artifact-engine.md"
+    },
+    {
+      "id": "S21",
+      "path": "core/artifacts/internal/kind/contracts.go",
+      "purpose": "implemented spec and plan kinds",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/artifacts/internal/kind/contracts.go"
+    },
+    {
+      "id": "S22",
+      "path": "core/artifacts/internal/repository/catalog.go",
+      "purpose": "HTML-specific catalog and canonical paths",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/artifacts/internal/repository/catalog.go"
+    },
+    {
+      "id": "S23",
+      "path": "core/artifacts/internal/operations/protocol.go",
+      "purpose": "closed operations and bounded mutation",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/artifacts/internal/operations/protocol.go"
+    },
+    {
+      "id": "S24",
+      "path": "core/pysrc/_protectedstatelib.py",
+      "purpose": "marker-gated/helper-only/append-only owners",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/_protectedstatelib.py"
+    },
+    {
+      "id": "S25",
+      "path": "core/surface/commands/feature.md",
+      "purpose": "map retrieval and real contribution lanes",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/commands/feature.md"
+    },
+    {
+      "id": "S26",
+      "path": "core/surface/commands/fix.md",
+      "purpose": "fix-time map retrieval",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/commands/fix.md"
+    },
+    {
+      "id": "S27",
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "purpose": "task-time context and real verification",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/skills/tdd/SKILL.md"
+    },
+    {
+      "id": "S28",
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "purpose": "routine provenance healing and unchanged commit authority",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/skills/commit-gate/SKILL.md"
+    },
+    {
+      "id": "S29",
+      "path": "core/surface/includes/reference-map.md",
+      "purpose": "task-dependent project-record consumers",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/surface/includes/reference-map.md"
+    },
+    {
+      "id": "S30",
+      "path": "core/pysrc/_subagentslib.py",
+      "purpose": "sampled display accounting, not total-scout cost proof",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/pysrc/_subagentslib.py"
+    },
+    {
+      "id": "S31",
+      "path": ".github/scripts/test_provenancelib.py",
+      "purpose": "125 executed tests",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/.github/scripts/test_provenancelib.py"
+    },
+    {
+      "id": "S32",
+      "path": ".github/scripts/test_readinjectlib.py",
+      "purpose": "202 executed tests",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/.github/scripts/test_readinjectlib.py"
+    },
+    {
+      "id": "S33",
+      "path": ".github/scripts/test_provenance_wiring.py",
+      "purpose": "eight executed structural checks",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/.github/scripts/test_provenance_wiring.py"
+    },
+    {
+      "id": "S34",
+      "path": ".claude-plugin/marketplace.json",
+      "purpose": "main catalog points at source subtree",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/.claude-plugin/marketplace.json"
+    },
+    {
+      "id": "S35",
+      "path": "core/artifacts/go.mod",
+      "purpose": "independent module and declared toolchain",
+      "url": "https://github.com/arbiterForge/codeArbiter/blob/d171126e71e48b78d242c3d95b218236fdd8f61d/core/artifacts/go.mod"
+    }
+  ]
+}

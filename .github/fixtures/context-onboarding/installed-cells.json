@@ -1,0 +1,6 @@
+{
+  "format": "codearbiter.context-installed-cells/0.1.0",
+  "required_hosts": ["claude", "codex"],
+  "candidate_facts": "runtime-required",
+  "scope": "Exact candidate facts are supplied by the post-assembly hosted cell. This declaration is not qualification or action permission."
+}

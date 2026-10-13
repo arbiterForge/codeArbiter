@@ -11,7 +11,7 @@
 #
 # It mirrors pre-bash.py's commit/push gates and reuses the SAME detection
 # primitives from _hooklib (CRYPTO_RE / SECRET_RE / line_digest / content_digest
-# / is_migration_path / marker_fresh / sensitive_scan_added_lines), so the two
+# / is_migration_path / sensitive_scan_added_lines), so the two
 # enforcement points can never drift on what counts as sensitive or as a
 # migration, on how a gate-pass marker binds to the lines it approved, or on
 # which path (gate-events.log, #279) is exempt from the sensitive-line scan.
@@ -30,9 +30,9 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _gitexec import git_executable  # noqa: E402
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS,
+    CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS,
     arbiter_active, content_digest, is_migration_path, line_digest,
-    marker_fresh, security_scan_diff, set_host, utf8_stdio,
+    security_scan_diff, set_host, utf8_stdio,
 )
 
 
@@ -223,8 +223,9 @@ def pre_commit(root):
         block("H-01", f"Direct commit to {target} is prohibited (ORCHESTRATOR §3) — this is "
                       f"the git-level backstop (#161). Create a feature branch.")
 
-    # H-09b / H-10b: a commit introducing crypto/secret changes needs a fresh,
-    # line-covering security-gate pass. Reuses the exact _hooklib primitives.
+    # H-09b / H-10b: a commit introducing crypto/secret changes needs a recorded,
+    # line-covering security-gate pass (bound by line digest, no time window).
+    # Reuses the exact _hooklib primitives.
     added = cached_added_lines(cwd)
     if added is None:
         block("H-09b", "the staged diff for the crypto/secret scan could not be read — "
@@ -237,7 +238,7 @@ def pre_commit(root):
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
         marker_root = _marker_root(root)
         marker = os.path.join(marker_root, ".codearbiter", ".markers", "security-gate-passed")
-        if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
+        if not os.path.isfile(marker):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (#161 git backstop). Run the {skill} gate, then commit.")
         approved = _marker_set(marker_root, "security-gate-passed")

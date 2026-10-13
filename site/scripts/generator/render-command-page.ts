@@ -67,6 +67,12 @@ export function renderCommandPage(input: PageInput): string {
     sections.push(`## Compatibility\n\n${lifecycle} Use \`${commandCatalog.replacement}\` for new work.`);
   }
 
+  // The source catalog supplies membership. Unknown synthetic entities must not
+  // acquire broken links, and this remains generated rather than hand-copied.
+  if (commandCatalog && /^[a-z][a-z0-9-]*$/.test(name)) {
+    sections.push(`## Route context\n\n[Find this entry in the workflow atlas](/concepts/workflow-routes/#atlas-${name}). Compare its related teaching maps, host spelling and context inputs. The exact procedure below remains the owner.`);
+  }
+
   sections.push(
     `## Source\n\n${renderSourceEmbed(
       input.sourceRaw,

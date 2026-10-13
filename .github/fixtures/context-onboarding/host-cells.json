@@ -1,0 +1,103 @@
+{
+  "format": "codearbiter.native-loading-cells/0.1",
+  "scope": "Harmless source fixtures only; no cell records a host observation or qualification.",
+  "cells": [
+    {
+      "id": "claude-root", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "session_start", "actor": "parent", "target": "target.txt",
+      "files": {
+        "CLAUDE.md": "T039_ROOT_A\n",
+        "packages/b/CLAUDE.md": "T039_SIBLING_B\n"
+      },
+      "required": ["T039_ROOT_A"], "excluded": ["T039_SIBLING_B"]
+    },
+    {
+      "id": "claude-nested", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "nested_traversal", "actor": "parent", "target": "packages/a/target.txt",
+      "files": {
+        "CLAUDE.md": "T039_ROOT_A\n",
+        "packages/a/CLAUDE.md": "T039_NESTED_A\n",
+        "packages/b/CLAUDE.md": "T039_SIBLING_B\n"
+      },
+      "required": ["T039_ROOT_A", "T039_NESTED_A"],
+      "excluded": ["T039_SIBLING_B"]
+    },
+    {
+      "id": "claude-cross-subtree", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "cross_subtree", "actor": "parent", "target": "packages/b/target.txt",
+      "files": {
+        "CLAUDE.md": "T039_CROSS_ROOT\n",
+        "packages/a/CLAUDE.md": "T039_CROSS_A\n",
+        "packages/b/CLAUDE.md": "T039_CROSS_B\n"
+      },
+      "required": ["T039_CROSS_ROOT", "T039_CROSS_A", "T039_CROSS_B"],
+      "excluded": []
+    },
+    {
+      "id": "claude-existing-owner", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "existing_instruction", "actor": "parent", "target": "packages/a/target.txt",
+      "files": {
+        "CLAUDE.md": "Human owner instruction: preserve this file.\nT039_EXISTING_OWNER\n",
+        "packages/a/CLAUDE.md": "T039_EXISTING_NESTED\n"
+      },
+      "required": ["T039_EXISTING_OWNER", "T039_EXISTING_NESTED"],
+      "excluded": []
+    },
+    {
+      "id": "claude-compaction", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "after_compaction", "actor": "parent", "target": "packages/a/target.txt",
+      "files": {
+        "CLAUDE.md": "T039_COMPACT_ROOT\n",
+        "packages/a/CLAUDE.md": "T039_COMPACT_A\n"
+      },
+      "required": ["T039_COMPACT_ROOT", "T039_COMPACT_A"], "excluded": []
+    },
+    {
+      "id": "claude-child", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "child_start", "actor": "child", "target": "packages/a/target.txt",
+      "files": {
+        "CLAUDE.md": "T039_CHILD_ROOT\n",
+        "packages/a/CLAUDE.md": "T039_CHILD_A\n"
+      },
+      "required": ["T039_CHILD_ROOT", "T039_CHILD_A"], "excluded": []
+    },
+    {
+      "id": "claude-import", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "include", "actor": "parent", "target": "target.txt",
+      "files": {
+        "CLAUDE.md": "@docs/shared.md\nT039_IMPORT_ROOT\n",
+        "docs/shared.md": "T039_IMPORTED_TEXT\n"
+      },
+      "required": ["T039_IMPORT_ROOT", "T039_IMPORTED_TEXT"], "excluded": []
+    },
+    {
+      "id": "claude-path-exclusion", "host": "claude", "profile": "map-only", "availability": "selected",
+      "phase": "path_glob_match", "actor": "parent", "target": "packages/b/target.txt",
+      "files": {
+        "CLAUDE.md": "T039_RULE_ROOT\n",
+        ".claude/rules/package-a.md": "---\npaths:\n  - 'packages/a/**'\n---\nT039_RULE_A\n"
+      },
+      "required": ["T039_RULE_ROOT"], "excluded": ["T039_RULE_A"]
+    },
+    {
+      "id": "codex-override", "host": "codex", "profile": "native-publication", "availability": "unselected",
+      "phase": "override", "actor": "parent", "target": "packages/a/target.txt",
+      "files": {
+        "AGENTS.md": "T039_CODEX_ROOT\n",
+        "packages/a/AGENTS.md": "T039_CODEX_SHADOWED\n",
+        "packages/a/AGENTS.override.md": "T039_CODEX_OVERRIDE\n"
+      },
+      "required": ["T039_CODEX_ROOT", "T039_CODEX_OVERRIDE"],
+      "excluded": ["T039_CODEX_SHADOWED"]
+    },
+    {
+      "id": "claude-disabled-rule", "host": "claude", "profile": "native-rules-disabled", "availability": "disabled",
+      "phase": "path_glob_match", "actor": "parent", "target": "packages/a/target.txt",
+      "files": {
+        "CLAUDE.md": "T039_DISABLED_ROOT\n",
+        ".claude/rules/package-a.md": "---\npaths:\n  - 'packages/a/**'\n---\nT039_DISABLED_RULE\n"
+      },
+      "required": ["T039_DISABLED_ROOT"], "excluded": ["T039_DISABLED_RULE"]
+    }
+  ]
+}

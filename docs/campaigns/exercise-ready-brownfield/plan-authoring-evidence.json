@@ -1,0 +1,471 @@
+{
+  "format": "campaign-plan-authoring-evidence/0.1.0",
+  "date": "2026-09-25",
+  "repository": "arbiterForge/codeArbiter",
+  "campaign": "exercise-ready-brownfield",
+  "scope": "Specification correctness review and draft implementation planning only. No campaign implementation or execution approval.",
+  "base_commit": "4187f1e22dc7da3cf755a2654bbf7ec268236126",
+  "starting_pr_commit": "91b0966883acb43fda4b9a3d435c13447e1da666",
+  "observed_at": "2026-09-25T18:54:11.459295+00:00",
+  "overlap": {
+    "854": {
+      "state": "open",
+      "draft": true,
+      "head": "680cb03d39f91fd3e4a8ad968f0536a84dde9f0d",
+      "base": "4187f1e22dc7da3cf755a2654bbf7ec268236126"
+    },
+    "871": {
+      "state": "open",
+      "draft": true,
+      "head": "2b6e5a5bcfdb5d4713ba6d8f655d9cc99bfd4827",
+      "base": "4187f1e22dc7da3cf755a2654bbf7ec268236126"
+    },
+    "872": {
+      "state": "open",
+      "draft": true,
+      "head": "91b0966883acb43fda4b9a3d435c13447e1da666",
+      "base": "4187f1e22dc7da3cf755a2654bbf7ec268236126"
+    }
+  },
+  "exact_resource_package": {
+    "tag": "v2.21.16",
+    "name": "codearbiter-ca-2.21.16.tar.gz",
+    "sha256": "32588a10eb5070b408443e5a0ef23453128725d33574c49a93f5edf5edf22fb8",
+    "matches_release_metadata": true,
+    "workflow_preflight": {
+      "host": "claude",
+      "adapter_version": "2.21.16",
+      "resources_available": true,
+      "evidence_kind": "installed-resource-preflight",
+      "live_host_verified": false,
+      "missing": []
+    },
+    "authoring_platform": "windows/amd64",
+    "python": "3.14.6"
+  },
+  "original_spec_identity": {
+    "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+    "authority": {
+      "authority_verified": false,
+      "diagnostic": "AUTHORITY_UNVERIFIED",
+      "state": "draft",
+      "trust_model": "cooperative workflow attestation"
+    },
+    "kind": "spec",
+    "model_sha256": "4c9023356fddede46a5feced03fe29d337965adf4f4f38e4cbf519e1b275e355",
+    "normative_sha256": "04dd9c3df515681104b63477a2c0d9a0daa571501dac327ed32df4d6592b30ba",
+    "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+    "revision": 4,
+    "symbol_count": 225
+  },
+  "amended_spec_identity": {
+    "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+    "authority": {
+      "authority_verified": false,
+      "diagnostic": "AUTHORITY_UNVERIFIED",
+      "state": "draft",
+      "trust_model": "cooperative workflow attestation"
+    },
+    "kind": "spec",
+    "model_sha256": "4960b0a249adbbf82826e000d8ff32db1ba91b8a0d4ee639df57841d1b60fa1b",
+    "normative_sha256": "addf0bf9bea697f1edd485e56d41b29810ced5d374d59ccf6d60197f9bda0d7a",
+    "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+    "revision": 7,
+    "symbol_count": 243
+  },
+  "draft_plan_identity": {
+    "artifact_id": "PLAN-EXERCISE-BROWNFIELD",
+    "authority": {
+      "authority_verified": false,
+      "diagnostic": "AUTHORITY_UNVERIFIED",
+      "state": "draft",
+      "trust_model": "cooperative workflow attestation"
+    },
+    "kind": "plan",
+    "model_sha256": "3a387adb250661ccbd2daa306704285b6d0443f4fcf17bc3a1f29538c0d5e6e5",
+    "normative_sha256": "a1118373c5d1eb3064c6c1d15f455180183c952077567409bb11749f7d01cfda",
+    "path": ".codearbiter/plans/exercise-ready-brownfield.html",
+    "revision": 2,
+    "symbol_count": 84
+  },
+  "artifact_file_sha256": {
+    "SPEC-EXERCISE-BROWNFIELD": "cbac5e25519af17a5389166f042a9f98e663ebd76a11b1ca7e944a7a8976be11",
+    "PLAN-EXERCISE-BROWNFIELD": "e34bb384326e1d6fec28a9bb6f489e8ad3539db58006b47c24a7fe2361310d9d"
+  },
+  "validation": {
+    "SPEC-EXERCISE-BROWNFIELD": {
+      "structural": {
+        "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "structural",
+        "kind": "spec",
+        "model_sha256": "4960b0a249adbbf82826e000d8ff32db1ba91b8a0d4ee639df57841d1b60fa1b",
+        "normative_sha256": "addf0bf9bea697f1edd485e56d41b29810ced5d374d59ccf6d60197f9bda0d7a",
+        "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+        "revision": 7,
+        "symbol_count": 243,
+        "valid": true
+      },
+      "ready": {
+        "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "spec",
+        "model_sha256": "4960b0a249adbbf82826e000d8ff32db1ba91b8a0d4ee639df57841d1b60fa1b",
+        "normative_sha256": "addf0bf9bea697f1edd485e56d41b29810ced5d374d59ccf6d60197f9bda0d7a",
+        "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+        "revision": 7,
+        "symbol_count": 243,
+        "valid": true
+      },
+      "approved": {
+        "artifact_id": "SPEC-EXERCISE-BROWNFIELD",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "authority_diagnostic": {
+          "code": "AUTHORITY_UNVERIFIED",
+          "message": "artifact has not been approved by its workflow"
+        },
+        "diagnostics": null,
+        "gate": "approved",
+        "kind": "spec",
+        "model_sha256": "4960b0a249adbbf82826e000d8ff32db1ba91b8a0d4ee639df57841d1b60fa1b",
+        "normative_sha256": "addf0bf9bea697f1edd485e56d41b29810ced5d374d59ccf6d60197f9bda0d7a",
+        "path": ".codearbiter/specs/exercise-ready-brownfield.html",
+        "revision": 7,
+        "symbol_count": 243,
+        "valid": false
+      }
+    },
+    "PLAN-EXERCISE-BROWNFIELD": {
+      "structural": {
+        "artifact_id": "PLAN-EXERCISE-BROWNFIELD",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "structural",
+        "kind": "plan",
+        "model_sha256": "3a387adb250661ccbd2daa306704285b6d0443f4fcf17bc3a1f29538c0d5e6e5",
+        "normative_sha256": "a1118373c5d1eb3064c6c1d15f455180183c952077567409bb11749f7d01cfda",
+        "path": ".codearbiter/plans/exercise-ready-brownfield.html",
+        "revision": 2,
+        "symbol_count": 84,
+        "valid": true
+      },
+      "ready": {
+        "artifact_id": "PLAN-EXERCISE-BROWNFIELD",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "diagnostics": null,
+        "gate": "ready",
+        "kind": "plan",
+        "model_sha256": "3a387adb250661ccbd2daa306704285b6d0443f4fcf17bc3a1f29538c0d5e6e5",
+        "normative_sha256": "a1118373c5d1eb3064c6c1d15f455180183c952077567409bb11749f7d01cfda",
+        "path": ".codearbiter/plans/exercise-ready-brownfield.html",
+        "revision": 2,
+        "symbol_count": 84,
+        "valid": true
+      },
+      "approved": {
+        "artifact_id": "PLAN-EXERCISE-BROWNFIELD",
+        "authority": {
+          "authority_verified": false,
+          "diagnostic": "AUTHORITY_UNVERIFIED",
+          "state": "draft",
+          "trust_model": "cooperative workflow attestation"
+        },
+        "authority_diagnostic": {
+          "code": "DRAFT_BINDING",
+          "message": "plan must be explicitly rebound to an approved source"
+        },
+        "diagnostics": null,
+        "gate": "approved",
+        "kind": "plan",
+        "model_sha256": "3a387adb250661ccbd2daa306704285b6d0443f4fcf17bc3a1f29538c0d5e6e5",
+        "normative_sha256": "a1118373c5d1eb3064c6c1d15f455180183c952077567409bb11749f7d01cfda",
+        "path": ".codearbiter/plans/exercise-ready-brownfield.html",
+        "revision": 2,
+        "symbol_count": 84,
+        "valid": false
+      }
+    }
+  },
+  "counts": {
+    "criteria": 41,
+    "scenarios": 101,
+    "spec_symbols": 243,
+    "plan_tasks": 60,
+    "plan_checkpoints": 11,
+    "plan_symbols": 84,
+    "covered_scope_records": 8
+  },
+  "planning_checks": {
+    "all_criteria_covered": true,
+    "all_tasks_map_to_criteria": true,
+    "task_and_checkpoint_dags": "acyclic",
+    "checkpoint_partition": "exact",
+    "source_and_generated_paths": "included in owning tasks",
+    "execution_scope_equals_checkpoint": true,
+    "negative_controls": {
+      "cycle": "rejected",
+      "uncovered": "rejected",
+      "unknown_dependency": "rejected",
+      "wrong_scope": "rejected"
+    },
+    "required_test_names": "proposed; no product test execution claimed",
+    "evaluator_oracles": "outside solving workspace/input required in T-002/T-045/T-057",
+    "finalization_depends_on_selected_pilot": "T-060 depends on T-057 until approved no-go amendment",
+    "native_task_readback": "60 task records read through installed engine",
+    "operation_replay": "create replay returned committed result without rewriting"
+  },
+  "no_go_native_fixture": {
+    "basis": "Disposable copy of final spec and plan, no authority fabricated",
+    "retired_unstarted_tasks": [
+      "T-049",
+      "T-050",
+      "T-051",
+      "T-052",
+      "T-053",
+      "T-054",
+      "T-055",
+      "T-056",
+      "T-057"
+    ],
+    "retired_checkpoints": [
+      "CP-08",
+      "CP-09"
+    ],
+    "remaining_live_tasks": 51,
+    "native_ready_valid": true,
+    "authority_verified": false,
+    "meaning": "Tests draft retirement shape/coverage, not a real no-go decision or approved-state transition"
+  },
+  "standalone_without_authoring_journals": {
+    "SPEC-EXERCISE-BROWNFIELD": true,
+    "PLAN-EXERCISE-BROWNFIELD": true
+  },
+  "installed_intent_helper": {
+    "package": "ca 2.21.16",
+    "result": "failed",
+    "exit": 2,
+    "stderr": "_intentlib.py: HTML validation failed: NoneType object is not iterable",
+    "cause": "Successful native response diagnostics is null and the installed helper iterates it.",
+    "disposition": "Spec AC-001 clarified; proposed task T-004. Runtime code unchanged. Native ready and explicit typed scope/criterion checks are separate evidence, not a successful helper run."
+  },
+  "initial_plan_attempt": {
+    "result": "rejected",
+    "code": "INVALID_SCOPE",
+    "reason": "Current v0.1.0 protocol requires execution_scope equal checkpoint",
+    "correction": "Used actual checkpoint IDs, then native create and ready validation succeeded. No validator or runtime change."
+  },
+  "review_findings": [
+    {
+      "id": "SR-01",
+      "title": "Ambiguity and refresh scope have contradictory admission rules",
+      "criteria": [
+        "AC-008",
+        "AC-009",
+        "AC-011"
+      ],
+      "problem": "SEC-03 rejects ambiguous findings while AC-008 permits them. Every refresh can be read as requiring six new full-repository reports.",
+      "correction": "Require six domains only for initial or explicitly full onboarding. Scoped refresh validates only affected assignments and retains the extent of previously known coverage. Complete report transport does not mean every finding is certain.",
+      "proof": "An ambiguous returned finding reaches gap handling; a missing report cannot. A one-command refresh launches only its affected evidence assignment, not six new scouts."
+    },
+    {
+      "id": "SR-02",
+      "title": "Read-only discovery accidentally forbids its own model transport",
+      "criteria": [
+        "AC-002",
+        "AC-038"
+      ],
+      "problem": "The absolute no publishing source/data rule also forbids sending approved source to the selected model provider; activation can run before the intended boundary exists.",
+      "correction": "Separate approved inference transport from repository-controlled egress, credential-file discovery and activation side effects. Pre-activation inspection must run outside active repository hooks when no qualified pre-start boundary exists.",
+      "proof": "A local/no-network fixture performs no egress; an explicitly authorized remote-provider fixture uses only that inference channel. Repository text cannot authorize another destination."
+    },
+    {
+      "id": "SR-03",
+      "title": "Legacy content has no existing bounded writer to reuse",
+      "criteria": [
+        "AC-041",
+        "AC-022"
+      ],
+      "problem": "The scaffold, board, override and provenance helpers exist, but no schema-owned bounded writer currently owns tech-stack/coding-standards/security-controls/code-map synthesis. A plan that just calls the existing writer is not executable.",
+      "correction": "Enroll one closed internal repository-context kind in the existing engine for the five existing content documents, with canonical Markdown and finite per-document typed codecs. Keep existing task, question, audit, release and ADR owners. No new JSON canonical shadow or generic text replacement API.",
+      "proof": "Exact-byte unowned-region preservation, duplicate/unknown owned-field rejection, actual approval-bound adoption, native package capability and source/generated consumer tests precede enabling the new write route."
+    },
+    {
+      "id": "SR-04",
+      "title": "New provenance could look clean to an old reader",
+      "criteria": [
+        "AC-014",
+        "AC-015",
+        "AC-031"
+      ],
+      "problem": "Versioned compatibility was requested without a mixed-reader policy. Current v1 readers skip unknown records, which can turn a new schema into silence rather than an explicit unknown.",
+      "correction": "Gate new writes on qualified paired producer/consumers; read v1 conservatively, never silently rewrite all records, and refuse verified-context claims on old hosts. Use named raw-byte digest and membership methods in new records.",
+      "proof": "Mixed v1/v2 and old/new reader fixtures, missing records, stale doc bytes and added instructions never become false freshness."
+    },
+    {
+      "id": "SR-05",
+      "title": "Freshness can invalidate itself or leak between actors",
+      "criteria": [
+        "AC-018",
+        "AC-019",
+        "AC-033"
+      ],
+      "problem": "The spec binds everything to current state but does not separate evidence inputs from files the workflow itself writes, nor semantic dedup from coincidentally equal text.",
+      "correction": "Separate source dependencies, approved output preimages and allowed transient state; scope delivery by recipient, scope and epoch. Planned task edits are reconciled by existing review/verification, not mistaken for unrelated concurrent edits.",
+      "proof": "Own marker/journal updates do not launch new scouts; a changed cited source still invalidates its claim; equal command text under different cwd is never deduplicated."
+    },
+    {
+      "id": "SR-06",
+      "title": "Existing repository rules can be demoted while new policy is over-approved",
+      "criteria": [
+        "AC-035",
+        "AC-012",
+        "AC-026"
+      ],
+      "problem": "Treating all existing instructions as evidence can discard valid effective repository conventions or demand renewed approval for every inherited rule.",
+      "correction": "Preserve effective host/user/repository instruction precedence. Distinguish carrying an existing applicable constraint unchanged from inventing/adopting a new normative rule or claiming a new Arbiter approval.",
+      "proof": "An unchanged effective root convention is referenced without a repeat interview; an upstream/local conflict still requires resolution and cannot be settled by a copied accepted label."
+    },
+    {
+      "id": "SR-07",
+      "title": "argv-only guidance cannot represent real commands honestly",
+      "criteria": [
+        "AC-017",
+        "AC-022",
+        "AC-023"
+      ],
+      "problem": "CI scripts may contain shell expansion, pipelines or platform-specific launchers. Converting every declaration to argv fabricates equivalent behavior; unsafe path rejection also omits the legitimate root cwd dot.",
+      "correction": "Use actionable literal argv with resolved executable/profile only when evidenced. Otherwise retain a declaration reference, not a pretend executable argv. Root dot is valid for scope/cwd only; target files must remain strict descendants.",
+      "proof": "Pipeline declaration remains unverified/reference-only; arguments containing spaces remain distinct; root cwd works while traversal/file target dot fails."
+    },
+    {
+      "id": "SR-08",
+      "title": "The benchmark gate is not reproducible enough",
+      "criteria": [
+        "AC-028",
+        "AC-037",
+        "AC-031"
+      ],
+      "problem": "Three sequences and medians lack pairing/aggregation rules, provider cache accounting and correctness-oracle independence; cherry-picking reruns could pass.",
+      "correction": "Freeze fixture task IDs, pairing/order, exact model/profile and independent oracle hashes before any paid run. Include every attempt and failure; distinguish unknown from zero. Keep the original proposed thresholds but define paired per-fixture aggregation and failure dispositions.",
+      "proof": "A zero baseline, missing usage, mixed model/cache conditions, selected best rerun or oracle copied from candidate guidance yields no-go/inconclusive, not a saving."
+    },
+    {
+      "id": "SR-09",
+      "title": "Slice readiness is confused with the existing all-plan commit gate",
+      "criteria": [
+        "AC-039",
+        "AC-029",
+        "AC-030"
+      ],
+      "problem": "Current _preflight_current_acceptance requires every live plan task accepted/current, and mandatory criteria cannot be disposed by a table label. The draft promises independent slices without distinguishing readiness reporting from permission to commit an unfinished plan.",
+      "correction": "Keep the all-plan gate unchanged. E0-E2 readiness is a scoped qualification result, not an exemption. Conditional tasks must have explicit approved branch outcomes, with genuine no-go evidence not a fabricated acceptance of implementation. Any future partial delivery needs an approved amendment of the same plan before committing; no new public gate or receipt shortcut.",
+      "proof": "Exercise acceptance can be reported while P1 remains unselected, but commit preflight still rejects any pending live task. No assumed applicability skip or fake PASS."
+    },
+    {
+      "id": "SR-10",
+      "title": "Native reader and engine global failure domains can contaminate unrelated work",
+      "criteria": [
+        "AC-034",
+        "AC-022",
+        "AC-041"
+      ],
+      "problem": "Current engine scans all registered artifacts and globally blocks on pending transactions. Adding guidance to that catalog can make malformed optional guidance break unrelated spec/plan work; read-only inspections themselves can create local lock/cache state.",
+      "correction": "Require kind-owned parsing and explicit failure locality with regression evidence, without weakening existing pending-transaction recovery. Unselected/unsupported optional guidance must not be loaded as an active spec/plan. Preserve the documented global pending-transaction gate; prevent optional operations from leaving it pending by qualified recovery.",
+      "proof": "An invalid optional guidance fixture cannot silently become approved context or poison unrelated legacy reads; a real pending transaction still requires recovery and cannot be hidden."
+    },
+    {
+      "id": "SR-11",
+      "title": "A plan could turn conditional trials into global prerequisites",
+      "criteria": [
+        "AC-001",
+        "AC-020",
+        "AC-027",
+        "AC-039"
+      ],
+      "problem": "Plan prerequisites are global in the current schema; adding unpaid/unselected P1 or every platform there would block core preparation.",
+      "correction": "Keep global prerequisites to actual spec/plan approval and source integrity. Scope host/trial authorization to the tasks that consume it, and explicitly bound greenfield reuse to the shared first-input mechanism.",
+      "proof": "Core planning and deterministic fixtures do not request paid credentials, create native consumer files or wait for an unselected pilot; real host claims still require their own exact evidence."
+    },
+    {
+      "id": "SR-12",
+      "title": "The authoring request is stale inside the normative document",
+      "criteria": [
+        "AC-032"
+      ],
+      "problem": "SEC-01 says no plan was requested and the campaign guide says approval must precede any planning, even after the maintainer explicitly requests the plan.",
+      "correction": "Update the active request and handoff: prepare one unapproved draft pair for combined review using the existing draft-preview machinery. This is not spec approval, runtime implementation, paid trial authorization or an autonomous sprint grant. Preserve historical review records.",
+      "proof": "Both artifacts validate structurally/readiness and remain draft/unapproved; no plan binding to fabricated approved authority."
+    },
+    {
+      "id": "SR-13",
+      "title": "Installed intent checking crashes on successful native validation",
+      "criteria": [
+        "AC-001",
+        "AC-032"
+      ],
+      "problem": "Reproduced with the exact ca 2.21.16 installed _intentlib.py: a ready spec returns diagnostics null and the helper exits 2 with NoneType is not iterable. This can block ordinary plan preparation before campaign work starts.",
+      "correction": "Add a bounded prerequisite fix to normalize documented empty diagnostics from a valid native response; preserve invalid/false/error handling. Today use native ready validation and explicit typed criterion/scope traversal as separately reported evidence, not a claimed successful helper run.",
+      "proof": "Positive null and empty-list success; invalid diagnostics, valid false, transport errors and unapproved input stay distinguishable. No source implementation change is made in this planning session."
+    }
+  ],
+  "preserved_historical_sha256": {
+    "PREMORTEM.md": "deba4e29c99f624b473494937de87372a1d9ddc0dfa2488c6bae8c8b0c1b02ab",
+    "authoring-evidence.json": "8fb6f1ebe7dddef07b4c3b29247ac9294b4b8540efca4c5a79fca76a2e22c985",
+    "supporting-review.md": "ac22d8f704ce91ac9472e4477be4161b253b8403aef5adea6d8bb6d9589367e2",
+    "evidence-ledger.json": "90c95a45ed33f97e213397a1b5ad39e2d76c05469e388a4566425ae422013091"
+  },
+  "local_checks": {
+    "build_surface_check": "passed, claude/codex/pi synchronized",
+    "changed_file_whitespace": "passed",
+    "relative_links": {
+      "result": "passed",
+      "count": 7
+    },
+    "gitleaks": {
+      "result": "passed",
+      "exit": 0,
+      "version": "8.30.1",
+      "config": ".gitleaks.toml"
+    },
+    "historical_files": "all four byte-identical",
+    "staged_paths": "exact five-file amendment"
+  },
+  "not_run": [
+    "Campaign implementation tests",
+    "Real-model onboarding or contribution trials",
+    "Paid B/C comparison",
+    "Independent policy-owned semantic review",
+    "Actual spec/plan approval or accepted-task reconciliation",
+    "Consumer instruction writes",
+    "Merge or release"
+  ],
+  "boundary": "One canonical spec and one canonical same-slug plan; no Markdown shadow. Local engine journals and disposable no-go fixtures are not published. No core, host payload, workflow, version, global settings or organization canon changes."
+}

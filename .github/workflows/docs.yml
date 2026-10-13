@@ -33,6 +33,7 @@ on:
       # the same defect class the impact filter already guards for ci.yml.
       - ".github/scripts/check_site_voice.py"
       - "core/pysrc/_sloplib.py"
+      - ".github/scripts/npm_audit_gate.py" # judges the site CVE gate's report
   pull_request:
     branches: [main]
     paths:
@@ -44,6 +45,7 @@ on:
       - ".github/published-tags.json"
       - ".codearbiter/release-targets.md"
       - ".github/workflows/docs.yml"
+      - ".github/scripts/npm_audit_gate.py"
   workflow_dispatch:
 
 # Least-privilege: only the deploy job needs pages/id-token:write, granted at
@@ -89,7 +91,11 @@ jobs:
         # red audit blocks the publish. Same threshold as the farm and sandbox
         # gates in ci.yml; --omit=dev scopes it to what the built site actually
         # ships, keeping routine Astro/vitest dev advisories non-blocking.
-        run: npm audit --omit=dev --audit-level=high
+        # The JSON report is judged by npm_audit_gate.py, which fails on every
+        # HIGH+ finding except a GHSA recorded in site/audit-exceptions.json
+        # with a dated backstop (see security-controls.md). No pipefail: npm
+        # exits 1 whenever it reports anything, and the gate decides.
+        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Generate release applicability

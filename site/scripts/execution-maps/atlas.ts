@@ -1,0 +1,172 @@
+import {readFileSync,readdirSync,lstatSync,existsSync} from 'node:fs';
+import {resolve,dirname} from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {commandMetadata} from './atlas-command';
+import {REVIEWED_AT,invocation,validateAtlas,validSourcePath,type Atlas,type HostDescriptor,type RouteMeta} from './atlas-model';
+import catalog from './atlas-data/catalog.json';
+import commands from './atlas-data/commands.json';
+import sources from './atlas-data/sources.json';
+import overview from './atlas-data/all-routes.json';
+import feature from './atlas-data/feature-sprint.json';
+import context from './atlas-data/context-layers.json';
+import change from './atlas-data/change-lanes.json';
+import delivery from './atlas-data/review-delivery.json';
+import operations from './atlas-data/knowledge-operations.json';
+import brownfield from './atlas-data/brownfield-lifecycle.json';
+import debug from './atlas-data/debug-handoff.json';
+import tribunal from './atlas-data/tribunal-lifecycle.json';
+
+// Original diagram/source links retain REVIEWED_AT. Freshness is separately
+// revalidated against this exact source revision, never whichever HEAD is newest.
+// PR936 corrected the Claude role count; PR935 added preflight batching. PR943
+// changes the Pi target to 1.1.0 in the host fingerprint key, doctor and parity
+// text, without changing command forms, exclusions, routes or diagram geometry.
+// PR918 updates the artifacts owner and cited native adapter with normalized
+// completion closure and bounded context retention. Their routes and authority
+// boundaries agree with the maps. PR945 adds the exact native V2 activity/child
+// binding, steering refusal and frozen verification context references to those
+// owners and docs/hooks.md. Routes and authority boundaries remain compatible;
+// historical comparisons remain independently tested.
+// PR952 makes the existing brownfield host prerequisites explicit before
+// scaffolding and links debug packet preparation before one-shot validation.
+// The reviewed containment, handoff, authority and recovery routes still agree
+// with the maps; no host qualification or new runtime capability is implied.
+export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
+// PR956's exact unittest matching change agrees with S32's cited lines and
+// native authority routes. All 71 product reads and the lens roster were
+// compared. Pin the retained blob so a squash does not require a branch commit.
+export const UNITTEST_COLLECTOR_BLOB = '76a2998f4bd5b6f441f5fd162bbe810b2de2ee93';
+
+// These exact tracked owner blobs retain the packet-preparation review through
+// changelog integration and a squash/main clone. All other owners retain the
+// historical native V2 binding; later release notes remain unreviewed additions.
+export const BROWNFIELD_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/commands/init.md':'c3de948de1617aa323e310eefee7fde2bd8a65fc',
+  'core/surface/skills/debug/SKILL.md':'6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
+});
+
+// #967 supplies bounded legacy metadata maintenance and a separate explicitly
+// selected per-block resolver. Commit review/staging and the displayed original
+// exact-HEAD recovery retain their gates; neither operation grants native ownership.
+export const LEGACY_CODE_MAP_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/skills/commit-gate/SKILL.md':'8818ab0ae6230aafcc42b48f72190e0e4ec9adcb',
+  'core/surface/skills/finishing-a-development-branch/SKILL.md':'7e495efd47875a05560c34634c46b59b71838ee5',
+});
+
+// #959 adds an authority-free initial draft-preview rebind. S07/S10 still
+// require genuine combined approval before sprint execution and preserve the
+// ordinary approved-source feature path. Bind only these reviewed canonical
+// file blobs, which the tracked documents retain through a squash/main clone.
+// PR961 (ADR-0042) adds ship-set input identity to the artifacts include; no route
+// reads or depends on that identity, so the same pin carries the combined text.
+export const DRAFT_PREVIEW_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/SPRINT.md':'c3c47d38028fb3a8141fe1235957e827031acd43',
+  'core/surface/includes/artifacts.md':'8a834b919fb81c77213086a1b1661d16b5290bbe',
+});
+
+// #968 clarifies observed/unknown host qualification, the fixed manifest layout
+// and complete same-interpreter helper calls. These three reviewed document
+// blobs preserve the existing routes and gates; earlier review objects remain
+// historical evidence rather than being relabelled as this clarification.
+export const CONTEXT_MAINTENANCE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/commands/init.md':'83afa327833ff6f76379389b6d1b80c4978f332b',
+  'core/surface/skills/commit-gate/SKILL.md':'bbfc5054fe7ac94309ded7b8cdd6073b3ad65c9d',
+  'core/surface/skills/finishing-a-development-branch/SKILL.md':'c9b8bc36934e5b79f0e4ec72c35c69997519378f',
+});
+
+function rootBoundGitEnv():NodeJS.ProcessEnv {
+  const env={...process.env};
+  // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
+  // removing only repository, object and discovery selectors that override cwd.
+  const selectors=new Set([
+    'GIT_ALTERNATE_OBJECT_DIRECTORIES','GIT_OBJECT_DIRECTORY','GIT_DIR','GIT_WORK_TREE',
+    'GIT_IMPLICIT_WORK_TREE','GIT_GRAFT_FILE','GIT_INDEX_FILE','GIT_NO_REPLACE_OBJECTS',
+    'GIT_REPLACE_REF_BASE','GIT_PREFIX','GIT_SHALLOW_FILE','GIT_COMMON_DIR',
+    'GIT_CEILING_DIRECTORIES','GIT_DISCOVERY_ACROSS_FILESYSTEM',
+  ]);
+  for(const name of Object.keys(env))if(selectors.has(name.toUpperCase()))delete env[name];
+  return env;
+}
+
+function repositoryRoot():string {
+  let root=process.cwd();
+  while(!existsSync(resolve(root,'core/hosts.json')) || !existsSync(resolve(root,'site/package.json'))) {
+    const parent=dirname(root);if(parent===root)throw new Error('Run the atlas build inside the codeArbiter checkout');root=parent;
+  }
+  return root;
+}
+/** S40 cites immutable release history, not notes added after its review. */
+export function retainsReviewedChangelog(current:string,reviewed:string):boolean {
+  current=current.replace(/\r\n/g,'\n');reviewed=reviewed.replace(/\r\n/g,'\n');
+  const boundary='## [Unreleased]\n\n';
+  const start=reviewed.indexOf(boundary);
+  if(start<0 || start!==reviewed.lastIndexOf(boundary))return false;
+  const split=start+boundary.length;
+  const header=reviewed.slice(0,split),history=reviewed.slice(split);
+  // Only insertion between the unchanged preamble and complete old history is
+  // permitted. The added notes are not consumed, rendered or marked reviewed.
+  return history.startsWith('## [') && current.length>=reviewed.length &&
+    current.startsWith(header) && current.endsWith(history) &&
+    current.indexOf(boundary)===current.lastIndexOf(boundary);
+}
+export function checkReviewedSource(root:string,path:string,pin?:string):void {
+  if(!validSourcePath(path))throw new Error(`Invalid atlas source path: ${path}`);
+  // Reject symlinked parents as well as a symlink leaf.
+  let absolute=root;
+  for(const part of path.split('/')) {absolute=resolve(absolute,part);if(lstatSync(absolute).isSymbolicLink())throw new Error(`Atlas source is a symlink: ${path}`);}
+  if(!lstatSync(absolute).isFile())throw new Error(`Atlas source is not a regular file: ${path}`);
+  if(pin!==undefined && !/^[0-9a-f]{40}$/.test(pin))throw new Error(`Atlas source changed: ${path}. Use the exact reviewed blob identity.`);
+  const expected=pin??`${REVALIDATED_AT}:${path}`;
+  const current=readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
+  let reviewed:Buffer;
+  try {reviewed=execFileSync('git',['--no-replace-objects','cat-file','blob',expected],{cwd:root,env:rootBoundGitEnv(),stdio:['ignore','pipe','pipe']});}
+  catch{throw new Error(`Atlas needs reviewed Git object ${expected} for ${path}. Do not substitute main.`);}
+  // Compare actual reviewed bytes; Git owns object identities, not application crypto.
+  if(Buffer.from(current).equals(reviewed))return;
+  // Keep explicit pins and every workflow owner byte-strict. Only the root
+  // historical changelog may grow above its intact reviewed release history.
+  if(path==='CHANGELOG.md' && pin===undefined) {
+    if(retainsReviewedChangelog(current,reviewed.toString('utf8')))return;
+  }
+  throw new Error(`Atlas source changed: ${path}. Review affected routes, then intentionally update the review binding.`);
+}
+/** Exact recovered maps, not the former grid-card projection. */
+export function originalAtlas():Atlas {
+  const atlas=structuredClone({...catalog,commands,sources,views:[overview,feature,context,change,delivery,operations,brownfield,debug,tribunal]}) as unknown as Atlas;
+  const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
+  return atlas;
+}
+export function loadAtlas(root=repositoryRoot()):Atlas {
+  const atlas=originalAtlas();
+  if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
+  const checked=new Set<string>();
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
+  const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
+  if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
+  // Product owners must still match. Site-design pointers are historical
+  // integration evidence, not product claims; this PR intentionally changes them.
+  for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
+  for(const command of atlas.commands) {
+    const meta=registry.commands[command.name];
+    if(meta.visibility!==command.visibility || (meta.canonical??command.name)!==command.canonical)throw new Error(`Atlas catalog classification changed: ${command.name}`);
+    const owner=commandMetadata(command.name,read);
+    command.replacement=meta.replacement;
+    command.description=owner.description;
+    command.source={path:owner.path,revision:REVIEWED_AT};
+    command.invocations=Object.fromEntries(hosts.map(host=>[host.name,invocation(host,command.name)]));
+  }
+  const lensDir='core/surface/skills/tribunal/references/lenses';
+  const names=readdirSync(resolve(root,lensDir)).filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
+  const expected=execFileSync('git',['--no-replace-objects','ls-tree','--name-only',`${REVALIDATED_AT}:${lensDir}`],{cwd:root,env:rootBoundGitEnv(),encoding:'utf8'}).trim().split('\n').filter(n=>n.endsWith('.md')&&n!=='INDEX.md').sort();
+  if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
+  atlas.lensCount=names.length;
+  atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
+  atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
+  return atlas;
+}
+
+import {atlasTheme,type AtlasTheme} from './atlas-theme';
+export function loadAtlasTheme(root=repositoryRoot()):AtlasTheme {
+  return atlasTheme(readFileSync(resolve(root,'site/src/styles/design-system.css'),'utf8'));
+}

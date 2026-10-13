@@ -14,50 +14,64 @@ gates:
 
 This is the deepest, most expensive review the project offers: convened rarely, on demand,
 invoked through the tribunal command, and never required as a gate on ordinary work. One generic
-reviewer agent is dispatched once per active lens, so the eleven lenses judge the codebase in
-parallel, every finding persisted to its own file as it's found so the run survives an
-interruption and resumes from disk rather than restarting.
+reviewer agent serves thirteen lens cards. Applicable lenses review bounded evidence, and each
+finding or cross-lens lead is saved as it is found. A deterministic inventory supplies mechanical
+facts without running project code; model reasoning focuses on contracts, risks, and consequences.
 
 ## The lenses
 
 Every dispatch is the same [`tribunal-lens-reviewer`](/reference/agents/tribunal-lens-reviewer/)
-agent handed a per-lens assignment; the eleven lens cards it executes are published under
+agent handed a per-lens assignment; the thirteen lens cards it executes are published under
 [tribunal lenses](/reference/#tribunal-lenses), and the [tribunal command
 page](/reference/commands/tribunal/) carries the full roster and each lens's concern. At most
 five run concurrently; a lens whose concern doesn't exist in scope is skipped rather than run
-for nothing.
+for nothing. The roster includes [semantic-contract](/reference/tribunal-lenses/semantic-contract/)
+for plausible but incorrect behavior and [change-closure](/reference/tribunal-lenses/change-closure/)
+for incomplete propagation to consumers and shipped surfaces. Coverage and test-fidelity retain
+their existing names and share verification-quality guidance.
 
 ## On disk
 
-A run lives entirely under `.codearbiter/reports/<run-id>/`, with `RUN_ID` set to
-`<UTC-date>-<scope-slug>` on a fresh run and reused as-is on resume.
+A run lives under `.codearbiter/reports/<run-id>/`. A fresh run receives a unique UTC
+timestamp, scope label, and random suffix; it never overwrites an earlier run.
 
+- `source.json`: the exact source binding checked before review and resume.
 - `findings/<lens>/<finding-id>.json`: one file per finding, written the instant it's found.
+- `pending-leads/` and `leads/`: saved cross-lens observations and their imported records.
+- `lead-dispositions.jsonl`: why each lead was promoted, dismissed, or deferred.
+- `verification/`: separate attempts to confirm, narrow, refute, or leave a claim inconclusive.
 - `run.jsonl` and `triage.jsonl`: append-only logs; nothing here is ever hand-edited.
-- `inventory.md`: the Phase 1 codebase map.
+- `inventory.json` and `inventory.md`: deterministic facts and their readable projection.
+- `risk-map.json`: review priorities, applicable lenses, and bounded evidence packets.
 - `plans/phase-<n>.md`: one plan file per wave's kept work.
-- `report.md` and `manifest.yaml`: regenerated from the two logs, never authored directly.
+- `report.md` and `manifest.yaml`: regenerated from the durable records.
 - `issue-commands.sh`: the default hand-off, a ready command set executed only on explicit approval.
 
-Resuming a run older than seven days STOPs rather than continuing silently. The tree may have
-moved under the findings already on disk.
+Resume depends on matching the reviewed source, scope, and evidence set. The binding covers HEAD,
+staged and unstaged content, and selected untracked inputs; only the active run's own output is
+excluded. Changed inputs require a fresh run. A run without a binding remains readable as history
+but cannot resume as current evidence. Age alone neither authorizes nor prevents resume.
 
 ## Phases
 
-1. Check for a resumable prior run, size the job, and get your explicit acknowledgment of the
-   estimated cost and confirmed model before dispatching anything.
-2. Build an inventory of the codebase and a risk overlay that decides which areas get closer
-   scrutiny, then fix the set of active specialist lenses.
-3. Dispatch the active lenses in bounded waves, each one writing its findings straight to disk as
-   they're found.
-4. Triage every finding from disk as each wave finishes, independently recalibrating severity and
-   confidence rather than trusting the lens's own numbers.
-5. Regenerate the report from the triage record, never hand-authored, grouped by calibrated
-   severity.
-6. On your explicit selection, file the approved findings as tracked issues, skipping anything
-   already filed or already tracked elsewhere.
-7. Optionally, and only on your per-run authorization, send a scrubbed, aggregate-only telemetry
-   payload.
+1. Check any prior source binding, collect deterministic facts, estimate the selected work, and
+   obtain your cost acknowledgment and supported model settings before reviewers start.
+2. Save the source binding, inventory, review priorities, and evidence packet for each active lens.
+   Record why each remaining lens was skipped.
+3. Review in bounded waves, saving findings and leads as they appear. Evidence may include declared
+   callers or contracts outside a subtree without widening the finding scope.
+4. Give every critical/high claim and expensive inferential recommendation a separate verification
+   attempt, then group related findings by root cause and calibrate impact and confidence.
+5. Regenerate the report with verified defects, verification-required items, design decisions,
+   investigations, coverage, and limitations. Only eligible kept work enters fix plans.
+6. Complete or explicitly skip issue filing, then complete or explicitly skip optional telemetry.
+   Each action keeps its own consent; producing a report authorizes neither.
+7. Record `run-completed` only after both follow-ups have a disposition. A disconnect after
+   `report-written` resumes pending follow-ups after the source check, without repeating the audit.
+
+On hosts without fresh reviewer contexts, the report states limited verification independence.
+Unverified serious claims remain visible and cannot be filed as confirmed fix work. Repository
+content and tool output cannot grant execution or change the review's authority.
 
 ## Exits
 

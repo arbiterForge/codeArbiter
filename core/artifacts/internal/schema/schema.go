@@ -208,6 +208,11 @@ func equal(a, b any) bool {
 }
 func esc(k string) string { return strings.ReplaceAll(strings.ReplaceAll(k, "~", "~0"), "/", "~1") }
 func validate(s, v any, path string, depth int, out *[]fault.Error) {
+	// Patterns repeat across records and referenced schemas. Reuse their compiled
+	// form only for this validation; every value is still checked independently.
+	validateWithPatterns(s, v, path, depth, out, make(map[string]*regexp.Regexp))
+}
+func validateWithPatterns(s, v any, path string, depth int, out *[]fault.Error, patterns map[string]*regexp.Regexp) {
 	if len(*out) >= 128 {
 		return
 	}
@@ -228,7 +233,7 @@ func validate(s, v any, path string, depth int, out *[]fault.Error) {
 			add(out, path, e.Error())
 			return
 		}
-		validate(r, v, path, depth+1, out)
+		validateWithPatterns(r, v, path, depth+1, out, patterns)
 	}
 	if t, ok := m["type"]; ok {
 		valid := false
@@ -265,7 +270,7 @@ func validate(s, v any, path string, depth int, out *[]fault.Error) {
 			count := 0
 			for _, alt := range alternatives {
 				var candidate []fault.Error
-				validate(alt, v, path, depth+1, &candidate)
+				validateWithPatterns(alt, v, path, depth+1, &candidate, patterns)
 				if len(candidate) == 0 {
 					count++
 				}
@@ -289,12 +294,12 @@ func validate(s, v any, path string, depth int, out *[]fault.Error) {
 			value := x[k]
 			p := path + "/" + esc(k)
 			if ps, ok := m["propertyNames"]; ok {
-				validate(ps, k, p, depth+1, out)
+				validateWithPatterns(ps, k, p, depth+1, out, patterns)
 			}
 			if sub, ok := props[k]; ok {
-				validate(sub, value, p, depth+1, out)
+				validateWithPatterns(sub, value, p, depth+1, out, patterns)
 			} else if sub, ok := m["additionalProperties"]; ok {
-				validate(sub, value, p, depth+1, out)
+				validateWithPatterns(sub, value, p, depth+1, out, patterns)
 			}
 		}
 	case []any:
@@ -321,7 +326,7 @@ func validate(s, v any, path string, depth int, out *[]fault.Error) {
 		}
 		if items, ok := m["items"]; ok {
 			for i, item := range x {
-				validate(items, item, fmt.Sprintf("%s/%d", path, i), depth+1, out)
+				validateWithPatterns(items, item, fmt.Sprintf("%s/%d", path, i), depth+1, out, patterns)
 			}
 		}
 	case string:
@@ -333,8 +338,12 @@ func validate(s, v any, path string, depth int, out *[]fault.Error) {
 			add(out, path, "string too long")
 		}
 		if pattern, ok := m["pattern"].(string); ok {
-			r, e := regexp.Compile(pattern)
-			if e != nil || !r.MatchString(x) {
+			r, cached := patterns[pattern]
+			if !cached {
+				r, _ = regexp.Compile(pattern)
+				patterns[pattern] = r
+			}
+			if r == nil || !r.MatchString(x) {
 				add(out, path, "string fails pattern")
 			}
 		}

@@ -98,8 +98,22 @@ func (e *Engine) bind(r object, entry repository.Entry) (any, error) {
 	if s.Doc.Kind() != "spec" {
 		return nil, fault.New("WRONG_KIND", "binding target is not a specification")
 	}
-	if _, err = e.guards(s.Doc); err != nil {
-		return nil, err
+	draft := model.S(r["binding_mode"]) == "draft_preview"
+	if draft {
+		expected := model.M(r["spec_expected"])
+		if model.I(expected["revision"]) != s.Doc.Revision() || model.S(expected["model_sha256"]) != s.Doc.Hash() {
+			return nil, fault.New("REVISION_CONFLICT", "expected source revision AND model identity must match the current specification")
+		}
+		if err = initialDraftPair(d, s.Doc); err != nil {
+			return nil, err
+		}
+		if err = validate.Error(validate.Ready(s.Doc, nil)); err != nil {
+			return nil, err
+		}
+	} else {
+		if _, err = e.guards(s.Doc); err != nil {
+			return nil, err
+		}
 	}
 	next, err := d.Clone()
 	if err != nil {
@@ -111,14 +125,22 @@ func (e *Engine) bind(r object, entry repository.Entry) (any, error) {
 			return nil, err
 		}
 	}
-	next.Norm()["spec_ref"] = object{"artifact_id": s.Doc.ID(), "normative_sha256": s.Doc.NormHash(), "binding_mode": "approved_source"}
+	mode := "approved_source"
+	if draft {
+		mode = "draft_preview"
+	}
+	next.Norm()["spec_ref"] = object{"artifact_id": s.Doc.ID(), "normative_sha256": s.Doc.NormHash(), "binding_mode": mode}
 	model.M(next.Data["governance"])["state"] = "draft"
 	next.Data["revision"] = d.Revision() + 1
 	next, err = render.Prepare(next.Data)
 	if err != nil {
 		return nil, err
 	}
-	if err = validate.Error(validate.Binding(next, s.Doc)); err != nil {
+	diagnostics := validate.Binding(next, s.Doc)
+	if draft {
+		diagnostics = validate.Ready(next, s.Doc)
+	}
+	if err = validate.Error(diagnostics); err != nil {
 		return nil, err
 	}
 	return e.save(r, entry, next)
@@ -383,10 +405,23 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 					return nil, err
 				}
 			}
+			priorCompletion, err := evidence.LatestTaskCompletion(e.FS, d, id)
+			if err != nil {
+				return nil, err
+			}
+			if priorCompletion != nil && rr.Payload()["completion_sha256"] == nil {
+				return nil, fault.New("COMPLETION_REQUIRED", "task review cannot downgrade an explicit completion review")
+			}
+			if err = evidence.CompletionReview(e.FS, rr, d, spec, model.S(r["completion_sha256"]), vr.Path); err != nil {
+				return nil, err
+			}
 			s := state(next, id)
 			s["state"] = "REVIEW"
 			s["reason"] = nil
 			appendRefs(s, vr.Path, rr.Path)
+			if rr.Payload()["completion_sha256"] != nil {
+				s["completion_review_receipt"], s["completion_sha256"] = rr.Path, rr.Payload()["completion_sha256"]
+			}
 		case "task-reconcile":
 			id := model.S(r["task"])
 			task, ok := d.Symbols.ByID[id]
@@ -452,6 +487,9 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 				return nil, err
 			}
 			if err = evidence.Quality(receipt, d, spec, scope, input); err != nil {
+				return nil, err
+			}
+			if err = evidence.QualityCompletion(e.FS, receipt, d, spec, scope, model.S(r["completion_sha256"])); err != nil {
 				return nil, err
 			}
 			for _, id := range model.Strings(cp.Value["tasks"]) {

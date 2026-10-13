@@ -2105,3 +2105,78 @@ Securable: the acceptance stays bound to its exact sealed bytes instead of being
 Merge this change with a merge commit. A squash would drop the second parent again.
 
 ---
+
+## DECISION-0073 — adr-0041-pi-strict-reduction — Admit a Pi host that strictly reduces audit findings; promote Pi 1.0.0
+
+**Date:** 2026-10-02
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — "Go ahead and update the package is objectively the correct decision. It closes a high."; accepted ADR-0041's content as recorded.
+**Decision category:** supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0035 admits a supported Pi host only with zero production and complete-graph audit findings.
+- **Scaffold position:** The supported baseline Pi 0.84.1 now carries six high advisories (undici and brace-expansion). Every published Pi through 1.0.0 still carries the three brace-expansion ones, so no release can pass, and every pull request's Pi CI fails.
+- **Status type:** divergent
+
+### Decision
+Admit a Pi host whose audit findings are a strict subset of the current baseline's, with each retained advisory recorded by GHSA in the review receipt and a dated backstop. Promote Pi 1.0.0 now: it closes the three undici advisories and retains only the brace-expansion ones 0.84.1 already has. ADR-0041 supersedes only ADR-0035's zero-findings clause.
+
+### SMARTS rationale
+Securable: the upgrade strictly reduces known high-severity exposure, while waiting keeps a fixed high running. Reliable: recorded GHSA matching and the backstop keep anything new fail-closed.
+
+### Implementation implication
+pi_host_locks review validation and the install-time audit compare findings to the receipt's accepted advisories. The Pi 1.0.0 promotion lands on the same branch.
+
+---
+
+## DECISION-0074 — artifact-concurrent-readers — Allow narrow concurrent artifact observations
+
+**Date:** 2026-10-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** Project owner, direct CLI conversation — "Implement narrow concurrent readers (Recommended)" and "Do this".
+**Decision category:** architecture/concurrency
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Remediation PERF-05 calls for reducing avoidable observation lock timeouts while preserving write, receipt and recovery consistency.
+- **Scaffold position:** Every repository operation takes an exclusive lock; a short identity read times out behind a longer snapshot even though both are observations.
+- **Status type:** open-decision-closure
+
+### Decision
+Allow shared cooperative repository locks only for snapshot, identity, outline, read-batch and read with mode explicitly exact. All other repository operations retain exclusive locks, including contextual reads, receipt and context producers, writes and recovery. Preserve the two-second lock timeout and all existing admission, filesystem, snapshot and mutation validation.
+
+### SMARTS rationale
+Scalable and Available: independent observations can overlap without waiting for a long snapshot. Maintainable: a closed allowlist leaves new operations exclusive by default. Reliable, Testable and Securable: deterministic contention tests must prove reader overlap, writer exclusion, retry/recovery and retained validation. This decision introduces no writer-fairness guarantee, latency SLO or stronger protection against non-cooperating same-user edits.
+
+### Implementation implication
+Use the existing shared-lock support in the native store backends and keep this fix in the existing performance PR. No daemon, persistent index, new dependency, machine configuration, CI runner requirement or project-state migration is authorized by this decision.
+
+---
+
+## DECISION-0075 — adr-0042-ship-set-evidence-inputs — Bind structured-artifact evidence inputs to the git ship set; exempt gate-events.log
+
+**Date:** 2026-10-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — "My biggest thing is I don't want a random append by another agent that is part of a file that isn't getting sent to remote"; chose "Keep tracked, exempt" for gate-events.log; approved SPEC-SHIP-SET-EVIDENCE-INPUTS (`approve 93WT`).
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** docs/artifacts/PROTOCOL.md and includes/artifacts.md define evidence inputs as a filesystem walk of the plan roots; `.gitignore` does not define the policy.
+- **Scaffold position:** A hook append to the tracked gate-events.log staled all 20 SMARTS round-2 receipts, and the per-file walk took 16–28 s (past the 30 s UserPromptSubmit limit, #931).
+- **Status type:** divergent
+
+### Decision
+Evidence input identity is the git ship set: index entries present on disk plus untracked non-ignored files, within plan roots minus plan excludes. Gitlinks contribute their pointer only. `.codearbiter/gate-events.log` stays tracked but is a fixed runtime path that never counts as input. Non-git roots fall back to the filesystem walk, labelled `membership: filesystem`; a failed git probe fails closed. The manifest advances to 0.2.0, and 0.1.0 receipts read as stale.
+
+### SMARTS rationale
+Reliable: unrelated runtime appends no longer stale evidence or stall a round. Securable: the audit log stays tracked, the exemption is a single fixed path that plans cannot widen, and probe failures fail closed. Maintainable: membership reuses the existing hardened git probes.
+
+### Implementation implication
+ADR-0042. Changes core/artifacts/internal/evidence/snapshot.go and store/fs_portable.go (bounded handle opens), plus docs/artifacts/PROTOCOL.md and core/surface/includes/artifacts.md. Rides with the #931 prompt-submit timeout fix.
+
+---

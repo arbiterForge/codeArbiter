@@ -23,6 +23,10 @@ REPO = HERE.parent.parent
 CORE_PYSRC = REPO / "core" / "pysrc"
 sys.path.insert(0, str(CORE_PYSRC))
 from _gitexec import root_bound_git_env  # noqa: E402
+from test_artifact_git_excludes import CompletionGitExcludesTest  # noqa: E402,F401
+from test_artifact_npm_nested_launch import (  # noqa: E402
+    NestedNpmPrefixContextTest, WindowsNestedNpmLaunchTest,
+)  # Keep focused launch regressions in the existing required authority suite.
 
 
 def git_run(argv, **kwargs):
@@ -79,29 +83,46 @@ class FakeClient:
                 },
             }],
         }
+        self.context_bytes = None
 
     def call(self, operation, request=None, **_kwargs):
         request = dict(request or {})
         self.calls.append((operation, request))
         if operation == "evidence-context":
-            raw = json.dumps(self.context, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode()
+            raw = self.context_bytes
+            if raw is None:
+                raw = json.dumps(self.context, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode()
             digest = hashlib.sha256(raw).hexdigest()
             relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(raw)
-            return {"context_ref": relative.as_posix(), "context_sha256": digest,
+            result = {"context_ref": relative.as_posix(), "context_sha256": digest,
                     "activity": self.context["activity"], "subject": self.context["subject"],
                     "input_sha256": self.context["input_sha256"]}
+            if "verification_command_bindings" in request:
+                # A fixed synthetic engine response; real normalization is
+                # exercised by ClaudeEndToEndTest with the native executable.
+                result["completion_workspace_after"] = [{
+                    "root": binding["workspace_root"], "filesystem_id": binding["workspace_filesystem_id"],
+                    "git_common_dir": binding["git_common_dir"], "git_common_filesystem_id": binding["git_common_filesystem_id"],
+                    "head": "fixture", "status_sha256": "7" * 64, "content_sha256": "8" * 64,
+                } for binding in request["verification_command_bindings"]]
+            return result
         if operation == "capture-observation":
             return {"receipt": self.receipt, "receipt_sha256": "9" * 64}
         raise AssertionError(operation)
 
 
 class AuthorityAdapterTest(unittest.TestCase):
+    def shortDescription(self):
+        return None
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
+        # OS temp roots may be aliases (macOS /var -> /private/var). Normal
+        # transcript fixtures use real paths; linked-path tests add their own links.
+        self.root = Path(self.temp.name).resolve()
         (self.root / ".codearbiter").mkdir()
         git_run(["git", "init", "--quiet", str(self.root)], check=True)
         git_run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
@@ -122,6 +143,10 @@ class AuthorityAdapterTest(unittest.TestCase):
             git_run(["git", "-C", str(self.root), "worktree", "remove", "--force", str(self.linked)], check=False)
         self.adapter.REGISTRY_PARENT = self.original_registry_parent
         self.temp.cleanup()
+
+    def test_engine_digest_rejects_non_native_values_as_invalid_authority_state(self):
+        with self.assertRaisesRegex(RuntimeError, "^INVALID_AUTHORITY_STATE:"):
+            self.adapter._engine_digest({"unsupported_number": 0.5})
 
     def test_fixture_git_commands_ignore_inherited_repository_location(self):
         environment = dict(os.environ)
@@ -188,6 +213,237 @@ class AuthorityAdapterTest(unittest.TestCase):
 
         self.assertEqual(self.client.calls, [])
 
+    def test_t017_context_authority_boundary_positive_controls(self):
+        """A fixture host reply captures only its engine-issued exact context preview."""
+        binding = "a" * 64
+        preview = {
+            "operation_id": "context-fixture-001", "mode": "update",
+            "document_id": "tech-stack", "target_path": ".codearbiter/tech-stack.md",
+            "typed": {"format": "codearbiter.repository-context/0.1.0", "document_id": "tech-stack", "entries": []},
+            "selections": [], "expected_document_sha256": "b" * 64,
+            "expected_provenance_sha256": "c" * 64,
+            "proposed_provenance": {"schema": 2},
+        }
+
+        class ContextClient(FakeClient):
+            def call(inner, operation, request=None, **kwargs):
+                if operation == "context-evidence-context":
+                    inner.calls.append((operation, dict(request or {})))
+                    prompt_hash = request["prompt_sha256"]
+                    inner.context = {
+                        "format": "codearbiter.evidence-context/0.1.0",
+                        "activity": "context_approval",
+                        "subject": {"artifact_id": "CONTEXT-TECH-STACK", "record_id": "CONTEXT-TECH-STACK", "normative_sha256": binding},
+                        "input_sha256": binding, "prompt_sha256": prompt_hash,
+                        "record_sha256": hashlib.sha256(self.adapter._canonical({"preview_binding_sha256": binding})).hexdigest(),
+                        "record": {"preview_binding_sha256": binding},
+                        "preview": preview,
+                        "preview_document": "# Fixture preview\n",
+                        "after_document_sha256": hashlib.sha256(b"# Fixture preview\n").hexdigest(),
+                        "before_document_base64": None, "before_provenance_base64": None,
+                    }
+                    raw = self.adapter._canonical(inner.context)
+                    digest = hashlib.sha256(raw).hexdigest()
+                    relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+                    target = self.root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(raw)
+                    return {"context_ref": relative.as_posix(), "context_sha256": digest,
+                            "preview_binding_sha256": binding, "subject": inner.context["subject"],
+                            "preview_document": inner.context["preview_document"],
+                            "after_document_sha256": inner.context["after_document_sha256"]}
+                return super().call(operation, request, **kwargs)
+
+        client = ContextClient(self.root)
+        self.assertTrue(callable(getattr(self.adapter, "arm_context_preview", None)),
+                        "context preview authority must be armed by the host adapter")
+        self.assertTrue(callable(getattr(self.adapter, "capture_context_preview", None)),
+                        "context preview approval must be captured from the host reply")
+        armed = self.adapter.arm_context_preview(self.root, client, preview, token="fixture-context-token-001")
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=client):
+            notice = self.adapter.capture_context_preview_from_hook(
+                root=self.root, plugin_root=self.root, prompt=armed["reply"],
+                host="codex", session_id="fixture-session"
+            )
+        self.assertIn(client.receipt, notice)
+        self.assertIn(binding, notice)
+        self.assertEqual(client.calls[-1][0], "capture-observation")
+        source_ref = client.calls[-1][1]["source_ref"]
+        source = json.loads((self.root / source_ref).read_text("utf-8"))
+        self.assertEqual((source["kind"], source["authority_kind"], source["verdict"]),
+                         ("context_approval", "user_workflow", "approved"))
+        self.assertEqual(source["payload"], {"preview_binding_sha256": binding})
+        observed = json.loads((self.root / source["observation_ref"]).read_text("utf-8"))
+        self.assertEqual(observed["producer_profile"], "host-user-context-preview/0.1.0")
+        self.assertEqual(observed["context_sha256"], armed["context_sha256"])
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=client):
+            self.assertEqual(self.adapter.capture_context_preview_from_hook(
+                root=self.root, plugin_root=self.root, prompt=armed["reply"],
+                host="codex", session_id="fixture-session"
+            ), "")
+
+    def test_t017_context_authority_boundary_negative_controls(self):
+        """Wrong scope, replay and caller-authored approval labels cannot grant context authority."""
+        self.assertTrue(callable(getattr(self.adapter, "arm_context_preview", None)),
+                        "context preview authority must reject caller approval labels")
+        self.assertTrue(callable(getattr(self.adapter, "capture_context_preview", None)),
+                        "context preview authority must reject unrelated approval replies")
+        preview = {"operation_id": "context-fixture-002", "mode": "update", "document_id": "tech-stack"}
+        for extras in ({"approved": True}, {"authority_kind": "user_workflow"},
+                       {"receipt": self.client.receipt}, {"kind": "approval"}):
+            with self.subTest(extras=extras), self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
+                self.adapter.arm_context_preview(self.root, self.client, {**preview, **extras})
+        self.assertEqual(self.client.calls, [])
+        with self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
+            self.adapter.capture_context_preview(
+                self.root, self.client, "approve PLAN-EXAMPLE unrelated-token",
+                host="codex", session_id="fixture-session"
+            )
+        self.assertEqual(self.client.calls, [])
+
+        full_preview = {
+            "operation_id": "context-fixture-003", "mode": "create", "document_id": "CONTEXT",
+            "target_path": ".codearbiter/CONTEXT.md", "typed": {"format": "codearbiter.repository-context/0.1.0"},
+            "selections": [], "expected_document_sha256": None,
+            "expected_provenance_sha256": None, "proposed_provenance": {"schema": 2},
+        }
+        for activity, artifact_id in (("approval", "CONTEXT-CONTEXT"),
+                                      ("context_approval", "PLAN-EXAMPLE")):
+            with self.subTest(activity=activity, artifact_id=artifact_id):
+                class WrongContextClient:
+                    def call(inner, operation, request=None, **_kwargs):
+                        self.assertEqual(operation, "context-evidence-context")
+                        context = {
+                            "format": "codearbiter.evidence-context/0.1.0", "activity": activity,
+                            "subject": {"artifact_id": artifact_id, "record_id": artifact_id,
+                                        "normative_sha256": "a" * 64},
+                            "input_sha256": "a" * 64, "prompt_sha256": request["prompt_sha256"],
+                            "record_sha256": hashlib.sha256(self.adapter._canonical({"preview_binding_sha256": "a" * 64})).hexdigest(),
+                            "record": {"preview_binding_sha256": "a" * 64}, "preview": full_preview,
+                            "preview_document": "# Wrong fixture\n",
+                            "after_document_sha256": hashlib.sha256(b"# Wrong fixture\n").hexdigest(),
+                            "before_document_base64": None, "before_provenance_base64": None,
+                        }
+                        raw = self.adapter._canonical(context)
+                        digest = hashlib.sha256(raw).hexdigest()
+                        relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+                        target = self.root / relative
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        target.write_bytes(raw)
+                        return {"context_ref": relative.as_posix(), "context_sha256": digest,
+                                "preview_binding_sha256": "a" * 64, "subject": context["subject"],
+                                "preview_document": context["preview_document"],
+                                "after_document_sha256": context["after_document_sha256"]}
+
+                with self.assertRaisesRegex(RuntimeError, "INVALID_CONTEXT_AUTHORITY"):
+                    self.adapter.arm_context_preview(
+                        self.root, WrongContextClient(), full_preview,
+                        token="fixture-context-token-003",
+                    )
+
+        installed = self.adapter._artifactlib.ArtifactClient.__new__(
+            self.adapter._artifactlib.ArtifactClient
+        )
+        pending = {"source_present": True, "kind_registered": True,
+                   "host_default_enabled": False, "qualification": "pending",
+                   "mutation_available": False}
+        with mock.patch.object(installed, "workflow_preflight", return_value={
+            "resources_available": True, "host": "codex"
+        }), mock.patch.object(installed, "call", return_value={"repository_context": pending}):
+            with self.assertRaisesRegex(RuntimeError, "CONTEXT_WORKFLOW_UNAVAILABLE"):
+                installed.require_context_workflow()
+
+    def test_native_utf8_context_arms_verification_without_changing_state_canonicalization(self):
+        self.client.context["task"]["rollback"] = "Restore the task’s prior state"
+        ascii_bytes = json.dumps(
+            self.client.context, ensure_ascii=True, allow_nan=False,
+            sort_keys=True, separators=(",", ":"),
+        ).encode("ascii")
+        self.client.context_bytes = ascii_bytes.replace(b"\\u2019", "’".encode("utf-8"))
+        self.assertIn("’".encode("utf-8"), self.client.context_bytes)
+        self.assertEqual(self.adapter._canonical({"text": "’"}), b'{"text":"\\u2019"}')
+
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="request-nonce-native-unicode",
+        )
+        self.assertEqual(armed["activity"], "verification")
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((self.root / request["context_ref"]).read_bytes(), self.client.context_bytes)
+
+    def test_native_context_utf16_order_and_canonical_bytes_remain_fail_closed(self):
+        context = {"text": "task’s\b\u0000", "\ue000": 1, "😀": 2}
+        native_bytes = b'{"text":"task\xe2\x80\x99s\\b\\u0000","\xf0\x9f\x98\x80":2,"\xee\x80\x80":1}'
+        self.assertEqual(json.loads(native_bytes), context)
+
+        def read(raw):
+            digest = hashlib.sha256(raw).hexdigest()
+            relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+            return self.adapter._read_context(self.root, relative.as_posix(), digest)
+
+        self.assertEqual(read(native_bytes), context)
+        escaped_bytes = native_bytes.replace("’".encode("utf-8"), b"\\u2019")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_EVIDENCE_CONTEXT"):
+            read(escaped_bytes)
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_EVIDENCE_CONTEXT"):
+            read(native_bytes + b"\n")
+
+    def test_large_verification_context_is_referenced_and_rehydrated(self):
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 << 20)}
+        context_bytes = self.adapter._canonical(self.client.context)
+        self.assertGreater(len(context_bytes), self.adapter.MAX_STATE)
+        self.assertLess(len(context_bytes), self.adapter.MAX_EVIDENCE_CONTEXT)
+
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="request-nonce-large-verification",
+        )
+        state_bytes = Path(armed["request_path"]).read_bytes()
+        stored = json.loads(state_bytes)
+        self.assertLessEqual(len(state_bytes), self.adapter.MAX_STATE)
+        self.assertEqual(stored["context"], {
+            "format": "codearbiter.evidence-context-reference/0.1.0",
+        })
+        self.assertEqual((self.root / stored["context_ref"]).read_bytes(), context_bytes)
+
+        loaded = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(loaded["state"], "ARMED")
+        self.assertEqual(loaded["context"], self.client.context)
+        self.assertEqual(loaded["command_bindings"], stored["command_bindings"])
+        self.assertEqual(len(loaded["command_bindings"]), 1)
+        binding = loaded["command_bindings"][0]
+        self.assertEqual(binding["definition_sha256"], self.client.context["commands"][0]["definition_sha256"])
+        self.assertEqual(binding["argv"][1:], ["-m", "unittest", "tests.test_config", "-v"])
+        self.assertTrue(Path(binding["argv"][0]).is_absolute())
+        self.assertEqual(binding["cwd"], str(self.root))
+
+    def test_verification_result_without_lifecycle_reserve_refuses_before_registration(self):
+        self.client.context["commands"][0]["definition"]["required_tests"] = [
+            f"test_capacity_{index:04d}_" + "x" * 220 for index in range(4800)
+        ]
+        self.assertLess(
+            len(self.adapter._canonical(self.client.context)), self.adapter.MAX_EVIDENCE_CONTEXT,
+        )
+        spool = self.adapter._spool_root(self.root)
+        registry = self.adapter._registry_root()
+        before_spool = {path.name: path.read_bytes() for path in spool.glob("*.json")}
+        before_registry = {path.name: path.read_bytes() for path in registry.glob("*.json")}
+
+        with self.assertRaisesRegex(
+            self.adapter.AuthorityError,
+            "^INVALID_AUTHORITY_STATE: verification result has no bounded lifecycle reserve$",
+        ):
+            self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                request_nonce="request-nonce-oversized-verification",
+            )
+
+        self.assertEqual({path.name: path.read_bytes() for path in spool.glob("*.json")}, before_spool)
+        self.assertEqual({path.name: path.read_bytes() for path in registry.glob("*.json")}, before_registry)
+
     def test_verifier_executes_engine_argv_without_shell_and_publishes_observation(self):
         armed = self.adapter.arm_request(
             self.root,
@@ -233,7 +489,8 @@ class AuthorityAdapterTest(unittest.TestCase):
             "payload_sha256", "producer_profile", "producer_run_id",
             "producer_result", "producer_result_sha256",
         })
-        self.assertEqual(observation["producer_profile"], "declared-command/0.2.0")
+        self.assertEqual(observation["producer_profile"], "declared-command/0.3.0")
+        self.assertTrue(observation["producer_result"]["completion_workspace_after"])
         canonical_result = json.dumps(
             observation["producer_result"], ensure_ascii=True, allow_nan=False,
             sort_keys=True, separators=(",", ":"),
@@ -944,6 +1201,196 @@ class AuthorityAdapterTest(unittest.TestCase):
             argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b""))
         self.assertEqual(result["commands"][0]["tests"], [{"name": "suite > exact test", "status": "pass"}])
 
+    def _npm_workspace_definition(self):
+        packages = {
+            "package.json": {"private": True, "workspaces": ["client", "shared"],
+                             "scripts": {"test:client": "npm -w @singedterra/client run test"}},
+            "client/package.json": {"name": "@singedterra/client", "scripts": {"test": "vitest run"}},
+            "shared/package.json": {"name": "@singedterra/shared"},
+        }
+        for relative, package in packages.items():
+            manifest = self.root / relative
+            manifest.parent.mkdir(exist_ok=True)
+            manifest.write_text(json.dumps(package), encoding="utf-8")
+        definition = self.client.context["commands"][0]["definition"]
+        definition.update(argv=["npm", "run", "test:client", "--", "--", "--reporter=verbose"],
+                          required_tests=["suite > exact test"])
+        return definition
+
+    def _workspace_runner(self, runner):
+        actual = self.adapter._run_contained
+        def dispatch(argv, **kwargs):
+            if os.name == "nt" and len(argv) > 1 and (
+                    Path(argv[1]).name == "npm-prefix.js"
+                    or (Path(argv[1]).name == "npm-cli.js" and argv[2:3] == ["config"])):
+                return actual(argv, **kwargs)
+            return runner(argv, **kwargs)
+        return dispatch
+
+    def test_npm_workspace_delegation_preserves_root_launch_and_binds_every_manifest(self):
+        definition = self._npm_workspace_definition()
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"][0]
+        self.assertEqual(binding["collector_profile"], "vitest-verbose/0.1.0")
+        manifests = {Path(item["path"]).relative_to(self.root.resolve()).as_posix()
+                     for item in binding["launch_files"] if item["role"] in {"npm-manifest", "npm-workspace-manifest"}}
+        self.assertEqual(manifests, {"package.json", "client/package.json", "shared/package.json"})
+        launches = []
+        def runner(argv, **kwargs):
+            launches.append((argv, kwargs))
+            return subprocess.CompletedProcess(argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b"")
+        result, _base = self._run(armed, self._workspace_runner(runner))
+        expected = definition["argv"][1:]
+        self.assertEqual(launches[0][0][2:] if os.name == "nt" else launches[0][0][1:], expected)
+        self.assertEqual(launches[0][1]["cwd"], str(self.root.resolve()))
+        self.assertEqual(result["commands"][0]["tests"], [{"name": "suite > exact test", "status": "pass"}])
+        if os.name == "nt":
+            self.assertEqual({item["role"] for item in binding["launch_files"]},
+                             {"declared-executable", "node-runtime", "npm-cli", "npm-prefix", "npm-manifest", "npm-workspace-manifest"})
+
+    def test_npm_workspace_manifest_drift_rejects_before_and_after_execution(self):
+        self._npm_workspace_definition()
+        (self.root / ".gitignore").write_text("package.json\nclient/\nshared/\n", encoding="utf-8")
+        for phase in ("before", "after"):
+            for relative in ("package.json", "client/package.json", "shared/package.json"):
+                target = self.root / relative
+                original = target.read_bytes()
+                with self.subTest(phase=phase, manifest=relative):
+                    armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                    if phase == "before":
+                        target.write_bytes(original + b"\n")
+                        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                            self._authorize(armed)
+                    else:
+                        def changed_manifest(argv, **_kwargs):
+                            target.write_bytes(original + b"\n")
+                            return subprocess.CompletedProcess(argv, 0, " ✓ a.test.ts > suite > exact test 4ms\n".encode(), b"")
+                        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+                            self._run(armed, self._workspace_runner(changed_manifest))
+                    self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["observation_ref"])
+                    target.write_bytes(original)
+
+    def test_npm_workspace_delegation_rejects_ambiguous_or_unbounded_grammar(self):
+        cases = (
+            ("root compound", "package.json", "script", "npm -w @singedterra/client run test && echo done"),
+            ("recursive", "client/package.json", "script", "npm run other"),
+            ("leaf compound", "client/package.json", "script", "vitest run && echo done"),
+            ("path executable", "package.json", "script", "./npm -w @singedterra/client run test"),
+            ("fanout", "package.json", "script", "npm --workspaces run test"),
+            ("second selector", "package.json", "script", "npm -w @singedterra/client -w @singedterra/shared run test"),
+            ("path selector", "package.json", "script", "npm -w ./client run test"),
+            ("unknown name", "package.json", "script", "npm -w @unknown/client run test"),
+            ("root pre", "package.json", "pre", "echo before"),
+            ("root post", "package.json", "post", "echo after"),
+            ("leaf pre", "client/package.json", "pre", "echo before"),
+            ("leaf post", "client/package.json", "post", "echo after"),
+            ("workspace object", "package.json", "workspaces", {"packages": ["client", "shared"]}),
+            ("glob", "package.json", "workspaces", ["*"]),
+            ("parent", "package.json", "workspaces", ["../client"]),
+            ("root path", "package.json", "workspaces", ["."]),
+            ("empty path", "package.json", "workspaces", [""]),
+            ("alias", "package.json", "workspaces", ["./client"]),
+            ("duplicate path", "package.json", "workspaces", ["client", "client"]),
+            ("oversized array", "package.json", "workspaces", ["client"] * 33),
+            ("missing array", "package.json", "workspaces", None),
+            ("duplicate name", "shared/package.json", "name", "@singedterra/client"),
+            ("missing name", "shared/package.json", "name", None),
+        )
+        for label, relative, field, value in cases:
+            with self.subTest(case=label):
+                definition = self._npm_workspace_definition()
+                self.assertEqual(self.adapter.validate_command_definition(definition, cwd=self.root),
+                                 "vitest-verbose/0.1.0")
+                path = self.root / relative
+                package = json.loads(path.read_text(encoding="utf-8"))
+                script_name = "test:client" if relative == "package.json" else "test"
+                if field in {"script", "pre", "post"}:
+                    package.setdefault("scripts", {})[("" if field == "script" else field) + script_name] = value
+                else:
+                    package[field] = value
+                path.write_text(json.dumps(package), encoding="utf-8")
+                with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                    self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_reporter_requires_both_argument_boundaries(self):
+        definition = self._npm_workspace_definition()
+        definition["argv"] = ["npm", "run", "test:client", "--", "--reporter=verbose"]
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    @unittest.skipUnless(os.name == "nt", "cmd.exe quoting and expansion differ from POSIX tokenization")
+    def test_npm_workspace_rejects_cmd_expansion_and_single_quotes(self):
+        for script_name, inspected_name, executed_name in (("te^st", "te^st", "test"), ("'test'", "test", "'test'")):
+            with self.subTest(script_name=script_name):
+                definition = self._npm_workspace_definition()
+                root = self.root / "package.json"
+                package = json.loads(root.read_text(encoding="utf-8"))
+                package["scripts"]["test:client"] = "npm -w @singedterra/client run " + script_name
+                root.write_text(json.dumps(package), encoding="utf-8")
+                client = self.root / "client/package.json"
+                package = json.loads(client.read_text(encoding="utf-8"))
+                package["scripts"] = {inspected_name: "vitest run", executed_name: "node other.js"}
+                client.write_text(json.dumps(package), encoding="utf-8")
+                with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+                    self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_name_cannot_also_select_another_directory(self):
+        definition = self._npm_workspace_definition()
+        root = self.root / "package.json"
+        package = json.loads(root.read_text(encoding="utf-8"))
+        package["scripts"]["test:client"] = "npm --workspace shared run test"
+        root.write_text(json.dumps(package), encoding="utf-8")
+        client = self.root / "client/package.json"
+        package = json.loads(client.read_text(encoding="utf-8"))
+        package["name"] = "shared"
+        client.write_text(json.dumps(package), encoding="utf-8")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_rejects_shell_sensitive_script_names(self):
+        definition = self._npm_workspace_definition()
+        root = self.root / "package.json"
+        package = json.loads(root.read_text(encoding="utf-8"))
+        package["scripts"]["test:client"] = r"npm -w @singedterra/client run te\st"
+        root.write_text(json.dumps(package), encoding="utf-8")
+        client = self.root / "client/package.json"
+        package = json.loads(client.read_text(encoding="utf-8"))
+        package["scripts"] = {r"te\st": "vitest run", "test": "node other.js"}
+        client.write_text(json.dumps(package), encoding="utf-8")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_COLLECTOR"):
+            self.adapter.validate_command_definition(definition, cwd=self.root)
+
+    def test_npm_workspace_admits_32_explicit_manifests(self):
+        definition = self._npm_workspace_definition()
+        root = self.root / "package.json"
+        package = json.loads(root.read_text(encoding="utf-8"))
+        for index in range(30):
+            name = f"extra-{index}"
+            directory = self.root / name
+            directory.mkdir()
+            (directory / "package.json").write_text(json.dumps({"name": name}), encoding="utf-8")
+            package["workspaces"].append(name)
+        root.write_text(json.dumps(package), encoding="utf-8")
+        self.assertEqual(self.adapter.validate_command_definition(definition, cwd=self.root), "vitest-verbose/0.1.0")
+        _runner, manifests = self.adapter._npm_runner(definition["argv"], self.root)
+        self.assertEqual(len(manifests), 33)
+
+    def test_npm_workspace_rejects_nested_executable_shadowing_before_arm(self):
+        self._npm_workspace_definition()
+        locations = [self.root / "node_modules/.bin/npm"]
+        if os.name == "nt":
+            locations.extend([self.root / "npm.cmd", self.root / "node_modules/.bin/npm.cmd"])
+        for shadow in locations:
+            with self.subTest(path=shadow):
+                shadow.parent.mkdir(parents=True, exist_ok=True)
+                shadow.write_text("untrusted executable, never run", encoding="utf-8")
+                try:
+                    with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSUPPORTED_EXECUTABLE.*shadowed"):
+                        self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification")
+                    self.assertEqual(self.adapter._registered_requests(), [])
+                finally:
+                    shadow.unlink()
+
     def test_npm_compound_or_missing_reporter_is_rejected_before_arm(self):
         for script, forwarded in (("playwright test", []), ("vitest run", []),
                                   ("echo pre && vitest run && echo after", ["--reporter=verbose"]),
@@ -1593,19 +2040,30 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         pre, _ = self._launch(armed)
         agent_id = "agent-mid-write"
         real_fsync = self.adapter.os.fsync
-        fired = []
+        fired, errors = [], []
+
+        def post():
+            try:
+                self._post(pre, agentId=agent_id)
+            except Exception as exc:  # noqa: BLE001 - surfaced below
+                errors.append(exc)
 
         def fsync(fd):
-            # The launch result lands while the start marker is being written.
+            # The launch result lands, in its own hook process, while the
+            # start marker is being written; it waits for the join lock.
             if not fired:
-                fired.append(True)
-                self._post(pre, agentId=agent_id)
+                fired.append(threading.Thread(target=post))
+                fired[0].start()
+                fired[0].join(0.5)
             return real_fsync(fd)
 
         with mock.patch.object(self.adapter.os, "fsync", fsync):
             self._start(agent_id)
-        self.assertTrue(fired)
+            self.assertTrue(fired)
+            fired[0].join(15)
+        self.assertEqual(errors, [])
         self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        self.assertFalse(self.adapter._claude_start_marker(agent_id).exists())
 
     def test_each_stop_guard_rejects(self):
         cases = {
@@ -2021,6 +2479,280 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         armed, agent_id = self._running("claude-review-whitespace")
         self.assertEqual(self._stop(agent_id, "\n" + self._decision(armed) + "\n")["state"], "COMPLETED")
 
+    # -- Claude Code 2.1.286 seams ------------------------------------------
+    def _launch_2286(self, nonce, agent_id):
+        armed = self._arm_claude_review(nonce)
+        pre = claude_fixture("2.1.286/agent-pretooluse.json", tool_input=dict(armed["launch_envelope"]))
+        self.adapter.observe_claude_hook(self.root, pre)
+        post = claude_fixture("2.1.286/agent-posttooluse.json", tool_input=pre["tool_input"])
+        post["tool_response"]["agentId"] = agent_id
+        return armed, pre, post
+
+    def _running_2286(self, nonce):
+        agent_id = "agent-" + nonce
+        armed, _pre, post = self._launch_2286(nonce, agent_id)
+        self.adapter.observe_claude_hook(self.root, post)
+        self.adapter.observe_claude_hook(
+            self.root, claude_fixture("2.1.286/subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        return armed, agent_id
+
+    def _handback(self, agent_id, message, **overrides):
+        event = claude_fixture("2.1.286/handback-posttooluse.json", agent_id=agent_id, agent_type=REVIEWER)
+        event["tool_input"] = {"message": message}
+        event.update(overrides)
+        return self.adapter.observe_claude_hook(self.root, event)
+
+    def _stop_2286(self, agent_id, **overrides):
+        event = claude_fixture("2.1.286/subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER)
+        event["background_tasks"] = [{**task, "id": agent_id} for task in event["background_tasks"]]
+        event.update(overrides)
+        return self.adapter.observe_claude_hook(self.root, event)
+
+    def test_2286_context_tagged_resolved_model_correlates(self):
+        armed, _pre, post = self._launch_2286("claude-2286-model", "agent-2286-model")
+        self.assertEqual(post["tool_response"]["resolvedModel"], "claude-opus-5-5[1m]")
+        self.adapter.observe_claude_hook(self.root, post)
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(state["state"], "LAUNCHING")
+        self.assertIs(state["launch"]["post_confirmed"], True)
+        # Recorded exactly as the host reported it, never normalized.
+        self.assertEqual(state["launch"]["resolved_model"], "claude-opus-5-5[1m]")
+
+    def test_context_tag_is_admitted_only_on_resolved_model(self):
+        for label, field, value in (
+            ("bare-tag", "resolvedModel", "[1m]"),
+            ("two-tags", "resolvedModel", "claude-opus-5-5[1m][1m]"),
+            ("open-tag", "resolvedModel", "claude-opus-5-5[1m"),
+            ("spaced-tag", "resolvedModel", "claude-opus-5-5[1 m]"),
+            ("inner-tag", "resolvedModel", "claude[1m]-opus"),
+            ("agent-id", "agentId", "agent[1m]"),
+        ):
+            with self.subTest(case=label):
+                armed, _pre, post = self._launch_2286("claude-2286-tag-" + label, "agent-2286-tag")
+                post["tool_response"][field] = value
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                    self.adapter.observe_claude_hook(self.root, post)
+                state = self.adapter._load(self.root, armed["request_id"])
+                self.assertEqual((state["state"], state["recovery"]["mode"]),
+                                 ("REJECTED", "uncorrelated-launch-result"))
+        armed = self._arm_claude_review("claude-2286-tag-prompt-id")
+        pre = claude_fixture("2.1.286/agent-pretooluse.json", tool_input=dict(armed["launch_envelope"]),
+                             prompt_id="prompt[1m]")
+        with self.assertRaisesRegex(RuntimeError, "prompt_id is malformed"):
+            self.adapter.observe_claude_hook(self.root, pre)
+
+    def test_2286_handback_completes_review(self):
+        armed, agent_id = self._running_2286("claude-2286-handback")
+        self.assertIsNone(self._handback(agent_id, self._decision(armed)))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        stop = claude_fixture("2.1.286/subagentstop-first.json")
+        self.assertNotIn("last_assistant_message", stop)
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+        published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        source = json.loads((self.root / published["authority_source"]).read_text("utf-8"))
+        observation = json.loads((self.root / source["observation_ref"]).read_text("utf-8"))
+        self.assertEqual(observation["producer_result"]["decision"], json.loads(self._decision(armed)))
+        self.assertEqual(observation["producer_result"]["launch"]["resolved_model"], "claude-opus-5-5[1m]")
+
+    def test_2286_stop_without_any_report_is_rejected(self):
+        armed, agent_id = self._running_2286("claude-2286-silent")
+        with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION"):
+            self._stop_2286(agent_id)
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["recovery"]["mode"]), ("REJECTED", "rejected-first-stop"))
+
+    def test_2286_second_handback_rejects_review(self):
+        armed, agent_id = self._running_2286("claude-2286-twice")
+        self._handback(agent_id, self._decision(armed))
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, self._decision(armed, assessment="Changed my mind."))
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["recovery"]["mode"]), ("REJECTED", "repeated-handback"))
+
+    def test_2286_handback_binding(self):
+        # Another agent's or another session's handback never touches the review.
+        for label, overrides in (
+            ("other-agent", {"agent_id": "agent-someone-else"}),
+            ("parent", {"agent_id": None, "agent_type": None}),
+            ("other-session", {"session_id": "session-other"}),
+        ):
+            with self.subTest(case=label):
+                armed, agent_id = self._running_2286("claude-2286-bind-" + label)
+                before = self.adapter._load(self.root, armed["request_id"])
+                hook = claude_fixture("2.1.286/handback-posttooluse.json", agent_id=agent_id, agent_type=REVIEWER)
+                hook["tool_input"] = {"message": self._decision(armed)}
+                for key, value in overrides.items():
+                    if value is None:
+                        hook.pop(key, None)
+                    else:
+                        hook[key] = value
+                self.assertIsNone(self.adapter.observe_claude_hook(self.root, hook))
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"]), before)
+        # The bound reviewer's id under another agent type fails closed.
+        armed, agent_id = self._running_2286("claude-2286-bind-type")
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, self._decision(armed), agent_type="general-purpose")
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+        # An undelivered handback records nothing; the stop then has no report.
+        armed, agent_id = self._running_2286("claude-2286-undelivered")
+        self._handback(agent_id, self._decision(armed), tool_response={"success": False, "message": "x"})
+        with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION"):
+            self._stop_2286(agent_id)
+
+    def test_2286_same_handback_delivered_twice_is_one_report(self):
+        armed, agent_id = self._running_2286("claude-2286-duplicate")
+        self._handback(agent_id, self._decision(armed))
+        before = self.adapter._load(self.root, armed["request_id"])
+        self.assertIsNone(self._handback(agent_id, self._decision(armed)))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"]), before)
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+        # A different call carrying the same text is still a second report.
+        armed, agent_id = self._running_2286("claude-2286-second-call")
+        self._handback(agent_id, self._decision(armed))
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, self._decision(armed), tool_use_id="toolu-other")
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["recovery"]["mode"], "repeated-handback")
+
+    def test_2286_handback_late_binds_a_start_that_lost_the_race(self):
+        # SubagentStart fired first but rescanned before the launch result
+        # saved agent_id, so the marker is left for the next event to join.
+        agent_id = "agent-claude-2286-race"
+        armed, _pre, post = self._launch_2286("claude-2286-race", agent_id)
+        self.adapter.observe_claude_hook(self.root, post)
+        marker = self.adapter._claude_start_marker(agent_id)
+        marker.write_bytes(self.adapter._canonical({"agent_id": agent_id, "agent_type": REVIEWER}))
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["launch"]["post_confirmed"]), ("LAUNCHING", True))
+        self.assertIsNone(self._handback(agent_id, self._decision(armed)))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+
+    def _race_launch_join(self, nonce, held):
+        """Run SubagentStart and the async launch result on two threads,
+        holding the `held` side between its read and its write while the
+        other side runs. Each hook is its own process in production."""
+        agent_id = "agent-" + nonce
+        armed, _pre, post = self._launch_2286(nonce, agent_id)
+        start = claude_fixture("2.1.286/subagentstart.json", agent_id=agent_id, agent_type=REVIEWER)
+        paused, resume = threading.Event(), threading.Event()
+        scans, scan, save = [], self.adapter._claude_requests, self.adapter._save
+
+        def hold(side):
+            if threading.current_thread().name == side == held and not paused.is_set():
+                paused.set()
+                resume.wait(10)
+
+        def scan_then_hold(*args, **kwargs):
+            found = scan(*args, **kwargs)
+            if threading.current_thread().name == "start":
+                scans.append(None)
+                if len(scans) == 2:
+                    # After the agent-id scan, before deciding on a marker.
+                    hold("start")
+            return found
+
+        def hold_then_save(root, request):
+            if request["state"] == "LAUNCHING" and request["launch"]["post_confirmed"]:
+                # After the marker check, before saving the launch result.
+                hold("post")
+            save(root, request)
+
+        errors = []
+
+        def run(event):
+            try:
+                self.adapter.observe_claude_hook(self.root, event)
+            except Exception as exc:  # noqa: BLE001 - surfaced below
+                errors.append(exc)
+
+        first, second = (start, post) if held == "start" else (post, start)
+        names = ("start", "post") if held == "start" else ("post", "start")
+        scans_held = mock.patch.object(self.adapter, "_claude_requests", side_effect=scan_then_hold)
+        saves_held = mock.patch.object(self.adapter, "_save", side_effect=hold_then_save)
+        with scans_held, saves_held:
+            a = threading.Thread(target=run, args=(first,), name=names[0])
+            a.start()
+            self.assertTrue(paused.wait(10), "the held hook never reached its pause point")
+            b = threading.Thread(target=run, args=(second,), name=names[1])
+            b.start()
+            b.join(0.5)
+            resume.set()
+            a.join(15)
+            b.join(15)
+        self.assertEqual(errors, [])
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["launch"]["agent_type"]), ("RUNNING", REVIEWER))
+        self.assertFalse(self.adapter._claude_start_marker(agent_id).exists(), "start marker was orphaned")
+        return armed, agent_id
+
+    def test_launch_result_between_start_scans_still_joins(self):
+        # The launch result saved agent_id after SubagentStart's agent-id scan
+        # but before its pending-launch scan: neither side wrote the join.
+        armed, agent_id = self._race_launch_join("claude-race-between-scans", "start")
+        self._handback(agent_id, self._decision(armed))
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+
+    def test_start_between_marker_check_and_launch_save_still_joins(self):
+        # SubagentStart wrote its marker after the launch result looked for it
+        # and rescanned before the launch result saved agent_id.
+        armed, agent_id = self._race_launch_join("claude-race-marker-check", "post")
+        self._handback(agent_id, self._decision(armed))
+        self.assertEqual(self._stop_2286(agent_id)["state"], "COMPLETED")
+
+    def test_2286_handback_cannot_push_state_past_its_bound(self):
+        armed, agent_id = self._running_2286("claude-2286-bound")
+        size = len(Path(armed["request_path"]).read_bytes())
+        # Quotes double when the state is serialized, though the UTF-8 cap allows them.
+        message = '"' * 40000
+        original = self.adapter.MAX_STATE
+        self.adapter.MAX_STATE = size + 100000
+        self.addCleanup(setattr, self.adapter, "MAX_STATE", original)
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._handback(agent_id, message)
+        state = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual((state["state"], state["recovery"]["mode"]), ("REJECTED", "rejected-handback"))
+
+    def test_save_refuses_state_past_its_bound(self):
+        armed = self._arm_claude_review("claude-save-bound")
+        path = Path(armed["request_path"])
+        before = path.read_bytes()
+        request = self.adapter._load(self.root, armed["request_id"])
+        request["dispatch_prompt"] = "x" * (self.adapter.MAX_STATE + 1)
+        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+            self.adapter._save(self.root, request)
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_load_refuses_a_malformed_handback(self):
+        for label, value in (
+            ("string", "{}"),
+            ("extra-key", {"tool_use_id": "toolu-1", "message": "{}", "x": 1}),
+            ("oversized", {"tool_use_id": "toolu-1", "message": "x" * 65537}),
+        ):
+            with self.subTest(case=label):
+                armed, _agent = self._running_2286("claude-2286-load-" + label)
+                request = self.adapter._load(self.root, armed["request_id"])
+                request["handback"] = value
+                self.adapter._save(self.root, request)
+                with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+                    self.adapter._load(self.root, armed["request_id"])
+
+    def test_handback_and_final_message_must_agree(self):
+        armed, agent_id = self._running_2286("claude-2286-agree")
+        self._handback(agent_id, self._decision(armed))
+        self.assertEqual(self._stop_2286(agent_id, last_assistant_message=self._decision(armed))["state"], "COMPLETED")
+        armed, agent_id = self._running_2286("claude-2286-disagree")
+        self._handback(agent_id, self._decision(armed))
+        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+            self._stop_2286(agent_id, last_assistant_message=self._decision(armed, assessment="Other."))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+
+    def test_ordinary_handback_is_never_refused(self):
+        self.assertIsNone(self.adapter.observe_claude_hook(
+            self.root, claude_fixture("2.1.286/handback-posttooluse.json")))
+        self.assertIsNone(self.adapter.observe_claude_hook(
+            self.root, claude_fixture("2.1.286/handback-pretooluse.json")))
+
     def test_codex_arm_is_unchanged_by_default(self):
         self.client.context["activity"] = "spec_review"
         self.client.context.pop("commands", None)
@@ -2035,6 +2767,18 @@ class NativeReviewTransportTest(unittest.TestCase):
     setUp = AuthorityAdapterTest.setUp
     tearDown = AuthorityAdapterTest.tearDown
     _setup_claude = ClaudeAuthorityAdapterTest._setup_claude
+
+    def test_review_prompt_and_charter_state_the_finding_contract(self):
+        self._setup_claude()
+        contract = "severity must be BLOCK, WARN, or INFO"
+        for host in ("codex", "claude"):
+            with self.subTest(host=host):
+                armed = self._arm_review(host, "spec_review", "finding-contract-" + host)
+                self.assertIn(contract, armed["dispatch_prompt"])
+                self.assertIn("exactly severity, code, message", armed["dispatch_prompt"])
+        charter = (REPO / "core/surface/agents/authority-reviewer.md").read_text(encoding="utf-8")
+        self.assertIn(contract, charter)
+        self.assertIn("exactly severity, code, message", charter)
 
     def _arm_review(self, host, activity, nonce, entries=0):
         self.client = FakeClient(self.root)
@@ -2268,7 +3012,9 @@ class NativeReviewTransportTest(unittest.TestCase):
         request["dispatch_prompt"] = prompt
         key = "prompt" if host == "claude" else "message"
         request["launch_envelope"][key] = prompt
-        self.adapter._save(self.root, request)
+        # The adapters that wrote these states had no write bound.
+        with mock.patch.object(self.adapter, "MAX_STATE", self.adapter.MAX_RECOVERY_STATE):
+            self.adapter._save(self.root, request)
         return armed, request
 
     def test_oversized_legacy_review_can_only_be_abandoned_after_full_validation(self):
@@ -2306,8 +3052,10 @@ class NativeReviewTransportTest(unittest.TestCase):
             self.adapter.publish_request(self.root, self.client, armed["request_id"])
         with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
             self._launch(host, armed)
-        with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE|INVALID_RECOVERY"):
+        # A retried abandonment names the real state, not a binding failure.
+        with self.assertRaisesRegex(RuntimeError, "INVALID_RECOVERY: request was already abandoned"):
             self.adapter.recover_request(self.root, armed["request_id"], "abandoned")
+        self.assertEqual(json.loads(path.read_bytes()), retained)
         self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
 
         mutations = {
@@ -2820,31 +3568,43 @@ class ClaudeEndToEndTest(unittest.TestCase):
     def _state(self, request_id):
         return self.adapter._load(self.root, request_id)
 
+    host_fixtures = ""
+
     def _review(self, record_id, activity, agent_id, tool_use_id, *model):
         armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
                                      "--record-id", record_id, "--activity", activity, *model))
         self.assertEqual(armed["launch_envelope"]["model"], model[1] if model else "opus")
-        pre = self._event("agent-pretooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
+        fixtures = self.host_fixtures
+        pre = self._event(fixtures + "agent-pretooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
         self._hook(pre)
         self.assertEqual(self._state(armed["request_id"])["state"], "LAUNCHING")
-        post = self._event("agent-posttooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
+        post = self._event(fixtures + "agent-posttooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
         post["tool_response"]["agentId"] = agent_id
         self._hook(post)
-        self._hook(claude_fixture("subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
+        self._hook(claude_fixture(fixtures + "subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
         self.assertEqual(self._state(armed["request_id"])["state"], "RUNNING")
         context = self._state(armed["request_id"])["context"]
         decision = json.dumps({
             "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
             "target_sha256": context["input_sha256"], "contract_sha256": armed["review_contract_sha256"],
             "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
-            "assessment": "Independent Claude review of the frozen target.",
+            "assessment": getattr(self, "review_assessment", "Independent Claude review of the frozen target."),
         })
-        stop = claude_fixture("subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER,
-                              prompt_id="e2e-later-prompt", last_assistant_message=decision)
+        if fixtures:
+            # Claude Code 2.1.286: the report arrives as the child's handback.
+            handback = self._event(fixtures + "handback-posttooluse.json", agent_id=agent_id, agent_type=REVIEWER)
+            handback["tool_input"] = {"message": decision}
+            self._hook(handback)
+            stop = claude_fixture(fixtures + "subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER,
+                                  session_id="e2e-session", prompt_id="e2e-later-prompt")
+        else:
+            stop = claude_fixture("subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER,
+                                  prompt_id="e2e-later-prompt", last_assistant_message=decision)
         stop["background_tasks"] = [{**stop["background_tasks"][0], "id": agent_id, "agent_type": REVIEWER}]
         self._hook(stop)
         self.assertEqual(self._state(armed["request_id"])["state"], "COMPLETED")
-        self._hook(claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER))
+        if not fixtures:
+            self._hook(claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER))
         return json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
 
     @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")
@@ -2885,6 +3645,101 @@ class ClaudeEndToEndTest(unittest.TestCase):
         post["tool_response"]["stdout"] = stdout
         self._hook(post)
         published = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))
+        self.assertTrue((self.root / published["receipt"]).is_file())
+
+    def test_end_to_end_claude_2_1_286(self):
+        """The same flow on Claude Code 2.1.286's tagged model and handback report."""
+        self.host_fixtures = "2.1.286/"
+        self.test_end_to_end_claude()
+
+    def test_end_to_end_claude_non_ascii_review_publishes(self):
+        """A reviewer reply with non-ASCII text publishes: the observation's
+        payload and producer-result digests use the engine's UTF-8 canonical
+        form, not ASCII-escaped JSON."""
+        self.host_fixtures = "2.1.286/"
+        self.review_assessment = "Independent review — the frozen target holds; naïve ✓ 😀."
+        self.test_end_to_end_claude()
+
+    @unittest.skipUnless(shutil.which("npm"), "native npm integration requires Node/npm")
+    def test_native_npm_workspace_verification_is_accepted_by_real_engine(self):
+        """Real npm delegation and named results reach the current Go receipt validator."""
+        workspace = self.root / "client"
+        shutil.copytree(self.root / "tests", workspace / "tests")
+        root_manifest = self.root / "package.json"
+        workspace_manifest = workspace / "package.json"
+        root_manifest.write_text(json.dumps({
+            "name": "workspace-integration-fixture", "private": True,
+            "workspaces": ["client"],
+            "scripts": {"test:client": "npm --workspace @fixture/client run test"},
+        }), encoding="utf-8")
+        workspace_manifest.write_text(json.dumps({
+            "name": "@fixture/client", "version": "1.0.0", "private": True,
+            "scripts": {"test": "python -m unittest -v tests.test_config"},
+        }), encoding="utf-8")
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation,
+                                      "npm-workspace-e2e", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {
+            "operation_id": "npm-workspace-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+            "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec,
+        })
+        workflow.approve("SPEC-FLOW")
+        spec_hash = client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"]
+        plan = self.host.plan_normative(spec_hash)
+        declared_argv = ["npm", "run", "test:client"]
+        plan["tasks"][0]["verification"][0].update(
+            argv=declared_argv,
+            assertion="The root npm command delegates to the workspace and runs the named unittest.",
+        )
+        client.call("create", {
+            "operation_id": "npm-workspace-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+            "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+            "spec_id": "SPEC-FLOW", "normative": plan,
+        })
+        # Real unittest imports write bytecode; retain every source and manifest as an input.
+        workflow.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {
+            "verification_inputs": {"roots": ["."], "exclude_directories": ["client/tests/__pycache__"]},
+        }}])
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        armed = json.loads(self._cli(
+            "arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+            "--record-id", "T-001", "--activity", "verification",
+        ))
+        pre = self._event("bash-pretooluse.json", tool_use_id="npm-workspace-verify",
+                          tool_input={"command": armed["verify_command"], "description": "verify npm workspace"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        verified = json.loads(stdout)
+        self.assertEqual(verified["commands"][0]["tests"], [
+            {"name": "test_environment_overrides", "status": "pass"},
+        ])
+        state = self._state(armed["request_id"])
+        self.assertEqual(state["context"]["commands"][0]["definition"]["argv"], declared_argv)
+        binding = state["command_bindings"][0]
+        self.assertEqual(binding["argv"][-2:], declared_argv[1:])
+        self.assertEqual(binding["collector_profile"], "python-unittest-text/0.1.0")
+        expected_roles = ["declared-executable", "npm-manifest", "npm-workspace-manifest"]
+        if sys.platform == "win32":
+            expected_roles.extend(["node-runtime", "npm-cli", "npm-prefix"])
+        self.assertCountEqual([item["role"] for item in binding["launch_files"]], expected_roles)
+        manifests = {item["role"]: item["path"] for item in binding["launch_files"]
+                     if item["role"] in {"npm-manifest", "npm-workspace-manifest"}}
+        self.assertEqual(manifests, {
+            "npm-manifest": str(root_manifest),
+            "npm-workspace-manifest": str(workspace_manifest),
+        })
+        post = self._event("bash-posttooluse.json", tool_use_id="npm-workspace-verify",
+                           tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        published = json.loads(self._cli(
+            "publish", "--root", str(self.root), "--request-id", armed["request_id"],
+        ))
         self.assertTrue((self.root / published["receipt"]).is_file())
 
     def test_end_to_end_claude(self):
@@ -2982,6 +3837,111 @@ class ClaudeEndToEndTest(unittest.TestCase):
         # accept-scope assertions; only the review producer is the native V1 path.
         with mock.patch.object(self, "_review", side_effect=self._native_codex_review):
             self.test_end_to_end_claude()
+
+    def test_completion_native_hook_allows_canonical_bookkeeping_and_rejects_source_drift(self):
+        """Actual native validation; host hook events remain labeled synthetic fixtures."""
+        # Native publication must remain fresh even when its complete evidence
+        # history is visible to Git, as it is in real governed workspaces.
+        (self.root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
+        bridge = self.host.load_bridge(self.plugin)
+        workflow = self.host.Workflow(bridge, self.root, self.installation, "completion", "claude", self.plugin)
+        client = workflow.client
+        spec = self.host.spec_normative()
+        client.call("create", {"operation_id": "completion-spec", "artifact_id": "SPEC-FLOW", "kind": "spec",
+                               "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
+        workflow.approve("SPEC-FLOW")
+        plan = self.host.plan_normative(client.call("identity", {"artifact_id": "SPEC-FLOW"})["normative_sha256"])
+        other_task = copy.deepcopy(plan["tasks"][0])
+        other_task.update(id="T-002", title="Unrelated task bookkeeping fixture")
+        plan["tasks"].append(other_task)
+        plan["checkpoints"][0]["tasks"].append("T-002")
+        client.call("create", {"operation_id": "completion-plan", "artifact_id": "PLAN-FLOW", "kind": "plan",
+                               "slug": "flow", "title": plan["title"], "summary": plan["summary"],
+                               "spec_id": "SPEC-FLOW", "normative": plan})
+        workflow.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {
+            "verification_inputs": {"roots": ["."], "exclude_directories": ["tests/__pycache__"]}}}])
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        workflow.approve("PLAN-FLOW")
+        workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
+        plan_path = self.root / ".codearbiter/plans/flow.html"
+        git_run(["git", "-C", str(self.root), "add", "--force", str(plan_path)], check=True)
+
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        pre = self._event("bash-pretooluse.json", tool_use_id="completion-verify",
+                          tool_input={"command": armed["verify_command"], "description": "fixture verifier"})
+        self._hook(pre)
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
+        post = self._event("bash-posttooluse.json", tool_use_id="completion-verify", tool_input=pre["tool_input"])
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        verification = json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
+
+        native_package = Path(self.registry.name).resolve() / "codex-plugin"
+        shutil.copytree(REPO / "plugins/ca-codex", native_package,
+                        ignore=shutil.ignore_patterns("node_modules", "helpers", "__pycache__"))
+        shutil.copytree(self.installation, native_package / "helpers/artifacts")
+        environment = {**self._environment(), "PLUGIN_ROOT": str(native_package)}
+
+        def native_cli(*arguments):
+            result = subprocess.run([sys.executable, str(native_package / "hooks/artifact-authority.py"), *arguments],
+                                    capture_output=True, env=environment, timeout=120)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            return json.loads(result.stdout)
+
+        matrix = Path(self.registry.name).resolve() / "selected-completion.txt"
+        matrix.write_text("Synthetic fixture: tests/test_config.py:5 provides the named pass.\n", encoding="utf-8")
+        review_args = ("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW", "--record-id", "T-001",
+                       "--activity", "spec_review", "--codex-review-profile", "native-v1",
+                       "--completion-receipt", verification, "--supporting-file", str(matrix))
+        review, drift_review = native_cli(*review_args), native_cli(*review_args)
+        frozen_plan = plan_path.read_bytes()
+        ticket = list(client.contextual_pages("PLAN-FLOW", "T-002", 65536))[-1]["context_ticket"]
+        workflow.mutate("task-start", "PLAN-FLOW", task="T-002", context_ticket=ticket)
+        self.assertNotEqual(plan_path.read_bytes(), frozen_plan, "fixture must exercise a real canonical HTML rewrite")
+        context = self._state(review["request_id"])["context"]
+        self.assertEqual(context["completion"]["verifications"][0]["receipt_ref"], verification)
+        self.assertEqual(context["completion"]["materials"][0]["source_path"], str(matrix))
+        decision = {"format": self.adapter.DECISION_FORMAT, "request_id": review["request_id"],
+                    "target_sha256": context["input_sha256"], "contract_sha256": review["review_contract_sha256"],
+                    "decision": "pass", "coverage": review["required_coverage"], "findings": [],
+                    "assessment": "Synthetic native integration fixture, not substantive product completion proof.",
+                    "completion_sha256": review["completion_sha256"], "completion_assessment": [
+                        {"task_id": task, "obligation": obligation, "status": "substantiated",
+                         "assessment": "tests/test_config.py:5 and the selected named-test receipt are fixture evidence.",
+                         "evidence_refs": [verification, str(matrix)]}
+                        for task, obligation in sorted(self.adapter._completion_obligations(context))]}
+        parent = {"cwd": str(self.root), "session_id": "completion-native", "turn_id": "completion-parent",
+                  "tool_name": "spawn_agent", "tool_use_id": "completion-review", "tool_input": review["launch_envelope"]}
+        child = {"cwd": str(self.root), "session_id": parent["session_id"], "agent_type": "default",
+                 "agent_id": "01900000-0000-7000-8000-000000000091", "turn_id": "01900000-0000-7000-8000-000000000092"}
+
+        def hook(event):
+            return subprocess.run([sys.executable, str(native_package / "hooks/artifact-authority-hook.py")],
+                                  input=json.dumps(event).encode(), capture_output=True, env=environment, timeout=120)
+
+        review_state = self._state(review["request_id"])
+        resumed = client.call("evidence-context", {"artifact_id": "PLAN-FLOW", "record_id": "T-001",
+            "activity": "spec_review", "completion_context_ref": review_state["context_ref"],
+            "completion_context_sha256": review_state["context_sha256"]})
+        self.assertEqual(resumed["context_sha256"], review_state["context_sha256"])
+        for event in ({**parent, "hook_event_name": "PreToolUse"},
+                      {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"agent_id": child["agent_id"], "nickname": None})},
+                      {**child, "hook_event_name": "SubagentStart"},
+                      {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+                       "last_assistant_message": json.dumps(decision)}):
+            result = hook(event)
+            self.assertEqual((result.returncode, result.stdout, result.stderr), (0, b"", b""))
+        published = native_cli("publish", "--root", str(self.root), "--request-id", review["request_id"])
+        self.assertTrue((self.root / published["receipt"]).is_file())
+        (self.root / "tests/test_config.py").write_text("changed mapped source\n", encoding="utf-8")
+        denied = hook({**parent, "session_id": "completion-drift", "turn_id": "completion-drift-turn",
+                       "tool_use_id": "completion-drift-call", "tool_input": drift_review["launch_envelope"],
+                       "hook_event_name": "PreToolUse"})
+        self.assertEqual(denied.returncode, 0, denied.stderr)
+        self.assertEqual(json.loads(denied.stdout)["decision"], "block")
+        self.assertIsNone(self._state(drift_review["request_id"])["launch"])
 
     @unittest.skipUnless(shutil.which("node"), "direct Node integration requires Node")
     def test_linked_node_entrypoint_is_accepted_by_real_engine(self):
@@ -3461,7 +4421,7 @@ class CodexNativeV1HookTest(unittest.TestCase):
     def test_native_v1_unknown_profiles_and_legacy_relabel_fail_closed(self):
         self.client.context["activity"] = "spec_review"
         self.client.context.pop("commands", None)
-        for profile in ("v1", "native-v2", "", "native-v1-extra"):
+        for profile in ("v1", "native-v2-extra", "", "native-v1-extra"):
             with self.subTest(profile=profile), self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_REQUEST"):
                 self.adapter.arm_request(
                     self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
@@ -3824,6 +4784,7 @@ class ClaudeHookRegistrationTest(unittest.TestCase):
         for event, matcher in (
             ("PreToolUse", "Agent"), ("PreToolUse", "Bash"), ("PreToolUse", "SendMessage"),
             ("PostToolUse", "Agent"), ("PostToolUse", "Bash"), ("PostToolUseFailure", "Bash"),
+            ("PostToolUse", "SubagentHandback"),
             ("SubagentStart", None), ("SubagentStop", None),
         ):
             with self.subTest(event=event, matcher=matcher):
@@ -3840,7 +4801,7 @@ class ClaudeHookRegistrationTest(unittest.TestCase):
 
     def test_empty_registry_is_silent_for_every_event(self):
         with tempfile.TemporaryDirectory() as temp:
-            for name in sorted(p.name for p in CLAUDE_FIXTURES.glob("*.json")):
+            for name in sorted(p.relative_to(CLAUDE_FIXTURES).as_posix() for p in CLAUDE_FIXTURES.rglob("*.json")):
                 with self.subTest(name=name):
                     result = self._run_hook(claude_fixture(name), Path(temp))
                     self.assertEqual(result.returncode, 0, result.stderr)
@@ -3857,6 +4818,993 @@ class ClaudeHookRegistrationTest(unittest.TestCase):
             self.assertEqual(output["hookSpecificOutput"]["hookEventName"], "PreToolUse")
             self.assertEqual(output["hookSpecificOutput"]["permissionDecision"], "deny")
             self.assertNotIn("decision", output)
+
+
+class CompletionBridgeEnvironmentTest(unittest.TestCase):
+    """S1: the pinned engine receives one safe Git identity, never ambient capabilities."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "repository"
+        self.root.mkdir()
+        (self.root / ".git").mkdir()
+        self.bin = Path(self.temp.name) / "host-bin"
+        self.bin.mkdir()
+        self.git = self.bin / ("git.exe" if os.name == "nt" else "git")
+        self.git.write_bytes(b"isolated inert executable fixture")
+        self.git.chmod(0o755)
+        self.bridge = importlib.import_module("_artifactlib")
+
+    def _environment(self, values, root=None):
+        process = mock.Mock(returncode=0, stdin=io.BytesIO(), stdout=io.BytesIO(), stderr=io.BytesIO())
+        with mock.patch.dict(os.environ, values, clear=True), mock.patch.object(
+                self.bridge.subprocess, "Popen", return_value=process) as launch, mock.patch.object(
+                self.bridge, "_native_git_excludes", return_value={}):
+            self.bridge._bounded_child(["pinned-engine", "evidence-context", "--root", str(root or self.root), "--request", "-"],
+                                       b"{}", 0, 2)
+        return launch.call_args.kwargs["env"]
+
+    def test_only_absolute_host_git_identity_crosses_native_bridge(self):
+        environment = self._environment({"CODEARBITER_GIT_EXECUTABLE": str(self.git), "PATH": "untrusted",
+                                         "GIT_DIR": "foreign", "USER_TOKEN": "secret-fixture", "HOME": "foreign"})
+        self.assertEqual(environment, {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve())})
+
+    def test_git_discovery_skips_current_relative_and_repository_paths(self):
+        local = self.root / self.git.name
+        local.write_bytes(b"repository-controlled executable")
+        local.chmod(0o755)
+        environment = self._environment({"PATH": os.pathsep.join((".", "relative", str(self.root), str(self.bin)))})
+        self.assertEqual(environment, {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve())})
+
+    def test_repository_git_is_refused_even_when_artifact_root_is_nested(self):
+        local = self.root / self.git.name
+        local.write_bytes(b"repository-controlled executable")
+        local.chmod(0o755)
+        nested = self.root / "subdirectory"
+        nested.mkdir()
+        self.assertEqual(self._environment({"CODEARBITER_GIT_EXECUTABLE": str(local)}, nested), {})
+
+    def test_cold_ordinary_operation_remains_viable_without_git(self):
+        self.assertEqual(self._environment({"PATH": ""}), {})
+
+    def test_installed_host_audit_only_admits_exact_bounded_git_environment(self):
+        host = importlib.import_module("test_artifact_installed_host")
+        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git)}, clear=True):
+            self.assertTrue(host.native_environment_allowed({}))
+            self.assertTrue(host.native_environment_allowed({"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve())}))
+            selected = {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve()),
+                        "GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "core.excludesFile",
+                        "GIT_CONFIG_VALUE_0": str(self.root / "host-ignore")}
+            self.assertTrue(host.native_environment_allowed(selected))
+            self.assertFalse(host.native_environment_allowed(dict(selected, GIT_CONFIG_KEY_0="alias.escape")))
+            self.assertFalse(host.native_environment_allowed(dict(selected, GIT_CONFIG_VALUE_0="relative")))
+            for environment in ({"PATH": str(self.bin)},
+                                {"CODEARBITER_GIT_EXECUTABLE": str(self.git.resolve()), "TOKEN": "secret"},
+                                {"CODEARBITER_GIT_EXECUTABLE": "git"},
+                                {"CODEARBITER_GIT_EXECUTABLE": str(Path(sys.executable).resolve())}):
+                with self.subTest(environment=environment):
+                    self.assertFalse(host.native_environment_allowed(environment))
+
+    def test_installed_host_audit_only_admits_fixed_git_ignore_query(self):
+        host = importlib.import_module("test_artifact_installed_host")
+        with mock.patch.dict(os.environ, {"CODEARBITER_GIT_EXECUTABLE": str(self.git),
+                                         "GIT_CONFIG": "must-not-reach-query"}, clear=True), mock.patch.object(
+                self.bridge, "_bounded_child", return_value=(0, b"", b"")) as query:
+            self.bridge._native_git_excludes(self.git.resolve(), self.root.resolve())
+            argv = query.call_args.args[0]
+            environment = query.call_args.kwargs["environment"]
+            cwd = query.call_args.kwargs["cwd"]
+            binary = Path(sys.executable).resolve()
+            for executable, arguments in ((str(self.git.resolve()), argv),
+                                          (None, subprocess.list2cmdline(argv))):
+                if executable is None and os.name != "nt":
+                    continue
+                host.enforce_runtime_event("subprocess.Popen", (executable, arguments, cwd, environment),
+                                           binary=binary, binary_sha256="", permit_verifier_children=False)
+            for arguments in (argv[:-1] + ["alias.escape"], argv + ["--show-origin"]):
+                with self.assertRaisesRegex(RuntimeError, "unreviewed process"):
+                    host.enforce_runtime_event("subprocess.Popen", (str(self.git.resolve()), arguments, cwd, environment),
+                                               binary=binary, binary_sha256="", permit_verifier_children=False)
+
+
+class CompletionReviewTransportTest(unittest.TestCase):
+    """C1/C3/S1/S3 adapter fixture; native tests separately prove receipt authority."""
+
+    def setUp(self):
+        AuthorityAdapterTest.setUp(self)
+        self.addCleanup(AuthorityAdapterTest.tearDown, self)
+    _launch = NativeReviewTransportTest._launch
+
+    def _fixture(self):
+        import base64
+
+        self.external = tempfile.TemporaryDirectory()
+        self.addCleanup(self.external.cleanup)
+        roots = {}
+        for label in ("candidate", "evidence"):
+            path = Path(self.external.name).resolve() / label
+            git_run(["git", "-C", str(self.root), "worktree", "add", "--quiet", "--detach", str(path)], check=True)
+            self.addCleanup(lambda selected=path: git_run(
+                ["git", "-C", str(self.root), "worktree", "remove", "--force", str(selected)], check=False))
+            roots[label] = str(path.resolve())
+        commands = []
+        for label in roots:
+            definition = dict(self.client.context["commands"][0]["definition"], cwd=label)
+            commands.append({"definition_sha256": hashlib.sha256(self.adapter._canonical(definition)).hexdigest(),
+                             "definition": definition})
+        self.client.context["commands"] = commands
+        bindings = self.adapter._bind_commands(self.root, self.client.context, roots)
+        material = Path(self.external.name).resolve() / "completion-matrix.txt"
+        material.write_bytes(b"T-001 done_when: fixture.txt has verified content.\n")
+        self.material = material
+        self.review_roots = roots
+        self.receipt_ref = ".codearbiter/.artifacts/receipts/" + "a" * 64 + ".json"
+        verification = {"task_id": "T-001", "receipt_ref": self.receipt_ref, "receipt_sha256": "a" * 64,
+                        "command_bindings": bindings, "workspace_after": self.adapter._workspace_snapshots(bindings)}
+        for name, char, directory in (("source", "b", "authority-sources"), ("event", "c", "events"),
+                                      ("observation", "d", "observations"), ("context", "e", "evidence-contexts")):
+            verification[name + "_sha256"] = char * 64
+            verification[name + "_ref"] = f".codearbiter/.artifacts/{directory}/{char * 64}.json"
+        completion = {"format": "codearbiter.completion-evidence/0.1.0", "verifications": [verification],
+                      "materials": [{"source_path": str(material), "sha256": hashlib.sha256(material.read_bytes()).hexdigest(),
+                                     "size_bytes": material.stat().st_size,
+                                     "content_base64": base64.b64encode(material.read_bytes()).decode("ascii")}]}
+        self.client.context.update(activity="spec_review", completion=completion,
+                                   completion_sha256=hashlib.sha256(self.adapter._canonical(completion)).hexdigest())
+        self.client.context["task"].update(steps=["Inspect the implementation."], done_when=["The result is proved."])
+        # The real engine owns receipt admission and normalized freshness. This
+        # fixture reports the matching native failure through that same API;
+        # it is not proof of the native engine's normalization implementation.
+        original_call = self.client.call
+
+        def native_context_fixture(operation, selection=None, **kwargs):
+            if operation == "evidence-context" and (selection or {}).get("completion_context_ref"):
+                self.adapter._require_completion_materials(self.client.context)
+                if self.adapter._workspace_snapshots(bindings) != verification["workspace_after"]:
+                    raise self.adapter.AuthorityError("WORKSPACE_DRIFT", "synthetic native fixture rejects mapped drift")
+            return original_call(operation, selection, **kwargs)
+
+        self.client.call = native_context_fixture
+        current_client = mock.patch.object(self.adapter, "_completion_client", return_value=self.client, create=True)
+        current_client.start()
+        self.addCleanup(current_client.stop)
+
+    def _arm_completion(self, profile="native-v1"):
+        try:
+            return self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                request_nonce="completion-review-transport", codex_review_profile=profile,
+                completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)],
+            )
+        except RuntimeError as exc:
+            self.fail("Explicit completion review cannot retain its selected verification/evidence: " + str(exc))
+
+    def _decision(self, armed):
+        return {"format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+                "target_sha256": self.client.context["input_sha256"],
+                "contract_sha256": armed["review_contract_sha256"], "decision": "pass",
+                "coverage": armed["required_coverage"], "findings": [], "assessment": "Completed fixture work.",
+                "completion_sha256": self.client.context["completion_sha256"],
+                "completion_assessment": [{"task_id": "T-001", "obligation": obligation,
+                    "status": "substantiated",
+                    "assessment": "fixture.txt:1 and selected matrix substantiate the performed work.",
+                    "evidence_refs": [self.receipt_ref, str(self.material)]}
+                    for obligation in ("criterion:AC-001", "criterion:AC-002", "step:1", "done_when:1")]}
+
+    def test_selected_published_verification_two_roots_and_matrix_reach_immutable_prompt(self):
+        self._fixture()
+        armed = self._arm_completion()
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(self.client.calls[0][1]["completion_selection"], {
+            "verification_receipts": [self.receipt_ref], "supporting_files": [str(self.material)]})
+        self.assertEqual(request["context"]["completion"], self.client.context["completion"])
+        self.assertEqual({v["workspace_root"] for v in request["context"]["completion"]["verifications"][0]["command_bindings"]},
+                         set(self.review_roots.values()))
+        prompt = armed["dispatch_prompt"]
+        for phrase in ("performed work", "done_when", "completion_assessment", "completion_sha256",
+                       "source locations", "changes_requested", "Definitions alone"):
+            self.assertIn(phrase, prompt)
+        self.assertEqual(armed["launch_envelope"], {"message": prompt, "fork_context": False})
+        self.assertEqual(self._launch("codex", armed)["state"], "LAUNCHING")
+
+    def test_mapped_workspace_drift_blocks_launch(self):
+        self._fixture()
+        armed = self._arm_completion()
+        (Path(self.review_roots["evidence"]) / "fixture.txt").write_text("changed after verification", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self._launch("codex", armed)
+        self.assertIsNone(self.adapter._load(self.root, armed["request_id"])["launch"])
+
+    def test_supporting_material_drift_blocks_launch(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self.material.write_bytes(b"changed supporting facts")
+        with self.assertRaisesRegex(RuntimeError, "COMPLETION_EVIDENCE_DRIFT"):
+            self._launch("codex", armed)
+
+    def test_completion_decision_requires_all_obligations_and_selected_references(self):
+        self._fixture()
+        armed = self._arm_completion()
+        request = self.adapter._load(self.root, armed["request_id"])
+        decision = self._decision(armed)
+        self.assertEqual(self.adapter._parse_decision(json.dumps(decision), request), decision)
+        for mutation in ("missing", "foreign", "duplicate", "wrong-packet", "unsubstantiated"):
+            with self.subTest(mutation=mutation):
+                invalid = json.loads(json.dumps(decision))
+                if mutation == "missing":
+                    invalid["completion_assessment"].pop()
+                elif mutation == "foreign":
+                    invalid["completion_assessment"][0]["evidence_refs"] = ["C:/unselected/proof.txt"]
+                elif mutation == "duplicate":
+                    invalid["completion_assessment"].append(invalid["completion_assessment"][0])
+                elif mutation == "wrong-packet":
+                    invalid["completion_sha256"] = "f" * 64
+                else:
+                    invalid["completion_assessment"][0]["status"] = "missing"
+                with self.assertRaisesRegex(RuntimeError, "INVALID_REVIEW_DECISION|INCOMPLETE_REVIEW"):
+                    self.adapter._parse_decision(json.dumps(invalid), request)
+
+    def _complete_native(self, armed, *, decision_json=None):
+        parent = {"session_id": "completion-fixture-parent", "turn_id": "completion-parent-turn",
+                  "tool_name": "spawn_agent", "tool_use_id": "completion-call", "tool_input": armed["launch_envelope"]}
+        child = {"session_id": parent["session_id"], "turn_id": "01900000-0000-7000-8000-000000000002",
+                 "agent_id": "01900000-0000-7000-8000-000000000003", "agent_type": "default"}
+        for event in (
+            {**parent, "hook_event_name": "PreToolUse"},
+            {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"agent_id": child["agent_id"], "nickname": None})},
+            {**child, "hook_event_name": "SubagentStart"},
+            {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+             "last_assistant_message": decision_json if decision_json is not None else json.dumps(self._decision(armed))},
+        ):
+            result = self.adapter.observe_codex_hook(self.root, event)
+        self.assertEqual(result["state"], "COMPLETED")
+
+    def test_native_first_stop_and_publication_retain_exact_completion_assessment(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self._complete_native(armed)
+        published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        source = json.loads((self.root / published["authority_source"]).read_bytes())
+        self.assertEqual(source["payload"]["completion_sha256"], self.client.context["completion_sha256"])
+        self.assertEqual(source["payload"]["completion_assessment"], self._decision(armed)["completion_assessment"])
+        observed = json.loads((self.root / source["observation_ref"]).read_bytes())
+        self.assertEqual(observed["producer_profile"], self.adapter.CODEX_NATIVE_V1)
+        self.assertTrue(observed["producer_result"]["launch"]["first_stop"])
+        resumes = [request for operation, request in self.client.calls
+                   if operation == "evidence-context" and "completion_context_ref" in request]
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(resumes[-1]["completion_context_ref"], request["context_ref"])
+        self.assertEqual(resumes[-1]["completion_context_sha256"], request["context_sha256"])
+
+    def test_codex_native_review_retains_completion_near_request_budget(self):
+        self._fixture()
+        small = self._arm_completion()
+        baseline = self.adapter._load(self.root, small["request_id"])
+        padding = self.adapter.MAX_STATE - len(self.adapter._canonical(baseline)) - 2048
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * padding}
+        armed = self._arm_completion()
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertLess(len(self.adapter._canonical(request)), self.adapter.MAX_STATE)
+        decision = self._decision(armed)
+        decision["assessment"] = "Bounded independent fixture assessment. " * 200
+        self.assertLess(len(json.dumps(decision).encode()), self.adapter.MAX_DECISION)
+        with mock.patch.object(self, "_decision", return_value=decision):
+            self._complete_native(armed)
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["state"], "COMPLETED")
+        self.assertEqual(completed["context"], self.client.context)
+        self.assertEqual(completed["payload"]["assessment"], decision["assessment"])
+        published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "CAPTURED")
+
+    def test_completion_dispatch_fields_and_obligations_match_closed_parser(self):
+        self._fixture()
+        armed = self._arm_completion()
+        prompt = armed["dispatch_prompt"]
+        field_list = prompt.split(". Fields: ", 1)[1]
+        self.assertIn("completion_sha256", field_list)
+        self.assertIn("completion_assessment", field_list)
+        for obligation in ("criterion:AC-001", "criterion:AC-002", "step:1", "done_when:1"):
+            self.assertIn(json.dumps(obligation), prompt)
+
+    def test_native_completion_unicode_result_preserves_decision_and_state_bounds(self):
+        self._fixture()
+        small = self._arm_completion()
+        baseline = self.adapter._load(self.root, small["request_id"])
+        self.client.context["input_manifest"] = {
+            "fixture_padding": "p" * (self.adapter.MAX_STATE - len(self.adapter._canonical(baseline)) - 2048)}
+        armed = self._arm_completion()
+        decision = self._decision(armed)
+        decision["assessment"] = "\U0001f600" * 15000
+        raw = json.dumps(decision, ensure_ascii=False)
+        self.assertGreater(len(raw.encode()), self.adapter.MAX_DECISION - 8192)
+        self.assertLess(len(raw.encode()), self.adapter.MAX_DECISION)
+        self.assertGreater(len(self.adapter._canonical(decision)), self.adapter.MAX_DECISION)
+        self._complete_native(armed, decision_json=raw)
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["payload"]["assessment"], decision["assessment"])
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "CAPTURED")
+
+    def test_native_completion_overbudget_base_rejects_before_registration(self):
+        self._fixture()
+        self.client.context["task"]["criterion_refs"] = [f"AC-{index:06d}-" + "x" * 240 for index in range(650)]
+        with self.assertRaisesRegex(RuntimeError, "review result has no bounded lifecycle reserve"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v1", completion_receipts=[self.receipt_ref],
+                supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), [])
+
+    def test_native_completion_full_context_uses_native_budget_not_mutable_state_budget(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 * self.adapter.MAX_STATE)}
+        armed = self._arm_completion()
+        self.assertGreater(len(self.adapter._native_context_canonical(self.client.context)), self.adapter.MAX_STATE)
+        self._complete_native(armed)
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        completed = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(completed["context"], self.client.context)
+        self.assertEqual(completed["state"], "CAPTURED")
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+
+    def test_native_completion_context_over_native_budget_cannot_arm(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (8 << 20)}
+        with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v1", completion_receipts=[self.receipt_ref],
+                supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), [])
+
+    def test_native_completion_private_context_reference_fails_closed(self):
+        self._fixture()
+        armed = self._arm_completion()
+        state_path = Path(armed["request_path"])
+        original = json.loads(state_path.read_bytes())
+        self.assertEqual(original["context"], self.adapter.CONTEXT_REFERENCE)
+        context_path = self.root / original["context_ref"]
+        context_bytes = context_path.read_bytes()
+        for mutation in ("missing", "tampered", "wrong-kind", "unknown-storage", "missing-storage"):
+            with self.subTest(mutation=mutation):
+                state = copy.deepcopy(original)
+                if mutation == "missing":
+                    context_path.unlink()
+                elif mutation == "tampered":
+                    context_path.write_bytes(context_bytes + b" ")
+                elif mutation == "wrong-kind":
+                    context = copy.deepcopy(self.client.context)
+                    context["activity"] = "verification"
+                    raw = self.adapter._native_context_canonical(context)
+                    digest = hashlib.sha256(raw).hexdigest()
+                    state.update(context_ref=f".codearbiter/.artifacts/evidence-contexts/{digest}.json", context_sha256=digest)
+                    (self.root / state["context_ref"]).write_bytes(raw)
+                elif mutation == "unknown-storage":
+                    state["context_storage"] = "unbounded/0.1.0"
+                else:
+                    del state["context_storage"]
+                state["integrity_sha256"] = self.adapter._integrity(state)
+                state_path.write_bytes(self.adapter._canonical(state))
+                with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT|INVALID_AUTHORITY_STATE"):
+                    self.adapter._load(self.root, armed["request_id"])
+                context_path.write_bytes(context_bytes)
+                state_path.write_bytes(self.adapter._canonical(original))
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "ARMED")
+
+    def test_completed_native_review_cannot_publish_after_selected_material_drift(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self._complete_native(armed)
+        self.material.write_bytes(b"replacement completion claims")
+        with self.assertRaisesRegex(RuntimeError, "COMPLETION_EVIDENCE_DRIFT"):
+            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+    def test_completed_native_review_cannot_publish_after_mapped_content_drift(self):
+        self._fixture()
+        armed = self._arm_completion()
+        self._complete_native(armed)
+        (Path(self.review_roots["candidate"]) / "fixture.txt").write_bytes(b"replacement code")
+        with self.assertRaisesRegex(RuntimeError, "WORKSPACE_DRIFT"):
+            self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        self.assertNotIn("capture-observation", [name for name, _ in self.client.calls])
+
+    def test_duplicate_or_implicit_selection_cannot_arm_completion_review(self):
+        self._fixture()
+        for receipts, paths in (([self.receipt_ref, self.receipt_ref], []),
+                                (None, [str(self.material)]),
+                                ([self.receipt_ref], [str(self.material), str(self.material)])):
+            with self.subTest(receipts=receipts, paths=paths), self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_REQUEST"):
+                self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                    completion_receipts=receipts, supporting_files=paths)
+        self.assertEqual(self.client.calls, [])
+
+    def test_native_freshness_failure_is_an_authority_denial(self):
+        self._fixture()
+        armed = self._arm_completion()
+        bridge = importlib.import_module("_artifactlib")
+        with mock.patch.object(self.client, "call", side_effect=bridge.ArtifactError(
+                "WORKSPACE_DRIFT", "native completion closure changed")):
+            try:
+                self._launch("codex", armed)
+            except self.adapter.AuthorityError as exc:
+                self.assertEqual(exc.code, "WORKSPACE_DRIFT")
+            except bridge.ArtifactError:
+                self.fail("Native completion rejection escaped the closed authority hook denial path")
+            else:
+                self.fail("Native completion rejection did not block review launch")
+
+    def test_nonstring_completion_status_is_a_closed_decision_error(self):
+        self._fixture()
+        armed = self._arm_completion()
+        decision = self._decision(armed)
+        decision["completion_assessment"][0]["status"] = {"untrusted": "value"}
+        with self.assertRaises(self.adapter.AuthorityError):
+            self.adapter._parse_decision(json.dumps(decision), self.adapter._load(self.root, armed["request_id"]))
+
+    def test_quality_assessment_cannot_use_another_tasks_selected_verification(self):
+        self._fixture()
+        context = self.client.context
+        other_task = copy.deepcopy(context["task"])
+        other_task["id"] = "T-002"
+        other_verification = copy.deepcopy(context["completion"]["verifications"][0])
+        other_verification.update(task_id="T-002", receipt_ref=self.receipt_ref.replace("a" * 64, "f" * 64),
+                                  receipt_sha256="f" * 64)
+        context["completion"]["verifications"].append(other_verification)
+        context.update(activity="quality_review", base_input_sha256="7" * 64,
+                       tasks=[context["task"], other_task], task_hashes={"T-001": "5" * 64, "T-002": "8" * 64},
+                       completion_sha256=hashlib.sha256(self.adapter._canonical(context["completion"])).hexdigest())
+        context["subject"]["record_id"] = "CP-001"
+        armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "CP-001", "quality_review",
+            codex_review_profile="native-v1",
+            completion_receipts=[self.receipt_ref, other_verification["receipt_ref"]], supporting_files=[str(self.material)])
+        decision = self._decision(armed)
+        decision["completion_assessment"].extend([
+            dict(row, task_id="T-002", evidence_refs=[other_verification["receipt_ref"]])
+            for row in decision["completion_assessment"]])
+        invalid = copy.deepcopy(decision)
+        invalid["completion_assessment"][0]["evidence_refs"] = [other_verification["receipt_ref"]]
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "INVALID_REVIEW_DECISION"):
+            self.adapter._parse_decision(json.dumps(invalid), self.adapter._load(self.root, armed["request_id"]))
+        self._complete_native(armed, decision_json=json.dumps(decision))
+        self.adapter.publish_request(self.root, self.client, armed["request_id"])
+        captured = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(captured["state"], "CAPTURED")
+        self.assertEqual(captured["context"], context)
+        self.assertEqual(captured["payload"]["task_hashes"], context["task_hashes"])
+        self.assertEqual(captured["payload"]["completion_assessment"], decision["completion_assessment"])
+        self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+        self.assertEqual(json.loads(Path(armed["request_path"]).read_bytes())["context"], self.adapter.CONTEXT_REFERENCE)
+
+
+
+class CodexNativeV2HookTest(unittest.TestCase):
+    """0.162.0-alpha.2 source-derived fixtures, never live host authority."""
+
+    setUp = AuthorityAdapterTest.setUp
+    tearDown = AuthorityAdapterTest.tearDown
+    _hook = CodexV2NativeHookTest._hook
+    _no_authority = CodexNativeV1HookTest._no_authority
+    _observe = CodexNativeV1HookTest._observe
+    PROFILE = "codex-native-v2/0.162.0-alpha.2"
+    PARENT = "01900000-0000-7000-8000-000000000001"
+
+    def _fixture(self, suffix="main", activity="spec_review"):
+        self.client = FakeClient(self.root)
+        self.client.context["activity"] = activity
+        self.client.context.pop("commands", None)
+        if activity == "quality_review":
+            self.client.context["subject"]["record_id"] = "SCOPE-001"
+            self.client.context["base_input_sha256"] = "7" * 64
+            self.client.context["task_hashes"] = {"T-001": "5" * 64}
+            self.client.context["tasks"] = [self.client.context["task"]]
+        try:
+            armed = self.adapter.arm_request(
+                self.root, self.client, "PLAN-EXAMPLE", self.client.context["subject"]["record_id"],
+                activity, request_nonce="native-v2-" + suffix, codex_review_profile="native-v2",
+            )
+        except self.adapter.AuthorityError as exc:
+            self.fail("qualified native V2 review rejected before exact activity/UUID binding: " + str(exc))
+        return armed, *self._native_events(armed, suffix)
+
+    def _native_events(self, armed, suffix):
+        self.sequence = getattr(self, "sequence", 0) + 1
+        transcript = self.root / ("parent-" + suffix + ".jsonl")
+        # Parent birth metadata may predate an in-place desktop update.
+        metadata = {"id": self.PARENT, "session_id": self.PARENT, "cli_version": "0.160.0"}
+        transcript.write_text(json.dumps({"type": "session_meta", "payload": metadata}) + "\n", encoding="utf-8")
+        parent = {"session_id": self.PARENT, "turn_id": "01900000-0000-7000-8000-000000000002",
+                  "tool_name": "collaborationspawn_agent", "tool_use_id": "call-v2-" + suffix,
+                  "tool_input": armed["launch_envelope"], "transcript_path": str(transcript)}
+        child = {"session_id": self.PARENT, "turn_id": "01900000-0000-7000-8000-000000000003",
+                 "agent_id": f"01900000-0000-7000-8000-{self.sequence + 16:012x}", "agent_type": "default"}
+        path = "/root/" + armed["launch_envelope"]["task_name"]
+        child_transcript = self.root / ("child-" + suffix + ".jsonl")
+        child_transcript.write_text(json.dumps({"type": "session_meta", "payload": {
+            "id": child["agent_id"], "parent_thread_id": self.PARENT, "session_id": self.PARENT,
+            "agent_path": path, "cli_version": "0.162.0-alpha.2"}}) + "\n", encoding="utf-8")
+        child["transcript_path"] = str(child_transcript)
+        native = {"type": "item_completed", "thread_id": self.PARENT, "turn_id": parent["turn_id"],
+                  "item": {"type": "SubAgentActivity", "id": parent["tool_use_id"], "kind": "started",
+                           "agent_thread_id": child["agent_id"], "agent_path": path},
+                  "started_at_ms": 1791601481147, "completed_at_ms": 1791601481147}
+        decision = {"format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
+                    "target_sha256": "3" * 64, "contract_sha256": armed["review_contract_sha256"],
+                    "decision": "pass", "coverage": armed["required_coverage"], "findings": [],
+                    "assessment": "Isolated V2 fixture binds the full immutable target."}
+        events = {"pre": {**parent, "hook_event_name": "PreToolUse"},
+                  "post": {**parent, "hook_event_name": "PostToolUse", "tool_response": json.dumps({"task_name": path})},
+                  "start": {**child, "hook_event_name": "SubagentStart"},
+                  "stop": {**child, "hook_event_name": "SubagentStop", "stop_hook_active": False,
+                           "last_assistant_message": json.dumps(decision)}}
+        return events, native
+
+    def _append(self, events, *activities):
+        with Path(events["pre"]["transcript_path"]).open("a", encoding="utf-8") as stream:
+            for activity in activities:
+                stream.write(json.dumps({"type": "event_msg", "payload": activity}) + "\n")
+
+    def _complete(self, suffix="valid", activity="spec_review"):
+        armed, events, native = self._fixture(suffix, activity)
+        self._observe(events["pre"])
+        self._append(events, native)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "COMPLETED")
+        return armed, events, native
+
+    def test_native_v2_exact_activity_uuid_binding_completes_both_hook_orders(self):
+        for activity in ("spec_review", "quality_review"):
+            for order in (("start", "post"), ("post", "start")):
+                with self.subTest(activity=activity, order=order):
+                    armed, events, native = self._fixture(activity + "-" + order[0], activity)
+                    self.assertEqual(armed["launch_envelope"], {"message": armed["dispatch_prompt"],
+                                     "task_name": "authority_" + armed["request_id"][:12], "fork_turns": "none"})
+                    result = self._hook(events["pre"])
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self._append(events, native)
+                    for key in (*order, "stop"):
+                        result = self._hook(events[key])
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["state"], "COMPLETED")
+                    launch = request["launch"]
+                    self.assertEqual(launch["agent_id"], events["start"]["agent_id"])
+                    self.assertEqual(launch["child_turn_id"], events["start"]["turn_id"])
+                    self.assertEqual(launch["native_activity"], native)
+                    self.assertEqual(launch["native_activity_sha256"], self.adapter._engine_digest(native))
+                    self.assertEqual(launch["task_name"], native["item"]["agent_path"])
+                    self.assertEqual(launch["native_child"]["cli_version"], "0.162.0-alpha.2")
+                    self.assertEqual(launch["native_child"]["thread_id"], launch["agent_id"])
+                    self.assertIs(launch["first_stop"], True)
+                    observed = json.loads((self.root / request["observation_ref"]).read_text("utf-8"))
+                    self.assertEqual(observed["producer_profile"], self.PROFILE)
+                    self.assertEqual(observed["producer_result"]["launch"], launch)
+                    self.adapter.publish_request(self.root, self.client, armed["request_id"])
+
+    def test_native_v2_activity_jsonl_preserves_unicode_line_separators(self):
+        armed, events, native = self._fixture("unicode-jsonl")
+        self._observe(events["pre"])
+        unrelated = {"type": "event_msg", "payload": {
+            "type": "agent_message", "message": "first\u0085second\u2028third\u2029last",
+        }}
+        with Path(events["pre"]["transcript_path"]).open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps(unrelated, ensure_ascii=False) + "\n")
+        self._append(events, native)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(request["state"], "COMPLETED")
+        self.assertEqual(request["launch"]["native_activity"], native)
+
+    def test_native_v2_activity_and_response_negative_controls(self):
+        self._complete("activity-witness")
+        cases = {"parent": lambda n, e: n.update(thread_id="01900000-0000-7000-8000-000000000099"),
+                 "turn": lambda n, e: n.update(turn_id="other-turn"),
+                 "call": lambda n, e: n["item"].update(id="other-call"),
+                 "path": lambda n, e: n["item"].update(agent_path="/root/other"),
+                 "uuid": lambda n, e: n["item"].update(agent_thread_id="not-a-uuid"),
+                 "kind": lambda n, e: n["item"].update(kind="stopped"),
+                 "extra": lambda n, e: n["item"].update(verdict="pass"),
+                 "model-result": lambda n, e: e["post"].update(tool_response='{"task_name":"/root/other"}'),
+                 "object-result": lambda n, e: e["post"].update(tool_response=json.loads(e["post"]["tool_response"])),
+                 "wrong-tool": lambda n, e: e["post"].update(tool_name="spawn_agent"),
+                 "input": lambda n, e: e["post"]["tool_input"].update(fork_turns="all")}
+        for suffix, mutate in cases.items():
+            with self.subTest(case=suffix):
+                armed, events, native = self._fixture("negative-" + suffix)
+                self._observe(events["pre"])
+                mutate(native, events)
+                self._append(events, native)
+                with self.assertRaises(RuntimeError):
+                    self._observe(events["post"])
+                self._no_authority(armed)
+        for suffix in ("missing", "duplicate", "old", "replace", "oversized", "invalid-json"):
+            with self.subTest(case=suffix):
+                armed, events, native = self._fixture("trace-" + suffix)
+                path = Path(events["pre"]["transcript_path"])
+                if suffix == "old":
+                    self._append(events, native)
+                self._observe(events["pre"])
+                if suffix == "duplicate":
+                    self._append(events, native, native)
+                elif suffix == "replace":
+                    path.unlink()
+                    path.write_text(json.dumps({"type": "event_msg", "payload": native}) + "\n", encoding="utf-8")
+                elif suffix in ("oversized", "invalid-json"):
+                    with path.open("a", encoding="utf-8") as stream:
+                        stream.write(" " * (self.adapter.MAX_OUTPUT + 1) if suffix == "oversized" else "not JSON\n")
+                with self.assertRaises(RuntimeError):
+                    self._observe(events["post"])
+                self._no_authority(armed)
+
+    def test_native_v2_first_stop_context_and_cas_remain_fail_closed(self):
+        self._complete("lifecycle-witness")
+        for suffix in ("early", "bad-stop", "wrong-stop", "double-start", "context", "cas"):
+            with self.subTest(case=suffix):
+                armed, events, native = self._fixture("life-" + suffix)
+                self._observe(events["pre"])
+                self._append(events, native)
+                if suffix == "early":
+                    self._observe(events["start"])
+                    self._observe(events["stop"])
+                else:
+                    self._observe(events["post"])
+                    self._observe(events["start"])
+                if suffix == "bad-stop":
+                    events["stop"]["last_assistant_message"] = "not JSON"
+                elif suffix == "wrong-stop":
+                    events["stop"]["turn_id"] = events["pre"]["turn_id"]
+                elif suffix == "context":
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    (self.root / request["context_ref"]).write_text("{}", encoding="utf-8")
+                elif suffix == "cas":
+                    stale = self.adapter._load(self.root, armed["request_id"])
+                    current = self.adapter._load(self.root, armed["request_id"])
+                    current["state"] = "REJECTED"
+                    self.adapter._save(self.root, current)
+                    with self.assertRaisesRegex(RuntimeError, "STALE_AUTHORITY_REQUEST"):
+                        self.adapter._save(self.root, stale)
+                try:
+                    self._observe(events["start"] if suffix == "double-start" else events["post"] if suffix == "early" else events["stop"])
+                except RuntimeError:
+                    pass
+                self._no_authority(armed)
+
+    def test_native_v2_child_runtime_and_parent_trace_safety_are_qualified(self):
+        self._complete("safety-witness")
+        for field, value in (("cli_version", "0.145.0"), ("id", self.PARENT),
+                             ("parent_thread_id", "01900000-0000-7000-8000-000000000099"),
+                             ("agent_path", "/root/other"), ("session_id", "other-session")):
+            armed, events, native = self._fixture("child-" + field)
+            self._observe(events["pre"])
+            self._append(events, native)
+            self._observe(events["post"])
+            path = Path(events["start"]["transcript_path"])
+            meta = json.loads(path.read_text("utf-8"))
+            meta["payload"][field] = value
+            path.write_text(json.dumps(meta) + "\n", encoding="utf-8")
+            for key in ("start", "stop"):
+                try:
+                    self._observe(events[key])
+                except RuntimeError:
+                    pass
+            self._no_authority(armed)
+        for suffix in ("relative", "directory", "malformed-meta", "wrong-session"):
+            armed, events, _ = self._fixture("unsafe-" + suffix)
+            if suffix == "relative":
+                events["pre"]["transcript_path"] = "parent.jsonl"
+            elif suffix == "directory":
+                events["pre"]["transcript_path"] = str(self.root)
+            else:
+                Path(events["pre"]["transcript_path"]).write_text(
+                    "bad JSON\n" if suffix == "malformed-meta" else json.dumps({"type": "session_meta", "payload": {"id": self.PARENT, "session_id": "other"}}) + "\n", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                self._observe(events["pre"])
+            self._no_authority(armed)
+
+    def test_native_v2_linked_transcript_ancestors_are_rejected(self):
+        def directory_fixture(suffix):
+            armed, events, native = self._fixture("linked-ancestor-" + suffix)
+            directory = self.root / ("native-transcripts-" + suffix)
+            directory.mkdir()
+            for keys in (("pre", "post"), ("start", "stop")):
+                original = Path(events[keys[0]]["transcript_path"])
+                direct = directory / original.name
+                shutil.copyfile(original, direct)
+                for key in keys:
+                    events[key]["transcript_path"] = str(direct)
+            return armed, events, native, directory
+
+        def directory_link(linked, target):
+            try:
+                if os.name == "nt":
+                    subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(linked), str(target)],
+                                   check=True, capture_output=True)
+                else:
+                    linked.symlink_to(target, target_is_directory=True)
+            except (OSError, subprocess.CalledProcessError) as exc:
+                self.skipTest("native transcript directory-link creation is unavailable: " + type(exc).__name__)
+            self.assertTrue(linked.is_symlink() or getattr(linked.lstat(), "st_file_attributes", 0) & 0x400)
+            self.assertEqual(linked.resolve(), target.resolve())
+
+        for start_first in (False, True):
+            with self.subTest(witness=True, start_first=start_first):
+                armed, events, native, _ = directory_fixture("witness-" + str(start_first))
+                self._observe(events["pre"])
+                self._append(events, native)
+                for key in (("start", "post", "stop") if start_first else ("post", "start", "stop")):
+                    self._observe(events[key])
+                request = self.adapter._load(self.root, armed["request_id"])
+                self.assertEqual(request["state"], "COMPLETED")
+                self.assertEqual(request["launch"]["agent_id"], events["start"]["agent_id"])
+
+        for boundary in ("parent-pre", "parent-post", "child-before-post", "child-after-post"):
+            with self.subTest(boundary=boundary):
+                armed, events, native, direct = directory_fixture(boundary)
+                linked = self.root / ("linked-transcripts-" + boundary)
+                directory_link(linked, direct)
+                if boundary == "parent-pre":
+                    events["pre"]["transcript_path"] = str(linked / Path(events["pre"]["transcript_path"]).name)
+                    with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                        self._observe(events["pre"])
+                    # Pre refuses before a launch is persisted or a child runs.
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(request["state"], "ARMED")
+                    self.assertIsNone(request["launch"])
+                    self._no_authority(armed)
+                    continue
+
+                self._observe(events["pre"])
+                self._append(events, native)
+                if boundary == "parent-post":
+                    # Preserve the exact locator and file inode while replacing
+                    # only its previously direct ancestor with native indirection.
+                    stored = direct.with_name(direct.name + "-stored")
+                    self.assertTrue(direct.resolve().is_relative_to(self.root))
+                    self.assertTrue(stored.resolve().is_relative_to(self.root))
+                    direct.rename(stored)
+                    directory_link(direct, stored)
+                    with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                        self._observe(events["post"])
+                    if os.name == "nt":
+                        direct.rmdir()
+                    else:
+                        direct.unlink()
+                    stored.rename(direct)
+                else:
+                    valid_start = copy.deepcopy(events["start"])
+                    events["start"]["transcript_path"] = str(linked / Path(valid_start["transcript_path"]).name)
+                    if boundary == "child-before-post":
+                        self.assertIsNone(self._observe(events["start"]))
+                        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                            self._observe(events["post"])
+                    else:
+                        self._observe(events["post"])
+                        with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                            self._observe(events["start"])
+                    events["start"] = valid_start
+
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+                self._no_authority(armed)
+                for key in ("post", "start", "stop"):
+                    try:
+                        self._observe(events[key])
+                    except RuntimeError:
+                        pass
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+                self._no_authority(armed)
+
+    def test_native_v2_steering_paths_and_uuid_before_and_after_post_are_denied(self):
+        self._complete("steering-witness")
+        for tool in ("collaborationsend_message", "collaborationfollowup_task", "collaborationinterrupt_agent"):
+            for before in (True, False):
+                for form in ("absolute", "relative", "uuid"):
+                    armed, events, native = self._fixture(tool + str(before) + form)
+                    self._observe(events["pre"])
+                    self._append(events, native)
+                    self._observe(events["start"])
+                    if not before:
+                        self._observe(events["post"])
+                    target = native["item"]["agent_path"] if form == "absolute" else armed["launch_envelope"]["task_name"] if form == "relative" else events["start"]["agent_id"]
+                    with self.assertRaises(RuntimeError):
+                        self._observe({**events["pre"], "tool_name": tool, "tool_input": {"target": target}})
+                    self._no_authority(armed)
+
+    def test_native_v2_relative_steering_requires_transcript_only_for_active_session(self):
+        event = {"hook_event_name": "PreToolUse", "session_id": self.PARENT,
+                 "tool_name": "collaborationsend_message", "tool_input": {"target": "ordinary"}}
+        transcripts = (None, str(self.root / "missing-transcript.jsonl"), str(self.root))
+        armed = None
+        for state in ("none", "armed", "other-session"):
+            if state == "armed":
+                armed, events, _ = self._fixture("steering-transcript-scope")
+            elif state == "other-session":
+                self._observe(events["pre"])
+                event["session_id"] = "01900000-0000-7000-8000-000000000099"
+            before = Path(armed["request_path"]).read_bytes() if armed else None
+            for transcript in transcripts:
+                with self.subTest(state=state, transcript=transcript):
+                    self.assertIsNone(self._observe({**event, "transcript_path": transcript}))
+            if armed:
+                self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+
+        # An active request in this session must still block relative steering
+        # when the caller identity cannot be resolved from its transcript.
+        event["session_id"] = self.PARENT
+        before = Path(armed["request_path"]).read_bytes()
+        for transcript in transcripts:
+            with self.subTest(state="active", transcript=transcript):
+                with self.assertRaisesRegex(RuntimeError, "UNSUPPORTED_HOST_SEAM"):
+                    self._observe({**event, "transcript_path": transcript})
+        self.assertEqual(Path(armed["request_path"]).read_bytes(), before)
+        self._no_authority(armed)
+
+    def test_native_v2_concurrent_launches_join_exact_call_identity(self):
+        armed, events, native = self._fixture("concurrent")
+        self._observe({**events["pre"], "tool_input": {"message": "ordinary author", "task_name": "ordinary", "fork_turns": "none"}, "tool_use_id": "ordinary-call"})
+        self._observe(events["pre"])
+        other = copy.deepcopy(native)
+        other["item"].update(id="ordinary-call", agent_path="/root/ordinary", agent_thread_id="01900000-0000-7000-8000-000000000077")
+        self._append(events, other, native)
+        for key in ("post", "start", "stop"):
+            self._observe(events[key])
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "COMPLETED")
+
+    def test_native_v2_first_correlated_invalid_post_is_terminal(self):
+        self._complete("first-post-validity-witness")
+        unrelated = {"hook_event_name": "PostToolUse", "session_id": self.PARENT,
+                     "turn_id": "01900000-0000-7000-8000-000000000002",
+                     "tool_use_id": "unrelated-call", "tool_name": "collaborationspawn_agent",
+                     "tool_input": {"message": "ordinary unrelated work"}}
+        self.assertIsNone(self._observe(unrelated))
+        cases = ("absent-input", "nonobject-input", "absent-message", "null", "nonstring",
+                 "ordinary", "malformed", "unknown", "other-request", "real-hook")
+        for start_first in (False, True):
+            for case in cases:
+                with self.subTest(start_first=start_first, case=case):
+                    armed, events, native = self._fixture("first-post-" + str(start_first) + case)
+                    other, _, _ = self._fixture("other-marker-" + str(start_first) + case)
+                    self._observe(events["pre"])
+                    self._append(events, native)
+                    if start_first:
+                        self._observe(events["start"])
+                    invalid = copy.deepcopy(events["post"])
+                    if case == "absent-input":
+                        invalid.pop("tool_input")
+                    elif case == "nonobject-input":
+                        invalid["tool_input"] = []
+                    elif case == "absent-message":
+                        invalid["tool_input"].pop("message")
+                    else:
+                        invalid["tool_input"]["message"] = {
+                            "null": None, "nonstring": {}, "ordinary": "changed ordinary message",
+                            "malformed": "[CODEARBITER_AUTHORITY_REQUEST:malformed]\n",
+                            "unknown": "[CODEARBITER_AUTHORITY_REQUEST:" + "f" * 64 + "]\n",
+                            "other-request": other["launch_envelope"]["message"],
+                            "real-hook": "changed ordinary message from real hook fixture",
+                        }[case]
+                    if case == "real-hook":
+                        result = self._hook(invalid)
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(result.stdout, b"")
+                    else:
+                        try:
+                            self._observe(invalid)
+                        except RuntimeError:
+                            pass
+                    first_state = self.adapter._load(self.root, armed["request_id"])["state"]
+                    for key in (("post", "stop") if start_first else ("post", "start", "stop")):
+                        try:
+                            self._observe(events[key])
+                        except RuntimeError:
+                            pass
+                    final_state = self.adapter._load(self.root, armed["request_id"])["state"]
+                    self.assertEqual(first_state, "REJECTED", (first_state, final_state))
+                    self.assertEqual(final_state, "REJECTED")
+                    self._no_authority(armed)
+
+
+
+class CodexNativeV2CompletionTransportTest(unittest.TestCase):
+    """Synthetic V2 completion transport; genuine native receipt tests remain separate."""
+
+    setUp = CompletionReviewTransportTest.setUp
+    _fixture = CompletionReviewTransportTest._fixture
+    _decision = CompletionReviewTransportTest._decision
+    _native_events = CodexNativeV2HookTest._native_events
+    _append = CodexNativeV2HookTest._append
+    _observe = CodexNativeV1HookTest._observe
+    PARENT = CodexNativeV2HookTest.PARENT
+
+    def _arm_completion(self):
+        return CompletionReviewTransportTest._arm_completion(self, "native-v2")
+
+    def _complete_native(self, armed, *, order=("post", "start"), decision_json=None):
+        events, native = self._native_events(armed, "completion-" + str(getattr(self, "sequence", 0)))
+        events["stop"]["last_assistant_message"] = decision_json or json.dumps(self._decision(armed))
+        self._observe(events["pre"])
+        self._append(events, native)
+        for key in (*order, "stop"):
+            result = self._observe(events[key])
+        self.assertEqual(result["state"], "COMPLETED")
+        return events
+
+    def test_native_v2_full_referenced_completion_both_orders_and_reviews(self):
+        self._fixture()
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (2 * self.adapter.MAX_STATE)}
+        for activity in ("spec_review", "quality_review"):
+            self.client.context["activity"] = activity
+            if activity == "quality_review":
+                self.client.context["subject"]["record_id"] = "SCOPE-001"
+                self.client.context.update(base_input_sha256="7" * 64, task_hashes={"T-001": "5" * 64},
+                                           tasks=[self.client.context["task"]])
+            for order in (("start", "post"), ("post", "start")):
+                with self.subTest(activity=activity, order=order):
+                    # A distinct immutable request is required for each launch.
+                    self.client.context["input_manifest"]["order"] = order[0]
+                    armed = self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE",
+                        self.client.context["subject"]["record_id"], activity,
+                        request_nonce="v2-completion-" + activity + order[0], codex_review_profile="native-v2",
+                        completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+                    request = self.adapter._load(self.root, armed["request_id"])
+                    stored = json.loads(Path(armed["request_path"]).read_bytes())
+                    self.assertEqual(stored["context"], self.adapter.CONTEXT_REFERENCE)
+                    self.assertEqual(stored["context_storage"], self.adapter.CONTEXT_STORAGE)
+                    self.assertEqual(request["context"], self.client.context)
+                    context_raw = (self.root / request["context_ref"]).read_bytes()
+                    self.assertGreater(len(context_raw), self.adapter.MAX_STATE)
+                    self.assertEqual(hashlib.sha256(context_raw).hexdigest(), request["context_sha256"])
+                    for binding in (request["context_ref"], request["context_sha256"],
+                                    self.client.context["completion_sha256"], self.receipt_ref):
+                        self.assertIn(binding, armed["dispatch_prompt"])
+                    allowed = json.loads(armed["dispatch_prompt"].split("Exact allowed evidence_refs by task_id (JSON):\n", 1)[1].split("\n", 1)[0])
+                    self.assertIn(str(self.material), allowed["T-001"])
+                    self._complete_native(armed, order=order)
+                    published = self.adapter.publish_request(self.root, self.client, armed["request_id"])
+                    complete = self.adapter._load(self.root, armed["request_id"])
+                    self.assertEqual(complete["state"], "CAPTURED")
+                    self.assertEqual(complete["context"], self.client.context)
+                    self.assertEqual(complete["payload"]["completion_assessment"], self._decision(armed)["completion_assessment"])
+                    observed = json.loads((self.root / complete["observation_ref"]).read_bytes())
+                    self.assertEqual(observed["producer_profile"], self.adapter.CODEX_NATIVE_V2)
+                    self.assertTrue(observed["producer_result"]["launch"]["first_stop"])
+                    self.assertLess(Path(armed["request_path"]).stat().st_size, self.adapter.MAX_STATE)
+
+    test_native_v2_private_reference_controls = CompletionReviewTransportTest.test_native_completion_private_context_reference_fails_closed
+    test_native_v2_material_drift_at_publication = CompletionReviewTransportTest.test_completed_native_review_cannot_publish_after_selected_material_drift
+    test_native_v2_workspace_drift_at_publication = CompletionReviewTransportTest.test_completed_native_review_cannot_publish_after_mapped_content_drift
+    test_native_v2_completion_decision_controls = CompletionReviewTransportTest.test_completion_decision_requires_all_obligations_and_selected_references
+    test_native_v2_unicode_result_reserve = CompletionReviewTransportTest.test_native_completion_unicode_result_preserves_decision_and_state_bounds
+
+    def test_native_v2_reference_remains_closed_and_bounded(self):
+        self._fixture()
+        armed = self._arm_completion()
+        state_path = Path(armed["request_path"])
+        baseline = json.loads(state_path.read_bytes())
+        for profile in ("codex-native-v2/0.162.0-alpha.3", "codex-native-v3/1.0", "codex-review/0.1.0"):
+            with self.subTest(profile=profile):
+                state = copy.deepcopy(baseline)
+                state["codex_review_profile"] = profile
+                state["integrity_sha256"] = self.adapter._integrity(state)
+                state_path.write_bytes(self.adapter._canonical(state))
+                with self.assertRaisesRegex(RuntimeError, "INVALID_AUTHORITY_STATE"):
+                    self.adapter._load(self.root, armed["request_id"])
+                state_path.write_bytes(self.adapter._canonical(baseline))
+        # The native context allowance and lifecycle reserve remain independent limits.
+        self.client.context["input_manifest"] = {"fixture_padding": "p" * (8 << 20)}
+        before = list(self.adapter._registered_requests())
+        with self.assertRaisesRegex(RuntimeError, "INVALID_EVIDENCE_CONTEXT"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v2", completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), before)
+        self.client.context.pop("input_manifest")
+        self.client.context["task"]["criterion_refs"] = [f"AC-{index:06d}-" + "x" * 240 for index in range(650)]
+        with self.assertRaisesRegex(RuntimeError, "review result has no bounded lifecycle reserve"):
+            self.adapter.arm_request(self.root, self.client, "PLAN-EXAMPLE", "T-001", "spec_review",
+                codex_review_profile="native-v2", completion_receipts=[self.receipt_ref], supporting_files=[str(self.material)])
+        self.assertEqual(list(self.adapter._registered_requests()), before)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,289 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.18.2] - 2026-10-12
+
+### Fixed
+
+- Allow initialized Windows artifact stores to be observed without write access (#971).
+- Pin the repository, metadata directories, and lock file against replacement while preserving reader/writer exclusion. Missing or unsafe lock state refuses without initialization.
+
+## [0.18.1] - 2026-10-12
+
+### Fixed
+
+- Reproduce normal ORT histogram conflicts in guarded legacy block resolution while preserving exact rendering and index/CAS controls (#968).
+- Clarify unknown host qualification and complete the repository-scoped maintenance commands.
+
+
+## [0.18.0] - 2026-10-10
+
+### Changed
+
+- Identify verification inputs by ship-set membership (ADR-0042): git index
+  entries present on disk plus untracked non-ignored files within the plan roots,
+  minus excludes. Outside git, membership comes from the filesystem; a failed git
+  probe fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE`, and an unmerged index
+  fails closed until resolved.
+- Exempt exactly `.codearbiter/gate-events.log` from snapshots. It is never
+  counted and stays tracked as the audit trail; every other `.codearbiter` path,
+  including `overrides.log`, still counts.
+- Advance the verification-input manifest to `codearbiter.verification-inputs/0.2.0`.
+  Receipts bound to a 0.1.0 manifest read as stale and must be re-verified.
+- Open snapshot files through bounded handle opens and validate each evidence
+  object at most once per operation. Raw reads are reused only up to a 64 MiB
+  per-operation retained-byte budget, so past it an object can be read again;
+  validation still happens once.
+- Raise the `prompt-submit` hook timeout to 600 seconds so a long snapshot no
+  longer times out the prompt seam (#931).
+## [0.17.10] - 2026-10-12
+
+### Fixed
+
+- Carry the shared native engine draft-pair rebinding repair and generated workflow guidance. This payload update does not enable Pi verification or review authority.
+
+## [0.17.9] - 2026-10-12
+
+### Fixed
+
+- Recognize normal verbose unittest rows for fully qualified required test
+  identities. Preserve exact identity matching and refusal of duplicate,
+  skipped, failed or missing required results (#955).
+
+## [0.17.8] - 2026-10-12
+
+### Fixed
+
+- Restore reviewed legacy code-map metadata updates and explicit per-block Git
+  conflict resolution with bounded helpers, preserving native ownership,
+  stale-input checks, unselected text and the Git index (#967).
+- Explain debug packet shapes and link the trusted schema and a synthetic
+  unresolved example before one-shot validation (#951).
+- Document brownfield host prerequisites before scaffolding, preserving
+  containment, native approval and partial-state recovery gates (#950).
+
+## [0.17.7] - 2026-10-10
+
+### Fixed
+
+- Carry the shared bounded verification projection and approval preflight checks,
+  retaining complete command definitions, source snapshot ordering and full plan
+  identity freshness. Pi verification and review authority remain unsupported.
+
+## [0.17.6] - 2026-10-10
+
+### Fixed
+
+- Preserve the shared engine's Codex native V2 review bindings and bounded
+  verification context storage. Pi verification and review authority remain
+  unsupported; this shared payload update does not enable those host seams.
+
+## [0.17.5] - 2026-10-10
+
+### Fixed
+
+- Preserve the shared adapter's bounded native completion-review context
+  references and complete review-result prompt contract (#921).
+- Fingerprint complete completion-review workspaces up to 1 GiB independently
+  of the 256 MiB selected verification-input budget. Preserve full content
+  hashing, freshness checks, and the 32 MiB member and 50,000 entry limits.
+- Preserve the shared engine's distinct fresh-verification completion profile
+  and historical receipt validation. Pi verification and review authority remain
+  unsupported; this shared payload change does not enable those host seams.
+
+## [0.17.4] - 2026-10-09
+
+### Changed
+
+- Promote the verified Pi host window through exact Pi 1.1.0.
+
+### Fixed
+
+- Accept Pi 1.1.0 execution timing fields and settlement outcomes without treating aborted child work as successful.
+- Recognize Pi's renamed Azure provider while retaining parent-only provider credentials.
+
+## [0.17.3] - 2026-10-09
+
+### Fixed
+
+- Keep managed Git hooks working with a restricted PATH while preserving
+  trusted executable identities, cross-host path resolution and stale-registration checks.
+
+## [0.17.2] - 2026-10-08
+
+### Fixed
+
+- Recognize the installed `@arbiterforge/ca-pi` package and report the missing
+  prompt, verification and review authority precisely. New full-lane workflows
+  remain refused until that support is qualified.
+
+### Added
+
+- Add a private, explicitly loaded native approval dialog candidate with exact
+  reply, pending-artifact, session and generation bindings. Ordinary extension
+  registration is unchanged; real human qualification remains pending.
+
+## [0.17.1] - 2026-10-07
+
+### Fixed
+
+- Reduce plan approval preflight latency by batching validated task reads.
+
+## [0.17.0] - 2026-10-05
+
+### Fixed
+
+- Read multiple stale Git-hook registrations correctly on Windows and Unix,
+  preserving enforcement by the current registered checker.
+- Resolve a genuine legacy code-map merge conflict using the exact committed
+  current version, preserving context protection, provenance and index entries.
+- Preserve Git's configured trust policy during recovery and Tribunal inventory.
+- Estimate Tribunal verification from average packet tokens plus the allowance,
+  removing the extra factor of four.
+
+### Added
+
+- Carry thirteen Tribunal lens cards, including semantic-contract and change-closure,
+  plus deterministic inventory and bounded evidence packets.
+
+### Changed
+
+- Bind resume to the reviewed source and preserve leads, verification results, and
+  root-cause triage. Report completion leaves filing and optional telemetry pending
+  until each is completed or explicitly skipped.
+- Resolve review profiles from actual Pi capabilities and report independence limits;
+  unresolved serious claims cannot become confirmed fix work. The supported Pi runtime
+  remains 1.0.2.
+
+## [0.16.7] - 2026-10-07
+
+### Fixed
+
+- Wait up to 120 seconds (was 30) for the structured-artifact engine before timing out. On a
+  large repository a whole-tree input snapshot takes about 30 seconds on Windows, so every
+  verification, review publish and approval arm failed with `TIMEOUT`. Set
+  `CODEARBITER_ENGINE_TIMEOUT` (seconds, up to 3600) to change the bound; a malformed value
+  is refused rather than ignored. The bound is a wait limit only and relaxes no check.
+
+## [0.16.6] - 2026-10-05
+
+### Fixed
+
+- Publish a review whose reply contains non-ASCII text (an em dash, accented or emoji
+  characters). The authority adapter hashed the observation payload and producer
+  result as ASCII-escaped JSON while the engine hashes raw UTF-8, so such a review
+  failed with `OBSERVATION_UNVERIFIED`. Observation digests now use the engine's
+  canonical form.
+
+## [0.16.5] - 2026-10-05
+
+### Changed
+
+- Promote the tested Pi host window through exact Pi 1.0.2 with a reviewed
+  managed-install lock, clearing the three brace-expansion advisories.
+
+## [0.16.4] - 2026-10-05
+
+### Fixed
+
+- Carry the shared feature-context fix for valid native artifact IDs without
+  mandatory `SPEC-` and `PLAN-` prefixes.
+- Carry native typed record reordering with preserved identities and history;
+  changed plan content retains its normal approval requirement.
+
+## [0.16.3] - 2026-10-05
+
+### Fixed
+
+- Keep host hook runtime markers out of review input snapshots, so an
+  independent review no longer goes stale because the reviewer read files.
+  Plans can no longer root verification inputs in, or claim coverage of, that
+  marker directory. Review and verification requests armed by an older engine
+  go stale after upgrading; re-arm them.
+
+## [0.16.2] - 2026-10-04
+
+### Fixed
+
+- Refresh the shared prerequisite deadline and reviewer finding contract.
+- Correct approval guidance: Pi has an input event, but still needs a native
+  authority adapter before these workflows can run on Pi.
+
+## [0.16.1] - 2026-10-04
+
+### Fixed
+
+- Carry the shared Claude review-join fix in the vendored authority library. Pi
+  behavior is unchanged.
+
+## [0.16.0] - 2026-10-03
+
+### Added
+
+- Add bounded task-context selection, per-document freshness and attempt accounting
+  to the shared governance payload, with explicit actor-delivery gaps.
+- Carry shared context resources while preserving Pi's refusal of the unqualified
+  repository-context write workflow. No live Pi qualification is claimed.
+
+### Fixed
+
+- Preserve Unicode whitespace in activation frontmatter while requiring a real
+  initialized marker outside fenced code and comments.
+- Synchronize the packaged adapter version with its release manifest.
+- Validate diagnostic handoffs before repair or task follow-ups, preserving
+  the caller's authority and checking that the evidence is current.
+- Keep diagnostic outcomes, regression reuse and helper invocation consistent
+  across the generated host packages.
+
+## [0.15.13] - 2026-10-04
+
+### Changed
+
+- Synchronize the shared evidence-context reader with native UTF-8 canonical
+  bytes while preserving digest and frozen-context checks.
+
+## [0.15.12] - 2026-10-03
+
+### Fixed
+
+- Shared authority library: recovering an already-abandoned oversized review now reports
+  `request was already abandoned` instead of a misleading binding failure. Carries the Claude
+  Code 2.1.286 review-correlation fix (tagged `resolvedModel`, `SubagentHandback` reports),
+  which applies only to the Claude host.
+- The crypto/secret commit gate (H-09b/H-10b) no longer expires a recorded pass after 30 minutes.
+  A pass now stays valid for exactly the lines it reviewed, in the files it reviewed them in,
+  like the migration gate; any new, changed, or moved sensitive line still blocks until reviewed.
+
+## [0.15.11] - 2026-10-03
+
+### Changed
+
+- Synchronize the shared kernel's explicit completion-review evidence contract.
+  This does not enable the unsupported Pi native review-authority path.
+
+## [0.15.10] - 2026-10-03
+
+### Changed
+
+- Promote the verified Pi host window through exact Pi 1.0.0. Pi 1.0.0 closes the
+  undici advisories present in 0.84.1; the brace-expansion advisories it still pins
+  were already present in 0.84.1 and are recorded as accepted under ADR-0041.
+
+### Fixed
+
+- Child dispatch no longer degrades on Pi 1.0.0: the runner accepts the 1.0.0 JSON
+  wire (`message_update` usage, named `toolcall_start`, `deferred` completion).
+- `/ca-doctor` validates the Pi 1.0.0 CLI at its declared `dist/bundle/cli.js` bin.
+
+## [0.15.9] - 2026-10-03
+
+### Fixed
+
+- Named verification now supports a root npm script delegating once to a uniquely
+  selected workspace runner. The declared root command remains intact, both npm
+  argument boundaries are honored, and every inspected manifest is retained in
+  launch provenance. Unsupported or ambiguous delegation fails before execution.
+
 ## [0.15.8] - 2026-09-27
 
 ### Fixed

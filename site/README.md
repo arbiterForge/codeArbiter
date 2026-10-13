@@ -8,8 +8,9 @@ The public documentation for codeArbiter, built with
 - generated command, skill, agent, hook-gate, configuration, and changelog reference; and
 - curated explanations layered over the exact plugin source.
 
-The visual and content contract lives in [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md). Read it before
-adding a component or documentation page.
+The visual and content contract lives in [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md). Search-discovery
+ownership, query strategy, and Search Console operations live in [`SEARCH-DISCOVERY.md`](./SEARCH-DISCOVERY.md).
+Read both before changing the landing page, metadata, canonical URLs, or search-targeted content.
 
 ## Local development
 
@@ -21,8 +22,8 @@ npm ci
 npm run dev
 ```
 
-The development URL is `http://localhost:4321/codeArbiter/` because the production site is a
-GitHub Pages project site.
+The development URL is `http://localhost:4321/`. Production is served from the custom-domain root
+at `https://codearbiter.dev/`.
 
 | Command | Purpose |
 |---|---|

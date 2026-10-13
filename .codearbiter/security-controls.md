@@ -380,6 +380,23 @@ runs in the detached refresh child).
 registries, `git+` URLs, `file:` references, or `http:` (non-TLS) sources are
 permitted in `package-lock.json` or any manifest.
 
+### Accepted dependency advisories (docs site)
+
+Every npm graph is audited at one threshold, `--audit-level=high`. The docs site
+graph (`site/`) is judged by `.github/scripts/npm_audit_gate.py`, which fails on
+every HIGH+ finding except an advisory recorded in `site/audit-exceptions.json`.
+A record names one GHSA and one package, the maximum accepted severity, a
+reason, the approving maintainer, and a backstop no more than 30 days after
+approval. A record past its backstop fails the gate. Only the maintainer approves
+records; an agent may not add one on its own judgment.
+
+- `GHSA-ch52-4w7c-c8xp` in `http-cache-semantics` (high), approved 2026-10-03 by
+  `SUaDtL@users.noreply.github.com`, backstop 2026-11-02. No patched release
+  exists (`<=4.2.0`; 4.2.0 is the latest). It reaches the site only through
+  astro at static build time; the published site is static files with no
+  server-side shared cache, so the cross-user cached-response disclosure it
+  describes cannot occur in this deploy.
+
 ---
 
 ## Approved licenses (dependencies)
@@ -395,6 +412,9 @@ npm dependencies; the docs site under `site/` is not part of that payload):
 - BSD-3-Clause
 - BlueOak-1.0.0 — permissive, OSI-approved "better-MIT"; imposes no obligations
 - CC0-1.0 — public-domain dedication; imposes no obligations
+- Unlicense — public-domain dedication equivalent to CC0-1.0; imposes no obligations.
+  Approved 2026-10-02 by `SUaDtL@users.noreply.github.com` (first seen as
+  `fast-sha256@1.3.0`, transitive via `@anthropic-ai/sdk` in the Pi 1.0.0 host graph).
 - MPL-2.0 (development/build-time only): weak, file-level copyleft. The obligation
   attaches only to the MPL-licensed source files themselves and edits made to
   them; it never reaches files that merely consume the library. Approved for
@@ -1004,7 +1024,7 @@ immutable Releases are available.
 | Declared release-target commands | `.codearbiter/release-targets.md` rows carry `pre-tag`, `rebuild`, `generate`, and optional `release-build` protected shell inputs on a lane that later holds `contents: write` | Operator-authored executable input, on the `plan.json` `gate.commands` model above and length-capped identically (≤1024 chars, `VALUE_MAX_CHARS`, ADR-0002 precedent). `releasehash.py` binds the ordered `pre-tag` list and optional `release-build` into one per-target human-read confirmation; changing either invalidates it, while rows without `release-build` retain their existing confirmation identity. `pre-tag` remains check-only and is guarded mechanically by `run-pre-tag`. A reviewed hosted-build path executes `release-build` only in the exact-candidate publisher with a newly empty `RELEASE_ASSET_DIR`, a clean tracked tree before and after, and exact inventory verification. A reviewed retained-cohort path instead treats the declared fail-closed sentinel as policy, never as a locally runnable builder, and accepts only CI packages whose digest, receipts, source commit, and flat names bind to that exact candidate. Arbitrary build failures cannot select this exception. The declaring file is protected under H-22 (ADR-0024), so planting any command requires a fresh authoring marker. The residual is the cooperative-agent one ADR-0010 already accepts: a marker-holding session can still declare a command, and this is a governance boundary, not a sandbox or filesystem confinement mechanism |
 | Hosted ca-codex candidate data | A final-tree ZIP or directory is parsed by trusted release-tree code on GitHub-hosted runners | Candidate code is never executed; bounded archive limits, regular-file-only extraction semantics, contained paths, static manifest/front-matter/resource/hook validation, and exact deterministic digest binding fail closed before publication |
 | Native structured-artifact payload | A reviewed native candidate crosses from build output into a host package only through manifest, digest, platform, and native-test verification | No PATH or runtime fetch is used. Unix developer installs traverse, create, and write relative to pinned directory handles and publish the manifest last; the Windows developer installer fails closed so reviewed release packaging must own that copy boundary. Qualified installed host packages default new full-lane feature/sprint work to HTML while preserving exact-format legacy authority; HTML farm use remains disabled, and exact-host CI is required before promotion |
-| Host hook evidence to engine receipt | Codex and Claude Code hook events (verifier wrapper Pre/PostToolUse, reviewer launch, child start and first stop) become verification and review observations that the artifact engine captures as `task-review` / `accept-scope` receipts | Each host path binds only closed host fields (Codex `turn_id`/`task_name`; Claude `prompt_id`, `tool_use_id`, `agentId`, first `SubagentStop`), pins its launch envelope and reviewer (`ca:authority-reviewer`, read-only, shadow-checked on Claude against project, session, main-checkout, user and managed agent directories), pins the verifier by script identity (not interpreter), denies a SendMessage or authority call on an unexpected hook error or an unreadable live request (a request skipped because its repository or spool cannot be resolved is still a fail-open gap, tracked on the board), and carries its own engine producer profile so evidence cannot be relabelled across hosts. Pi has no such path. The residual is the cooperative-agent one ADR-0010 already accepts: request state, observations and authority sources live in unkeyed, integrity-hashed files a session with filesystem write can forge, a session with Bash can replay forged events into the shipped hook or substitute the verifier interpreter, session- or CLI-defined (`--agents`) agents are outside the shadow check, and a parent can plant text a running reviewer reads; this is a governance boundary, not a signed attestation |
+| Host hook evidence to engine receipt | Codex and Claude Code hook events (verifier wrapper Pre/PostToolUse, reviewer launch, child start and first stop) become verification and review observations that the artifact engine captures as `task-review` / `accept-scope` receipts | Each host path binds only closed host fields (Codex `turn_id`/`task_name`; Claude `prompt_id`, `tool_use_id`, `agentId`, first `SubagentStop`, and on Claude Code 2.1.286 the bound reviewer's single delivered `SubagentHandback` from the launching session), pins its launch envelope and reviewer (`ca:authority-reviewer`, read-only, shadow-checked on Claude against project, session, main-checkout, user and managed agent directories), pins the verifier by script identity (not interpreter), denies a SendMessage or authority call on an unexpected hook error or an unreadable live request (a request skipped because its repository or spool cannot be resolved is still a fail-open gap, tracked on the board), and carries its own engine producer profile so evidence cannot be relabelled across hosts. Pi has no such path. The residual is the cooperative-agent one ADR-0010 already accepts: request state, observations and authority sources live in unkeyed, integrity-hashed files a session with filesystem write can forge, a session with Bash can replay forged events into the shipped hook or substitute the verifier interpreter, session- or CLI-defined (`--agents`) agents are outside the shadow check, and a parent can plant text a running reviewer reads; this is a governance boundary, not a signed attestation |
 | CI-only npm CLI acquisition | The ca-pi publisher downloads and executes exact `npm@11.19.1` from the approved npm registry without adding it to repository dependency state | Exact registry URL and SHA-512 SRI are drift-guarded; TLS verification stays enabled and redirects are not followed; acquisition is credential-free; archive path/link/device containment and the resolved executable root are checked before exact-version execution; only the absolute reviewed CLI path reaches pack, publish, and verification; all npm network commands pin the approved general and `@arbiterforge` scoped registry, while verifier config, cache, and logs live only in its cleaned disposable root |
 
 ### Closed exceptions

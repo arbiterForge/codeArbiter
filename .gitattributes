@@ -30,6 +30,11 @@ docs/artifacts/design/original-review2/** text eol=lf
 .github/fixtures/pi-hosts/**/*.json text eol=lf
 .github/fixtures/pi-hosts/**/.npmrc  text eol=lf
 
+# Frozen debug qualification inputs are verified against their committed bytes.
+# Disable newline conversion so Windows checkouts preserve those identities.
+/.github/fixtures/debug/cases.json -text
+/docs/proposals/debug-correctness/D1-CASES.json -text
+
 # Pi release metadata and TypeScript/JavaScript artifacts are also checked as
 # exact UTF-8/LF bytes after checkout and regeneration on every hosted OS.
 plugins/ca-pi/**/*.json text eol=lf

@@ -1,7 +1,7 @@
 {
   "mode": "dangerous",
   "host_name": "claude",
-  "ctx_text": "<!--INITIALIZED-->\nstage: 3\n",
+  "ctx_text": "---\narbiter: enabled\n---\n\n<!--INITIALIZED-->\nstage: 3\n",
   "oq_text": "- CONFIRM-07: resolve the widget question\n- an unrelated open note\n",
   "ot_text": "- [ ] 2026-08-01 write the startup-emitter fixture\n- [x] an already-done thing\n",
   "drift_line": "codeArbiter: 1 doc(s) may be stale relative to source — see .codearbiter/CONTEXT.md",

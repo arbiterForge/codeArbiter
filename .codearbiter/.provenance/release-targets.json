@@ -1,45 +1,45 @@
 {
-  "created": "2026-09-27",
+  "created": "2026-10-05",
   "doc": "release-targets",
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "3730ee71a9b8cb73cb641ec20b26d333344ec110",
+      "hash": "a5ac3e2950f6620d67f2225e0ba293e0232ee1ff",
       "path": "CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "adc5759d052a5a33a1e73a7ddfeba9a76a646b1a",
+      "hash": "ab8d60151eea0d32b1562307f40bb16fff308c53",
       "path": "package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "cc154f056bcd3fa8d703c73e4b6365a4802d58f6",
+      "hash": "35e70b98dbd5951617fc7a31f41b756ec2f8bf8d",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "64089d2bc2906e0d6bf8343aaeb92b832a5e25fb",
+      "hash": "14e9f5bfd70780ab7c8464931a822093dfd3d39f",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "d75e0b89f47d97b341592873403c0467151fe473",
+      "hash": "62cac3635a9379163f94addfccd48618b51a00c3",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "168c4ce53e2dd0252f451163c1f2b602397119b7",
+      "hash": "8c211bdfb8260da6ae7373ca423c409d7fcc97b8",
       "path": "plugins/ca-pi/extensions/codearbiter-child.js"
     },
     {
       "drift_trigger": true,
-      "hash": "58658eab6a619e7fdbcab851a770404c6d0999e1",
+      "hash": "a1d8aa17c0071a7b8c1cd28d237d435695e45d90",
       "path": "plugins/ca-pi/extensions/codearbiter.js"
     },
     {
       "drift_trigger": true,
-      "hash": "8562792b53a653c4043d8e1c1c70278bf0c9a21f",
+      "hash": "96aea33b7feb83e19cc36cd28e1fbd8dffa53b5c",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -64,7 +64,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "f4182e98cc0aa4fc78a0d5981d192cfee8a4974f",
+      "hash": "abb074e0006c5988e5a1f02de78873875a0778d4",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {

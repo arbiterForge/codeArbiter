@@ -1,0 +1,370 @@
+{
+  "format": "codearbiter.atlas-historical-inputs/1",
+  "source_commit": "5e909cfab72e4e7793b3ffa7b62c2239632f80d1",
+  "baseline_commit": "25980c292b529fca90c39f5f26d69a1c0674de44",
+  "evidence_kind": "historical-draft-source-snapshot-not-publication",
+  "changed_paths": [
+    "CHANGELOG.md",
+    "core/surface/commands/init.md",
+    "core/surface/skills/debug/SKILL.md"
+  ],
+  "input_count": 71,
+  "inputs": [
+    {
+      "path": "CHANGELOG.md",
+      "blob": "0290d678905fd2853ff2132e0ce8151155129bd6",
+      "sha256": "8d299cd300ea41b7dae51e89a8caa418eafff0066173ac8ab1ae55030772f7a4"
+    },
+    {
+      "path": "core/hosts.json",
+      "blob": "4ee02473d7560ff1c6c90943ed28be9da741ab7f",
+      "sha256": "7ee1de9bf256d5d46a2cf1580a542f39b95af70205ad1b90c5c964dcd2ff4f88"
+    },
+    {
+      "path": "core/pysrc/_artifactauthoritylib.py",
+      "blob": "796471d01306edddb3c4b5af26b9f740d2c81fc7",
+      "sha256": "95fd8176f4c4b4cea2146672622fff918ff30642ec24eef86bffa6568accc864"
+    },
+    {
+      "path": "core/pysrc/_contextselectlib.py",
+      "blob": "9f605a9014ea4191e7ab080f7df17c0ca54a4774",
+      "sha256": "a03b94a01677cb2907ac27c88fa5afec20a994325addd9208288198efa85a024"
+    },
+    {
+      "path": "core/pysrc/_readinjectlib.py",
+      "blob": "f7d3fdd8daf76825520470e7a7ea47285e81028a",
+      "sha256": "de10ae656bf95ce05f2b515967c265d10b0fb791818f95c237247198007e2482"
+    },
+    {
+      "path": "core/pysrc/_tribunalrunlib.py",
+      "blob": "dd24fcf50b3a7826cbc546bf8726bef6402faf4d",
+      "sha256": "16102ca3fac5e0618580920c9b11db478b3425321ef8a90525ea25c88b12ab59"
+    },
+    {
+      "path": "core/pysrc/prompt-submit.py",
+      "blob": "88a7e1ba69cdb14ace45424188c2b0d175d72dc0",
+      "sha256": "1eaf3b2c464727e1af297cdf5f7c857547734eab7172c1daa03d75fe752ae171"
+    },
+    {
+      "path": "core/surface/COMMANDS.md",
+      "blob": "265f5c4c1371df91dd96dac32aac3e3230396923",
+      "sha256": "0b573fa9d046c738f527289886ed96730c228ffde2557ec5ba6a5d82a4c53e59"
+    },
+    {
+      "path": "core/surface/SPRINT.md",
+      "blob": "e5943b6c99510484f4011aa511cf64c827bc4e18",
+      "sha256": "f4febee07ef7446307c14cf8a52d40224daaddcf1e43bc1e84e9ca36af1f99ec"
+    },
+    {
+      "path": "core/surface/agents/INDEX.md",
+      "blob": "e2ae31ced5e98c2194daa217eb24b4c12238cfb3",
+      "sha256": "cd54e4b3afd36c5388d7e73da363977286df0394d2410d11a0197dab86f06f62"
+    },
+    {
+      "path": "core/surface/arbiter.md",
+      "blob": "0a508191bfbc31c67ca84fd52fe9b2c5e9326c92",
+      "sha256": "4bbe2beb49d1026271025d2553709728af1b300a9fdabd7c9d80978925faeb14"
+    },
+    {
+      "path": "core/surface/command-routes.json",
+      "blob": "a6b8aa3746347cf07e867f7e0f40bd0194d3ee60",
+      "sha256": "2ced3f30fea81d5318e5b22dcf05e14edd6d516c2920bf5bcfbd74596d1059cb"
+    },
+    {
+      "path": "core/surface/commands/add-dep.md",
+      "blob": "12f790c6c7659c85246414cc5dcac54ea4134618",
+      "sha256": "caa5d86962d33f7fdf49e230d1a3997d2d1db01503f422c1f99db00b7c3c2a14"
+    },
+    {
+      "path": "core/surface/commands/adr-status.md",
+      "blob": "66f71fe98c46d5c60e291d1de3785338219c7f1d",
+      "sha256": "5ebf347bbf893c8256159d0d1953e152eec6135fbc4b48052ff968c2de0d05eb"
+    },
+    {
+      "path": "core/surface/commands/adr.md",
+      "blob": "682d76fa5a49a2d6e8da2461988b070bf2849be3",
+      "sha256": "027aa4b12e68025adfa5e3f6fab87c8812e89e186e44a8728e2b50ab59be2d7c"
+    },
+    {
+      "path": "core/surface/commands/audit.md",
+      "blob": "94e9ab9db2d2edca75e5e73b8540ff26d481842f",
+      "sha256": "48b68f4d51571b4e5f1ac6c7fcc6ae4912886384e98ad9bfc5d85b4fb8377ea4"
+    },
+    {
+      "path": "core/surface/commands/btw.md",
+      "blob": "c4582ed19c1dccfd01b594fb6fce65565d7ce50f",
+      "sha256": "82bc2b5eb2d7c78cc68c4ce47ea02615b99b44c508d0d1a2195788585d2afa57"
+    },
+    {
+      "path": "core/surface/commands/checkpoint.md",
+      "blob": "4f5a4739b75b02b526b27f9e9e17f959a056f134",
+      "sha256": "12c40c38d60f045ac42ec903933bb15372733dc3475c7167c0e308aa433b82b8"
+    },
+    {
+      "path": "core/surface/commands/chore.md",
+      "blob": "745a67e8a2a8fc239867f8b1b47bea85a1d535a7",
+      "sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31"
+    },
+    {
+      "path": "core/surface/commands/cleanup.md",
+      "blob": "d14c24bb540a46944561b2f64039ba522d0d8c7d",
+      "sha256": "b14f3542873efdbcf2b600c1ccfe060467b4ca299b3687e717a495d652f9b339"
+    },
+    {
+      "path": "core/surface/commands/commands.md",
+      "blob": "2838d5cabf622a4f9634c28c0f2271e94c2c98ba",
+      "sha256": "8b5a38e9f947ac5e34e9ec2a0c83d2024441d11521cb312935bbfebf40acc030"
+    },
+    {
+      "path": "core/surface/commands/commit.md",
+      "blob": "d4f0f8272e6f33b1699315645633396bcc4ef6d6",
+      "sha256": "e4499982c3281fcb85cc02ee50400e7d35d3c6a0b54e39af1bf8b21deba30b58"
+    },
+    {
+      "path": "core/surface/commands/conflict.md",
+      "blob": "e116d01b74972a939e75fb1f1f43ba9cf4034fd0",
+      "sha256": "ea96bc18a20f8096211ffea954456d41593bdbdc139cafd3bf1a8a0bdb8e819b"
+    },
+    {
+      "path": "core/surface/commands/context-check.md",
+      "blob": "c23b4a82f094d962f513c5c2fee5558518d28f61",
+      "sha256": "bc523c2c8ede4e77d58c975af0604fad30d5d33e6a2308f4779530b93801841d"
+    },
+    {
+      "path": "core/surface/commands/create-context.md",
+      "blob": "7991148f203ca3ba6ce0a10f6bc8d45f358631f4",
+      "sha256": "a5911b97a2591fdc88f148b72e28dd120d7c6c5291029d28c5be79a292094d24"
+    },
+    {
+      "path": "core/surface/commands/debug.md",
+      "blob": "b206f9c45616068bf7ce74f4e3be762f702b739a",
+      "sha256": "3c510d576a35feed9294d3746a6aabdaad42d276067b9486867ad7e145f59714"
+    },
+    {
+      "path": "core/surface/commands/decompose.md",
+      "blob": "2191b474b63bdb8b34708f9b86fd8ed3630d9a7a",
+      "sha256": "f354d94f1b7357967df3394230b9cecdd59743640df0b51bd29414ece74cce1e"
+    },
+    {
+      "path": "core/surface/commands/doctor.md",
+      "blob": "e3328cdfc172ba50210f3961275b99a992ec88ba",
+      "sha256": "f551e672cac05df0c66c7b16e516447fc88cdd42bd3e0b00d5347a24b6512e6c"
+    },
+    {
+      "path": "core/surface/commands/feature.md",
+      "blob": "20c407ccece6e57a225cae1b73b6570fd419fc1f",
+      "sha256": "bee83def5937b3ff787e3e293ecf42e5949d21018a463ee20e23ff0731e7ffcd"
+    },
+    {
+      "path": "core/surface/commands/fix.md",
+      "blob": "e5e8c44994c1c245b4461014dce30b3d4553daa7",
+      "sha256": "11fa3308f2f37b7bd2ba45cf54af7c912f93b740d90ea5f836eec64481390213"
+    },
+    {
+      "path": "core/surface/commands/init.md",
+      "blob": "c3de948de1617aa323e310eefee7fde2bd8a65fc",
+      "sha256": "ce5e5f8c1249a256c089d109f84b1fe3acc1ac48223b4d71f04896d685d73f4a"
+    },
+    {
+      "path": "core/surface/commands/metrics.md",
+      "blob": "1d42e6f066a4856050b5093a0a59f9736e7235a6",
+      "sha256": "c2238e20fd51dc6867039efd89f2a2b93f67ecf1af186975bea4e485966d74b0"
+    },
+    {
+      "path": "core/surface/commands/override.md",
+      "blob": "e867c552d35274d7a6cca89e5fdf484f1c102256",
+      "sha256": "dd0a88dc70eb17dcb982e09b20cd3d5089fe88d23c077982692a48531b9a732a"
+    },
+    {
+      "path": "core/surface/commands/pr.md",
+      "blob": "f36d003981fc06774cb5a2cf184aea42750210bf",
+      "sha256": "06a91e16ace3b742caeba08de4108004ac64a69bbb9d368ff5e5643e39436f42"
+    },
+    {
+      "path": "core/surface/commands/preview.md",
+      "blob": "cb8b2e1fd060f3a16d3a4e61e44786c32237683f",
+      "sha256": "615c5ee71f465b0de4b9008a77e12961bcd4e0a80458fa9a0ea89c3327414b31"
+    },
+    {
+      "path": "core/surface/commands/prune.md",
+      "blob": "03bb32e3347924852c1bde7fab957cd3203178e3",
+      "sha256": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95"
+    },
+    {
+      "path": "core/surface/commands/reconcile.md",
+      "blob": "6ed56d2b2ea5b99ffc67e1d20632dfc2f3af3a65",
+      "sha256": "496a19ae1c63dd993dd3c9bcc608a9e74d0ba0cdf6dd4b384b030614dd49d49a"
+    },
+    {
+      "path": "core/surface/commands/refactor.md",
+      "blob": "75cc8c97410274d7f74f2c9908a42312ef7d8638",
+      "sha256": "301429359448ac0614e20a63bb95a6603435a45e5ddd6eab054eae57041c0177"
+    },
+    {
+      "path": "core/surface/commands/release.md",
+      "blob": "acb316787ad16534558ad7031fd69ddc2427597f",
+      "sha256": "38ea3697585f72a15d003be5be926090977586e7820311e8911a28575e5db509"
+    },
+    {
+      "path": "core/surface/commands/review.md",
+      "blob": "bd2ebd5beb9470f6b9a19a4d6986772b51cf365e",
+      "sha256": "ce0f94d2a5233ab05a1abf1fe2f947bfeac7c82bb60c79056450dbf11cd94db5"
+    },
+    {
+      "path": "core/surface/commands/spike.md",
+      "blob": "db3311f094322e4e857fc9cfc8b37b6c03b76a54",
+      "sha256": "2fc4b6ae4ed858f437d4242356e69e84878d849b2ccd65ff0fe9cedead1e625b"
+    },
+    {
+      "path": "core/surface/commands/sprint.md",
+      "blob": "bb19fac7c813a6f6d8dff91f046505f1308a2c11",
+      "sha256": "b1f65860b3f695edd0e05e85a15fbc5788fffa5961f228572c9f3bf88e708ca8"
+    },
+    {
+      "path": "core/surface/commands/standup.md",
+      "blob": "d44c8365eca329f15b198e69de5fc4b56703ac53",
+      "sha256": "a16bb26170b55a2b4295ff4f7889306d00f587699ab6378ff97b5449166b80ba"
+    },
+    {
+      "path": "core/surface/commands/status.md",
+      "blob": "0216eab207dbb61d7b05700de5e5e209e75a67af",
+      "sha256": "c0ef5521f25c6abbad9f88ebc72f38e4c5210c9c0c3587faaa8ae98d1ffeb041"
+    },
+    {
+      "path": "core/surface/commands/statusline.md",
+      "blob": "abdbe397923d1a1d591d1347632cb0f3ab924c05",
+      "sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233"
+    },
+    {
+      "path": "core/surface/commands/task.md",
+      "blob": "a76737a05c1fa6750be259c4a91211cbaaf155a5",
+      "sha256": "8f28c6390877e50bf98f26043cc53aba34ab94f9bbce9e9aa0c60a06bc77ff55"
+    },
+    {
+      "path": "core/surface/commands/threat-model.md",
+      "blob": "0e623e49c3a7a5b98b561f475c4c12cdd789881b",
+      "sha256": "c2a09005f04516dfbfb3b57d6bfb983bca027382ef66c2bb6ede668484653382"
+    },
+    {
+      "path": "core/surface/commands/tribunal.md",
+      "blob": "82415cc60802bc15810e57599ded1f15b57c490e",
+      "sha256": "3424e7d7f90557baa6c3cbd2864abe06f0aa55050b76f0a0e0edd491872ac79f"
+    },
+    {
+      "path": "core/surface/commands/watch.md",
+      "blob": "0349390c5472e9db75d04300e7876fec6f62902c",
+      "sha256": "740916a5052b7657a600665a14155ef5146ef38a48e4f0d1d2e627505528227b"
+    },
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "blob": "ff55bc49e336ef6ddf6498c55d7993a137214532",
+      "sha256": "0c6a47921c15c62127c3b4473bc8158beba38f231ac765ba06bd192f67b32da4"
+    },
+    {
+      "path": "core/surface/includes/reference-map.md",
+      "blob": "4cfcfaca2f0eb8e19c6ce33206f5a026d2f37852",
+      "sha256": "268e18af06e55dfeccd449c2d106dcee62b47bb6cc4cb62144f019c172b3fda0"
+    },
+    {
+      "path": "core/surface/includes/review-matrix.md",
+      "blob": "459a04f645f0a29f9139ce6b92c704c0b3f4e1bd",
+      "sha256": "10ef5ccb76e3c5bc132fb3085dec8850615339217105e3892c8d9ed054f8b98a"
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "blob": "0800d2d5af7d2990bc5a9d8989b457dc6dd00853",
+      "sha256": "51f94ae7437bd5d92cc6d9cf8e803b08a981b4d5617129489643e2975fb2604a"
+    },
+    {
+      "path": "core/surface/skills/INDEX.md",
+      "blob": "4011e2d11981d9cac7fa6a225f21e213031ba9fa",
+      "sha256": "490c49e117b44985da3c8f8cedd3ae97105490e3a328d1854540b81f39312eeb"
+    },
+    {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "blob": "5f6b778a5bf1fdc5c139db9fc4a1b12d8b16e7df",
+      "sha256": "896ef8ed1326ae920539fc627ace5cb5c56b75f10d808011eb0bbedfa9a16948"
+    },
+    {
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "blob": "eb55f65163c1f9edd988ec08ef93cfb4bf0ca76d",
+      "sha256": "92f206780af9b008083b2568b6b696c5020600a797950e48888873a977aeb13b"
+    },
+    {
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "blob": "6c2471a0553729bd0e349580c08a72657e54f0ad",
+      "sha256": "af7edae7605b21e4fcd236ac1e2fa546d9dbdf8d682f95bc89fc30dcf9152659"
+    },
+    {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "blob": "6a791230cdbfa0916c63d2b1dcc6431d1625b1a3",
+      "sha256": "43bcb337fdee6b0c5f64d3cb3dd84b3b218fe4188d5509f3113f2249c60a10d4"
+    },
+    {
+      "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+      "blob": "82b791ba561ad1cf0e267855503f4f05546e7e12",
+      "sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "blob": "0d183c9ab24195f5826d4af255b038afa1cbeb46",
+      "sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c"
+    },
+    {
+      "path": "core/surface/skills/decompose/SKILL.md",
+      "blob": "6674cbfdb27a39d712f08434d5a393f4675a729e",
+      "sha256": "bd1424552724c76591e4364df083c95eb36ef636e48d84580a7105af5f277563"
+    },
+    {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "blob": "848ef48bd509a43f677d69485e5e1914b09bd1b5",
+      "sha256": "a37f99f3e32f27407fbe651c2e6f49e0f93eb7482f6dd0f288b510dc4ba28b9e"
+    },
+    {
+      "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+      "blob": "69a63e9fc5c1496689b2e0071ab654a1133e7698",
+      "sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+    },
+    {
+      "path": "core/surface/skills/refactor/SKILL.md",
+      "blob": "ea478d14325d75b16b59f6f818c60e10692d2a4d",
+      "sha256": "cec03d7c8bf6aeb1a7d44e2fb1cd190f500529c253ed1bee59b2fa210a54414f"
+    },
+    {
+      "path": "core/surface/skills/release/SKILL.md",
+      "blob": "7f664dc5cac967ae90103ccfaf0782c7583d3193",
+      "sha256": "41f0ba04d4192b0e8432e0f50377d9f01fcb0d6a1dd03b2db4155c91b3c1a421"
+    },
+    {
+      "path": "core/surface/skills/security-architecture/SKILL.md",
+      "blob": "9a2ff1c183ec81b6b98f36751a7b16fdc4de68f0",
+      "sha256": "6ebeaffb3669cab207948ac0c99f81b62709741ae50a30b9882b6ee7a44cbc94"
+    },
+    {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "blob": "94b79f3cd6c0ee96b83330dca1309c20838cc259",
+      "sha256": "771a6e8c5c0403d748bebc9f18dd20e12375b4fe24d4b701cfb9e2170bf05820"
+    },
+    {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "blob": "ff2b0a28d0e5922229f8efabde544fd57310a532",
+      "sha256": "90b74f55d9fa247dedb91fbb683eb861c5a546e5a6437b82fa6bb963a85198df"
+    },
+    {
+      "path": "core/surface/skills/tribunal/SKILL.md",
+      "blob": "fe1d538deac174300b9b24e28b8fb561fef37d96",
+      "sha256": "fe475c12cca3a0cf4d2977ff85c8e9fe878b726c11ec14e736ffa003f66569ad"
+    },
+    {
+      "path": "docs/hooks.md",
+      "blob": "7e7312aefd548049e54b98a53297b0e19213477a",
+      "sha256": "2c506d0c12e202bade558b4390b2ece67e657e895b9cb5dbf39b443ab7538515"
+    },
+    {
+      "path": "docs/parity.md",
+      "blob": "1fb91dc7d0ee2da2b5513d6691ea1cb31e113a38",
+      "sha256": "bc6c7b895609602d3a5d9b349fb2de1111c5976f9abd017062f762019542d488"
+    }
+  ],
+  "changelog_sha256": "8d299cd300ea41b7dae51e89a8caa418eafff0066173ac8ab1ae55030772f7a4"
+}

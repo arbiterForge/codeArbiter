@@ -82,7 +82,9 @@ explicit delegation terms. The installed private pair adapter in
 1. Finish the spec as a ready draft. Let `writing-plans` use `_preflight_plan_authoring` with
    `draft_for_pair: true` only for this full-lane initial sprint. Populate the same-slug plan as
    `draft_preview`, validate both, and review their complete criteria, paths, tests and checkpoints.
-   Neither draft has execution authority. Do not separately approve or `plan-bind` this pair.
+   Neither draft has execution authority. Do not separately approve this pair or bind it to an
+   approved source. If review changes the draft spec, use only the explicit `draft_preview`
+   rebind described in `includes/artifacts.md`, then revalidate both current drafts before arming.
 2. Arm both exact identities with `arm-sprint`. Include `--delegate-methods` only when the presented
    terms explicitly ask the user to delegate existing task-method revisions. Present the exact returned reply;
    it names both artifacts and `delegate-methods` or `approve-only`, not an ambiguous generic yes.

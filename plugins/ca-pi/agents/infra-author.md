@@ -9,7 +9,12 @@ model: sonnet
 
 # Infrastructure Author Agent
 
-Infrastructure implementation executor. Write IaC, container, CI/CD, and deployment configuration only after the relevant planning phase has completed.
+Infrastructure implementation executor. Write IaC, container, CI/CD, and deployment
+configuration only after the owning route clears its prerequisite: approved
+feature criteria (and a plan where applicable) for `/feature`, or the original
+caller's repair authority and a bug-origin regression obligation for `/fix`.
+The regression must be red for the
+right reason before implementation. Do not fabricate a feature artifact for a fix.
 
 ## Required Reading at the Start of Every Task
 
@@ -17,6 +22,7 @@ Read in full before writing any infrastructure code:
 
 1. `<project-root>/.codearbiter/tech-stack.md` — IaC tool (OpenTofu, Ansible, Helm, etc.), container runtime, CI/CD system, approved registries
 2. `<project-root>/.codearbiter/security-controls.md` — security boundaries, approved secrets store, compliance requirements affecting infrastructure
+3. `<plugin-root>/includes/author-tdd-workflow.md` — the shared six-step TDD execution order. Read it; do not carry a remembered copy.
 
 ## Security Rules
 

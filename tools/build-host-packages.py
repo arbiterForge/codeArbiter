@@ -50,6 +50,11 @@ ARTIFACT_NATIVE_TESTS = frozenset({
     "artifact-bridge", "artifact-conformance", "artifact-native", "artifact-package",
     "go-test", "go-vet",
 })
+CONTEXT_NATIVE_CASES = frozenset({
+    "TestContextRepresentationBoundary", "TestContextDocumentContract",
+    "TestContextMarkdownPreservation", "TestContextBoundedRender",
+    "TestContextMutationAdmission", "TestContextRecoveryAndPaths",
+})
 ARTIFACT_PLATFORMS = frozenset({
     "linux/amd64", "linux/arm64", "darwin/amd64", "darwin/arm64",
     "windows/amd64", "windows/arm64",
@@ -143,9 +148,69 @@ def _artifact_qualification(path: Path, candidate: Path, installer) -> tuple[dic
         "format", "source_commit", "workflow", "run_id", "job", "platform",
         "binary_sha256", "version", "protocol", "schema_version", "native_tests",
     }
-    if not isinstance(receipt, dict) or set(receipt) != expected:
+    if not isinstance(receipt, dict) or set(receipt) not in (expected, expected | {"context_native"}):
         raise ValueError("qualification receipt has an unexpected shape")
     return receipt, raw
+
+
+def _context_qualification(native: object, *, source_commit: str,
+                           binary_sha256: str, workflow: str, run_id: str,
+                           repo: Path) -> dict[str, object]:
+    """Check actual finite case identities before admitting a context package."""
+    if (not isinstance(native, dict) or set(native) != {
+            "format", "module_sha256", "go_sha256", "cases"}
+            or native["format"] != "codearbiter.context-native-observation/0.1.0"
+            or not isinstance(native["cases"], list)
+            or len(native["cases"]) != len(CONTEXT_NATIVE_CASES)):
+        raise ValueError("context native qualification has an invalid result set")
+    if (not isinstance(native["module_sha256"], str)
+            or not isinstance(native["go_sha256"], str)
+            or any(re.fullmatch(r"[0-9a-f]{64}", native[field]) is None
+                   for field in ("module_sha256", "go_sha256"))):
+        raise ValueError("context native qualification has invalid tool/source identity")
+    scripts = repo / ".github" / "scripts"
+    sys.path.insert(0, str(scripts))
+    try:
+        import _contextverificationlib as context_bridge
+        import test_context_native as context_tests
+    finally:
+        sys.path.remove(str(scripts))
+    expected = {
+        "TestContextRepresentationBoundary": (context_tests.SOURCE, context_tests.SUBTESTS),
+        "TestContextDocumentContract": (context_tests.DOCUMENT_SOURCE, context_tests.DOCUMENT_SUBTESTS),
+        "TestContextMarkdownPreservation": (context_tests.MARKDOWN_SOURCE, context_tests.MARKDOWN_SUBTESTS),
+        "TestContextBoundedRender": (context_tests.RENDER_SOURCE, context_tests.RENDER_SUBTESTS),
+        "TestContextMutationAdmission": (context_tests.MUTATION_SOURCE, context_tests.MUTATION_SUBTESTS),
+        "TestContextRecoveryAndPaths": (context_tests.RECOVERY_SOURCE, context_tests.RECOVERY_SUBTESTS),
+    }
+    if native["module_sha256"] != context_bridge.hash_go_module(repo / "core/artifacts"):
+        raise ValueError("context native qualification source module drifted")
+    names = set()
+    for case in native["cases"]:
+        if (not isinstance(case, dict) or set(case) != {
+                "name", "subtests", "source_sha256", "stdout_sha256",
+                "stderr_sha256", "exit_code"}):
+            raise ValueError("context native qualification has invalid case evidence")
+        name = case["name"]
+        if name not in expected or name in names or case["exit_code"] != 0:
+            raise ValueError("context native qualification has missing or failed cases")
+        source, subtests = expected[name]
+        if (case["subtests"] != list(subtests)
+                or case["source_sha256"] != hashlib.sha256(source.read_bytes()).hexdigest()
+                or any(not isinstance(case[field], str) or re.fullmatch(r"[0-9a-f]{64}", case[field]) is None
+                       for field in ("stdout_sha256", "stderr_sha256"))):
+            raise ValueError("context native qualification case evidence drifted")
+        names.add(name)
+    if names != CONTEXT_NATIVE_CASES:
+        raise ValueError("context native qualification omitted a required case")
+    native_bytes = json.dumps(native, sort_keys=True, separators=(",", ":")).encode("ascii")
+    return {
+        "source_commit": source_commit, "workflow": workflow, "run_id": run_id,
+        "binary_sha256": binary_sha256,
+        "observation_sha256": hashlib.sha256(native_bytes).hexdigest(),
+        "module_sha256": native["module_sha256"],
+        "native_cases": sorted(names),
+    }
 
 
 def _binary_matches_platform(platform_name: str, data: bytes) -> bool:
@@ -438,6 +503,7 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
     binaries: dict[str, bytes] = {}
     entries: dict[str, dict[str, object]] = {}
     qualifications: dict[str, dict[str, object]] = {}
+    context_qualifications: dict[str, dict[str, object]] = {}
     identity: tuple[str, str, str] | None = None
     installer = _artifact_installer_module()
     for candidate, qualification_path in zip(candidates, qualification_receipts, strict=True):
@@ -472,10 +538,16 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
             "schema_version": current_identity[2],
             "native_tests": sorted(ARTIFACT_NATIVE_TESTS),
         }
-        if receipt != expected_receipt:
+        context_native = receipt.get("context_native")
+        if receipt != {**expected_receipt, **({"context_native": context_native} if context_native is not None else {})}:
             raise ValueError(
                 f"qualification receipt is not bound to the trusted native result for {platform_name}"
             )
+        if context_native is not None:
+            context_qualifications[platform_name] = _context_qualification(
+                context_native, source_commit=trusted_source_commit,
+                binary_sha256=entry["sha256"], workflow=trusted_workflow,
+                run_id=trusted_workflow_run, repo=repo)
         entries[platform_name] = dict(entry)
         binaries[filename] = data
         qualifications[platform_name] = {
@@ -484,6 +556,8 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
             "binary_sha256": receipt["binary_sha256"],
             "native_tests": receipt["native_tests"],
         }
+        if context_native is not None:
+            qualifications[platform_name]["context_observation_sha256"] = context_qualifications[platform_name]["observation_sha256"]
 
     missing = set(required) - set(entries)
     extra = set(entries) - set(required)
@@ -499,6 +573,10 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
         "schema_version": identity[2],
         "binaries": {name: entries[name] for name in sorted(entries)},
     }
+    if context_qualifications:
+        release["context_qualification"] = {
+            name: context_qualifications[name] for name in sorted(context_qualifications)
+        }
     release_bytes = (json.dumps(release, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
     hosts = sorted(load_host_descriptors(str(repo)), key=lambda host: host.name)
@@ -1560,6 +1638,7 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         promotion_receipt_sha256=promotion_receipt_sha256, stage=stage,
         require_production=require_production,
     )
+    source_repo = source_repo.resolve(strict=True)
     installer = _artifact_installer_module()
     host_descriptors = {descriptor.name: descriptor for descriptor in load_host_descriptors(str(REPO))}
     descriptor = host_descriptors.get(host)
@@ -1647,7 +1726,7 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
                 workflow_env[name] = os.environ[name]
         workflow_completed = subprocess.run(
             [
-                sys.executable,
+                sys.executable, "-I", "-B",
                 str(workflow_script.absolute()),
                 "--host", host,
                 "--plugin-root", str(plugin_root.absolute()),
@@ -1705,6 +1784,65 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         ):
             raise RuntimeError("cold installed-host workflow returned malformed proof")
 
+        context_tests: list[dict[str, str]] = []
+        context_stdout_sha256: str | None = None
+        context_scope = "unsupported" if host == "pi" else "unqualified"
+        if require_production and host in {"claude", "codex"}:
+            if expected_platform not in manifest.get("context_qualification", {}):
+                raise RuntimeError("required cold context cell lacks native package qualification")
+            copied_cohort = extracted / "artifact-package-cohort.json"
+            with copied_cohort.open("xb") as stream:
+                stream.write((package_root / "artifact-package-cohort.json").read_bytes())
+            context_repository = isolated / "context-repository"
+            context_repository.mkdir()
+            runtime_cell = {
+                "format": "codearbiter.context-installed-cells/0.1.0",
+                "cell": {
+                    "host": host, "candidate_root": str(extracted.resolve(strict=True)),
+                    "plugin_root": str(plugin_root.resolve(strict=True)),
+                    "repository": str(context_repository.resolve(strict=True)),
+                    "binary_sha256": entry["sha256"],
+                    "candidate_commit": source_commit,
+                    "candidate_tree": cohort["source_tree"],
+                    "candidate_manifest_path": str(copied_cohort.resolve(strict=True)),
+                    "candidate_manifest_sha256": hashlib.sha256(copied_cohort.read_bytes()).hexdigest(),
+                    "python_executable": str(Path(sys.executable).resolve(strict=True)),
+                    "empty_path_dir": str(empty_path.resolve(strict=True)),
+                    "development_root": str(source_repo.resolve(strict=True)),
+                    "authorization": "fixture-only-installed-candidate",
+                },
+            }
+            cell_path = isolated / "context-installed-cell.json"
+            with cell_path.open("x", encoding="utf-8", newline="\n") as stream:
+                json.dump(runtime_cell, stream, sort_keys=True, separators=(",", ":"))
+                stream.write("\n")
+            context_env = dict(workflow_env)
+            context_env["CA_CONTEXT_INSTALLED_CELLS"] = str(cell_path)
+            context_completed = subprocess.run(
+                [sys.executable, "-I", "-B", "-m", "unittest", "discover",
+                 "-s", str(source_repo / ".github" / "scripts"),
+                 "-p", "test_context_installed.py", "-v"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=180,
+                check=False, cwd=context_repository, env=context_env,
+            )
+            if context_completed.returncode != 0:
+                raise _subprocess_failure("cold installed context workflow", context_completed)
+            sys.path.insert(0, str(source_repo / "core" / "pysrc"))
+            try:
+                from _artifactauthoritylib import _unittest_collector
+            finally:
+                sys.path.remove(str(source_repo / "core" / "pysrc"))
+            required = ["test_t044_installed_context_kind",
+                        "test_t044_rejects_missing_candidate_identity",
+                        "test_t044_rejects_nonisolated_environment"]
+            context_tests = _unittest_collector(
+                context_completed.stdout, context_completed.stderr, required)
+            context_stdout_sha256 = hashlib.sha256(
+                context_completed.stdout + b"\n" + context_completed.stderr).hexdigest()
+            context_scope = "candidate-preflight"
+        elif host == "pi":
+            context_scope = "unsupported-pi-authority"
+
     cold_receipt = {
         "format": ARTIFACT_COLD_EXECUTION_FORMAT,
         "source_commit": source_commit,
@@ -1735,6 +1873,12 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         "all_accepted_and_current": True,
         "markdown_shadow_count": 0,
     }
+    if require_production and host in {"claude", "codex"}:
+        cold_receipt.update({
+            "context_workflow_scope": context_scope,
+            "context_installed_tests": context_tests,
+            "context_installed_output_sha256": context_stdout_sha256,
+        })
     with output.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(cold_receipt, stream, indent=2, ensure_ascii=False)
         stream.write("\n")

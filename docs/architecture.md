@@ -40,6 +40,15 @@ of 100% validation.
 - The grouped **REVIEWER FLEET** and **finding-triage → checkpoint-aggregator** nodes are the
   convergence points many paths reuse, rather than each path carrying its own copy.
 
+The debug branch is a result map, not permission to perform the next action. An unknown trigger
+can enter with a cited failure. Hypotheses follow available discriminators, with no fixed count.
+A confirmed code defect carries a concrete regression obligation, but `/fix` requires the
+original caller's repair authority and an observed target-red test before changing code. An
+active authorized `/fix` can request one bounded internal diagnosis and resume its own gates;
+it does not recursively invoke public commands. A design question goes to an attributed
+decision owner, while a separately authorized task follow-up uses the existing `/task` owner
+and installed writer. Debug itself makes no default board write on `no_action` or `unresolved`.
+
 ## Context minimization
 
 Standing governance context is a **composed persona**: `includes/safety-core.md` followed by the
@@ -191,9 +200,11 @@ flowchart TD
     S_refactor -. "new test seam" .-> S_tdd
     S_refactor -. "diff is a feat" .-> C_feature
     C_debug --> S_debug
-    S_debug -->|"confirmed bug"| C_fix
-    S_debug -->|"design ambiguity"| C_adr
-    S_debug -. "no-action close" .-> NOACTION([append to open-tasks.md])
+    S_debug -->|"confirmed code defect + actual repair authority"| C_fix
+    S_debug -->|"confirmed non-code cause"| NONCODE([return to operational owner])
+    S_debug -->|"design question"| DESIGNQ([surface decision to attributed owner])
+    S_debug -->|"no action, positive closure evidence"| NOACTION([close without state write])
+    S_debug -->|"unresolved"| UNRESOLVED([report discriminator and resume condition])
     C_chore -->|"deps lane"| A_dep
     C_chore --> S_commitgate
     C_spike --> SPIKEBR["spike/* branch (commit-gate EXEMPT)"]

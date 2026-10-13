@@ -79,6 +79,15 @@ COLD_FIELDS = {
     "commit_proof", "finalization_proof", "all_accepted_and_current",
     "markdown_shadow_count",
 }
+CONTEXT_COLD_FIELDS = {
+    "context_workflow_scope", "context_installed_tests",
+    "context_installed_output_sha256",
+}
+CONTEXT_COLD_TESTS = [
+    {"name": "test_t044_installed_context_kind", "status": "pass"},
+    {"name": "test_t044_rejects_missing_candidate_identity", "status": "pass"},
+    {"name": "test_t044_rejects_nonisolated_environment", "status": "pass"},
+]
 INSTALLED_WORKFLOW_FORMAT = "codearbiter.installed-host-workflow/0.2.0"
 COLD_PLATFORMS = {
     "darwin/amd64", "darwin/arm64", "linux/amd64", "linux/arm64",
@@ -244,7 +253,8 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
         if path.is_symlink() or not path.is_file():
             raise ValueError("cold-execution receipt must be a real file")
         cold = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_unique_object)
-        if not isinstance(cold, dict) or set(cold) != COLD_FIELDS:
+        if (not isinstance(cold, dict)
+                or set(cold) not in (COLD_FIELDS, COLD_FIELDS | CONTEXT_COLD_FIELDS)):
             raise ValueError("cold-execution receipt schema is not exact")
         cell = (cold["host"], cold["platform"])
         if cell not in required or cell in observed:
@@ -287,6 +297,24 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
         manifest_name = prefix + "release.json"
         manifest_bytes = _archive_member_bytes(package_root / package["file"], manifest_name)
         manifest = json.loads(manifest_bytes)
+        context = manifest.get("context_qualification", {})
+        context_entry = context.get(cold["platform"]) if isinstance(context, dict) else None
+        if context_entry is not None and not isinstance(context_entry, dict):
+            raise ValueError("cold context package qualification is malformed")
+        if context_entry is None:
+            if set(cold) != COLD_FIELDS:
+                raise ValueError("cold context results lack package qualification")
+        elif cold["host"] in {"claude", "codex"}:
+            if (set(cold) != COLD_FIELDS | CONTEXT_COLD_FIELDS
+                    or cold["context_workflow_scope"] != "candidate-preflight"
+                    or cold["context_installed_tests"] != CONTEXT_COLD_TESTS
+                    or not isinstance(cold["context_installed_output_sha256"], str)
+                    or re.fullmatch(r"[0-9a-f]{64}", cold["context_installed_output_sha256"]) is None
+                    or context_entry.get("source_commit") != source_commit
+                    or context_entry.get("binary_sha256") != cold["binary_sha256"]):
+                raise ValueError("cold context results are not bound to the exact package")
+        elif set(cold) != COLD_FIELDS:
+            raise ValueError("unsupported host claimed cold context qualification")
         binary = manifest.get("binaries", {}).get(cold["platform"])
         if not isinstance(binary, dict) or not isinstance(binary.get("file"), str):
             raise ValueError("cold-execution binary is absent from the final manifest")

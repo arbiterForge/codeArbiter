@@ -77,7 +77,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `/ca-debug` | Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff. A no-action close records a board note. Not for implementing a known fix, new features, or explanation-only questions. |
+| `/ca-debug` | Investigate an unexplained defect or unexpected behavior without changing application code. Use for root-cause diagnosis and an evidence-backed handoff, including a bounded unresolved result. Not for implementing a known fix, new features, or explanation-only questions. |
 
 ### Review
 

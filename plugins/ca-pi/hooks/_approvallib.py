@@ -26,6 +26,7 @@ TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 HOST_RE = re.compile(r"[A-Za-z0-9_-]{1,32}")
 SESSION_RE = re.compile(r"[A-Za-z0-9._:-]{1,256}")
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
+PI_DIALOG_SESSION_RE = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")
 
 
 class ApprovalError(RuntimeError):
@@ -92,40 +93,44 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
     artifact_id = identity["artifact_id"]
 
     def same_identity(value: dict[str, Any]) -> None:
-        if not isinstance(value, dict) or any(value.get(key) != identity.get(key) for key in keys):
+        if not isinstance(value, dict) or type(value.get("revision")) is not int:
+            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification identity is malformed")
+        if any(value.get(key) != identity.get(key) for key in keys):
             raise _artifactlib.ArtifactError("STALE_PLAN_PREFLIGHT", "plan identity changed during verification preflight; reread the complete current plan")
 
-    same_identity(client.call("identity", {"artifact_id": artifact_id}))
     root = _artifactlib._trusted_directory(client.root, "UNSAFE_ROOT")
     diagnostics: list[str] = []
-    seen: set[str] = set()
+    last_task_id = ""
     command_count = 0
     offset, total = 0, None
     for _ in range(8193):
-        request = {"artifact_id": artifact_id, "offset": offset, "budget": 16384}
-        if offset:
-            request["model_sha256"] = identity["model_sha256"]
-        page = client.call("outline", request)
+        try:
+            page = client.call("plan-verification", {
+                "artifact_id": artifact_id, "expected": {key: identity[key] for key in keys},
+                "offset": offset, "budget": 16384,
+            })
+        except _artifactlib.ArtifactError as exc:
+            if exc.code == "STALE_CURSOR":
+                raise _artifactlib.ArtifactError("STALE_PLAN_PREFLIGHT", "plan identity changed during verification preflight; reread the complete current plan") from exc
+            raise
         same_identity(page)
-        _artifactlib.ArtifactClient._check_page(page, offset, "records")
-        if (page.get("offset") != offset or type(page.get("total")) is not int
-                or page["total"] < offset + len(page["records"])
-                or total is not None and page["total"] != total):
-            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline count or offset changed")
+        _artifactlib.ArtifactClient._check_page(page, offset, "tasks")
+        tasks = page["tasks"]
+        end = offset + len(tasks)
+        if (page.get("context_complete") is not False
+                or type(page.get("offset")) is not int or page["offset"] != offset
+                or type(page.get("total")) is not int or page["total"] < end
+                or total is not None and page["total"] != total
+                or not tasks and page["total"] != 0
+                or page["next_offset"] != (end if end < page["total"] else None)):
+            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification count, offset or completeness changed")
         total = page["total"]
-        for row in page["records"]:
-            if (not isinstance(row, dict) or not isinstance(row.get("id"), str)
-                    or row["id"] in seen or type(row.get("retired")) is not bool):
-                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline contains an invalid or duplicate record")
-            seen.add(row["id"])
-            if row.get("kind") != "tasks" or row["retired"]:
-                continue
-            exact = client.call("read", {"artifact_id": artifact_id, "symbol": row["id"], "mode": "exact", "budget": 16384})
-            same_identity(exact)
-            task = exact.get("record")
-            if (not isinstance(task, dict) or task.get("id") != row["id"]
+        for task in tasks:
+            if (not isinstance(task, dict) or set(task) != {"id", "verification"}
+                    or not isinstance(task.get("id"), str) or task["id"] <= last_task_id
                     or not isinstance(task.get("verification"), list) or not task["verification"]):
-                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan task lacks complete verification definitions")
+                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification contains an invalid, unordered or incomplete task")
+            last_task_id = task["id"]
             for number, definition in enumerate(task["verification"], 1):
                 command_count += 1
                 try:
@@ -145,18 +150,12 @@ def _preflight_plan_verification(client: Any, identity: dict[str, Any]) -> dict[
                     _artifactauthoritylib.validate_command_definition(definition, cwd=cwd)
                 except (_artifactlib.ArtifactError, _artifactauthoritylib.AuthorityError) as exc:
                     argv = definition.get("argv") if isinstance(definition, dict) else None
-                    diagnostics.append(f"{row['id']} verification[{number}] {json.dumps(argv, ensure_ascii=True)}: {exc}")
-        next_offset = page["next_offset"]
-        expected = offset + len(page["records"])
-        if next_offset is None:
-            if expected != total:
-                raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline ended before every record was inspected")
+                    diagnostics.append(f"{task['id']} verification[{number}] {json.dumps(argv, ensure_ascii=True)}: {exc}")
+        if page["next_offset"] is None:
             break
-        if next_offset != expected:
-            raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline skipped records")
-        offset = next_offset
+        offset = end
     else:
-        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan outline did not terminate")
+        raise _artifactlib.ArtifactError("INVALID_RESPONSE", "plan verification did not terminate")
     try:
         snapshot = client.call("snapshot", {"artifact_id": artifact_id})
     except _artifactlib.ArtifactError as exc:
@@ -354,14 +353,29 @@ def consume_user_approval(
     host: str,
     session_id: str,
     seam: str = "UserPromptSubmit",
+    expected_pending_sha256: str | None = None,
 ) -> dict[str, Any]:
     root = Path(root).resolve(strict=True)
-    if seam not in {"UserPromptSubmit", "AskUserQuestion"}:
+    if seam not in {"UserPromptSubmit", "AskUserQuestion", "PiNativeInput"}:
         raise ApprovalError("INVALID_HOST_CONTEXT", "approval seam is unsupported")
+    if host == "pi" or seam == "PiNativeInput":
+        # Only the isolated Pi dialog producer owns this seam. Its native session
+        # and fresh dialog generation travel together; ordinary Pi input events
+        # can contain transformed text and cannot use the prompt-hook route.
+        if (host != "pi" or seam != "PiNativeInput" or not isinstance(session_id, str)
+                or PI_DIALOG_SESSION_RE.fullmatch(session_id) is None
+                or not isinstance(expected_pending_sha256, str)
+                or SHA256_RE.fullmatch(expected_pending_sha256) is None):
+            raise ApprovalError("INVALID_HOST_CONTEXT", "Pi approval requires its native dialog session and generation")
     pending = _load_pending(root)
     if pending is None or not isinstance(prompt, str):
         return {"matched": False, "approved": False}
+    if expected_pending_sha256 is not None and not secrets.compare_digest(
+            hashlib.sha256(_canonical(pending)).hexdigest(), expected_pending_sha256):
+        raise ApprovalError("STALE_APPROVAL", "approval request changed while native input was pending")
     if pending["format"] == "codearbiter.pending-user-approval/0.2.0":
+        if host == "pi":
+            raise ApprovalError("INVALID_HOST_CONTEXT", "paired Pi approval is not qualified")
         import _sprintapprovallib
         return _sprintapprovallib.consume(root, client, pending, prompt, host=host, session_id=session_id, seam=seam)
     parts = prompt.split(" ")

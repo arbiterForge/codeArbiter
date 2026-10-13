@@ -23,7 +23,9 @@ from _gitexec import git_executable, root_bound_git_env  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 import _githooks  # noqa: E402 — #556: git-hook drop-in registry freshness
-from _hooklib import frontmatter_enabled, get_host, set_host, utf8_stdio  # noqa: E402
+from _hooklib import (  # noqa: E402
+    frontmatter_enabled, get_host, initialized_body_text, set_host, utf8_stdio,
+)
 
 HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
                 "pre-edit.py", "post-write-edit.py", "prune-transcript.py",
@@ -298,7 +300,7 @@ def check_repo():
     if enabled:
         with open(ctx, encoding="utf-8", errors="replace") as f:
             body = f.read()
-        if "<!--INITIALIZED-->" in body:
+        if initialized_body_text(body):
             ok("project is initialized (<!--INITIALIZED--> marker present)")
         else:
             warn(f"no <!--INITIALIZED--> marker — startup will route to "

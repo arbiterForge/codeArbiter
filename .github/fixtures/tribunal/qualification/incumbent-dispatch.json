@@ -1,0 +1,8 @@
+{
+  "run_id": "pr887-benchmark-A",
+  "dispatch_started_at": "2026-10-05 16:26:22 UTC",
+  "duration_basis": "coordinator-observed task wall time; model inference time unavailable",
+  "completion_observed_at": "2026-10-05T16:32:24.954556+00:00",
+  "duration_seconds": 362.954556,
+  "agent_identity": "/root/pr887_benchmark_a"
+}

@@ -81,15 +81,16 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as plain_root:
             fake_added = ['const test_secret_token ' + '= "dummy_synthetic_testing_token";\n']
             digest = _hooklib.line_digest(fake_added[0])
+            # The gate requires the marker to EXIST at the operation root.
+            expected_marker = os.path.join(plain_root, ".codearbiter", ".markers", "security-gate-passed")
+            os.makedirs(os.path.dirname(expected_marker))
+            open(expected_marker, "w", encoding="utf-8").close()
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test"), \
                  mock.patch.object(self.mod, "cached_added_lines", return_value=_hooklib.security_scan_lines(fake_added)), \
                  mock.patch.object(self.mod, "cached_names", return_value=set()), \
-                 mock.patch.object(self.mod, "marker_fresh", return_value=True) as mock_fresh, \
                  mock.patch.object(self.mod, "_marker_set", return_value={digest}) as mock_set:
                 self.mod.pre_commit(plain_root)
 
-            expected_marker = os.path.join(plain_root, ".codearbiter", ".markers", "security-gate-passed")
-            mock_fresh.assert_called_once_with(expected_marker, _hooklib.MARKER_FRESHNESS_MINUTES)
             mock_set.assert_called_once_with(plain_root, "security-gate-passed")
 
     def test_plain_repo_keeps_migration_marker_and_file_reads_under_operation_root(self):
@@ -131,19 +132,20 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
             main_root, worktree_root = self._linked_roots(temporary)
             fake_added = ['const test_secret_token ' + '= "dummy_synthetic_testing_token";\n']
             digest = _hooklib.line_digest(fake_added[0])
+            # The marker must be read from the MAIN root, never the worktree.
+            expected_marker = os.path.join(main_root, ".codearbiter", ".markers", "security-gate-passed")
+            os.makedirs(os.path.dirname(expected_marker), exist_ok=True)
+            open(expected_marker, "w", encoding="utf-8").close()
 
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test") as mock_branch, \
                  mock.patch.object(self.mod, "cached_added_lines", return_value=_hooklib.security_scan_lines(fake_added)) as mock_added, \
                  mock.patch.object(self.mod, "cached_names", return_value=set()) as mock_names, \
-                 mock.patch.object(self.mod, "marker_fresh", return_value=True) as mock_fresh, \
                  mock.patch.object(self.mod, "_marker_set", return_value={digest}) as mock_set:
                 self.mod.pre_commit(worktree_root)
 
-            expected_marker = os.path.join(main_root, ".codearbiter", ".markers", "security-gate-passed")
             mock_branch.assert_called_once_with(worktree_root)
             mock_added.assert_called_once_with(worktree_root)
             mock_names.assert_called_once_with(worktree_root)
-            mock_fresh.assert_called_once_with(expected_marker, _hooklib.MARKER_FRESHNESS_MINUTES)
             mock_set.assert_called_once_with(main_root, "security-gate-passed")
 
     def test_pre_commit_reads_migration_marker_from_main_root_in_worktree(self):

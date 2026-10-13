@@ -22,6 +22,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     ".codearbiter/specs/pi-support.md",
     ".codearbiter/specs/ci-impact-selection.md",
     "package.json",
+    "plugins/ca-pi/hooks/_host.py",
     ".codearbiter/tech-stack.md",
     ".github/scripts/test_host_descriptors.py",
     ".github/scripts/test_pi_child_live.py",
@@ -31,7 +32,6 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     ".github/scripts/pi_host_locks.py",
     ".github/scripts/test_verify_pi_support.py",
     ".github/scripts/verify_pi_support.py",
-    ".github/workflows/ci.yml",
     "README.md",
     "core/hosts.json",
     "core/surface/commands/doctor.md",
@@ -43,6 +43,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "site/src/content/docs/getting-started/pi.md",
     "site/scripts/generator/forge-status.ts",
     "site/test/content/documentation-presentation.test.ts",
+    "site/test/generator/forge-status.test.ts",
     "site/src/content/docs/guides/troubleshooting.md",
     "plugins/ca-pi/CHANGELOG.md",
     "plugins/ca-pi/package.json",
@@ -109,6 +110,9 @@ class ReleaseSource:
     # The repo-root manifest is the published npm unit (ADR-0029), rendered
     # from the nested version; a release bump must advance both in lockstep.
     root_package_path: Path | None = None
+    # The packaged hook adapter pins its own version to the manifest
+    # (AdapterVersionIdentityTest), so it advances in the same lockstep.
+    host_adapter_path: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -228,6 +232,8 @@ def load_targets(path: Path) -> Targets:
             _relative_path(release.get("changelog_path"), "release.changelog_path"),
             None if release.get("root_package_path") is None
             else _relative_path(release.get("root_package_path"), "release.root_package_path"),
+            None if release.get("host_adapter_path") is None
+            else _relative_path(release.get("host_adapter_path"), "release.host_adapter_path"),
         )
     return Targets(
         policy=PolicySource(
@@ -306,8 +312,9 @@ def _enforce_official_write_scope(repo: Path, targets: Targets) -> None:
             str(targets.release.package_path).replace("\\", "/"),
             str(targets.release.changelog_path).replace("\\", "/"),
         })
-        if targets.release.root_package_path is not None:
-            paths.add(str(targets.release.root_package_path).replace("\\", "/"))
+        for optional in (targets.release.root_package_path, targets.release.host_adapter_path):
+            if optional is not None:
+                paths.add(str(optional).replace("\\", "/"))
     unknown = sorted(paths - OFFICIAL_PROMOTION_PATHS)
     if unknown:
         raise PromotionError(f"promotion recipe declares unapproved write path: {unknown[0]}")
@@ -350,9 +357,18 @@ def _plan_release_metadata(repo: Path, release: ReleaseSource, candidate: Candid
         f"\n\n## [{next_version}] - {date}\n\n### Changed\n\n"
         f"- Promote the verified Pi host window through exact Pi {candidate.version}.\n"
     )
+    unreleased = re.search(r"(?m)^## \[Unreleased\][ \t]*$", changelog)
+    if unreleased is not None:
+        next_heading = re.search(r"(?m)^## ", changelog[unreleased.end():])
+        insertion = len(changelog) if next_heading is None else unreleased.end() + next_heading.start()
+        prefix = changelog[:insertion]
+        separator = "" if prefix.endswith("\n\n") else "\n" if prefix.endswith("\n") else "\n\n"
+        changelog = prefix + separator + entry.lstrip("\n") + "\n" + changelog[insertion:]
+    else:
+        changelog = changelog.replace(marker, marker + entry, 1)
     writes: list[tuple[Path, str]] = [
         (package_path, json.dumps(package, indent=2) + "\n"),
-        (changelog_path, changelog.replace(marker, marker + entry, 1)),
+        (changelog_path, changelog),
     ]
     changed: list[Path] = [release.package_path, release.changelog_path]
     if release.root_package_path is not None:
@@ -371,6 +387,20 @@ def _plan_release_metadata(repo: Path, release: ReleaseSource, candidate: Candid
         # so the generated-manifest byte contract keeps holding after the bump.
         writes.append((root_path, json.dumps(root_manifest, indent=2, ensure_ascii=False) + "\n"))
         changed.append(release.root_package_path)
+    if release.host_adapter_path is not None:
+        host_path = _target_path(repo, PromotionTarget("release-host-adapter", release.host_adapter_path, "release-metadata", "-", "-", "one"))
+        try:
+            host_source = host_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            raise PromotionError(f"cannot read ca-pi host adapter: {error}") from error
+        current = f'    adapter_version = "{version}"\n'
+        if host_source.count(current) != 1:
+            raise PromotionError(
+                "ca-pi host adapter_version does not match the nested manifest; "
+                "align it before promoting",
+            )
+        writes.append((host_path, host_source.replace(current, f'    adapter_version = "{next_version}"\n', 1)))
+        changed.append(release.host_adapter_path)
     return _ReleasePlan(writes=tuple(writes), changed=tuple(changed))
 
 
@@ -389,8 +419,9 @@ def apply_promotion(
     # declared target would be clobbered — refuse the recipe outright.
     if targets.release is not None:
         declared_release_paths = [targets.release.package_path, targets.release.changelog_path]
-        if targets.release.root_package_path is not None:
-            declared_release_paths.append(targets.release.root_package_path)
+        for optional in (targets.release.root_package_path, targets.release.host_adapter_path):
+            if optional is not None:
+                declared_release_paths.append(optional)
         if len(set(declared_release_paths)) != len(declared_release_paths):
             raise PromotionError("release paths must be distinct files")
         overlap = sorted(str(path) for path in set(declared_release_paths) & {target.path for target in targets.targets})
@@ -606,7 +637,10 @@ def _main() -> int:
     root = Path.cwd()
     if arguments.command == "policy":
         policy = read_policy(root, targets)
-        print(json.dumps({"minimum": policy.minimum, "last_verified": policy.last_verified, "node_floor": policy.node_floor}))
+        print(json.dumps({
+            "minimum": policy.minimum, "last_verified": policy.last_verified,
+            "supported_versions": policy.supported_versions, "node_floor": policy.node_floor,
+        }))
         return 0
     if arguments.command == "apply":
         candidate = parse_candidate(arguments.candidate, read_policy(root, targets))

@@ -40,7 +40,8 @@ describe("professional repository README", () => {
     }
 
     expect(readme.indexOf("## Get running")).toBeLessThan(readme.indexOf("## How governance works"));
-    expect(readme).toContain("https://arbiterforge.github.io/codeArbiter/#proof");
+    expect(readme).toContain("https://codearbiter.dev/#proof");
+    expect(readme).not.toContain("https://arbiterforge.github.io/codeArbiter");
     expect(readme).not.toContain("#direct-hook-proof");
   });
 

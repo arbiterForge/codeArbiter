@@ -20,7 +20,7 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 | Family | Operations |
 |---|---|
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity` |
-| Content | `create`, `apply`, `diff`, `read`, `validate`, `rebrand`, `export` |
+| Content | `create`, `apply`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
 | Authority | `capture`, `approve`, `plan-bind`, `prerequisite`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
 | Execution ledger | `snapshot`, `eligible`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
@@ -61,6 +61,39 @@ For mutations, fetch `identity` immediately before preparing the request. A conf
 
 `index` pages a unique validated catalog. `outline` returns stable IDs and summaries, bound to a model identity. Exact `read` returns the requested whole record and `context_complete: false`.
 
+`plan-verification` is an internal observation for approval preflight. Every page
+request supplies `artifact_id`, `expected: {artifact_id, revision, model_sha256,
+normative_sha256}`, `offset` and `budget`; the host uses a 16384-byte budget.
+The expected identity quartet is required on the first page and every continuation.
+A changed identity returns `STALE_CURSOR`, which the approval bridge reports as
+`STALE_PLAN_PREFLIGHT`. Other native failures retain their codes.
+
+The result carries the same identity quartet, `context_complete: false`, `offset`,
+the stable nonnegative active-task `total`, `tasks` and `next_offset`. Each task
+contains exactly `id` and its complete `verification` array. Active task IDs are
+strictly ascending and unique across pages; retired tasks and unrelated task prose
+are excluded. Offsets, totals and revisions are integers, never booleans. A
+continuation equals the current offset plus the number of whole tasks delivered;
+the final page has `next_offset: null` and reaches the exact total. An empty
+selection returns an empty final page at offset zero. A whole verification array
+that cannot fit the requested budget returns `RECORD_TOO_LARGE`, without truncation.
+The native projection preserves empty verification arrays; host preflight refuses
+an active task with no definitions.
+
+The bridge checks every projected command with the existing Python cwd and
+command-definition validator, then collects the source-input snapshot, then
+rechecks the full plan identity. Command diagnostics and snapshot diagnostics are
+aggregated; a snapshot diagnostic still requires the final identity check. This
+path executes no declared command, imports no declared test and performs no test
+discovery. A valid single-page preflight uses projection, snapshot and identity
+(three native calls); ordinary approval arming adds its existing ready identity
+and validation (five calls). Malformed, incomplete or stale delivery refuses
+before any pending approval is written.
+
+This operation joins only the existing shared-observation allowlist under the
+unchanged two-second lock timeout. It creates no context ticket, authority source,
+receipt or artifact, and retains writer exclusion and existing admission checks.
+
 Contextual `read` includes the selected record, applicable dependencies and governing context from the contributing documents. Follow every `next_cursor` until `context_complete: true`. Cursor identity includes contributing model and receipt/event bytes, not just the requested plan. A record is never silently cut in half; an oversized indivisible record fails with a specific diagnostic. The final context ticket is required by `task-start` and becomes stale when its contributing context changes. Delivery of context is not proof the model understood it.
 
 Cursors and completion tickets are SHA-256 names for engine-written cooperative delivery receipts under `.codearbiter/.artifacts/context-tokens/`. They are not authentication secrets and do not claim resistance to an unrestricted same-user filesystem writer. A digest without its corresponding engine-written receipt is rejected.
@@ -74,6 +107,8 @@ The test suite's synthetic user/reviewer events are test fixtures only. Producti
 A verification payload names the input digest, specification digest, task digest and actual outcomes for every declared command. Outcomes include the command-definition digest, exit, named test statuses and stdout/stderr digests. Missing, failing, duplicate or skipped required tests fail verification. A separate spec-review receipt is required. The binary verifies receipt structure and binding; the orchestrator—not this binary—runs commands and performs review.
 
 `snapshot` derives an input identity from file bytes, executable flags, directory membership, normative documents and declared platform/toolchain identity. Engine-generated outputs are excluded only when their output contracts validate. Whole `.codearbiter` is never excluded. Two matching scans reject ordinary concurrent changes. Default input roots cover the repository except Git metadata; large repositories need a reviewed explicit policy. External compiler/environment dependencies and existing host-generated outputs require a complete policy/adapter inventory before production rollout.
+
+Snapshot input identity is ship-set membership (ADR-0042). In a git work tree the members are the git index entries present on disk, plus untracked non-ignored files within the plan's input roots, minus the plan's excludes. A deleted index entry is absent, a gitlink counts as its pointer only, and executable flags come from the index mode. One fixed exemption exists: `.codearbiter/gate-events.log` is never counted in any snapshot, whatever the plan says, and it stays tracked as the audit trail. Every other `.codearbiter` path still counts. Outside a git work tree, membership is read from the filesystem (`membership: filesystem`). The root must be the top level of its work tree: a root that is a subdirectory of one has no `.git` of its own and counts as outside git; a git probe that fails inside a work tree fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE` and never falls back to the filesystem. An unmerged git index (conflicted paths) also makes a snapshot fail closed until the conflict is resolved. The manifest format is `codearbiter.verification-inputs/0.2.0`, which records membership; receipts bound to a 0.1.0 manifest read as stale. Within one operation each evidence object is validated at most once and scans are bounded. Raw reads are reused only up to a 64 MiB per-operation retained-byte budget, past which an object can be read again, but validation is never skipped.
 
 Within one checkpoint, a predecessor in `REVIEW` can unblock a dependent after current verification and spec review. Across checkpoint scopes, dependencies need current accepted-scope evidence. After all tasks reach `REVIEW`, reverify against the current combined input state and perform the scope quality review. `accept-scope` records the entire scope together. A later source change marks evidence stale without pretending earlier work never happened. Interrupted `IN_PROGRESS` tasks and changed scope baselines require explicit reconciliation.
 
@@ -144,6 +179,16 @@ New artifacts advertise schema **0.3.1**. This patch permits an empty companion 
 The reviewed design originally used schema 0.2.0. It is retained as a re-rendered review reference under `design/original-review2/` for merge acceptance. The implementation's 0.3.x schema changes are **implementation deviations requiring explicit review**, not amendments to that original contract. The safe-integer-only canonical domain is not one of those deviations; it is the original v0.1.0 contract.
 
 Readiness now requires every declared task path to fall within its verification-input roots and outside explicit exclusions. This proves declared-path coverage only, not transitive build dependencies. Explicitly excluded symlinks are not followed or inspected; an included symlink still blocks a snapshot. Known test-runner spellings (including absolute Go paths, Python module invocation, Node and npm) require named tests. Custom wrappers still need reviewer-declared `required_tests`; the engine does not claim universal command intent detection.
+
+## Completion workspace Git probes
+
+Completion evidence checks use the bridge-selected absolute Git executable for a
+closed set of read-only identity, status and index probes. Their arguments are
+compiled into the engine; artifact text cannot supply a command or Git option.
+The probes disable lazy fetching and filesystem-monitor commands, retain bounded
+output and a timeout, and do not invoke a shell. The package guard permits this
+reviewed boundary while continuing to reject other process launches, network
+packages and direct network syscalls.
 
 ## Durable replay results
 

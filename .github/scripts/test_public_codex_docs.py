@@ -755,7 +755,11 @@ class PublicCodexDocsTest(unittest.TestCase):
     def test_readme_announces_all_hosts_and_shared_parity(self):
         """The README presents one product and all supported host adapters."""
         self.assertIn(
-            "Shared enforcement and project-context parity across Claude Code, Codex CLI, and Pi",
+            "Open-source governance and hard gates for AI coding agents across Claude Code, Codex CLI, and Pi.",
+            self.readme,
+        )
+        self.assertIn(
+            "The three governance hosts are generated from one shared surface and use one checked-in",
             self.readme,
         )
         opening = self.readme.split("## See it catch something", 1)[0]

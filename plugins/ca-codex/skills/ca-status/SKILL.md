@@ -18,6 +18,11 @@ write only after the user's explicit selection. In drift mode the `context-check
 the opening summary and Hard gate below apply only to the no-argument snapshot. With no argument,
 continue with the unchanged read-only snapshot below. Reject other arguments rather than treating
 them as drift mode.
+
+An initialized refresh is a separate explicit scoped or full selection handled
+by that existing owner after its read-only report. Neither this argument nor an
+ordinary status snapshot authorizes a write, a create-context retry or marker
+reset.
 <!-- catalog-command-modes:end -->
 
 ## Flow

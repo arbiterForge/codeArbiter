@@ -61,6 +61,41 @@ refresh. A rolled-back operation reports `OPERATION_ROLLED_BACK`, not success.
 `RECOVERY_REQUIRED` and `COMMIT_OUTCOME_UNKNOWN` stop execution until the
 transaction is reconciled.
 
+## Repository-context source upgrade and recovery
+
+The repository-context writer is a separate, bounded kind in the artifact
+engine. Its canonical outputs remain human-readable Markdown. A selected
+document may acquire a version 2 per-document provenance record only after
+the writer has checked its current document and provenance bytes, selected
+owned fields, and received the workflow's review evidence. Other documents
+remain in their existing format and retain their exact bytes. A supported
+field update preserves the initialization marker and all unowned Markdown;
+task, question, audit and other independently owned files are outside this
+writer's transaction.
+
+An interrupted context write leaves a journal for explicit `recover`. Retry
+with the same operation ID and input after a lost response. Completing or
+rolling back a pending transaction requires the recorded before/after bytes;
+if a human changed either target, recovery reports a conflict and retains the
+edit and pending journal for reconciliation. An unsupported journal version
+blocks another context write rather than being deleted or interpreted by an
+older engine. A stale expected document or provenance identity likewise
+refuses replacement.
+
+Version 1 provenance remains readable as legacy coverage while selected
+records upgrade. Mixed version 1/version 2 coverage is incomplete, and even
+a current version 2 identity does not establish semantic verification on its
+own. A version 1 writer refuses to replace a version 2 or unsupported record;
+an older host cannot claim verified-context reliance by silently skipping a
+newer record. Canonical Markdown stays available for reading and authorized
+task-time evidence use. A host without a qualified installed context writer
+must stop context mutation; source-level engine capability alone does not
+qualify an installed package.
+
+Native guidance publication and removal are conditional P1 work. No native
+guidance rollback is claimed until that path is selected, implemented and
+qualified; the context-document recovery contract above does not create it.
+
 ## Rollback
 
 Stop dispatch first. Before any new-format mutation, `migration-rollback` may

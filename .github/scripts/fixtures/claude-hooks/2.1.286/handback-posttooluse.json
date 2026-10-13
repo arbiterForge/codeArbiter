@@ -1,0 +1,23 @@
+{
+ "agent_id": "agent-1",
+ "agent_type": "ca:authority-reviewer",
+ "cwd": "<cwd>",
+ "duration_ms": 13,
+ "effort": {
+  "level": "medium"
+ },
+ "hook_event_name": "PostToolUse",
+ "permission_mode": "auto",
+ "prompt_id": "prompt-1",
+ "session_id": "session-1",
+ "tool_input": {
+  "message": "{\"decision\":\"pass\",\"findings\":[]}"
+ },
+ "tool_name": "SubagentHandback",
+ "tool_response": {
+  "message": "Report delivered to your caller.",
+  "success": true
+ },
+ "tool_use_id": "toolu-2",
+ "transcript_path": "<transcript-path>"
+}

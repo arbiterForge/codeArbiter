@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 import pathlib
 import re
 import subprocess
 import sys
 import unittest
+
+import check_codex_skill_resources as codex_resources
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -99,6 +102,20 @@ EXPECTED_EPHEMERAL_OUTPUTS = {
     "generator": "site/scripts/gen.ts",
     "source_root": "plugins/ca",
     "workflow": ".github/workflows/docs.yml",
+}
+
+CONTEXT_PYTHON_SOURCES = (
+    "_artifactlib.py", "_protectedstatelib.py", "_contextreportlib.py",
+    "_contextsnapshotlib.py", "_provenancelib.py",
+    "_contextselectlib.py", "_artifactpromptlib.py", "_readinjectlib.py",
+    "prompt-submit.py",
+)
+CONTEXT_SURFACE_CONSUMERS = {
+    "commands/feature.md": "compose_feature_actor_input",
+    "commands/fix.md": "compose_fix_or_test_actor_input",
+    "commands/review.md": "prepare_review_input",
+    "skills/tdd/SKILL.md": "compose_fix_or_test_actor_input",
+    "skills/subagent-driven-development/SKILL.md": "prepare_actor_delivery",
 }
 
 
@@ -427,6 +444,102 @@ class ArtifactConsumerClosureTest(unittest.TestCase):
         review = ABSORPTION_REVIEW_PATH.read_text(encoding="utf-8")
         self.assertIn("T-017 | Partial; explicit deviation", review)
         self.assertIn("status portion is not implemented", review)
+
+
+class TestContextConsumerClosure(unittest.TestCase):
+    def shortDescription(self):
+        return None
+
+    @classmethod
+    def setUpClass(cls):
+        spec = importlib.util.spec_from_file_location(
+            "context_build_surface", ROOT / "tools" / "build-surface.py")
+        cls.build_surface = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.build_surface)
+        cls.package = ROOT / "plugins" / "ca-codex"
+
+    def generated_snapshot(self):
+        expected = {}
+        actual = {}
+        for descriptor in self.build_surface.load_host_descriptors(str(ROOT)):
+            host_root = ROOT / descriptor.plugin_dir
+            rendered = self.build_surface.render_all(str(ROOT), descriptor.name)
+            for source in CONTEXT_PYTHON_SOURCES:
+                canonical = (ROOT / "core" / "pysrc" / source).read_bytes()
+                key = (host_root / "hooks" / source).relative_to(ROOT).as_posix()
+                expected[key] = canonical
+                actual[key] = (ROOT / key).read_bytes()
+            for source, symbol in CONTEXT_SURFACE_CONSUMERS.items():
+                canonical_path = ROOT / "core" / "surface" / source
+                self.assertIn(symbol, canonical_path.read_text(encoding="utf-8"), source)
+                destination, _ = self.build_surface._output_rel(source, descriptor)
+                self.assertIsNotNone(destination, (descriptor.name, source))
+                key = (host_root / destination).relative_to(ROOT).as_posix()
+                expected[key] = rendered[destination]
+                actual[key] = (ROOT / key).read_bytes()
+                self.assertIn(symbol.encode(), actual[key], key)
+        return expected, actual
+
+    @staticmethod
+    def generated_mismatches(expected, actual):
+        return sorted(path for path, body in expected.items()
+                      if actual.get(path) != body)
+
+    def test_t042_context_consumer_closure_positive_controls(self):
+        """Context source, helpers, owner routes and three generated hosts close."""
+        expected, actual = self.generated_snapshot()
+        self.assertEqual(len(expected), 3 * (len(CONTEXT_PYTHON_SOURCES) +
+                                              len(CONTEXT_SURFACE_CONSUMERS)))
+        self.assertEqual(self.generated_mismatches(expected, actual), [])
+        files = codex_resources._candidate_package_files(self.package)
+        self.assertIsNone(codex_resources.validate_context_consumer_resources(files))
+        self.assertTrue(codex_resources.candidate_resource_contract(
+            self.package, files=files)["selected_paths"])
+        inventory = load_inventory()["public_surface_baseline"]
+        routes = json.loads((ROOT / "core/surface/command-routes.json").read_text(
+            encoding="utf-8"))["commands"]
+        reviewed_removals = {row["name"] for row in inventory["reviewed_removals"]
+                             if row["category"] == "commands"}
+        self.assertEqual(set(routes),
+                         set(inventory["registrations"]["commands"]) - reviewed_removals)
+        self.assertEqual(reviewed_removals, {"new-skill"})
+        protected = next(row for row in load_inventory()["consumers"]
+                         if row["id"] == "context-writer-protected-state")
+        self.assertEqual(protected["treatment"], "partial")
+        self.assertFalse(protected["default_path"])
+        self.assertIn("core/pysrc/_protectedstatelib.py",
+                      protected["canonical_paths"])
+
+    def test_t042_context_consumer_closure_negative_controls(self):
+        """Missing selector/helper, changed copy or omitted consumer fails."""
+        files = codex_resources._candidate_package_files(self.package)
+        for absent in ("hooks/_contextselectlib.py", "hooks/_contextreportlib.py",
+                       "hooks/_protectedstatelib.py", "routines/tdd/SKILL.md"):
+            damaged = dict(files)
+            del damaged[absent]
+            with self.subTest(absent=absent), self.assertRaisesRegex(
+                    ValueError, "context.*missing"):
+                codex_resources.validate_context_consumer_resources(damaged)
+        omitted = dict(files)
+        route = "skills/ca-review/SKILL.md"
+        self.assertIn(b"prepare_review_input", omitted[route])
+        omitted[route] = omitted[route].replace(b"prepare_review_input",
+                                                b"omitted_review_context", 1)
+        with self.assertRaisesRegex(ValueError, "context.*consumer"):
+            codex_resources.candidate_resource_contract(self.package, files=omitted)
+        expected, actual = self.generated_snapshot()
+        altered = dict(actual)
+        path = next(key for key in altered if key.endswith(
+            "plugins/ca-pi/hooks/_contextselectlib.py"))
+        altered[path] += b"\n# generated drift\n"
+        self.assertEqual(self.generated_mismatches(expected, altered), [path])
+        accounted, trees = inventory_paths(load_inventory())
+        accounted.remove("core/pysrc/_protectedstatelib.py")
+        self.assertEqual(unaccounted({"core/pysrc/_protectedstatelib.py"},
+                                     accounted, trees),
+                         ["core/pysrc/_protectedstatelib.py"])
+        self.assertIsNone(codex_resources.validate_context_consumer_resources(
+            {"skills/ca-feature/SKILL.md": b"Legacy feature policy"}))
 
 
 if __name__ == "__main__":

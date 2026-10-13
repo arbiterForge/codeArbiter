@@ -1,0 +1,124 @@
+{
+  "schema": "tribunal-resource-notation-correction/v1",
+  "captured_bundle_sha256": "05c7accc1e635b6bd61bc8f3071c874cf20417a65a176ada78f2f0e8306945ec",
+  "delivered_bundle_sha256": "9f911c3d7200b90d06305b4daa5b5ab7cda03ce0c6a2174df25fff45b9a2c032",
+  "transformation": "[label]({{PLUGIN_ROOT}}/path) -> label (`{{PLUGIN_ROOT}}/path`); preserve label, path and every other byte",
+  "changed_files": [
+    {
+      "path": "core/surface/skills/tribunal/SKILL.md",
+      "links": 8,
+      "before_sha256": "0b22e7e2d01fdb2e5ebad0116dc5aa3d85fcdae5242d2edae20f3693d84bc735",
+      "after_sha256": "fe475c12cca3a0cf4d2977ff85c8e9fe878b726c11ec14e736ffa003f66569ad"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/ai-markers.md",
+      "links": 1,
+      "before_sha256": "8f5674b2e3307de7cea20a161a6c632ced8c97006afefb9edea8f4e762e742d1",
+      "after_sha256": "bcbc025ff69f8d32e9a543dce7b04a522c6ad8bbb74abd11b6f56de941197d46"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/cost-and-models.md",
+      "links": 1,
+      "before_sha256": "0c4c4106e22be873fc47e0cff16240a443ab49ad2ec62f184fc86a12a3fd51df",
+      "after_sha256": "1bb61db28229803bfa2841d5e08358cf75ccb45bd72d510a8e6026289a706448"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/finding-record.md",
+      "links": 1,
+      "before_sha256": "b92b5a82e3ca904d9ea7fb4d296421de1034e32f3562c193eee1947234d5f834",
+      "after_sha256": "f82a0d48b31a2521617fb9a7b4326f6c2ce439022367dcaf67f3d338bce010c7"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/issue-filing.md",
+      "links": 1,
+      "before_sha256": "a7698f4c6c5009bb63d0529cb124a95bbe75bccf91d6d6a7f6e2aa805e6c6189",
+      "after_sha256": "b7eb4b28315ba0d9c5ed943f3014cb3f96a5bd9ba4f418c6c2d77ae7cea3d052"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/appsec.md",
+      "links": 2,
+      "before_sha256": "8edcd7db2f35342964e86f717d0ea6e9d8e694eb40f72d69a52db9705d7cd389",
+      "after_sha256": "535d4093d9e908d5bde2b099db5522ac98449b74939ab84c11bca38813a2f8e6"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/architecture.md",
+      "links": 2,
+      "before_sha256": "bfd986e48351d39b78047cda50f93550e0187209f8d8b19740ea10e4725bcd20",
+      "after_sha256": "4d0c783f1cf0ed79ae3fd55934fd17f1f36d908c69f7ddee3fb3d0ef94a30e6e"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/change-closure.md",
+      "links": 2,
+      "before_sha256": "1c885afa3b9601edfccf0e67156573f312c3d0fb19383fcbd89deea2cf162c06",
+      "after_sha256": "c4872a00ea4ffdffe53b508df95693a4fad71580e758a87c6a822cf525cbd1de"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/coverage.md",
+      "links": 3,
+      "before_sha256": "1b254589e7bc308b89c891c1a8f1e435d3d6c508002be14ab9bce7b5a0ea1a42",
+      "after_sha256": "84ae38b02ba2261f42732d67dc6f8e77211b809f1451b0ced91371f4fc802319"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/infra.md",
+      "links": 2,
+      "before_sha256": "0ffedf7d4d777637848f6a5b10413cc794c27207457adef05cc20bdff72680a0",
+      "after_sha256": "8bb308a10f4b5f2e42093a5da9f3d6fbff885f9b8ecf8114263fb8a8c2204cc2"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/migration.md",
+      "links": 2,
+      "before_sha256": "5680c7ff6da516fd949969e3505a0a3885eb699edb48ba463eda031560009892",
+      "after_sha256": "d59b60c1e94dea414047f0af6544d437cf5fda0cc3f27196db3eba69e31ca40c"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/observability.md",
+      "links": 2,
+      "before_sha256": "2a2961dd3046d059dea51f7227e52b0e09da2c5ca13fdebe6fb7ce559a108754",
+      "after_sha256": "56d747329c38209073aa5c10ab688383e2cbc425528dad156e3a19d34d4b9f33"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/performance.md",
+      "links": 2,
+      "before_sha256": "2eb053d5ad968d0a379cb6b8e677222f8b9f3b1e8a6ec190cd2d177d25f2494b",
+      "after_sha256": "678983f65b979eeb419bd4c37e3673c9a9d47a3baeaaf144d61e1f8b1cf58ead"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/reliability.md",
+      "links": 2,
+      "before_sha256": "6506637c4dc2e4429424a5ec7b96dc1a2f089511c9c46bba7861b6f95f7ce5dc",
+      "after_sha256": "b8e4e4afafc9d4e8bcf447627f0882651128c0ff02107ca96af2b6c422f6d858"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/secrets-supply.md",
+      "links": 2,
+      "before_sha256": "20f06cbcdf1c4f2f5251cc536a3810830ea10bb09ae0d757b0ba1e911deb6c4a",
+      "after_sha256": "b7f5c50a14323991d25b25f0f281e4881dfff769ade2a41bfc9e163347aeeab0"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/semantic-contract.md",
+      "links": 2,
+      "before_sha256": "9264181fa2be55a4617f6382ffc956b9bb42a8dbec1fdd3c5a244864fe3e5e52",
+      "after_sha256": "c0f30171b78c9b65adee074f692744abeeb57c0f0435a8716792f126602aaa35"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/test-fidelity.md",
+      "links": 3,
+      "before_sha256": "8afcb0ae2a037c03e695c749cc3318e8aa6068747263e725e72020d0d083ec41",
+      "after_sha256": "abd5054a78b74fcc405a528c54af81b8f3302dea6b71ee713cba4545b0903461"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/lenses/typesafety.md",
+      "links": 2,
+      "before_sha256": "283ba4382072871c1ef0ce97e02afc0526c0dcd326bcd9eae52733a8214ef1d3",
+      "after_sha256": "b0fa14e92867179bba818ff50bbb75eb516a649d6f410ab2e4553c5a1643a9f8"
+    },
+    {
+      "path": "core/surface/skills/tribunal/references/schemas.md",
+      "links": 2,
+      "before_sha256": "ca1da476283b1396e3234864ecec013b2669c8cbc3e66429fd0cdd9e03dddf3e",
+      "after_sha256": "86e391bd60b19ffb914aa6300320b5ab335ec1a0b1b793bcffacab27e800c76f"
+    }
+  ],
+  "total_links": 42,
+  "scope": "Package resource notation only. The real candidate review remains bound to its original frozen bundle; no model rerun or modification of captured findings."
+}

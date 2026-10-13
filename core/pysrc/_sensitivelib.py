@@ -281,7 +281,7 @@ def sensitive_scan_added_lines(diff_text):
 # bindings use a separate marker namespace; a user-authored source string or
 # an old line-only approval cannot impersonate one of these records.
 # SecurityScan(crypto, digests): classification and exact approval identities.
-# security_scan_lines(lines) -> SecurityScan|None: line-bound scan or refusal.
+# security_scan_lines(lines, path=None) -> SecurityScan|None: line-bound scan or refusal.
 # security_scan_source(path, source, added_rows) -> SecurityScan|None.
 # security_scan_diff(text) -> SecurityScan|None: None means untrusted context.
 SecurityScan = namedtuple("SecurityScan", "crypto digests")
@@ -320,20 +320,23 @@ def _cross_line_crypto_spans(lines):
     return spans
 
 
-def _scan_bound_lines(lines, contextual_bindings):
+def _scan_bound_lines(lines, contextual_bindings, path=None):
     """Each cross-line match needs its own recognized contextual identity."""
     spans = _cross_line_crypto_spans(lines)
     if not spans <= contextual_bindings.keys():
         return None
     return SecurityScan(bool(spans) or any(CRYPTO_RE.search(line) for line in lines), {
-        line_digest(line) for line in lines
+        line_digest(line, path) for line in lines
         if CRYPTO_RE.search(line) or SECRET_RE.search(line)
     } | set(contextual_bindings.values()))
 
 
-def security_scan_lines(lines):
-    """Preserve same-line bindings; refuse crypto spanning unbound lines."""
-    return _scan_bound_lines(lines, {})
+def security_scan_lines(lines, path=None):
+    """Preserve same-line bindings; refuse crypto spanning unbound lines.
+
+    `path` binds each approval to the file the line lives in, so a reviewed
+    line cannot be admitted again after moving to a different file."""
+    return _scan_bound_lines(lines, {}, path)
 
 
 def security_scan_source(path, source, added_rows):
@@ -348,7 +351,7 @@ def security_scan_source(path, source, added_rows):
     if any(row < 1 or row > len(lines) for row in added_rows):
         return None
     added = [lines[row - 1] for row in added_rows]
-    result = security_scan_lines(added)
+    result = security_scan_lines(added, path)
     candidates = {row for row in added_rows
                   if _is_context_item_line(lines[row - 1])}
     if not candidates:
@@ -405,7 +408,7 @@ def security_scan_source(path, source, added_rows):
     bindings = {(positions[first[0]], first[1], positions[last[0]], last[1]): contexts[last[0]]
                 for first, last in import_spans
                 if first[0] in positions and last[0] in positions}
-    result = _scan_bound_lines(added, bindings)
+    result = _scan_bound_lines(added, bindings, path)
     if result is None:
         return None
     return SecurityScan(result.crypto or bool(contexts), result.digests | set(contexts.values()))
@@ -484,7 +487,9 @@ def security_scan_diff(diff_text):
         # in the legacy permissive walker before context validation even runs.
         if not any(line.startswith("+") and _is_context_item_line(line[1:])
                    for line in section):
-            contextual = security_scan_lines(added)
+            # One file per section: bind its approvals to that file's path.
+            paths = {path for path, _ in attributed if path}
+            contextual = security_scan_lines(added, paths.pop() if len(paths) == 1 else None)
         else:
             if not section[0].startswith("diff --git "):
                 return None
@@ -508,14 +513,23 @@ def security_scan_diff(diff_text):
     return result
 
 
-def line_digest(line):
+def line_digest(line, path=None):
     """Digest of one added diff line, for the security-gate binding
     (H-09b/H-10b). The gate-pass marker stores these digests instead of being
     an empty `touch`d file, so a recorded pass admits only the exact sensitive
-    lines it reviewed — not whatever lands in the next 30 minutes. Trailing
-    whitespace is stripped so CRLF translation between worktree and index
-    never breaks the match."""
-    return hashlib.sha256(line.rstrip().encode("utf-8", "replace")).hexdigest()
+    lines it reviewed. A pass has no time window, so the digest also binds the
+    repository-relative `path` the line was reviewed in: the identical line in
+    a different file is a different digest and needs its own review. Without
+    a path (an unattributable diff section) both the recording and the
+    checking side fall back to the line alone. Trailing whitespace is
+    stripped so CRLF translation between worktree and index never breaks the
+    match."""
+    text = line.rstrip()
+    if path is None:
+        return hashlib.sha256(text.encode("utf-8", "replace")).hexdigest()
+    return "path-v1:" + hashlib.sha256(json.dumps(
+        [path, text], separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8", "replace")).hexdigest()
 
 
 def content_digest(text):

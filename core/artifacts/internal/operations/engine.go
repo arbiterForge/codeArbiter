@@ -6,6 +6,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	reads "github.com/arbiterForge/codeArbiter/core/artifacts/internal/read"
@@ -20,10 +21,33 @@ import (
 	"time"
 )
 
+// openStore opens the store handle for one engine operation; tests may wrap it
+// to instrument that handle. Production never reassigns it.
+var openStore = store.Open
+
+// The existing-store observation capability is Windows-only. A portable
+// interface keeps other native backends on their unchanged locking path.
+type existingStoreObservationLocker interface {
+	ObservationLock(bool, time.Duration) (func(), error)
+}
+
 type Engine struct {
 	FS          *store.FS
 	Catalog     *repository.Catalog
 	RequestHash string
+}
+
+// Only observations that produce no context tokens, receipts or state changes
+// may overlap. New operations remain exclusive until explicitly classified.
+func sharedObservation(op string, r object) bool {
+	switch op {
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification":
+		return true
+	case "read":
+		return model.S(r["mode"]) == "exact"
+	default:
+		return false
+	}
 }
 
 func Identity(d *model.Document, p string) object {
@@ -38,7 +62,10 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	if op == "capabilities" {
-		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
+		_, contextContract := kind.Lookup("context")
+		contextCodec, contextCodecFound := kind.Codecs()["context"]
+		contextRegistered := contextContract && contextCodecFound && contextCodec.Optional && contextCodec.Representation == kind.Markdown
+		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": false, "qualification": "package-required", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
 	}
 	if op == "schema" {
 		switch model.S(r["name"]) {
@@ -58,12 +85,21 @@ func Run(root, op string, input object) (any, error) {
 			return schema.Get(model.S(r["name"]), model.S(r["fragment"]))
 		}
 	}
-	f, e := store.Open(root)
+	f, e := openStore(root)
 	if e != nil {
 		return nil, e
 	}
 	defer f.Close()
-	unlock, e := f.Lock(true, 2*time.Second)
+	var unlock func()
+	if runtime.GOOS == "windows" && (op == "index" || sharedObservation(op, r)) {
+		locker, ok := any(f).(existingStoreObservationLocker)
+		if !ok {
+			return nil, fault.New("LOCK_FAILED", "existing repository lock is unavailable")
+		}
+		unlock, e = locker.ObservationLock(!sharedObservation(op, r), 2*time.Second)
+	} else {
+		unlock, e = f.Lock(!sharedObservation(op, r), 2*time.Second)
+	}
 	if e != nil {
 		return nil, e
 	}
@@ -101,7 +137,29 @@ func Run(root, op string, input object) (any, error) {
 	if op == "repair-preview" || op == "repair-apply" {
 		return engine.repair(op, r)
 	}
-	c, e := repository.Scan(f)
+	if op == "context-evidence-context" {
+		return engine.contextEvidenceContext(r)
+	}
+	if op == "context-finalize-evidence-context" {
+		return engine.contextFinalizationEvidenceContext(r)
+	}
+	if op == "context-apply" {
+		return engine.contextApply(r)
+	}
+	if op == "capture-observation" {
+		observedSource, _, sourceErr := authority.LoadSource(f, model.S(r["source_ref"]), model.S(r["source_sha256"]))
+		if sourceErr != nil {
+			return nil, sourceErr
+		}
+		if model.S(observedSource["kind"]) == "context_approval" {
+			return engine.captureContextPreview(r)
+		}
+	}
+	activeKind := model.S(r["kind"])
+	if activeKind == "" {
+		activeKind = kind.ForID(model.S(r["artifact_id"]))
+	}
+	c, e := repository.ScanFor(f, activeKind)
 	if e != nil {
 		return nil, e
 	}
@@ -176,6 +234,19 @@ func Run(root, op string, input object) (any, error) {
 			return reads.Exact(d, model.S(r["symbol"]), budget)
 		}
 		return reads.Page(f, c, d, model.S(r["symbol"]), model.S(r["cursor"]), budget)
+	case "read-batch":
+		if model.S(r["model_sha256"]) != d.Hash() {
+			return nil, fault.New("STALE_CURSOR", "exact batch requires the same model identity")
+		}
+		offset, ok := model.NativeInt(model.I(r["offset"]))
+		if !ok {
+			return nil, fault.New("INVALID_OFFSET", "batch offset is outside the native integer range")
+		}
+		out, err := reads.ExactBatch(d, model.Strings(r["symbols"]), offset, budget)
+		if err != nil {
+			return nil, err
+		}
+		return out, nil
 	case "outline":
 		offset, ok := model.NativeInt(model.I(r["offset"]))
 		if !ok {
@@ -185,6 +256,20 @@ func Run(root, op string, input object) (any, error) {
 			return nil, fault.New("STALE_CURSOR", "outline continuation requires the same model identity")
 		}
 		return reads.Outline(d, offset, budget)
+	case "plan-verification":
+		expected := model.M(r["expected"])
+		if model.S(expected["artifact_id"]) != d.ID() || model.I(expected["revision"]) != d.Revision() || model.S(expected["model_sha256"]) != d.Hash() || model.S(expected["normative_sha256"]) != d.NormHash() {
+			return nil, fault.New("STALE_CURSOR", "plan verification requires the same full artifact identity")
+		}
+		offset, ok := model.NativeInt(model.I(r["offset"]))
+		if !ok {
+			return nil, fault.New("INVALID_OFFSET", "verification offset is outside the native integer range")
+		}
+		out, err := reads.PlanVerification(d, offset, budget)
+		if err != nil {
+			return nil, err
+		}
+		return out, nil
 	case "validate":
 		gate := model.S(r["gate"])
 		es := validate.Structural(d)

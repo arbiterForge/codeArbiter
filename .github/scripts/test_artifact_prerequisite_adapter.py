@@ -170,6 +170,32 @@ class PrerequisiteAdapterTest(unittest.TestCase):
         self.assertEqual(self.hook("yes"), "")
         self.assertEqual(self.client.calls, before)
 
+    def test_delayed_short_reply_is_accepted_once_within_24_hours(self):
+        self.hook_fixture()
+        with mock.patch.object(time, "time", return_value=1000):
+            armed = self.arm()
+        with mock.patch.object(time, "time", return_value=1000 + 23 * 60 * 60):
+            self.assertIn("workflow prerequisite recorded", self.hook(armed["short_reply"]))
+            self.assertIn("matches no armed request", self.hook(armed["short_reply"]))
+        self.assertEqual([name for name, _ in self.client.calls].count("prerequisite"), 1)
+
+    def test_reply_code_and_returned_deadline_match_the_request(self):
+        replies = self.hook_fixture()
+        # Code creation can happen later than the request's issue time.
+        with mock.patch.object(time, "time", return_value=1120):
+            armed = self.arm(now=1000)
+        deadline = 1000 + 24 * 60 * 60
+        self.assertEqual(armed.get("expires_at"), deadline)
+        self.assertEqual(armed.get("expires_at_utc"), "1970-01-02 00:16:40 UTC")
+        pending = json.loads((self.root / armed["pending"]).read_text(encoding="utf-8"))
+        entry = json.loads(next(replies._registry().glob("*.json")).read_text(encoding="utf-8"))
+        self.assertEqual(pending["expires_at"], deadline)
+        self.assertEqual(entry["expires_at"], deadline)
+        with mock.patch.object(time, "time", return_value=deadline - 1):
+            self.assertEqual(replies.expand(armed["short_reply"])["text"], armed["reply"])
+        with mock.patch.object(time, "time", return_value=deadline):
+            self.assertIn("expired", replies.expand(armed["short_reply"])["notice"])
+
     def arm(self, *, confirmation_nonce="fixed-prerequisite-nonce", now=1000):
         return self.adapter.arm_user_prerequisite(
             self.root,
@@ -314,8 +340,9 @@ class PrerequisiteAdapterTest(unittest.TestCase):
 
     def test_expired_confirmation_conveys_no_authority(self):
         armed = self.arm(now=1000)
+        pending = json.loads((self.root / armed["pending"]).read_text(encoding="utf-8"))
         with self.assertRaisesRegex(RuntimeError, "EXPIRED_PREREQUISITE"):
-            self.consume(armed["reply"], now=1901)
+            self.consume(armed["reply"], now=pending["expires_at"])
         self.assertNotIn("capture", [name for name, _ in self.client.calls])
         source_dir = self.root / ".codearbiter" / ".artifacts" / "authority-sources"
         self.assertFalse(source_dir.exists())

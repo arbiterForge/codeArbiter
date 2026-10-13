@@ -21,6 +21,7 @@ import (
 const MaxReadyRecordBytes = 12 * 1024
 
 var drive = regexp.MustCompile(`^[a-zA-Z]:`)
+var reservedDeviceName = regexp.MustCompile(`^(COM|LPT)[1-9]$`)
 
 // Path accepts portable, slash-separated repository paths, not globs.
 func Path(s string, allowDot bool) bool {
@@ -40,7 +41,7 @@ func Path(s string, allowDot bool) bool {
 			return false
 		}
 		u := strings.ToUpper(strings.SplitN(p, ".", 2)[0])
-		if u == "CON" || u == "PRN" || u == "AUX" || u == "NUL" || regexp.MustCompile(`^(COM|LPT)[1-9]$`).MatchString(u) {
+		if u == "CON" || u == "PRN" || u == "AUX" || u == "NUL" || reservedDeviceName.MatchString(u) {
 			return false
 		}
 	}
@@ -201,7 +202,7 @@ func Structural(d *model.Document) []fault.Error {
 	if d.Kind() == "plan" {
 		if policy := model.M(n["verification_inputs"]); policy != nil {
 			for _, p := range model.Strings(policy["roots"]) {
-				if !Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") {
+				if !Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") || IsRuntimeMarkerPath(p) {
 					add(&es, "INVALID_INPUT_POLICY", "", "verification_inputs.roots", "unsafe input root")
 				}
 			}

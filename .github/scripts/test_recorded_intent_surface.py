@@ -78,6 +78,9 @@ def read(rel: str) -> str:
 class SurfaceCase(unittest.TestCase):
     """Assert a regex on every copy of a surface, naming the copy on failure."""
 
+    def shortDescription(self):
+        return None
+
     def assert_on(self, copies, pattern: str, why: str) -> None:
         for rel in copies:
             with self.subTest(copy=rel):

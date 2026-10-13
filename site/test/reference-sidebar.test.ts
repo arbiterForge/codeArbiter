@@ -50,7 +50,11 @@ const generatedGroups: GeneratedGroupsFixture = [
     ],
   },
   { type: "skill", label: "skill", items: [{ label: "tdd", slug: "tdd" }] },
-  { type: "tribunal-lens", label: "tribunal-lens", items: [{ label: "appsec", slug: "appsec" }] },
+  { type: "tribunal-lens", label: "tribunal-lens", items: [
+    { label: "appsec", slug: "appsec" },
+    { label: "change-closure", slug: "change-closure" },
+    { label: "semantic-contract", slug: "semantic-contract" },
+  ] },
 ];
 
 function commandGroups(): GeneratedGroupsFixture {
@@ -86,7 +90,11 @@ describe("reference sidebar projection", () => {
     expect(serialized).not.toContain("localStorage");
     expect(serialized).not.toContain("sessionStorage");
     expect(referenceGroups[1].items[0].slug).toBe("reference/skills/tdd");
-    expect(referenceGroups[2].items[0].slug).toBe("reference/tribunal-lenses/appsec");
+    expect(referenceGroups[2].items.map((item) => item.slug)).toEqual([
+      "reference/tribunal-lenses/appsec",
+      "reference/tribunal-lenses/change-closure",
+      "reference/tribunal-lenses/semantic-contract",
+    ]);
   });
 
   it("fails closed rather than flattening a command group without visibility children", async () => {

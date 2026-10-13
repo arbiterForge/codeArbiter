@@ -127,26 +127,110 @@ def marker_root(payload=None):
     return get_host().marker_root(payload)
 
 ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
+_BODY_MARKER_RE = re.compile(r"^\s*<!--\s*INITIALIZED\s*-->\s*$")
+_FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(?:[^`~].*)?$")
 
-def frontmatter_enabled_text(text):
-    """(enabled, malformed) for CONTEXT.md *content* (see frontmatter_enabled).
-    Split out so the #159 Write/Edit guard can vet the RESULTING content of an
-    edit — 'does this edit keep the repo arbiter-enabled?' — without going to
-    disk, sharing one parser with the on-disk activation check so the two never
-    disagree on what 'enabled' means."""
+def context_state_text(text):
+    """Return (enabled, malformed, initialized) from one CONTEXT.md parse."""
     lines = (text or "").split("\n")
     if not lines:
-        return (False, False)
+        return (False, False, False)
     first = lines[0].lstrip("﻿")  # tolerate a leading UTF-8 BOM
     if first.strip() != "---":
-        return (False, False)  # no opening delimiter — dormant, not malformed
-    found = False
-    for ln in lines[1:]:
+        return (False, False, False)
+    enabled = False
+    body_start = None
+    for index, ln in enumerate(lines[1:], 1):
         if ln.strip() == "---":
-            return (found, False)  # closing delimiter — decision is final
+            body_start = index + 1
+            break
         if ARBITER_RE.match(ln):
-            found = True
-    return (False, True)  # opened but never closed — malformed
+            enabled = True
+    if body_start is None:
+        return (False, True, False)
+    if not enabled:
+        return (False, False, False)
+
+    fence_char = ""
+    fence_length = 0
+    in_comment = False
+    for ln in lines[body_start:]:
+        stripped = ln.strip()
+        if fence_char:
+            if re.fullmatch(r" {0,3}" + re.escape(fence_char) +
+                            "{" + str(fence_length) + r",}\s*", ln):
+                fence_char = ""
+            continue
+        if in_comment:
+            if "-->" in ln:
+                in_comment = False
+            continue
+        fence = _FENCE_RE.match(ln)
+        if fence:
+            fence_char, fence_length = fence.group(1)[0], len(fence.group(1))
+            continue
+        if _BODY_MARKER_RE.fullmatch(ln):
+            return (True, False, True)
+        if "<!--" in stripped and "-->" not in stripped:
+            in_comment = True
+    return (True, False, False)
+
+
+def frontmatter_enabled_text(text):
+    """(enabled, malformed) for CONTEXT.md content; shared with body parsing."""
+    enabled, malformed, _initialized = context_state_text(text)
+    return (enabled, malformed)
+
+
+def initialized_body_text(text):
+    """True only for a standalone marker in an enabled CONTEXT.md body."""
+    return context_state_text(text)[2]
+
+
+def passive_activation_inventory(root):
+    """Read only the explicit root's activation marker; execute no project tools.
+
+    This is a pre-session inspection result, not proof of repository identity,
+    host capability, network policy, or permission to activate. The caller must
+    inventory sensitive paths before sending any source to a model.
+    """
+    root = os.path.abspath(root)
+    if not os.path.isdir(root) or os.path.islink(root):
+        raise ValueError("passive inspection requires an existing, non-link directory")
+    state_dir = os.path.join(root, ".codearbiter")
+    ctx = os.path.join(state_dir, "CONTEXT.md")
+    if os.path.islink(state_dir) or os.path.islink(ctx):
+        raise ValueError("passive inspection refuses linked context paths")
+    if os.path.lexists(state_dir) and not os.path.isdir(state_dir):
+        raise ValueError(".codearbiter is not a directory")
+    if os.path.lexists(ctx) and not os.path.isfile(ctx):
+        raise ValueError("CONTEXT.md is not a regular file")
+    exists = os.path.isfile(ctx)
+    enabled = malformed = initialized = False
+    if exists:
+        if os.path.getsize(ctx) > 1024 * 1024:
+            raise ValueError("CONTEXT.md exceeds passive inspection read limit")
+        with open(ctx, encoding="utf-8") as stream:
+            enabled, malformed, initialized = context_state_text(stream.read(1024 * 1024 + 1))
+    effect = {"capability": "unverified", "authorization": "not_established",
+              "performed": False}
+    activation_behaviors = {
+        "git_hooks_exclusions": "scaffold may write Git-local exclusions and hooks; active startup may refresh hooks",
+        "git_fetch": "active startup may spawn detached Git fetch",
+        "update_refresh": "active startup may spawn detached update refresh",
+        "inference_transport": "host-selected model may receive approved source after authorization",
+    }
+    return {
+        "profile": "passive-before-activation",
+        "root": root,
+        "root_identity": "caller_supplied_unverified",
+        "context": {"exists": exists, "enabled": enabled,
+                    "initialized": initialized, "malformed": malformed},
+        "effects": {name: {**effect, "activation_behavior": behavior}
+                    for name, behavior in activation_behaviors.items()},
+        "source_reads": "none",
+        "sensitive_path_inventory": "pending",
+    }
 
 
 def frontmatter_enabled(ctx_path):
