@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, INERT_VERIFIER_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -258,6 +258,7 @@ describe('atlas source compatibility revalidation', () => {
 
   it('binds the reviewed unittest collector and exact combined source changes', () => {
     expect(UNITTEST_COLLECTOR_BLOB).toBe('76a2998f4bd5b6f441f5fd162bbe810b2de2ee93');
+    expect(INERT_VERIFIER_COLLECTOR_BLOB).toBe('a8526b1547bc11887139052502e3577d853f9cc8');
     expect(productInputs.size).toBe(71);
     const paths = [...productInputs];
     const current = git('hash-object', '--', ...paths).trim().split('\n');
@@ -273,9 +274,11 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
-    expect(git('hash-object', '--', path).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
+    expect(git('hash-object', '--', path).trim()).toBe(INERT_VERIFIER_COLLECTOR_BLOB);
     expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
       .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
+    expect(git('cat-file', 'blob', INERT_VERIFIER_COLLECTOR_BLOB).split('\n').slice(0, 190))
+      .toEqual(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190));
     expect(retainsReviewedChangelog(readFileSync(new URL('../../../CHANGELOG.md', import.meta.url), 'utf8'),
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
@@ -405,7 +408,7 @@ describe('atlas source compatibility revalidation', () => {
     });
     for (const [path, blob] of Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
-      'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB})) {
+      'core/pysrc/_artifactauthoritylib.py': INERT_VERIFIER_COLLECTOR_BLOB})) {
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
       expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: current(path), encoding: 'utf8'}).trim()).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
