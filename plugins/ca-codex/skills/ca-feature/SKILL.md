@@ -1,12 +1,12 @@
 ---
 name: ca-feature
-description: "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation."
+description: "Build an authorized feature from a maintained specification, testable criteria and useful plan, without duplicating user approval."
 argument-hint: "<what you want to build>"
 ---
 
 # $ca-feature — spec-driven feature
 
-The single permitted entry to implementation work. No feature code is written before a spec is approved and `tdd` Phase 1 clears. A one-line idea is not a spec — `brainstorming` makes it one.
+The feature entry maintains a useful spec and plan before full-lane implementation. The user request supplies the intended authorization; the artifact engine does not require another permission code. Check criteria and applicable tests before claiming completion.
 
 ## Structured-artifact boundary
 
@@ -18,8 +18,7 @@ and the selected lane. Use only its returned mode, format, and paths. For a
 selected HTML route it
 checks the installed capability before writing; a missing or invalid helper is
 a STOP and the workflow must not fall back to Markdown.
-Its validated identity, authority, binding and task-state operations replace this
-command's `.md`, approval-label and status-cell assumptions for that pipeline.
+Its typed identity, binding, and task-progress operations replace rendered-label and Markdown status-cell assumptions for that pipeline.
 New full-lane specs use the installed structured-artifact engine and default to
 canonical `.html`. An existing `.md` pair remains on the legacy path. Discovery requires a
 complete same-extension spec/plan pair: select that exact pair as authoritative. A
@@ -28,7 +27,7 @@ and the next plan must use the same extension. The workflow must not create, ren
 blocked. Small-lane behavior is unchanged: its confirmed mini-spec remains inline
 and does not create a spec artifact.
 
-**Orientation:** if `.codearbiter/code-map.md` is present, read it first — a coarse concern→path→role map that orients task authoring. Absent is fine; it is read-on-demand, populated by context-creation or commit-gate heal. At each actual author or independent reviewer dispatch, use the private `_artifactpromptlib.compose_feature_actor_input` contract described in `tdd` and `subagent-driven-development`; send its returned `input` to the fresh actor before mutation, execution of discovered commands, or a substantive review verdict. A coordinator's read alone is not delivery.
+**Orientation:** if `.codearbiter/code-map.md` is present, read it first — a coarse concern→path→role map that orients task authoring. Absent is fine; it is read-on-demand, populated by context-creation or commit-gate heal. At each actual author or independent reviewer dispatch, use the private `_artifactpromptlib.compose_feature_actor_input` contract described in `tdd` and `subagent-driven-development`; send the bounded relevant input to that actor. Host permissions still apply to commands; delivery records do not independently grant or deny execution.
 
 ## Resume — an interrupted pipeline is re-entered, never restarted
 
@@ -46,18 +45,14 @@ rendered labels or embedded JSON. For a Markdown pair, use the
 existing Markdown status ledger. Resume either exact format
 without creating or consulting a shadow artifact; the workflow must not create,
 rename, or convert its counterpart. On a match,
-confirm the resume with the user in one line
-("resume `<slug>` at <point>?") and re-enter at the furthest checkpoint reached:
+summarize the resume point without requesting an additional permission reply, then re-enter at the furthest useful stage:
 
-1. **Plan exists with non-`ACCEPTED` tasks** → `executing-plans` (its Phase 1 batches only the
-   remaining tasks).
-2. **Plan exists, every task `ACCEPTED`** → `commit-gate` (the work is done and verified; it was the
-   commit that never happened).
-3. **Spec approved, no plan** → `writing-plans` ([routines/writing-plans/SKILL.md](../../routines/writing-plans/SKILL.md)).
-4. **Spec exists but never approved** → `brainstorming` ([routines/brainstorming/SKILL.md](../../routines/brainstorming/SKILL.md)), at its approval gate — not from scratch.
+1. **Plan exists with remaining, blocked, or unverified work** → `executing-plans` for actual outstanding tasks. HTML `REVIEW` and `DONE` are implementation progress, not proof of passing checks.
+2. **Plan work complete with applicable checks recorded** → the authorized `commit-gate` handoff, without making a proof receipt another permission.
+3. **Spec exists, no plan** → `writing-plans`.
+4. **Spec exists but is incomplete** → inspect the missing actual requirements with `brainstorming`, rather than restarting the interview.
 
-Re-running `brainstorming` against an already-approved spec is the failure mode this section exists
-to prevent: it discards approved decisions and re-asks answered questions. Only an explicit user
+Re-running `brainstorming` against a usable existing spec discards decisions and re-asks answered questions. Only an explicit user
 request ("start over") restarts an existing slug — and that is logged to `triage.log` like any
 classification.
 
@@ -72,16 +67,14 @@ judged against `$ARGUMENTS` and a quick look at the code, never assumed:
 - no new dependency, endpoint, command, or configuration surface;
 - the behavior change is expressible as 1–3 concrete, individually testable acceptance criteria.
 
-**Small lane:** state the mini-spec inline (the 1–3 criteria) and STOP for the user's one-reply
-confirmation. On confirmation, append one line to `<project-root>/.codearbiter/triage.log`
+**Small lane:** state the mini-spec inline (the 1–3 criteria). Unless the user requested a pause or a real consequential question remains, proceed without a second permission reply. Append one line to `<project-root>/.codearbiter/triage.log`
 (append-only, `>>`):
 
 ```
 [ISO-8601 timestamp] | BY: <git user.email> | LANE: small | SCOPE: <one-line> | BASIS: <criteria met>
 ```
 
-Then route directly to `tdd` ([routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)) — the confirmed criteria are its Phase 1 obligations; Phases 2–6 run
-unchanged — and exit through the full `commit-gate` and `finishing-a-development-branch` exactly as
+Then route directly to `tdd` ([routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)) — the stated criteria are its obligations; run applicable TDD checks — and exit through the full `commit-gate` and `finishing-a-development-branch` exactly as
 the full lane does. The lane trims ceremony, never gates.
 
 Any criterion violated, or uncertain → **full lane** (below). Uncertainty is full-lane; the triage
@@ -95,31 +88,22 @@ Route through the pipeline in order; each step gates the next:
    vague language, surface hidden complexity, force trade-offs. Writes the spec to
    route-selected spec path. New full-lane work writes
    `<project-root>/.codearbiter/specs/<slug>.html` through the installed engine.
-   **Hard gate: no plan and no code until the
-   user approves the spec.** Genuinely-unresolved unknowns become `[CONFIRM-NN]` in
-   `open-questions.md`, never guesses.
-2. **`writing-plans`** ([routines/writing-plans/SKILL.md](../../routines/writing-plans/SKILL.md)) — decompose the approved spec into small tasks, each with an exact path and a
+   A missing consequential decision is asked once, not converted into a general spec-approval gate.
+2. **`writing-plans`** ([routines/writing-plans/SKILL.md](../../routines/writing-plans/SKILL.md)) — turn the maintained spec into coherent tasks, each with relevant paths and a
    verification that maps to a `tdd` obligation (it does not replace one). Writes
    matching route-selected plan path with bijective criterion↔task coverage.
-3. **`executing-plans`** ([routines/executing-plans/SKILL.md](../../routines/executing-plans/SKILL.md)) — coordinates the plan in small batches with human checkpoints. Each batch is
-   delegated to `subagent-driven-development` ([routines/subagent-driven-development/SKILL.md](../../routines/subagent-driven-development/SKILL.md) — fresh author agent per task, spec-compliance review,
-   quality review, fresh verification). The user acknowledges between batches; nothing advances until
-   they do.
+3. **`executing-plans`** ([routines/executing-plans/SKILL.md](../../routines/executing-plans/SKILL.md)) — runs coherent batches through `subagent-driven-development`, directly or with useful agents. Reports real progress and check results; pauses only for explicitly requested checkpoints or real missing decisions.
 4. **`commit-gate`** — the only path to a commit; nine gates, including behavioral proof.
 5. **`finishing-a-development-branch`** — terminal step: open-PR / merge-via-PR / discard. Every
    change lands through a PR; never a direct write to the default branch.
 
-The autonomous counterpart (`$ca-sprint`) runs the same spec→plan but passes the full plan to
+The autonomous counterpart (`$ca-sprint`) maintains the same spec→plan but passes the full plan to
 `subagent-driven-development` directly, without per-batch checkpoints. That path is its own entry,
 not `/feature`.
 
 ## Scope routing
 
-Scope determines which author agent `subagent-driven-development` dispatches per task:
-`backend-author`, `frontend-author`, or `infra-author` — per the mapping in `tech-stack.md`. A
-multi-area feature runs the appropriate agent per task. Each transition requires the affected local
-tests from [includes/verification-boundary.md](../../includes/verification-boundary.md) to be green; exhaustive cross-area and
-cross-platform proof runs in exact-head hosted CI before merge.
+Scope suggests useful author skills (`backend-author`, `frontend-author`, `infra-author`), not mandatory one-agent-per-task dispatch. Run the affected local checks and preserve failures; exhaustive cross-area and cross-platform proof remains exact-head hosted CI before merge under [includes/verification-boundary.md](../../includes/verification-boundary.md).
 
 ## When NOT to use
 
@@ -130,10 +114,9 @@ cross-platform proof runs in exact-head hosted CI before merge.
 
 ## Hard gate
 
-MUST NOT write feature code before a spec is approved AND `tdd` Phase 1 clears — the brainstormed
-spec in the full lane, the user-confirmed mini-spec in the small lane. MUST NOT take the small lane
+MUST preserve testable intent and perform applicable checks before claiming completion. An unapproved artifact is not a denial of an already-authorized feature. MUST NOT take the small lane
 unless every Step 0 criterion holds, and MUST log the classification to
 `.codearbiter/triage.log` before `tdd` begins. MUST NOT skip `writing-plans` in the full lane.
-MUST NOT resolve a `[CONFIRM-NN]` in the spec by guessing — surface it.
+MUST NOT guess consequential unresolved user decisions; keep the affected task visibly waiting.
 MUST NOT restart an interrupted pipeline whose artifacts exist on disk — resume at the furthest
 checkpoint per the Resume ladder, unless the user explicitly asks to start over.

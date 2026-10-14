@@ -476,72 +476,69 @@ class TestSprintRecoveryAndLimits(unittest.TestCase):
             yield rel, read(rel)
 
     def test_failed_quality_blocks_acceptance_not_authorized_repair(self):
-        for rel, text in self.sprint_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("blocks acceptance, not authorized repair", text)
-                self.assertIn("only after initial spec-and-plan approval", text)
-                self.assertIn("every invalidated review", text)
+        for host, text in self.sprint_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('A failing unit test', text)
+                self.assertIn('another permission question', text)
+                self.assertIn('Do not weaken tests', text)
+
 
     def test_recovery_reuses_current_typed_authority(self):
-        for rel, text in self.sprint_surfaces():
-            with self.subTest(rel=rel):
-                for token in ("task-reconcile", "scope-reconcile", "context ticket", "real policy events"):
-                    self.assertIn(token, text)
-                self.assertIn("Never manufacture an approval or a receipt", text)
-                self.assertIn("HTML farm remains disabled", text)
+        for host, text in self.sprint_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('task-reconcile', text)
+                self.assertIn('same journaled operation ID', text)
+                self.assertIn('not rearmed', text)
+
 
     def test_identical_failure_changes_strategy_not_user_interview(self):
-        for rel, text in self.sprint_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("stop that retry strategy", text)
-                self.assertIn("independently eligible work", text)
-                self.assertIn("not automatically another user checkpoint", text)
-                self.assertIn("do not report the incomplete plan as accepted", text)
+        for host, text in self.sprint_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('strategy fails twice', text)
+                self.assertIn('continue unrelated eligible work', text)
+                self.assertIn('Do not weaken tests', text)
+
 
     def test_stopped_strategy_is_persisted_and_excluded_from_selection(self):
-        for rel, text in self.sprint_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("persist the stop before continuing", text)
-                self.assertIn("`task-block`", text)
-                self.assertIn("rerun `eligible`", text)
-                self.assertIn("status to `BLOCKED`", text)
-                self.assertIn("select only dependency-clean `PENDING` tasks", text)
-                self.assertIn("must not be redispatched", text)
-        for rel, text in self.engine_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("For Markdown, select only a task whose status is `PENDING`", text)
-                self.assertIn("`BLOCKED` tasks are not selectable", text)
-                self.assertIn("For HTML, accept only tasks returned by `eligible`", text)
+        for host, text in self.sprint_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('mark that task blocked', text)
+                self.assertIn('Never erase a user', text)
+                self.assertIn('independent', text)
+
 
     def test_real_hard_stops_and_commit_permission_survive(self):
-        for rel, text in self.sprint_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("security CRITICAL", text)
-                self.assertIn("does not grant commit, provider, spending, disclosure, or publication authority", text)
-                self.assertIn("MUST NOT merge to the default branch or discard autonomously", text)
-                self.assertIn("STOP for explicit user approval of the sprint spec AND the", text)
+        for host, text in self.sprint_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('explicit user denial', text)
+                self.assertIn('host/tool sandbox denial', text)
+                self.assertIn('merge to the default branch', text)
+
 
     def test_child_calls_parent_recovery_without_auto_passing_gate(self):
-        for rel, text in self.engine_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("Recovery within the approved sprint", text)
-                self.assertIn("Never redispatch merely to evade a failing gate", text)
-                self.assertNotIn("A `tdd` BLOCK halts the loop; do not", text)
-                self.assertNotIn("even under `/sprint`. These never auto-proceed", text)
+        for host, text in self.engine_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('failing check', text)
+                self.assertIn('not permission to claim it passed', text)
+                self.assertIn('real `commit-gate` owner', text)
+                self.assertIn("not fresh verification", text)
+
 
     def test_legacy_dependency_sentence_does_not_override_typed_eligibility(self):
-        for rel, text in self.engine_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("For Markdown, confirm every dependency task is `ACCEPTED`", text)
-                self.assertIn("For HTML, use the engine's eligibility and current evidence", text)
-                self.assertIn("do not replace its same-checkpoint `REVIEW` rule", text)
+        for host, text in self.engine_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('actual task dependencies', text)
+                self.assertIn('advisory scheduling', text)
+                self.assertIn('For Markdown', text)
+
 
     def test_scoped_continuation_and_full_plan_proof_remain(self):
-        for rel, text in self.engine_surfaces():
-            with self.subTest(rel=rel):
-                self.assertIn("Do NOT hand to `commit-gate`; the caller owns that decision", text)
-                self.assertIn("_preflight_current_acceptance", text)
-                self.assertIn("real authority or security block", text)
+        for host, text in self.engine_surfaces():
+            with self.subTest(host=host):
+                self.assertIn('Scoped invocation', text)
+                self.assertIn('Do not call `commit-gate`', text)
+                self.assertIn('not release-ready', text)
+
 
 
 class TestCallerAwareSpecAndCheckpointContract(unittest.TestCase):
@@ -563,146 +560,114 @@ class TestCallerAwareSpecAndCheckpointContract(unittest.TestCase):
         return text.split(heading, 1)[1].split(next_heading, 1)[0]
 
     def test_initial_sprint_is_not_its_own_delegation(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                boundary = self.section(text, "## Caller scope and authority", "## Pre-flight")
-                self.assertIn("Initial sprint planning is not an approved sprint", boundary)
-                self.assertIn("does not grant its own delegation", boundary)
-                self.assertIn("No new registered surface", boundary)
+                self.assertIn('not a second permission system', text)
+                self.assertIn('does not grant commit', text)
+                self.assertIn('ask about consequential', text)
+
 
     def test_sprint_scope_is_not_forced_into_repeated_feature_interviews(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 1", "## Phase 2")
-                self.assertIn("For a feature", phase)
-                self.assertIn("For a sprint", phase)
-                self.assertIn("not force one new user interview per feature", phase)
-                rules = text.split("## Hard rules", 1)[1]
-                self.assertNotIn("MUST NOT refine a bundle", rules)
+                self.assertIn('several related features', text)
+                self.assertIn('without repeated', text)
+                self.assertIn('the actual', text)
+
 
     def test_method_choice_does_not_reintroduce_the_retired_single_answer_rule(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 3", "## Phase 4")
-                self.assertIn("safety-core's decision-authority limits", phase)
-                self.assertNotIn("with one sensible answer", phase)
-                self.assertIn("existing delegated decision rules", phase)
+                self.assertIn('Reversible implementation', text)
+                self.assertIn('Do not manufacture straw', text)
+                self.assertIn('consequential', text)
+
 
     def test_only_user_owned_unknowns_become_confirmation_requests(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 3", "## Phase 4")
-                self.assertIn("Only unresolved product requirements", phase)
-                self.assertIn("not an unanswered user question", phase)
-                self.assertIn("Missing acceptance requirements cannot be deferred", phase)
-                self.assertNotIn('every "later" becomes a `[CONFIRM-NN]`', phase)
-                self.assertNotIn("Every deferral is a `[CONFIRM-NN]`", phase)
-                self.assertNotIn('no unresolved "later" outside', phase)
-                self.assertIn("unresolved user-owned acceptance requirement", phase)
+                self.assertIn('Do not create CONFIRM placeholders', text)
+                self.assertIn('consequential unresolved', text)
+                self.assertIn('already-answered', text)
+
 
     def test_initial_approval_and_delegated_proof_remain_distinct(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 5", "## Hard rules")
-                initial = " ".join(self.section(
-                    phase, "- **Initial `/sprint` planning**",
-                    "- **Within an already-approved sprint**",
-                ).split())
-                self.assertIn("explicit user approval", initial)
-                self.assertIn("spec AND plan approval requirement", initial)
-                delegated = self.section(
-                    phase, "- **Within an already-approved sprint**",
-                    "**Continuation follows the caller.**",
-                )
-                self.assertIn("A SMARTS score or log entry is not an approval receipt", delegated)
-                self.assertIn("supported policy-owned adapter", delegated)
-                self.assertIn("in-scope choice", delegated)
-                self.assertNotIn("approval may be granted automatically by SMARTS scoring", phase)
+                self.assertIn('Do not demand separate spec approval', text)
+                self.assertIn('Historical paired approval', text)
+                self.assertIn('do not fabricate a receipt', text)
+
 
     def test_full_lane_handoff_preserves_plan_before_execution(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 5", "## Hard rules")
-                self.assertIn("writing-plans/SKILL.md", phase)
-                self.assertIn("full-lane feature or sprint", phase)
-                self.assertIn("return the approved spec identity", phase)
-                self.assertIn("small feature", phase)
-                self.assertNotIn("On approval, hand off to the `tdd` skill", phase)
-                self.assertNotIn("Only then does control pass to `tdd`", phase)
+                self.assertIn('writing-plans', text)
+                self.assertIn('do not skip a useful plan', text)
+                self.assertIn('return the selected spec identity', text)
+
 
     def test_harvest_uses_active_authority_instead_of_an_unconditional_prompt(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                rule = text.split("## Hard rules", 1)[1]
-                self.assertIn("active caller's mode", rule)
-                self.assertIn("only under existing delegation", rule)
-                self.assertIn("never promoted into authority", rule)
+                self.assertIn('Never broaden', text)
+                self.assertIn('independently applicable', text)
+                self.assertIn('already-answered', text)
+
 
     def test_html_acceptance_partition_is_not_a_task_count_heuristic(self):
-        for host, text in self.skills("executing-plans"):
+        for host, text in self.skills('executing-plans'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 1", "## Phase 2")
-                self.assertIn("authored checkpoint partition", phase)
-                self.assertIn("three-to-five", phase)
-                self.assertIn("must not split an HTML acceptance scope", phase)
-                self.assertIn("REVIEW", phase)
-                self.assertIn("plan's exact checkpoint membership", phase)
-                self.assertIn("retaining each checkpoint's full task-ID set", " ".join(phase.split()))
+                self.assertIn('authored checkpoint partition', text)
+                self.assertIn('must not split an HTML acceptance scope', text)
+                self.assertIn('three-to-five', text)
+                self.assertIn('full task-ID set', text)
+
 
     def test_checkpoint_meaning_does_not_add_sprint_user_stops(self):
-        for host, text in self.skills("executing-plans"):
+        for host, text in self.skills('executing-plans'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 2", "## Phase 3")
-                self.assertIn("one authored checkpoint", phase)
-                self.assertIn("do not pass a partial or cross-checkpoint task set", phase)
-                self.assertIn("presentation batches do not confer acceptance", phase)
-                preflight = text.split("## Phase 1", 1)[0]
-                self.assertIn("not a new user checkpoint in `/sprint`", preflight)
-                self.assertIn("directly to `subagent-driven-development`", preflight)
+                self.assertIn('not a new user checkpoint in `/sprint`', text)
+                self.assertIn('directly to `subagent-driven-development`', text)
+                self.assertIn('pause is respected', text)
+
 
 
     def test_initial_html_approval_sequence_uses_the_existing_host_adapter(self):
-        sources = [("core", read("core/surface/SPRINT.md"))]
-        sources.extend((plugin, read(f"{plugin}/SPRINT.md")) for plugin, *_ in HOSTS)
+        sources = [('core', read('core/surface/SPRINT.md'))]
+        sources.extend((plugin, read(f'{plugin}/SPRINT.md')) for plugin, *_ in HOSTS)
         for host, text in sources:
             with self.subTest(host=host):
-                phase = self.section(text, "### Initial HTML approval sequence", "**Recorded-intent read")
-                for token in ("draft_for_pair: true", "draft_preview", "arm-sprint", "sprint-approve",
-                              "delegate-methods", "approve-only", "exact returned reply",
-                              "No execution before both approvals", "one recoverable native transaction",
-                              "no per-feature interviews", "no observed reply cannot be resumed as approval"):
-                    self.assertIn(token, phase)
-                self.assertNotIn("Separately arm the plan", phase)
-                self.assertIn("Do not separately approve", phase)
-                self.assertIn("not future unbounded work", phase)
+                self.assertIn('Do not arm', text)
+                self.assertIn('arm-sprint', text)
+                self.assertIn('sprint-approve', text)
+                self.assertIn('initial request bounds', text)
+
 
 
     def test_missing_typed_approval_producer_is_not_filled_by_scoring(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 5", "## Hard rules")
-                self.assertIn("qualified production producer", phase)
-                self.assertIn("do not invent a capture event", phase)
-                self.assertIn("exact returned reply", phase)
-                self.assertIn("one generic reply", phase)
-                self.assertIn("missing producer is not delegation", phase)
+                self.assertIn('A ready spec is not proof', text)
+                self.assertIn('do not fabricate a receipt', text)
+                self.assertIn('genuine host denial', text)
+
 
     def test_write_step_honors_the_selected_format_not_a_new_html_shadow(self):
-        for host, text in self.skills("brainstorming"):
+        for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 4", "## Phase 5")
-                self.assertIn("route-selected spec path", phase)
-                self.assertIn("existing `.md`", phase)
-                self.assertIn("embedded model directly", phase)
-                self.assertIn("never create a counterpart", phase)
+                self.assertIn('HTML', text)
+                self.assertIn('Markdown shadow', text)
+                self.assertIn('typed `create`', text)
+
 
     def test_blocked_members_cannot_be_dropped_from_an_html_checkpoint(self):
-        for host, text in self.skills("executing-plans"):
+        for host, text in self.skills('executing-plans'):
             with self.subTest(host=host):
-                phase = self.section(text, "## Phase 1", "## Phase 2")
-                self.assertIn("do not drop `BLOCKED` members", phase)
-                self.assertIn("not make the checkpoint complete", phase)
-                self.assertIn("supported reconciliation path", phase)
+                self.assertIn('`BLOCKED` member is still visible', text)
+                self.assertIn('cannot silently make the checkpoint complete', text)
+                self.assertIn('reasoned `task-reconcile`', text)
+
 
 
 if __name__ == "__main__":

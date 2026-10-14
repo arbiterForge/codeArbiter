@@ -188,7 +188,7 @@
     },
     "feature": {
       "name": "feature",
-      "description": "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.",
+      "description": "Build an authorized feature from a maintained specification, testable criteria and useful plan, without duplicating user approval.",
       "commandPath": "commands/feature.md",
       "visibility": "core",
       "workflow": "change",
@@ -311,7 +311,7 @@
     },
     "sprint": {
       "name": "sprint",
-      "description": "Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops.",
+      "description": "Run an autonomous sprint from maintained specs and plans, with truthful verification and no duplicate artifact approval ceremonies.",
       "commandPath": "commands/sprint.md",
       "visibility": "core",
       "workflow": "change",

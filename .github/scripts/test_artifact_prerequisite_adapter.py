@@ -692,11 +692,14 @@ class PrerequisiteSurfaceTest(unittest.TestCase):
         text = (REPO / "core" / "surface" / "includes" / "artifacts.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("_prerequisitelib.py\" arm", text)
-        self.assertIn("--prerequisite-id <prerequisite-id>", text)
-        self.assertIn("satisfy-prerequisite", text)
-        self.assertIn("_prerequisitelib.py\" supersede", text)
-        self.assertIn("Do not infer eligibility from one satisfied prerequisite", text)
+        # Historical explicit attestation remains tested in this file, but
+        # ordinary task-scoped observations must not require that adapter.
+        self.assertIn("observable prerequisite", text)
+        self.assertIn("bounded `observation`", text)
+        self.assertIn("no certification code", text)
+        self.assertIn("caller-reported", text)
+        self.assertIn("legacy unscoped prerequisite", text.lower())
+        self.assertIn("Historical paired approval", text)
         self.assertNotIn("--authority-kind", text)
 
 

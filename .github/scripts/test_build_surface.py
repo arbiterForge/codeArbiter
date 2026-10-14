@@ -586,8 +586,8 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
         self.assertIn(
             "<!-- codearbiter-codex-agent-route-contract: "
-            "literal_route_lines=23 literal_route_occurrences=25 "
-            "generic_route_lines=2 generic_route_occurrences=2 -->",
+            "literal_route_lines=18 literal_route_occurrences=20 "
+            "generic_route_lines=1 generic_route_occurrences=1 -->",
             index,
         )
         self.assertNotIn("\nmodel:", index)
@@ -1639,11 +1639,13 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[path].decode()
                 for obligation in ('Confirm the user explicitly authorized this commit.',
-                                   '_preflight_current_acceptance',
-                                   'all_accepted_and_current: true',
-                                   'verification-boundary', '## Phase 7', '## Phase 9',
-                                   'postponing a commit', 'never implies a push or PR'):
+                                   'current', 'verification-boundary', '## Phase 7',
+                                   '## Phase 9', 'postponing a commit',
+                                   'never implies a push or PR'):
                     self.assertIn(obligation, entry)
+                self.assertIn('Do not call', entry)
+                self.assertIn('_preflight_current_acceptance', entry)
+                self.assertNotIn('all_accepted_and_current: true', entry)
 
     def test_no_discovery_or_startup_registration_was_added(self):
         """Catalog visibility and compatibility inventory are unchanged on each host."""
@@ -1910,7 +1912,7 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
                                'dependency-reviewer', 'coverage-auditor', 'CRITICAL or HIGH',
                                'anti-slop-design', 'babysit.py', 'CODEARBITER_BABYSIT',
                                'Never enable the flag', '_preflight_current_acceptance',
-                               '--match-head-commit', 'all_accepted_and_current: true'):
+                               '--match-head-commit', 'exact-head hosted CI'):
                 self.assertIn(obligation, text)
 
     def test_pr_respects_direct_choice_and_caller_authority(self):
@@ -1928,7 +1930,14 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
         import hashlib
         text = (REPO_ROOT / 'core/surface/skills/finishing-a-development-branch/SKILL.md').read_text(encoding='utf-8')
         section = text[text.index('## Pre-flight\n'):text.index('## Phase 2')]
-        self.assertEqual(hashlib.sha256(section.encode()).hexdigest(), '0df4e08d97542d6273ae5c7d7cf149daec423d7c7587f5123f4bafadb8dc146a')
+        # This contract was intentionally changed by ADR-0043. Assert the
+        # actual proof/authorization split instead of an obsolete fixed hash.
+        self.assertIn('advisory', section)
+        self.assertIn('not the mandatory permission gate', section)
+        self.assertIn('_preflight_current_acceptance', section)
+        self.assertIn('exact-head hosted CI', section)
+        self.assertNotIn('all_accepted_and_current: true', section)
+        self.assertNotEqual(hashlib.sha256(section.encode()).hexdigest(), '0df4e08d97542d6273ae5c7d7cf149daec423d7c7587f5123f4bafadb8dc146a')
         inventory = json.loads((REPO_ROOT / 'docs/artifacts/consumer-inventory.json').read_text(encoding='utf-8'))
         consumer = next(row for row in inventory['consumers']
                         if row['id'] == 'finalization-and-worktree-plan-readers')

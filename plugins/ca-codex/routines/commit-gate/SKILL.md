@@ -21,22 +21,21 @@ Read these, or STOP and surface the gap — never guess a command:
 - [includes/verification-boundary.md](../../includes/verification-boundary.md) — the required split between focused local proof and exhaustive exact-head hosted CI.
 - A git repository must be present and `git status` available.
 - The `tdd` skill must have cleared all six phases for any new or modified feature code in the staged set. If `tdd` is incomplete, STOP and surface the gap.
-- The discovered authoritative spec/plan pair, when this commit belongs to a
-  `/feature` or `/sprint` pipeline. For HTML, load
-  [includes/artifacts.md](../../includes/artifacts.md); use the engine `identity` and `eligible`
-  results, and treat the exact spec and plan identities plus the acceptance
-  receipts bound in engine state as the commit proof. Require
-  `all_accepted_and_current: true` before this gate can commit completed plan
-  work. The gate must not parse rendered HTML and must not consult a shadow
-  Markdown ledger. Displayed state, checkboxes, hashes, or caller-supplied
-  labels cannot substitute for current engine acceptance.
+- The discovered authoritative spec/plan pair, when relevant to this commit. For HTML,
+  load [includes/artifacts.md](../../includes/artifacts.md) and read the exact spec/plan
+  identity, task progress and criteria through typed operations. `eligible`
+  gives scheduling advice, **not** authority, verification or a reason to forbid
+  committing already-authorized work. `REVIEW` and `DONE` describe work
+  progress, not independent checks.
 
-For that HTML pair, invoke the installed bridge's
-`_preflight_current_acceptance` with the exact `_resolve_workflow_pair` result,
-the repository-bound client, and the spec/plan IDs returned by the engine. Use
-its returned identities and receipts as the proof for this gate. A refusal is a
-BLOCK before staging or committing; never construct an equivalent proof from
-caller metadata.
+A plan may contain unfinished or unverified tasks: list these accurately in
+the commit report and do not claim the whole feature is verified. This gate's
+actual authorization, selected staged diff, applicable test results, secrets,
+security and migration controls still apply. Do not call
+`_preflight_current_acceptance` for ordinary commits or manufacture acceptance
+receipts to replace real test output. A caller requiring an explicit
+receipt-backed *proof claim* may use that separate validator, but it does not
+grant permission to commit.
 
 ## Phase 1 — Permission · gate: BLOCK
 

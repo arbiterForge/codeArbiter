@@ -66,7 +66,11 @@ describe("human-operable product window", () => {
   it("bounds typed authority by host rather than equating entry syntax with capability", () => {
     const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
     expect(source).toContain("Verification and review authority below is supported on Codex and Claude Code");
-    expect(source).toContain("Pi has no prerequisite-capture adapter and must remain blocked");
+    // Explicit historical verification/review authority remains host-limited,
+    // but Pi native drafting and ordinary progress are not blocked by its
+    // missing legacy prompt adapter.
+    expect(source).toContain("This includes the native Pi writer");
+    expect(source).toContain("no certification code");
     const guide = read("src/content/docs/guides/review-artifacts.md");
     expect(guide).toContain("## Check your host's authority capability");
     expect(guide).toContain("| Claude Code | Host-observed prompt approval | Production adapters");

@@ -21,8 +21,8 @@ reached the same way.
 
 | Invocation cue | Primary route | Also dispatch | Hard gate |
 |---|---|---|---|
-| New feature | `/feature` Step 0 triage → full lane `brainstorming` → `writing-plans` → `executing-plans` → `tdd`, or logged small lane straight to `tdd` | `backend-`/`frontend-`/`infra-author` | No spec, no code; no code before `tdd` Phase 1; small lane only on all triage criteria, logged to `triage.log` |
-| Autonomous sprint | `/sprint` → `SPRINT.md` (brainstorm → plan → `subagent-driven-development`) | per-task impl authors + reviewers | One interactive spec gate; hard gates never auto-decided; every auto-decision logged |
+| New feature | `/feature` Step 0 triage → full lane `brainstorming` → `writing-plans` → `executing-plans` → `tdd`, or logged small lane straight to `tdd` | `backend-`/`frontend-`/`infra-author` | Maintain useful full-lane spec/plan and applicable tests; small lane requires its listed criteria and triage log, not another permission question |
+| Autonomous sprint | `/sprint` → `SPRINT.md` (brainstorm → plan → `subagent-driven-development`) | implementation or useful delegated authors; reviews by actual risk | No duplicate artifact approval; real host/security and unresolved material decisions remain stops; meaningful auto-decisions logged |
 | Bug fix | `/fix` → `tdd` (bug variant) | impl author | Failing regression test before any fix code |
 | Docs edit / dep bump / revert | `/chore` (type-scaled gates) | `dependency-reviewer` for deps | No behavioral code; suite green for deps/revert; exits via `commit-gate` |
 | Exploratory throwaway spike | `/spike` (self-contained command) → `spike/<slug>` branch | — | Never merges or PRs; `commit-gate`-exempt (nothing on the branch can land); exits to a findings note or `/feature` |

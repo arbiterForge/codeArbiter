@@ -64,18 +64,16 @@ Read these, or STOP and surface the gap — never guess the branch name or the d
 - `<project-root>/.codearbiter/last-checkpoint` — the most recent gate results; confirms `commit-gate` cleared on this branch.
 - [includes/verification-boundary.md](../../includes/verification-boundary.md) — the exact-head hosted-CI evidence required before merge.
 
-For an HTML pair, query the engine `identity` and `eligible` again after process
-recreation. Require `all_accepted_and_current: true` for the exact spec and plan
-identities, with their acceptance receipts still bound in engine state and the
-commit-gate proof. Finalization must not parse rendered HTML and must not consult
-a shadow Markdown ledger; displayed labels, status words, checkboxes, or digests
-cannot establish completion.
-
-Enforce that requirement by invoking the installed bridge's
-`_preflight_current_acceptance` with the exact `_resolve_workflow_pair` result,
-repository-bound client, and engine-returned spec/plan IDs. Carry its returned
-identity/receipt proof into state assembly. Any refusal blocks terminal options;
-do not recreate the proof from the PR description, checkpoint prose, or labels.
+For an HTML pair, query `identity` and `eligible` after process
+recreation and read the actual work and check results. `eligible` is advisory
+scheduling; `DONE` means implementation progress, not a verified release.
+Report unfinished work, missing or failing tests, and any outstanding
+decisions, rather than requiring an artifact acceptance receipt simply to
+prepare or open an authorized PR. Do not scrape HTML or invent receipts.
+`_preflight_current_acceptance` remains an **explicit historical proof query**,
+not the mandatory permission gate for opening a PR or preparing a branch.
+Real Git/host authorization, current commit-gate results, independent security
+controls and exact-head hosted CI before merge still apply.
 
 `commit-gate` MUST have cleared on the current HEAD. If it has not, this skill does not run — return to it.
 

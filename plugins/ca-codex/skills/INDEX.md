@@ -36,11 +36,11 @@ skill is invoked — never bulk-read this directory.
 |---|---|
 | `$ca-add-dep` | Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs. |
 | `$ca-chore` | Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose. |
-| `$ca-feature` | Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation. |
+| `$ca-feature` | Build an authorized feature from a maintained specification, testable criteria and useful plan, without duplicating user approval. |
 | `$ca-fix` | Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates. |
 | `$ca-refactor` | Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work. |
 | `$ca-spike` | Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or $ca-feature. |
-| `$ca-sprint` | Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops. |
+| `$ca-sprint` | Run an autonomous sprint from maintained specs and plans, with truthful verification and no duplicate artifact approval ceremonies. |
 
 ### Review
 

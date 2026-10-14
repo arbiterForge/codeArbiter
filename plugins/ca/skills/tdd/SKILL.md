@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: The test-first gate. Routed to by /feature (after the spec is approved), /fix, and /refactor before any implementation code is written. Six gated phases — obligation scan, red, green, obligation verify, coverage, lint. No feature code exists before Phase 1 clears; nothing reaches commit-gate until all six are green.
+description: The test-first gate. Routed to by an authorized /feature, /fix, and /refactor before any implementation code is written. Six gated phases — obligation scan, red, green, obligation verify, coverage, lint. No feature code exists before Phase 1 clears; nothing reaches commit-gate until all six are green.
 disable-model-invocation: true
 ---
 
@@ -9,8 +9,8 @@ disable-model-invocation: true
 ## Authoritative format boundary
 
 For an HTML spec/plan pair, load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` and use
-the installed structured-artifact engine for artifact I/O. Verify the plan's
-binding to the approved spec, use typed `index`, `outline`, and symbol-scoped `read`,
+the installed structured-artifact engine for artifact I/O. Check the plan's
+exact binding to its selected spec, use typed `index`, `outline`, and symbol-scoped `read`,
 and follow contextual pages for the selected task. The workflow must not parse rendered HTML
 for criteria, status, evidence, or authority. Missing or
 invalid HTML capability is a STOP, not a fallback to Markdown. Existing
@@ -18,7 +18,7 @@ authoritative Markdown pairs continue through the legacy path. HTML `--farm`
 dispatch remains blocked.
 
 
-Test-first, or it does not ship. Routed to by `/feature` (after spec approval), `/fix`, and `/refactor`.
+Test-first, or it does not ship. Routed to by an authorized `/feature`, `/fix`, and `/refactor`.
 
 For a feature author, including a confirmed small-lane feature, the owning
 coordinator selects task paths and obtains the current bounded map, provenance,
@@ -26,20 +26,19 @@ scoped command records and collector observations, applicable constraint
 references, and host-effective instructions in native precedence order. Before
 the author mutates or executes a discovered command, compose the fresh child
 input with `_artifactpromptlib.compose_feature_actor_input` and send its
-returned `input` to that child. Bind the actual approved spec and plan IDs
+returned `input` to that child. Bind the selected spec and plan IDs
 for full-lane work. For a confirmed small-lane feature, pass its mini-spec
 text as `confirmed_mini_spec` and leave both artifact IDs absent; do not invent
-a plan or bypass its existing gate. The packet
+a plan or additional approval record. The packet
 is an orientation aid with `requires_actor_check`, not admission. Recheck
 worktree/source identity and resolve applicable critical constraints before a
 material action. Missing optional map detail permits bounded read-only source
 inspection, with full schema or document body read only when needed.
 Apply `_contextselectlib.prepare_actor_delivery` to that selected packet for
-the actual child, task, worktree and current source/host epochs. Send its
-`delivery_text` when requested and count the attempt before the material
-action; an unknown receipt or surviving session marker never proves delivery.
-Re-select on resume, compaction, scope or worktree change, and report a blocked
-delivery gap rather than assuming the child retained prior context.
+the actual child, task, worktree and current source/host epochs when that
+helper is useful. Deliver the relevant bounded input; a missing receipt does
+not independently deny execution. Re-select context after a material source
+or worktree change, and do not claim a child saw input not actually delivered.
 
 For a fix or targeted test-only change, use the caller that already owns the
 task. Before the author mutates or executes a discovered command, call
@@ -48,8 +47,8 @@ sources, exact command cwd and collector evidence, then send its returned
 `input` to that actor. Use `route='fix'`, `caller='fix'`, and the confirmed
 bug-origin evidence and named regression for a fix. Use `route='test_change'`
 with the existing `fix`, `feature`, or `refactor` caller for a test-only change;
-do not create a feature spec pair merely to deliver context. The selected
-caller retains its own approval and TDD gates. Reuse an actual bug-origin RED
+do not create a feature spec pair merely to deliver context. the selected
+caller retains its real host permissions and applicable TDD checks. Reuse an actual bug-origin RED
 when it already proves the named regression; for a targeted test change,
 validate the test against the real defect or an honest fault fixture. Never
 change production behavior merely to manufacture a failing test. If this
@@ -65,7 +64,7 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — test, coverage, and lint invocations; file layout; mock patterns.
 - `${CLAUDE_PLUGIN_ROOT}/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 3.
-- For `/feature`, the authoritative approved spec. For HTML, read its typed
+- For `/feature`, the authoritative selected spec. For HTML, read its typed
   criterion records through the installed engine and confirm the paired plan's
   exact binding; for legacy Markdown, read
   `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`. It is the feature obligation
@@ -89,7 +88,7 @@ test is `MISSING`. "We should test X" is not an obligation.
 
 Derive every obligation before any code is written, and record each as `ID · source · OPEN`:
 
-- **Spec (`/feature`)** — one obligation per acceptance criterion in the approved spec. For
+- **Spec (`/feature`)** — one obligation per acceptance criterion in the selected spec. For
   HTML, cite the exact artifact ID and criterion ID returned by the engine;
   caller-supplied labels cannot manufacture obligations or widen the approved
   criterion set.

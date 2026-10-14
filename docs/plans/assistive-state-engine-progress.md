@@ -1,7 +1,7 @@
 # Assistive state-engine overhaul: implementation progress
 
 **PR:** #983, `overhaul/assistive-state-engine` -> `main`.
-**State:** DRAFT; three implementation slices, not the completed overhaul or a released package.
+**State:** DRAFT; fourth implementation slice in progress, not the completed overhaul or a released package.
 **Baseline:** `arbiterForge/codeArbiter@045c0812888f20f4c843677cfb37b802e2084770:/`.
 **Contract:** [the complete nine-task handoff](assistive-state-engine-overhaul.md).
 **Decision:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md), accepted product direction, separately bound to its actual source commit. No independent review or release proof is fabricated by that acceptance.
@@ -14,13 +14,34 @@
 | T02 | Native lifecycle expanded | Advisory scheduling, receipt-free work progress/reconciliation, draft binding, and receipt-free implementation batch completion are implemented. Full caller conversion and subject-scoped evidence assessment remain. |
 | T03 | Native path implemented | Typed fact/decision definitions, explicit task scope, reported observations, failure/unknown visibility, definition-specific applicability, bounded symbol readback, and escaped HTML are implemented. Normal host callers still need T05 conversion. |
 | T04 | Bounded rerun correction implemented | A new explicit batch review can select a fresh passing rerun without another task review of unchanged source/support. General task/source-scoped applicability and ordinary result recording remain. |
-| T05 | Native authoring and drafting converted | Writer admission and plan preflight no longer require artifact approvals or future reviewers. The canonical drafting skill and artifact guidance are regenerated. Remaining sprint/execution entrypoints, hooks, context delivery, and obsolete adapters still need conversion. |
+| T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
 | T06 | Partial readback | Exact/batch prerequisite reads now include their bounded assessment and new-schema HTML displays it. Full compact task packets and retrieval-cost work remain. |
 | T07 | Not started | Existing state can be read by this slice, but complete upgrade, obsolete-prompt recovery, and mixed-client compatibility are not qualified. |
-| T08 | Candidate metadata and schema propagation | Schema 0.3.2 is synchronized through the bridge, builders, installed candidate checks, and rebuilt farm bundle. Breaking candidate versions advance independently; full active-instruction/documentation conversion remains. |
+| T08 | Main execution and adapter surfaces regenerated | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; fourth slice regenerates core execution instructions, route table, skill index, and three host projections. Public help/Academy/atlas and exact installation checks remain. |
 | T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Fourth slice: ordinary execution callers (source candidate)
+
+**Source status:** Implemented in the draft PR, **not** live-host qualified or released. Exact commit and hosted CI state are recorded in the PR after publishing the branch.
+
+The canonical `/feature`, `/sprint`, `brainstorming`, `executing-plans`, `subagent-driven-development`, TDD entry boundary, and the ordinary commit/PR handoff now use the implemented assistive model rather than requiring a second artifact approval conversation. A plan remains useful and mandatory for its full-lane workflow, but the spec can be a working draft. Existing in-scope implementation changes do not require digest-bound replies, a per-task author/reviewer fleet, or a reviewer replay just because test receipts changed.
+
+Task selection uses `eligible` as advice, actual task dependencies, and scoped factual observations. `task-review` without receipts reports implementation readiness; `accept-scope` without receipts records `DONE`, not proof of testing. Unknown/failing tests remain visible; review follows real risk. Interruption handling inspects current work and respects CAS/replay, active workers, `BLOCKED` states and actual user denials. No tool permission, security, irreversible-operation, secrets, commit, merge or publication authorization is granted by these changes.
+
+The canonical route/skill indexes and the complete generated Claude, Codex and Pi surfaces have been regenerated. Old contracts requiring artifact authority were replaced in their targeted regression suites with positive checks that real host controls and safe progress distinctions remain. The first CI failure on the prior commit was an obsolete prerequisite surface assertion; the source now checks that ordinary task-scoped observations require no legacy prompt adapter, while the historical attestation adapter's own negative tests are retained. The docs assertion likewise distinguishes Pi's native writer/ordinary progress from unqualified historical verification/review authority.
+
+**Local verification performed during this slice:**
+
+- `test_routing_and_cleanup_surface.py`: 53 passing tests after updating policy-bound assertions.
+- `test_build_surface.py`: 147 tests, one existing skip, passing after preserving the exact changed Codex charter route count and replacing the obsolete fixed PR preflight assertion with checks of real authorization/hosted-CI boundaries.
+- `test_artifact_workflow.py ArtifactWorkflowResolverTest`: 12 passing tests for canonical format, resumed tasks, advisory state, separate explicit evidence, and commit/PR rules.
+- `test_artifact_consumers.py`: 18 passing tests for resource closure.
+- `tools/build-surface.py --check`: passed after regenerating all three host projections.
+- Full native-builder-dependent Python workflow/authoring/prerequisite suites were attempted concurrently but did not complete in the bounded local exercise; do **not** count them as passes. Run them on the current exact head in CI and investigate any failures. A local Windows docs test also hit the existing captured-product-example digest mismatch; do not alter that historic capture to force green.
+
+**Unresolved:** actual installed-host /feature and /sprint canaries, old armed prompt retirement and recovery, ordinary command/result recording with scoped freshness, complete cross-surface site/public explanation, upgrade and rollback. The route atlas remains historical and must be reconciled against exact changed source bytes before claiming current diagrams. Do not merge this partial version.
 
 ## Third slice: authoring admission and review reuse
 
@@ -248,12 +269,12 @@ The fixture verifies that ordinary work produces no approval, observation, or re
 
 ## Next implementation steps
 
-1. Finish the normal T05 execution path: connect the implemented prerequisite/progress operations to sprint/execution entrypoints and remove duplicate artifact permission dependencies in hooks/context delivery. Drafting and the bounded batch-rerun correction are already implemented; do not rebuild them or add another authority adapter.
-2. Complete T04 result/applicability handling and T07 compatibility alongside that conversion: accurate ordinary results, affected-source refresh, old prompt markers, interrupted operations, mixed installed clients, and rollback after later edits. Neither a passing rerun reuse fixture nor a native schema reader test establishes the complete workflow.
+1. Finish T05/T07 pending host adapters: inspect/retire old armed approval, prerequisite and reconciliation prompts without losing historical receipts or interrupting active operations; verify actual host hook behavior. The main canonical sprint/feature/task execution path is now converted.
+2. Complete T04 ordinary command/result and subject-scoped applicability plus T07 interrupted-operation, mixed-client upgrade, old markers and rollback after later edits. Neither instruction tests nor a native schema reader proves the installed workflow.
 3. Finish T06-T09 in this PR: compact task packets/HTML, obsolete-prompt and interrupted-work upgrade, generated instructions, package compatibility, and an actual installed-candidate exercise. The full requirements and twelve acceptance scenarios are in the handoff.
 
 ## Merge and release boundary
 
-Do not merge or publish this partial conversion. The active host instructions still contain the unwanted workflow, and mixed old/new installed clients have not been qualified. Preserve actual host permissions, explicit user stops/denials, normal repository CI, and publication controls. No package was released and no existing user's project state was migrated.
+Do not merge or publish this partial conversion. The main host instruction path is updated, but obsolete hook/pending-request protocols, some advanced/farm callers, and mixed old/new installed clients are not fully qualified. Preserve actual host permissions, explicit user stops/denials, normal repository CI, and publication controls. No package was released and no existing user's project state was migrated.
 
 **Claim-registry delta for subsequent Project maintenance:** product-specific assistive-engine direction is accepted; native progress, scoped prerequisite observations, and batch completion are source-only on this PR; full orchestration, migration, and released behavior remain unverified. Record that distinction without relabeling October 7 evidence or claiming the Project files were replaced.

@@ -1,261 +1,57 @@
-<!-- codeArbiter v2 — /sprint: autonomous sprint mode. This is the mode body,
-loaded on demand when /ca:sprint (commands/sprint.md) is invoked; the command
-file is the thin entry point, this file is the procedure. -->
+<!-- codeArbiter /sprint body. Loaded by the existing sprint command. -->
 
-# /sprint — autonomous sprint
+# /sprint - autonomous, assistive execution
 
-Brainstorm a sprint with the user, then execute it end-to-end — deciding "as the user" on everything
-that is not a true hard gate. Every auto-decision is logged. Hard gates are real stops, rare by design.
+The user's sprint request authorizes the agreed work. Build and maintain its spec and plan, then execute **without a second artifact approval system**. Make ordinary in-scope method decisions, record meaningful deviations, verify outcomes, and report real blockers. Do not make the user repeatedly certify prerequisites or evidence identities.
 
-## Structured-artifact boundary
+## Representation and resume
 
-For new sprint work or an existing `.html` spec/plan match, load
-`${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` before resume classification or artifact
-I/O. Call `_select_authoring_route` with the trusted project root, slug,
-`workflow: sprint`, and `lane: full`; use only its returned format and paths. For a selected HTML
-route it checks the installed capability before writing; a missing or invalid
-helper is a STOP and the workflow must not fall back to Markdown.
-Its validated identity, authority, binding and task-state operations replace the
-`.md` and status-column assumptions below for that pipeline. An existing `.md`
-pair remains on the legacy path. Discovery requires a
-complete same-extension spec/plan pair: select that exact pair as authoritative. A
-mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format, and the
-next plan must use the same extension. The workflow must not create, rename, or
-convert its counterpart to repair ambiguity. New full-lane sprint specs use the
-installed structured-artifact engine and default to canonical `.html`. The HTML
-path must block `--farm` before canary
-or dispatch; do not project it into legacy farm JSON.
+For new full sprint work or an existing HTML spec/plan, load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` and use `_select_authoring_route` with the trusted root, slug, `workflow: sprint`, `lane: full`. New complete sprint artifacts default to canonical HTML through the pinned native writer. An existing Markdown pair remains Markdown; a complete same-extension spec/plan pair is authoritative. A mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format, and the next plan must use the same extension. Do not create, rename, or convert a counterpart to repair ambiguity.
 
-## Execution backend: premium (default) vs. `--farm`
+**Resume first.** Resolve `_resolve_workflow_pair`. For an HTML pair, read state only through the installed engine `identity`, `index`, and symbol-scoped `read`. For a Markdown pair, use the existing Markdown status ledger. Resume either exact format without creating or consulting a shadow artifact. A task marked `IN_PROGRESS` requires inspection of running workers and partial work, not automatic redispatch. Do not demand a new approval because a session was restarted.
 
-> **`--farm` is a Feature Forge `preview`** — shipped off by default. Historical runs informed its
-> design but count as zero current qualification evidence. The premium subagent path is the blessed
-> default. The fresh-evidence promotion bar lives in `${CLAUDE_PLUGIN_ROOT}/includes/farm.md`.
+The HTML writer may refuse a genuinely invalid/missing payload; that means an artifact was not saved, not permission to invent a Markdown fallback. Ordinary safe investigation may continue. HTML `--farm` dispatch remains disabled.
 
-`/sprint` runs the normal premium-subagent path unless invoked as `/sprint --farm`. The `--farm` flag
-selects the pluggable execution backend: Claude still authors the spec, the failing tests, and the plan,
-but a worker (not a premium subagent) implements each task behind the same hard gates. Thread the flag
-into Phase 1 (`writing-plans --farm`) and Phase 2 (the farm dispatch path in
-`subagent-driven-development`); if `--farm` is set, pre-flight `FARM_API_KEY` and BLOCK if absent,
-citing `${CLAUDE_PLUGIN_ROOT}/includes/farm.md`, before brainstorming begins. Everything else about
-`/sprint` (the one interactive gate, deciding-as-the-user, hard gates, logging) is identical between
-backends. The worker-seam design (the cheap/premium/agentic policies the seam admits) lives in
-`farm.md`; do not restate it here.
+## Backend
 
-## Phase 1 — Sprint spec · gate: STOP
+Default is the normal agent-assisted implementation engine. Delegate when it helps; **one fresh premium subagent and two reviewers per task are not mandatory**. `/sprint --farm` remains a separately requested legacy Markdown preview backend governed by `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` and `subagent-driven-development/references/farm-dispatch.md`: do not run without real provider configuration and budget, bypass its circuit breaker, or silently switch to premium on a failure. No model is selected, charged, or invoked by the artifact writer alone.
 
-**Resume first:** discover this sprint's existing artifacts. Call the private
-bridge resolver `_resolve_workflow_pair` with the trusted project root and sprint
-slug; its returned paths and format own this resume. Select a complete
-same-extension spec/plan pair as authoritative. A lone spec resumes in its exact
-format, and the next plan must use the same extension. A mixed-extension or
-duplicate match is a STOP. For an HTML pair, obtain state only through the
-installed engine `identity`, `index`, and symbol-scoped `read` operations. For a
-Markdown pair, use the existing Markdown status ledger. Resume either exact format
-without creating or consulting a shadow artifact; the workflow must not create,
-rename, or convert its counterpart. Do not re-brainstorm — confirm the resume
-with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan with remaining
-dependency-clean `PENDING` tasks → straight to Phase 2, executing only those tasks; the legacy
-plan's `status` column or the typed engine's execution ledger is authoritative for its own format).
-`BLOCKED` tasks remain non-selectable until their owning reconciliation path records a supported
-transition. An interrupted sprint is re-entered, never restarted.
+## Phase 1 - Establish a useful working agreement
 
-Route to `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/skills/brainstorming/SKILL.md`), scoped to a **sprint** — a coherent chunk of work (several features or one
-goal), not a single feature. Drive it to a concrete sprint spec at the
-route-selected spec path, then to `writing-plans`
-(`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`) for the task breakdown at the
-matching route-selected plan path. New sprint work uses `.html` through the
-installed engine.
+Use `brainstorming` for a missing spec and `writing-plans` for a missing plan. Bound the sprint goal, requirements, relevant acceptance criteria, real dependencies, and genuinely consequential decisions. Prefer source evidence and existing project decisions; read applicable ADR titles/index first, and only relevant full bodies. A missing planning index is not another user STOP. Avoid bulk context loads and repeated interviews about answered requirements.
 
-This is the ONE interactive gate, and it is load-bearing: the thoroughness of the spec is what makes
-hard-gate stops rare later. Capture the user's intent, priorities, risk tolerance, and any
-explicit "decide it this way" steers here. STOP for explicit user approval of the sprint spec AND the
-plan before autonomy begins. A blocking `[CONFIRM-NN]` is resolved here, with the user — never carried
-into autonomous execution unresolved.
+For HTML create the spec and plan as typed drafts. A `draft_preview` binding identifies the current source and can be maintained under the existing authorization. Use `validate` for structural/ready diagnostics. **Do not arm `arm-sprint`, `sprint-approve`, `delegate-methods`, or `smarts-apply` to obtain permission to make ordinary plans or choose methods.** Those are historical attestation operations, not prerequisites to this default workflow. An explicit requested human approval checkpoint remains real; do not infer one from an artifact state.
 
-### Initial HTML approval sequence
+Identify factual prerequisites and scope them to the tasks they really affect. The agent can check a fact through an ordinary authorized tool and record a `prerequisite` observation; a tool result is not a decision made by the user. Ask the actual user about a consequential unresolved product choice. Do not ask to certify a hash, approve a nonce, or reapprove a plan because tests or steps changed.
 
-Prepare one review packet containing the ready spec, ready draft plan, adversarial findings and
-explicit delegation terms. The installed private pair adapter in
-`${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` owns the combined one-reply transaction:
+The initial request bounds the work; it does **not** grant arbitrary future scope expansion, third-party spending, credential access, irreversible changes, merge, publication, or an override. Keep actual authorizations and explicit user limits intact.
 
-1. Finish the spec as a ready draft. Let `writing-plans` use `_preflight_plan_authoring` with
-   `draft_for_pair: true` only for this full-lane initial sprint. Populate the same-slug plan as
-   `draft_preview`, validate both, and review their complete criteria, paths, tests and checkpoints.
-   Neither draft has execution authority. Do not separately approve this pair or bind it to an
-   approved source. If review changes the draft spec, use only the explicit `draft_preview`
-   rebind described in `includes/artifacts.md`, then revalidate both current drafts before arming.
-2. Arm both exact identities with `arm-sprint`. Include `--delegate-methods` only when the presented
-   terms explicitly ask the user to delegate existing task-method revisions. Present the exact returned reply;
-   it names both artifacts and `delegate-methods` or `approve-only`, not an ambiguous generic yes.
-3. The existing qualified host observes that single reply. `sprint-approve` validates both frozen
-   definitions and commits approval plus plan binding in one recoverable native transaction.
-   Verify both current approved identities before execution. No execution before both approvals.
+## Phase 2 - Execute autonomously within the scope
 
-One reply approves the reviewed pair, not future unbounded work. `delegate-methods` does not grant
-initial self-approval, product decisions, prerequisite satisfaction, new files, verification changes,
-commit/push, provider/spending/disclosure/publication authority, or any security bypass. Keep
-no per-feature interviews and no attended execution pauses. A declined, changed or unsupported pair
-retains drafts; capability absence is not permission to invent a legacy shadow or receipt.
-If an observed reply was interrupted, `resume-sprint` replays its stored transaction without asking
-for the same reply again. An armed request with no observed reply cannot be resumed as approval.
-The existing sequential single-artifact path remains available for `/feature` and older workflows;
-Markdown retains its original approval contract.
+Send the selected plan to `subagent-driven-development` with no artificial per-batch human pause. It reads compact task records, selects actual dependency-clean work, and implements or delegates coherent units. Use TDD where behavior changes benefit from test-first work. Tests, review, and evidence belong to their actual subject and risk; do not require a fixed number of reviewers or rerun them because a receipt ID changed.
 
-**Recorded-intent read — BEFORE spec approval, fail-soft (ADR-0025):** consult
-`decisions/decision-log.md`, the accepted-ADR index, the `plans/` artifacts' section headings, and
-`open-questions.md`'s deferred sections — index-first, bodies only when the index names them
-relevant. Surface AT THIS GATE every accepted ADR and open deferral the planned scope plausibly
-touches, and capture the user's ruling on each in the approved spec ("conform" / "supersede via
-`/adr` first" / "scoped exception, cite the ADR"). A ruling recorded here is a user decision: a
-later in-flight collision with a pre-ruled record cites the ruling and proceeds. An absent
-`plans/` or `decisions/` records `intent: silent — no decomposition record` in the sprint log and
-proceeds — never a STOP.
+**Deciding on behalf of the sprint:** use the user's intent and priorities to choose reversible implementation methods. Use SMARTS when a genuinely difficult trade-off warrants it, not as a six-lens tax on every step. Record material decisions in `.codearbiter/sprint-log.md` with reason and any meaningful uncertainty. A changed method, verification runner, or task decomposition within the agreed outcome is ordinary typed plan maintenance with a short reason, not a new user grant. A materially different product outcome is a question for the actual owner.
 
-**`--farm` mode:** route the plan step through `writing-plans --farm`, which additionally writes each
-task's failing test and co-emits `plans/<sprint-slug>.plan.json`. To preserve the MVP-slice philosophy
-(and to cap the blast radius of a bad model), drive the farm **one MVP slice at a time**: emit and
-dispatch the plan.json for the current slice, review/merge it, then plan the next slice with the merged
-code in hand — rather than authoring every failing test in the sprint up front. The user approves the
-sprint spec and the first slice's plan at this gate; subsequent slices proceed under the same autonomy.
+For HTML, use receipt-free `task-start`, `task-review` (implementation reported ready), `task-reconcile` (reasoned progress correction), and `accept-scope` (reported implementation `DONE`) as appropriate. These labels **never certify a passing check, independent review, or released artifact**. Preserve applicable test output and state the exact outstanding checks. `eligible` is advisory scheduling; use `verification-status` only when an explicit historical attestation claim is actually needed, never to decide whether ordinary code editing may proceed.
 
-## Phase 2 — Autonomous execution · gate: BLOCK
+## Actual stops
 
-Hand the approved plan to `subagent-driven-development` (`${CLAUDE_PLUGIN_ROOT}/skills/subagent-driven-development/SKILL.md`) and run it to completion WITHOUT per-batch
-human checkpoints — that is the difference from `/feature`'s `executing-plans`. Each task is
-test-first via `tdd`, two-pass reviewed, and proven on a fresh run.
+Stop affected work for an explicit user denial/stop, an unauthorized irreversible or destructive operation, a host/tool sandbox denial, a genuinely consequential missing product decision, or an independently applicable security, secrets, migration, or publication control. A security-critical finding requires resolving its risk, not faking a reviewer pass. Not every change mentioning authentication or an ADR automatically asks the user again when it is already within the agreed task; assess the actual risk and authorization.
 
-**`--farm` mode:** `subagent-driven-development` detects `plan.json` and takes its farm path —
-selecting a model (a canary probe over candidate Zen models, falling back to websearch), dispatching
-`farm.js`, then routing every green task through the SAME spec-compliance + quality + fresh-verification
-gates the premium path runs (Phases 3–5). Swapping the worker only changes who *writes* the code, never
-whether it is *reviewed* — every farm-produced green task still routes through the full review chain. A farm escalation is handled per `subagent-driven-development`'s Phase 2.5
-(re-dispatch via premium Phase 2, or `[CONFIRM-NN]` on a genuine spec gap), and a circuit-breaker abort
-from `farm.js` (too many escalations) is itself a hard-gate surface: stop and tell the user the model
-isn't capable of the slice rather than grinding through.
+A failing unit test, lint error, mismatched criterion, missing optional context map, changed receipt, or unsupported named-test parser is **not** another permission question. Record the failure and work on a correction or independent task. Do not equate a reported passing command exit with named-test-level proof it does not provide.
 
-### Deciding "as the user"
+## Recovery without an approval ritual
 
-At every point the framework would normally surface for the user's decision — a design choice, an
-ambiguity, a trade-off, a non-obvious option — DECIDE rather than stop:
+Investigate the failed obligation and actual output. Fix the affected work, rerun the appropriate checks, and revisit only findings affected by the changed source or result. Do not spawn a full reviewer fleet or restart planning for routine implementation learning.
 
-- Run the SMARTS 6-lens evaluation (the scoring in
-  `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md`), beginning with its Step 0 recorded-intent check
-  (ADR-0025 — in scope here by name), plus a project-correctness read against `CONTEXT.md` and the
-  sprint spec. Reuse SMARTS *scoring* only — NOT `decision-variance`'s
-  Rule 1 ("never decide alone"), which `/sprint` explicitly overrides.
-- Choose the option the analysis favors. Decide on EVERY non-hard-gate point **regardless of SMARTS
-  strength** — `strong`, `moderate`, or `tied`. Break a `tied` toward the sprint spec's stated
-  priorities; failing that, the §2 conflict hierarchy.
-- LOG every auto-decision to `${CLAUDE_PROJECT_DIR}/.codearbiter/sprint-log.md` (append-only): the
-  decision point, the options weighed, the SMARTS verdict, the chosen option, the strength, a
-  **confidence flag** — `low` for any `tied` or `moderate`, `high` for `strong` — and an
-  **intent field**: `intent: per <source>` when Step 0 answered or constrained (an answered
-  decision logs `confidence: high`, with the citation written in the verdict slot), `intent:
-  silent` otherwise. On a heading line `intent:` goes AFTER the `confidence:` token, or on a body
-  line — never before it: the harvest's positional parser takes the promoted title as everything
-  before `· confidence:`. The `low`-confidence
-  entries are exactly what the user reviews in the morning; nothing is hidden behind autonomy.
+After process recreation, inspect workers and worktree state before changing an `IN_PROGRESS` record. Use `identity` and `eligible` for current advisory state, then a reasoned `task-reconcile` when needed. Never erase a user `BLOCKED` stop or rerun an uncertain attempt merely because its previous response was lost. Use the same journaled operation ID for an uncertain write and the engine's actual recovery operation. Old armed prompt/receipt history remains historical; it is not rearmed to permit progress.
 
-### Typed SMARTS method authority
+If the same corrective strategy fails twice with no new diagnosis or evidence, change the approach or mark that task blocked with its actual cause; continue unrelated eligible work. Do not weaken tests, invent exceptions, or claim unrun verification passed.
 
-After the pair's explicit `delegate-methods` approval, use the private `smarts-apply` producer for a
-material change to an existing task's method steps. First perform SMARTS Step 0 and the existing
-project/ADR/scope checks. Submit the actual options, six-lens comparison, selected option, strength
-and rationale with the exact plan revision/model hash and the retained initial `grant_receipt`.
-Use the private request shape and adapter in `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md`; a pasted matrix
-or an append-only log is not itself authority. A single evidenced option is allowed; an in-scope tie
-uses the existing priorities rather than another user interview. Do not manufacture alternatives.
+## Phase 3 - Return an honest result
 
-The producer retains all protected plan fields and requires the original user-approved scope. It can
-change only existing task `steps`; paths, tests, criteria, dependencies, prerequisites, rollback and
-checkpoint membership cannot expand. It quiesces affected writers by refusing `IN_PROGRESS` and
-invalidates affected checkpoint/dependency proof before another attempt, without clearing `BLOCKED`
-members or their recorded reasons. A blocked method revision
-therefore resumes through fresh `eligible`, context tickets, verification and review, never auto-pass.
-The original log still records material reasoning and source citations. No result implies accepted
-work or independently proves the truth of model judgment. Changes outside the granted boundary use
-their actual authority owner; this producer does not satisfy prerequisites or waive security stops.
+Summarize implemented changes, tests and checks **actually run**, unresolved defects/decisions, risk findings, and what still requires verification. Attribute meaningful autonomous decisions from the sprint log without requiring the user to read a long transcript.
 
-### Hard gates — true stops, even mid-sprint
+If an authorized commit is requested, route through `commit-gate`, then `finishing-a-development-branch` for the chosen PR action. `/sprint` may open a PR under the existing authorized workflow; it must not merge to the default branch, publish a release, discard work, or bypass Git permissions without the appropriate separate authority. A local `DONE` batch is not a shipped release.
 
-NEVER auto-decided. Halt and surface to the user:
-
-- Anything in `security-controls.md`; auth, crypto, secrets, or a trust-boundary change.
-- An irreversible operation — data loss, a destructive migration, anything that cannot be rolled back.
-- `/override` or hotfix territory — a gate bypass is never taken autonomously.
-- A security CRITICAL finding, or a `[CONFIRM-NN]` that requires a missing user decision.
-  An ordinary failing TDD/verification result instead takes Recovery within the approved sprint;
-  it remains blocked from acceptance until the original gate and required reviews pass.
-- An auto-decision that would contradict an accepted ADR or a recorded deferral rationale
-  (ADR-0025). The valve, none of it auto-decided: a collision pre-ruled at the Phase 1 gate cites
-  the ruling and proceeds (that ruling was a user decision); a deferral whose recorded
-  re-evaluation trigger has occurred is reopened and surfaced, not treated as a contradiction;
-  one stop per record per sprint — the first stop's answer is logged, later identical collisions
-  cite it.
-- Merge to the default branch (see Phase 3).
-
-Hard gates are rare BY DESIGN. If they trip repeatedly in one sprint, that is a signal the spec was
-too thin, confidence was misplaced, or the record itself is stale — route a repeatedly-tripping
-ADR to supersession in the summary; surface it, do not silently grind through.
-
-## Recovery within the approved sprint
-
-A failed TDD, coverage, lint, or fresh-verification result blocks acceptance, not authorized repair.
-This section applies only after initial spec-and-plan approval and only inside that approved scope.
-Classify the failure before acting: an implementation defect or stale proof takes the owning repair
-or reconciliation path; a real authority or security block takes the named Hard gates path.
-
-Read the diagnostics and current state, give the author a corrective brief containing the failed
-obligation and relevant evidence, and rerun the original gate plus every invalidated review.
-Never redispatch merely to evade a failing gate. Do not weaken tests, invent an exemption, broaden
-scope, or accept a self-reported pass to continue. Use SMARTS and the existing sprint log for material
-method choices, not another approval interview for an already-authorized correction.
-
-For HTML, load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` and use the exact current identity,
-`eligible`, and applicable `task-reconcile` or `scope-reconcile` operations before redispatch.
-Obtain a fresh complete context ticket and capture real policy events for every required receipt.
-Never manufacture an approval or a receipt, edit execution cells, or create a shadow ledger.
-An invalidated proof needs the appropriate fresh verification/review, not automatic reimplementation.
-
-Unchanged failure plus unchanged inputs is not progress. After two consecutive corrective attempts
-with the same failure and no new evidence, stop that retry strategy. Choose a different authorized
-approach supported by a new diagnosis, or persist the stop before continuing independently eligible work.
-For HTML, apply `task-block` with the exact current revision and model hash, then rerun `eligible`;
-the blocked task and invalidated dependents must not be redispatched. For Markdown,
-record the bounded blocked-task report in the authoritative plan and change that task's status to `BLOCKED`;
-select only dependency-clean `PENDING` tasks whose dependencies are `ACCEPTED`.
-`BLOCKED` tasks must not be redispatched until the owning plan/reconciliation workflow records a
-supported transition. This is not automatically another user checkpoint. Ask only for the specific
-missing fact or authority when that is the blocker; do not report the incomplete plan as accepted.
-
-A `commit-gate` refusal returns to its named repair/reconciliation prerequisite. Recovery does not grant commit, provider, spending, disclosure, or publication authority. Security CRITICAL findings,
-unresolved `[CONFIRM-NN]` decisions, irreversible operations, and all named Hard gates remain stops.
-HTML farm remains disabled. This recovery path does not change farm-only intent or authorize a
-silent premium fallback, another provider, or more spending after a farm circuit-breaker abort.
-
-## Phase 3 — Land & summarize · gate: BLOCK
-
-On plan completion, route the branch through `commit-gate`, then `finishing-a-development-branch` —
-which under `/sprint` AUTO-SELECTS open-PR and surfaces the merge decision to the user. `/sprint`
-never merges and never discards.
-
-Emit the sprint **Receipt** — the same win-summary shape `finishing-a-development-branch` Phase 4 uses,
-widened to the whole sprint: what shipped; obligations covered and the gates that fired with what each
-caught; secrets/regressions prevented; suite time; the auto-decision count with every `low`-confidence
-call listed for review (cite `sprint-log.md`); any hard gates that tripped, each with the
-planning/confidence signal; and any open `[NEEDS-TRIAGE]` items. Drawn from in-hand state, not a fresh
-crawl. Close with exactly one warm, synthesizing sentence (per the orchestrator register) — earned,
-never on a no-op run.
-
-## Hard rules
-
-- MUST log every auto-decision to `.codearbiter/sprint-log.md` — append-only, never edited, committed as a permanent audit artifact.
-- MUST NOT auto-decide a hard gate: `security-controls`, crypto/secrets/auth, irreversible ops, `/override`/hotfix, an unresolvable `[CONFIRM-NN]`, or a contradiction with an accepted ADR / recorded deferral outside the ADR-0025 valve. Halt and surface.
-- MUST run the recorded-intent read before Phase 1 spec approval — index-first and fail-soft: an absent `plans/` or `decisions/` logs `intent: silent` and never stops the sprint.
-- MUST NOT merge to the default branch or discard autonomously — auto-select open-PR only.
-- MUST NOT inherit `decision-variance`'s Rule 1 — `/sprint` decides as the user, reusing only the SMARTS scoring.
-- MUST surface a repeated hard-gate-trip pattern as a planning/confidence signal, not grind past it.
-- MUST diagnose and repair ordinary in-scope quality failures through Recovery within the approved sprint;
-  never auto-pass a gate or treat recovery as additional authority.
-- MUST, at sprint close, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) in autonomous mode — auto-promote `confidence: low` `sprint-log.md` decisions and any open `[NEEDS-TRIAGE]` to `open-tasks.md` (work) / `open-questions.md` (decisions), each promotion SMARTS-scored and logged. A blocking decision is never auto-promoted — it escalates.
+Harvest applicable follow-up tasks and decisions through `${CLAUDE_PLUGIN_ROOT}/includes/harvest.md` without silently broadening this sprint or promoting an unresolved decision into authority. The requested work, not procedural gate count, determines when the sprint is finished.
