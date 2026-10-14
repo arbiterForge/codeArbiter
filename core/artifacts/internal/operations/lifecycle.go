@@ -156,6 +156,9 @@ func (e *Engine) prerequisites(d *model.Document) error {
 	for _, v := range model.A(d.Norm()["prerequisites"]) {
 		r := model.M(v)
 		id := model.S(r["id"])
+		if _, reported := model.M(ex["prerequisite_observations"])[id]; reported {
+			return fault.New("AUTHORITY_UNVERIFIED", "a reported prerequisite observation is not a legacy authority receipt; use advisory scheduling for ordinary work")
+		}
 		if model.S(model.M(ex["prerequisites"])[id]) != "satisfied" {
 			return fault.New("PREREQUISITE_UNSATISFIED", "plan prerequisite is not satisfied: "+id)
 		}
@@ -277,6 +280,12 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 		(op == "task-reconcile" && r["receipt"] == nil) {
 		return e.recordWork(op, r, entry)
 	}
+	if op == "prerequisite" && r["observation"] != nil {
+		return e.recordPrerequisite(r, entry)
+	}
+	if op == "accept-scope" && r["receipt"] == nil {
+		return e.finishScope(r, entry)
+	}
 	next, err := d.Clone()
 	if err != nil {
 		return nil, err
@@ -324,6 +333,7 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 		if err = receipt.Subject(d, id, "prerequisite"); err != nil {
 			return nil, err
 		}
+		delete(model.M(ex["prerequisite_observations"]), id)
 		model.M(ex["prerequisites"])[id] = "satisfied"
 		refs := model.Strings(model.M(ex["prerequisite_evidence"])[id])
 		refs = append(refs, receipt.Path)
@@ -340,7 +350,7 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 				return nil, fault.New("UNKNOWN_TASK", "task is absent")
 			}
 			status := model.S(state(d, id)["state"])
-			if status != "IN_PROGRESS" && status != "REVIEW" && status != "ACCEPTED" && status != "STALE" {
+			if status != "IN_PROGRESS" && status != "REVIEW" && status != "DONE" && status != "ACCEPTED" && status != "STALE" {
 				return nil, fault.New("INVALID_TRANSITION", "task must have been dispatched before recording review")
 			}
 			scope := model.S(task.Value["checkpoint"])

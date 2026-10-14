@@ -1,7 +1,7 @@
 # Assistive state-engine overhaul: implementation progress
 
 **PR:** #983, `overhaul/assistive-state-engine` -> `main`.
-**State:** DRAFT; initial implementation slice, not the completed overhaul or a released package.
+**State:** DRAFT; two native implementation slices, not the completed overhaul or a released package.
 **Baseline:** `arbiterForge/codeArbiter@045c0812888f20f4c843677cfb37b802e2084770:/`.
 **Contract:** [the complete nine-task handoff](assistive-state-engine-overhaul.md).
 **Decision:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md), accepted product direction, separately bound to its actual source commit. No independent review or release proof is fabricated by that acceptance.
@@ -11,18 +11,56 @@
 | Task | Status | Actual delivery / remaining work |
 |---|---|---|
 | T01 | Complete for this starting slice | Owner decision, caller disposition below, retained full scope, native before/after failure fixture. A model-backed workflow benchmark was not run. |
-| T02 | In progress | Native advisory scheduling; receipt-free start, implementation-completion report, and progress reconciliation; ordinary draft source binding; explicit evidence query separated from scheduling. Scope completion and full caller conversion remain. |
-| T03 | Groundwork only | Legacy prerequisites remain visible with recorded status and unknown task scope. No typed factual-observation writer or task-scoped prerequisite schema has been implemented. |
+| T02 | Native lifecycle expanded | Advisory scheduling, receipt-free work progress/reconciliation, draft binding, and receipt-free implementation batch completion are implemented. Full caller conversion and subject-scoped evidence assessment remain. |
+| T03 | Native path implemented | Typed fact/decision definitions, explicit task scope, reported observations, failure/unknown visibility, definition-specific applicability, bounded symbol readback, and escaped HTML are implemented. Normal host callers still need T05 conversion. |
 | T04 | Not started | Subject-scoped evidence applicability and elimination of completion-review rerun coupling remain. |
 | T05 | Not started | Active host prompts, approval/prerequisite/reconciliation adapters, context delivery, and orchestration still need conversion. |
-| T06 | Not started | Existing bounded symbol reads and HTML are retained; compact task-packet and retrieval-cost work remains. |
+| T06 | Partial readback | Exact/batch prerequisite reads now include their bounded assessment and new-schema HTML displays it. Full compact task packets and retrieval-cost work remain. |
 | T07 | Not started | Existing state can be read by this slice, but complete upgrade, obsolete-prompt recovery, and mixed-client compatibility are not qualified. |
-| T08 | Partial propagation only | The changed Python bridge is regenerated to three host copies; full active-instruction, metadata, and documentation reconciliation remains. |
+| T08 | Candidate metadata and schema propagation | Schema 0.3.2 is synchronized through the bridge, builders, installed candidate checks, and rebuilt farm bundle. Breaking candidate versions advance independently; full active-instruction/documentation conversion remains. |
 | T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
 
-## What the native code now does
+## Second slice: scoped prerequisites and completed implementation batches
+
+The existing prerequisite operation now records bounded caller-reported facts or
+conversation decisions without arming an approval request. Definitions identify
+`fact` versus `decision` and the actual `task_refs`. Missing legacy scope stays
+unknown. Only affected tasks get waiting-prerequisite advice; starting/progress
+operations are not another permission boundary.
+
+Latest failures and unknown results supersede earlier successes in the advisory
+view. Definition-specific identity covers the requirement, kind, source refs,
+and task scope; titles and unrelated task-method edits do not invalidate it.
+The engine records time and provenance without claiming authenticated host or
+user evidence. User declines remain visible; a tool result or agent opinion
+cannot be labeled a resolved user decision. Sources are inert text, safely escaped
+in HTML. Existing journals retain history, and CAS/replay checks protect writes.
+
+`accept-scope` now also has a receipt-free progress form with a reason. It records
+`DONE`, meaning implementation complete with checks not assessed, instead of
+manufacturing `ACCEPTED`. Pending work and recorded stops are not silently cleared.
+The explicit proof form and its real evidence validators remain separate.
+
+Old artifact reads preserve their bytes. New fields and DONE use schema 0.3.2;
+old-version labels cannot conceal the new semantics. Exact/batch symbol reads
+include the prerequisite assessment without HTML parsing or new receipt chains.
+This is native compatibility/readback, not completed installed-host migration.
+
+The candidate manifests advance for the approved breaking overhaul: Claude
+3.0.0, Codex 0.18.0, Pi 0.19.0. These are **unreleased source candidates**, derived
+from each independent series, not published-version or maturity claims. The root
+Pi manifest is regenerated rather than edited separately. No tags, registries,
+release objects, marketplace refs, or historical evidence are changed.
+
+The previous head's platform CI failed on an obsolete CLI assertion requiring
+approval for ordinary draft binding. The assertion is replaced with actual
+successful-binding, no-authority, and replay coverage. Version gates previously
+failed because the changed payload reused the base versions; candidate metadata
+now advances rather than disabling those checks.
+
+## What the first native slice delivered
 
 `eligible` is an advisory query over recorded tasks and their explicit task dependencies. It returns `assessment: advisory`, `evidence_assessed: false`, recorded reasons, waiting task IDs, binding currency, and visible prerequisite requirements. It does not call `guards`, take a source snapshot, or validate approval/review receipt chains. It does not return an accepted/current-evidence claim. Earlier checkpoint numbering is not a blanket dependency gate.
 
@@ -59,7 +97,35 @@ All paths below are inside `arbiterForge/codeArbiter`. The base facts were read 
 
 The handoff intentionally supersedes the October 7 Project recommendation to preserve identical artifact-origin refusals. Its old measurements remain historical. No private Project Source file is automatically replaced by this PR.
 
-## Verification performed
+## Second-slice verification
+
+All mutation fixtures use isolated test repositories. No model-backed host session,
+user project migration, release, or marketplace promotion was performed.
+
+| Check | Actual result |
+|---|---|
+| Focused Windows native regressions | 14 assistive scenarios pass, plus the existing all-operation schema-closure test. Coverage includes scoped facts, later failures/unknowns, source classification, inert Unicode/HTML, history, CAS/replay, stopped work, DONE versus accepted proof, and old-schema read preservation. |
+| Final Linux native operations suite | 122 top-level tests pass, zero fail; one existing Windows-only case skips. Cross-compiled with Go 1.27.1, then actually executed under Ubuntu/WSL on an isolated Linux filesystem copy. |
+| CLI integration and statement profile | 17 tests pass. The prior draft-binding CI failure is corrected; ordinary binding has explicit successful/no-approval/replay coverage. |
+| Existing full Python workflow suite | 43 tests pass. This closes the previous local suite gap, but does not establish the new prerequisite path in an actual model-backed host. |
+| Installed-candidate metadata bridge | Seven selected installed-input tests pass; these validate inert package fixtures, not a real installed host. |
+| Doctor tests | 40 pass, one existing skip. Current capability fixtures use schema 0.3.2. |
+| Native schema/type and Python projections | Generated/embedded schemas and Go views match; 90 canonical Python files match their three host copies; root Pi metadata and the badge/catalog check pass. |
+| Farm bundle | Rebuilt from locked dependencies with the existing build script; the tracked bundle changes only its schema identity. No farm/model execution was performed. |
+| Python syntax, ADR identity/lifecycle, whitespace | Passed. Existing accepted ADR/history is not rewritten. |
+
+The initial complete Linux run identified an outer schema-closure omission in
+the new union request descriptors. Both alternatives were already closed, but
+the published operation root now also declares the closed union. The unchanged
+schema-closure test and the full Linux suite pass after that correction; it was
+not waived. Version guard results and final hosted CI state are recorded in the
+PR after committing the candidate, since those guards inspect committed HEAD.
+
+The source and generated callers still do not constitute a finished installed
+workflow. Keep this PR draft until T04/T05/T07 and the remaining T06/T08/T09
+work are completed together. Historical first-slice evidence follows separately.
+
+## First-slice verification (historical; not proof of the second slice)
 
 Tests execute in isolated temporary roots, not an existing user repository. No host model session or publication was performed.
 
@@ -81,12 +147,12 @@ The fixture verifies that ordinary work produces no approval, observation, or re
 
 ## Next implementation steps
 
-1. Finish T02/T03 against the actual model and request schema: separately represent progress and evidence status, add task-scoped factual prerequisites, preserve real user decisions, and finish normal scope completion without legacy authority dependencies. Include additive/old-state compatibility rather than creating a parallel state store.
-2. Complete T04/T05 together: remove review-to-receipt identity coupling and convert the real host/caller paths. Do not fix integration failures by restoring mandatory approval/ticket checks or by making proof validators always succeed.
+1. Continue T04/T05: connect the implemented prerequisite/progress operations to actual host callers and remove review-to-receipt identity coupling. Keep incomplete checks and historical evidence honest. Do not build another authority adapter to satisfy the retired design.
+2. Complete T07 compatibility and recovery alongside caller conversion: old prompt markers, interrupted operations, old/new installed clients, explicit user stops, and rollback after subsequent edits. The native schema reader test alone does not qualify that workflow.
 3. Finish T06-T09 in this PR: compact task packets/HTML, obsolete-prompt and interrupted-work upgrade, generated instructions, package compatibility, and an actual installed-candidate exercise. The full requirements and twelve acceptance scenarios are in the handoff.
 
 ## Merge and release boundary
 
 Do not merge or publish this partial conversion. The active host instructions still contain the unwanted workflow, and mixed old/new installed clients have not been qualified. Preserve actual host permissions, explicit user stops/denials, normal repository CI, and publication controls. No package was released and no existing user's project state was migrated.
 
-**Claim-registry delta for subsequent Project maintenance:** product-specific assistive-engine direction is accepted; initial native progress implementation is source-only on this PR; full orchestration, migration, and released behavior remain unverified. Record that distinction without relabeling October 7 evidence or claiming the Project files were replaced.
+**Claim-registry delta for subsequent Project maintenance:** product-specific assistive-engine direction is accepted; native progress, scoped prerequisite observations, and batch completion are source-only on this PR; full orchestration, migration, and released behavior remain unverified. Record that distinction without relabeling October 7 evidence or claiming the Project files were replaced.

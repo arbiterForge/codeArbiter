@@ -112,6 +112,8 @@ type Prerequisite struct {
 	Title       string   `json:"title"`
 	Requirement string   `json:"requirement"`
 	SourceRefs  []string `json:"source_refs"`
+	Kind        string   `json:"kind,omitempty"`
+	TaskRefs    []string `json:"task_refs,omitempty"`
 }
 type SpecRef struct {
 	ArtifactID      string `json:"artifact_id"`
@@ -185,6 +187,15 @@ type CriterionDisposition struct {
 	CriterionRef string `json:"criterion_ref"`
 	Disposition  string `json:"disposition"`
 	Rationale    string `json:"rationale"`
+}
+type PrerequisiteObservation struct {
+	Outcome          string `json:"outcome"`
+	Summary          string `json:"summary"`
+	Source           string `json:"source"`
+	Origin           string `json:"origin"`
+	Provenance       string `json:"provenance"`
+	RecordedAt       string `json:"recorded_at"`
+	DefinitionSHA256 string `json:"definition_sha256"`
 }
 type Spec struct {
 	RetiredSymbols []Retired      `json:"retired_symbols"`

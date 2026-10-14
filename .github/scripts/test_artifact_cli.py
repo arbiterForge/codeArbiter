@@ -215,6 +215,18 @@ class CliTests(unittest.TestCase):
                 "operation_id": "cli-draft-rebind", "expected": self.expected(plan),
                 "binding_mode": "draft_preview", "spec_expected": self.expected(spec)}
 
+    def test_ordinary_draft_bind_records_source_without_approval(self):
+        spec, plan = self.initial_draft_pair()
+        request = {"artifact_id": plan["artifact_id"], "spec_id": spec["artifact_id"],
+                   "operation_id": "cli-ordinary-draft-bind", "expected": self.expected(plan)}
+        rebound = self.successful("plan-bind", request)
+        self.assertEqual(rebound["revision"], plan["revision"] + 1)
+        ready = self.successful("validate", {"artifact_id": plan["artifact_id"], "gate": "ready"})
+        self.assertTrue(ready["valid"])
+        self.assertFalse(ready["authority"]["authority_verified"])
+        replay = self.successful("plan-bind", request)
+        self.assertTrue(replay["transaction"]["replay"])
+
     def test_initial_draft_pair_can_rebind_after_spec_revision(self):
         spec, plan = self.initial_draft_pair()
         self.successful("apply", {
@@ -234,13 +246,6 @@ class CliTests(unittest.TestCase):
         self.assertEqual([row["code"] for row in envelope["result"]["diagnostics"]],
                          ["STALE_SPEC"])
         request = self.draft_bind_request(spec, plan)
-        default = {key: value for key, value in request.items()
-                   if key not in ("binding_mode", "spec_expected")}
-        before = self.files()
-        result, envelope = self.invoke("plan-bind", default)
-        self.assert_error(result, envelope, "AUTHORITY_UNVERIFIED")
-        self.assertEqual(self.files(), before)
-
         result, envelope = self.invoke("plan-bind", request)
         self.assertEqual(result.returncode, 0, envelope)
         rebound = envelope["result"]

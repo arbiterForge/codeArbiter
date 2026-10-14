@@ -4,6 +4,19 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-10-14
+
+### Changed
+
+- Start the assistive state-engine overhaul in PR #983: native work tracking no
+  longer requires artifact approval codes or context tickets.
+- Record task-scoped prerequisite observations and completed implementation
+  batches separately from verified acceptance, with compact symbol reads and
+  human-readable HTML. New records use schema 0.3.2; historical reads retain
+  their bytes and evidence.
+- This is an unreleased source candidate. Host-workflow conversion, full upgrade
+  qualification, and publication remain tracked by the overhaul PR.
+
 ## [0.18.4] - 2026-10-13
 
 ### Fixed

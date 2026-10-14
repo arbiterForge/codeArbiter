@@ -44,7 +44,7 @@ NPM_PACKER_INTEGRITY = (
     "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
 )
 ARTIFACT_PROTOCOL = "codearbiter.artifact-api/0.1.0"
-ARTIFACT_SCHEMA_VERSION = "0.3.1"
+ARTIFACT_SCHEMA_VERSION = "0.3.2"
 ARTIFACT_VERSION = "0.1.0"
 ARTIFACT_NATIVE_TESTS = frozenset({
     "artifact-bridge", "artifact-conformance", "artifact-native", "artifact-package",

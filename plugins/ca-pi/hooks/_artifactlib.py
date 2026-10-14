@@ -20,7 +20,7 @@ import threading
 from typing import Any
 
 PROTOCOL = "codearbiter.artifact-api/0.1.0"
-SCHEMA_VERSION = "0.3.1"
+SCHEMA_VERSION = "0.3.2"
 MAX_REQUEST = 8 << 20
 MAX_RESPONSE = 65536
 READ_OPERATIONS = frozenset({"capabilities", "schema", "read", "outline", "identity", "validate", "index", "snapshot", "diff", "repair-preview", "eligible", "verification-status", "farm-verify", "migration-preview"})

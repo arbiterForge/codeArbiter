@@ -271,12 +271,47 @@ func RequestSchema(op string) (object, error) {
 	case "accept-scope":
 		cas()
 		add("scope", idType(), true)
-		add("receipt", text(), true)
-		add("completion_sha256", digestType(), false)
+		legacy := object{}
+		for key, value := range p {
+			legacy[key] = value
+		}
+		legacy["receipt"], legacy["completion_sha256"] = text(), digestType()
+		proofRequired := append(append([]string{}, required...), "receipt")
+		add("reason", object{"type": "string", "minLength": int64(1), "maxLength": int64(2048)}, true)
+		properties := object{}
+		for key, value := range legacy {
+			properties[key] = value
+		}
+		properties["reason"] = p["reason"]
+		request := closed(properties)
+		request["oneOf"] = []any{closed(legacy, proofRequired...), closed(p, required...)}
+		return request, nil
 	case "prerequisite":
 		cas()
 		add("prerequisite", idType(), true)
-		add("receipt", text(), true)
+		legacy := object{}
+		for key, value := range p {
+			legacy[key] = value
+		}
+		legacy["receipt"] = text()
+		observation := closed(object{
+			"outcome": enum("satisfied", "unsatisfied", "unknown"),
+			"summary": object{"type": "string", "minLength": int64(1), "maxLength": int64(2048)},
+			"source":  object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
+			"origin":  enum("tool_result", "user_statement", "agent_report"),
+		}, "outcome", "summary", "source", "origin")
+		add("observation", observation, true)
+		properties := object{}
+		for key, value := range p {
+			properties[key] = value
+		}
+		properties["receipt"] = text()
+		request := closed(properties)
+		request["oneOf"] = []any{
+			closed(legacy, append(append([]string{}, required[:len(required)-1]...), "receipt")...),
+			closed(p, required...),
+		}
+		return request, nil
 	case "farm-project":
 		cas()
 		add("scope", idType(), true)

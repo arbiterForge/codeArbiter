@@ -365,8 +365,14 @@ func planStructure(d *model.Document) []fault.Error {
 	ps := model.M(ex["prerequisites"])
 	pe := model.M(ex["prerequisite_evidence"])
 	for _, v := range model.A(n["prerequisites"]) {
-		id := model.S(model.M(v)["id"])
+		record := model.M(v)
+		id := model.S(record["id"])
 		prs[id] = true
+		for _, task := range model.Strings(record["task_refs"]) {
+			if _, exists := tasks[task]; !exists {
+				add(&es, "DANGLING_REFERENCE", id, "task_refs", "prerequisite names an absent task: "+task)
+			}
+		}
 		if _, ok := ps[id]; !ok {
 			add(&es, "MISSING_STATE", id, "execution.prerequisites", "prerequisite state missing")
 		}
@@ -382,6 +388,19 @@ func planStructure(d *model.Document) []fault.Error {
 	for id := range pe {
 		if !prs[id] {
 			add(&es, "ORPHAN_STATE", id, "execution.prerequisite_evidence", "unknown prerequisite evidence")
+		}
+	}
+	for id, value := range model.M(ex["prerequisite_observations"]) {
+		record, known := d.Symbols.ByID[id]
+		if !prs[id] && (!known || !record.Retired) {
+			add(&es, "ORPHAN_STATE", id, "execution.prerequisite_observations", "unknown prerequisite observation")
+		}
+		observation := model.M(value)
+		if !nonblank(observation["summary"]) || !nonblank(observation["source"]) {
+			add(&es, "INVALID_OBSERVATION", id, "execution.prerequisite_observations", "observation needs a result and source")
+		}
+		if _, err := time.Parse(time.RFC3339, model.S(observation["recorded_at"])); err != nil {
+			add(&es, "INVALID_DATE", id, "recorded_at", "invalid observation timestamp")
 		}
 	}
 	return es

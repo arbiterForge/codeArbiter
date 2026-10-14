@@ -18,6 +18,10 @@ func (e *Engine) eligible(d *model.Document) (any, error) {
 	if err := validate.Error(validate.Structural(d)); err != nil {
 		return nil, err
 	}
+	prerequisites := []any{}
+	for _, value := range model.A(d.Norm()["prerequisites"]) {
+		prerequisites = append(prerequisites, model.PrerequisiteAssessment(d, model.M(value)))
+	}
 	rows := []any{}
 	next := ""
 	for _, value := range model.A(d.Norm()["tasks"]) {
@@ -29,34 +33,38 @@ func (e *Engine) eligible(d *model.Document) (any, error) {
 			// REVIEW records finished implementation, not proof that checks ran.
 			// Evidence applicability is assessed separately when making a claim.
 			depState := model.S(state(d, dep)["state"])
-			if depState != "REVIEW" && depState != "ACCEPTED" {
+			if depState != "REVIEW" && depState != "ACCEPTED" && depState != "DONE" {
 				waiting = append(waiting, dep)
 			}
 		}
-		available := status == "PENDING" && len(waiting) == 0
+		conditions := []any{}
+		for _, value := range prerequisites {
+			condition := model.M(value)
+			if condition["outcome"] == "satisfied" {
+				continue
+			}
+			for _, affected := range model.Strings(condition["task_refs"]) {
+				if affected == id {
+					conditions = append(conditions, condition["id"])
+					break
+				}
+			}
+		}
+		available := status == "PENDING" && len(waiting) == 0 && len(conditions) == 0
 		row := object{"task": id, "state": status, "eligible": available,
-			"waiting_on": waiting, "reason": state(d, id)["reason"], "evidence_assessed": false}
+			"waiting_on": waiting, "waiting_prerequisites": conditions,
+			"reason": state(d, id)["reason"], "evidence_assessed": false}
 		if status != "PENDING" {
 			row["diagnostic"] = "NOT_PENDING"
 		} else if len(waiting) != 0 {
 			row["diagnostic"] = "DEPENDENCY_PENDING"
+		} else if len(conditions) != 0 {
+			row["diagnostic"] = "PREREQUISITE_PENDING"
 		}
 		if available && next == "" {
 			next = id
 		}
 		rows = append(rows, row)
-	}
-	prerequisites := []any{}
-	for _, value := range model.A(d.Norm()["prerequisites"]) {
-		record := model.M(value)
-		id := model.S(record["id"])
-		prerequisites = append(prerequisites, object{
-			"id": id, "title": record["title"], "requirement": record["requirement"],
-			"recorded_state": model.M(model.M(d.Data["execution"])["prerequisites"])[id],
-			// Legacy records have no task scope. Do not silently turn that absence
-			// into either a plan-wide permission gate or a satisfied condition.
-			"scope": "unspecified", "evidence_assessed": false,
-		})
 	}
 	bindingCurrent := false
 	if spec, err := e.Catalog.Spec(d); err == nil {

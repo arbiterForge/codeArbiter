@@ -215,7 +215,11 @@ func (w *writer) record(m map[string]any, k string) {
 	if r.Kind == "tasks" {
 		state := model.S(model.M(model.M(model.M(w.d.Data["execution"])["tasks"])[id])["state"])
 		w.raw(`<span class="badge">`)
-		w.text(state)
+		if state == "DONE" {
+			w.text("Implementation complete (checks not assessed)")
+		} else {
+			w.text(state)
+		}
 		w.raw(`</span>`)
 	}
 	if r.Retired {
@@ -226,6 +230,14 @@ func (w *writer) record(m map[string]any, k string) {
 	if r.Kind == "tasks" {
 		w.raw(`<details><summary>Execution record</summary>`)
 		w.value(model.M(model.M(w.d.Data["execution"])["tasks"])[id], "execution")
+		w.raw(`</details>`)
+	}
+	if r.Kind == "prerequisites" && !r.Retired && model.S(w.d.Data["schema_version"]) == model.SchemaVersion {
+		w.raw(`<details><summary>Recorded prerequisite assessment</summary>`)
+		assessment := model.PrerequisiteAssessment(w.d, m)
+		// Do not repeat the symbol's id as an HTML anchor in this projection.
+		delete(assessment, "id")
+		w.value(assessment, "prerequisite_assessment")
 		w.raw(`</details>`)
 	}
 	w.raw(`</article>` + "\n<!-- CA:END:" + id + " -->\n")

@@ -144,9 +144,80 @@ an explicitly supplied receipt is still checked. Callers must inspect actual
 work and honor user stop/deny instructions before reconciling or redispatching.
 
 Historical evidence and unrelated progress are preserved. `REVIEW` alone means
-neither tests passed nor an independent review occurred. Complete evidence-impact
-selection, scope finalization, task-scoped factual observations, and active host
-instruction conversion are subsequent tasks in this same PR.
+neither tests passed nor an independent review occurred. Subject-scoped evidence applicability and active host instruction conversion
+remain subsequent work in this same PR. The next section describes the implemented
+prerequisite and implementation-completion operations, not installed-host qualification.
+
+## Scoped prerequisite observations and implementation completion
+
+Artifact schema **0.3.2** adds optional `kind: fact | decision` and `task_refs`
+to prerequisite definitions. `task_refs` names the active tasks that actually need
+that prerequisite. Omitted legacy scope remains `unspecified`, never an inferred
+plan-wide permission gate. Classify a legacy requirement using an ordinary typed
+`apply` before recording its result. Task references must resolve; do not narrow
+a prerequisite's scope merely to hide a real dependency.
+
+The existing `prerequisite` operation accepts a closed `observation` request as an
+alternative to its historical receipt form. Supply the ordinary `protocol`,
+`artifact_id`, `operation_id`, current `expected` revision/model digest, and
+`prerequisite` ID, followed by:
+
+```json
+{
+  "observation": {
+    "outcome": "satisfied",
+    "summary": "The service probe returned its expected healthy response.",
+    "source": "Current session: the actual service-probe result.",
+    "origin": "tool_result"
+  }
+}
+```
+
+This is the observation fragment, not a complete command or an executed result.
+Use the actual result, never copy the example as evidence. Outcomes are
+`satisfied`, `unsatisfied`, or `unknown`; origins are `tool_result`,
+`user_statement`, or `agent_report`. The native engine assigns the recording time,
+`provenance: caller_reported`, and a definition digest. It does not authenticate
+a conversation, execute the source string, produce authority receipts, or invoke
+reviewers. A resolved `decision` needs a reported `user_statement`; an agent's
+opinion or an automated check cannot be mislabeled as the user's choice. Actual
+host permissions and explicit user stops remain outside this bookkeeping.
+
+Recording an observation changes no legacy authority flag. A newer negative or
+unknown observation cannot fall back to an older positive receipt. The explicit
+legacy proof query rejects substituting reported information for authority;
+ordinary scheduling uses the recorded facts without invoking that proof query.
+Prior observations remain in transaction before-images, and the latest observation
+is retained when its prerequisite is retired.
+
+Applicability is specific to the prerequisite definition: changing its kind,
+requirement, task scope, or source references marks the observation as applying to
+an older definition. Changing its title or an unrelated task method does not.
+`definition_current` means the definition still matches, **not** that an external
+service is live or the result was independently verified. The timestamp, source,
+and reported origin remain visible so the agent can decide whether a new check
+is useful. Only explicitly affected tasks get `waiting_prerequisites` advice;
+independent work remains available. Advice is not a new permission barrier.
+
+Exact and batch symbol reads include `prerequisite_assessment`, with the existing
+whole-record response budget and explicit context-incomplete label. They neither
+parse presentation HTML nor load authority chains. The same assessment is
+available in a collapsed, escaped HTML section on new-schema artifacts.
+
+`accept-scope` with `scope` and a nonblank `reason`, **without a receipt**, records
+an implementation batch as `DONE`. Members must have recorded implementation in
+progress, ready for review, or complete; a pending/stopped member is not silently
+marked done. `DONE` explicitly means implementation complete, checks not assessed.
+It makes recorded dependencies available without inventing acceptance or test
+results. Existing evidence and genuinely accepted members are retained. The
+historical receipt form remains an explicit proof operation; callers cannot mix
+its receipt/completion fields with the ordinary progress form.
+
+Old 0.3.0/0.3.1 artifacts remain readable without rewriting their bytes. Introducing
+new fields or `DONE` writes schema 0.3.2 through the existing CAS/journal path.
+New semantics cannot be stored under an old schema label, and an old engine does
+not silently accept the new version. Full mixed-installed-client upgrade and
+obsolete-prompt recovery remain T07; this source compatibility is not that claim.
 
 ## Cooperative approval and evidence
 
