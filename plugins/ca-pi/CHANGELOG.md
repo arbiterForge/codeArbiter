@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.18.4] - 2026-10-13
+
+### Fixed
+
+- Fix task reconciliation for Unicode text while preserving armed requests and prompt-route integrity.
+
 ## [0.18.3] - 2026-10-13
 
 ### Fixed

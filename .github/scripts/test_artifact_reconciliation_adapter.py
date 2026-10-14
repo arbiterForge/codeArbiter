@@ -825,5 +825,201 @@ class ReconciliationTest(unittest.TestCase):
         self.assertTrue(json.loads(output.getvalue())["cancelled"])
 
 
+class NativeReconciliationTest(unittest.TestCase):
+    """Disposable real-engine fixtures; their receipts confer no live authority."""
+
+    @classmethod
+    def setUpClass(cls):
+        from test_artifact_authoring import build_installation
+        cls.installation_owner, cls.installation = build_installation()
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.installation_owner is not None:
+            cls.installation_owner.cleanup()
+
+    def setUp(self):
+        from test_artifact_authoring import physical_test_directory, WorkflowHarness
+        self.temp = tempfile.TemporaryDirectory(prefix="ca-reconciliation-native-")
+        self.addCleanup(self.temp.cleanup)
+        self.root = physical_test_directory(self.temp.name) / "repo"
+        self.root.mkdir()
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        (self.root / "src").mkdir()
+        (self.root / "src/config.py").write_text("original\n", encoding="utf-8")
+        self.workflow = WorkflowHarness(self.root, self.installation)
+        self.client = self.workflow.client
+        self.adapter = importlib.import_module("_reconciliationlib")
+        for module_name in ("_artifactpromptlib", "_replylib"):
+            module = importlib.import_module(module_name)
+            self.addCleanup(setattr, module, "REGISTRY_PARENT", module.REGISTRY_PARENT)
+            module.REGISTRY_PARENT = self.root.parent
+
+    def create_plan(self, task_text="The task\u2019s named test passes.", scope_text="Complete implementation"):
+        from test_artifact_authoring import plan_normative
+        spec = self.workflow.create_spec()
+        plan = plan_normative("SPEC-FLOW", spec["normative_sha256"])
+        plan["tasks"][0]["done_when"] = [task_text]
+        plan["checkpoints"][0]["title"] = scope_text
+        self.client.call("create", {
+            "operation_id": self.workflow.operation_id("create-plan"),
+            "artifact_id": "PLAN-FLOW", "kind": "plan", "slug": "flow",
+            "title": plan["title"], "summary": plan["summary"],
+            "spec_id": "SPEC-FLOW", "normative": plan,
+        })
+        self.workflow.approve_pair()
+        self.workflow.mutate(
+            "task-start", "PLAN-FLOW", task="T-001",
+            context_ticket=self.workflow.context_ticket("T-001"),
+        )
+
+    def arm_task(self):
+        return self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-FLOW", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted synthetic verifier.",
+            assessment="The fixture task has no established completion.",
+            token="native-reconciliation-fixture",
+        )
+
+    def consume(self, reply):
+        return self.adapter.consume_reconciliation(
+            self.root, self.client, reply, host="codex", session_id="synthetic-native-fixture",
+        )
+
+    def captured_event_and_context(self):
+        events = [
+            json.loads(path.read_bytes())
+            for path in (self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json")
+        ]
+        event, = [item for item in events if item["kind"] == "reconciliation"]
+        observation = json.loads((self.root / event["observation_ref"]).read_bytes())
+        context = json.loads((self.root / observation["context_ref"]).read_bytes())
+        return event, context
+
+    def assert_native_task_reconciled(self, reply):
+        result = self.consume(reply)
+        self.assertTrue(result["reconciled"])
+        self.assertTrue((self.root / result["receipt"]).is_file())
+        event, context = self.captured_event_and_context()
+        self.assertEqual(event["source_text"], reply)
+        self.assertEqual(event["payload"]["task_sha256"], context["record_sha256"])
+        self.assertEqual(self.client.call("eligible", {
+            "artifact_id": "PLAN-FLOW",
+        })["tasks"][0]["state"], "PENDING")
+
+    def test_unicode_task_reconciliation_uses_engine_record_hash(self):
+        self.create_plan()
+        armed = self.arm_task()
+        self.assert_native_task_reconciled(armed["reply"])
+
+    def test_unicode_task_consumes_unchanged_legacy_ascii_pending_binding(self):
+        self.create_plan()
+        identity, snapshot, record = self.adapter._current(self.client, "PLAN-FLOW", "T-001")
+        reply = "reconcile-task PLAN-FLOW T-001 PENDING legacy-native-fixture"
+        canonical = lambda value: json.dumps(
+            value, ensure_ascii=True, sort_keys=True, separators=(",", ":"),
+        ).encode("utf-8")
+        pending = {
+            "format": "codearbiter.pending-reconciliation/0.1.0",
+            "operation": "task-reconcile", "artifact_id": "PLAN-FLOW", "target_id": "T-001",
+            "target_state": "PENDING", "reason": "Interrupted legacy fixture.",
+            "assessment": "No established fixture completion.", "identity": identity,
+            "input_sha256": snapshot["sha256"], "record": record,
+            "record_sha256": hashlib.sha256(canonical(record)).hexdigest(),
+            "prompt_sha256": hashlib.sha256(reply.encode()).hexdigest(),
+        }
+        raw = canonical(pending)
+        path = self.adapter._pending_path(self.root, "PLAN-FLOW")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+        binding = hashlib.sha256(raw).hexdigest()
+        self.adapter._artifactpromptlib.register(
+            self.root, "reconciliation", "PLAN-FLOW", reply, binding_sha256=binding,
+        )
+        self.assertIn(b"\\u2019", raw)
+        self.assertEqual(self.adapter._load(self.root, "PLAN-FLOW"), pending)
+        capture = self.adapter._artifactauthoritylib.capture_user_prompt
+
+        def inspect_legacy_binding(*args, **kwargs):
+            self.assertEqual(path.read_bytes(), raw)
+            self.assertEqual(self.adapter._artifactpromptlib.binding(
+                self.root, "reconciliation", "PLAN-FLOW",
+            ), binding)
+            return capture(*args, **kwargs)
+
+        with mock.patch.object(
+            self.adapter._artifactauthoritylib, "capture_user_prompt", side_effect=inspect_legacy_binding,
+        ):
+            self.assert_native_task_reconciled(reply)
+
+    def test_unicode_task_marker_serialization_remains_ascii_canonical(self):
+        self.create_plan()
+        armed = self.arm_task()
+        pending = self.adapter._load(self.root, "PLAN-FLOW")
+        raw = self.adapter._pending_path(self.root, "PLAN-FLOW").read_bytes()
+        canonical = lambda value: json.dumps(
+            value, ensure_ascii=True, sort_keys=True, separators=(",", ":"),
+        ).encode("utf-8")
+        self.assertIn(b"\\u2019", raw)
+        self.assertEqual(raw, canonical(pending))
+        self.assertEqual(pending["record_sha256"], hashlib.sha256(canonical(pending["record"])).hexdigest())
+        self.assertEqual(self.adapter._artifactpromptlib.binding(
+            self.root, "reconciliation", "PLAN-FLOW",
+        ), hashlib.sha256(raw).hexdigest())
+        self.assertEqual(self.adapter._artifactpromptlib.resolve("reconciliation", armed["reply"]), self.root)
+
+    def test_ascii_task_reconciliation_uses_native_capture(self):
+        self.create_plan(task_text="The task's named test passes.")
+        self.assert_native_task_reconciled(self.arm_task()["reply"])
+
+    def test_unicode_scope_reconciliation_uses_native_capture_without_task_hash(self):
+        self.create_plan(task_text="The task's named test passes.", scope_text="Scope\u2019s baseline")
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-FLOW", "CP-01", "scope-reconcile",
+            assessment="The synthetic scope baseline was inspected.", token="native-scope-fixture",
+        )
+        result = self.consume(armed["reply"])
+        self.assertTrue(result["reconciled"])
+        self.assertTrue((self.root / result["receipt"]).is_file())
+        event, context = self.captured_event_and_context()
+        self.assertEqual(context["record"]["title"], "Scope\u2019s baseline")
+        self.assertNotIn("task_sha256", event["payload"])
+
+    def test_unicode_task_input_drift_is_refused_before_native_capture(self):
+        self.create_plan()
+        armed = self.arm_task()
+        (self.root / "src/config.py").write_text("changed\n", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "target changed after arming"):
+            self.consume(armed["reply"])
+        self.assertFalse(any(item["kind"] == "reconciliation" for item in (
+            json.loads(path.read_bytes())
+            for path in (self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json")
+        )))
+
+    def test_unicode_task_record_drift_is_refused_before_native_capture(self):
+        self.create_plan()
+        armed = self.arm_task()
+        call = self.client.call
+
+        def changed_record(operation, request=None, **kwargs):
+            result = call(operation, request, **kwargs)
+            if operation == "read":
+                result["record"]["done_when"] = ["Changed fixture contract."]
+            return result
+
+        with mock.patch.object(self.client, "call", side_effect=changed_record):
+            with self.assertRaisesRegex(RuntimeError, "target changed after arming"):
+                self.consume(armed["reply"])
+
+    def test_unicode_task_prompt_drift_preserves_pending_and_route(self):
+        self.create_plan()
+        armed = self.arm_task()
+        path = self.adapter._pending_path(self.root, "PLAN-FLOW")
+        raw = path.read_bytes()
+        self.assertFalse(self.consume(armed["reply"] + "x")["reconciled"])
+        self.assertEqual(path.read_bytes(), raw)
+        self.assertEqual(self.adapter._artifactpromptlib.resolve("reconciliation", armed["reply"]), self.root)
+
+
 if __name__ == "__main__":
     unittest.main()
