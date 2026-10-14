@@ -400,6 +400,37 @@ inline manifests made them too large for normal dispatch. Launched or captured
 requests remain subject to their existing recovery rules. Arm a new request
 only after the retained request is terminal.
 
+## Assistive recovery of an unanswered legacy reconciliation prompt
+
+After a session restart, **inspect the active task and any workers first**.
+Ordinary `task-reconcile` records a reasoned progress update through the
+native engine without a prompt token; it never clears an explicit user stop.
+The following repair applies **only** when an older installed adapter has left
+an *unanswered* reconciliation prompt that should no longer be re-armed:
+
+```sh
+python "<plugin-root>/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --supersede --reason "Old unanswered artifact prompt; the actual task was inspected and no user decision is being overridden."
+```
+
+This calls the existing host adapter's locked, read-validated pending-state
+handler. It requires the original prompt-route binding to match the pending
+record, rejects ambiguous legacy/current markers, and **refuses any durable
+mutation attempt**. It removes only an unanswered prompt/route, does not edit
+spec/plan state, report tests passed, cancel a user stop, or fabricate an
+approval. No existing receipt or evidence history is rewritten. If it fails
+because a mutation may have started, use the exact `--recover` path below;
+**never** reissue the work under a different operation ID. After superseding,
+read `identity` and `eligible`, then reconcile only what actual observed
+work requires. A cancelled question is not an accomplished task.
+
+An unanswered legacy prerequisite prompt may use the existing
+`_prerequisitelib` `cancel` operation for an **ARMED** state; a confirmed
+or captured user answer is **not** a disposable prompt and must use its
+specific recovery contract. Existing approval-pair cancellation likewise
+refuses a submitted reply. Neither path is needed to start ordinary
+already-authorized work. Do not bulk-delete markers, receipts, or Git-admin
+attempt state. Actual host permissions and explicit user denials remain final.
+
 ## Historical pending-request recovery
 
 Ordinary progress uses the receipt-free reconciliation path above. The following
@@ -450,10 +481,14 @@ result proving no commit (`REVISION_CONFLICT` or `OPERATION_ROLLED_BACK`). Other
 errors retain it for investigation. Re-arm only after cancellation or recovery
 succeeds; a committed recovery is not permission to repeat the mutation.
 
-`IN_PROGRESS` after interruption requires reconciliation, not automatic completion.
-`REVIEW` requires fresh evidence. Source changes stale proof; state/branding updates
-do not stale their own verification. `task-block` invalidates downstream provisional
-states. `scope-reconcile` records a reviewed new baseline after plan edits.
+An `IN_PROGRESS` task after interruption requires inspecting the current
+worktree, outstanding tools and actual task results, **not a new approval code**.
+Use receipt-free `task-reconcile` only after establishing its real state; do
+not assume completion or duplicate dispatch. `REVIEW` is implementation-ready,
+not passing verification. Source changes affect applicable proof; presentation
+and routine bookkeeping do not by themselves justify reviewer cascades.
+The legacy `scope-reconcile` proof form remains an explicitly attested claim,
+not the default method of resuming independent tasks.
 
 ## Mutation and recovery
 

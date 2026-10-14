@@ -16,11 +16,56 @@
 | T04 | Bounded rerun correction implemented | A new explicit batch review can select a fresh passing rerun without another task review of unchanged source/support. General task/source-scoped applicability and ordinary result recording remain. |
 | T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
 | T06 | Compact task packet implemented in native source | Read-only `task-context` delivers one task, directly cited criteria, dependencies and scoped prerequisites without source snapshots/receipt chains, with stale-model and size-limit refusal. Complete installed-host/token-cost qualification remains. |
-| T07 | Not started | Existing state can be read by this slice, but complete upgrade, obsolete-prompt recovery, and mixed-client compatibility are not qualified. |
+| T07 | One interrupted-prompt recovery path implemented | Unanswered legacy reconciliation prompts can be superseded without a code after route binding and no-attempt checks; actual in-flight mutations still require exact replay. Pending approval/prerequisite conversion, mixed-client upgrade, rollback and installed-host qualification remain. |
 | T08 | Main execution and adapter surfaces regenerated | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized. The historical atlas now binds sixteen exact fifth-slice owner blobs; final public claims/Academy/mixed-host qualification remain. |
 | T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Sixth slice: routed-agent mutation test and unanswered prompt recovery
+
+**Starting development commit:** `541540957b0d78a86d9fdd2218667cb644803ea2`;
+this is not a released package. The existing Mac hook job failed on an old
+mutation fixture that inserted a generic agent link into the now-retired
+compulsory `subagent-driven-development` route. Its replacement targets the
+real optional `dispatching-parallel-agents` route and still demonstrates
+that unsupported `<role>` agent names are rejected. All 23 routing/index
+parity tests pass locally; no missing-route check was disabled.
+
+The reconciliation host helper gains `--supersede --reason` for an
+unanswered previously armed user-reconciliation prompt. The existing locked
+pending reader, registered prompt binding and durable attempt lookup are
+used; no new authority or persistence service is introduced. It refuses
+different identities, invalid/overlong reason strings, missing or wrong
+route bindings, dual legacy/admin markers and in-flight operation attempts.
+It removes only the unanswered prompt and reports a superseded
+**non-authority** disposition. It does not manufacture verified acceptance,
+touch the actual task's BLOCKED state or delete receipts. If an attempt
+already exists, its exact operation ID and receipt must be recovered using
+the existing replay path. The old exact-prompt cancellation remains for
+historical inspection/compatibility; normal receipt-free task progress
+needs neither operation.
+
+Canonical protocol and artifact documentation will describe this bounded
+recovery. Only the three generated adapter copies of the owning Python
+sources will be updated, with no new slash command or changed released
+version. Full T04 subject-scoped command-result applicability, other
+legacy pending marker categories and T07 mixed-client rollback remain
+material work; they are not silently inferred from this narrow repair.
+
+### Sixth-slice verification
+
+| Check | Local observation and limitation |
+|---|---|
+| Routing/index parity | **23 passed**, including the moved negative-control fixture against the actual optional Codex generic agent route. The prior Mac CI failure had targeted a route intentionally removed by the assistive overhaul. |
+| Legacy reconciliation adapter | **52 passed** on Windows after the seven new unanswered-prompt supersession and CLI tests. Cases cover ordinary cancellation, exact replay after a lost response, in-flight refusal, current/legacy ambiguity, invalid route binding, cross-session behavior, and lock ordering. Tests use isolated Git fixtures and the real native candidate where the preexisting suite requires it; they are not a model-backed installed-host session. |
+| Generated surfaces and references | **147 generated-surface tests** with one existing skip; **53 routing/cleanup tests**, **18 consumer-closure tests**, and **22 host-descriptor tests** passed. The canonical Python bridge matches its three generated adapter copies and the canonical Markdown surfaces match their three projections. |
+| Package/ADR consistency | Root Pi metadata parity and host-package generator `--check` passed. ADR identity and lifecycle checks passed; no historical acceptance was upgraded to verified evidence. |
+| Hosted CI status | At the starting head `541540957b0d78a86d9fdd2218667cb644803ea2`, documentation deployment passed and the Mac hook contract failed on the obsolete agent-link mutation anchor. Other structured-artifact jobs were still running at inspection. A subsequent head must be checked independently; no green CI claim is inferred from local tests. |
+
+No prompt was auto-approved, no old receipt or source was deleted, and no
+consumer project was migrated. This is a specific in-flight-safe retirement
+operation, not a sweeping approval/prerequisite cleanup or an engine rewrite.
 
 ## Fifth slice: CI contract correction and compact context
 

@@ -397,6 +397,47 @@ def _cancel_reconciliation_unlocked(root: Path, artifact_id: str, prompt: str) -
     return {"artifact_id": artifact_id, "cancelled": True}
 
 
+def supersede_unanswered_reconciliation(
+    root: str | Path, artifact_id: str, *, reason: str,
+) -> dict[str, Any]:
+    """Retire an unanswered legacy prompt without a user approval code.
+
+    This only discards an armed question. If a durable execution attempt
+    exists, recover_reconciliation owns its fate: never turn uncertain work
+    into an uncommitted result by deleting its marker. Real task BLOCKED state,
+    original receipts and actual user decisions are not changed by this call.
+    """
+    if (
+        not isinstance(reason, str) or not reason.strip()
+        or len(reason.encode("utf-8")) > 2048
+        or not isinstance(artifact_id, str) or ID_RE.fullmatch(artifact_id) is None
+    ):
+        raise ReconciliationError("a valid artifact and bounded nonblank supersession reason are required")
+    root = _artifactlib._trusted_directory(root, "UNSAFE_ROOT")
+    with _reconciliation_lock(root, artifact_id):
+        pending = _load(root, artifact_id)
+        if _load_attempt(root, pending) is not None:
+            raise ReconciliationError("in-flight reconciliation must be retried or recovered, not superseded")
+        try:
+            binding = _artifactpromptlib.binding(root, "reconciliation", artifact_id)
+        except _artifactpromptlib.PromptRouteError as exc:
+            raise ReconciliationError("reconciliation route is unavailable or unsafe; inspect before retiring") from exc
+        if binding != _digest(_canonical(pending)):
+            raise ReconciliationError("pending reconciliation and registered prompt binding differ")
+        # The validated marker represents an unanswered question; no attempt
+        # exists. This does not certify a user decision or change task state.
+        # Receipt, observation and source history remain in their owning stores.
+        _pending_path(root, artifact_id).unlink()
+        _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
+        return {
+            "artifact_id": artifact_id, "target_id": pending["target_id"],
+            "original_operation": pending["operation"],
+            "superseded": True, "disposition": "unanswered_prompt_superseded",
+            "reason": reason.strip(), "mutation_attempted": False,
+            "authority_granted": False,
+        }
+
+
 def cancel_orphaned_reconciliation(root: str | Path, artifact_id: str) -> dict[str, Any]:
     """Recover a complete pending marker stranded before route registration."""
     root = Path(root).resolve(strict=True)

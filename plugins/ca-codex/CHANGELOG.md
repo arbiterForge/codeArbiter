@@ -32,6 +32,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   source/support/workspace integrity is still checked.
 - Align runtime adapter identities and the second Codex package manifest with
   the unreleased candidate versions.
+- Retire unanswered legacy reconciliation prompts with an explicit superseded
+  disposition, without a new approval code. Committed or uncertain attempts
+  retain exact replay/recovery; no task state or evidence is forged by cleanup.
 - This is an unreleased source candidate. Host-workflow conversion, full upgrade
   qualification, and publication remain tracked by the overhaul PR.
 

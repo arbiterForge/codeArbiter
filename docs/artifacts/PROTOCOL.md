@@ -305,6 +305,35 @@ For advisory scheduling, a predecessor recorded as `REVIEW` or `ACCEPTED` can ma
 
 The outer `/feature` human checkpoint and host scheduling policies are not replaced by this ledger. The current overlay does not complete all those entry-point integrations.
 
+## Unanswered legacy prompt supersession (adapter; not a native permission)
+
+The existing `artifact-reconcile.py` host helper has an explicit
+`--supersede --reason <nonblank-text>` path for a previously armed,
+**unanswered** task/scope reconciliation prompt. It takes only the repository
+root and plan artifact ID; **no old user code or exact prompt string** is
+required. It reads a validated bounded pending record under the existing
+per-artifact transition lock, verifies its prompt-route binding, and refuses
+any durable mutation attempt, ambiguous marker location or unsafe root.
+It reports `disposition: unanswered_prompt_superseded`,
+`mutation_attempted: false`, and `authority_granted: false`.
+
+This operation cancels obsolete *question routing*, **not actual work** or
+an accepted user decision. It does not mutate native artifacts, snapshots,
+receipts or the durable transaction log. A possible prior mutation must be
+replayed under the exact stored ID via `--recover`; the accepted
+`REVISION_CONFLICT`/`OPERATION_ROLLED_BACK` noncommit results remain a
+closed set. The preexisting exact-prompt `--cancel` operation remains
+available for other historical consumers. A missing route, an already
+submitted attempt, or a conflicted legacy/current marker is an error, not
+proof of noncommit. The helper never launches a verifier or renews a
+prerequisite. A normal resumed task uses identity + advisory state and
+receipt-free progress instead.
+
+This is a **partial T07 transition**: mixed installed-client compatibility,
+approval/prerequisite pending-marker recovery, and package rollback after
+new edits still require separate qualification. It is not a new public
+command or an all-prompt cleanup service.
+
 ## Filesystem and recovery
 
 Repository operations use anchored directory descriptors on Linux and `os.Root` containment on Windows
