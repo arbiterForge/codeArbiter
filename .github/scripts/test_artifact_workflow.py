@@ -1378,7 +1378,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         self.assertEqual(resumed["tasks"][0]["state"], "IN_PROGRESS")
         self.assertFalse(resumed["tasks"][0]["eligible"])
 
-    def test_stale_context_blocks_before_dispatch_side_effect(self) -> None:
+    def test_stale_context_is_reported_without_blocking_progress(self) -> None:
         self.harness.approve_pair()
         ticket = self.harness.context_ticket("T-001")
         self.harness.mutate(
@@ -1392,13 +1392,20 @@ class ArtifactWorkflowTest(unittest.TestCase):
             ],
         )
         before = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
-        with self.assertRaises(ArtifactError) as caught:
-            self.harness.mutate(
-                "task-start", "PLAN-FLOW", task="T-001", context_ticket=ticket
-            )
-        self.assertEqual(caught.exception.code, "STALE_SPEC")
+        advice = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertFalse(advice["binding_current"])
+        self.assertFalse(advice["evidence_assessed"])
+        self.harness.mutate(
+            "task-start", "PLAN-FLOW", task="T-001", context_ticket=ticket
+        )
         after = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
-        self.assertEqual(after, before)
+        self.assertEqual(after["revision"], before["revision"] + 1)
+        self.assertEqual(after["normative_sha256"], before["normative_sha256"])
+        resumed = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(resumed["tasks"][0]["state"], "IN_PROGRESS")
+        with self.assertRaises(ArtifactError) as caught:
+            self.harness.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(caught.exception.code, "STALE_SPEC")
 
     def test_changed_worktree_rejects_review_evidence(self) -> None:
         self.harness.approve_pair()

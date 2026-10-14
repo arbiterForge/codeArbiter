@@ -215,3 +215,21 @@ func TestAssistiveReportedReviewCannotMasqueradeAsReceiptedReview(t *testing.T) 
 		t.Fatal("rejected review changed progress")
 	}
 }
+
+func TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress(t *testing.T) {
+	f := newAssistiveFixture(t)
+	before := f.doc("PLAN-EXAMPLE").NormHash()
+	f.call("apply", f.mutation("SPEC-EXAMPLE", object{"changes": []any{
+		object{"op": "header.update", "fields": object{"summary": "Changed after the last context delivery."}},
+	}}))
+	advice := f.call("eligible", object{"artifact_id": "PLAN-EXAMPLE"})
+	if advice["binding_current"] != false || advice["evidence_assessed"] != false {
+		t.Fatalf("stale binding was hidden: %v", advice)
+	}
+	f.mutate("task-start", object{"task": "T-001", "context_ticket": "historical-ticket-is-not-permission"})
+	after := f.doc("PLAN-EXAMPLE")
+	if after.NormHash() != before || state(after, "T-001")["state"] != "IN_PROGRESS" {
+		t.Fatal("progress rewrote the requirement binding or failed to record the start")
+	}
+	f.assertNoAuthorityFiles()
+}
