@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.26.4] - 2026-10-13
+
+### Fixed
+
+- Fix task reconciliation for Unicode text while preserving armed requests and prompt-route integrity.
+
 ## [2.26.3] - 2026-10-13
 
 ### Fixed

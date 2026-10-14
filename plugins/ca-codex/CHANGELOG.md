@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.17.4] - 2026-10-13
+
+### Fixed
+
+- Fix task reconciliation for Unicode text while preserving armed requests and prompt-route integrity.
+
 ## [0.17.3] - 2026-10-13
 
 ### Fixed

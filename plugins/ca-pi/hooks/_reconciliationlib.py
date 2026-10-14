@@ -498,7 +498,9 @@ def _consume_reconciliation_unlocked(
             raise ReconciliationError("reconciliation target changed after arming")
         payload = {"input_sha256": pending["input_sha256"], "assessment": pending["assessment"]}
         if pending["operation"] == "task-reconcile":
-            payload.update(task_sha256=pending["record_sha256"], target_state=pending["target_state"])
+            # Marker/route integrity retains its legacy serialization; authority
+            # binds the rechecked record to the engine's canonical JSON digest.
+            payload.update(task_sha256=_artifactauthoritylib._engine_digest(record), target_state=pending["target_state"])
         event = {
             "kind": "reconciliation",
             "authority_kind": "user_workflow",
