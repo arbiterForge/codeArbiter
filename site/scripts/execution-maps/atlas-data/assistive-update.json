@@ -1,12 +1,12 @@
 {
-  "revision": "b8db5f4e5301e02feeb9c5aee06daa86cbdd595b",
+  "revision": "739f0d2610a91055592ea560ac2d255f84ff4ea9",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "This canvas retains the October 7 route geometry as a historical snapshot. The current draft PR has converted native progress and feature/sprint execution callers, restored real recorded-intent and ADR decision checks, and added read-only compact task context. Advanced hooks, pending-prompt recovery, impact applicability and installed-host upgrade are not fully converted. The historical approval arrows are not the new default; follow current source-bound notes. No release or installed-host qualification is implied.",
+  "summary": "The original October 7 route geometry remains a historical snapshot. The current draft PR has already converted ordinary authoring, scheduling and execution callers; a new recovery slice retires only verified unanswered legacy reconciliation prompts without approval codes and preserves exact replay for requests with in-flight mutations. Advanced host prompts, other legacy pending kinds, evidence applicability, mixed-client upgrades and release qualification remain not fully converted. The original approval arrows are historical, not the new default. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "0e1652d0183919da0dbeae9f2b4d107e9ef5a1d9",
-      "summary": "Ordinary execution uses advisory task selection and read-only bounded task-context; neither task start nor informational retrieval needs an approval code, context ticket, or evidence snapshot. Historical attested proof remains separate.",
+      "blob": "03ddccce29d5143ec5cc3baa9af61126048ff46b",
+      "summary": "The canonical artifact guidance now distinguishes receipt-free progress from obsolete approval prompts: an unanswered, route-bound legacy reconciliation request can be superseded without a code after actual worker/state inspection, but in-flight operations must still replay their exact journaled request.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -190,6 +190,25 @@
         "f-verify",
         "c-read",
         "c-proof"
+      ]
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "blob": "2d96de2b1fa66689b0c70ea254075f498861c6eb",
+      "summary": "Under the existing per-artifact lock, an unanswered legacy reconciliation prompt may be retired only when the stored registered route matches and no durable mutation attempt exists. The result is an explicit non-authorizing superseded disposition; user stops and receipts remain intact.",
+      "nodes": [
+        "f-recovery",
+        "f-accept",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/pysrc/artifact-reconcile.py",
+      "blob": "bc765277a82628343e547c03043283a042e5202f",
+      "summary": "The existing artifact-reconcile helper adds a reason-bound --supersede switch with no old approval token. It refuses conflicting modes and retains the exact --recover path for uncertain or committed writes.",
+      "nodes": [
+        "f-recovery",
+        "c-read"
       ]
     }
   ]

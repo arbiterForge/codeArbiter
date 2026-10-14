@@ -67,6 +67,28 @@ No prompt was auto-approved, no old receipt or source was deleted, and no
 consumer project was migrated. This is a specific in-flight-safe retirement
 operation, not a sweeping approval/prerequisite cleanup or an engine rewrite.
 
+### Sixth-slice docs source-drift correction
+
+The first pushed sixth-slice implementation commit was
+`739f0d2610a91055592ea560ac2d255f84ff4ea9`. The docs workflows on that
+head failed during atlas generation because `core/surface/includes/artifacts.md`
+had legitimately changed while the atlas still bound its old blob. The source
+check was correct; it was **not disabled**. The follow-up rebinds the atlas to
+**18 exact owner Git blobs at `739f0d`**, adding the two real recovery owners,
+retaining the historical October 7 diagram geometry and source links, and
+describing unanswered-prompt supersession versus exact in-flight recovery.
+
+The revised local `npm run gen:atlas` passed, as did all **67** targeted
+atlas, revalidation and model tests. The ordinary `npm run build` completed
+after generating the site and auditing diagrams; Astro built **173 pages**,
+with the existing search-bundle integrity check, and `npm run typecheck`
+passed. The historical route geometry is not a claimed current execution
+diagram. Source verification still fails on any later unreviewed owner change.
+
+Hosted CI and deployment for the **follow-up commit** must be read separately;
+a successful local build and earlier failed docs run do not prove the new
+deployment green.
+
 ## Fifth slice: CI contract correction and compact context
 
 **Starting PR head:** `049cc775128eb4bb00950e88481d242c196e8495`.

@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('partial assistive implementation versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('b8db5f4e5301e02feeb9c5aee06daa86cbdd595b');
-    expect(update.changes).toHaveLength(16);
+    expect(update.revision).toBe('739f0d2610a91055592ea560ac2d255f84ff4ea9');
+    expect(update.changes).toHaveLength(18);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
@@ -40,6 +40,8 @@ describe('partial assistive implementation versus retained historical routes',()
     expect(allText).toContain('without approval codes');
     expect(allText).toContain('without replacing the original task review');
     expect(allText).toContain('Read-only task-context');
+    expect(allText).toContain('unanswered legacy reconciliation');
+    expect(allText).toContain('in-flight');
   });
 
   it('shows the distinction before the canvas, in affected node details, and in standalone exports',()=>{
