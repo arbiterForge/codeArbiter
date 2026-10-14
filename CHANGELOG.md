@@ -18,6 +18,7 @@ predate the plugin rewrite and are grouped by date.
 
 - Distinguish inert PowerShell evidence from actual verifier wrapper calls (#970).
 - Preserve refusal of selected malformed and compound wrappers and exact authorization/corroboration checks.
+- Fix task reconciliation for Unicode text while preserving armed requests and prompt-route integrity.
 
 ## [2.26.3] - 2026-10-13
 
