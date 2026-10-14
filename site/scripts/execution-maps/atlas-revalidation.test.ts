@@ -237,9 +237,13 @@ describe('atlas source compatibility revalidation', () => {
     const changed = [...inputs].sort().filter(path => current(path) !==
       git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:${path}`));
     expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
-      'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
+      'core/surface/commands/feature.md', 'core/surface/commands/init.md',
+      'core/surface/commands/sprint.md', 'core/surface/includes/artifacts.md',
+      'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
-      'core/surface/skills/finishing-a-development-branch/SKILL.md', 'docs/hooks.md']);
+      'core/surface/skills/finishing-a-development-branch/SKILL.md',
+      'core/surface/skills/subagent-driven-development/SKILL.md', 'core/surface/skills/tdd/SKILL.md',
+      'docs/hooks.md']);
     expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
       'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
       'core/surface/includes/artifacts.md': '8a834b919fb81c77213086a1b1661d16b5290bbe',
@@ -270,11 +274,14 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
-      'core/surface/SPRINT.md', 'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
-      'core/surface/skills/commit-gate/SKILL.md',
+      'core/surface/SPRINT.md', 'core/surface/commands/feature.md',
+      'core/surface/commands/init.md', 'core/surface/commands/sprint.md',
+      'core/surface/includes/artifacts.md', 'core/surface/includes/routing-table.md',
+      'core/surface/skills/INDEX.md', 'core/surface/skills/commit-gate/SKILL.md',
       'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
-      'docs/hooks.md',
+      'core/surface/skills/subagent-driven-development/SKILL.md',
+      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md',
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
@@ -414,9 +421,13 @@ describe('atlas source compatibility revalidation', () => {
     }
     expect(offset).toBe(reviewed.length);
     expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
-      'core/surface/commands/init.md', 'core/surface/includes/artifacts.md',
+      'core/surface/commands/feature.md', 'core/surface/commands/init.md',
+      'core/surface/commands/sprint.md', 'core/surface/includes/artifacts.md',
+      'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
-      'core/surface/skills/finishing-a-development-branch/SKILL.md', 'docs/hooks.md']);
+      'core/surface/skills/finishing-a-development-branch/SKILL.md',
+      'core/surface/skills/subagent-driven-development/SKILL.md', 'core/surface/skills/tdd/SKILL.md',
+      'docs/hooks.md']);
     expect(BROWNFIELD_SOURCE_BLOBS).toEqual({
       'core/surface/commands/init.md': 'c3de948de1617aa323e310eefee7fde2bd8a65fc',
       'core/surface/skills/debug/SKILL.md': '6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',

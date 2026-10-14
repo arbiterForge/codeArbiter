@@ -1,7 +1,7 @@
 {
-  "revision": "6fe7f45a18daa547525b8c1b5f0585750916b1ea",
+  "revision": "24845e8ff72b96236436221f0cea22f6f4ea3e27",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "This canvas preserves the October 7 route snapshot, including its old approval and review sequence. The current draft PR changes native authoring and progress, but execution callers, hooks, and upgrade handling are not fully converted. Read the source changes below rather than treating the historical arrows as the completed new workflow. No release or installed-host qualification is implied.",
+  "summary": "This canvas preserves the October 7 route snapshot, including its historical approval and reviewer sequence. The current draft PR has converted native work progress and normal feature/sprint execution callers, but advanced hooks, upgrade and recovery remain not fully converted. These original arrows are historical; consult the current source-bound changes below. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
@@ -62,6 +62,122 @@
         "f-accept",
         "c-proof",
         "c-accept"
+      ]
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "blob": "074e4fbf17134d73fbf0487be0f0bfe8aac787f3",
+      "summary": "The user-facing route table now points feature and sprint work at useful planned execution rather than per-task reviewer chains; real destructive actions still use their owning host/commit controls.",
+      "nodes": [
+        "f-entry",
+        "f-selection",
+        "o-runtime"
+      ]
+    },
+    {
+      "path": "core/surface/skills/INDEX.md",
+      "blob": "3d804cf2718eda3b4212b550e6c8a741fe60947f",
+      "summary": "The skill index now labels brainstorming, planning, execution and optional reviewers as assistive instead of mandatory approval and double-review stages.",
+      "nodes": [
+        "f-spec",
+        "f-plan",
+        "f-selection",
+        "f-verify"
+      ]
+    },
+    {
+      "path": "core/surface/SPRINT.md",
+      "blob": "7654c8d2a8a06537a3ad8bcc7e213b67d5a8499e",
+      "summary": "The sprint caller now executes the authorized goal without a second sprint/plan approval nonce, works across actual dependencies and reports tests honestly; commit/merge remain separately governed.",
+      "nodes": [
+        "o-sprint-spec",
+        "f-approval",
+        "f-selection",
+        "f-recovery",
+        "f-accept"
+      ]
+    },
+    {
+      "path": "core/surface/commands/sprint.md",
+      "blob": "47ee0bd1fe815bd3137c923bdcf64476d91eb094",
+      "summary": "The sprint entry now routes to the assistive implementation body instead of requiring a fresh user approval and two reviews per task.",
+      "nodes": [
+        "o-sprint-spec",
+        "f-entry",
+        "f-selection"
+      ]
+    },
+    {
+      "path": "core/surface/commands/feature.md",
+      "blob": "7c31901cc37a9c404b7a9c0f3cf2ff00b07716e7",
+      "summary": "The feature entry now resumes a maintained spec/plan and task progress without another artifact certification prompt; independent commit and test controls remain.",
+      "nodes": [
+        "o-feature-spec",
+        "f-entry",
+        "f-spec",
+        "f-plan",
+        "f-selection"
+      ]
+    },
+    {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "blob": "f4b31169a71300dd0503c9384353b49d65d49a29",
+      "summary": "Specification refinement retains real product questions and exact typed drafts, but ordinary method choices no longer manufacture confirmation questions or approval receipts.",
+      "nodes": [
+        "o-feature-spec",
+        "o-sprint-spec",
+        "f-spec",
+        "f-approval"
+      ]
+    },
+    {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "blob": "aed94fc1bee8c0552d0c5abc6059de555d343331",
+      "summary": "Attended feature execution now treats checkpoints as progress groups, not compulsory approval stops; it forwards real failures and continues independent work.",
+      "nodes": [
+        "f-selection",
+        "f-recovery",
+        "f-accept"
+      ]
+    },
+    {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "blob": "ad5345649c1ccaa125c5a8d24b57f2e3d7ae1b39",
+      "summary": "The implementation loop now chooses direct work or useful delegation, records DONE separately from verified acceptance, and dispatches risk-specific reviewers rather than a fleet per task.",
+      "nodes": [
+        "f-selection",
+        "f-verify",
+        "f-spec-review",
+        "f-quality",
+        "f-recovery",
+        "f-accept"
+      ]
+    },
+    {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "blob": "95ce4fbeb7aa45fa52bebda1f32665b30f8dad67",
+      "summary": "The test-first discipline now consumes the selected spec and actual relevant checks without requiring an extra artifact approval or context-delivery receipt.",
+      "nodes": [
+        "f-spec",
+        "f-verify"
+      ]
+    },
+    {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "blob": "3c6f5e1f7bbd0f73e38cc7762e4ee8ef4949357b",
+      "summary": "The commit owner retains actual user commit permission, staged diff inspection, secrets and focused tests without requiring an artifact-specific acceptance receipt to stage.",
+      "nodes": [
+        "f-accept",
+        "o-runtime"
+      ]
+    },
+    {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "blob": "6edfb9de2e22e739cca9bc127c5984cc49865b61",
+      "summary": "PR preparation now reports unfinished implementation and verification honestly while retaining Git, merge ancestry and exact-head hosted CI controls.",
+      "nodes": [
+        "f-accept",
+        "o-runtime"
       ]
     }
   ]
