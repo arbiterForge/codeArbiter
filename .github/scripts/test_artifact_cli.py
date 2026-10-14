@@ -273,7 +273,11 @@ class CliTests(unittest.TestCase):
         for header in headers.values():
             self.assertEqual(header["governance"]["state"], "draft")
             self.assertEqual(header["governance"]["approvals"], [])
-        result, envelope = self.invoke("eligible", {"artifact_id": plan["artifact_id"]})
+        advice = self.successful("eligible", {"artifact_id": plan["artifact_id"]})
+        self.assertEqual(advice["assessment"], "advisory")
+        self.assertEqual(advice["next_task"], "T-001")
+        self.assertFalse(advice["evidence_assessed"])
+        result, envelope = self.invoke("verification-status", {"artifact_id": plan["artifact_id"]})
         self.assert_error(result, envelope, "DRAFT_BINDING")
         after = self.files()
         replay = self.successful("plan-bind", request)

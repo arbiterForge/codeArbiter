@@ -4,6 +4,15 @@ Product `v0.1.0` candidate · protocol `codearbiter.artifact-api/0.1.0` · schem
 
 This is an internal subprocess contract, not a proposal for another public command. No operation executes code, shell snippets or verification commands stored in the documents.
 
+## In-progress assistive overhaul
+
+ADR-0043 changes the native scheduling/progress contract described below. This is
+an implementation slice on the overhaul PR, not a released-host claim. The
+complete caller, prerequisite-observation, migration, and package compatibility
+work remains tracked in [the implementation handoff](../plans/assistive-state-engine-overhaul.md)
+and [its progress record](../plans/assistive-state-engine-progress.md). Do not
+publish a partial engine/caller conversion.
+
 ## Invocation and envelopes
 
 ```text
@@ -20,10 +29,10 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 | Family | Operations |
 |---|---|
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity` |
-| Content | `create`, `apply`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
+| Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
-| Authority | `capture`, `approve`, `plan-bind`, `prerequisite`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
-| Execution ledger | `snapshot`, `eligible`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
+| Authority | `capture`, `approve`, `prerequisite`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
+| Execution ledger | `snapshot`, `eligible`, `verification-status`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 
@@ -33,7 +42,7 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 
 `artifact_id` and record IDs are stable semantic addresses. Normative content has a separate hash from the full model and rendered file bytes. A document revision increments on state/presentation changes as well as content edits; identity plus hash is the concurrency token. Hashes do not identify a human approver.
 
-A plan's `spec_ref` binds the exact normative specification digest. The initial mode is `draft_preview`. `plan-bind` requires the approved current spec and validates coverage. The newly bound plan must receive its own applicable approval. Initial combined sprint review is the explicit exception to the sequential order: both documents remain ready drafts until one source-bound `sprint-approve` transaction projects the approved binding and commits both approvals. It cannot replace already-started or previously approved work. Normative changes invalidate approval; history is preserved.
+A plan's `spec_ref` binds the exact normative specification digest. The initial mode is `draft_preview`. Ordinary `plan-bind` selects the current structurally valid specification and validates references and coverage without requiring approval. If the selected source has a genuine current approval, its `approved_source` provenance is retained; otherwise the binding remains `draft_preview`. Binding does not mint an approval or reset unrelated task progress. Explicit legacy evidence claims still validate their own approvals. Initial combined sprint review is the explicit exception to the sequential order: both documents remain ready drafts until one source-bound `sprint-approve` transaction projects the approved binding and commits both approvals. It cannot replace already-started or previously approved work. Normative changes invalidate approval; history is preserved.
 
 Each canonical HTML contains one authoritative embedded JSON model, inline presentation and generated record boundaries. Normal readers revalidate its structure, hashes and exact renderer correspondence. Human-only HTML edits produce `RENDER_DRIFT`; they are not silently interpreted as semantic edits.
 
@@ -94,9 +103,50 @@ This operation joins only the existing shared-observation allowlist under the
 unchanged two-second lock timeout. It creates no context ticket, authority source,
 receipt or artifact, and retains writer exclusion and existing admission checks.
 
-Contextual `read` includes the selected record, applicable dependencies and governing context from the contributing documents. Follow every `next_cursor` until `context_complete: true`. Cursor identity includes contributing model and receipt/event bytes, not just the requested plan. A record is never silently cut in half; an oversized indivisible record fails with a specific diagnostic. The final context ticket is required by `task-start` and becomes stale when its contributing context changes. Delivery of context is not proof the model understood it.
+Contextual `read` includes the selected record, applicable dependencies and governing context from the contributing documents. Follow every `next_cursor` until `context_complete: true`. Cursor identity includes contributing model and receipt/event bytes, not just the requested plan. A record is never silently cut in half; an oversized indivisible record fails with a specific diagnostic. The final context ticket describes that delivery and becomes stale when its contributing context changes. `task-start` no longer requires or validates the ticket; the optional field is accepted only for caller compatibility and grants no authority. Delivery of context is not proof the model understood it.
 
 Cursors and completion tickets are SHA-256 names for engine-written cooperative delivery receipts under `.codearbiter/.artifacts/context-tokens/`. They are not authentication secrets and do not claim resistance to an unrestricted same-user filesystem writer. A digest without its corresponding engine-written receipt is rejected.
+
+## Advisory scheduling and ordinary progress
+
+`eligible` returns scheduling advice from the recorded task states and explicit
+task dependencies. Its result is labeled `assessment: advisory` and
+`evidence_assessed: false`. It returns `next_task`, per-task `waiting_on`, current
+recorded reasons, binding currency, and the recorded prerequisite requirements.
+Legacy prerequisites have `scope: unspecified`; they are neither silently
+satisfied nor automatically treated as plan-wide permission gates. The caller
+must assess their actual applicability. Checkpoint order alone does not require
+reverification of earlier work. A task in `BLOCKED` or already `IN_PROGRESS` is
+not proposed as a new start.
+
+This query performs no source snapshot and validates no approval or review
+receipt chain. It deliberately does not return `all_accepted_and_current` or a
+verification-input digest. `verification-status` owns those explicit legacy
+evidence-assessment fields and retains the real receipt/freshness checks. Do
+not substitute its result back into ordinary task selection. The Python
+acceptance-proof helper uses that evidence query, retaining its legacy result
+key `eligible` only for existing proof consumers pending the caller overhaul.
+
+`task-start` uses ordinary CAS and journaled writes to record a `PENDING` task as
+`IN_PROGRESS`. It does not require approvals, a context ticket, or a source
+snapshot. A new start of running/stopped work is refused to avoid duplicate
+dispatch or silently clearing a stop; an identical operation ID safely replays.
+
+`task-review` without receipts records implementation reported ready for review
+as `REVIEW`, with an explicit reason that verification and review were not
+assessed. It does not create a test result or review receipt. Supplying receipts
+instead makes an explicit evidence claim: both verification and review receipts
+are required together and must pass their existing validators. A completion hash
+without both receipts is invalid. The first receipted review initializes a
+scope's evidence baseline; that baseline is not represented as a pre-work source
+snapshot. `task-reconcile` may update progress with a reason without a receipt;
+an explicitly supplied receipt is still checked. Callers must inspect actual
+work and honor user stop/deny instructions before reconciling or redispatching.
+
+Historical evidence and unrelated progress are preserved. `REVIEW` alone means
+neither tests passed nor an independent review occurred. Complete evidence-impact
+selection, scope finalization, task-scoped factual observations, and active host
+instruction conversion are subsequent tasks in this same PR.
 
 ## Cooperative approval and evidence
 
@@ -110,7 +160,7 @@ A verification payload names the input digest, specification digest, task digest
 
 Snapshot input identity is ship-set membership (ADR-0042). In a git work tree the members are the git index entries present on disk, plus untracked non-ignored files within the plan's input roots, minus the plan's excludes. A deleted index entry is absent, a gitlink counts as its pointer only, and executable flags come from the index mode. One fixed exemption exists: `.codearbiter/gate-events.log` is never counted in any snapshot, whatever the plan says, and it stays tracked as the audit trail. Every other `.codearbiter` path still counts. Outside a git work tree, membership is read from the filesystem (`membership: filesystem`). The root must be the top level of its work tree: a root that is a subdirectory of one has no `.git` of its own and counts as outside git; a git probe that fails inside a work tree fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE` and never falls back to the filesystem. An unmerged git index (conflicted paths) also makes a snapshot fail closed until the conflict is resolved. The manifest format is `codearbiter.verification-inputs/0.2.0`, which records membership; receipts bound to a 0.1.0 manifest read as stale. Within one operation each evidence object is validated at most once and scans are bounded. Raw reads are reused only up to a 64 MiB per-operation retained-byte budget, past which an object can be read again, but validation is never skipped.
 
-Within one checkpoint, a predecessor in `REVIEW` can unblock a dependent after current verification and spec review. Across checkpoint scopes, dependencies need current accepted-scope evidence. After all tasks reach `REVIEW`, reverify against the current combined input state and perform the scope quality review. `accept-scope` records the entire scope together. A later source change marks evidence stale without pretending earlier work never happened. Interrupted `IN_PROGRESS` tasks and changed scope baselines require explicit reconciliation.
+For advisory scheduling, a predecessor recorded as `REVIEW` or `ACCEPTED` can make its explicit dependent available without treating either label as current verification. Explicit legacy scope-acceptance claims remain separate: after all member tasks reach `REVIEW`, their current evidence and the scope quality review are checked. `accept-scope` records the entire scope together. A later source change marks evidence stale without pretending earlier work never happened. Interrupted work needs inspection and a reasoned progress update, not another artifact approval. Changed legacy evidence baselines still have their explicit scope-reconciliation operation while the remaining overhaul is implemented.
 
 The outer `/feature` human checkpoint and host scheduling policies are not replaced by this ledger. The current overlay does not complete all those entry-point integrations.
 

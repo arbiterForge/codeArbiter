@@ -23,7 +23,7 @@ PROTOCOL = "codearbiter.artifact-api/0.1.0"
 SCHEMA_VERSION = "0.3.1"
 MAX_REQUEST = 8 << 20
 MAX_RESPONSE = 65536
-READ_OPERATIONS = frozenset({"capabilities", "schema", "read", "outline", "identity", "validate", "index", "snapshot", "diff", "repair-preview", "eligible", "farm-verify", "migration-preview"})
+READ_OPERATIONS = frozenset({"capabilities", "schema", "read", "outline", "identity", "validate", "index", "snapshot", "diff", "repair-preview", "eligible", "verification-status", "farm-verify", "migration-preview"})
 
 
 class ArtifactError(RuntimeError):
@@ -754,7 +754,7 @@ def _preflight_current_acceptance(
             )
         identities[kind] = identity
 
-    eligible = client.call("eligible", {"artifact_id": plan_artifact_id})
+    eligible = client.call("verification-status", {"artifact_id": plan_artifact_id})
     if (
         eligible.get("artifact_id") != plan_artifact_id
         or eligible.get("model_sha256") != identities["plan"].get("model_sha256")
@@ -821,7 +821,7 @@ def _preflight_current_acceptance(
 
     final_spec = client.call("identity", {"artifact_id": spec_artifact_id})
     final_plan = client.call("identity", {"artifact_id": plan_artifact_id})
-    final_eligible = client.call("eligible", {"artifact_id": plan_artifact_id})
+    final_eligible = client.call("verification-status", {"artifact_id": plan_artifact_id})
     if (
         final_spec.get("model_sha256") != identities["spec"].get("model_sha256")
         or final_plan.get("model_sha256") != identities["plan"].get("model_sha256")

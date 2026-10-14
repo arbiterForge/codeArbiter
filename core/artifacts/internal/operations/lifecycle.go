@@ -6,7 +6,6 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
-	reads "github.com/arbiterForge/codeArbiter/core/artifacts/internal/read"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
@@ -111,7 +110,7 @@ func (e *Engine) bind(r object, entry repository.Entry) (any, error) {
 			return nil, err
 		}
 	} else {
-		if _, err = e.guards(s.Doc); err != nil {
+		if err = validate.Error(validate.Structural(s.Doc)); err != nil {
 			return nil, err
 		}
 	}
@@ -125,9 +124,13 @@ func (e *Engine) bind(r object, entry repository.Entry) (any, error) {
 			return nil, err
 		}
 	}
-	mode := "approved_source"
-	if draft {
-		mode = "draft_preview"
+	mode := "draft_preview"
+	if !draft {
+		// Binding records the source actually selected. An existing genuine
+		// approval can be retained as provenance, but is not needed to bind.
+		if _, approvalErr := authority.Approved(e.FS, s.Doc); approvalErr == nil {
+			mode = "approved_source"
+		}
 	}
 	next.Norm()["spec_ref"] = object{"artifact_id": s.Doc.ID(), "normative_sha256": s.Doc.NormHash(), "binding_mode": mode}
 	model.M(next.Data["governance"])["state"] = "draft"
@@ -169,6 +172,8 @@ func (e *Engine) prerequisites(d *model.Document) error {
 	}
 	return nil
 }
+
+// priorScopes remains for explicit legacy scope/farm evidence claims, not scheduling.
 func (e *Engine) priorScopes(d, spec *model.Document, scope, input string) error {
 	found := false
 	for _, v := range model.A(d.Norm()["checkpoints"]) {
@@ -188,34 +193,14 @@ func (e *Engine) priorScopes(d, spec *model.Document, scope, input string) error
 	}
 	return nil
 }
-func (e *Engine) taskEligible(d, spec *model.Document, id, input string) error {
-	r, ok := d.Symbols.ByID[id]
-	if !ok || r.Kind != "tasks" {
-		return fault.New("UNKNOWN_TASK", "task does not exist")
-	}
-	if model.S(state(d, id)["state"]) != "PENDING" {
-		return fault.New("NOT_PENDING", "task requires revalidation/reconciliation rather than a new dispatch")
-	}
-	scope := model.S(r.Value["checkpoint"])
-	if err := e.priorScopes(d, spec, scope, input); err != nil {
-		return err
-	}
-	for _, dep := range model.Strings(r.Value["depends_on"]) {
-		dr := d.Symbols.ByID[dep]
-		s := model.S(state(d, dep)["state"])
-		if model.S(dr.Value["checkpoint"]) == scope && s == "REVIEW" {
-			if err := evidence.TaskFresh(e.FS, d, spec, dr.Value, input); err != nil {
-				return err
-			}
-		} else if err := evidence.AcceptedFresh(e.FS, d, spec, dep, input); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (e *Engine) eligible(d *model.Document) (any, error) {
+
+// verificationStatus is an explicit evidence assessment, never task-selection
+// permission. Legacy acceptance-proof consumers use this instead of eligible.
+// Its existing receipt checks remain intact while the overhaul separates work
+// progress from claim-specific evidence applicability.
+func (e *Engine) verificationStatus(d *model.Document) (any, error) {
 	if d.Kind() != "plan" {
-		return nil, fault.New("WRONG_KIND", "eligibility applies to implementation plans")
+		return nil, fault.New("WRONG_KIND", "verification status applies to implementation plans")
 	}
 	spec, err := e.guards(d)
 	if err != nil {
@@ -229,33 +214,18 @@ func (e *Engine) eligible(d *model.Document) (any, error) {
 		return nil, err
 	}
 	input := model.S(snap["sha256"])
-	tasks := []any{}
-	next := ""
+	rows := []any{}
 	allAccepted := true
-	for _, v := range model.A(d.Norm()["tasks"]) {
-		r := model.M(v)
-		id := model.S(r["id"])
+	for _, value := range model.A(d.Norm()["tasks"]) {
+		id := model.S(model.M(value)["id"])
 		status := model.S(state(d, id)["state"])
-		err := e.taskEligible(d, spec, id, input)
-		row := object{"task": id, "state": status, "eligible": err == nil}
-		if err != nil {
-			row["diagnostic"] = fault.Code(err)
-		}
-		if status == "ACCEPTED" {
-			fresh := evidence.AcceptedFresh(e.FS, d, spec, id, input) == nil
-			row["current_evidence"] = fresh
-			if !fresh {
-				allAccepted = false
-			}
-		} else {
-			allAccepted = false
-		}
-		if err == nil && next == "" {
-			next = id
-		}
-		tasks = append(tasks, row)
+		fresh := status == "ACCEPTED" && evidence.AcceptedFresh(e.FS, d, spec, id, input) == nil
+		rows = append(rows, object{"task": id, "state": status, "current_evidence": fresh})
+		allAccepted = allAccepted && fresh
 	}
-	return object{"artifact_id": d.ID(), "model_sha256": d.Hash(), "input_sha256": input, "next_task": next, "tasks": tasks, "all_accepted_and_current": allAccepted}, nil
+	return object{"artifact_id": d.ID(), "model_sha256": d.Hash(), "input_sha256": input,
+		"assessment": "verification", "evidence_assessed": true,
+		"tasks": rows, "all_accepted_and_current": allAccepted}, nil
 }
 func appendRefs(s object, refs ...string) {
 	existing := model.Strings(s["evidence_refs"])
@@ -302,12 +272,18 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 	if d.Kind() != "plan" {
 		return nil, fault.New("WRONG_KIND", "progress operations require a plan")
 	}
+	if op == "task-start" ||
+		(op == "task-review" && r["verification_receipt"] == nil && r["review_receipt"] == nil) ||
+		(op == "task-reconcile" && r["receipt"] == nil) {
+		return e.recordWork(op, r, entry)
+	}
 	next, err := d.Clone()
 	if err != nil {
 		return nil, err
 	}
-	// Blocking is always safe: it grants no execution and may be necessary after
-	// the spec binding has become stale. Every positive transition checks guards.
+	// Blocking records an actual obstacle, including after a stale spec binding.
+	// The remaining receipted operations below validate explicit evidence claims;
+	// ordinary progress above has no artifact-authority prerequisite.
 	if op == "task-block" {
 		id := model.S(r["task"])
 		task, ok := d.Symbols.ByID[id]
@@ -357,24 +333,6 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 			return nil, err
 		}
 		switch op {
-		case "task-start":
-			id := model.S(r["task"])
-			if err = e.taskEligible(d, spec, id, input); err != nil {
-				return nil, err
-			}
-			if err = reads.CheckTicket(e.FS, e.Catalog, d, id, model.S(r["context_ticket"])); err != nil {
-				return nil, err
-			}
-			scope := model.S(d.Symbols.ByID[id].Value["checkpoint"])
-			scopes := model.M(ex["scopes"])
-			if base := model.M(scopes[scope]); base == nil {
-				scopes[scope] = object{"base_input_sha256": input, "plan_sha256": d.NormHash()}
-			} else if model.S(base["plan_sha256"]) != d.NormHash() {
-				return nil, fault.New("SCOPE_RECONCILIATION_REQUIRED", "scope baseline predates the current plan")
-			}
-			s := state(next, id)
-			s["state"] = "IN_PROGRESS"
-			s["reason"] = nil
 		case "task-review":
 			id := model.S(r["task"])
 			task, ok := d.Symbols.ByID[id]
@@ -386,7 +344,11 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 				return nil, fault.New("INVALID_TRANSITION", "task must have been dispatched before recording review")
 			}
 			scope := model.S(task.Value["checkpoint"])
-			if base := model.M(model.M(ex["scopes"])[scope]); model.S(base["plan_sha256"]) != d.NormHash() {
+			if base := model.M(model.M(ex["scopes"])[scope]); base == nil {
+				// A scope's evidence baseline begins with its first receipted review,
+				// not with ordinary task start. Starting work needs no source scan.
+				model.M(ex["scopes"])[scope] = object{"base_input_sha256": input, "plan_sha256": d.NormHash()}
+			} else if model.S(base["plan_sha256"]) != d.NormHash() {
 				return nil, fault.New("SCOPE_RECONCILIATION_REQUIRED", "scope baseline must be reconciled")
 			}
 			vr, err := authority.Load(e.FS, model.S(r["verification_receipt"]))

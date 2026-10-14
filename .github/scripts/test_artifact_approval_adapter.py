@@ -1266,7 +1266,7 @@ class SprintPairIntegrationTest(unittest.TestCase):
         self.assertNotEqual(before["steps"], after["steps"])
         self.assertEqual({k: v for k, v in before.items() if k != "steps"}, {k: v for k, v in after.items() if k != "steps"})
         self.assertTrue(self.h.client.call("validate", {"artifact_id": "PLAN-FLOW", "gate": "approved"})["valid"])
-        self.assertFalse(self.h.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"])
+        self.assertFalse(self.h.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"])
         self.assertFalse((self.root / self.approval.PENDING).exists())
 
     def test_no_delegation_and_scope_expansion_refused(self):

@@ -48,7 +48,7 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "verification-status", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -230,18 +230,30 @@ func RequestSchema(op string) (object, error) {
 		request := closed(p)
 		request["oneOf"] = []any{approved, closed(p, required...)}
 		return request, nil
-	case "eligible":
+	case "eligible", "verification-status":
 		artifact()
 	case "task-start":
 		cas()
 		add("task", idType(), true)
-		add("context_ticket", text(), true)
+		add("context_ticket", text(), false)
 	case "task-review":
 		cas()
 		add("task", idType(), true)
-		add("verification_receipt", text(), true)
-		add("review_receipt", text(), true)
+		add("verification_receipt", text(), false)
+		add("review_receipt", text(), false)
 		add("completion_sha256", digestType(), false)
+		// Advertise the same two closed shapes enforced at runtime: progress
+		// alone, or an explicit evidence claim carrying both real receipts.
+		progressProperties := object{}
+		for key, value := range p {
+			if key != "verification_receipt" && key != "review_receipt" && key != "completion_sha256" {
+				progressProperties[key] = value
+			}
+		}
+		claimedRequired := append(append([]string{}, required...), "verification_receipt", "review_receipt")
+		request := closed(p)
+		request["oneOf"] = []any{closed(progressProperties, required...), closed(p, claimedRequired...)}
+		return request, nil
 	case "task-block":
 		cas()
 		add("task", idType(), true)
@@ -249,7 +261,7 @@ func RequestSchema(op string) (object, error) {
 	case "task-reconcile":
 		cas()
 		add("task", idType(), true)
-		add("receipt", text(), true)
+		add("receipt", text(), false)
 		add("state", enum("PENDING", "REVIEW", "BLOCKED"), true)
 		add("reason", text(), true)
 	case "scope-reconcile":

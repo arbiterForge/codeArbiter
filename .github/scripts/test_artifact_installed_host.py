@@ -886,7 +886,7 @@ def phase_run(args, bridge, installation: Path) -> dict[str, object]:
         if workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["tasks"][0]["state"] != "REVIEW":
             raise AssertionError("review state was not preserved across process recreation")
         workflow.accept()
-        return {"accepted": workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"]}
+        return {"accepted": workflow.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"]}
     if args.phase in {"commit-proof", "finalization-proof"}:
         proof = bridge._preflight_current_acceptance(bridge._resolve_workflow_pair(args.repository, "flow"), workflow.client, spec_artifact_id="SPEC-FLOW", plan_artifact_id="PLAN-FLOW")
         return {"proof": proof["eligible"]["all_accepted_and_current"], "plan_sha256": proof["plan_identity"]["normative_sha256"]}

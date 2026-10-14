@@ -1311,7 +1311,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         cached = {
             "SPEC-FLOW": original_call("identity", {"artifact_id": "SPEC-FLOW"}),
             "PLAN-FLOW": original_call("identity", {"artifact_id": "PLAN-FLOW"}),
-            "eligible": original_call("eligible", {"artifact_id": "PLAN-FLOW"}),
+            "eligible": original_call("verification-status", {"artifact_id": "PLAN-FLOW"}),
         }
         shadow = self.root / ".codearbiter" / "specs" / "flow.md"
 
@@ -1323,7 +1323,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         def stable_call(operation: str, request: dict, **kwargs: object) -> dict:
             if shadow.exists() and operation == "identity":
                 return cached[request["artifact_id"]]
-            if shadow.exists() and operation == "eligible":
+            if shadow.exists() and operation == "verification-status":
                 return cached["eligible"]
             return original_call(operation, request, **kwargs)
 
@@ -1335,9 +1335,14 @@ class ArtifactWorkflowTest(unittest.TestCase):
 
         self.assertEqual(caught.exception.code, "AMBIGUOUS_ARTIFACT")
 
-    def test_draft_or_missing_approval_cannot_dispatch(self) -> None:
+    def test_draft_scheduling_is_advisory_not_an_approval_claim(self) -> None:
+        report = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(report["assessment"], "advisory")
+        self.assertEqual(report["next_task"], "T-001")
+        self.assertFalse(report["evidence_assessed"])
+        self.assertNotIn("all_accepted_and_current", report)
         with self.assertRaises(ArtifactError) as caught:
-            self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+            self.harness.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(caught.exception.code, "DRAFT_BINDING")
 
     def test_caller_labels_cannot_widen_task_state_authority(self) -> None:
@@ -1421,12 +1426,12 @@ class ArtifactWorkflowTest(unittest.TestCase):
         self.harness.review_task("T-001")
 
         resumed = WorkflowHarness(self.root, self.installation)
-        checkpoint = resumed.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        checkpoint = resumed.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(checkpoint["tasks"][0]["state"], "REVIEW")
         self.assertFalse(checkpoint["all_accepted_and_current"])
 
         resumed.accept_scope("CP-01", ["T-001"])
-        accepted = resumed.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        accepted = resumed.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(accepted["tasks"][0]["state"], "ACCEPTED")
         self.assertTrue(accepted["all_accepted_and_current"])
 
@@ -1483,7 +1488,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         review = final_process.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(review["tasks"][0]["state"], "REVIEW")
         final_process.accept_scope("CP-01", ["T-001"])
-        accepted = final_process.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        accepted = final_process.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         current_plan = final_process.client.call(
             "identity", {"artifact_id": "PLAN-FLOW"}
         )

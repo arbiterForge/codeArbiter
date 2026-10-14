@@ -748,8 +748,11 @@ class PrerequisiteProductionBoundaryTest(unittest.TestCase):
 
     def test_real_engine_moves_from_unsatisfied_to_eligible_through_adapter(self):
         self.create_approved_plan()
+        advice = self.workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(advice["assessment"], "advisory")
+        self.assertEqual(advice["prerequisites"][0]["recorded_state"], "not_satisfied")
         with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_UNSATISFIED"):
-            self.workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+            self.workflow.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
 
         approval_receipt = None
         for path in (self.root / ".codearbiter" / ".artifacts" / "receipts").glob("*.json"):
