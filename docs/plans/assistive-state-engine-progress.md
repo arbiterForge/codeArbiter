@@ -93,7 +93,7 @@ All paths below are inside `arbiterForge/codeArbiter`. The base facts were read 
 | `core/surface/includes/artifacts.md`, `sprint-authority.md`, `SPRINT.md`, planning/execution/TDD/resume skills | Remove instructions that recreate native approval, review, prerequisite, or reconciliation admission. | Active instructions still describe the old workflow; this is a known integration gap, not shipped parity. |
 | `_artifactpromptlib.py`, `_contextselectlib.py`, actor-delivery callers | Keep useful task/constraint context, remove receipt/ticket-driven permission to continue ordinary work. | Caller conversion remains. |
 | `core/artifacts/internal/read/` and renderer | Keep compact symbol reads, complete paging, stable anchors, and safe HTML. Do not use delivery receipts as task-start authorization. | Existing implementation retained; receipt integrity tested independently of task start. |
-| Host package manifests, compatibility/release tooling | Publish a compatible engine/bridge/caller set with honest host-specific status and upgrade behavior. | No release/version/maturity changes in this slice. |
+| Host package manifests, compatibility/release tooling | Publish a compatible engine/bridge/caller set with honest host-specific status and upgrade behavior. | Unreleased breaking candidate versions are set; no tag, publication, marketplace promotion, or maturity change was made. |
 
 The handoff intentionally supersedes the October 7 Project recommendation to preserve identical artifact-origin refusals. Its old measurements remain historical. No private Project Source file is automatically replaced by this PR.
 
@@ -118,8 +118,10 @@ The initial complete Linux run identified an outer schema-closure omission in
 the new union request descriptors. Both alternatives were already closed, but
 the published operation root now also declares the closed union. The unchanged
 schema-closure test and the full Linux suite pass after that correction; it was
-not waived. Version guard results and final hosted CI state are recorded in the
-PR after committing the candidate, since those guards inspect committed HEAD.
+not waived. All three payload-version guards passed against committed candidate
+`2219957a3cb0e0fb64d9c83cb47a6cf031f237b4`: Claude 2.26.4 to 3.0.0,
+Codex 0.17.4 to 0.18.0, and Pi 0.18.4 to 0.19.0 with regenerated root
+metadata and its changelog. Final hosted CI state is recorded in the PR.
 
 The source and generated callers still do not constitute a finished installed
 workflow. Keep this PR draft until T04/T05/T07 and the remaining T06/T08/T09
