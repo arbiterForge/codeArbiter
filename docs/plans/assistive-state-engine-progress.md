@@ -88,6 +88,39 @@ continuous monitoring. Actual model-backed installed execution, full ordinary
 result/applicability handling, remaining entrypoint/hook conversion, and complete
 upgrade/rollback qualification remain outstanding. No release was performed.
 
+### Third-slice documentation follow-up
+
+Hosted docs generation on native commit
+`6fe7f45a18daa547525b8c1b5f0585750916b1ea` stopped because the atlas correctly
+detected changed artifacts-owner bytes. The release-applicability generator had
+completed; the failing child was `gen:atlas`, not release classification.
+
+The follow-up does not claim that old permission diagrams now describe the
+finished overhaul. Original geometry, source links, and historical review records
+remain intact. A visible partial-implementation notice identifies the retained
+October 7 routes as historical and describes the actual authoring/progress and
+bounded review-rerun changes. Affected node details, the reading guide, standalone
+HTML/SVG labels, and source-ledger export carry that distinction. Four current
+owner blobs are checked against their actual committed bytes; later source drift
+still fails rather than silently substituting main or relabeling old evidence.
+
+Verification: the complete `npm run gen` pipeline, including release-applicability,
+atlas, 17 standard diagrams, and diagram audit, passes. TypeScript typecheck passes.
+All 53 targeted atlas/source-revalidation/model tests pass on Windows with one
+worker. Initial parallel/serial attempts hit the existing five-second limit in
+redundant whole-fixture source reads; the shared positive fixture check is retained
+once and every exact drift-rejection assertion remains. No timeout or assertion
+was waived. New tests cover the visible historical/current distinction, exact
+source identities, preserved geometry, export parity, invalid references, and
+escaping. Full Astro/browser execution and the next hosted docs result are not
+claimed by these checks.
+
+The existing pinned Academy submodule was initialized only in the temporary
+checkout to run the site's normal generator. Its pin and remote repository were
+not changed. Standard generated diagrams had no substantive tracked changes and
+are not republished as newly reviewed routes. Remaining execution/hook conversion
+and the final coherent route update stay in this same PR's T05/T08 work.
+
 ## Second slice: scoped prerequisites and completed implementation batches
 
 The existing prerequisite operation now records bounded caller-reported facts or

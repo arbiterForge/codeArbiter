@@ -1,0 +1,68 @@
+{
+  "revision": "6fe7f45a18daa547525b8c1b5f0585750916b1ea",
+  "title": "Assistive overhaul: partial implementation",
+  "summary": "This canvas preserves the October 7 route snapshot, including its old approval and review sequence. The current draft PR changes native authoring and progress, but execution callers, hooks, and upgrade handling are not fully converted. Read the source changes below rather than treating the historical arrows as the completed new workflow. No release or installed-host qualification is implied.",
+  "changes": [
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "blob": "1fa2309b338af273679a03ff4e8a66d62e49b888",
+      "summary": "Ordinary native progress is separate from explicit historical attestation: no approval or context ticket is needed to record a task start, prerequisite observation, or implementation completion. Several execution callers still need conversion.",
+      "nodes": [
+        "o-runtime",
+        "o-feature-spec",
+        "o-sprint-spec",
+        "f-entry",
+        "f-spec",
+        "f-plan",
+        "f-approval",
+        "f-capability",
+        "f-selection",
+        "f-verify",
+        "f-recovery",
+        "f-accept",
+        "c-spec",
+        "c-plan",
+        "c-read",
+        "c-ticket-note",
+        "c-proof",
+        "c-accept",
+        "r-cmd"
+      ]
+    },
+    {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "blob": "bb30a0bbe9949bb1a98a53c0290f0bdf37786925",
+      "summary": "The drafting skill now plans coherent units of work and maintains exact criteria and dependencies without approval codes, future-runner admission, or mandatory five-minute tasks. It does not execute the plan.",
+      "nodes": [
+        "o-feature-spec",
+        "f-plan"
+      ]
+    },
+    {
+      "path": "core/pysrc/_artifactlib.py",
+      "blob": "d89228c2cfb6897b740170f073a5ed0cc11d422f",
+      "summary": "Authoring requires the installed native writer and a current structurally valid source, not a ready or approved specification or every future authority producer. Native Pi writer admission does not establish a complete live Pi workflow.",
+      "nodes": [
+        "f-entry",
+        "f-plan",
+        "f-approval",
+        "f-capability",
+        "c-spec",
+        "c-plan"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/evidence/completion.go",
+      "blob": "4b1f0a36c7c1cb825a4a1d6b2235822cea9024bb",
+      "summary": "A new explicit batch review can select a passing rerun of still-reviewed work without replacing the original task review. The selected run must match its own recorded workspace; changed source or supporting evidence still requires reassessment.",
+      "nodes": [
+        "f-spec-review",
+        "f-verify",
+        "f-quality",
+        "f-accept",
+        "c-proof",
+        "c-accept"
+      ]
+    }
+  ]
+}

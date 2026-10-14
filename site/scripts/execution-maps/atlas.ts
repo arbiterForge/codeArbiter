@@ -15,6 +15,7 @@ import operations from './atlas-data/knowledge-operations.json';
 import brownfield from './atlas-data/brownfield-lifecycle.json';
 import debug from './atlas-data/debug-handoff.json';
 import tribunal from './atlas-data/tribunal-lifecycle.json';
+import assistiveUpdate from './atlas-data/assistive-update.json';
 
 // Original diagram/source links retain REVIEWED_AT. Freshness is separately
 // revalidated against this exact source revision, never whichever HEAD is newest.
@@ -86,6 +87,14 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
   'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
 });
 
+// PR983 is not merely source-compatible with the old permission diagram. Retain
+// that geometry as explicitly historical and attach the bounded implementation
+// delta. Exact tracked owner blobs survive a squash; no moving-main substitution
+// or fabricated host qualification makes the old arrows current.
+export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze(
+  Object.fromEntries(assistiveUpdate.changes.map(change=>[change.path,change.blob])),
+);
+
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
@@ -152,13 +161,14 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
   const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
   // Product owners must still match. Site-design pointers are historical
   // integration evidence, not product claims; this PR intentionally changes them.
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
+  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,blob);
   for(const command of atlas.commands) {
     const meta=registry.commands[command.name];
     if(meta.visibility!==command.visibility || (meta.canonical??command.name)!==command.canonical)throw new Error(`Atlas catalog classification changed: ${command.name}`);
@@ -175,6 +185,10 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   atlas.lensCount=names.length;
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
+  atlas.sourceUpdate=structuredClone(assistiveUpdate);
+  atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Partial assistive changes are bound to ${assistiveUpdate.revision}; remaining caller conversion is not a completed or released workflow. `+atlas.scope;
+  atlas.caveats=atlas.caveats.map(note=>`Historical snapshot: ${note}`);
+  const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
   return atlas;
 }
 

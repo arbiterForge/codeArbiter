@@ -20,7 +20,8 @@ export interface AtlasCommand {
   modes: string[]; hosts: string; canonical: string;
   replacement?: string; description?: string; source?: {path:string;revision:string}; invocations?: Record<string,string|null>;
 }
-export interface Atlas { repository:string; commit:string; checked_at:string; scope:string; sources:AtlasSource[]; commands:AtlasCommand[]; views:AtlasView[]; caveats:string[]; lensCount?:number }
+export interface AtlasSourceUpdate { revision:string; title:string; summary:string; changes:{path:string;blob:string;summary:string;nodes:string[]}[] }
+export interface Atlas { sourceUpdate?:AtlasSourceUpdate; repository:string; commit:string; checked_at:string; scope:string; sources:AtlasSource[]; commands:AtlasCommand[]; views:AtlasView[]; caveats:string[]; lensCount?:number }
 export interface HostDescriptor { name: string; command_form: string; surface: { rules: Array<{ source_prefix: string; exclude: string[] }> } }
 export const REVIEWED_AT = '9496cff6332fe0b97195b7ebe67b73f62f30e5b3';
 export const OWNER_ROUTE = '/concepts/workflow-routes/';
@@ -99,6 +100,16 @@ export function validateAtlas(atlas:Atlas):string[] {
       if(e.label_at && (e.label_at.length!==2 || !e.label_at.every(Number.isFinite)))errors.push(`Invalid edge label ${v.id}`);
       for(const r of e.routes)if(!commands.has(r))errors.push(`Unknown edge route ${r}`);
       if(e.source_id && !sources.has(e.source_id))errors.push(`Unknown edge source ${e.source_id}`);
+    }
+  }
+  if(atlas.sourceUpdate) {
+    const update=atlas.sourceUpdate;
+    if(!/^[0-9a-f]{40}$/.test(update.revision)||!update.title.trim()||!update.summary.trim()||!update.changes.length)errors.push('Invalid atlas source update');
+    const paths=new Set<string>();
+    for(const change of update.changes) {
+      if(!validSourcePath(change.path)||paths.has(change.path)||!/^[0-9a-f]{40}$/.test(change.blob)||!change.summary.trim()||!change.nodes.length)errors.push('Invalid atlas update source');
+      paths.add(change.path);
+      for(const id of change.nodes)if(!nodesGlobal.has(id))errors.push(`Unknown updated node ${id}`);
     }
   }
   for(const c of atlas.commands)if(!atlas.views.some(v=>v.nodes.some(n=>n.routes.includes(c.name))))errors.push(`Undrawn entry ${c.name}`);

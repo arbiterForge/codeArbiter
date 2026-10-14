@@ -20,5 +20,5 @@ function document(interactive:boolean):string {
 writeFileSync(resolve(destination,'atlas.html'),document(true));
 writeFileSync(resolve(destination,'reading-guide.html'),document(false));
 for(const view of atlas.views)writeFileSync(resolve(destination,`${view.id}.svg`),renderAtlasSvg(atlas,view,theme));
-writeFileSync(resolve(destination,'sources.json'),JSON.stringify({reviewedAt:atlas.commit,scope:atlas.scope,sources:atlas.sources,commands:atlas.commands.map(c=>({name:c.name,visibility:c.visibility,source:c.source,invocations:c.invocations}))},null,2)+'\n');
+writeFileSync(resolve(destination,'sources.json'),JSON.stringify({reviewedAt:atlas.commit,scope:atlas.scope,sourceUpdate:atlas.sourceUpdate,sources:atlas.sources,commands:atlas.commands.map(c=>({name:c.name,visibility:c.visibility,source:c.source,invocations:c.invocations}))},null,2)+'\n');
 console.log(`Generated original route atlas: ${atlas.commands.length} entries, ${atlas.views.length} spatial maps -> ${destination}`);
