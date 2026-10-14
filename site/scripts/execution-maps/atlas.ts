@@ -74,6 +74,18 @@ export const CONTEXT_MAINTENANCE_SOURCE_BLOBS:Readonly<Record<string,string>>=Ob
   'core/surface/skills/finishing-a-development-branch/SKILL.md':'c9b8bc36934e5b79f0e4ec72c35c69997519378f',
 });
 
+// PR979 separates Codex release provenance from native review protocol proof.
+// S10/S17 retain admission, observed approval and host-event boundaries; S32
+// retains native IDs, producer states, Claude joins and canonical digests.
+// Independent source-bound review still requires actual launch/child/first-Stop
+// evidence. No route, geometry or installed-host qualification claim changes.
+// These tracked owner blobs survive a squash; earlier bindings stay historical.
+export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/includes/artifacts.md':'c10c13162e63699c3748809f3ef2448bc8b07fb9',
+  'core/pysrc/_artifactauthoritylib.py':'8dbbfdbae637e79dea52181b01e328a21efe3a06',
+  'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
+});
+
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
@@ -140,7 +152,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
   const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');

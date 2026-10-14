@@ -117,7 +117,11 @@ CLAUDE_REVIEW_PROFILE = "claude-review/0.1.0"
 CODEX_REVIEW_PROFILE = "codex-review/0.1.0"
 CODEX_NATIVE_V1 = "codex-native-v1/0.145.0"
 CODEX_NATIVE_V2 = "codex-native-v2/0.162.0-alpha.2"
-CODEX_NATIVE_PROFILES = frozenset({CODEX_NATIVE_V1, CODEX_NATIVE_V2})
+# This version identifies our evidence protocol, never the host release.
+CODEX_NATIVE_PROTOCOL = "codex-native-collaboration/1.0.0"
+CODEX_COLLABORATION_PROFILES = frozenset({CODEX_NATIVE_V2, CODEX_NATIVE_PROTOCOL})
+CODEX_NATIVE_PROFILES = frozenset({CODEX_NATIVE_V1, *CODEX_COLLABORATION_PROFILES})
+CODEX_RUNTIME_RE = re.compile(r"[0-9]+(?:\.[0-9]+){2}(?:[-+][0-9A-Za-z.+-]+)?", re.ASCII)
 CODEX_UUID_RE = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 CODEX_AGENT_PATH_RE = re.compile(r"/root(?:/[a-z0-9_]+)*")
 CODEX_STEERING_TOOLS = frozenset({
@@ -1179,7 +1183,7 @@ def _reject_overlapping_authority(session_id: str, turn_id: str) -> None:
         launch = request.get("launch") or {}
         if (
             request["state"] in {"LAUNCHING", "RUNNING"}
-            and request.get("codex_review_profile") != CODEX_NATIVE_V2
+            and request.get("codex_review_profile") not in CODEX_COLLABORATION_PROFILES
             and launch.get("parent_session_id") == session_id
             and launch.get("parent_turn_id") == turn_id
         ):
@@ -1500,8 +1504,8 @@ def _dispatch_prompt(request: dict[str, Any], *, legacy_inline: bool = False) ->
         "these settings do not provide an OS sandbox.\n"
         if request.get("codex_review_profile") == CODEX_NATIVE_V1 else ""
     )
-    if request.get("codex_review_profile") == CODEX_NATIVE_V2:
-        profile = (f"Native review profile: {CODEX_NATIVE_V2}. This review was dispatched through "
+    if request.get("codex_review_profile") in CODEX_COLLABORATION_PROFILES:
+        profile = (f"Native review profile: {request['codex_review_profile']}. This review was dispatched through "
                    "collaboration.spawn_agent with default role and fork_turns=none. Read-only conduct "
                    "is cooperative; these settings do not provide an OS sandbox.\n")
     completion = ""
@@ -1600,7 +1604,7 @@ def arm_request(
     if host == "claude" and reviewer_model not in CLAUDE_REVIEWER_MODELS:
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "reviewer model is unsupported")
     if codex_review_profile is not None and (
-        codex_review_profile not in {"native-v1", "native-v2"} or host != "codex" or activity not in REVIEW_ACTIVITIES
+        codex_review_profile not in {"native", "native-v1", "native-v2"} or host != "codex" or activity not in REVIEW_ACTIVITIES
     ):
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "Codex review profile is unsupported")
     completion_selection = None
@@ -1652,7 +1656,9 @@ def arm_request(
     if activity == "verification":
         seed_value["context_storage"] = CONTEXT_STORAGE
     if codex_review_profile is not None:
-        seed_value["codex_review_profile"] = CODEX_NATIVE_V1 if codex_review_profile == "native-v1" else CODEX_NATIVE_V2
+        seed_value["codex_review_profile"] = {
+            "native": CODEX_NATIVE_PROTOCOL, "native-v1": CODEX_NATIVE_V1, "native-v2": CODEX_NATIVE_V2,
+        }[codex_review_profile]
         if completion_selection is not None:
             seed_value["context_storage"] = CONTEXT_STORAGE
     seed = _canonical(seed_value)
@@ -3043,6 +3049,16 @@ def _codex_v2_activity(event: dict[str, Any], request: dict[str, Any]) -> dict[s
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native activity for exact call is missing or ambiguous")
     activity = matches[0]
     item = activity["item"]
+    if request.get("codex_review_profile") == CODEX_NATIVE_PROTOCOL:
+        # Host records may gain non-authoritative fields. Retained evidence is
+        # closed; required joins, bounds and duplicate-key rejection stay strict.
+        activity = {key: activity[key] for key in (
+            "type", "thread_id", "turn_id", "item", "started_at_ms", "completed_at_ms",
+        ) if key in activity}
+        item = {key: item[key] for key in (
+            "type", "id", "kind", "agent_thread_id", "agent_path",
+        ) if key in item}
+        activity["item"] = item
     if (set(activity) != {"type", "thread_id", "turn_id", "item", "started_at_ms", "completed_at_ms"}
             or set(item) != {"type", "id", "kind", "agent_thread_id", "agent_path"}
             or activity["thread_id"] != anchor["parent_thread_id"] or activity["turn_id"] != launch["parent_turn_id"]
@@ -3052,6 +3068,10 @@ def _codex_v2_activity(event: dict[str, Any], request: dict[str, Any]) -> dict[s
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native activity binding differs from the exact launch")
     _codex_uuid(item["agent_thread_id"])
     return activity
+
+
+def _codex_runtime_identity(value: Any) -> bool:
+    return isinstance(value, str) and len(value) <= 128 and CODEX_RUNTIME_RE.fullmatch(value) is not None
 
 
 def _codex_v2_child(event: dict[str, Any]) -> dict[str, Any] | None:
@@ -3065,16 +3085,26 @@ def _codex_v2_child(event: dict[str, Any]) -> dict[str, Any] | None:
         # A V1 Start did not promise native metadata. V2 binding below requires
         # qualified metadata; missing/unsafe bytes still cannot pass V2.
         return None
-    if meta.get("cli_version") != "0.162.0-alpha.2":
+    # Runtime identity is provenance; compatibility comes from the concrete
+    # launch/activity/lifecycle protocol, not a release allowlist.
+    if (not _codex_runtime_identity(meta.get("cli_version"))
+            or not {"id", "parent_thread_id", "session_id", "agent_path"} <= set(meta)):
+        # V1 metadata lacks collaboration fields. Its own lifecycle contract
+        # remains sufficient; collaboration requests require this evidence at bind.
         return None
-    identity = {"cli_version": meta["cli_version"], "thread_id": _codex_uuid(meta.get("id")),
-                "parent_thread_id": _codex_uuid(meta.get("parent_thread_id")),
-                "session_id": _host_id(meta.get("session_id"), "session_id"),
-                "agent_path": meta.get("agent_path"), "metadata_sha256": _digest(raw)}
+    try:
+        identity = {"cli_version": meta["cli_version"], "thread_id": _codex_uuid(meta.get("id")),
+                    "parent_thread_id": _codex_uuid(meta.get("parent_thread_id")),
+                    "session_id": _host_id(meta.get("session_id"), "session_id"),
+                    "agent_path": meta.get("agent_path"), "metadata_sha256": _digest(raw)}
+    except AuthorityError:
+        # Optional metadata cannot impose collaboration prerequisites on V1.
+        # A collaboration request will reject this absence at profile binding.
+        return None
     if (identity["thread_id"] != event["agent_id"] or identity["session_id"] != event.get("session_id")
             or not isinstance(identity["agent_path"], str)
             or CODEX_AGENT_PATH_RE.fullmatch(identity["agent_path"]) is None):
-        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native child metadata differs from its lifecycle")
+        return None
     return identity
 
 
@@ -3085,7 +3115,11 @@ def _codex_v2_bind_child(request: dict[str, Any], child: dict[str, Any]) -> None
             or identity.get("thread_id") != launch["agent_id"]
             or identity.get("session_id") != launch["parent_session_id"]
             or identity.get("agent_path") != launch["task_name"]):
-        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native V2 child runtime or parent association is unqualified")
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native collaboration requires child metadata bound to the exact parent/session/path/UUID")
+    # Only new protocol requests admit differing runtime provenance.
+    if (request.get("codex_review_profile") == CODEX_NATIVE_V2
+            and identity.get("cli_version") != "0.162.0-alpha.2"):
+        raise AuthorityError("UNSUPPORTED_HOST_SEAM", "historical native-v2 request requires its original runtime; arm a new native protocol request")
     launch["native_child"] = identity
 
 
@@ -3173,7 +3207,7 @@ def _read_codex_child(path: Path, agent_id: str, session_id: str) -> dict[str, A
         identity = value["native_v2"]
         if (not isinstance(identity, dict) or set(identity) != {
                 "cli_version", "thread_id", "parent_thread_id", "session_id", "agent_path", "metadata_sha256"}
-                or identity.get("cli_version") != "0.162.0-alpha.2"
+                or not _codex_runtime_identity(identity.get("cli_version"))
                 or identity.get("thread_id") != agent_id or identity.get("session_id") != value["session_id"]
                 or not isinstance(identity.get("parent_thread_id"), str)
                 or CODEX_UUID_RE.fullmatch(identity["parent_thread_id"]) is None
@@ -3224,7 +3258,7 @@ def _codex_native_post(event: dict[str, Any], root: Path, request: dict[str, Any
 
 
 def _codex_native_post_join(event: dict[str, Any], root: Path, request: dict[str, Any]) -> dict[str, Any]:
-    expected_tool = "collaborationspawn_agent" if request.get("codex_review_profile") == CODEX_NATIVE_V2 else "spawn_agent"
+    expected_tool = "collaborationspawn_agent" if request.get("codex_review_profile") in CODEX_COLLABORATION_PROFILES else "spawn_agent"
     if event.get("tool_name") != expected_tool:
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native review PostToolUse tool differs from its launch profile")
     if _canonical(event.get("tool_input")) != _canonical(request["launch_envelope"]):
@@ -3238,13 +3272,22 @@ def _codex_native_post_join(event: dict[str, Any], root: Path, request: dict[str
     except ValueError as exc:
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native-v1 spawn result is not strict JSON") from exc
     activity = None
-    if request.get("codex_review_profile") == CODEX_NATIVE_V2:
-        if (not isinstance(response, dict) or set(response) not in ({"task_name"}, {"task_name", "nickname"})
+    if request.get("codex_review_profile") in CODEX_COLLABORATION_PROFILES:
+        stable = request.get("codex_review_profile") == CODEX_NATIVE_PROTOCOL
+        if (not isinstance(response, dict)
+                or not stable and set(response) not in ({"task_name"}, {"task_name", "nickname"})
                 or response.get("task_name") != request["codex_native_trace"]["agent_path"]
                 or ("nickname" in response and (not isinstance(response["nickname"], str) or len(response["nickname"]) > 256))):
-            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native-v2 spawn result fields or canonical task path differ")
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native collaboration spawn result fields or canonical task path differ")
         activity = _codex_v2_activity(event, request)
         agent_id = _codex_uuid(activity["item"]["agent_thread_id"])
+        if stable:
+            # Extra display metadata is inert, but an optional host identity
+            # must agree with the independently observed native activity.
+            identities = {"agent_id": agent_id, "thread_id": agent_id,
+                          "parent_thread_id": request["launch"]["parent_thread_id"]}
+            if any(key in response and response[key] != expected for key, expected in identities.items()):
+                raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native spawn result identity conflicts with its activity")
     elif (not isinstance(response, dict) or set(response) != {"agent_id", "nickname"}
             or (response["nickname"] is not None and (
                 not isinstance(response["nickname"], str) or len(response["nickname"]) > 256))):
@@ -3269,7 +3312,7 @@ def _codex_native_post_join(event: dict[str, Any], root: Path, request: dict[str
         if activity is not None:
             launch.update(native_activity=activity, native_activity_sha256=_engine_digest(activity))
         if child["start"] is not None:
-            if request.get("codex_review_profile") == CODEX_NATIVE_V2:
+            if request.get("codex_review_profile") in CODEX_COLLABORATION_PROFILES:
                 _codex_v2_bind_child(request, child)
             launch.update(child_turn_id=child["start"]["turn_id"], agent_type="default")
             request["state"] = "RUNNING"
@@ -3363,7 +3406,7 @@ def _codex_native_lifecycle_join(event: dict[str, Any]) -> dict[str, Any] | None
         if name == "SubagentStart":
             if request["state"] != "LAUNCHING":
                 _codex_native_refuse(root, request, "native reviewer start was repeated")
-            if request.get("codex_review_profile") == CODEX_NATIVE_V2:
+            if request.get("codex_review_profile") in CODEX_COLLABORATION_PROFILES:
                 _codex_v2_bind_child(request, child)
             launch.update(child_turn_id=event["turn_id"], agent_type="default")
             request["state"] = "RUNNING"
@@ -3419,7 +3462,7 @@ def _codex_native_steering(event: dict[str, Any]) -> None:
                 _write_codex_child(path, child)
         for root, request in _registered_requests(strict=True):
             launch = request.get("launch") or {}
-            if (request.get("codex_review_profile") != CODEX_NATIVE_V2
+            if (request.get("codex_review_profile") not in CODEX_COLLABORATION_PROFILES
                     or request["state"] not in {"LAUNCHING", "RUNNING"}
                     or launch.get("parent_session_id") != event.get("session_id")):
                 continue
@@ -3470,11 +3513,11 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
         message = tool_input.get("message") if isinstance(tool_input, dict) else None
         if isinstance(message, str) and message.startswith("[CODEARBITER_AUTHORITY_REQUEST:"):
             _, candidate = _registered_request(_request_id_from_prompt(message))
-            if candidate.get("codex_review_profile") != CODEX_NATIVE_V2:
+            if candidate.get("codex_review_profile") not in CODEX_COLLABORATION_PROFILES:
                 raise AuthorityError(
                     "UNSUPPORTED_HOST_SEAM",
-                    "Codex v2 requires a fresh qualified native-v2 request with direct activity UUID binding; "
-                    "otherwise qualify native-v1 and arm a fresh request",
+                    "collaboration review requires a fresh native protocol request with direct activity UUID binding; "
+                    "historical requests cannot be relabelled",
                 )
         else:
             turn_id = _host_id(event.get("turn_id"), "turn_id")
@@ -3508,7 +3551,7 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review request is not launchable")
         if _canonical(tool_input) != _canonical(request.get("launch_envelope")):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
-        is_v2 = request.get("codex_review_profile") == CODEX_NATIVE_V2
+        is_v2 = request.get("codex_review_profile") in CODEX_COLLABORATION_PROFILES
         if is_v2 != (event["tool_name"] == "collaborationspawn_agent"):
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "native review profile differs from launch tool")
         _require_frozen_context(root, request)
@@ -3536,7 +3579,7 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
         elif is_v2:
             anchor = _codex_v2_trace_anchor(event, tool_input["task_name"])
             request["codex_native_trace"] = anchor
-            request["launch"].update(codex_review_profile=CODEX_NATIVE_V2, child_turn_id=None,
+            request["launch"].update(codex_review_profile=request["codex_review_profile"], child_turn_id=None,
                 parent_thread_id=anchor["parent_thread_id"], task_name=anchor["agent_path"], fork_turns="none")
         else:
             request["launch"].update(task_name=tool_input["task_name"], fork_turns=tool_input["fork_turns"])
