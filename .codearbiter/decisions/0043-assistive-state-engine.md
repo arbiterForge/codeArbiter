@@ -3,7 +3,7 @@ status: accepted
 date: 2026-10-14
 title: Make the state engine assistive rather than a second permission system
 decided-by: SUaDtL@users.noreply.github.com
-supersedes: 0037-extensible-structured-artifact-engine (artifact-origin permission policy only)
+supersedes: 0037-extensible-structured-artifact-engine
 governs: core/artifacts/**, core/pysrc/_artifact*.py, core/pysrc/_approvallib.py, core/pysrc/_prerequisitelib.py, core/pysrc/_reconciliationlib.py, core/surface/includes/artifacts.md, core/surface/skills/**
 ---
 
