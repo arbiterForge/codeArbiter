@@ -1,7 +1,7 @@
 # Assistive state-engine overhaul: implementation progress
 
 **PR:** #983, `overhaul/assistive-state-engine` -> `main`.
-**State:** DRAFT; fourth implementation slice in progress, not the completed overhaul or a released package.
+**State:** DRAFT; fifth implementation slice under verification, not the completed overhaul or a released package.
 **Baseline:** `arbiterForge/codeArbiter@045c0812888f20f4c843677cfb37b802e2084770:/`.
 **Contract:** [the complete nine-task handoff](assistive-state-engine-overhaul.md).
 **Decision:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md), accepted product direction, separately bound to its actual source commit. No independent review or release proof is fabricated by that acceptance.
@@ -17,7 +17,7 @@
 | T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
 | T06 | Compact task packet implemented in native source | Read-only `task-context` delivers one task, directly cited criteria, dependencies and scoped prerequisites without source snapshots/receipt chains, with stale-model and size-limit refusal. Complete installed-host/token-cost qualification remains. |
 | T07 | Not started | Existing state can be read by this slice, but complete upgrade, obsolete-prompt recovery, and mixed-client compatibility are not qualified. |
-| T08 | Main execution and adapter surfaces regenerated | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; fourth slice regenerates core execution instructions, route table, skill index, and three host projections. Public help/Academy/atlas and exact installation checks remain. |
+| T08 | Main execution and adapter surfaces regenerated | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized. The historical atlas now binds sixteen exact fifth-slice owner blobs; final public claims/Academy/mixed-host qualification remain. |
 | T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
@@ -95,7 +95,23 @@ coherent package/host checks close.
   canonical instructions and the Python bridge match their generated copies
   across Claude, Codex, and Pi. These do not establish live host qualification.
 
-### Verification in progress
+### Fifth-slice verification boundaries
+
+| Check | Result and limitation |
+|---|---|
+| Native Windows Go module | The full 15 tested packages passed on the initial fifth-slice native implementation, with other packages having no tests; after adding the three missing task definition fields to the packet, the focused task-context/assistive/schema-closure suite passed again. This is not a new full-module run against the exact final PR head. |
+| Rebuilt native development candidate | Windows/amd64 `ca-artifact` built with Go 1.27.1, local SHA-256 `5bcff62b25b6959ed3e36b375f11808b58795c454a1e8f257f996230f0c85ee5`. The builder reports `module_tests_passed: true` and `upstream_host_qualified: false`. This is a local fixture, not distributed bytes or a live host. |
+| CLI bridge | Seventeen tests passed against that development candidate; adding task-context did not change the bridge's historical authority restrictions for explicit proof consumers. |
+| Authoring contract correction | The first full authoring run had two failures from tests expecting every caller to duplicate the same Markdown/HTML boilerplate. The owner include and feature entry retain strict fallback checks; sprint and brainstorming are tested for correct delegation. The corrected five-test contract class now passes. Full authoring rerun is tracked by conformance and must not be assumed green. |
+| Recorded intent and catalog | Eighteen and five tests respectively passed, with consequential decisions and deferral provenance checked rather than artifact approval codes. |
+| Current-versus-historical documentation | Five targeted site suites: 62 passed. The documented saved-searches HTML capture retains its original digest and has platform-stable LF checkouts. |
+| Atlas/source fidelity | Sixteen current owner blobs at exact commit `b8db5f4e5301e02feeb9c5aee06daa86cbdd595b`, with the previous geometry marked historical. Complete site generation, TypeScript typecheck and diagram audit passed; 65 atlas/source tests passed. The two source-derived feature/sprint SVG descriptions now identify the retained geometry as historical; all other diagram content is unchanged. Generated SVG LF checkout is stable across platforms. No new live website deployed. |
+| Python adversarial conformance | First local run found missing `jsonschema`/`referencing` only in the temporary Windows test environment, plus the now-corrected redundant authoring assertion. The original reference suite correctly failed to run without its pinned requirements. An isolated virtual environment is being used for the full rerun; do not count the first failure as a native-engine regression or the second attempt as passed until its result is captured. |
+
+The source correction stays **one draft PR**. The full T04 impact-aware applicability,
+T07 pending-prompt/mixed-client recovery, complete low-token workflow measurement,
+and actual installed host/upgrade qualification remain open. A local synthetic
+fixture cannot establish the prompt/model behavior of the distributed package.
 
 Results belong to the specific execution and candidate; local fixture success
 is not independent model-backed host evidence. The final Windows Go module run,

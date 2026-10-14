@@ -31,6 +31,11 @@ docs/artifacts/design/original-review2/** text eol=lf
 /site/public/examples/saved-searches/specs/*.html text eol=lf
 /site/public/examples/saved-searches/plans/*.html text eol=lf
 
+# Generated docs route SVGs have exact, checked-in source-relative descriptions.
+# Keep output LF-stable on Windows so redraw/diagram audit compares real changes,
+# not CRLF checkout normalization; historical geometry remains source-bound.
+/site/public/diagrams/*.svg text eol=lf
+
 # Reviewed Pi host graphs are hash-bound byte-for-byte and must survive a
 # Windows checkout without newline conversion.
 .github/fixtures/pi-hosts/**/*.json text eol=lf

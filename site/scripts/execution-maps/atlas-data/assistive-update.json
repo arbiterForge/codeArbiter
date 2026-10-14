@@ -1,12 +1,12 @@
 {
-  "revision": "24845e8ff72b96236436221f0cea22f6f4ea3e27",
+  "revision": "b8db5f4e5301e02feeb9c5aee06daa86cbdd595b",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "This canvas preserves the October 7 route snapshot, including its historical approval and reviewer sequence. The current draft PR has converted native work progress and normal feature/sprint execution callers, but advanced hooks, upgrade and recovery remain not fully converted. These original arrows are historical; consult the current source-bound changes below. No release or installed-host qualification is implied.",
+  "summary": "This canvas retains the October 7 route geometry as a historical snapshot. The current draft PR has converted native progress and feature/sprint execution callers, restored real recorded-intent and ADR decision checks, and added read-only compact task context. Advanced hooks, pending-prompt recovery, impact applicability and installed-host upgrade are not fully converted. The historical approval arrows are not the new default; follow current source-bound notes. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "1fa2309b338af273679a03ff4e8a66d62e49b888",
-      "summary": "Ordinary native progress is separate from explicit historical attestation: no approval or context ticket is needed to record a task start, prerequisite observation, or implementation completion. Several execution callers still need conversion.",
+      "blob": "0e1652d0183919da0dbeae9f2b4d107e9ef5a1d9",
+      "summary": "Ordinary execution uses advisory task selection and read-only bounded task-context; neither task start nor informational retrieval needs an approval code, context ticket, or evidence snapshot. Historical attested proof remains separate.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -40,8 +40,8 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "d89228c2cfb6897b740170f073a5ed0cc11d422f",
-      "summary": "Authoring requires the installed native writer and a current structurally valid source, not a ready or approved specification or every future authority producer. Native Pi writer admission does not establish a complete live Pi workflow.",
+      "blob": "cabf7d4367498b0f5ee6666206ce9bdbffb63a80",
+      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow.",
       "nodes": [
         "f-entry",
         "f-plan",
@@ -87,8 +87,8 @@
     },
     {
       "path": "core/surface/SPRINT.md",
-      "blob": "7654c8d2a8a06537a3ad8bcc7e213b67d5a8499e",
-      "summary": "The sprint caller now executes the authorized goal without a second sprint/plan approval nonce, works across actual dependencies and reports tests honestly; commit/merge remain separately governed.",
+      "blob": "681776867f5a08f450e60bfa76f495d3b197a8fb",
+      "summary": "The sprint caller performs an index-first recorded-intent read, preserves actual owner decisions and ADR conflicts, then proceeds with authorized work without a second artifact approval system.",
       "nodes": [
         "o-sprint-spec",
         "f-approval",
@@ -121,8 +121,8 @@
     },
     {
       "path": "core/surface/skills/brainstorming/SKILL.md",
-      "blob": "f4b31169a71300dd0503c9384353b49d65d49a29",
-      "summary": "Specification refinement retains real product questions and exact typed drafts, but ordinary method choices no longer manufacture confirmation questions or approval receipts.",
+      "blob": "500946da52405f7e0d516a766c0525113fdf3f63",
+      "summary": "Source refinement respects recorded deferrals and accepted ADR conflicts without turning each ordinary method adjustment into a separate authorization interview.",
       "nodes": [
         "o-feature-spec",
         "o-sprint-spec",
@@ -142,8 +142,8 @@
     },
     {
       "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-      "blob": "ad5345649c1ccaa125c5a8d24b57f2e3d7ae1b39",
-      "summary": "The implementation loop now chooses direct work or useful delegation, records DONE separately from verified acceptance, and dispatches risk-specific reviewers rather than a fleet per task.",
+      "blob": "7cf67e11069e08032e492b9bd29060161a964f2c",
+      "summary": "The implementation loop uses low-token read-only task-context with source-bound criteria and prerequisite facts, direct work or useful delegation, honest test reporting, and risk-specific review without a compulsory reviewer fleet.",
       "nodes": [
         "f-selection",
         "f-verify",
@@ -178,6 +178,18 @@
       "nodes": [
         "f-accept",
         "o-runtime"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/task_context.go",
+      "blob": "e20cde3d78df68ee68f39ebe465da614ed2b25ab",
+      "summary": "Read-only task-context assembles one complete task, directly referenced spec criteria, dependency states, and scoped/unscoped prerequisites in a bounded response. It rejects stale plan identity and oversized packets; it never runs tools, takes a full source snapshot, or grants authority.",
+      "nodes": [
+        "f-selection",
+        "f-spec-review",
+        "f-verify",
+        "c-read",
+        "c-proof"
       ]
     }
   ]

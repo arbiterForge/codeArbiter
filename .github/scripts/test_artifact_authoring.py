@@ -119,38 +119,49 @@ class AuthoringRouteContractTest(unittest.TestCase):
 
     def test_composed_authoring_instructions_define_one_default_contract(self) -> None:
         sources = {
-            "feature": FEATURE_COMMAND,
-            "sprint": SPRINT_PROCEDURE,
-            "brainstorming": BRAINSTORMING_SKILL,
-            "artifacts-include": ARTIFACTS_INCLUDE,
+            "feature": FEATURE_COMMAND.read_text(encoding="utf-8"),
+            "sprint": SPRINT_PROCEDURE.read_text(encoding="utf-8"),
+            "brainstorming": BRAINSTORMING_SKILL.read_text(encoding="utf-8"),
+            "artifacts-include": ARTIFACTS_INCLUDE.read_text(encoding="utf-8"),
         }
+        # The include owns the detailed format/capability contract; route
+        # callers delegate to it rather than copying every condition and
+        # accidentally recreating the old artifact-approval preflight.
         expected = {
-            "default_format": "html",
-            "capability_before_write": True,
-            "existing_markdown": True,
-            "html_farm": "disabled",
+            "default_format": "html", "capability_before_write": True,
+            "existing_markdown": True, "html_farm": "disabled",
             "pilot_only_language": False,
         }
-
-        observed = {
-            name: self._contract(path.read_text(encoding="utf-8"))
-            for name, path in sources.items()
-        }
-
-        self.assertEqual(observed, {name: expected for name in sources})
+        self.assertEqual(self._contract(sources["artifacts-include"]), expected)
+        self.assertEqual(self._contract(sources["feature"]), expected)
+        for name in ("sprint", "brainstorming"):
+            source = sources[name]
+            self.assertIn("includes/artifacts.md", source, name)
+            self.assertIn("`_select_authoring_route`", source, name)
+            self.assertIn("canonical HTML", source, name)
+            self.assertNotIn("html_requested", source, name)
+            self.assertNotIn("pilot", source.lower(), name)
+            self.assertNotIn("Markdown by default", source, name)
+        self.assertIn("HTML `--farm` dispatch remains disabled", sources["sprint"])
+        self.assertIn("Existing Markdown", sources["brainstorming"])
 
     def test_html_is_the_full_lane_default_without_markdown_fallback(self) -> None:
+        include = ARTIFACTS_INCLUDE.read_text(encoding="utf-8")
         feature = FEATURE_COMMAND.read_text(encoding="utf-8")
         sprint = SPRINT_PROCEDURE.read_text(encoding="utf-8")
         brainstorming = BRAINSTORMING_SKILL.read_text(encoding="utf-8")
-
-        for source in (feature, sprint, brainstorming):
-            self.assertIn("`_select_authoring_route`", source)
+        for source in (feature, include):
             self.assertIn(".html", source)
             self.assertIn("before writing", source)
             self.assertIn("must not fall back to Markdown", source)
+        for source in (sprint, brainstorming):
+            self.assertIn("includes/artifacts.md", source)
+            self.assertIn("`_select_authoring_route`", source)
+            self.assertIn("canonical HTML", source)
+        for source in (feature, sprint, brainstorming, include):
             self.assertNotIn("pilot", source.lower())
             self.assertNotIn("html_requested", source)
+        self.assertIn("must not fall back to Markdown", include)
 
     def test_feature_small_lane_remains_inline_and_does_not_create_an_artifact(self) -> None:
         feature = FEATURE_COMMAND.read_text(encoding="utf-8")

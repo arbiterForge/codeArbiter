@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('partial assistive implementation versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('24845e8ff72b96236436221f0cea22f6f4ea3e27');
-    expect(update.changes).toHaveLength(15);
+    expect(update.revision).toBe('b8db5f4e5301e02feeb9c5aee06daa86cbdd595b');
+    expect(update.changes).toHaveLength(16);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
@@ -36,9 +36,10 @@ describe('partial assistive implementation versus retained historical routes',()
     expect(atlas.caveats.every(note=>note.startsWith('Historical snapshot: '))).toBe(true);
     expect(validateAtlas(atlas)).toEqual([]);
     const allText=atlas.sourceUpdate!.changes.map(change=>change.summary).join('\n');
-    expect(allText).toContain('not a ready or approved specification');
+    expect(allText).toContain('author a structurally valid draft');
     expect(allText).toContain('without approval codes');
     expect(allText).toContain('without replacing the original task review');
+    expect(allText).toContain('Read-only task-context');
   });
 
   it('shows the distinction before the canvas, in affected node details, and in standalone exports',()=>{
