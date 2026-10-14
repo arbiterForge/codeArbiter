@@ -2,8 +2,8 @@
 export const evidenceSourceRevision = '6860daa3c974ae32cd9584d3e60e0a51c185a613';
 export const evidenceSources = {
   smarts: { path: 'core/surface/includes/smarts/core.md', quote: 'Step 0 — recorded-intent check' },
-  sprint: { path: 'core/surface/SPRINT.md', quote: 'Decide on EVERY non-hard-gate point **regardless of SMARTS' },
-  methods: { path: 'core/surface/SPRINT.md', quote: 'It can\nchange only existing task `steps`' },
+  sprint: { path: 'core/surface/SPRINT.md', quote: 'Decide on EVERY non-hard-gate point **regardless of SMARTS', currentQuote: 'Use SMARTS when a genuinely difficult trade-off warrants it' },
+  methods: { path: 'core/surface/SPRINT.md', quote: 'It can\nchange only existing task `steps`', currentQuote: 'A changed method, verification runner, or task decomposition within the agreed outcome' },
   reconcile: { path: 'core/surface/skills/decision-variance/SKILL.md', quote: 'confirm it back in one sentence, then append the decision' },
   decisionLog: { path: 'core/surface/includes/smarts/decision-log-format.md', quote: 'SHA-256 of the artifact section that defined the artifact' },
   lifecycle: { path: 'core/surface/skills/decision-lifecycle/SKILL.md', quote: '`accepted` means **Accepted/Planned**' },

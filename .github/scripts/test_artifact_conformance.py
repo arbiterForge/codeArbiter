@@ -23,16 +23,20 @@ INSTALLATION: Path | None = None
 INSTALLATION_OWNER: tempfile.TemporaryDirectory | None = None
 CANDIDATE_IDENTITY: tuple[str, str, str, int, int] | None = None
 
+# Schema 0.3.2 changes the canonical normative projection and rendered HTML
+# for newly created artifacts. These identities were independently re-derived
+# through the exact installed native candidate, then checked on Windows.
+# A historical 0.3.1 artifact is not relabeled or silently rewritten.
 CURRENT_GOLDEN = {
     "spec": {
-        "normative": "c14d6ac6673cb032ef42f1e3cd03e557eec10fba716bfd8831ae17d7cea83560",
-        "model": "3c509e9042b40599b51c27c8881219c1ca99f49f55abf6e72292a8de6f2a3620",
-        "html": "6432d7bb6241c6ae620bcda669698f9985ae4e57f949b2f5292de5e72771d043",
+        "normative": "5d06ff20cbd6fb199e9bdd7902cb192c3c52c33d71bd154a033932ce1e588036",
+        "model": "ee590d45fe1d8071b0b8b62b3472fc2581a7a64c9b054b564709f7563fd076fb",
+        "html": "b4336d5b8c1246b93f25c68aed36514fb797a426af4c99572853878c1013cf36",
     },
     "plan": {
-        "normative": "8cbb42800e1ce9ef86405decadbcf84bd6486515616d7cc3cce34d731f342830",
-        "model": "cd0647912158fb02bd1681c116a4500b2f9bde6c91041d80467d71d1ebbc247e",
-        "html": "977ee61b675d717a33519d07cb9a06b3f5b3195aad9c312e661d8b792b7b8626",
+        "normative": "e80ebda32b93aacc855dba5b9ee8f005dd3815895cb83c04c03072069461920b",
+        "model": "48eed5fb661d5a1fd85fe6784cc1c5fa260a27b5ec9e1beb6afefa4bbb097acb",
+        "html": "442f90d8db4ba745a5d5745e996a9de154cac7a4c070976f8267359a972b3419",
     },
 }
 
@@ -58,8 +62,8 @@ EXPECTED_SUITES = {
         "test_installed_intent_cli_reports_incomplete_native_draft",
         "test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts",
         "test_fixture_copy_excludes_stale_payload_before_building_artifacts",
-        "test_admission_rechecks_namespace_after_host_resource_scan",
-        "test_admission_rechecks_before_plan_identity_reads",
+        "test_authoring_does_not_load_host_authority_registry",
+        "test_plan_authoring_needs_native_identity_not_future_reviewers",
         "test_admission_accepts_current_codex_resources_without_conveying_authority",
         "test_admission_accepts_merged_claude_authority_resources",
         "test_admission_checks_the_platform_specific_hook_command",
@@ -67,7 +71,7 @@ EXPECTED_SUITES = {
         "test_admission_preserves_small_lane_and_existing_markdown_on_pi",
         "test_admission_rechecks_resources_after_initial_success",
         "test_admission_refuses_missing_producers_and_host_helpers",
-        "test_admission_refuses_pi_before_any_new_full_lane_artifact",
+        "test_pi_native_authoring_does_not_require_legacy_authority",
         "test_admission_identifies_scoped_pi_package_without_enabling_workflow",
         "test_admission_rejects_bare_engine_installation",
         "test_admission_rejects_linked_helper_ancestors",
@@ -79,6 +83,7 @@ EXPECTED_SUITES = {
         "test_admission_requires_claude_failure_event_and_reviewer_charter",
         "test_admission_requires_every_authority_event",
         "test_admission_requires_native_codex_refusal_and_steering_seams",
+        "test_authoring_and_progress_need_no_authority_producers",
         "test_producers_create_and_read_canonical_html_pair",
         "test_intent_cli_accepts_ready_spec_from_native_engine",
         "test_incomplete_draft_is_named_without_inventing_contract_fields",
@@ -93,22 +98,22 @@ EXPECTED_SUITES = {
         "test_html_is_the_full_lane_default_without_markdown_fallback",
         "test_disabled_or_read_only_capability_fails_before_authoring_writes",
         "test_missing_or_invalid_capability_fails_before_authoring_writes",
-        "test_plan_creation_uses_engine_and_binds_the_approved_html_spec",
+        "test_plan_creation_uses_engine_without_artifact_approval",
         "test_plan_preflight_rechecks_namespace_after_identity_or_validation",
         "test_plan_preflight_rejects_forged_client_before_any_call",
-        "test_plan_preflight_rejects_unapproved_wrong_identity_and_wrong_digest",
+        "test_plan_preflight_accepts_draft_but_rejects_wrong_identity_and_digest",
         "test_plan_preflight_requires_exact_approved_spec_and_binds_exact_html_pair",
         "test_real_client_for_another_root_is_rejected_before_capability_call",
-        "test_real_plan_bind_rejects_unapproved_or_wrong_spec_binding",
+        "test_real_plan_bind_accepts_draft_but_rejects_wrong_spec_binding",
         "test_selection_rechecks_namespace_after_capability_probe",
         "test_small_lane_stays_inline_without_resolving_or_writing_artifacts",
         "test_tdd_reads_typed_obligations_without_parsing_rendered_html",
     },
     "test_artifact_workflow.py": {
-        "test_draft_or_missing_approval_cannot_dispatch",
+        "test_draft_scheduling_is_advisory_not_an_approval_claim",
         "test_authority_capture_is_bound_to_host_owned_source_bytes",
         "test_approved_pair_dispatches_with_complete_context_and_resumes_in_progress",
-        "test_stale_context_blocks_before_dispatch_side_effect",
+        "test_stale_context_is_reported_without_blocking_progress",
         "test_changed_worktree_rejects_review_evidence",
         "test_review_checkpoint_survives_resume_and_scope_acceptance_is_atomic",
         "test_absent_pair_defaults_to_html_without_creating_paths",

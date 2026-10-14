@@ -1312,6 +1312,15 @@ class ArtifactAuthoringTest(unittest.TestCase):
             self.harness.create_plan(spec["artifact_id"], spec["normative_sha256"])
             self.harness.mutate("task-start", "PLAN-FLOW", task="T-001")
             self.harness.mutate("task-review", "PLAN-FLOW", task="T-001")
+            plan_identity = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
+            packet = self.harness.client.call("task-context", {
+                "artifact_id": "PLAN-FLOW", "task": "T-001",
+                "model_sha256": plan_identity["model_sha256"],
+            })
+            self.assertEqual(packet["task"]["id"], "T-001")
+            self.assertEqual(packet["assessment"], "advisory")
+            self.assertFalse(packet["evidence_assessed"])
+            self.assertFalse(packet["context_complete"])
             advice = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
             self.assertEqual(advice["assessment"], "advisory")
             self.assertFalse(advice["evidence_assessed"])

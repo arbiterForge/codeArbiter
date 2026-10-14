@@ -15,7 +15,7 @@ describe('C02 source and evidence distinctions', () => {
   it('binds editorial claims to inspected current and pinned canonical source', () => {
     expect(validateDecisionEvidence()).toEqual([]);
     for (const source of Object.values(evidenceSources)) {
-      expect(read(`../${source.path}`)).toContain(source.quote);
+      expect(read(`../${source.path}`)).toContain("currentQuote" in source ? source.currentQuote : source.quote);
       const revision = 'revision' in source ? source.revision : evidenceSourceRevision;
       expect(execFileSync('git', ['show', `${revision}:${source.path}`], { encoding: 'utf8' })).toContain(source.quote);
     }

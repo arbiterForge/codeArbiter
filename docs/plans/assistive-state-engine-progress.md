@@ -15,12 +15,93 @@
 | T03 | Native path implemented | Typed fact/decision definitions, explicit task scope, reported observations, failure/unknown visibility, definition-specific applicability, bounded symbol readback, and escaped HTML are implemented. Normal host callers still need T05 conversion. |
 | T04 | Bounded rerun correction implemented | A new explicit batch review can select a fresh passing rerun without another task review of unchanged source/support. General task/source-scoped applicability and ordinary result recording remain. |
 | T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
-| T06 | Partial readback | Exact/batch prerequisite reads now include their bounded assessment and new-schema HTML displays it. Full compact task packets and retrieval-cost work remain. |
+| T06 | Compact task packet implemented in native source | Read-only `task-context` delivers one task, directly cited criteria, dependencies and scoped prerequisites without source snapshots/receipt chains, with stale-model and size-limit refusal. Complete installed-host/token-cost qualification remains. |
 | T07 | Not started | Existing state can be read by this slice, but complete upgrade, obsolete-prompt recovery, and mixed-client compatibility are not qualified. |
 | T08 | Main execution and adapter surfaces regenerated | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; fourth slice regenerates core execution instructions, route table, skill index, and three host projections. Public help/Academy/atlas and exact installation checks remain. |
 | T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Fifth slice: CI contract correction and compact context
+
+**Starting PR head:** `049cc775128eb4bb00950e88481d242c196e8495`.
+**Development-only status:** changes in this slice must not be represented as
+released or installed-host verified until the exact candidate has been built,
+CI has passed, and a supported installed host has been exercised.
+
+The previous hosted checks failed because current execution instructions had
+removed duplicate artifact approvals but historical test assertions still
+required the removed phrases and a compulsory reviewer sequence. The corrected
+prose tests keep **real** recorded-intent protections: explicit user decisions
+outweigh older records, ADR contradictions need a visible consequential choice,
+and actually deferred outcomes are not silently resurrected. Missing optional
+plan/decision indices remain fail-soft and do not become user permission gates.
+
+The static conformance suite retains an explicit, exact test-name inventory;
+its renamed authoring/workflow cases and new positive tests are reflected in that
+inventory. Golden native-rendered spec/plan hashes were independently rederived
+from the installed development binary with schema 0.3.2; the old schema 0.3.1
+historical capture was **not** relabeled. The strict identity and renderer-drift
+assertions remain. No check is made to return success for all inputs.
+
+The C02/C04 site comparison data retains its older reviewed source quotes as
+historical evidence, with separate current source references and explicit
+historical qualification. Active HTML guides display that difference rather
+than implying the old receipt-approval protocol is still the new default.
+Windows `core.autocrlf` previously rewrote the old captured HTML example's
+checked-out LF bytes to CRLF and made an exact SHA-256 check fail. Narrow
+`.gitattributes` entries now preserve that example's original HTML bytes on
+Windows, without modifying its historical digests or relaxing the byte check.
+
+**Next T06 implementation:** native read-only `task-context` returns a compact
+source-bound task packet with its directly referenced criteria, relevant
+actual dependency states, scoped prerequisite observations, and explicitly
+unscoped legacy prerequisites. It returns `assessment: advisory` and
+`evidence_assessed: false`, not approval or a current passing-test claim.
+The model digest is checked against the current plan. A changed source binding
+is visible. A packet too large for the declared budget fails without returning
+partial data. It does not snapshot source files, launch a reviewer, execute a
+command, mint an authority ticket, or create a second state store.
+
+The canonical implementation skill recommends this packet for normal HTML work,
+with bounded exact/batch symbol reads on older installed packages. The operation
+is an internal native API addition, **not** a new public slash command. It uses
+the existing packaged Go/Python bridge, and generated host surfaces stay derived
+from their canonical owner. This is development-source behavior until the final
+coherent package/host checks close.
+
+### Local focused evidence for this slice
+
+- The pre-existing missing-permission conformance fixtures were kept strict;
+  current suite membership was checked against Python test ASTs for all five
+  exact candidate scripts. Renamed positive behaviors now have named tests;
+  old assertion-only permission refusals were not silently counted as passes.
+- `test_recorded_intent_surface.py`: **18 passed**. The actual deferral,
+  supersession, contradiction, index-fail-soft, and intent-parser rules are
+  retained, while irrelevant approval phrases are no longer required.
+- `test_command_catalog.py`: **5 passed**, preserving exact catalog routing
+  and recovery wording without demanding artifact approval for ordinary work.
+- Five targeted documentation suites (`model`, `workflows`, `concepts-decisions`,
+  `human-experience`, and `workflow-propagation`): **62 passed** on Windows.
+  Those assertions distinguish historical source quotes from current defaults.
+- Seven new native `TestTaskContext*` scenarios pass on Windows, alongside the
+  existing assistive and closed-schema tests. They cover referenced criteria,
+  scoped/unscoped prerequisites, real stops, dependency states, stale identities,
+  bounded-output rejection, and avoiding full-source snapshots/authority files.
+- The checked-in saved-search example's two native HTML blobs now match their
+  unchanged historical SHA-256 records exactly on Windows. Narrow LF checkout
+  rules repair the byte instability instead of falsifying the old provenance.
+- `tools/build-surface.py --check` and `tools/sync-core.py --check` pass:
+  canonical instructions and the Python bridge match their generated copies
+  across Claude, Codex, and Pi. These do not establish live host qualification.
+
+### Verification in progress
+
+Results belong to the specific execution and candidate; local fixture success
+is not independent model-backed host evidence. The final Windows Go module run,
+rebuilt development payload, Python bridge/conformance suites, and hosted CI are
+tracked here or in the PR when completed. Do not silently replace earlier
+historical verification with this attempt.
 
 ## Fourth slice: ordinary execution callers (source candidate)
 

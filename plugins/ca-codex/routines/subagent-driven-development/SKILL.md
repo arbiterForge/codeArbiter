@@ -22,6 +22,21 @@ Read the selected spec/plan, relevant `.codearbiter/CONTEXT.md`, and the needed 
 
 For HTML, use `identity`, `index`, `outline`, exact or batched symbol-scoped `read`, and `eligible`. The engine `eligible` response is **advisory scheduling**, not permission or evidence of a passing test. Read actual task dependencies and `waiting_prerequisites`; do not treat a checkpoint number or an unscoped legacy prerequisite as a universal dependency.
 
+**Low-token task context:** after `eligible` identifies a task, prefer the
+native read-only `task-context` request with that plan's current
+`model_sha256` and the selected task ID. It returns only the task,
+its referenced spec criteria, relevant dependency states, scoped factual
+prerequisites, and explicitly unknown legacy scope. It does not collect a
+verification snapshot, invoke tools, mint receipts, or authorize execution.
+A `binding_current: false` response means review affected requirements and
+reconcile the source, not assume the old plan is approved. The packet marks
+`context_complete: false` because unrelated spec material is deliberately
+omitted; expand exact symbols for material constraints. A stale model identity
+needs a fresh `identity` read. When an older installed engine lacks
+`task-context`, use existing bounded exact/`read-batch` symbol reads without
+claiming the new capability exists. On `RECORD_TOO_LARGE`, read complete
+needed records at a larger supported budget; never accept silent truncation.
+
 For a `fact` prerequisite, check it with ordinary authorized tools and record the actual `prerequisite` observation (satisfied/unsatisfied/unknown, source, outcome and reported origin). For a `decision`, apply the user's already-stated choice where it is actually supported; otherwise ask the consequential question in ordinary language. An agent report is not an authenticated user decision. An unresolved prerequisite affects only the tasks that depend on it; continue independent work.
 
 Record `task-start` when beginning a pending HTML task using the current revision/model hash and a durable operation ID. `task-start` does not need approval receipts, a complete context ticket, a source snapshot, or a reviewer. It cannot clear a recorded stop or start already-running work again.

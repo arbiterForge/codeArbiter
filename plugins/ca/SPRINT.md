@@ -16,6 +16,23 @@ The HTML writer may refuse a genuinely invalid/missing payload; that means an ar
 
 Default is the normal agent-assisted implementation engine. Delegate when it helps; **one fresh premium subagent and two reviewers per task are not mandatory**. `/sprint --farm` remains a separately requested legacy Markdown preview backend governed by `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` and `subagent-driven-development/references/farm-dispatch.md`: do not run without real provider configuration and budget, bypass its circuit breaker, or silently switch to premium on a failure. No model is selected, charged, or invoked by the artifact writer alone.
 
+## Recorded intent before drafting
+
+Perform the **recorded-intent read — BEFORE first material spec shaping, fail-soft**.
+Read only relevant plan/decision index entries and expand cited records as needed.
+Absent `plans/` or `decisions/` is never a STOP; it is
+**intent: silent — no decomposition record**, not invented prior consent.
+
+Do not silently contradict an accepted ADR or a recorded deferral when choosing
+a different outcome. If the named re-evaluation trigger has occurred, the
+decision is reopened; a current explicit owner direction also supersedes lower
+priority history. Ask one consequential question when ownership is genuinely
+unresolved: **one stop per record per sprint**, not repeated approval codes.
+In the sprint log `intent:` goes AFTER the `confidence:` token for
+the existing reader. When a conflict repeats, consider whether the planned
+outcome is wrong **or the record itself is stale** before questioning the user
+again. None of this is an approval prerequisite for routine work.
+
 ## Phase 1 - Establish a useful working agreement
 
 Use `brainstorming` for a missing spec and `writing-plans` for a missing plan. Bound the sprint goal, requirements, relevant acceptance criteria, real dependencies, and genuinely consequential decisions. Prefer source evidence and existing project decisions; read applicable ADR titles/index first, and only relevant full bodies. A missing planning index is not another user STOP. Avoid bulk context loads and repeated interviews about answered requirements.

@@ -10,6 +10,9 @@ journey:
   proof: "You can distinguish requirements, planned verification, recorded evidence and current approval, and request a scoped revision safely."
 ---
 
+> **Historical receipt-based workflow (released-adapter documentation):** The receipt/approval examples below describe older installed packages. The **unreleased** assistive overhaul in [PR #983](https://github.com/arbiterForge/codeArbiter/pull/983) removes artifact-origin approval from ordinary drafting and progress. These instructions do not establish new package behavior or qualify any host; follow the exact package installed until a new version is published. Real host permissions and explicit user stops still apply.
+
+
 A specification defines the behavior being agreed to. Its plan connects that definition to tasks,
 paths, dependencies and verification. **A plan is not a second independent requirements list.**
 Start with the [read-only artifact workbench](/product-tour/#artifact-workbench) to inspect a real

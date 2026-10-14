@@ -1,4 +1,5 @@
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { workflows } from '../../scripts/execution-maps/workflows';
 const read = (path: string) => readFileSync(path, 'utf8');
@@ -33,15 +34,19 @@ describe('C04 cross-surface consistency', () => {
     expect(init).toContain('/diagrams/lane-opt-in.svg');
     expect(init).toContain('alternatives, not consecutive phases');
   });
-  it('documents the real initial-pair transaction separately from feature approval', () => {
+  it('separates current assistive sprint from historical pair attestation', () => {
     const source = read('../core/surface/SPRINT.md');
-    expect(source).toContain('commits approval plus plan binding in one recoverable native transaction.');
+    expect(source).toContain('without a second artifact approval system');
+    expect(source).toContain('does **not** grant arbitrary future scope expansion');
+    const historical = execFileSync('git', ['show', '929229354e3a15ae3002c82116b66c837ab43729:core/surface/SPRINT.md'], {encoding: 'utf8'});
+    expect(historical).toContain('commits approval plus plan binding in one recoverable native transaction.');
     for (const path of ['guides/autonomous-sprints.mdx', 'guides/review-artifacts.md']) {
       const text = read(docs + path);
       for (const term of ['arm-sprint', 'sprint-approve', 'resume-sprint', 'approve-only', 'delegate-methods']) expect(text).toContain(term);
       expect(text).not.toContain('current typed adapter arms one artifact at a time');
     }
-    expect(read(docs + 'guides/review-artifacts.md')).toContain('An attended feature normally approves');
+    expect(read(docs + 'guides/review-artifacts.md')).toContain('Historical receipt-based workflow');
+    expect(read(docs + 'guides/autonomous-sprints.mdx')).toContain('Historical receipt-based workflow');
   });
   it('states release dry-run exclusions and the mandatory PR, hosted and receipt boundaries', () => {
     const source = read('../core/surface/skills/release/SKILL.md');

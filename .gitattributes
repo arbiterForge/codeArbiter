@@ -25,6 +25,12 @@ core/artifacts/** text eol=lf
 # LF renderer output into CRLF and manufacture RENDER_DRIFT.
 docs/artifacts/design/original-review2/** text eol=lf
 
+# The captured website example compares exact native-rendered HTML bytes against
+# its provenance inventory. LF is part of the evidence, including on Windows
+# autocrlf checkouts; do not normalize at runtime or update hashes to mask it.
+/site/public/examples/saved-searches/specs/*.html text eol=lf
+/site/public/examples/saved-searches/plans/*.html text eol=lf
+
 # Reviewed Pi host graphs are hash-bound byte-for-byte and must survive a
 # Windows checkout without newline conversion.
 .github/fixtures/pi-hosts/**/*.json text eol=lf

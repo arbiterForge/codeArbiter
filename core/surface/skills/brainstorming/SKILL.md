@@ -16,6 +16,27 @@ The calling feature or sprint owns scope and the next step. A sprint may include
 
 Use relevant CONTEXT.md, tech-stack.md and security-controls.md when present. Read an existing open-questions document and relevant ADR/plan headings index-first. Missing optional historical indices are not blockers. Preserve real decisions while distinguishing an accepted decision from implemented or released behavior.
 
+## Recorded intent and consequential conflicts
+
+Use an index-first recorded-intent read to avoid asking about settled choices.
+This pre-flight is exempt from the read-or-STOP rule when optional project
+history is absent: **intent: silent — no decomposition record**. Do not
+manufacture a plan or an approval to fill that gap.
+
+If a proposed solution resurrects a capability `plans/02` records as deferred,
+identify the original reason and any stated re-evaluation trigger, then fork to ask
+only when the *outcome* would materially change. An explicit current owner steer
+can settle that fork; an ordinary implementation detail cannot silently reverse
+a recorded deferral.
+
+A candidate that contradicts an accepted ADR must be **surfaced WITH the ADR
+citation, never silently dropped**. A recommended outcome change is paired with
+a supersession fork via `/adr` instead of pretending the old decision never
+existed. If the contradiction is the only sane approach, that IS the fork:
+show the choice and consequence to the owner once, respecting an already
+recorded superseding instruction. A referenced ADR is not a new permission
+token for safe, in-scope investigation or implementation.
+
 ## Phase 1 - Frame
 
 State the problem, observable result, intended scope and explicit exclusions. Respect what the user already requested. If a record conflicts with new intent, identify the material decision and which work it affects; do not automatically create another approval round for ordinary method choices.
@@ -28,7 +49,7 @@ Review applicable ADRs and explicit exclusions. A real conflicting architecture 
 
 ## Phase 3 - Make acceptance observable
 
-Turn intended scope into specific criteria: input or trigger, expected behavior, and relevant failure/boundary condition. Check integration risks and ask: **if every criterion passed, what would still be broken?** For complex or issue-backed work, a bounded `_intentlib.py uncovered-intent` inspection can catch uncited requirements. It is not a mandatory permission gate for every small change.
+Turn intended scope into specific criteria: input or trigger, expected behavior, and relevant failure/boundary condition. Check integration risks and ask: **if every criterion passed, what would still be broken?** For meaningful behavior changes, plan one or more focused tests against the actual obligation; do not create tests solely to clear an artifact gate. For complex or issue-backed work, a bounded `_intentlib.py uncovered-intent` inspection can catch uncited requirements. It is not a mandatory permission gate for every small change.
 
 Choose sensible defaults and record material parameters. Do not create CONFIRM placeholders for normal method choices. A consequential unresolved requirement warrants one clear user question; independent work may proceed if that decision affects only part of the plan. Do not repeatedly ask the same question merely because an artifact was revised.
 
@@ -40,7 +61,7 @@ Drafts may be incomplete. `validate` with `gate: ready` identifies missing cover
 
 ## Phase 5 - Self-review and handoff
 
-Read back the saved specification. Check consistency, alignment with the user's request, exclusions, and ability to verify. Identify a plausible failure mode or say none was found. Proportion the review to risk rather than mandating an adversarial committee.
+Read back the saved specification. Check consistency, alignment with the user's request, exclusions, and ability to verify: no criterion that contradicts an accepted ADR without an explicitly resolved, source-visible owner decision. Identify a plausible failure mode or say none was found. Proportion the review to risk rather than mandating an adversarial committee.
 
 For full-lane feature or sprint work, return the selected spec identity, normative digest, criteria, and genuinely open decisions directly to `writing-plans` (`{{PLUGIN_ROOT}}/skills/writing-plans/SKILL.md`). The caller maintains its ordering; do not skip a useful plan to reach implementation. An existing spec should resume at its actual unfinished step, not restart an interview.
 

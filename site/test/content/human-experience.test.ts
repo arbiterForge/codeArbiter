@@ -83,13 +83,17 @@ describe("human-operable product window", () => {
     expect(read("src/components/HostViews.astro")).toContain("verification and review authority are not supported");
   });
 
-  it("separates initial sprint pair approval from single-artifact and scope acceptance", () => {
+  it("separates current assisted execution from retained historical authority evidence", () => {
     const adapter = read("../core/pysrc/_approvallib.py");
     expect(adapter).toContain("PENDING_APPROVAL");
     expect(adapter).toContain('reply = f"approve {artifact_id} {token}"');
     const guide = read("src/content/docs/guides/autonomous-sprints.mdx");
-    expect(read("../core/surface/SPRINT.md")).toContain("commits approval plus plan binding in one recoverable native transaction.");
+    const sprint = read("../core/surface/SPRINT.md");
+    expect(sprint).toContain("without a second artifact approval system");
+    expect(sprint).toContain("Do not arm");
+    expect(sprint).toContain("a local `DONE` batch is not a shipped release".replace("a local", "A local"));
     expect(guide).toContain("arm-sprint");
+    expect(guide).toContain("Historical receipt-based workflow");
     expect(guide).toContain("sprint-approve");
     expect(guide).toContain("Later single-artifact changes");
     expect(guide).not.toContain("This is not two approvals.");

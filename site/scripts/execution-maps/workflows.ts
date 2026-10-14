@@ -16,12 +16,13 @@ export const workflows: readonly WorkflowDefinition[] = [
       "id": "sprint",
       "title": "An approved sprint reaches a PR",
       "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
-      "boundary": "New full-lane sprint, normal premium path. The initial HTML pair uses its qualified one-reply transaction. There are no attended per-batch pauses; real hard gates still stop. This is a source-traced route, not a captured host run.",
+      "boundary": "Historical sprint source-traced route at reviewedAt, not the currently installed workflow. Current assistive drafts require no pair approval; no artificial per-batch pause or receipt-driven reviewer chain is required. Preserve actual host/security/commit permissions. This is not a captured live host run.",
       "outcome": "An open PR and sprint receipt with current evidence, decisions and remaining work. The sprint never merges or discards the branch.",
       "sources": {
         "autonomy": {
           "path": "core/surface/SPRINT.md",
-          "quote": "WITHOUT per-batch\nhuman checkpoints"
+          "quote": "WITHOUT per-batch\nhuman checkpoints",
+          "currentQuote": "no artificial per-batch human pause"
         },
         "finish": {
           "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
@@ -30,7 +31,8 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "pair": {
           "path": "core/surface/SPRINT.md",
-          "quote": "commits approval plus plan binding in one recoverable native transaction."
+          "quote": "commits approval plus plan binding in one recoverable native transaction.",
+          "currentQuote": "A `draft_preview` binding identifies the current source"
         },
         "pr": {
           "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
@@ -38,23 +40,28 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "sprint": {
           "path": "core/surface/SPRINT.md",
-          "quote": "## Phase 1 — Sprint spec · gate: STOP"
+          "quote": "## Phase 1 — Sprint spec · gate: STOP",
+          "currentQuote": "## Phase 1 - Establish a useful working agreement"
         },
         "sprintExit": {
           "path": "core/surface/SPRINT.md",
-          "quote": "AUTO-SELECTS open-PR and surfaces the merge decision to the user."
+          "quote": "AUTO-SELECTS open-PR and surfaces the merge decision to the user.",
+          "currentQuote": "`/sprint` may open a PR under the existing authorized workflow"
         },
         "sprintRecovery": {
           "path": "core/surface/SPRINT.md",
-          "quote": "A failed TDD, coverage, lint, or fresh-verification result blocks acceptance, not authorized repair."
+          "quote": "A failed TDD, coverage, lint, or fresh-verification result blocks acceptance, not authorized repair.",
+          "currentQuote": "A failing unit test, lint error, mismatched criterion"
         },
         "task": {
           "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-          "quote": "The subagent works test-first by routing through the `tdd` skill"
+          "quote": "The subagent works test-first by routing through the `tdd` skill",
+          "currentQuote": "Work directly when a focused change is clearer and cheaper."
         },
         "taskReview": {
           "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-          "quote": "Runs ONCE per scope — after every task in the current scope has cleared Phase 3 and Phase 5"
+          "quote": "Runs ONCE per scope — after every task in the current scope has cleared Phase 3 and Phase 5",
+          "currentQuote": "## 3. Verify truthfully and assess only relevant risks"
         },
         "tdd": {
           "path": "core/surface/skills/tdd/SKILL.md",

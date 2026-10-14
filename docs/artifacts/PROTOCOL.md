@@ -28,7 +28,7 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 
 | Family | Operations |
 |---|---|
-| Discovery | `capabilities`, `schema`, `index`, `outline`, `identity` |
+| Discovery | `capabilities`, `schema`, `index`, `outline`, `identity`, `task-context` |
 | Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
 | Explicit attestation | `capture`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
@@ -131,6 +131,31 @@ receipt or artifact, and retains writer exclusion and existing admission checks.
 Contextual `read` includes the selected record, applicable dependencies and governing context from the contributing documents. Follow every `next_cursor` until `context_complete: true`. Cursor identity includes contributing model and receipt/event bytes, not just the requested plan. A record is never silently cut in half; an oversized indivisible record fails with a specific diagnostic. The final context ticket describes that delivery and becomes stale when its contributing context changes. `task-start` no longer requires or validates the ticket; the optional field is accepted only for caller compatibility and grants no authority. Delivery of context is not proof the model understood it.
 
 Cursors and completion tickets are SHA-256 names for engine-written cooperative delivery receipts under `.codearbiter/.artifacts/context-tokens/`. They are not authentication secrets and do not claim resistance to an unrestricted same-user filesystem writer. A digest without its corresponding engine-written receipt is rejected.
+
+## Compact task-context retrieval
+
+`task-context` is a read-only request with `artifact_id` (plan ID),
+`task` (symbol ID), the exact current `model_sha256`, and optional
+`budget` (4,096 to 65,536 bytes, 16,384 default). It returns a bounded
+`assessment: advisory` packet: the task's implementation fields and
+declared checks, criterion summaries actually referenced by that task,
+current dependency states, scoped prerequisite observations, unknown
+legacy-prerequisite applicability, and matching plan/source identities.
+
+The packet intentionally has `context_complete: false`: unrelated
+requirements, decisions, source files and complete verification results
+were **not** fetched. Retrieve additional symbols only where relevant;
+never treat omission as proof of absence. `binding_current: false` is
+visible and needs source reconciliation. A changed plan hash returns
+`STALE_CURSOR`; missing/retired tasks and dangling references fail
+without fabricated content. A packet too large for its requested budget
+fails `RECORD_TOO_LARGE` without partially returning a record.
+
+No source snapshot, authority receipt, reviewer, context ticket, test
+execution, workspace scan, or persisted cache is created by this read.
+The engine's normal transaction/pending-record checks still apply before
+informational reads. It is not a permission-granting or verified-acceptance
+operation and does not claim model comprehension or independent test proof.
 
 ## Advisory scheduling and ordinary progress
 

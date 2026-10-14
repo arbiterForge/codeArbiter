@@ -16,6 +16,14 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Normal feature/sprint execution guidance uses advisory plan state and real
+  checks instead of mandatory artifact approval codes or per-task reviewer fleets.
+  Recorded-intent conflicts and material ADR supersession remain visible without
+  becoming an additional permission protocol.
+- Add read-only `task-context` to deliver one bounded task and its directly
+  referenced criteria/dependencies/prerequisites without an evidence snapshot,
+  reviewer dispatch, or persistent context ticket. Stale and oversized requests
+  fail explicitly; this is not a host-qualification claim.
 - Start the assistive state-engine overhaul in PR #983: native work tracking no
   longer requires artifact approval codes or context tickets.
 - Record task-scoped prerequisite observations and completed implementation

@@ -198,6 +198,18 @@ fetch relevant requirements, dependencies, and constraints when needed. Complete
 contextual pages remain available for a deliberate full context request, but
 their delivery ticket is not permission to start a task.
 
+For low-token orientation after task selection, query read-only
+`task-context` with the current plan `model_sha256`, task ID, and optional
+response `budget`. It supplies the complete selected task definition,
+referenced criterion summaries, dependency states, scoped prerequisite
+observations, and a notice about omitted broader context. A stale plan ID
+refuses rather than combining revisions; a stale bound specification is
+reported, not silently rebound. It never takes a source snapshot or creates
+a ticket, reviewer, or authority. Its `context_complete: false` flag means
+fetch specific additional symbols before making a decision that requires them.
+A missing operation on an older installed package uses existing exact/batched
+symbol reads rather than an invented result.
+
 `eligible` supplies advisory scheduling from recorded dependencies and explicit
 prerequisite task scope. It does not scan source inputs or claim current test or
 review evidence. Inspect its waiting reasons; work on independent tasks while a

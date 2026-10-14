@@ -41,7 +41,7 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "verification-status":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
@@ -356,6 +356,11 @@ func Run(root, op string, input object) (any, error) {
 		return engine.bind(r, entry)
 	case "eligible":
 		return engine.eligible(d)
+	case "task-context":
+		if model.S(r["model_sha256"]) != d.Hash() {
+			return nil, fault.New("STALE_CURSOR", "task context requires the current plan model identity")
+		}
+		return engine.taskContext(d, model.S(r["task"]), budget)
 	case "verification-status":
 		return engine.verificationStatus(d)
 	case "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite":
