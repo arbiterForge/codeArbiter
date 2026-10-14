@@ -22,6 +22,14 @@ predate the plugin rewrite and are grouped by date.
   batches separately from verified acceptance, with compact symbol reads and
   human-readable HTML. New records use schema 0.3.2; historical reads retain
   their bytes and evidence.
+- Native plan authoring no longer requires artifact approval or every future
+  reviewer/verification adapter; generated planning guidance uses coherent work
+  units rather than mandatory five-minute slices.
+- Explicit batch reviews can select fresh passing reruns of still-reviewed work
+  without recreating each task review. Original evidence remains distinct, and
+  source/support/workspace integrity is still checked.
+- Align runtime adapter identities and the second Codex package manifest with
+  the unreleased candidate versions.
 - This is an unreleased source candidate. Host-workflow conversion, full upgrade
   qualification, and publication remain tracked by the overhaul PR.
 

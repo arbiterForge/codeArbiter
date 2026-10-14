@@ -1285,7 +1285,7 @@ class SprintPairIntegrationTest(unittest.TestCase):
             self.h.mutate("smarts-apply", "PLAN-FLOW", grant_receipt=result["grant_receipt"], decision=decision)
         self.assertEqual(self.identities(), before)
 
-    def test_preview_is_explicit_and_does_not_relax_feature_preflight(self):
+    def test_draft_for_pair_is_compatibility_not_authoring_permission(self):
         from test_artifact_authoring import WorkflowHarness
         root = self.root.parent / "preview"
         root.mkdir()
@@ -1293,13 +1293,13 @@ class SprintPairIntegrationTest(unittest.TestCase):
         spec = h.create_spec()
         selected = self.lib._select_authoring_route(root, "flow", workflow="sprint", lane="full", client=h.client)
         kwargs = {"spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": spec["normative_sha256"]}
-        with self.assertRaisesRegex(RuntimeError, "AUTHORITY_UNVERIFIED"):
-            self.lib._preflight_plan_authoring(selected, h.client, **kwargs)
-        target = self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs)
-        self.assertFalse(target.exists())
+        target = self.lib._preflight_plan_authoring(selected, h.client, **kwargs)
+        self.assertEqual(target, self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs))
         selected["workflow"] = "feature"
+        self.assertEqual(target, self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs))
+        self.assertFalse(target.exists())
         with self.assertRaisesRegex(RuntimeError, "INVALID_ROUTE"):
-            self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs)
+            self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair="true", **kwargs)
 
     def test_hook_routes_pair_reply_from_another_working_directory(self):
         armed = self.arm()

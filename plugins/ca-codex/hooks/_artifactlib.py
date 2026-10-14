@@ -549,12 +549,6 @@ def _select_authoring_route(
         _require_authoring_capability(client)
         if _resolve_workflow_pair(root, slug) != selected:
             raise ArtifactError("STALE_ROUTE", "artifact namespace changed during the capability probe")
-        _require_host_workflow(client)
-        if _resolve_workflow_pair(root, slug) != selected:
-            raise ArtifactError(
-                "STALE_ROUTE",
-                "artifact namespace changed during the installed host preflight",
-            )
     return {"workflow": workflow, "lane": lane, "mode": "artifact", **selected}
 
 
@@ -566,15 +560,14 @@ def _preflight_plan_authoring(
     spec_normative_sha256: str,
     draft_for_pair: bool = False,
 ) -> Path:
-    """Verify the exact spec. Only initial sprint-pair preparation admits a ready draft.
+    """Resolve the exact source and safe target without an artifact approval.
 
-    Draft preparation never approves the spec or plan and never permits execution.
-    The ordinary feature/sequential path still requires an approved spec.
+    Drafts may be incomplete. This checks structural identity, not ready-state
+    completeness, user consent, command support, or future reviewer availability.
+    draft_for_pair remains a typed compatibility keyword, not an execution mode.
     """
     if type(draft_for_pair) is not bool:
         raise ArtifactError("INVALID_ROUTE", "draft_for_pair must be an explicit boolean")
-    if draft_for_pair and (not isinstance(selected, dict) or selected.get("workflow") != "sprint" or selected.get("lane") != "full"):
-        raise ArtifactError("INVALID_ROUTE", "draft preview is limited to full-lane initial sprint pairs")
     if not isinstance(selected, dict):
         raise ArtifactError("INVALID_ROUTE", "plan authoring requires a selected route")
     slug = selected.get("slug")
@@ -616,7 +609,7 @@ def _preflight_plan_authoring(
     ):
         raise ArtifactError("AUTHORITY_MISMATCH", "spec normative digest is invalid")
 
-    _require_host_workflow(client)
+    _require_authoring_capability(client)
     identity = client.call("identity", {"artifact_id": spec_artifact_id})
     expected_path = f".codearbiter/specs/{slug}.html"
     if (
@@ -629,24 +622,19 @@ def _preflight_plan_authoring(
             "AUTHORITY_MISMATCH",
             "caller spec identity does not match the selected current HTML spec",
         )
-    approved = client.call(
-        "validate",
-        {"artifact_id": spec_artifact_id, "gate": "ready" if draft_for_pair else "approved"},
+    checked = client.call(
+        "validate", {"artifact_id": spec_artifact_id, "gate": "structural"},
         permit_invalid=True,
     )
-    authority = approved.get("authority")
     if (
-        approved.get("valid") is not True
-        or approved.get("artifact_id") != spec_artifact_id
-        or approved.get("normative_sha256") != spec_normative_sha256
-        or not isinstance(authority, dict)
-        or approved.get("model_sha256") != identity.get("model_sha256")
-        or authority.get("state") != ("draft" if draft_for_pair else "approved")
-        or authority.get("authority_verified") is not (not draft_for_pair)
+        checked.get("valid") is not True
+        or checked.get("artifact_id") != spec_artifact_id
+        or checked.get("normative_sha256") != spec_normative_sha256
+        or checked.get("model_sha256") != identity.get("model_sha256")
     ):
         raise ArtifactError(
-            "AUTHORITY_UNVERIFIED",
-            "plan authoring requires the exact current ready and approved spec",
+            "SOURCE_INVALID",
+            "plan authoring requires the selected structurally valid, unchanged spec",
         )
     if _resolve_workflow_pair(root, slug) != current:
         raise ArtifactError(

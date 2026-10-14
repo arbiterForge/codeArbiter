@@ -1,7 +1,7 @@
 # Assistive state-engine overhaul: implementation progress
 
 **PR:** #983, `overhaul/assistive-state-engine` -> `main`.
-**State:** DRAFT; two native implementation slices, not the completed overhaul or a released package.
+**State:** DRAFT; three implementation slices, not the completed overhaul or a released package.
 **Baseline:** `arbiterForge/codeArbiter@045c0812888f20f4c843677cfb37b802e2084770:/`.
 **Contract:** [the complete nine-task handoff](assistive-state-engine-overhaul.md).
 **Decision:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md), accepted product direction, separately bound to its actual source commit. No independent review or release proof is fabricated by that acceptance.
@@ -13,14 +13,80 @@
 | T01 | Complete for this starting slice | Owner decision, caller disposition below, retained full scope, native before/after failure fixture. A model-backed workflow benchmark was not run. |
 | T02 | Native lifecycle expanded | Advisory scheduling, receipt-free work progress/reconciliation, draft binding, and receipt-free implementation batch completion are implemented. Full caller conversion and subject-scoped evidence assessment remain. |
 | T03 | Native path implemented | Typed fact/decision definitions, explicit task scope, reported observations, failure/unknown visibility, definition-specific applicability, bounded symbol readback, and escaped HTML are implemented. Normal host callers still need T05 conversion. |
-| T04 | Not started | Subject-scoped evidence applicability and elimination of completion-review rerun coupling remain. |
-| T05 | Not started | Active host prompts, approval/prerequisite/reconciliation adapters, context delivery, and orchestration still need conversion. |
+| T04 | Bounded rerun correction implemented | A new explicit batch review can select a fresh passing rerun without another task review of unchanged source/support. General task/source-scoped applicability and ordinary result recording remain. |
+| T05 | Native authoring and drafting converted | Writer admission and plan preflight no longer require artifact approvals or future reviewers. The canonical drafting skill and artifact guidance are regenerated. Remaining sprint/execution entrypoints, hooks, context delivery, and obsolete adapters still need conversion. |
 | T06 | Partial readback | Exact/batch prerequisite reads now include their bounded assessment and new-schema HTML displays it. Full compact task packets and retrieval-cost work remain. |
 | T07 | Not started | Existing state can be read by this slice, but complete upgrade, obsolete-prompt recovery, and mixed-client compatibility are not qualified. |
 | T08 | Candidate metadata and schema propagation | Schema 0.3.2 is synchronized through the bridge, builders, installed candidate checks, and rebuilt farm bundle. Breaking candidate versions advance independently; full active-instruction/documentation conversion remains. |
 | T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Third slice: authoring admission and review reuse
+
+Starting head: `b6a775f3a9f30a450940d75ec7447b69b6c75808` on the same PR branch.
+
+The native bridge now asks whether the actual writer can operate, not whether
+all future authority producers are installed. Spec/plan route selection no
+longer calls the historical host authority inventory. Plan preflight checks the
+selected source's identity and structural validity without requiring ready or
+approved status. Existing wrong-root, forged-client, namespace-conflict, pinned
+payload, and CAS checks remain. Incomplete drafts remain incomplete rather than
+acquiring fabricated approval. The paired-draft argument is a typed compatibility
+keyword, not a separate permission mode.
+
+The canonical writing-plans skill now reflects that behavior: coherent task
+sizes, actual criteria/dependencies, useful diagnostics, no drafting approval
+codes, and no future-runner preflight simply to maintain the plan. The artifact
+include describes ordinary progress separately from explicit historical receipt
+operations. These edits are generated into all three adapters. They do not by
+themselves convert every sprint/execution entrypoint or retire old hooks.
+
+The native completion path also separates a new verification run from a task
+review of unchanged work. A new explicit batch review may select a separately
+validated passing rerun while retaining the original task review and its original
+run. The prior reviewed subject must still be current, the rerun must match its
+own recorded workspace, normalized reviewed workspaces must agree, and selected
+support must be retained. Different source or corrupt recorded closure fails;
+a new receipt ID alone no longer forces another task reviewer. No old review is
+relabeled as seeing a new run. This is a bounded T04 correction, not general
+impact analysis or removal of the explicit path's initial review requirement.
+
+CI on the starting head exposed stale runtime `adapter_version` literals and a
+second Codex package manifest after the preceding candidate bumps. Runtime
+identities and both Codex manifests are now aligned with the existing unreleased
+candidates (3.0.0 / 0.18.0 / 0.19.0). No root-validation check is weakened, and no
+new release/version series is invented. The earlier payload-version passes did
+not establish this runtime consistency; the descriptor and cold-install checks
+cover that separate boundary.
+
+### Third-slice verification
+
+| Check | Actual result |
+|---|---|
+| Final native Windows build | All 15 tested native packages pass. Built with Go 1.27.1; the builder explicitly records no upstream-host qualification. |
+| Final Linux operations suite | 124 top-level tests pass, zero fail; one existing Windows-only case skips. The binary was cross-compiled and actually executed under Ubuntu/WSL on an isolated Linux filesystem copy. |
+| Final pinned writer/bridge fixtures | 50 authoring tests, 17 bridge tests, 43 workflow tests, and 79 legacy approval-compatibility tests pass against the final rebuilt native payload. |
+| Rerun reuse regressions | Fresh distinct runs can reach a separately reviewed batch acceptance while original task review/run references remain unchanged. Changed source and a corrupt run-owned closure are rejected. No model or real verification command runs inside the explicitly synthetic producer fixture. |
+| Runtime identity and interpreter checks | 22 descriptor tests pass; the ca/Codex cold-install matrix passes 468 assertions; 87 Codex adapter tests pass. These are isolated interpreter/hook fixtures, not model-backed feature qualification. |
+| Generated surfaces and references | Surface generator: 147 tests run, one skip. Routing/cleanup: 53 pass. Three-adapter reference graph, canonical Python projection, and generated surface/package checks pass. |
+| Integrity checks | Changed Python files compile; whitespace and ADR identity/lifecycle checks pass. No accepted ADR body or historical evidence was rewritten. |
+
+The final Windows fixture executable SHA-256 is
+`3ec20d84e8250a405bbc7f23d0fe3efc0ff5fd6730ee1da19aa58f83d8d17e06`.
+It is a local test payload, not a released artifact or a marketplace installation.
+
+Self-review caught a reuse-path omission before commit: the newly selected run
+must match its own recorded workspace as well as the old reviewed subject.
+That original run-integrity check is retained and has a negative regression.
+An obsolete namespace-test mock was updated to include the real capability call;
+its conflicting-namespace assertions were preserved and extended to that call.
+No check was waived to obtain these results.
+
+The latest commit and hosted-CI observation belong to the PR, not a claim of
+continuous monitoring. Actual model-backed installed execution, full ordinary
+result/applicability handling, remaining entrypoint/hook conversion, and complete
+upgrade/rollback qualification remain outstanding. No release was performed.
 
 ## Second slice: scoped prerequisites and completed implementation batches
 
@@ -149,8 +215,8 @@ The fixture verifies that ordinary work produces no approval, observation, or re
 
 ## Next implementation steps
 
-1. Continue T04/T05: connect the implemented prerequisite/progress operations to actual host callers and remove review-to-receipt identity coupling. Keep incomplete checks and historical evidence honest. Do not build another authority adapter to satisfy the retired design.
-2. Complete T07 compatibility and recovery alongside caller conversion: old prompt markers, interrupted operations, old/new installed clients, explicit user stops, and rollback after subsequent edits. The native schema reader test alone does not qualify that workflow.
+1. Finish the normal T05 execution path: connect the implemented prerequisite/progress operations to sprint/execution entrypoints and remove duplicate artifact permission dependencies in hooks/context delivery. Drafting and the bounded batch-rerun correction are already implemented; do not rebuild them or add another authority adapter.
+2. Complete T04 result/applicability handling and T07 compatibility alongside that conversion: accurate ordinary results, affected-source refresh, old prompt markers, interrupted operations, mixed installed clients, and rollback after later edits. Neither a passing rerun reuse fixture nor a native schema reader test establishes the complete workflow.
 3. Finish T06-T09 in this PR: compact task packets/HTML, obsolete-prompt and interrupted-work upgrade, generated instructions, package compatibility, and an actual installed-candidate exercise. The full requirements and twelve acceptance scenarios are in the handoff.
 
 ## Merge and release boundary

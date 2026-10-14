@@ -18,21 +18,21 @@ and continues on the legacy path without automatic conversion. The feature
 small lane remains an inline mini-spec and creates no artifact. HTML `--farm`
 dispatch remains disabled and outside this rollout.
 
-## Installed host admission
+## Installed authoring capability
 
-Before new full-lane or plan authoring, the bridge checks the exact installed
-host's required producers, helpers, reviewer charter where applicable, and
-platform-specific hook registrations. `_select_authoring_route` and
-`_preflight_plan_authoring` require this read-only preflight in addition to the
-native engine capability. `HOST_WORKFLOW_UNAVAILABLE` stops before authoring;
-repair the installed package or use a supported host. Never create a fallback
-artifact, substitute another package, or mint an authority event to proceed.
+`_select_authoring_route` checks the actual installation-pinned native writer and
+rechecks the selected namespace. `_preflight_plan_authoring` checks the exact
+current source identity and structural validity before returning its same-slug
+plan target. Neither operation requires artifact approval, a verifier/reviewer
+producer, or a source snapshot merely to author a draft. This includes the native
+Pi writer; it does not qualify a Pi host workflow or enable HTML farm dispatch.
 
-`ArtifactClient.workflow_preflight()` reports only installed resources. It does
-not prove host trust, enabled hooks, supported host-version behavior, reviewer
-independence, or a completed live workflow. Actual authority producers and their
-existing validation remain required. Pi currently fails this admission check;
-existing Markdown pairs and the inline small feature lane are unchanged.
+`ArtifactClient.workflow_preflight()` retains the explicit historical authority
+resource inventory used by its own consumers, including the separate context
+workflow. It is not an admission check for ordinary spec/plan authoring. Its
+result does not prove host trust, enabled hooks, or live verification. Missing
+actual writer capability remains a failed write with a repair diagnostic; it is
+not permission to create a competing canonical artifact or claim success.
 
 ## Internal execution contract
 
@@ -56,7 +56,7 @@ stdout is a single bounded JSON envelope. Nonzero exits are failures except the
 structured `validate` response explicitly reporting `valid: false` (also a gate
 failure). Logs/stderr are not artifact content.
 
-## Authoring and approval
+## Authoring
 
 New full-lane specs and plans use `.codearbiter/specs/<slug>.html` and
 `.codearbiter/plans/<slug>.html`. Create a draft, then use typed `apply` changes;
@@ -65,24 +65,27 @@ stable ID when omitted. Keep criterion IDs from the spec in plan references;
 never assign a second criterion ledger. Use `record.update` and explicit
 retirement reasons. There is no generic status/approval update.
 
-Drafts may be incomplete. `validate` with `gate: ready` is required before review.
-It checks types, references, scope coverage, contracts and task definitions—not
-semantic truth. Retain the existing negative-intent question, adversarial review,
-ADR compatibility review, open-question handling, harvest and user/SMARTS gates.
-One criterion may need multiple tests. Never invent a condition, oracle, source,
-command, result, approval or reviewer to satisfy a required field.
+Drafts may be incomplete. Use `validate` with `gate: ready` to discover missing
+coverage, contracts, or task definitions. These are useful diagnostics, not an
+artifact permission decision. Structural errors, unsafe paths, and write
+conflicts still fail the operation. Never invent a condition, source, command,
+result, approval, or reviewer to fill a field.
 
-Before requesting review or approval of a plan, use the private
-`_approvallib._preflight_plan_verification(client, identity)` with its current engine identity.
-It checks all task verification definitions through complete bounded engine reads
-and collects the current source-input snapshot, reporting every unsupported
-command and any input-policy failure together. Both ordinary and initial paired
-approval arming enforce this check. No declared command, test discovery, or test
-module is executed or imported. Proposed test files and names may be absent;
-the installed collector still has to support the proposed runner's output format.
-Missing package-script definitions cannot establish a runner contract: declare a
-supported direct runner or supply the reviewed script definition first. Runtime
-executable/workspace binding and fresh named-result evidence remain required.
+Use the same source's criterion IDs and `plan-bind` to select its current
+structurally valid definition. A draft binding does not require a user code.
+Maintain methods, checks, and task decomposition within the agreed outcome using
+typed changes and a concise reason; do not erase requirements to claim completion.
+The drafting skill does not call `_approvallib._preflight_plan_verification` or
+arm approvals merely to maintain this working agreement. Existing authorization
+and genuine unresolved product decisions belong to the conversation and host.
+
+## Explicit verification-input and attestation contracts
+
+The following input/receipt protocols describe explicit historical evidence and
+attestation operations, not ordinary authoring or work-progress prerequisites.
+Read only the portion needed for an actual evidence consumer. Do not create an
+approval, method grant, or reviewer event just to satisfy a status transition.
+Independent host permissions and genuinely requested user checkpoints still apply.
 
 `verification_inputs.roots` and `exclude_directories` use exact slash-separated
 repository-relative paths. Exclusions are directory paths, not globs or basename
@@ -180,79 +183,51 @@ Inspect the installed operation schema first. An engine without this explicit dr
 request reports a capability gap; never edit HTML, recreate the pair, substitute sequential
 approval or use ordinary approved-source `plan-bind` to repair it.
 
-## Initial sprint pair and delegated methods
+## Historical paired approval and delegated methods
 
-Only when preparing initial combined approval, replaying an observed reply, or revising a task's
-method under its existing grant, load [includes/sprint-authority.md](sprint-authority.md). That private
-card owns the `arm-sprint` / `resume-sprint` / `smarts` bridge and the native pair/method operations.
-Do not bulk-load it for ordinary task reads. Scoring is not consent; the initial observed user reply,
-protected scope, real producer, current evidence and existing security/permission gates remain required.
+[includes/sprint-authority.md](sprint-authority.md) retains the old paired/method
+attestation adapter contract for inspecting or recovering those records. It is
+not required to create drafts, bind a source, or maintain an in-scope method.
+A historical grant is not permission to bypass a real user stop or host denial.
 
-## Reading and dispatch
+## Reading and ordinary progress
 
-Use `index`, then `outline`, then symbol-scoped `read`. Exact reads are explicitly
-context-incomplete. Execution uses contextual pages; follow every `next_cursor`
-until `context_complete: true`, and retain the final context ticket. Cursors bind
-both documents and contributing receipts/events. No partial record is silently
-returned. A stale cursor/ticket requires a fresh read.
+Use `index`, `outline`, then exact symbol-scoped `read` or `read-batch` for the
+records needed now. Exact reads explicitly report incomplete broader context;
+fetch relevant requirements, dependencies, and constraints when needed. Complete
+contextual pages remain available for a deliberate full context request, but
+their delivery ticket is not permission to start a task.
 
-These cursors and tickets name engine-written, content-addressed cooperative
-delivery receipts. They are not authentication secrets and do not claim
-resistance to an unrestricted same-user filesystem writer. A digest without its
-corresponding engine-written receipt is rejected.
+`eligible` supplies advisory scheduling from recorded dependencies and explicit
+prerequisite task scope. It does not scan source inputs or claim current test or
+review evidence. Inspect its waiting reasons; work on independent tasks while a
+real prerequisite remains unresolved. A legacy unscoped prerequisite needs an
+applicability assessment, not automatic plan-wide blocking or silent satisfaction.
 
-Before task selection, inspect the plan's exact prerequisite records. If one is
-unsatisfied, collect and present the facts needed to judge its requirement; a
-verification runner may supply facts but cannot confer prerequisite authority.
-On Claude Code or Codex, arm a genuine user-workflow decision for the exact
-current approved plan and prerequisite:
+For an observable prerequisite, run the appropriate check through the ordinary
+authorized host tool and call `prerequisite` with its actual bounded `observation`.
+Use `fact` or `decision` and relevant `task_refs` in the definition. Results are
+caller-reported, with a native recording time and definition identity, not host
+attestations. A tool result cannot stand in for a resolved user choice. Ask a clear
+normal-language question for a genuinely missing decision; no certification code.
 
-```sh
-python "${PLUGIN_ROOT}/hooks/_prerequisitelib.py" arm --root "<project-root>" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
-```
+Use `task-start` for pending work. Use `task-review` without receipts to record
+implementation ready for review, or `accept-scope` with a reason and no receipt to
+record a finished implementation batch as `DONE`. Neither operation asserts a
+passing check or an independent review. Retain the actual check results and report
+outstanding failures, uncertainty, and unrun checks separately. The explicit
+`verification-status` proof query is not a scheduling prerequisite.
 
-Show the returned title, requirement, review-packet digest, and `expires_at_utc`
-deadline. The request and its reply code expire together 24 hours after arming.
-Require the returned `short_reply` (`satisfy-prerequisite <code>`) or the full `reply`, with
-the same tolerance and mismatch reporting as approval. The `UserPromptSubmit` hook
-durably records that observed decision before publishing its authority source,
-captures a prerequisite receipt, and applies the existing prerequisite CAS
-operation. Its final nonce is non-secret freshness/correlation data, not a
-credential: possession alone confers no authority, and only the exact prompt
-observed at the trusted host boundary while the reviewed plan remains current
-can satisfy the prerequisite. Wrong nonces or records, stale plan content or
-approval, and expired requests confer no authority. A retry after confirmation reuses the same event,
-receipt, operation ID, and mutation request; it never reconstructs a decision.
-Only an unconfirmed request can be cancelled:
+On resume, inspect current work and active workers before `task-reconcile` with a
+reason. Do not clear a user stop or duplicate running work. A process restart does
+not by itself require a new approval or reviewer. Preserve CAS and operation IDs;
+handle an uncertain write through the transaction recovery contract below.
 
-```sh
-python "${PLUGIN_ROOT}/hooks/_prerequisitelib.py" cancel --root "<project-root>" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
-```
+## Explicit verification and review receipts
 
-If the plan changes after confirmation, recover the obsolete request instead of
-deleting its marker. `supersede` first proves the current identity differs. For
-a captured request it also retries the exact operation ID: a committed replay is
-accepted, while only an engine `REVISION_CONFLICT` proves the obsolete mutation
-did not commit and permits the marker to clear. Published source and receipt
-files remain as evidence:
-
-```sh
-python "${PLUGIN_ROOT}/hooks/_prerequisitelib.py" supersede --root "<project-root>" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
-```
-
-The adapter fixes `authority_kind: user_workflow` and `verdict: satisfied`;
-there is no caller-selected authority or bulk-satisfaction path. SMARTS prerequisite satisfaction remains unsupported; the plan-method producer below does not
-grant prerequisite, security, backend or publication authority. Pi has no
-prerequisite-capture adapter and must remain blocked. Do not infer eligibility from one satisfied prerequisite:
-rerun `eligible`, and resolve each remaining record independently against the
-new current plan identity.
-
-`eligible` is authoritative for task selection on the HTML path.
-`task-start` checks current spec/plan approval, binding, prerequisites, source
-snapshot, dependency evidence and the complete context ticket. Within a checkpoint,
-a predecessor in `REVIEW` can provisionally unblock its dependent after fresh
-verification and spec review. Across checkpoints, dependencies require accepted
-scope evidence. Provisional progress never counts as completion.
+This is the existing attested-evidence path for a consumer that actually needs
+that claim. It is not a mandatory author/reviewer sequence for ordinary work.
+Do not apply the following arming protocol to receipt-free progress operations.
 
 The orchestrator executes the declared verification through its existing governed
 execution tool through the installed production authority adapter; it never
@@ -360,10 +335,15 @@ and source references. A consistent plan or an empty diff is insufficient.
 Use the returned `completion_sha256` in the native `task-review` or
 `accept-scope` request. The completed review and its exact verification run must
 agree; a definition-only review or a different successful run is rejected.
-The recorded task selection remains required by downstream freshness and scope
-acceptance. Scope review uses validated task completion bindings. If verification
-is rerun, obtain and record its completed task review before selecting that run
-for scope review; do not infer equivalence between receipts.
+A task review retains the exact run it actually inspected; never relabel it as
+having reviewed another run. A new scope review may select a separately validated
+passing rerun without redispatching that task reviewer when the original task
+review remains current, the reviewed workspaces match the new run's normalized
+closure, and all supporting material is retained. The engine checks those facts;
+a new receipt ID alone is not a reason to repeat the task review. Different
+source, definitions, or supporting evidence still needs the affected assessment.
+This does not infer equivalence from a caller-supplied label or a matching exit
+code, and does not make a later failed run pass.
 
 Creating a completion context for a `0.3.0` verification recomputes the normalized
 worktree closure bound during that verification. Only validated native outputs
@@ -477,7 +457,15 @@ inline manifests made them too large for normal dispatch. Launched or captured
 requests remain subject to their existing recovery rules. Arm a new request
 only after the retained request is terminal.
 
-An interrupted or `BLOCKED` HTML task never resumes by editing its status. Arm
+## Historical pending-request recovery
+
+Ordinary progress uses the receipt-free reconciliation path above. The following
+legacy adapter operations describe retained armed requests, not a requirement to
+create new approval prompts after every interruption. Do not delete an uncertain
+mutation or relabel its history. Full upgrade retirement of obsolete prompts is
+separate from ordinary task progress.
+
+For an explicit historical authority-backed reconciliation, arm
 the installed reconciliation adapter for the exact task or scope, present its
 returned `short_reply` (`reconcile <STATE> <code>` for a task, `reconcile <code>`
 for a scope; the full `reply` also works), and let `UserPromptSubmit` capture and apply the observed

@@ -159,7 +159,7 @@ class AuthoringRouteContractTest(unittest.TestCase):
         self.assertIn("does not create a spec artifact", feature)
         self.assertIn("state the mini-spec inline", feature)
 
-    def test_plan_creation_uses_engine_and_binds_the_approved_html_spec(self) -> None:
+    def test_plan_creation_uses_engine_without_artifact_approval(self) -> None:
         writing_plans = WRITING_PLANS_SKILL.read_text(encoding="utf-8")
 
         self.assertIn("`_preflight_plan_authoring`", writing_plans)
@@ -168,8 +168,10 @@ class AuthoringRouteContractTest(unittest.TestCase):
         self.assertIn("`.codearbiter/plans/<slug>.html`", writing_plans)
         self.assertIn("`draft_preview`", writing_plans)
         self.assertIn("`plan-bind`", writing_plans)
-        self.assertIn("approved spec's exact artifact ID and normative digest", writing_plans)
-        self.assertIn("must not create `.codearbiter/plans/<slug>.md`", writing_plans)
+        self.assertIn("source's exact artifact ID and normative digest", writing_plans)
+        self.assertIn("It does not require spec approval", writing_plans)
+        self.assertIn("not a compulsory two-to-five-minute limit", writing_plans)
+        self.assertIn("must not create `.codearbiter/plans/<slug>.md`", " ".join(writing_plans.split()))
 
     def test_tdd_reads_typed_obligations_without_parsing_rendered_html(self) -> None:
         tdd = TDD_SKILL.read_text(encoding="utf-8")
@@ -224,6 +226,7 @@ class InstalledFixtureCopyTest(unittest.TestCase):
         self.exercise(supplied=False)
 
 class HostWorkflowAdmissionTest(unittest.TestCase):
+    """Explicit historical authority inventory, not native authoring admission."""
     """Installed resources are prerequisites, not live-host authority evidence."""
 
     def setUp(self):
@@ -249,11 +252,9 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
 
     def refused(self, client):
         before = sorted(str(p.relative_to(self.root)) for p in self.root.rglob("*"))
-        for workflow in ("feature", "sprint"):
-            with self.subTest(workflow=workflow):
-                with self.assertRaises(ArtifactError) as caught:
-                    self.select(client, workflow)
-                self.assertEqual(caught.exception.code, "HOST_WORKFLOW_UNAVAILABLE")
+        with self.assertRaises(ArtifactError) as caught:
+            _artifactlib._require_host_workflow(client)
+        self.assertEqual(caught.exception.code, "HOST_WORKFLOW_UNAVAILABLE")
         self.assertEqual(before, sorted(str(p.relative_to(self.root)) for p in self.root.rglob("*")))
 
     def registry(self):
@@ -276,8 +277,11 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         self.assertEqual(self.select(client, "sprint")["format"], "html")
         self.assertEqual(client.workflow_preflight()["host"], "claude")
 
-    def test_admission_refuses_pi_before_any_new_full_lane_artifact(self):
-        self.refused(self.client("ca-pi"))
+    def test_pi_native_authoring_does_not_require_legacy_authority(self):
+        client = self.client("ca-pi")
+        self.refused(client)
+        self.assertEqual(self.select(client)["format"], "html")
+        self.assertEqual(list(self.root.iterdir()), [])
 
     def test_admission_identifies_scoped_pi_package_without_enabling_workflow(self):
         client = self.client("ca-pi")
@@ -464,35 +468,38 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         path.mkdir()
         self.refused(client)
 
-    def test_admission_rechecks_before_plan_identity_reads(self):
+    def test_plan_authoring_needs_native_identity_not_future_reviewers(self):
         client = self.client()
         spec = self.root / ".codearbiter/specs/fresh.html"
         spec.parent.mkdir(parents=True)
-        spec.write_bytes(b"existing fixture, not an approved artifact")
+        spec.write_bytes(b"mocked structural spec; no authority is claimed")
         route = self.select(client)
         (self.plugin / "hooks/_approvallib.py").unlink()
-        with mock.patch.object(client, "call", side_effect=AssertionError("host preflight must run first")):
-            with self.assertRaises(ArtifactError) as caught:
-                _artifactlib._preflight_plan_authoring(
-                    route, client, spec_artifact_id="SPEC-FIXTURE", spec_normative_sha256="a" * 64)
-        self.assertEqual(caught.exception.code, "HOST_WORKFLOW_UNAVAILABLE")
-        self.assertEqual(spec.read_bytes(), b"existing fixture, not an approved artifact")
-        self.assertFalse((self.root / ".codearbiter/plans").exists())
+        identity = {"artifact_id": "SPEC-FIXTURE", "kind": "spec", "path": ".codearbiter/specs/fresh.html",
+                    "normative_sha256": "a" * 64, "model_sha256": "b" * 64}
+        calls = []
+        def native(operation, request=None, **kwargs):
+            calls.append(operation)
+            if operation == "capabilities":
+                return {"host_default_enabled": True, "repository_operations_available": True}
+            if operation == "identity":
+                return identity
+            self.assertEqual(operation, "validate")
+            self.assertEqual(request["gate"], "structural")
+            return {**identity, "valid": True}
+        with mock.patch.object(client, "call", side_effect=native), mock.patch.object(
+                client, "workflow_preflight", side_effect=AssertionError("authoring requested authority inventory")):
+            target = _artifactlib._preflight_plan_authoring(
+                route, client, spec_artifact_id="SPEC-FIXTURE", spec_normative_sha256="a" * 64)
+        self.assertEqual(calls, ["capabilities", "identity", "validate"])
+        self.assertEqual(target, self.root / ".codearbiter/plans/fresh.html")
+        self.assertFalse(target.exists())
 
-    def test_admission_rechecks_namespace_after_host_resource_scan(self):
+    def test_authoring_does_not_load_host_authority_registry(self):
         client = self.client()
-        original = client.workflow_preflight
-        shadow = self.root / ".codearbiter/specs/fresh.md"
-        def inject():
-            result = original()
-            shadow.parent.mkdir(parents=True)
-            shadow.write_bytes(b"concurrent legacy artifact")
-            return result
-        with mock.patch.object(client, "workflow_preflight", side_effect=inject):
-            with self.assertRaises(ArtifactError) as caught:
-                self.select(client)
-        self.assertIn(caught.exception.code, {"STALE_ROUTE", "AMBIGUOUS_ARTIFACT"})
-        self.assertFalse((shadow.parent / "fresh.html").exists())
+        with mock.patch.object(client, "workflow_preflight", side_effect=AssertionError("unneeded authority scan")):
+            self.assertEqual(self.select(client)["format"], "html")
+        self.assertEqual(list(self.root.iterdir()), [])
 
     def test_admission_rejects_bare_engine_installation(self):
         payload = self.base / "bare-engine"
@@ -1283,6 +1290,36 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.assertFalse(result["valid"])
         self.assertIn("INTENT", json.dumps(result).upper())
         self.assertNotIn("placeholder", (self.root / ".codearbiter/specs/incomplete.html").read_text())
+        identity = self.harness.client.call("identity", {"artifact_id": "SPEC-INCOMPLETE"})
+        route = _artifactlib._select_authoring_route(
+            self.root, "incomplete", workflow="feature", lane="full", client=self.harness.client)
+        self.assertEqual(self._plan_preflight(route, identity["artifact_id"], identity["normative_sha256"]),
+                         self.root / ".codearbiter/plans/incomplete.html")
+        self.assertFalse((self.root / ".codearbiter/plans/incomplete.html").exists())
+
+    def test_authoring_and_progress_need_no_authority_producers(self) -> None:
+        helpers = [self.installation.parent.parent / "hooks" / name for name in
+                   ("_approvallib.py", "_prerequisitelib.py", "_artifactauthoritylib.py")]
+        originals = {p: p.read_bytes() for p in helpers}
+        try:
+            for p in helpers:
+                p.unlink()
+            spec = self.harness.create_spec()
+            route = _artifactlib._select_authoring_route(
+                self.root, "flow", workflow="feature", lane="full", client=self.harness.client)
+            target = self._plan_preflight(route, spec["artifact_id"], spec["normative_sha256"])
+            self.assertFalse(target.exists())
+            self.harness.create_plan(spec["artifact_id"], spec["normative_sha256"])
+            self.harness.mutate("task-start", "PLAN-FLOW", task="T-001")
+            self.harness.mutate("task-review", "PLAN-FLOW", task="T-001")
+            advice = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+            self.assertEqual(advice["assessment"], "advisory")
+            self.assertFalse(advice["evidence_assessed"])
+            self.assertFalse(any((self.root / ".codearbiter/.artifacts/receipts").glob("*.json")))
+            self.assertEqual(list((self.root / ".codearbiter").rglob("*.md")), [])
+        finally:
+            for p, data in originals.items():
+                p.write_bytes(data)
 
     def test_missing_payload_fails_closed_without_markdown_fallback(self) -> None:
         missing = self.root / "missing-installation"
@@ -1338,7 +1375,7 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.assertEqual(binding["binding_mode"], "approved_source")
         self.assertEqual(list((self.root / ".codearbiter").rglob("*.md")), [])
 
-    def test_plan_preflight_rejects_unapproved_wrong_identity_and_wrong_digest(self) -> None:
+    def test_plan_preflight_accepts_draft_but_rejects_wrong_identity_and_digest(self) -> None:
         spec = self.harness.create_spec()
         route = _artifactlib._select_authoring_route(
             self.root,
@@ -1347,8 +1384,8 @@ class ArtifactAuthoringTest(unittest.TestCase):
             lane="full",
             client=self.harness.client,
         )
-        with self.assertRaises(ArtifactError):
-            self._plan_preflight(route, spec["artifact_id"], spec["normative_sha256"])
+        self.assertEqual(self._plan_preflight(route, spec["artifact_id"], spec["normative_sha256"]),
+                         self.root / ".codearbiter/plans/flow.html")
 
         self.harness.approve_spec("SPEC-FLOW")
         other = self.harness.create_spec("SPEC-OTHER", "other")
@@ -1426,13 +1463,15 @@ class ArtifactAuthoringTest(unittest.TestCase):
                 )
         self.assertEqual(wrong_root_error.exception.code, "CAPABILITY_MISSING")
 
-    def test_real_plan_bind_rejects_unapproved_or_wrong_spec_binding(self) -> None:
+    def test_real_plan_bind_accepts_draft_but_rejects_wrong_spec_binding(self) -> None:
         unapproved = self.harness.create_spec()
         self.harness.create_plan(
             unapproved["artifact_id"], unapproved["normative_sha256"]
         )
-        with self.assertRaises(ArtifactError):
-            self.harness.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        self.harness.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        report = self.harness.client.call("validate", {"artifact_id": "PLAN-FLOW", "gate": "structural"})
+        self.assertTrue(report["valid"])
+        self.assertFalse(report["authority"]["authority_verified"])
 
         self.harness.approve_spec("SPEC-FLOW")
         other = self.harness.create_spec("SPEC-OTHER", "other")
@@ -1451,7 +1490,8 @@ class ArtifactAuthoringTest(unittest.TestCase):
             permit_invalid=True,
         )
 
-        for trigger in ("identity", "validate"):
+        capability = self.harness.client.call("capabilities")
+        for trigger in ("capabilities", "identity", "validate"):
             with self.subTest(trigger=trigger):
                 shadow = self.root / ".codearbiter/specs/flow.md"
                 shadow.unlink(missing_ok=True)
@@ -1472,9 +1512,12 @@ class ArtifactAuthoringTest(unittest.TestCase):
                         shadow.write_text(
                             "# adversarial legacy shadow\n", encoding="utf-8"
                         )
+                    if operation == "capabilities":
+                        return capability
                     if operation == "identity":
                         return identity
                     if operation == "validate":
+                        self.assertEqual(request["gate"], "structural")
                         return approved
                     raise AssertionError(f"unexpected operation: {operation}")
 

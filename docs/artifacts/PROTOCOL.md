@@ -1,6 +1,6 @@
 # Internal artifact protocol
 
-Product `v0.1.0` candidate · protocol `codearbiter.artifact-api/0.1.0` · schema `0.3.1` · renderer `codearbiter-html/0.1.0`.
+Product `v0.1.0` candidate · protocol `codearbiter.artifact-api/0.1.0` · schema `0.3.2` · renderer `codearbiter-html/0.1.0`.
 
 This is an internal subprocess contract, not a proposal for another public command. No operation executes code, shell snippets or verification commands stored in the documents.
 
@@ -8,7 +8,7 @@ This is an internal subprocess contract, not a proposal for another public comma
 
 ADR-0043 changes the native scheduling/progress contract described below. This is
 an implementation slice on the overhaul PR, not a released-host claim. The
-complete caller, prerequisite-observation, migration, and package compatibility
+remaining execution-caller, evidence-applicability, migration, and package compatibility
 work remains tracked in [the implementation handoff](../plans/assistive-state-engine-overhaul.md)
 and [its progress record](../plans/assistive-state-engine-progress.md). Do not
 publish a partial engine/caller conversion.
@@ -31,8 +31,8 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity` |
 | Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
-| Authority | `capture`, `approve`, `prerequisite`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
-| Execution ledger | `snapshot`, `eligible`, `verification-status`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
+| Explicit attestation | `capture`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
+| Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 
@@ -47,6 +47,31 @@ A plan's `spec_ref` binds the exact normative specification digest. The initial 
 Each canonical HTML contains one authoritative embedded JSON model, inline presentation and generated record boundaries. Normal readers revalidate its structure, hashes and exact renderer correspondence. Human-only HTML edits produce `RENDER_DRIFT`; they are not silently interpreted as semantic edits.
 
 The canonical JSON domain intentionally permits only safe-range integers, booleans, strings, null, arrays and objects. Duplicate keys, invalid UTF-8, unpaired surrogates, fractional/exponent numbers, excessive depth and trailing data are rejected. It is a restricted canonical subset, **not** a general arbitrary-number RFC 8785 implementation. The schema evaluator similarly supports only the declared vocabulary used by the packaged schemas; it is not a general-purpose Draft 2020-12 library. Unknown schema keywords fail initialization.
+
+## Authoring is not an authority preflight
+
+The installation-pinned bridge checks the actual native writer capability before
+new HTML authoring. `_select_authoring_route` does not require the installed
+approval/verifier/reviewer inventory. `_preflight_plan_authoring` resolves the
+exact spec artifact, same-slug target, normative digest, current model identity,
+and structural validity; it does not demand an approved or fully ready spec.
+Drafts can therefore expose missing work without inventing answers to pass an
+approval boundary. Namespace conflicts and a changed source remain actual errors.
+
+The `draft_for_pair` keyword is accepted for compatibility and checked as a
+boolean, but no longer grants a special authoring mode. An explicit historical
+paired-approval operation still validates its own original attestation contract.
+`workflow_preflight()` retains that explicit inventory for consumers that really
+use it, including the separate context workflow; it does not decide whether the
+native spec/plan writer may author a draft. Native Pi writer admission is not
+proof of a complete live Pi workflow, farm support, or changed maturity.
+
+The generated writing-plans skill uses this contract. It plans coherent units of
+work rather than mandatory five-minute task slices, records real constraints and
+criteria, treats ready diagnostics as guidance, and does not arm approval codes
+or verify future runner support simply to draft a plan. Broader sprint/execution
+caller conversion remains separate work on this PR, not a claim established by
+the drafting skill alone.
 
 ## Draft authoring and typed modification
 
@@ -218,6 +243,26 @@ new fields or `DONE` writes schema 0.3.2 through the existing CAS/journal path.
 New semantics cannot be stored under an old schema label, and an old engine does
 not silently accept the new version. Full mixed-installed-client upgrade and
 obsolete-prompt recovery remain T07; this source compatibility is not that claim.
+
+## Reruns and retained task reviews
+
+An explicit completed task review retains the exact verification run it actually
+inspected. Do not rewrite that old receipt or pretend it reviewed a newer run.
+When a new scope review selects a fresh passing rerun, the native engine now
+checks whether the prior task review still covers the current subject, whether
+the selected rerun matches its own recorded workspace, whether its normalized
+workspace closure matches the still-reviewed work, and whether all supporting
+material is retained. When those checks hold, a different run/receipt identity
+alone does not require another task review.
+
+The new scope review records the newly selected run and makes its own assessment.
+The old task review and original run stay unchanged. Changed source, requirements,
+selected support, wrong workspace, or a corrupt run-owned closure do not qualify
+for reuse. A failing selected verification is not accepted merely because an
+older run passed. This is not a general claim that all checks outside a task's
+path list are independent: broader source-scoped applicability remains T04 work.
+Nor does it remove the initial per-task review requirement from this explicit
+legacy proof path; normal orchestration is being converted separately in T05.
 
 ## Cooperative approval and evidence
 

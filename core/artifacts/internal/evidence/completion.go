@@ -198,10 +198,11 @@ func BuildCompletion(f *store.FS, plan, spec *model.Document, context, selection
 			}
 		}
 		oldRow := completedRow(previous, id)
-		if model.S(context["activity"]) == "quality_review" && (oldRow == nil || oldRow["receipt_ref"] != ref) {
-			return nil, fault.New("COMPLETION_REQUIRED", "quality completion must preserve the exact verifier selected by each task completion review")
+		quality := model.S(context["activity"]) == "quality_review"
+		if quality && oldRow == nil {
+			return nil, fault.New("COMPLETION_REQUIRED", "quality completion requires a retained task review of the completed subject")
 		}
-		if oldRow != nil && oldRow["receipt_ref"] == ref {
+		if oldRow != nil && (oldRow["receipt_ref"] == ref || quality) {
 			if err = TaskPayload(prior, plan, spec, plan.Symbols.ByID[id].Value, model.S(context["input_sha256"])); err != nil {
 				return nil, err
 			}
@@ -209,6 +210,30 @@ func BuildCompletion(f *store.FS, plan, spec *model.Document, context, selection
 				return nil, err
 			}
 			row["consumer_workspace_after"] = oldRow["consumer_workspace_after"]
+			if oldRow["receipt_ref"] != ref {
+				// The new verification was validated independently above. Compare
+				// its current normalized workspaces, not its receipt/run identity.
+				if row["completion_workspace_after"] == nil {
+					raw, rawErr := completionWorkspacesReused(f, model.A(row["command_bindings"]), false)
+					if rawErr != nil {
+						return nil, rawErr
+					}
+					if !equalCompletion(raw, row["workspace_after"]) {
+						return nil, fault.New("WORKSPACE_DRIFT", "selected rerun's original worktree identity changed")
+					}
+				}
+				closure, closureErr := completionWorkspacesReused(f, model.A(row["command_bindings"]), true)
+				if closureErr != nil {
+					return nil, closureErr
+				}
+				if row["completion_workspace_after"] != nil && !equalCompletion(closure, row["completion_workspace_after"]) {
+					return nil, fault.New("WORKSPACE_DRIFT", "selected rerun's recorded normalized worktree changed")
+				}
+				if !equalCompletion(closure, oldRow["consumer_workspace_after"]) {
+					return nil, fault.New("WORKSPACE_DRIFT", "new verification does not cover the still-reviewed workspaces")
+				}
+				row["consumer_workspace_after"] = closure
+			}
 			for _, v := range model.A(model.M(previous["completion"])["materials"]) {
 				m := model.M(v)
 				priorMaterials[model.S(m["source_path"])] = m
@@ -337,7 +362,7 @@ func ValidateCompletion(f *store.FS, plan, spec *model.Document, context map[str
 		}
 	}
 	if model.S(context["activity"]) == "quality_review" {
-		return qualityCompletionSelection(f, plan, model.S(model.M(context["subject"])["record_id"]), context)
+		return qualityCompletionSelection(f, plan, spec, model.S(model.M(context["subject"])["record_id"]), context)
 	}
 	return nil
 }
@@ -374,10 +399,10 @@ func QualityCompletion(f *store.FS, r *authority.Receipt, plan, spec *model.Docu
 	if err != nil {
 		return err
 	}
-	return qualityCompletionSelection(f, plan, scope, c)
+	return qualityCompletionSelection(f, plan, spec, scope, c)
 }
 
-func qualityCompletionSelection(f *store.FS, plan *model.Document, scope string, c map[string]any) error {
+func qualityCompletionSelection(f *store.FS, plan, spec *model.Document, scope string, c map[string]any) error {
 	for _, id := range model.Strings(plan.Symbols.ByID[scope].Value["tasks"]) {
 		prior, err := LatestTaskCompletion(f, plan, id)
 		if err != nil {
@@ -396,8 +421,23 @@ func qualityCompletionSelection(f *store.FS, plan *model.Document, scope string,
 		if err != nil {
 			return err
 		}
-		if !equalCompletion(completedRow(previous, id), completedRow(c, id)) {
-			return fault.New("COMPLETION_REQUIRED", "scope review substituted its task completion verification")
+		oldRow, selectedRow := completedRow(previous, id), completedRow(c, id)
+		if oldRow == nil || selectedRow == nil {
+			return fault.New("COMPLETION_REQUIRED", "scope review omitted a task's completed subject")
+		}
+		if !equalCompletion(oldRow, selectedRow) {
+			if err = TaskPayload(prior, plan, spec, plan.Symbols.ByID[id].Value, model.S(c["input_sha256"])); err != nil {
+				return err
+			}
+			if err = ValidateCompletion(f, plan, spec, previous); err != nil {
+				return err
+			}
+			if !equalCompletion(oldRow["consumer_workspace_after"], selectedRow["consumer_workspace_after"]) {
+				return fault.New("WORKSPACE_DRIFT", "scope review changed the previously reviewed workspaces")
+			}
+			// ValidateCompletion already checks the newly selected verification
+			// and its current closure. The task review keeps its original receipt;
+			// this batch review actually inspects the selected new run instead.
 		}
 		selected := map[string]any{}
 		for _, m := range model.A(model.M(c["completion"])["materials"]) {
