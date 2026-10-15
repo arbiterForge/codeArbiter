@@ -1,12 +1,12 @@
 {
-  "revision": "ad052251b021796b6b70d6b78ff687a400b40091",
+  "revision": "b7681d9857b954d60cee91e28ba5590e984ebbf0",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "This canvas preserves the October 7 route geometry as explicitly historical. The draft assistive overhaul now uses source-bound TDD obligations with no duplicate permission ceremony, and a cold installed-candidate fixture exercises ordinary draft authoring, relevant task context, unknown check recording, receipt-free DONE and fresh-process readback through Claude, Codex and Pi. Strict historical attestation remains optional, independently tested and available when legitimately needed. Other installed model-backed behavior, full transitive dependency closure and release qualification remain incomplete and unverified. No release or installed-host qualification is implied.",
+  "summary": "Draft codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. The October 7 diagram layout is a historical visual reference, not the current executable workflow. Model-backed host and release qualification remain incomplete. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "661ea4eb291265adb354ba7bf905d6b13cb37483",
-      "summary": "The default model-facing artifact reference now contains only ordinary planning, relevant task context, factual prerequisites, real check results, safe mutations and recovery. It is about 13 KB rather than 44 KB and links to an optional historical attestation reference; it does not demand old approval codes, context tickets or a reviewer fleet for authorized work.",
+      "blob": "f01d3195289c97de502b01b6a300ed9d167c09dc",
+      "summary": "Routine artifact instructions now focus on the installed writer, typed plan, bounded task reads, factual prerequisites, actual checks and safe retry. The default leaf is about 5.9 KB; explicit attestation remains available on demand without burdening ordinary task context.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -31,8 +31,8 @@
     },
     {
       "path": "core/surface/skills/writing-plans/SKILL.md",
-      "blob": "af25ade65a84563b3a2fcd40e48c1b3e37994e69",
-      "summary": "The drafting owner now describes explicit shared_inputs for known common interfaces and configuration, with no invented dependency graph or extra artifact approval.",
+      "blob": "3c55b31be1ff74df3421856c7b13c1d8ec2e9792",
+      "summary": "Plan authoring preserves agreed criteria, useful tasks, real dependencies and bounded shared inputs. It maintains structurally valid drafts without separate user approval codes or repetitive historical workflow guidance.",
       "nodes": [
         "o-feature-spec",
         "f-plan"
@@ -142,8 +142,8 @@
     },
     {
       "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-      "blob": "56935504aee2411a92f88a948eeb7cae62fbb8c1",
-      "summary": "The implementation owner uses bounded task/source applicability for targeted rechecks, never treating scoped hash matches or caller notes as an independent review or full graph proof.",
+      "blob": "8c512286553765e01fc2540aab3b82686e578c9f",
+      "summary": "Execution reads one bounded task, does relevant work, rechecks affected inputs and records observed outcomes. No compulsory reviewer chain or receipt-driven restarts; genuine host/security controls and user stops still apply.",
       "nodes": [
         "f-selection",
         "f-verify",

@@ -2,7 +2,7 @@
 
 **PR:** [arbiterForge/codeArbiter #983](https://github.com/arbiterForge/codeArbiter/pull/983)
 **Branch:** `overhaul/assistive-state-engine` — **draft, unmerged, unreleased**.
-**Last reviewed head:** `81dd93afb279c7d849e77e1f5fbb3a0515e07026`.
+**Implementation evidence commit:** `b7681d9857b954d60cee91e28ba5590e984ebbf0`.
 **Direction:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md).
 **Scope:** [single-PR task contract](assistive-state-engine-overhaul.md).
 
@@ -43,8 +43,9 @@ commits and publication permissions are **not** bypassed.
   eight UX obligation groups passed locally.
 - **Current instruction projection:** `build-surface.py --check` and
   `sync-core.py --check` passed against all three generated hosts.
-- **Last GitHub Actions observation at reviewed head:** Docs **success**;
-  CI **in progress**. Recheck the exact new head before calling this green.
+- **Latest source-head check:** CI and Docs must be revalidated after the
+  source-bound atlas update; neither a local test nor an older successful
+  workflow establishes a new released or deployed artifact.
 
 ## Next executable work
 

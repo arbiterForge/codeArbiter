@@ -13,7 +13,7 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('partial assistive implementation versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('ad052251b021796b6b70d6b78ff687a400b40091');
+    expect(update.revision).toBe('b7681d9857b954d60cee91e28ba5590e984ebbf0');
     expect(update.changes).toHaveLength(30);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
@@ -46,7 +46,7 @@ describe('partial assistive implementation versus retained historical routes',()
     expect(allText).toContain('Confirmed or captured decisions');
     expect(allText).toContain('content-addressed observed reply');
     expect(allText).toContain('strict scan bound');
-    expect(allText).toContain('optional historical attestation reference');
+    expect(allText).toContain('available on demand without burdening ordinary task context');
     expect(allText).toContain('ordinary task start');
     expect(allText.toLowerCase()).toContain('in-flight');
     expect(allText).toContain('Task-check observations now retain');
