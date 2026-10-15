@@ -1323,6 +1323,15 @@ class ArtifactAuthoringTest(unittest.TestCase):
             self.harness.create_plan(spec["artifact_id"], spec["normative_sha256"])
             self.harness.mutate("task-start", "PLAN-FLOW", task="T-001")
             self.harness.mutate("task-review", "PLAN-FLOW", task="T-001")
+            # An ordinary failed command is recordable without importing the
+            # missing approval/reviewer producers. It cannot become ACCEPTED.
+            self.harness.mutate("task-check", "PLAN-FLOW", task="T-001", check={
+                "argv": ["python", "-m", "unittest", "-v", "tests.test_config"],
+                "cwd": ".", "command_index": 0, "outcome": "fail",
+                "exit_code": 1, "summary": "A fixture assertion was reported failing.",
+                "source": "Synthetic fixture command-output reference.",
+                "origin": "agent_report",
+            })
             plan_identity = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
             packet = self.harness.client.call("task-context", {
                 "artifact_id": "PLAN-FLOW", "task": "T-001",
@@ -1332,6 +1341,10 @@ class ArtifactAuthoringTest(unittest.TestCase):
             self.assertEqual(packet["assessment"], "advisory")
             self.assertFalse(packet["evidence_assessed"])
             self.assertFalse(packet["context_complete"])
+            self.assertEqual(packet["reported_checks"][-1]["reported_outcome"], "fail")
+            self.assertFalse(packet["checks_are_verified"])
+            self.assertFalse(packet["reported_checks"][-1]["named_tests_verified"])
+            self.assertEqual(packet["reported_checks"][-1]["worktree_freshness"], "unassessed")
             advice = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
             self.assertEqual(advice["assessment"], "advisory")
             self.assertFalse(advice["evidence_assessed"])

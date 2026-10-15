@@ -48,14 +48,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -241,6 +241,21 @@ func RequestSchema(op string) (object, error) {
 		cas()
 		add("task", idType(), true)
 		add("context_ticket", text(), false)
+	case "task-check":
+		cas()
+		add("task", idType(), true)
+		check := closed(object{
+			"argv":           object{"type": "array", "items": object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, "minItems": int64(1), "maxItems": int64(24)},
+			"cwd":            object{"type": "string", "minLength": int64(1), "maxLength": int64(512)},
+			"command_index":  object{"type": "integer", "minimum": int64(0), "maximum": int64(128)},
+			"outcome":        enum("pass", "fail", "skip", "unknown"),
+			"exit_code":      object{"type": "integer", "minimum": int64(0), "maximum": int64(255)},
+			"summary":        object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
+			"source":         object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
+			"origin":         enum("tool_result", "agent_report"),
+			"output_excerpt": object{"type": "string", "maxLength": int64(1024)},
+		}, "argv", "cwd", "outcome", "summary", "source", "origin")
+		add("check", check, true)
 	case "task-review":
 		cas()
 		add("task", idType(), true)

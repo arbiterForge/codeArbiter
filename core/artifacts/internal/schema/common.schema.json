@@ -1206,6 +1206,96 @@
         "definition_sha256"
       ],
       "additionalProperties": false
+    },
+    "task_check_observation": {
+      "type": "object",
+      "properties": {
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "minItems": 1,
+          "maxItems": 24
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "command_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "outcome": {
+          "enum": [
+            "pass",
+            "fail",
+            "skip",
+            "unknown"
+          ]
+        },
+        "exit_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "origin": {
+          "enum": [
+            "tool_result",
+            "agent_report"
+          ]
+        },
+        "output_excerpt": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "recorded_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "provenance": {
+          "const": "caller_reported"
+        },
+        "task_subject_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_normative_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "history_trimmed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "argv",
+        "cwd",
+        "outcome",
+        "summary",
+        "source",
+        "origin",
+        "recorded_at",
+        "provenance",
+        "task_subject_sha256",
+        "source_normative_sha256",
+        "history_trimmed"
+      ],
+      "additionalProperties": false
     }
   }
 }

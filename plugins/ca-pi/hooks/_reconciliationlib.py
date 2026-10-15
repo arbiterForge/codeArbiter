@@ -413,7 +413,22 @@ def supersede_unanswered_reconciliation(
         or not isinstance(artifact_id, str) or ID_RE.fullmatch(artifact_id) is None
     ):
         raise ReconciliationError("a valid artifact and bounded nonblank supersession reason are required")
-    root = _artifactlib._trusted_directory(root, "UNSAFE_ROOT")
+    # Match existing reconciliation entrypoints: macOS /var may resolve through
+    # the system /private/var alias. Inspect the canonical path with the shared
+    # trusted-directory validator rather than rejecting that platform alias.
+    # This still rejects an unsafe final directory, unreadable path or reparse
+    # point, and all pending/attempt/route checks remain unchanged.
+    requested = Path(root).absolute()
+    try:
+        info = requested.lstat()
+    except OSError as exc:
+        raise ReconciliationError("reconciliation root is unavailable or unsafe") from exc
+    # Allow macOS's *parent* /var -> /private/var alias after canonicalization,
+    # but never accept a symlink or Windows reparse point as the selected repo
+    # itself. This is stricter than the older legacy arm/cancel entrypoints.
+    if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+        raise ReconciliationError("reconciliation root cannot be a linked or reparse directory")
+    root = _artifactlib._trusted_directory(requested.resolve(strict=True), "UNSAFE_ROOT")
     with _reconciliation_lock(root, artifact_id):
         pending = _load(root, artifact_id)
         if _load_attempt(root, pending) is not None:

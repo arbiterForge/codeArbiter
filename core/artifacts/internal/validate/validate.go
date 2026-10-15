@@ -361,6 +361,23 @@ func planStructure(d *model.Document) []fault.Error {
 			add(&es, "ORPHAN_STATE", id, "execution.tasks", "state has no task definition")
 		}
 	}
+	for id, observations := range model.M(ex["task_check_observations"]) {
+		if _, exists := tasks[id]; !exists {
+			record, known := d.Symbols.ByID[id]
+			if !known || !record.Retired || record.Kind != "tasks" {
+				add(&es, "ORPHAN_STATE", id, "execution.task_check_observations", "unknown task command history")
+			}
+		}
+		for _, value := range model.A(observations) {
+			check := model.M(value)
+			if !nonblank(check["summary"]) || !nonblank(check["source"]) {
+				add(&es, "INVALID_OBSERVATION", id, "execution.task_check_observations", "command observation needs a source and summary")
+			}
+			if _, err := time.Parse(time.RFC3339, model.S(check["recorded_at"])); err != nil {
+				add(&es, "INVALID_DATE", id, "recorded_at", "invalid command timestamp")
+			}
+		}
+	}
 	prs := map[string]bool{}
 	ps := model.M(ex["prerequisites"])
 	pe := model.M(ex["prerequisite_evidence"])

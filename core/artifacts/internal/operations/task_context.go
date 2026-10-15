@@ -81,6 +81,14 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 	}
 
 	status := model.S(state(d, id)["state"])
+	checks, historyBounded := model.TaskCheckAssessments(d, spec.Doc, id)
+	// Small model-facing packet: last three reports only. The typed HTML
+	// includes the bounded recorded history; native transaction before-images
+	// retain older reports. Neither claims source-file applicability.
+	shown := checks
+	if len(shown) > 3 {
+		shown = shown[len(shown)-3:]
+	}
 	out := object{
 		"artifact_id": d.ID(), "revision": d.Revision(), "model_sha256": d.Hash(),
 		"normative_sha256": d.NormHash(), "source_artifact_id": spec.Doc.ID(),
@@ -98,13 +106,25 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 		"dependencies": dependencies, "waiting_on": waiting,
 		"prerequisites": prerequisites, "unscoped_prerequisites": unscoped,
 		"waiting_prerequisites": waitingOnFacts,
-		"next_action":           "Inspect the recorded dependencies and checks; execute work through existing host permissions.",
-		"omitted_context":       model.List("unrelated tasks", "broader specification decisions", "full source and test output"),
+		"reported_checks":       shown, "check_reports_omitted": int64(len(checks) - len(shown)),
+		"check_history_bounded": historyBounded, "checks_are_verified": false,
+		"next_action":     "Inspect the recorded dependencies and checks; execute work through existing host permissions.",
+		"omitted_context": model.List("unrelated tasks", "broader specification decisions", "full source and test output"),
 	}
 	if !current {
 		out["next_action"] = "Source binding changed; inspect affected requirements and reconcile the plan without resetting unrelated work."
 	} else if status == "BLOCKED" {
 		out["next_action"] = "Inspect the recorded stop; do not clear it or redispatch until the actual condition or user decision is resolved."
+	} else if len(shown) > 0 {
+		latest := model.M(shown[len(shown)-1])
+		switch model.S(latest["reported_outcome"]) {
+		case "fail":
+			out["next_action"] = "The latest command was reported failing; inspect actual output and repair the affected work before claiming verification. No new artifact permission is required."
+		case "skip", "unknown":
+			out["next_action"] = "The latest command was skipped or remains unknown; record the missing or unavailable check honestly and continue other authorized work."
+		case "pass":
+			out["next_action"] = "A command was reported passing, but named-test and source-file evidence is not attested; assess relevant coverage before any verification claim."
+		}
 	}
 	b, err := json.Marshal(out)
 	if err != nil {

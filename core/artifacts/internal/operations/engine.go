@@ -220,6 +220,8 @@ func Run(root, op string, input object) (any, error) {
 	switch op {
 	case "evidence-context":
 		return engine.evidenceContext(r, entry)
+	case "task-check":
+		return engine.recordTaskCheck(r, entry)
 	case "export":
 		return engine.export(r, entry)
 	case "identity":

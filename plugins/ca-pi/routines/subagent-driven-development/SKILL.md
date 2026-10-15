@@ -63,6 +63,18 @@ Review the combined relevant diff when risk or change size warrants it. Use a sp
 
 An explicit receipt-backed review/verification claim remains available under the historical attestation section of `includes/artifacts.md` **only when an actual caller requires such proof**. Never create, auto-approve, relabel, or simulate a receipt to move ordinary progress. Host security controls, actual deny/stop instructions, and policy-required reviews are independent of the artifact status engine.
 
+For a real verification command that the host already ran, record its
+ordinary result via native `task-check` with `command_index` only when
+the exact declared command ran, or without it for a useful ad-hoc check.
+Pass along the observed exit code, summary and bounded source/output; never
+invent a named-test result because a collector could not parse it. The
+result stays `caller_reported`, with source/worktree freshness **unassessed**,
+not an independent test or reviewer certificate. A failed/skipped/unknown
+report does not become successful because the task was marked `DONE`.
+The latest reported failure remains visible even after an older pass; fix
+only relevant work and record another actual result as appropriate. Avoid
+turning this bookkeeping into an extra testing or approval phase.
+
 ## 4. Persist honest progress and return
 
 For HTML use `task-review` without receipts to record implementation ready for review; this is **not** a claim that an independent review or tests passed. For a completed implementation batch use `accept-scope` with its authored scope ID and a real reason, **without a receipt**, to record `DONE` (implementation complete; checks not assessed). It must not clear a pending/blocked member. Keep failures, outstanding checks, and uncertainty in the report or appropriate typed records. Do not upgrade `DONE` to `ACCEPTED` without genuine independent evidence.

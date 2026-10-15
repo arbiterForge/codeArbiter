@@ -517,6 +517,41 @@ class ReconciliationTest(unittest.TestCase):
         self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE")["operation"],
                          original["operation"])
 
+    def test_assistive_supersession_validates_the_canonical_root(self):
+        # macOS temporary roots commonly enter through the /var system alias.
+        # The canonical physical directory must be checked, not rejected solely
+        # because the host's system path prefix is an alias.  No pending
+        # mutation is permitted and the request still needs its bound route.
+        self.arm_task("canonical-root-supersede-token")
+        original = self.adapter._artifactlib._trusted_directory
+        inspected = []
+        def verify(path, code):
+            inspected.append(Path(path))
+            return original(path, code)
+        with mock.patch.object(self.adapter._artifactlib, "_trusted_directory", side_effect=verify):
+            self.assertTrue(self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="Retire unanswered prompt only.",
+            )["superseded"])
+        self.assertEqual(inspected, [self.root.resolve(strict=True)])
+        self.assertFalse(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+
+    def test_assistive_supersession_rejects_symlinked_selected_root(self):
+        # A macOS parent directory alias is legitimate; the *repository root*
+        # itself must not be a symlink to a different directory.
+        armed = self.arm_task("symlink-root-token")
+        linked = self.root.parent / (self.root.name + "-linked")
+        try:
+            linked.symlink_to(self.root, target_is_directory=True)
+        except (NotImplementedError, OSError) as exc:
+            self.skipTest(f"platform cannot create a symlink: {exc}")
+        with self.assertRaisesRegex(RuntimeError, "root cannot be a linked"):
+            self.adapter.supersede_unanswered_reconciliation(
+                linked, "PLAN-EXAMPLE", reason="Only the canonical selected repo may retire this prompt.",
+            )
+        self.assertIsNotNone(self.adapter._load(self.root, "PLAN-EXAMPLE"))
+        self.assertEqual(self.root.resolve(), self.routes.resolve("reconciliation", armed["reply"]))
+        linked.unlink()
+
     def test_assistive_supersession_requires_a_bounded_reason_and_matching_id(self):
         self.arm_task()
         for reason in ("", "  ", "x" * 2049, 6, None):

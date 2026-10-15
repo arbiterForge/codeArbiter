@@ -33,6 +33,11 @@ All notable changes to `ca-pi` are documented in this file.
 - Retire unanswered legacy reconciliation prompts with an explicit superseded
   disposition, without a new approval code. Committed or uncertain attempts
   retain exact replay/recovery; no task state or evidence is forged by cleanup.
+- Preserve ordinary task command results as bounded, caller-reported
+  pass/fail/skip/unknown observations. Definition drift is visible, source
+  freshness remains explicitly unassessed, and no review/approval is invented.
+- Canonicalize macOS temporary-directory aliases before validating the native
+  reconciliation root, retaining the existing unsafe-path/attempt refusals.
 - This is an unreleased source candidate. Host-workflow conversion, full upgrade
   qualification, and publication remain tracked by the overhaul PR.
 

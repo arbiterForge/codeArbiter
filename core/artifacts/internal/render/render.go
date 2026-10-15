@@ -231,6 +231,17 @@ func (w *writer) record(m map[string]any, k string) {
 		w.raw(`<details><summary>Execution record</summary>`)
 		w.value(model.M(model.M(w.d.Data["execution"])["tasks"])[id], "execution")
 		w.raw(`</details>`)
+		if model.S(w.d.Data["schema_version"]) == model.SchemaVersion {
+			checks, bounded := model.TaskCheckAssessments(w.d, nil, id)
+			if len(checks) > 0 {
+				w.raw(`<details><summary>Reported command checks (not independently verified)</summary>`)
+				w.value(checks, "reported_checks")
+				if bounded {
+					w.raw(`<p>Earlier reports are retained in the transaction history.</p>`)
+				}
+				w.raw(`</details>`)
+			}
+		}
 	}
 	if r.Kind == "prerequisites" && !r.Retired && model.S(w.d.Data["schema_version"]) == model.SchemaVersion {
 		w.raw(`<details><summary>Recorded prerequisite assessment</summary>`)

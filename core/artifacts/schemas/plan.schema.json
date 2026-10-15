@@ -225,6 +225,21 @@
           "additionalProperties": {
             "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/prerequisite_observation"
           }
+        },
+        "task_check_observations": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 16,
+            "items": {
+              "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/task_check_observation"
+            }
+          }
         }
       },
       "required": [

@@ -18,6 +18,9 @@ func HasAssistiveFields(v map[string]any) bool {
 		}
 	}
 	ex := M(v["execution"])
+	if _, ok := ex["task_check_observations"]; ok {
+		return true
+	}
 	if _, ok := ex["prerequisite_observations"]; ok {
 		return true
 	}
@@ -75,4 +78,64 @@ func PrerequisiteAssessment(d *Document, record map[string]any) map[string]any {
 		"definition_current": current, "provenance": provenance,
 		"needs_decision": kind == "decision" && outcome == "unknown", "evidence_assessed": false,
 	}
+}
+
+// TaskCheckDefinition tracks the task's *verification subject*, not the
+// implementation recipe or presentation. A changed path or criterion can make
+// an old command result inapplicable even when the command argv stays equal.
+// File contents and external shared interfaces are never assessed here.
+func TaskCheckDefinition(task map[string]any) (string, error) {
+	return canonical.Hash(map[string]any{
+		"verification": task["verification"], "paths": task["paths"],
+		"criterion_refs": task["criterion_refs"], "source_refs": task["source_refs"],
+	})
+}
+
+// TaskCheckAssessments returns only caller-reported information. Matching
+// command/spec definitions is not evidence that source files are unchanged or
+// that a particular named test passed. A later failure remains the latest
+// reported result; old observations stay in the native journal before-images.
+func TaskCheckAssessments(d, spec *Document, id string) ([]any, bool) {
+	entries := A(M(M(d.Data["execution"])["task_check_observations"])[id])
+	record, ok := d.Symbols.ByID[id]
+	if !ok || record.Kind != "tasks" {
+		return []any{}, false
+	}
+	hash, err := TaskCheckDefinition(record.Value)
+	if err != nil {
+		return []any{}, false
+	}
+	bound := S(M(d.Norm()["spec_ref"])["normative_sha256"])
+	out := []any{}
+	for _, value := range entries {
+		entry := M(value)
+		// HTML-only presentation cannot load the external specification. It
+		// displays unknown applicability instead of falsely reporting stale
+		// or current code coverage.
+		var current any
+		if spec != nil {
+			current = hash == S(entry["task_subject_sha256"]) &&
+				spec.NormHash() == S(entry["source_normative_sha256"]) &&
+				bound == spec.NormHash()
+		}
+		note := map[string]any{
+			"argv": entry["argv"], "cwd": entry["cwd"],
+			"reported_outcome": entry["outcome"], "exit_code": entry["exit_code"],
+			"summary": entry["summary"], "source": entry["source"],
+			"origin": entry["origin"], "recorded_at": entry["recorded_at"],
+			"definition_current": current, "worktree_freshness": "unassessed",
+			"provenance": "caller_reported", "evidence_assessed": false,
+			"declared_command":     entry["command_index"] != nil,
+			"named_tests_verified": false,
+			"history_trimmed":      entry["history_trimmed"],
+		}
+		if index, exists := entry["command_index"]; exists {
+			note["command_index"] = index
+		}
+		if excerpt, exists := entry["output_excerpt"]; exists {
+			note["output_excerpt"] = excerpt
+		}
+		out = append(out, note)
+	}
+	return out, len(entries) > 0 && M(entries[len(entries)-1])["history_trimmed"] == true
 }

@@ -1,7 +1,7 @@
 # Assistive state-engine overhaul: implementation progress
 
 **PR:** #983, `overhaul/assistive-state-engine` -> `main`.
-**State:** DRAFT; fifth implementation slice under verification, not the completed overhaul or a released package.
+**State:** DRAFT; seventh implementation slice under candidate verification, not the completed overhaul or a released package.
 **Baseline:** `arbiterForge/codeArbiter@045c0812888f20f4c843677cfb37b802e2084770:/`.
 **Contract:** [the complete nine-task handoff](assistive-state-engine-overhaul.md).
 **Decision:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md), accepted product direction, separately bound to its actual source commit. No independent review or release proof is fabricated by that acceptance.
@@ -13,14 +13,70 @@
 | T01 | Complete for this starting slice | Owner decision, caller disposition below, retained full scope, native before/after failure fixture. A model-backed workflow benchmark was not run. |
 | T02 | Native lifecycle expanded | Advisory scheduling, receipt-free work progress/reconciliation, draft binding, and receipt-free implementation batch completion are implemented. Full caller conversion and subject-scoped evidence assessment remain. |
 | T03 | Native path implemented | Typed fact/decision definitions, explicit task scope, reported observations, failure/unknown visibility, definition-specific applicability, bounded symbol readback, and escaped HTML are implemented. Normal host callers still need T05 conversion. |
-| T04 | Bounded rerun correction implemented | A new explicit batch review can select a fresh passing rerun without another task review of unchanged source/support. General task/source-scoped applicability and ordinary result recording remain. |
+| T04 | Honest command-level observations added | Explicit batch reruns of unchanged reviewed work remain reusable. New typed `task-check` records command-level pass/fail/skip/unknown as caller-reported history with definition-applicability checks and no reviewer dispatch. Worktree/input impact analysis remains unimplemented and is explicitly unassessed. |
 | T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
 | T06 | Compact task packet implemented in native source | Read-only `task-context` delivers one task, directly cited criteria, dependencies and scoped prerequisites without source snapshots/receipt chains, with stale-model and size-limit refusal. Complete installed-host/token-cost qualification remains. |
 | T07 | One interrupted-prompt recovery path implemented | Unanswered legacy reconciliation prompts can be superseded without a code after route binding and no-attempt checks; actual in-flight mutations still require exact replay. Pending approval/prerequisite conversion, mixed-client upgrade, rollback and installed-host qualification remain. |
-| T08 | Main execution and adapter surfaces regenerated | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized. The historical atlas now binds sixteen exact fifth-slice owner blobs; final public claims/Academy/mixed-host qualification remain. |
+| T08 | Canonical execution and adapter surfaces synchronized | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; new task-check guidance is regenerated to three host adapters. Historical atlas source bindings will be updated against the exact seventh-slice commit before this branch is pushed. Final public claims/Academy/mixed-host qualification remain. |
 | T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Seventh slice: macOS root compatibility and ordinary check recording
+
+**Starting exact head:** `5ac73c86d1a904ddc12c707ca687aeec9c764b2f`
+of this draft PR. On the preceding exact head, the documentation workflow
+completed successfully; the macOS/arm64 structured-artifact job failed
+because the new recovery path used `_trusted_directory(root)` on a macOS
+temporary path whose system `/var` component is an alias for
+`/private/var`. Existing reconciliation entrypoints canonicalize the
+path before accessing the pending files. The repair does the same
+(`resolve(strict=True)` followed by the existing directory validator),
+retains all in-flight/route-binding/unsafe-file refusal checks, and adds a
+root-canonicalization regression. It is not a blanket symlink exemption.
+
+**T04 next step:** Add `task-check` to the existing closed artifact API,
+rather than building a new reviewer/proof service. Ordinary authorized
+tool commands may be recorded with a command-level outcome, bounded
+excerpt, declared-command index (only for an exact matching invocation),
+exit code, source and reporting origin. Unknown/skipped commands do not
+assert exit codes. The engine explicitly marks results `caller_reported`,
+never `verified` or `accepted`. The latest failure, skip, or unknown
+is not hidden by an older pass; progress remains independently recordable.
+A changed command, task path, referenced criterion or specification definition marks old observations inapplicable, while
+routine implementation-method changes do not. Source-file freshness
+remains `unassessed`, not a fabricated guarantee.
+
+New reports use an **optional new field in the still-unpublished schema
+0.3.2**. The document keeps at most sixteen recent results per task,
+with earlier entries preserved in the existing transaction journal
+before-images. Model-facing task packets show the latest three and a
+bounded-history indicator, with exact/batch symbol readback and escaped
+HTML for people. Recording observations is inert and does not execute
+stored commands, generate a review receipt, or take a full workspace
+snapshot. No new public slash command is introduced. Full T04
+subject-scoped source impact analysis, T07 mixed-client upgrade/rollback,
+and installed-host verification remain open.
+
+### Seventh-slice verification
+
+| Check | Actual result and limit |
+|---|---|
+| Final Windows/amd64 native module | **15 tested packages passed** under Go 1.27.1, including the updated bounded command-result schema, subject applicability and refusal tests. The candidate builder also ran normal Go vet and reported module tests passing. Other packages have no tests. |
+| Final native candidate | Local development executable SHA-256 **`2236f2e7ad6cd991596b33988ed89af86a6ea8d2a84cba66bf461ae230efb68d`** at `ca-artifact-windows-amd64.exe`, explicitly `upstream_host_qualified: false`. These bytes are **not** a released package, tag or installed-host proof. |
+| Final Linux/amd64 native smoke | Cross-compiled the source and actually executed **31 focused top-level tests, zero failed**, under Ubuntu/WSL from an isolated Linux filesystem copy. This is not the full Linux matrix or a model-backed host session. |
+| Final legacy reconciliation adapter | **55 tests passed**, including macOS-alias-compatible canonical root, refusal of a linked repository root, bounded no-code unanswered-request retirement and exact recovery of in-flight mutations. The macOS alias itself still requires hosted macOS qualification. |
+| Ordinary check and task-context regression | Focused Go tests passed for pass/fail/skip/unknown, later-failure visibility, CAS/replay, task paths and criterion references, safe inert HTML, bounded history and refusal of invented named-test proof. Reported outcomes never become `ACCEPTED`. |
+| Existing interfaces and sources | 23 routing/index tests, 147 generated-surface tests with one skip, 53 cleanup/routing tests, 22 host descriptor tests and 18 consumer-closure tests passed before final subject-digest adjustment; final generated/embedded Go schemas and three Python/Markdown host projections match. |
+| Pinned authoring/bridge and reference conformance | Earlier final-before-subject-digest candidate passed 50 authoring, 17 bridge, 43 workflow, 13 farm, 39 package and 6 top-level conformance checks. The exact final binary's pinned conformance check is running separately; do not infer its result from the earlier candidate. |
+| T06 small synthetic fixture | A task-only `task-context` response was **2,181 UTF-8 bytes**, versus **20,692 bytes** of full rendered HTML (**9.49x** size ratio) for the same tiny one-task example. One native task-context call per read; five samples had median **40.975 ms** on local Windows including process start and lock. No receipts were created and the plan identity was unchanged. These are different-content payloads, **not token counts**, a matched semantic benchmark or a cross-platform latency guarantee. |
+
+**Still unverified:** exact-head hosted Mac result, independent real tool-execution
+attestation, shared-interface/file-content impact selection, full archived
+pending-request and mixed installed-client upgrade, and rollback after later
+edits. The new check history is deliberately caller-reported with
+`worktree_freshness: unassessed`; it must not be presented as passing
+named-test proof. The final release/website state has not changed.
 
 ## Sixth slice: routed-agent mutation test and unanswered prompt recovery
 

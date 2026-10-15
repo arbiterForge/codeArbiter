@@ -32,7 +32,7 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 | Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
 | Explicit attestation | `capture`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
-| Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
+| Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-check`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 
@@ -197,6 +197,63 @@ Historical evidence and unrelated progress are preserved. `REVIEW` alone means
 neither tests passed nor an independent review occurred. Subject-scoped evidence applicability and active host instruction conversion
 remain subsequent work in this same PR. The next section describes the implemented
 prerequisite and implementation-completion operations, not installed-host qualification.
+
+## Ordinary command-level check observations
+
+`task-check` is a CAS/journaled plan mutation, separate from historical
+`verification-status` acceptance proof. Supply current
+`artifact_id`, `operation_id`, `expected` revision/model digest,
+`task`, and a closed `check` object like:
+
+```json
+{
+  "task": "T-001",
+  "check": {
+    "argv": ["go", "test", "./..."],
+    "cwd": ".",
+    "outcome": "fail",
+    "exit_code": 1,
+    "summary": "A relevant test assertion failed.",
+    "source": "Current session: command tool result.",
+    "origin": "tool_result"
+  }
+}
+```
+
+This is an example observation fragment, **not a command to execute or
+a real test result**. Actual `outcome` is `pass`, `fail`, `skip`, or
+`unknown`. `exit_code` is required for a reported pass; skipped/unrun
+checks cannot invent a code. A provided `command_index` must name and
+match an existing verification definition's exact `argv` and `cwd`;
+a pass must use its declared successful exit code. An ad-hoc result omits
+that index and **cannot** assert that named tests passed. Each result may
+carry at most 1,024 characters of bounded, inert `output_excerpt`.
+
+The engine never executes these arguments, runs a collector, dispatches
+reviewers, or mints a verification receipt. It adds a native recording
+timestamp, `provenance: caller_reported`, current spec normative digest
+and task-subject digest (verification commands, paths and references). Real permission checks remain host-owned.
+The latest result is visible in model-facing `task-context`, exact/batch
+symbol reads, and escaped human-readable HTML. The task packet shows only
+the latest three notes and reports omitted counts. The document keeps
+the latest sixteen, with earlier observations preserved in existing
+transaction before-images. No second ledger or cache is created.
+
+`definition_current` means only that the *recorded check definition and
+selected specification* still match. When a reader lacks the source spec
+(e.g. rendering HTML), this is unknown rather than a false stale/current
+judgment. **`worktree_freshness: unassessed` always remains explicit**:
+neither the pass exit code nor a matching definition is independent
+source-file proof. A new failure/unknown overrides an older successful
+report in the latest view, but all historical results remain. Ordinary
+reported checks do not change a task's implementation progress or
+upgrade `DONE` to `ACCEPTED`. The historical attested verification path
+retains its separate proof requirements.
+
+This optional execution-field addition is inside the **unpublished
+schema 0.3.2 candidate**; it is never silently written to a 0.3.0/0.3.1
+artifact without the native version upgrade. Mixed installed-package
+rollback and complete subject/file impact analysis remain unqualified.
 
 ## Scoped prerequisite observations and implementation completion
 

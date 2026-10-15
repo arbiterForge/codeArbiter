@@ -197,6 +197,22 @@ type PrerequisiteObservation struct {
 	RecordedAt       string `json:"recorded_at"`
 	DefinitionSHA256 string `json:"definition_sha256"`
 }
+type TaskCheckObservation struct {
+	Argv                  []string `json:"argv"`
+	CWD                   string   `json:"cwd"`
+	CommandIndex          int64    `json:"command_index,omitempty"`
+	Outcome               string   `json:"outcome"`
+	ExitCode              int64    `json:"exit_code,omitempty"`
+	Summary               string   `json:"summary"`
+	Source                string   `json:"source"`
+	Origin                string   `json:"origin"`
+	OutputExcerpt         string   `json:"output_excerpt,omitempty"`
+	RecordedAt            string   `json:"recorded_at"`
+	Provenance            string   `json:"provenance"`
+	TaskSubjectSHA256     string   `json:"task_subject_sha256"`
+	SourceNormativeSHA256 string   `json:"source_normative_sha256"`
+	HistoryTrimmed        bool     `json:"history_trimmed"`
+}
 type Spec struct {
 	RetiredSymbols []Retired      `json:"retired_symbols"`
 	Title          string         `json:"title"`

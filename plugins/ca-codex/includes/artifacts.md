@@ -223,6 +223,30 @@ caller-reported, with a native recording time and definition identity, not host
 attestations. A tool result cannot stand in for a resolved user choice. Ask a clear
 normal-language question for a genuinely missing decision; no certification code.
 
+Ordinary verification output belongs in a typed **reported command check**, not
+an invented review receipt. After an authorized host tool runs a relevant
+command, call `task-check` with the observed `argv`, repository-relative
+`cwd`, `outcome` (`pass`, `fail`, `skip`, `unknown`), factual `summary`,
+the result's `source`, and `origin: tool_result` or `agent_report`.
+Include `exit_code` only when the command actually ran; a reported pass
+requires its code. Specify `command_index` only if the invocation exactly
+matches that plan verification entry. An ad-hoc check omits the index and
+never silently fulfills a named-test requirement. Never execute a command
+stored in an artifact merely to record it.
+
+The engine writes a bounded `caller_reported` note, timestamp, and the
+applicable task-subject/specification digests. The latest failure/unknown
+remains visible; prior results remain in transaction history. Exact/batch
+symbol reads and `task-context` expose the report **without treating the
+reported outcome as independent proof**. `definition_current` compares
+recorded definitions; `worktree_freshness: unassessed` does **not** establish
+unchanged source files. Changing an implementation step alone does not
+invalidate the verification definition. A changed command, task path, referenced criterion or specification
+makes the prior observation's definition inapplicable. HTML renders these
+reports as escaped, explicitly unverified history. Do not automatically
+re-run reviewers because a routine presentation edit or a new command
+receipt exists. Actual negative checks still need appropriate repair.
+
 Use `task-start` for pending work. Use `task-review` without receipts to record
 implementation ready for review, or `accept-scope` with a reason and no receipt to
 record a finished implementation batch as `DONE`. Neither operation asserts a
