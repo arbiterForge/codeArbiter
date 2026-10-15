@@ -1,12 +1,12 @@
 {
-  "revision": "f9f12f51a3e0a8f08b78ae749b01b3d740b48e16",
+  "revision": "bf3cec62a5093cd5a5aab6af9caef96d0f9b9423",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "This canvas preserves the original October 7 route geometry as historical. The draft PR now has bounded source-impact applicability and code-free retirement of provably unanswered legacy reconciliation, paired-approval, and ARMED prerequisite prompts without repeating approval codes. The original paired observer can publish a durable immutable reply observation before its native submission: cancellation now checks both, failing closed on ambiguous history. Older standalone approvals remain unprovable, and submitted decisions retain exact recovery. Full installed-host verification, complete dependency attestation, and universal upgrade/rollback remain incomplete. The historical approval arrows are not the new default. No release or installed-host qualification is implied.",
+  "summary": "This canvas preserves the October 7 route geometry as explicitly historical. The assistive overhaul now keeps routine artifact guidance small, with source-bound task retrieval, actual checking, honest progress and no duplicate permission ceremony. Strict historical approval, reviewer, receipt and recovery procedures remain available in an opt-in attestation reference and are not loaded with everyday execution. Confirmed or captured decisions, in-flight writes, user stops, host security and existing publication controls remain protected. Further installed-host, mixed-client rollback and final exact-artifact qualification remain incomplete. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "b9618fe28700dd5fc56abb21ffd1e3b9ccbd0599",
-      "summary": "Canonical instructions distinguish ordinary permission-free artifact progress from rare historical cleanup. Paired cancellation refuses both persisted submissions and matching immutable observations written just before submission, even after a crash; ARMED prerequisites may retire without a reply code, while uncertain standalone approvals and actual user stops remain protected.",
+      "blob": "661ea4eb291265adb354ba7bf905d6b13cb37483",
+      "summary": "The default model-facing artifact reference now contains only ordinary planning, relevant task context, factual prerequisites, real check results, safe mutations and recovery. It is about 13 KB rather than 44 KB and links to an optional historical attestation reference; it does not demand old approval codes, context tickets or a reviewer fleet for authorized work.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -318,6 +318,18 @@
       "nodes": [
         "f-approval",
         "f-recovery",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/surface/includes/artifacts-attestation.md",
+      "blob": "d35847cb4c7e50cc1c8e5ef42491b16bc7512577",
+      "summary": "The optional reference retains every original strict historical evidence input and reviewer protocol without replacing the original task review; it also retains paired approval, confirmed or captured decisions, content-addressed observed reply, strict scan bound, in-flight write recovery, and older installed-client limitations. It is read on demand for actual policy proof or historical work, not for ordinary task start.",
+      "nodes": [
+        "f-approval",
+        "f-recovery",
+        "f-quality",
+        "f-accept",
         "c-proof"
       ]
     }

@@ -130,6 +130,28 @@ to final exact-head checks. Byte counts are rendered Markdown size,
 **not** model token usage or an end-to-end cost measurement. No published
 release or installed-host upgrade is claimed.
 
+### Canonical inventory and atlas follow-up
+
+The new cold reference was discovered by the repository's independent
+consumer closure scan, which correctly rejected an unowned source. Added
+one **non-default, on-demand historical-attestation** entry to
+`docs/artifacts/consumer-inventory.json`, preserving its distinct closure
+and generated Claude/Codex/Pi paths. All **18 consumer-closure tests pass**
+after that correction; the default-path consumer set is unchanged.
+
+The route atlas is rebound to **30 exact owner blobs at
+`bf3cec62a5093cd5a5aab6af9caef96d0f9b9423`**, including the new cold
+reference; its original geometry stays historical and the source identity
+and changed-content negative tests remain active. The first full four-suite
+atlas run found only a stale prose assertion while **78 tests passed**;
+updating that expectation to the actual `no duplicate permission
+ceremony` wording made all **4 changed atlas-specific tests pass**.
+A complete re-run on the exact docs-follow-up head remains CI evidence.
+
+Local full `npm run build` completed the normal generators, diagram audit,
+Astro **173-page** build and Pagefind integrity check; `npm run typecheck`
+passed. This is not a deployed-site readback or a published release.
+
 ## Tenth-slice final local atlas and build evidence
 
 Source commits: `1b48960b1f6c52b31733122268f01b1877ad47d3`
