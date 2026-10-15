@@ -274,6 +274,14 @@ func planStructure(d *model.Document) []fault.Error {
 				add(&es, "INVALID_PATH", id, "paths", "task path is not a portable repository path")
 			}
 		}
+		for _, shared := range model.Strings(t["shared_inputs"]) {
+			if !Path(shared, false) || shared == ".git" || strings.HasPrefix(shared, ".git/") ||
+				IsRuntimeMarkerPath(shared) || shared == ".codearbiter/.artifacts" || strings.HasPrefix(shared, ".codearbiter/.artifacts/") ||
+				shared == ".codearbiter/specs" || strings.HasPrefix(shared, ".codearbiter/specs/") ||
+				shared == ".codearbiter/plans" || strings.HasPrefix(shared, ".codearbiter/plans/") {
+				add(&es, "INVALID_PATH", id, "shared_inputs", "shared input must be a real portable source path, not generated state")
+			}
+		}
 		for _, v := range model.A(t["verification"]) {
 			c := model.M(v)
 			if !Path(model.S(c["cwd"]), true) {

@@ -8,6 +8,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Changed
 
+- Keep command-result applicability aligned with the exact referenced
+  acceptance criteria and bounded task/shared source inputs plus known build
+  controls. Distinguish `scoped_changed`, `scoped_unchanged` and
+  `unassessed` without pretending that a partial fingerprint proves tests,
+  shared imports or independent review.
+- Record mixed 0.3.1/0.3.2 engine compatibility and fail-closed old-client
+  behavior in disposable cross-binary fixtures; preserve historical files,
+  receipts and post-upgrade edits rather than promising a destructive downgrade.
 - Normal feature/sprint execution guidance uses advisory plan state and real
   checks instead of mandatory artifact approval codes or per-task reviewer fleets.
   Recorded-intent conflicts and material ADR supersession remain visible without

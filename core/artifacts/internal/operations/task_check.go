@@ -69,6 +69,11 @@ func (e *Engine) recordTaskCheck(r object, entry repository.Entry) (any, error) 
 	if err != nil {
 		return nil, err
 	}
+	criteriaHash, err := model.TaskCriterionSubject(spec.Doc, task.Value)
+	if err != nil {
+		return nil, fault.New("DANGLING_REFERENCE", "task criterion does not resolve in the current specification")
+	}
+	scopedHash, scopeReason := scopedInputDigest(e.FS, task.Value)
 	next, err := d.Clone()
 	if err != nil {
 		return nil, err
@@ -97,11 +102,17 @@ func (e *Engine) recordTaskCheck(r object, entry repository.Entry) (any, error) 
 		"argv": check["argv"], "cwd": cwd,
 		"outcome": outcome, "summary": check["summary"],
 		"source": check["source"], "origin": check["origin"],
-		"provenance":              "caller_reported",
-		"recorded_at":             time.Now().UTC().Format(time.RFC3339),
-		"task_subject_sha256":     definitionHash,
-		"source_normative_sha256": spec.Doc.NormHash(),
-		"history_trimmed":         trimmed,
+		"provenance":               "caller_reported",
+		"recorded_at":              time.Now().UTC().Format(time.RFC3339),
+		"task_subject_sha256":      definitionHash,
+		"source_normative_sha256":  spec.Doc.NormHash(),
+		"criterion_subject_sha256": criteriaHash,
+		"history_trimmed":          trimmed,
+	}
+	if scopedHash != "" {
+		recorded["scoped_inputs_sha256"] = scopedHash
+	} else {
+		recorded["scope_unassessed_reason"] = scopeReason
 	}
 	for _, optional := range []string{"command_index", "exit_code", "output_excerpt"} {
 		if v, exists := check[optional]; exists {

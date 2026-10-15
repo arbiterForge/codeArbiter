@@ -231,24 +231,57 @@ carry at most 1,024 characters of bounded, inert `output_excerpt`.
 
 The engine never executes these arguments, runs a collector, dispatches
 reviewers, or mints a verification receipt. It adds a native recording
-timestamp, `provenance: caller_reported`, current spec normative digest
-and task-subject digest (verification commands, paths and references). Real permission checks remain host-owned.
+timestamp, `provenance: caller_reported`, current spec normative digest,
+task-subject digest (verification commands, paths, `shared_inputs` and
+references) and the exact *referenced* normative criterion digest.
+Historical records without the newer criterion digest retain their old
+whole-spec applicability semantics; they are never silently narrowed.
+Real permission checks remain host-owned.
 The latest result is visible in model-facing `task-context`, exact/batch
 symbol reads, and escaped human-readable HTML. The task packet shows only
 the latest three notes and reports omitted counts. The document keeps
 the latest sixteen, with earlier observations preserved in existing
 transaction before-images. No second ledger or cache is created.
 
-`definition_current` means only that the *recorded check definition and
-selected specification* still match. When a reader lacks the source spec
-(e.g. rendering HTML), this is unknown rather than a false stale/current
-judgment. **`worktree_freshness: unassessed` always remains explicit**:
-neither the pass exit code nor a matching definition is independent
-source-file proof. A new failure/unknown overrides an older successful
-report in the latest view, but all historical results remain. Ordinary
-reported checks do not change a task's implementation progress or
-upgrade `DONE` to `ACCEPTED`. The historical attested verification path
-retains its separate proof requirements.
+`definition_current` means only that the recorded check definition and
+referenced normative criteria still match. A different spec summary or an
+unrelated criterion change no longer restarts this task's assessment; a
+changed referenced requirement does. A stale plan/spec binding is always
+reported separately, never silently refreshed. Older observations preserve
+their original whole-spec applicability rules. Without an external spec
+(e.g. when rendering a standalone HTML artifact), criterion applicability
+remains unknown rather than falsely current or stale.
+
+`task-check` also attempts a **bounded, read-only, optional scoped-input
+fingerprint** for the task's repository-relative `paths` and explicitly
+declared `shared_inputs`. Known build-control files at the repository root
+and the verification command's working directories (for example `go.mod`,
+package manifests/lockfiles, `tsconfig.json` and `pyproject.toml`) are
+included with both present and absent states. A directory task path hashes
+its immediate/nested members, so additions, deletions and renames affect
+the result. It does not run code or execute the declared test.
+
+The scope is bounded to 256 visited entries, depth 12, 2 MiB per file,
+and 12 MiB total. It refuses unsafe generated state paths, symlink/reparse
+inputs and ambiguous or changing handles through the existing rooted
+filesystem. If no declared task/shared source actually exists or a limit
+is exceeded, recording **continues** with `scope_unassessed_reason`;
+no fake digest is generated. The model-facing `task-context` read checks
+the source subset again and reports `worktree_freshness` as:
+
+- `scoped_unchanged`: only the selected bounded inputs match.
+- `scoped_changed`: selected source/configuration bytes or membership changed;
+  refresh the affected checks, not unrelated task reviewers.
+- `unassessed`: missing historical fingerprint, empty/unsafe/unbounded
+  source selection, or inability to make a safe observation.
+
+**Every scope result has `scope_complete: false`.** This is not full
+import/build dependency closure, named-test attestation or proof that an
+external service is unchanged. Exact/batch symbol reads and HTML, which
+lack the live rooted source/spec pair, continue displaying explicitly
+unassessed status. An earlier pass never conceals the latest
+failure/skipped/unknown report, and reported checks do not change
+`PENDING`/`DONE` to `ACCEPTED`.
 
 This optional execution-field addition is inside the **unpublished
 schema 0.3.2 candidate**; it is never silently written to a 0.3.0/0.3.1
@@ -390,6 +423,55 @@ This is a **partial T07 transition**: mixed installed-client compatibility,
 approval/prerequisite pending-marker recovery, and package rollback after
 new edits still require separate qualification. It is not a new public
 command or an all-prompt cleanup service.
+
+## Historical schema 0.3.1 to assistive 0.3.2: exact-byte upgrade/rollback
+
+An old 0.3.0/0.3.1 HTML spec/plan is read without rewriting its source bytes.
+The first journaled mutation that introduces 0.3.2-only observations,
+`shared_inputs`, or `DONE` records writes the **same artifact ID**, preserved
+task states, evidence history and new schema identity. An identical operation
+ID replays the same committed operation; it never runs the work a second time.
+The before-image is retained in the engine's existing transaction history.
+
+**Do not run two engine generations against one repository concurrently.**
+An older 0.3.1 client fails closed with `UNSUPPORTED_VERSION` once it
+encounters a new-format member of the canonical pair; it cannot continue
+writing other artifacts in that repository. This is intentional, not missing
+data or a reason to downgrade the HTML schema label. Update the installed
+cohort to the compatible engine/bridge and active caller resources first.
+No automatic Markdown conversion or reapproval is part of this cutover.
+
+For a rollback *before subsequent changes*, preserve the candidate's
+journal and exact pre-upgrade files. Restore old files only after checking
+there have been **no newer edits** and no uncertain mutation to recover.
+Never simply copy an old backup over a changed plan. The native
+`migration-rollback` API applies only to an explicitly reviewed,
+completed **Markdown-to-HTML** cutover; it refuses an edited candidate and
+is **not** a general schema-downgrade method.
+
+After any 0.3.2 write or change to task/source evidence, prefer forward
+recovery with the compatible engine. Use `identity`, `task-context`,
+exact/batch symbol reads, and a standalone `export` to
+`.codearbiter/exports/<name>.html` before considering any manual
+migration. The export records its source hash and cannot replace the
+canonical pair. Retain all receipts/history and make an explicit new
+reviewed forward migration if older tooling must be restored. A previous
+binary's refusal is safer than silently discarding modern state.
+
+A reproducible disposable compatibility probe is
+`python tools/test-artifact-mixed-schema.py --old <0.3.1-binary>
+--candidate <0.3.2-binary>`. The binaries must be exact trusted versions;
+the probe creates no project-wide state. It checks old reads preserving
+bytes, a retained user stop, one journaled new observation and idempotent
+replay, older-client rejection, source ID/history, and unchanged canonical
+bytes after an export. The probe is fixture evidence, **not** live host,
+security or distribution qualification.
+
+This compatibility rule does not silently retire submitted approval or
+prerequisite markers. A historical answered or in-flight request must use
+its owner-specific exact-operation recovery; only *unanswered* legacy
+reconciliation questions can use the separately documented code-free
+supersession. Never fabricate user consent or delete unknown state.
 
 ## Filesystem and recovery
 

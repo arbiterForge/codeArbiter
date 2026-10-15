@@ -13,14 +13,93 @@
 | T01 | Complete for this starting slice | Owner decision, caller disposition below, retained full scope, native before/after failure fixture. A model-backed workflow benchmark was not run. |
 | T02 | Native lifecycle expanded | Advisory scheduling, receipt-free work progress/reconciliation, draft binding, and receipt-free implementation batch completion are implemented. Full caller conversion and subject-scoped evidence assessment remain. |
 | T03 | Native path implemented | Typed fact/decision definitions, explicit task scope, reported observations, failure/unknown visibility, definition-specific applicability, bounded symbol readback, and escaped HTML are implemented. Normal host callers still need T05 conversion. |
-| T04 | Honest command-level observations added | Explicit batch reruns of unchanged reviewed work remain reusable. New typed `task-check` records command-level pass/fail/skip/unknown as caller-reported history with definition-applicability checks and no reviewer dispatch. Worktree/input impact analysis remains unimplemented and is explicitly unassessed. |
+| T04 | Bounded partial impact assessment implemented in development source | Retained reviewed-task reruns remain reusable; reported command outcomes now bind exact referenced criteria and bounded task/shared source files plus known build controls. Only affected scoped reads turn stale; unsafe/unmodeled scope is unassessed, never a guarantee of full dependency closure or attested test proof. |
 | T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
 | T06 | Compact task packet implemented in native source | Read-only `task-context` delivers one task, directly cited criteria, dependencies and scoped prerequisites without source snapshots/receipt chains, with stale-model and size-limit refusal. Complete installed-host/token-cost qualification remains. |
-| T07 | One interrupted-prompt recovery path implemented | Unanswered legacy reconciliation prompts can be superseded without a code after route binding and no-attempt checks; actual in-flight mutations still require exact replay. Pending approval/prerequisite conversion, mixed-client upgrade, rollback and installed-host qualification remain. |
+| T07 | Mixed-version read/write boundary tested in addition to prompt recovery | An unanswered legacy reconciliation prompt can be superseded without a code only before any durable attempt. New explicit mixed-binary compatibility fixture proves old 0.3.1 canonical bytes survive current read, first new field upgrades to 0.3.2, and old clients fail closed without changing state. Forward export works; full backup/rollback after subsequent edits, other pending kinds and installed-host qualification remain. |
 | T08 | Canonical execution and adapter surfaces synchronized | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; new task-check guidance is regenerated to three host adapters. Historical atlas is bound to 24 exact reviewed seventh-slice code-owner blobs at cffd553bddb4; older route geometry is clearly historical. Final public claims/Academy/mixed-host qualification remain. |
 | T09 | Local candidate suite completed | Full Windows native build and pinned Python/reference conformance pass against the same local candidate bytes, plus scoped Linux checks. Hosted matrix, model-backed installed-host canaries, migration/rollback and exact distributed artifact remain unqualified. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Ninth slice: bounded T04 impact + mixed-version T07 recovery
+
+**Started from exact PR head** `036b129eed47bba3b332bf75fba540ff90cda51f`.
+Development-only source: no changed package has been installed or released.
+
+### T04 implemented on the native caller-reported path
+
+An ordinary `task-check` now records the exact referenced criterion
+definitions and an optional safely bounded source-input fingerprint.
+The input subset covers the task's declared `paths`, explicit
+`shared_inputs`, and known build manifests/lockfiles at the
+repository and verification-working-directory level. Directory
+membership is recorded, so additions, removals or renames under a
+declared directory change the digest. The handler uses rooted,
+no-follow native file reads and refuses unsafe state paths. Bounds:
+**256 visited entries, directory depth 12, 2 MiB per file, 12 MiB
+combined**. Oversized, missing or unsafe input scopes remain recorded
+as **unassessed** rather than blocking an authorized task.
+
+`task-context` displays `scoped_unchanged`, `scoped_changed`
+or `unassessed` for its latest bounded reported checks. Every result
+explicitly says `scope_complete: false` and
+`evidence_assessed: false`: unchanged declared bytes are **not**
+full build graph or reviewer proof. Exact/batch records and standalone
+HTML do not independently read the filesystem and remain unassessed.
+Only affected reported checks need refreshing; no reviewer is
+automatically launched. Source presentation, task method edits and
+unrelated files do not reset tests; a changed task definition,
+referenced criterion, selected shared input or relevant config does.
+Older check records retain their original whole-spec semantics and
+are not retroactively reinterpreted with the new hash fields.
+
+### T07 mixed installed-client boundary, idempotence and rollback
+
+Two actual native executable generations were compiled from the
+authorized repository: historical base `045c0812888f20f4c843677cfb37b802e2084770`
+(schema 0.3.1) and this worktree's unpublished 0.3.2 code.
+`tools/test-artifact-mixed-schema.py` exercises them against an
+entirely disposable repository. The newer reader preserves the old
+plan's bytes and IDs. An old task explicitly blocked by the user
+stays `BLOCKED` after the first 0.3.2 command observation. Replaying
+the exact journaled check is idempotent. The old engine refuses both
+reads and mutation rather than interpreting a partially upgraded
+repository. A new standalone export leaves the canonical pair
+unchanged. No old approvals are relabeled as proof, and no legacy
+user files were accessed.
+
+The compatibility result also clarifies rollback: old binaries are
+**not** a safe downgrade mechanism once modern schema writes exist.
+Native before-images remain in the transaction journal; after later
+edits, preserve user data through current-engine forward recovery and
+standalone export. The existing `migration-rollback` code only
+supports the already-reviewed Markdown-to-HTML cutover and refuses
+changes after it. There is no universal or destructive rollback.
+Existing unanswered reconciliation prompt retirement remains
+code-free but refuses in-flight mutations. Other historical
+approval/prerequisite states have specific retention/cancellation
+rules; their full installed-host qualification remains open.
+
+### Ninth-slice test evidence
+
+- Focused native regression set including six new scoped-source
+  cases **passed**. Tests cover unrelated source changes, shared
+  interface edits, directory membership, build config additions,
+  criterion-only scope, exact historical semantics, symlink and
+  resource-limit uncertainty, and no forged verification receipts.
+- Full Windows native `go test ./... -count=1` passed across
+  **15 tested packages**; four packages have no tests. This checks
+  Go contracts, not a model-backed host.
+- Cross-binary compatibility fixture passed, including
+  `historical_read_preserved_bytes`, `recorded_user_stop_preserved`,
+  `idempotent_upgrade_retry`, `older_client_write_rejected`,
+  `new_check_reporting_is_not_verification`, and
+  `standalone_export_preserved_canonical_plan`.
+- Pending: final exact candidate binary build, pinned Python conformance,
+  cross-platform hosted CI, generated site/route review, and installed
+  end-to-end host canaries. Results must be linked to the exact final
+  candidate; do not infer green merely from these local checks.
 
 ## Eighth slice: Academy installer fixture timing correction
 

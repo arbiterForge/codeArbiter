@@ -82,6 +82,30 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 
 	status := model.S(state(d, id)["state"])
 	checks, historyBounded := model.TaskCheckAssessments(d, spec.Doc, id)
+	scopeDigest, scopeReason := "", "not_recorded"
+	if len(checks) != 0 {
+		scopeDigest, scopeReason = scopedInputDigest(e.FS, task.Value)
+		for _, value := range checks {
+			note := model.M(value)
+			stored := model.S(note["recorded_scoped_inputs_sha256"])
+			status := "unassessed"
+			switch {
+			case stored == "":
+				if model.S(note["scope_reason"]) == "" {
+					note["scope_reason"] = "historical_unbound_report"
+				}
+			case scopeDigest == "":
+				note["scope_reason"] = scopeReason
+			case stored != scopeDigest:
+				status = "scoped_changed"
+			default:
+				status = "scoped_unchanged"
+			}
+			note["worktree_freshness"] = status
+			// Partial source coverage is *not* a reviewer/host attestation.
+			note["scope_complete"] = false
+		}
+	}
 	// Small model-facing packet: last three reports only. The typed HTML
 	// includes the bounded recorded history; native transaction before-images
 	// retain older reports. Neither claims source-file applicability.
@@ -99,6 +123,7 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 			"id": id, "title": task.Value["title"], "checkpoint": task.Value["checkpoint"],
 			"execution_scope": task.Value["execution_scope"], "depends_on": task.Value["depends_on"],
 			"steps": task.Value["steps"], "paths": task.Value["paths"], "rollback": task.Value["rollback"],
+			"shared_inputs":  task.Value["shared_inputs"],
 			"criterion_refs": task.Value["criterion_refs"], "verification": task.Value["verification"],
 			"done_when": task.Value["done_when"], "source_refs": task.Value["source_refs"],
 		},
@@ -124,6 +149,9 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 			out["next_action"] = "The latest command was skipped or remains unknown; record the missing or unavailable check honestly and continue other authorized work."
 		case "pass":
 			out["next_action"] = "A command was reported passing, but named-test and source-file evidence is not attested; assess relevant coverage before any verification claim."
+		}
+		if model.S(latest["worktree_freshness"]) == "scoped_changed" {
+			out["next_action"] = "Declared task or shared source input bytes changed; refresh the affected command check. Independent review and host permissions remain separate."
 		}
 	}
 	b, err := json.Marshal(out)

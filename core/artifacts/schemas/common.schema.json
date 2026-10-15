@@ -666,6 +666,16 @@
         "execution_scope": {
           "type": "string",
           "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "shared_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "maxItems": 64,
+          "uniqueItems": true
         }
       },
       "required": [
@@ -1280,6 +1290,19 @@
         },
         "history_trimmed": {
           "type": "boolean"
+        },
+        "criterion_subject_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "scoped_inputs_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "scope_unassessed_reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
         }
       },
       "required": [

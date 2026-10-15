@@ -234,18 +234,30 @@ matches that plan verification entry. An ad-hoc check omits the index and
 never silently fulfills a named-test requirement. Never execute a command
 stored in an artifact merely to record it.
 
-The engine writes a bounded `caller_reported` note, timestamp, and the
-applicable task-subject/specification digests. The latest failure/unknown
-remains visible; prior results remain in transaction history. Exact/batch
-symbol reads and `task-context` expose the report **without treating the
-reported outcome as independent proof**. `definition_current` compares
-recorded definitions; `worktree_freshness: unassessed` does **not** establish
-unchanged source files. Changing an implementation step alone does not
-invalidate the verification definition. A changed command, task path, referenced criterion or specification
-makes the prior observation's definition inapplicable. HTML renders these
-reports as escaped, explicitly unverified history. Do not automatically
-re-run reviewers because a routine presentation edit or a new command
-receipt exists. Actual negative checks still need appropriate repair.
+The engine records a bounded `caller_reported` note and digest of the
+declared check and **directly referenced criteria**, not a second approval.
+Historical observations retain their original broad-spec semantics. The
+latest failure/unknown is never hidden by an older pass. `task-context`
+uses a safe, bounded read of the task's declared paths and explicit
+`shared_inputs`, plus common build manifests/lockfiles, to report only
+`scoped_unchanged`, `scoped_changed` or `unassessed`. This is **partial
+source applicability**, not independent test evidence: `scope_complete`
+remains false even when hashes match. The task's source binding remains
+separately visible. Newly added/removed files beneath declared source
+directories, and known build configuration, change the scoped identity.
+Undeclared shared dependencies and custom build inputs still require
+explicit investigation and optional `shared_inputs`, never an inferred
+verification guarantee. On unsafe paths, symlinks, missing/oversize scopes or
+uncertain reads, record a useful unassessed result rather than blocking
+ordinary authorized work.
+
+Exact/batch reads and rendered HTML do not inspect the filesystem, so they
+do not report source freshness. A method-only task edit, presentation change
+or fresh receipt identity by itself does not restart reviewers. A changed
+command, task scope, referenced criterion or bounded tracked input makes the
+affected check inapplicable or stale. Assess the changed work; do not
+redispatch unrelated reviews. Real host denials and actual negative tests
+remain independent.
 
 Use `task-start` for pending work. Use `task-review` without receipts to record
 implementation ready for review, or `accept-scope` with a reason and no receipt to
@@ -522,6 +534,29 @@ not passing verification. Source changes affect applicable proof; presentation
 and routine bookkeeping do not by themselves justify reviewer cascades.
 The legacy `scope-reconcile` proof form remains an explicitly attested claim,
 not the default method of resuming independent tasks.
+
+## Before using an older installed engine on a modern plan
+
+Old 0.3.0/0.3.1 plans remain byte-for-byte readable by the 0.3.2
+engine until the first journaled edit introducing the newer observation
+or task status. Once any canonical plan member uses 0.3.2, an older
+installed engine must refuse reads and writes rather than rewriting,
+downgrading or silently losing it. **Use a matching installed
+engine/bridge/host-resource cohort**; do not use another host's
+outdated executable on the same project. Existing IDs, stopped tasks,
+history and already recorded real receipts remain owned by the project.
+
+To recover uncertain work, first inspect whether the prior worker or
+native mutation already committed. Replay **exactly** the same operation
+ID/input when needed; do not manufacture a replacement start. For
+manual backup, use the compatible engine's standalone `export` without
+replacing canonical HTML. Before any downgrade, keep the complete
+transaction history and a verified backup, and only restore old files
+when no later modifications would be lost. If new work occurred,
+**forward recovery is required**. `migration-rollback` is limited to
+the originally reviewed Markdown cutover and cannot be used as a
+schema downgrade. Consult `docs/artifacts/PROTOCOL.md` for bounded
+mixed-version checks and exact recovery boundaries.
 
 ## Mutation and recovery
 

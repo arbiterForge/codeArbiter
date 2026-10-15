@@ -72,6 +72,15 @@ facts use ordinary authorized tools and the engine's reported-observation path.
 A consequential unresolved choice gets a clear normal-language question, not an
 approval digest or a certification code.
 
+For source impact without a repository-wide dependency analysis, record
+`shared_inputs` only where the task genuinely depends on a common source
+interface, fixture, schema or unusual build configuration. These must be
+portable repository-relative paths to actual source, not generated artifact
+state; a directory path includes its bounded descendants. A known shared
+input change should refresh the affected check, not every unrelated review.
+Do not invent references or claim an exhaustive dependency graph; missing
+or unbounded inputs remain honestly `unassessed` in task context.
+
 Order tasks by their actual dependencies. Remove cycles by fixing the plan, not
 by pretending a required predecessor is complete. Group meaningful batches with
 clear outcomes; checkpoints organize implementation and do not independently

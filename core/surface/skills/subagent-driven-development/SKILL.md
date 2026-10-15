@@ -68,8 +68,15 @@ ordinary result via native `task-check` with `command_index` only when
 the exact declared command ran, or without it for a useful ad-hoc check.
 Pass along the observed exit code, summary and bounded source/output; never
 invent a named-test result because a collector could not parse it. The
-result stays `caller_reported`, with source/worktree freshness **unassessed**,
-not an independent test or reviewer certificate. A failed/skipped/unknown
+result stays `caller_reported`, never an independent test/reviewer certificate.
+The engine can compare the bounded task paths, explicitly declared
+`shared_inputs` and known build manifests to the earlier report. Treat
+`scoped_changed` as a reason to refresh **affected** checks; treat
+`scoped_unchanged` as partial applicability only (`scope_complete: false`).
+An unmodeled import, oversized directory, symlink, missing source or
+custom build input remains `unassessed`. Include actual shared interfaces
+in the plan when relevant; do not run a repository-wide snapshot on every
+task read or claim complete dependency closure from these hashes. A failed/skipped/unknown
 report does not become successful because the task was marked `DONE`.
 The latest reported failure remains visible even after an older pass; fix
 only relevant work and record another actual result as appropriate. Avoid
