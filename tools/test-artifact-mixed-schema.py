@@ -125,20 +125,64 @@ def exercise(old: Path, current: Path) -> dict:
         assert (root / entries[0]["backup"]).read_bytes() == before_bytes
         assert plan_file.read_bytes() == upgraded
         assert upgraded != before_bytes and re.search(rb'"schema_version"\s*:\s*"0\.3\.2"', upgraded)
+
+        # Real post-upgrade edit: a second reported note, separately journaled.
+        # An older before-image is now *not* a safe downgrade candidate:
+        # restoring it would discard the second operation and its history.
+        after_upgrade = identity(current, root, "PLAN-FLOW")
+        later_check = {
+            "artifact_id": "PLAN-FLOW", "operation_id": "mixed-check-0002",
+            "expected": {
+                "revision": after_upgrade["revision"],
+                "model_sha256": after_upgrade["model_sha256"],
+            },
+            "task": "T-001",
+            "check": {
+                "cwd": ".", "argv": ["python", "--version"], "outcome": "unknown",
+                "summary": "Later compatibility note; no command executed.",
+                "source": "Synthetic forward-recovery test; not verification evidence.",
+                "origin": "agent_report",
+            },
+        }
+        ok(current, root, "task-check", later_check)
+        after_later_edit = plan_file.read_bytes()
+        assert after_later_edit != upgraded, "a later 0.3.2 edit made no new state"
+        later_journal = json.loads(
+            (root / ".codearbiter/.artifacts/transactions/mixed-check-0002.json").read_text(encoding="utf-8")
+        )
+        assert later_journal["state"] == "committed"
+        later_entries = [
+            entry for entry in later_journal["entries"]
+            if entry["path"] == ".codearbiter/plans/flow.html"
+        ]
+        assert len(later_entries) == 1
+        assert later_entries[0]["before_sha256"] == hashlib.sha256(upgraded).hexdigest()
+        assert (root / later_entries[0]["backup"]).read_bytes() == upgraded
+
+        # A delayed response to the ORIGINAL upgrade may be safely retried
+        # but must never roll back a later change. Same for the second write.
+        assert ok(current, root, "task-check", reported_check)["transaction"]["replay"] is True
+        assert ok(current, root, "task-check", later_check)["transaction"]["replay"] is True
+        assert plan_file.read_bytes() == after_later_edit, (
+            "replaying an old committed operation erased newer saved work"
+        )
+        # The old schema before-image is retained for recovery, not an
+        # automatic restore after subsequent committed revisions.
+        assert hashlib.sha256(after_later_edit).hexdigest() != entries[0]["before_sha256"]
         newer = identity(current, root, "PLAN-FLOW")
-        assert newer["revision"] > before["revision"]
+        assert newer["revision"] > after_upgrade["revision"] > before["revision"]
         # This engine scans the complete canonical artifact pair. A historical
         # client fails closed for the *repository*, not just the new-schema
         # plan, instead of silently reinterpreting mixed models.
         refuse(old, root, "identity", {"artifact_id": "SPEC-FLOW"}, "UNSUPPORTED_VERSION")
         refuse(old, root, "identity", {"artifact_id": "PLAN-FLOW"}, "UNSUPPORTED_VERSION")
-        assert plan_file.read_bytes() == upgraded
+        assert plan_file.read_bytes() == after_later_edit
         refuse(old, root, "task-start", {
             "artifact_id": "PLAN-FLOW", "operation_id": "old-client-write-0001",
             "expected": {"revision": before["revision"], "model_sha256": before["model_sha256"]},
             "task": "T-001", "context_ticket": "legacy-client-unusable-with-new-schema",
         }, "UNSUPPORTED_VERSION")
-        assert plan_file.read_bytes() == upgraded, "old client changed a new-schema plan"
+        assert plan_file.read_bytes() == after_later_edit, "old client changed post-upgrade work"
 
         packet = ok(current, root, "task-context", {
             "artifact_id": "PLAN-FLOW", "task": "T-001",
@@ -147,7 +191,9 @@ def exercise(old: Path, current: Path) -> dict:
         checks = packet["reported_checks"]
         assert packet["state"] == "BLOCKED", "schema upgrade cleared an explicit stop"
         assert "user stop" in (packet["reason"] or "")
+        assert len(checks) >= 2, "second committed note disappeared after upgrade"
         assert checks[-1]["reported_outcome"] == "unknown"
+        assert checks[-1]["summary"] == "Later compatibility note; no command executed."
         assert checks[-1]["named_tests_verified"] is False
         assert checks[-1]["evidence_assessed"] is False
 
@@ -159,7 +205,10 @@ def exercise(old: Path, current: Path) -> dict:
         path = root / " .codearbiter/exports/mixed-schema-safety.html".strip()
         assert export["standalone"] is True and export["canonical"] is False
         assert hashlib.sha256(path.read_bytes()).hexdigest() == export["sha256"]
-        assert plan_file.read_bytes() == upgraded, "standalone export modified canonical plan"
+        assert b"Later compatibility note; no command executed." in path.read_bytes(), (
+            "standalone forward export omitted later saved work"
+        )
+        assert plan_file.read_bytes() == after_later_edit, "standalone export modified canonical plan"
 
         return {
             "old_schema": old_caps["schema_version"],
@@ -172,6 +221,9 @@ def exercise(old: Path, current: Path) -> dict:
             "recorded_user_stop_preserved": packet["state"] == "BLOCKED",
             "idempotent_upgrade_retry": replay["transaction"]["replay"],
             "actual_journal_before_image_preserved": True,
+            "post_upgrade_edits_preserved": True,
+            "earlier_committed_retry_never_rolls_back_later_work": True,
+            "forward_export_includes_later_edit": True,
             "latest_revision": newer["revision"],
         }
 

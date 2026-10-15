@@ -64,13 +64,16 @@ describe("human-operable product window", () => {
   });
 
   it("bounds typed authority by host rather than equating entry syntax with capability", () => {
-    const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    const normal = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    expect(normal).toContain("includes/artifacts-attestation.md");
+    expect(normal).not.toContain("Verification and review authority below is supported on Codex and Claude Code");
+    const source = read("../core/surface/includes/artifacts-attestation.md").replace(/\s+/g, " ");
     expect(source).toContain("Verification and review authority below is supported on Codex and Claude Code");
     // Explicit historical verification/review authority remains host-limited,
     // but Pi native drafting and ordinary progress are not blocked by its
     // missing legacy prompt adapter.
-    expect(source).toContain("This includes the native Pi writer");
-    expect(source).toContain("no certification code");
+    expect(normal).toContain("This includes the native Pi writer");
+    expect(normal).toContain("no certification code");
     const guide = read("src/content/docs/guides/review-artifacts.md");
     expect(guide).toContain("## Check your host's authority capability");
     expect(guide).toContain("| Claude Code | Host-observed prompt approval | Production adapters");
@@ -103,7 +106,10 @@ describe("human-operable product window", () => {
   });
 
   it("keeps old authority receipts inspection-only rather than relabelling them after upgrade", () => {
-    const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    const normal = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    expect(normal).toContain("includes/artifacts-attestation.md");
+    expect(normal).not.toContain("Verification and review authority below is supported on Codex and Claude Code");
+    const source = read("../core/surface/includes/artifacts-attestation.md").replace(/\s+/g, " ");
     expect(source).toContain("Receipt format 0.1.0 remains readable for inspection after upgrade but is not authority-bearing");
     const guide = read("src/content/docs/guides/resume-and-recover.mdx");
     expect(guide).toContain("0.1.0");

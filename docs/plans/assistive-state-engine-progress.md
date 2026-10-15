@@ -1,7 +1,7 @@
 # Assistive state-engine overhaul: implementation progress
 
 **PR:** #983, `overhaul/assistive-state-engine` -> `main`.
-**State:** DRAFT; seventh implementation slice under candidate verification, not the completed overhaul or a released package.
+**State:** DRAFT; ongoing source and compatibility qualification, not a completed overhaul, published release, or installed-host guarantee.
 **Baseline:** `arbiterForge/codeArbiter@045c0812888f20f4c843677cfb37b802e2084770:/`.
 **Contract:** [the complete nine-task handoff](assistive-state-engine-overhaul.md).
 **Decision:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md), accepted product direction, separately bound to its actual source commit. No independent review or release proof is fabricated by that acceptance.
@@ -21,6 +21,54 @@
 | T09 | Local candidate suite completed | Full Windows native build and pinned Python/reference conformance pass against the same local candidate bytes, plus scoped Linux checks. Hosted matrix, model-backed installed-host canaries, migration/rollback and exact distributed artifact remain unqualified. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Twelfth slice: fix opt-in proof docs and protect newer edits on upgrade
+
+**Inspected PR base:** `e50bed2ff3d490ec95bd47955c8c782564bb2e0a`,
+unreleased development branch; `main` baseline remains
+`045c0812888f20f4c843677cfb37b802e2084770`.
+
+The prior Docs workflow failed with **two obsolete assertions** out of 1,065
+site tests: they required historical reviewer authority and receipt-version
+language to appear in the 13 KB normal `artifacts.md` include. The strict
+language still exists in the **on-demand** `artifacts-attestation.md` include.
+The corrected website test checks that the normal include links to the
+optional owner, that it does not preload old reviewer instructions, and that
+the previous host and receipt restrictions still exist in the optional file.
+Its **12 focused tests pass** on Windows. No production permission hook,
+receipt validation, or release policy was relaxed to make the test pass.
+A broader **Windows** `npm test` attempt was **not green**: 1,020 tests
+passed, 35 were skipped, and 10 failed, including Windows CRLF-sensitive
+website fixtures and Git/process startup timeouts under parallel test load.
+It stopped at Vitest before the later npm test phases. These failures are
+not resolved by the two targeted Linux-hosted assertion fixes; full
+exact-head hosted Docs/CI must be observed before claiming release readiness.
+
+T07's **existing** disposable mixed-schema probe now covers a second real
+journaled edit **after** the first schema-0.3.2 write. This is a narrow
+compatibility check, not another migration service. Using source-built
+Go 1.27.1 Windows/amd64 native binaries, it passed:
+
+- Older schema 0.3.1 at exact base SHA `045c0812`:
+  SHA-256 `56a696e4f3aca730c1344daea93e6b0f8ba188e8264b646e67bbb6b26266a870`.
+- Newer schema 0.3.2 at exact source head `e50bed2f`:
+  SHA-256 `de88953242db508aaea7271a3082cff78d6c72e89d40594ad8fa422ae9a3db0d`.
+
+The probe exercised two actual committed native `task-check` transactions,
+verified both original journal before-images, retried **both exact operation
+IDs after the second edit** without losing newer bytes, preserved the recorded
+user `BLOCKED` stop, and proved the older client still fails closed on the
+modern artifact. Its standalone forward export contains the later note and
+does not overwrite the canonical pair. Outcomes remain synthetic **unknown**
+reports; the fixture did **not** run the named command, assert independent
+test passing, or attempt an unsafe automatic schema downgrade. The backup
+of a prior revision is recovery evidence, **not** a file to overwrite modern
+work with after further edits.
+
+**Still not proved:** full consumer rollback, arbitrary shared dependency
+closure, unknown historical pending formats, published package parity, and an
+installed model-backed full workflow. No new approval/verification machinery,
+artifact API, persistent store, or release change was introduced.
 
 ## Tenth slice: retire only provably unanswered legacy decision prompts
 
