@@ -1,12 +1,12 @@
 {
-  "revision": "cffd553bddb4067c46abd3bc9b9b5c6ccd291702",
+  "revision": "ebe6d11327212e544e9da6d1eb70d39486d1daac",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "The original October 7 route geometry remains a historical snapshot. This draft PR changes ordinary task authoring and execution, keeps genuine host decisions, allows selective reuse of unchanged reviews, safely retires unanswered legacy reconciliation prompts without user codes, and adds bounded caller-reported command pass/fail/skip/unknown histories which do not establish independent proof or source-file freshness. Old approval arrows are historical, not the current default. Other pending formats, full source-impact tracking, mixed-client upgrade and installed-host qualification remain not fully converted. No release or installed-host qualification is implied.",
+  "summary": "This canvas retains the October 7 geometry as an explicitly historical route snapshot. The draft assistive implementation now records caller-reported task checks and can compare bounded declared source paths, explicitly named shared interfaces and common build controls without rescanning every source or dispatching a reviewer. Unchanged scoped bytes are partial applicability, not full dependency closure or passing test proof. A mixed old/new engine fixture checks byte-preserving upgrade, retained user stops, exact journal replay and older-client fail-closed behavior. Pending-prompt, full dependency, installed-host and release qualification remain incomplete. The historical approval arrows are not the current default. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "09df53c69c42b1f24472e6947a3eeac1b4f369a8",
-      "summary": "Normal state progression is advisory, with bounded task context and task-check reported command outcomes separate from verified evidence; failure/unknown remains visible without another approval or routine review cascade. Exact operation replay and host permissions remain independent.",
+      "blob": "656aa91b4ca63a182e8676127c592c21414e26b7",
+      "summary": "The source-bound artifact guidance now explains optional shared input paths, targeted affected-check refresh, and explicit unassessed fallback. It also documents old-client refusal after modern schema writes and exact-operation forward recovery, not automatic downgrade. This still allows applicable in-scope work to proceed without approval codes or blanket reviewer redispatch.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -31,8 +31,8 @@
     },
     {
       "path": "core/surface/skills/writing-plans/SKILL.md",
-      "blob": "bb30a0bbe9949bb1a98a53c0290f0bdf37786925",
-      "summary": "The drafting skill now plans coherent units of work and maintains exact criteria and dependencies without approval codes, future-runner admission, or mandatory five-minute tasks. It does not execute the plan.",
+      "blob": "af25ade65a84563b3a2fcd40e48c1b3e37994e69",
+      "summary": "The drafting owner now describes explicit shared_inputs for known common interfaces and configuration, with no invented dependency graph or extra artifact approval.",
       "nodes": [
         "o-feature-spec",
         "f-plan"
@@ -142,8 +142,8 @@
     },
     {
       "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-      "blob": "7c138152ca71a6be8749efafc5c7839c0f850534",
-      "summary": "The execution skill uses bounded task-context and real tool checks, then records command-level pass/fail/skip/unknown through task-check without inventing named-test proof. It does not require approval or reviewer fleets.",
+      "blob": "56935504aee2411a92f88a948eeb7cae62fbb8c1",
+      "summary": "The implementation owner uses bounded task/source applicability for targeted rechecks, never treating scoped hash matches or caller notes as an independent review or full graph proof.",
       "nodes": [
         "f-selection",
         "f-verify",
@@ -182,8 +182,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/task_context.go",
-      "blob": "96755ea79cb00a6b4d9640bd484dc36e95779a55",
-      "summary": "Read-only task-context now exposes the last three bounded reported command results with a latest failure or unknown diagnostic, without tool execution, authority codes or source snapshots.",
+      "blob": "3cdec8f620265b48fc2ad4fdc65625f4c7c0783b",
+      "summary": "Read-only task-context reassesses the bounded source subset and reports scoped_changed, scoped_unchanged or unassessed with scope_complete false; relevant changes guide targeted retests.",
       "nodes": [
         "f-selection",
         "f-spec-review",
@@ -213,8 +213,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/task_check.go",
-      "blob": "5a5d1c17d69edc4de4903b01c0e16944c8d075f5",
-      "summary": "Reported task-check records an inert, CAS-protected command observation with pass, fail, skip or unknown status and bounded source/excerpt. No command execution or independent review is manufactured.",
+      "blob": "b66f26e0153c2e14266b076b61162d0570e76878",
+      "summary": "Task-check observations now retain directly referenced criterion identity and an optional bounded source-input fingerprint or an explicit unassessed reason, without executing tests or minting approval receipts.",
       "nodes": [
         "f-verify",
         "f-quality",
@@ -224,8 +224,8 @@
     },
     {
       "path": "core/artifacts/internal/model/assistive.go",
-      "blob": "c972944dde5a4bb3e2d67d232a73a474f5ad2970",
-      "summary": "Task-subject identity covers declared checks, task paths and referenced criteria while excluding method-only steps. Worktree freshness remains explicitly unassessed; old results remain historical.",
+      "blob": "03665300ecbea35ea9d050400ed3e43ca598b969",
+      "summary": "Historical check observations keep whole-spec applicability while new ones bind only referenced criterion definitions, avoiding irrelevant spec changes without falsely claiming verified work.",
       "nodes": [
         "f-verify",
         "c-read"
@@ -261,11 +261,33 @@
     },
     {
       "path": "core/artifacts/schemas/common.schema.json",
-      "blob": "2c5a502d0dbb73feb7576811bfec63cad2b0aa1a",
-      "summary": "Unpublished schema 0.3.2 includes a closed bounded caller-reported command observation, with explicit outcome, source, task-subject digest and an inert history record.",
+      "blob": "1cb30c77e225715cd8f15b0cfda03ed6f2db68d7",
+      "summary": "The unpublished 0.3.2 native schema adds optional shared_inputs and scoped task-check fields without silently relabeling old records.",
       "nodes": [
         "f-verify",
         "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/input_scope.go",
+      "blob": "4ea9e8ed7da40a6b1ab4b851801c999b85749e2a",
+      "summary": "The bounded source-fingerprint reader hashes actual declared task/shared paths, directory membership and known build-control files; unsafe, missing and over-limit scopes are explicitly unassessed rather than blocking work or proving a full dependency graph.",
+      "nodes": [
+        "f-verify",
+        "f-quality",
+        "f-accept",
+        "c-proof",
+        "c-read"
+      ]
+    },
+    {
+      "path": "docs/artifacts/ASSISTIVE-UPGRADE.md",
+      "blob": "5656378811f6732d82edfb862ee083ca685274c9",
+      "summary": "The candidate-only human recovery guide distinguishes historical reads, the first new-format write, old-client closed refusal, journal replay, standalone export and the narrow non-destructive rollback policy. Its process requires preserving recorded user stops rather than silently restarting unfinished work.",
+      "nodes": [
+        "f-recovery",
+        "f-accept",
+        "c-proof"
       ]
     }
   ]

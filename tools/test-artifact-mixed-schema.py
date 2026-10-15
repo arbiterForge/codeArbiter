@@ -115,6 +115,15 @@ def exercise(old: Path, current: Path) -> dict:
         replay = ok(current, root, "task-check", reported_check)
         assert replay.get("transaction", {}).get("replay") is True
         assert plan_file.read_bytes() == upgraded, "idempotent retry duplicated an upgrade"
+        # Native rollback and forward recovery require the journal's *real*
+        # pre-upgrade bytes, not an invented dump or model-visible receipt.
+        journal = json.loads((root / ".codearbiter/.artifacts/transactions/mixed-check-0001.json").read_text(encoding="utf-8"))
+        assert journal["state"] == "committed"
+        entries = [entry for entry in journal["entries"] if entry["path"] == ".codearbiter/plans/flow.html"]
+        assert len(entries) == 1
+        assert entries[0]["before_sha256"] == hashlib.sha256(before_bytes).hexdigest()
+        assert (root / entries[0]["backup"]).read_bytes() == before_bytes
+        assert plan_file.read_bytes() == upgraded
         assert upgraded != before_bytes and re.search(rb'"schema_version"\s*:\s*"0\.3\.2"', upgraded)
         newer = identity(current, root, "PLAN-FLOW")
         assert newer["revision"] > before["revision"]
@@ -162,6 +171,7 @@ def exercise(old: Path, current: Path) -> dict:
             "plan_identity_retained": newer["artifact_id"] == before["artifact_id"],
             "recorded_user_stop_preserved": packet["state"] == "BLOCKED",
             "idempotent_upgrade_retry": replay["transaction"]["replay"],
+            "actual_journal_before_image_preserved": True,
             "latest_revision": newer["revision"],
         }
 

@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('partial assistive implementation versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('cffd553bddb4067c46abd3bc9b9b5c6ccd291702');
-    expect(update.changes).toHaveLength(24);
+    expect(update.revision).toBe('ebe6d11327212e544e9da6d1eb70d39486d1daac');
+    expect(update.changes).toHaveLength(26);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
@@ -22,7 +22,7 @@ describe('partial assistive implementation versus retained historical routes',()
       expect(bytes.toString('utf8')).toBe(current);
       expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
     }
-    expect(update.summary).toContain('not fully converted');
+    expect(update.summary).toContain('remain incomplete');
     expect(update.summary).toContain('No release or installed-host qualification');
   });
 
@@ -42,8 +42,10 @@ describe('partial assistive implementation versus retained historical routes',()
     expect(allText).toContain('Read-only task-context');
     expect(allText).toContain('unanswered legacy reconciliation');
     expect(allText.toLowerCase()).toContain('in-flight');
-    expect(allText).toContain('Reported task-check');
-    expect(allText).toContain('Worktree freshness remains explicitly unassessed');
+    expect(allText).toContain('Task-check observations now retain');
+    expect(allText).toContain('scoped_changed');
+    expect(allText).toContain('preserving recorded user stops');
+    expect(allText).toContain('unassessed rather than blocking');
   });
 
   it('shows the distinction before the canvas, in affected node details, and in standalone exports',()=>{
