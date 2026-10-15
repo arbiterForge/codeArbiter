@@ -26,9 +26,11 @@ The tested older client may refuse **the whole repository's canonical pair** aft
 
 The new default workflow does **not** require artifact-specific user reply codes. Keep three separate cases:
 
-- **Unanswered, properly bound legacy reconciliation question, no durable attempt:** after inspecting active work, use the existing helper's `--supersede --reason` command. It clears only that question/route and records a non-authorizing disposition; it never clears an actual task stop.
-- **An answered prerequisite, submitted paired approval, or durable reconciliation mutation:** **do not discard the marker**. Use the owning historical recovery/replay method. A newly failing requirement or explicit user denial remains meaningful even when the old UI prompt is obsolete.
-- **Unknown, malformed or conflicting legacy/current markers, uncertain host execution:** preserve the bytes and investigate. Do not bulk-delete marker directories, generate new approval events, or start the task under a fresh operation ID.
+- **Unanswered legacy reconciliation prompt with no durable attempt:** after inspecting active workers, use the existing helper's `--supersede --reason` command. It retires only that bounded question/route and cannot clear an actual task stop.
+- **Unsubmitted historical 0.2 paired-sprint approval:** the old producer writes a durable submission *before* native execution. The code-free `retire` helper acquires the same transition lock and refuses any submitted pair. See the command below.
+- **Unanswered prerequisite in exactly `ARMED`:** the existing prerequisite lock validates the record and retires that question without recording a user decision. `CONFIRMED` and `CAPTURED` must use their owning recovery path, not this command.
+- **Old 0.1 single approval:** its marker alone cannot prove no reply was submitted or committed. Code-free retirement deliberately refuses `LEGACY_APPROVAL_RECOVERY_REQUIRED`. Inspect the authority/history and native journal; do not discard this marker as if it were a safe unsubmitted pair.
+- **Uncertain host execution, malformed or conflicting legacy/current markers:** preserve the bytes and investigate. Do not bulk-delete marker directories, mint approval events, or start work under a fresh operation ID.
 
 For a supported host whose plugin helpers include `artifact-reconcile.py`, an *unanswered* reconciliation repair looks like:
 
@@ -40,7 +42,24 @@ python "<PLUGIN_ROOT>/hooks/artifact-reconcile.py" \
 
 If an attempt exists, this command refuses it. Use the helper's `--recover` to replay the **exact stored** operation; recoveries distinguish committed or proven-uncommitted outcomes. Inspect the result before dispatching any new work.
 
-For older *ARMED* single-approval or prerequisite prompts, the existing owner-specific `cancel` methods remain available, but they are **not** universal cleanup commands. A confirmed/captured answer, submitted pair, or uncertain operation is not disposable.
+For an unsubmitted paired-sprint approval, the canonical helper is:
+
+```sh
+python "<PLUGIN_ROOT>/hooks/_approvallib.py" retire \
+  --root "<PROJECT_DIR>" --artifact-id PLAN-EXAMPLE \
+  --reason "Unanswered paired prompt retired after reviewing the actual current work"
+```
+
+For a prerequisite still in the validated `ARMED` state:
+
+```sh
+python "<PLUGIN_ROOT>/hooks/_prerequisitelib.py" retire \
+  --root "<PROJECT_DIR>" --artifact-id PLAN-EXAMPLE \
+  --prerequisite-id GATE-EXAMPLE \
+  --reason "No user answer observed; reassess factual applicability separately"
+```
+
+Both return `unanswered_prompt_superseded`, `mutation_attempted: false`, and `authority_granted: false`. They do not claim that implementation succeeded, a test passed, or a human granted permission. Submitted pairs and confirmed/captured prerequisite requests are rejected without discarding their state. An old single-artifact approval has a different, **unverifiable** pending format and is not covered. Never repeat an uncertain mutation with a new ID.
 
 ## Recovering source state or returning to an older package
 
