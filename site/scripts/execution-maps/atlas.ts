@@ -36,6 +36,10 @@ export const REVALIDATED_AT = '25980c292b529fca90c39f5f26d69a1c0674de44';
 // native authority routes. All 71 product reads and the lens roster were
 // compared. Pin the retained blob so a squash does not require a branch commit.
 export const UNITTEST_COLLECTOR_BLOB = '76a2998f4bd5b6f441f5fd162bbe810b2de2ee93';
+// #970 limits malformed-wrapper refusal to parsed Python wrapper prefixes.
+// S32's native producer/reviewer routes and historical links/geometry still agree.
+// Bind the compatible current bytes without changing historical review data.
+export const INERT_VERIFIER_COLLECTOR_BLOB = 'a8526b1547bc11887139052502e3577d853f9cc8';
 
 // These exact tracked owner blobs retain the packet-preparation review through
 // changelog integration and a squash/main clone. All other owners retain the
@@ -84,6 +88,13 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
   'core/surface/includes/artifacts.md':'c10c13162e63699c3748809f3ef2448bc8b07fb9',
   'core/pysrc/_artifactauthoritylib.py':'8dbbfdbae637e79dea52181b01e328a21efe3a06',
   'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
+});
+
+// PR978 integrates the inert-wrapper selector with PR979's native protocol.
+// Preserve both earlier owner identities; only the combined current collector
+// needs this separate binding. Source guards and historical route data agree.
+export const INTEGRATED_AUTHORITY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/pysrc/_artifactauthoritylib.py':'2469eb2f26b46228e335e73035299cd86d765b10',
 });
 
 function rootBoundGitEnv():NodeJS.ProcessEnv {
@@ -152,7 +163,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
   const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??INTEGRATED_AUTHORITY_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
@@ -175,6 +186,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   atlas.lensCount=names.length;
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
+  atlas.scope+=` Current verifier collector compatibility bound to reviewed blob ${INERT_VERIFIER_COLLECTOR_BLOB}.`;
   return atlas;
 }
 

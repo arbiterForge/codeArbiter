@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, INERT_VERIFIER_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, INTEGRATED_AUTHORITY_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -20,6 +20,7 @@ const packetPreparationMain = '4c2529e2f3804d38855094e1c11d36178067c826';
 // Main960 retains the exact two reviewed a968 guide blobs after its squash.
 const legacyDeliveryReview = 'd547f82777111bc20001a977719307d3d68fc13e';
 const runtimeCompatibilityBaseline = 'e33bb87b30d4a3ac3286378ad9ec5bff70140392';
+const runtimeCompatibilityReview = '0e96f44ac68b2d17d5bb8b4a75a72ea35e41193e';
 const packetInventoryHash = 'faee422cbe0747004b85660ce6c1bf54a730759c83435dd5d9c69469a06e0baf';
 const packetChangelogHash = '8d299cd300ea41b7dae51e89a8caa418eafff0066173ac8ab1ae55030772f7a4';
 const git = (...args: string[]): string => execFileSync('git', args, {
@@ -261,6 +262,7 @@ describe('atlas source compatibility revalidation', () => {
 
   it('binds the reviewed unittest collector and exact combined source changes', () => {
     expect(UNITTEST_COLLECTOR_BLOB).toBe('76a2998f4bd5b6f441f5fd162bbe810b2de2ee93');
+    expect(INERT_VERIFIER_COLLECTOR_BLOB).toBe('a8526b1547bc11887139052502e3577d853f9cc8');
     expect(productInputs.size).toBe(71);
     const paths = [...productInputs];
     const current = git('hash-object', '--', ...paths).trim().split('\n');
@@ -278,9 +280,14 @@ describe('atlas source compatibility revalidation', () => {
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
-    expect(git('hash-object', '--', path).trim()).toBe(RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]);
+    expect(INTEGRATED_AUTHORITY_SOURCE_BLOBS).toEqual({
+      [path]: '2469eb2f26b46228e335e73035299cd86d765b10',
+    });
+    expect(git('hash-object', '--', path).trim()).toBe(INTEGRATED_AUTHORITY_SOURCE_BLOBS[path]);
     expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
       .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
+    expect(git('cat-file', 'blob', INERT_VERIFIER_COLLECTOR_BLOB).split('\n').slice(0, 190))
+      .toEqual(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190));
     expect(retainsReviewedChangelog(readFileSync(new URL('../../../CHANGELOG.md', import.meta.url), 'utf8'),
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
@@ -362,10 +369,13 @@ describe('atlas source compatibility revalidation', () => {
       'core/pysrc/_artifactauthoritylib.py': '8dbbfdbae637e79dea52181b01e328a21efe3a06',
       'docs/hooks.md': 'd4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
     });
-    expect(changedProductInputs(runtimeCompatibilityBaseline, 'HEAD')).toEqual([
+    expect(changedProductInputs(runtimeCompatibilityBaseline, runtimeCompatibilityReview)).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
       'core/surface/includes/artifacts.md', 'docs/hooks.md',
     ]);
+    for (const [path, blob] of Object.entries(RUNTIME_COMPATIBILITY_SOURCE_BLOBS)) {
+      expect(git('rev-parse', `${runtimeCompatibilityReview}:${path}`).trim()).toBe(blob);
+    }
     // S10 and S17 cite these unchanged historical ranges. The Codex protocol
     // clarification is later in each owner; source review, not these slices,
     // establishes compatibility of the authority claims that refer to them.
@@ -433,7 +443,7 @@ describe('atlas source compatibility revalidation', () => {
     for (const [path, blob] of Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
-      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS})) {
+      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...INTEGRATED_AUTHORITY_SOURCE_BLOBS})) {
       expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
       expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: current(path), encoding: 'utf8'}).trim()).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
