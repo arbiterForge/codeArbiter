@@ -822,7 +822,122 @@ def context_phase(args, bridge, installation: Path) -> dict[str, object]:
     raise AssertionError("unsupported context phase")
 
 
+def assistive_phase(args, bridge, installation: Path) -> dict[str, object]:
+    """Ordinary cold-installed flow; no historical approval/reviewer route.
+
+    Deliberately separate from the older exact-attestation lifecycle below:
+    both must still pass, but a normal task needn't earn an approval receipt.
+    """
+    workflow = Workflow(
+        bridge, args.repository, installation, args.phase, args.host, args.plugin_root,
+    )
+    client = workflow.client
+    if args.phase == "assistive-progress":
+        selected = bridge._select_authoring_route(
+            args.repository, "flow", workflow="feature", lane="full", client=client,
+        )
+        if selected["format"] != "html":
+            raise AssertionError("installed native authoring did not select HTML")
+        spec = spec_normative()
+        client.call("create", {
+            "operation_id": workflow.operation_id("create-spec"),
+            "artifact_id": "SPEC-FLOW", "kind": "spec", "slug": "flow",
+            "title": spec["title"], "summary": spec["summary"], "normative": spec,
+        })
+        source = client.call("identity", {"artifact_id": "SPEC-FLOW"})
+        # Re-resolve the namespace after creating the spec. An earlier
+        # empty-route snapshot does not establish a plan-authoring target.
+        selected = bridge._select_authoring_route(
+            args.repository, "flow", workflow="feature", lane="full", client=client,
+        )
+        target = bridge._preflight_plan_authoring(
+            selected, client, spec_artifact_id="SPEC-FLOW",
+            spec_normative_sha256=source["normative_sha256"],
+        )
+        if target.exists():
+            raise AssertionError("plan preflight unexpectedly wrote a plan")
+        plan = plan_normative(source["normative_sha256"])
+        client.call("create", {
+            "operation_id": workflow.operation_id("create-plan"),
+            "artifact_id": "PLAN-FLOW", "kind": "plan", "slug": "flow",
+            "title": plan["title"], "summary": plan["summary"],
+            "spec_id": "SPEC-FLOW", "normative": plan,
+        })
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        advice = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        if (
+            advice["assessment"] != "advisory"
+            or advice["evidence_assessed"] is not False
+            or advice["next_task"] != "T-001"
+        ):
+            raise AssertionError("draft work was blocked or disguised as verified proof")
+        before = client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        packet = client.call("task-context", {
+            "artifact_id": "PLAN-FLOW", "task": "T-001",
+            "model_sha256": before["model_sha256"],
+        })
+        if (
+            packet["task"]["id"] != "T-001"
+            or packet["binding_current"] is not True
+            or packet["evidence_assessed"] is not False
+            or packet["context_complete"] is not False
+            or len(packet["criteria"]) != 1
+        ):
+            raise AssertionError("task context omitted its actual constraints or claimed authority")
+
+        start_request = {
+            "artifact_id": "PLAN-FLOW",
+            "operation_id": workflow.operation_id("task-start"),
+            "expected": {
+                "revision": before["revision"], "model_sha256": before["model_sha256"],
+            },
+            "task": "T-001",
+        }
+        client.call("task-start", start_request)
+        start_replay = client.call("task-start", start_request)
+        if start_replay["transaction"]["replay"] is not True:
+            raise AssertionError("installed ordinary progress replay dispatched duplicate work")
+        workflow.mutate("task-check", "PLAN-FLOW", task="T-001", check={
+            "cwd": ".", "argv": ["python", "--version"], "outcome": "unknown",
+            "summary": "Cold fixture did not execute the proposed verification command.",
+            "source": "Installed candidate fixture: no command result or passing tests.",
+            "origin": "agent_report",
+        })
+        workflow.mutate("task-review", "PLAN-FLOW", task="T-001")
+        workflow.mutate(
+            "accept-scope", "PLAN-FLOW", scope="CP-01",
+            reason="Fixture implementation reported complete; tests and review unassessed.",
+        )
+        return {"progress": "recorded", "evidence_claimed": False}
+    if args.phase == "assistive-readback":
+        plan_identity = client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        packet = client.call("task-context", {
+            "artifact_id": "PLAN-FLOW", "task": "T-001",
+            "model_sha256": plan_identity["model_sha256"],
+        })
+        checks = packet["reported_checks"]
+        if (
+            packet["state"] != "DONE"
+            or packet["evidence_assessed"] is not False
+            or packet["context_complete"] is not False
+            or not checks or checks[-1]["reported_outcome"] != "unknown"
+            or checks[-1]["evidence_assessed"] is not False
+        ):
+            raise AssertionError("restarted ordinary workflow promoted progress to proof")
+        receipts = args.repository / ".codearbiter" / ".artifacts" / "receipts"
+        if receipts.exists() and any(receipts.rglob("*.json")):
+            raise AssertionError("ordinary progress minted a historical authority receipt")
+        for collection in ("specs", "plans"):
+            where = args.repository / ".codearbiter" / collection
+            if list(where.glob("*.md")):
+                raise AssertionError("installed HTML workflow created a Markdown shadow")
+        return {"progress": "DONE", "check_outcome": "unknown", "authority_receipts": 0}
+    raise AssertionError("unsupported assistive installed-host phase")
+
+
 def phase_run(args, bridge, installation: Path) -> dict[str, object]:
+    if args.phase.startswith("assistive-"):
+        return assistive_phase(args, bridge, installation)
     if args.phase.startswith("context-"):
         return context_phase(args, bridge, installation)
     workflow = Workflow(
@@ -882,10 +997,11 @@ def phase_run(args, bridge, installation: Path) -> dict[str, object]:
     raise AssertionError(f"unknown phase: {args.phase}")
 
 
-def child(args, phase: str) -> dict[str, object]:
+def child(args, phase: str, *, repository: Path | None = None) -> dict[str, object]:
     command = [sys.executable, "-I", "-B", str(Path(__file__).resolve()),
                "--host", args.host, "--plugin-root", str(args.plugin_root),
-               "--repository", str(args.repository), "--expected-binary-sha256",
+               "--repository", str(repository if repository is not None else args.repository),
+               "--expected-binary-sha256",
                args.expected_binary_sha256, "--phase", phase]
     if args.context_kind:
         command.extend(("--context-kind", "--development-root", str(args.development_root)))
@@ -948,6 +1064,24 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
         "# Installed-host workflow fixture\n",
         encoding="utf-8",
     )
+    # Prove the new everyday journey independently of the retained historical
+    # attestation contract, in a sibling scratch repository. No new host,
+    # provider, approval token, verifier, or test-only storage is introduced.
+    assistive_root = args.repository.parent / "assistive-workflow"
+    assistive_root.mkdir()
+    assistive_state = assistive_root / ".codearbiter"
+    assistive_state.mkdir()
+    (assistive_state / "CONTEXT.md").write_text(
+        "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n"
+        "# Cold installed assistive workflow fixture\n", encoding="utf-8",
+    )
+    started = child(args, "assistive-progress", repository=assistive_root)
+    restarted = child(args, "assistive-readback", repository=assistive_root)
+    if started != {"progress": "recorded", "evidence_claimed": False} or restarted != {
+        "progress": "DONE", "check_outcome": "unknown", "authority_receipts": 0,
+    }:
+        raise AssertionError("installed ordinary progress did not survive a fresh process")
+
     first = child(args, "author-dispatch")
     resumed = child(args, "reconcile-review")
     if resumed["ticket"] == first["ticket"]:
@@ -1032,7 +1166,7 @@ def main() -> int:
     parser.add_argument("--candidate-commit")
     parser.add_argument("--candidate-tree")
     parser.add_argument("--candidate-manifest-sha256")
-    parser.add_argument("--phase", choices=("author-dispatch", "reconcile-review", "accept", "commit-proof", "finalization-proof", "context-create", "context-update", "context-recover"))
+    parser.add_argument("--phase", choices=("assistive-progress", "assistive-readback", "author-dispatch", "reconcile-review", "accept", "commit-proof", "finalization-proof", "context-create", "context-update", "context-recover"))
     args = parser.parse_args()
     args.plugin_root = args.plugin_root.resolve(strict=True)
     args.repository = args.repository.resolve(strict=True)

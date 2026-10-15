@@ -90,7 +90,7 @@ Derive every obligation before any code is written, and record each as `ID · so
 
 - **Spec (`/feature`)** — one obligation per acceptance criterion in the selected spec. For
   HTML, cite the exact artifact ID and criterion ID returned by the engine;
-  caller-supplied labels cannot manufacture obligations or widen the approved
+  caller-supplied labels cannot manufacture obligations or widen the selected
   criterion set.
 - **Bug-origin regression (`/fix`)** — one obligation for each scoped wrong
   behavior to repair. Cite the current expectation, observed defect and supported
@@ -106,10 +106,13 @@ Derive every obligation before any code is written, and record each as `ID · so
 - **Contract** — API and input-validation invariants, error responses, boundary conditions.
 - **Security** — only when `security-controls.md` applies: the assertion that the security-relevant boundary holds.
 
-Gate: the obligation list is complete. For `/feature`, **auto-pass** when every obligation maps
-one-to-one onto the acceptance criteria of an already-approved spec (full-lane spec or small-lane
-mini-spec) — the user approved that list once; do not re-ask. **User review is required** only for
-obligations derived BEYOND that spec (Contract and Security rows): surface just those additions.
+Gate: the obligation list is complete. For `/feature`, continue when each obligation
+maps to the selected full-lane spec's criterion records or the confirmed small-lane mini-spec.
+An exact source/plan binding protects the agreed outcome; it is **not another artifact approval**.
+Do not re-ask the user for a code or independent authorization merely to test or implement the
+existing criteria. Escalate only a material change to the agreed outcome or a real host/security
+decision to its actual owner; ordinary Contract and Security regression checks may proceed under
+existing permissions without a new artifact-level human checkpoint.
 For `/fix`, the scoped bug-origin regression follows the original caller's repair authority and
 current evidence; the absence of a feature spec is not a block or permission to expand scope.
 Review any proposed obligation beyond that supported correction under its actual owner. An ADR

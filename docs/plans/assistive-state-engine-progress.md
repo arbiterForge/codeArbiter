@@ -22,6 +22,60 @@
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
 
+## Thirteenth slice: installed everyday workflow and source-bound TDD correction
+
+**Base inspected:** `e9e2da9d97469637f193fbd2dae49fb93776a579`,
+PR #983 development only. The exact-head Docs workflow **passed**;
+the full CI run ultimately failed in its macOS and Ubuntu hook-contract
+jobs. Both shared **one** outdated assertion in
+`.github/scripts/test_debug_workflow.py`: that TDD's selected source and
+obligation scan must require an `approved spec`. The canonical TDD owner
+correctly selected a current spec/criterion and bound plan instead; the
+new test requires that **selected-source identity**, exact binding, and
+actual caller/ADR/scope safeguards. The owning TDD skill was also simplified:
+ordinary contract/security regressions no longer demand another artifact
+approval code, and only a material outcome change or real host/security
+decision returns to its actual owner. The source is regenerated for Claude,
+Codex and Pi; no native security check is bypassed.
+
+T09 now uses **the existing exact-package installed-host workflow** to
+exercise an independent *ordinary* path alongside the older explicit
+attestation protocol. In a disposable scratch repository per host, it
+creates an HTML spec and plan as drafts, binds the current source, reads a
+bounded `task-context`, starts a task without a delivery ticket or approval,
+retries the identical operation ID without duplicate work, records an
+**unknown** (not fabricated passing) check, then records `DONE` with a
+reason instead of a reviewer receipt. A fresh process reads back that
+status, the unknown check and **zero authority receipts**. The retained
+strict historical proof sequence is then exercised in a separate scratch
+repository, with its original evidence checks unchanged. No external
+model/provider API is called by this test.
+
+### Actual installed-candidate fixture results
+
+- **Claude, Codex and Pi**: each host's isolated ordinary authoring/progress
+  and fresh-process readback **passed**, without receipt minting or
+  Markdown shadow artifacts. All three hosts also passed the retained
+  complete multi-process historical proof sequence. Tests used copied
+  plugin resources and a *pinned development native binary*; no user's
+  installed plugin was replaced.
+- Native binary: Windows/amd64, built by Go 1.27.1 from unchanged
+  `core/artifacts` source last modified at `ebe6d113`; candidate SHA-256
+  `2236f2e7ad6cd991596b33988ed89af86a6ea8d2a84cba66bf461ae230efb68d`.
+  Source-derived candidate, **not** a released package or external-model
+  installed-host qualification.
+- TDD/debug regression: **43 passed** on Windows; source-generation and
+  three-host parity checks passed. Focused authoring contract:
+  **5 passed**. Full GitHub CI of the new commit remains to be observed.
+
+**Limitations:** Synthetic authoring/unknown result fixtures do not
+establish that an external model follows the instructions. Full T04
+transitive dependency-closure inference remains out of scope for this
+narrow slice; T07 older pending categories remain fail-closed and a safe
+automatic downgrade after newer work is not claimed. Exact published
+archive/marketplace/npm bytes were not acquired or qualified. These
+remaining boundaries must not trigger invented reviewer/approval tax.
+
 ## Twelfth slice: fix opt-in proof docs and protect newer edits on upgrade
 
 **Inspected PR base:** `e50bed2ff3d490ec95bd47955c8c782564bb2e0a`,
