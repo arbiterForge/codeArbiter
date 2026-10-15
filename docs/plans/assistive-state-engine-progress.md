@@ -68,6 +68,20 @@ model/provider API is called by this test.
   three-host parity checks passed. Focused authoring contract:
   **5 passed**. Full GitHub CI of the new commit remains to be observed.
 
+**Source and derivative reconciliation:** native/test implementation is
+`arbiterForge/codeArbiter@ad052251b021796b6b70d6b78ff687a400b40091`.
+The atlas retains its earlier diagram geometry and now binds 30 exact
+owners at this implementation commit, including the corrected TDD source.
+The original diagrams are marked historical; they do **not** demonstrate
+actual new runtime paths. CI on the next docs-only head must validate that
+specific binding before a green claim is made. Locally, the atlas generator
+and TypeScript typecheck passed. The four-suite atlas run completed with
+**78 passing tests and one obsolete summary-phrasing failure**; after
+restoring the explicit no-release/no-duplicate-permission wording, all
+**four affected atlas tests passed**. The unchanged source-drift checks
+were not disabled, and a full combined run against the final docs commit
+is left to hosted CI rather than reported as already green.
+
 **Limitations:** Synthetic authoring/unknown result fixtures do not
 establish that an external model follows the instructions. Full T04
 transitive dependency-closure inference remains out of scope for this

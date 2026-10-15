@@ -13,7 +13,7 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('partial assistive implementation versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('bf3cec62a5093cd5a5aab6af9caef96d0f9b9423');
+    expect(update.revision).toBe('ad052251b021796b6b70d6b78ff687a400b40091');
     expect(update.changes).toHaveLength(30);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
@@ -40,6 +40,7 @@ describe('partial assistive implementation versus retained historical routes',()
     expect(atlas.sourceUpdate!.summary).toContain('no duplicate permission ceremony');
     expect(allText).toContain('without replacing the original task review');
     expect(allText).toContain('Read-only task-context');
+    expect(allText).toContain('Matching an agreed criterion needs no additional artifact approval');
     expect(allText).toContain('unanswered legacy reconciliation');
     expect(allText).toContain('paired approval');
     expect(allText).toContain('Confirmed or captured decisions');

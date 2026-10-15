@@ -1,7 +1,7 @@
 {
-  "revision": "bf3cec62a5093cd5a5aab6af9caef96d0f9b9423",
+  "revision": "ad052251b021796b6b70d6b78ff687a400b40091",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "This canvas preserves the October 7 route geometry as explicitly historical. The assistive overhaul now keeps routine artifact guidance small, with source-bound task retrieval, actual checking, honest progress and no duplicate permission ceremony. Strict historical approval, reviewer, receipt and recovery procedures remain available in an opt-in attestation reference and are not loaded with everyday execution. Confirmed or captured decisions, in-flight writes, user stops, host security and existing publication controls remain protected. Further installed-host, mixed-client rollback and final exact-artifact qualification remain incomplete. No release or installed-host qualification is implied.",
+  "summary": "This canvas preserves the October 7 route geometry as explicitly historical. The draft assistive overhaul now uses source-bound TDD obligations with no duplicate permission ceremony, and a cold installed-candidate fixture exercises ordinary draft authoring, relevant task context, unknown check recording, receipt-free DONE and fresh-process readback through Claude, Codex and Pi. Strict historical attestation remains optional, independently tested and available when legitimately needed. Other installed model-backed behavior, full transitive dependency closure and release qualification remain incomplete and unverified. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
@@ -155,8 +155,8 @@
     },
     {
       "path": "core/surface/skills/tdd/SKILL.md",
-      "blob": "95ce4fbeb7aa45fa52bebda1f32665b30f8dad67",
-      "summary": "The test-first discipline now consumes the selected spec and actual relevant checks without requiring an extra artifact approval or context-delivery receipt.",
+      "blob": "9141a05379daa4c35bf96373adf1a21c50b17d44",
+      "summary": "TDD uses the authoritative selected spec, exact criterion IDs and plan binding. Matching an agreed criterion needs no additional artifact approval or reviewer; only material outcome changes or real security/host decisions escalate to their owner. A planned command or reported UNKNOWN is never fabricated passing evidence.",
       "nodes": [
         "f-spec",
         "f-verify"
