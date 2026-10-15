@@ -1296,6 +1296,60 @@ class SprintPairIntegrationTest(unittest.TestCase):
         replacement = self.arm()
         self.assertIsInstance(replacement["reply"], str)
 
+    def test_observed_pair_reply_before_submission_is_not_unanswered(self):
+        armed = self.arm()
+        before_identity = self.identities()
+        pending = self.approval._load_pending(self.root)
+        old_bytes = (self.root / self.approval.PENDING).read_bytes()
+        # A host actually reported this exact reply and published its first
+        # immutable source, then crashed before writing the submission marker.
+        # This is not an unanswered question, even without an engine call.
+        recorded = self.pair._source(
+            self.root, pending, "spec", armed["reply"], "codex", "crashed-before-submission",
+        )
+        observed_path = self.root / recorded["source_ref"]
+        self.assertTrue(observed_path.is_file())
+        self.assertIsNone(self.pair._submission(self.root, pending))
+        with self.assertRaisesRegex(RuntimeError, "SUBMITTED_APPROVAL"):
+            self.approval.retire_unanswered_user_approval(
+                self.root, "PLAN-FLOW",
+                reason="A reply source was already published and must not be erased.",
+            )
+        self.assertEqual((self.root / self.approval.PENDING).read_bytes(), old_bytes)
+        self.assertTrue(observed_path.is_file())
+        self.assertEqual(self.root.resolve(), self.routes.resolve("approval", armed["reply"]))
+        self.assertEqual(self.identities(), before_identity,
+                         "an observed reply without durable submission changed native authority")
+
+    def test_tampered_immutable_observation_blocks_retirement(self):
+        self.arm()
+        pending_bytes = (self.root / self.approval.PENDING).read_bytes()
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True, exist_ok=True)
+        bogus = directory / ("f" * 64 + ".json")
+        bogus.write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "SUBMISSION_RECOVERY_REQUIRED"):
+            self.approval.retire_unanswered_user_approval(
+                self.root, "PLAN-FLOW",
+                reason="A tampered observation is not proof of no user reply.",
+            )
+        self.assertEqual((self.root / self.approval.PENDING).read_bytes(), pending_bytes)
+        self.assertEqual(bogus.read_text(encoding="utf-8"), "{}")
+
+    def test_oversized_observation_inventory_refuses_retirement_without_scanning_all(self):
+        self.arm()
+        pending_bytes = (self.root / self.approval.PENDING).read_bytes()
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True, exist_ok=True)
+        for index in range(513):
+            (directory / (f"{index:064x}.json")).write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "too many historical observations"):
+            self.approval.retire_unanswered_user_approval(
+                self.root, "PLAN-FLOW",
+                reason="Observation inventory is too large to establish an unanswered prompt.",
+            )
+        self.assertEqual((self.root / self.approval.PENDING).read_bytes(), pending_bytes)
+
     def test_submitted_paired_approval_must_recover_instead_of_retiring(self):
         armed = self.arm()
         original = self.h.client.call

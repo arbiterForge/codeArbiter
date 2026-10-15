@@ -529,10 +529,15 @@ read `identity` and `eligible`, then reconcile only what actual observed
 work requires. A cancelled question is not an accomplished task.
 
 An **unanswered** old paired-sprint approval can be retired through the
-existing approval adapter. The paired format persists any observed human
-reply as a separate exact submission before attempting the native write.
-The transition lock rechecks the current pair and **refuses a submitted
-approval**, which must use the existing `resume-sprint` recovery path:
+existing approval adapter. The paired format persists a submitted reply before attempting a native
+write. Its old producer publishes an immutable observation **before** that
+submission record, so a crash between those two writes must not make the
+reply appear unanswered. The transition lock rechecks both the exact
+submission and a **bounded, content-hash-checked observation scan**.
+It refuses retirement if either proves an observed reply or if historical
+observation storage cannot be safely assessed. Recover confirmed/submitted
+decisions with the existing `resume-sprint` path or investigate an
+interrupted pre-submission observation; never discard its source:
 
 ```sh
 python "${PLUGIN_ROOT}/hooks/_approvallib.py" retire --root "<project-root>" --artifact-id <plan-id> --reason "The old paired approval was never answered; the current authorized work does not require that question."

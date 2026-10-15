@@ -35,7 +35,12 @@ No approval, reviewer or test receipt is generated.
 Paired approval retirement delegates to the existing private serialized
 pair-cancellation handler. It validates the exact current pending marker
 and refuses any persisted user submission; a lost native reply must go
-through `resume-sprint` exact journal replay. Historical standalone
+through `resume-sprint` exact journal replay. A self-review found a narrower
+crash window: the old observer publishes immutable content-addressed
+observation evidence **before** recording the submission. The handler now
+refuses a matching observed reply or uncertain/corrupt observation storage,
+using bounded, hash-checked reads only during the explicit legacy cleanup.
+This does not add a reader-time or statusline tax. Historical standalone
 approval 0.1 has no comparable durable observed-submission record, so
 the new helper **refuses** to declare it unanswered or delete its
 marker. Existing individual-approval inspection and recovery remain.
@@ -53,6 +58,35 @@ tests; no historical user repository was opened or migrated.
 Canonical instructions and the protocol are regenerated through the
 existing surface/host builders. This slice does not claim T07's complete
 post-upgrade snapshot/restore or a safe old-client downgrade.
+
+### Tenth-slice local verification and self-review
+
+- **86 approval-adapter tests passed**, including code-free paired retirement,
+  deliberate 0.1 single-approval refusal, an actual submitted pair that
+  replays after response loss, and the newly discovered pre-submission
+  immutable-reply crash window. Malformed and over-limit observation
+  storage conservatively refuses cleanup instead of deleting evidence.
+- **35 prerequisite-adapter tests passed with one existing skip**, including
+  bounded no-code ARMED-only retirement and explicit refusal of both
+  CONFIRMED and CAPTURED decision/mutation states. Neither reports
+  authority or erases a recorded user choice.
+- Generated host-descriptor tests: **22 passed**; surface generator:
+  **147 tests with one existing skip**; routing/cleanup: **53 passed**.
+  `sync-core.py --check` and `build-surface.py --check` passed for the
+  three host projections. Local fixtures do not establish model-backed
+  installed-host behavior or cross-platform qualification.
+- Self-review detected that the old pair producer publishes an immutable
+  observation before a separate durable submission. The paired cleanup
+  now scans at most 513 observation names with the existing safe bounded
+  reader and checks content digests, prompt identity and frozen contexts.
+  A matching observed reply, corrupt entry or over-limit directory
+  refuses retirement. No new cache, receipt, reviewer or ordinary
+  task-context read is added. Source evidence remains immutable.
+
+**Remaining:** full T04 dependency closure and attested real test execution;
+T07 packaged mixed-client compatibility/rollback after later edits; exact
+installed-host exercise and distributed-artifact verification. This draft
+remains unmerged/unpublished regardless of local checks.
 
 ## T04/T07 integration review and CI correction (current continuation)
 

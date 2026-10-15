@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 from functools import wraps
+from itertools import islice
 import json
 import os
 from pathlib import Path
@@ -278,12 +279,61 @@ def resume(root: str | Path, client: Any, plan_id: str) -> dict[str, Any]:
                 "reapproval_required": True}
 
 
+
+def _published_reply_observed(root: Path, pending: dict[str, Any]) -> bool:
+    """Bounded crash-gap check for a reply published before pair submission.
+
+    The old producer publishes a content-addressed observation *before* its
+    durable submission record. A crash between these writes is not an
+    unanswered request. This rare cleanup-only read uses existing bounded,
+    no-follow readers; it never scans source files or validates execution.
+    """
+    relative = Path(".codearbiter/.artifacts/observations")
+    try:
+        directory = approval._safe_directory(root, relative, create=False)
+    except FileNotFoundError:
+        return False
+    expected_contexts = {
+        pending["spec_context"]["context_ref"],
+        pending["plan_context"]["context_ref"],
+    }
+    # Stop enumeration at the first over-limit entry; do not materialize an
+    # unbounded directory just to decide a rare legacy cleanup is uncertain.
+    entries = list(islice(directory.iterdir(), 513))
+    if len(entries) > 512:
+        raise approval.ApprovalError(
+            "SUBMISSION_RECOVERY_REQUIRED",
+            "too many historical observations to prove the paired prompt was unanswered",
+        )
+    for entry in entries:
+        if not approval.SHA256_RE.fullmatch(entry.stem) or entry.suffix != ".json":
+            # An incomplete publisher/temp or an unexpected file in immutable
+            # observation storage makes a zero-observed-reply claim unsafe.
+            raise approval.ApprovalError(
+                "SUBMISSION_RECOVERY_REQUIRED",
+                "observation storage contains an unrecognized entry; inspect before retiring",
+            )
+        observed = _read(root, relative / entry.name)
+        if _hash(observed) != entry.stem:
+            raise approval.ApprovalError(
+                "SUBMISSION_RECOVERY_REQUIRED",
+                "stored observation changed; do not discard the pending decision",
+            )
+        if (observed.get("format") == "codearbiter.observation/0.2.0"
+                and observed.get("kind") == "approval"
+                and observed.get("producer_profile") == "host-user-pair/0.1.0"
+                and observed.get("context_ref") in expected_contexts
+                and isinstance(observed.get("producer_result"), dict)
+                and observed["producer_result"].get("prompt_sha256") == pending["prompt_sha256"]):
+            return True
+    return False
+
 @_serialized
 def cancel(root: Path, pending: dict[str, Any]) -> dict[str, Any]:
     if approval._load_pending(root) != pending:
         raise approval.ApprovalError("PENDING_APPROVAL_MISMATCH", "pending pair changed before cancellation")
-    if _submission(root, pending) is not None:
-        raise approval.ApprovalError("SUBMITTED_APPROVAL", "recover the observed transaction before cancelling its pending state")
+    if _submission(root, pending) is not None or _published_reply_observed(root, pending):
+        raise approval.ApprovalError("SUBMITTED_APPROVAL", "recover the observed user reply before cancelling its pending state")
     _artifactpromptlib.unregister(root, "approval", pending["artifact_id"])
     (root / approval.PENDING).unlink()
     return {"artifact_id": pending["artifact_id"], "cancelled": True}

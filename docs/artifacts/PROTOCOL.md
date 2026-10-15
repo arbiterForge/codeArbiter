@@ -401,6 +401,13 @@ The canonical Python approval helper also offers internal
 `retire --root <repo> --artifact-id <plan> --reason <text>` for the
 historical **0.2 paired approval** only. It uses the existing serialized
 pair-cancellation handler and refuses a durable reply/submission.
+The old observer publishes immutable source observations *before* writing
+the submission record; retirement also scans at most 513 names in the
+bounded observations directory and checks exact content hashes, frozen
+pending contexts and prompt identity. A matching observed reply, corrupt
+immutable record, or over-limit directory fails closed. This scan runs
+**only on explicit legacy prompt retirement**, never on normal task
+selection, context reads or work progress.
 An old **0.1 single approval** cannot distinguish an unanswered prompt
 from a lost committed response and deliberately fails with
 `LEGACY_APPROVAL_RECOVERY_REQUIRED`. It must be inspected rather than

@@ -692,6 +692,22 @@ with _prerequisitelib._pending_transition_lock(Path(sys.argv[2]), sys.argv[3]):
             )
         self.assertEqual(json.loads(path.read_text(encoding="utf-8")), pending)
 
+    def test_prerequisite_retirement_preserves_captured_mutation_attempt(self):
+        armed = self.arm()
+        path = self.root / armed["pending"]
+        self.client.failure = "prerequisite"
+        with self.assertRaisesRegex(RuntimeError, "prerequisite failed"):
+            self.consume(armed["reply"])
+        pending = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(pending["state"], "CAPTURED")
+        self.assertIsInstance(pending["mutation_request"], dict)
+        with self.assertRaisesRegex(self.adapter.PrerequisiteError, "PREREQUISITE_RECOVERY_REQUIRED"):
+            self.adapter.retire_unanswered_user_prerequisite(
+                self.root, "PLAN-EXAMPLE", "GATE-APPROVAL",
+                reason="A published observation is not an unanswered question.",
+            )
+        self.assertEqual(json.loads(path.read_text(encoding="utf-8")), pending)
+
     def test_prerequisite_retirement_cli_does_not_request_installed_authority(self):
         armed = self.arm()
         with mock.patch.object(self.adapter._artifactlib, "ArtifactClient",
