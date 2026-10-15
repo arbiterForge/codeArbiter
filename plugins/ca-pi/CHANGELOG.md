@@ -4,12 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.18.4] - 2026-10-13
+## [0.18.5] - 2026-10-15
 
 ### Fixed
 
 - Distinguish inert PowerShell evidence from actual verifier wrapper calls (#970).
 - Preserve refusal of selected malformed and compound wrappers and exact authorization/corroboration checks.
+
+## [0.18.4] - 2026-10-13
+
+### Fixed
+
 - Fix task reconciliation for Unicode text while preserving armed requests and prompt-route integrity.
 
 ## [0.18.3] - 2026-10-13
