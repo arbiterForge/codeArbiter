@@ -22,6 +22,28 @@
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
 
+## Eighth slice: Academy installer fixture timing correction
+
+**Starting head:** `0ad01f92e223bf90464d92b1f1715116d19877ce`.
+Hosted CI and Docs failed on this exact head. The Docs Astro build passed,
+but the Academy generator suite had **one failure among 1,059 tests**:
+`generate-academy.test.ts` timed out launching a harmless PowerShell
+installer fixture (`spawnSync pwsh ETIMEDOUT`) under the 10-second
+per-process deadline. This is a test-runner process-startup bound, not a
+failure of the installer digest policy or proof that any installation occurred.
+
+The test now permits up to **30 seconds per Windows PowerShell launch** and
+**75 seconds for the containing case**. The exact focused Academy generator
+suite was rerun through the required npm environment on local Windows:
+**15 tests passed**, including real matching/mismatching installer digest
+execution and refusal fixtures. This is local evidence, not hosted green. Both the matching-digest execution
+sentinel and mismatching-digest refusal assertions remain unchanged, and
+macOS/Linux shell invocations retain the existing 10-second per-process
+bound. This is not a skip, a fabricated result, a disabled digest check or
+a relaxation of production installation security. The full T04 source-impact
+and T07 migration work remain open; this slice prioritizes clearing the
+actual hosted regression without adding new machinery.
+
 ## Seventh slice: macOS root compatibility and ordinary check recording
 
 **Starting exact head:** `5ac73c86d1a904ddc12c707ca687aeec9c764b2f`
