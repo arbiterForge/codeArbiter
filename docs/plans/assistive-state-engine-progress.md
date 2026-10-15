@@ -88,6 +88,48 @@ T07 packaged mixed-client compatibility/rollback after later edits; exact
 installed-host exercise and distributed-artifact verification. This draft
 remains unmerged/unpublished regardless of local checks.
 
+### Tenth-slice final local atlas and build evidence
+
+Source commits: `1b48960b1f6c52b31733122268f01b1877ad47d3`
+for the paired/ARMED retirement helpers,
+`392de7b6263cc147d7cbffbc0570909408e8865b` for upgrade guidance,
+and `f9f12f51a3e0a8f08b78ae749b01b3d740b48e16` for the
+pre-submission immutable-reply crash-gap guard. The atlas follow-up
+binds **29 exact source-owner blobs at f9f12f51** rather than moving-main
+claims or pretending the October route geometry is a current installed run.
+
+- Final full **approval adapter: 86 tests passed**, including real pinned
+  development-native pair fixtures, safe unsubmitted retirement, refusal
+  for standalone 0.1 and submitted pair records, pre-submission observed
+  reply preservation, tampered evidence, and the 513-entry inventory bound.
+- Final full **prerequisite adapter: 35 tests, one existing skip, no
+  failures**. A captured mutation record and confirmed human reply cannot
+  be deleted through code-free retirement.
+- Host descriptors: **22 passed**; generated surfaces: **147 tests,
+  one existing skip**; routing/cleanup: **53 passed**. Canonical source
+  files match generated Claude/Codex/Pi copies, with no engine permission
+  bypass and no host qualification from fixture output alone.
+- Atlas generation and all **78 source/geometry/identity tests passed**
+  in four suites. The Windows workstation exceeded the unchanged five-
+  second Vitest default on two Git-intensive source tests during the first
+  full run; **the same assertions passed with a temporary 30-second local
+  per-test deadline**, without changing checked-in test timeouts.
+  The local checkout also has a pre-existing, unrelated unstaged
+  `atlas-revalidation.test.ts` performance edit, deliberately **not
+  committed** as part of this slice. Final hosted CI against committed
+  sources is still required for release qualification.
+- Full local `npm run build` passed after the 29-owner atlas rebind,
+  including normal generators, diagram audit, Astro (**173 pages**) and
+  Pagefind integrity; `npm run typecheck` passed. These are local source
+  and generated-site checks, not a deployed website readback.
+
+The code and documentation remain on one **draft, unmerged and unreleased**
+PR. This does **not** qualify actual published adapter packages or
+model-backed host execution. Residual T04 full dependency/host-result
+attestation, T07 backup and rollback after later edits, and T09 exact
+installed-candidate verification remain necessary. No real consumer
+repository or historical receipt was modified.
+
 ## T04/T07 integration review and CI correction (current continuation)
 
 Live PR head `6b150fa68acdc21184fed1608901c73283c7fa30` already

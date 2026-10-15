@@ -234,8 +234,17 @@ describe('atlas source compatibility revalidation', () => {
       return readFileSync(resolve(root, path), 'utf8');
     });
     const current = (path: string): string => readFileSync(resolve(root, path), 'utf8').replace(/\r\n/g, '\n');
-    const changed = [...inputs].sort().filter(path => current(path) !==
-      git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:${path}`));
+    // One Git object query for the complete current set and one for its
+    // reviewed baseline. Spawning a separate Git process per source grew
+    // past Vitest's 5s limit on Windows as the real input set expanded.
+    // Hashes are Git's own object identities; the exact pinned blob probes
+    // below remain independently byte-strict.
+    const paths = [...inputs].sort();
+    const observed = git('hash-object', '--', ...paths).trim().split('\n');
+    const reviewed = git('rev-parse', ...paths.map(path => `${nativeV2Review}:${path}`)).trim().split('\n');
+    expect(observed).toHaveLength(paths.length);
+    expect(reviewed).toHaveLength(paths.length);
+    const changed = paths.filter((_, index) => observed[index] !== reviewed[index]);
     expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
       'core/surface/commands/feature.md', 'core/surface/commands/init.md',
       'core/surface/commands/sprint.md', 'core/surface/includes/artifacts.md',

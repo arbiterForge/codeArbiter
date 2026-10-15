@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('partial assistive implementation versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('ebe6d11327212e544e9da6d1eb70d39486d1daac');
-    expect(update.changes).toHaveLength(26);
+    expect(update.revision).toBe('f9f12f51a3e0a8f08b78ae749b01b3d740b48e16');
+    expect(update.changes).toHaveLength(29);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
@@ -37,10 +37,14 @@ describe('partial assistive implementation versus retained historical routes',()
     expect(validateAtlas(atlas)).toEqual([]);
     const allText=atlas.sourceUpdate!.changes.map(change=>change.summary).join('\n');
     expect(allText).toContain('author a structurally valid draft');
-    expect(allText).toContain('without approval codes');
+    expect(atlas.sourceUpdate!.summary).toContain('without repeating approval codes');
     expect(allText).toContain('without replacing the original task review');
     expect(allText).toContain('Read-only task-context');
     expect(allText).toContain('unanswered legacy reconciliation');
+    expect(allText).toContain('paired approval');
+    expect(allText).toContain('Confirmed or captured decisions');
+    expect(allText).toContain('content-addressed observed reply');
+    expect(allText).toContain('strict scan bound');
     expect(allText.toLowerCase()).toContain('in-flight');
     expect(allText).toContain('Task-check observations now retain');
     expect(allText).toContain('scoped_changed');

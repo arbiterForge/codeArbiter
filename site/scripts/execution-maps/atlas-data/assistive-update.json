@@ -1,12 +1,12 @@
 {
-  "revision": "ebe6d11327212e544e9da6d1eb70d39486d1daac",
+  "revision": "f9f12f51a3e0a8f08b78ae749b01b3d740b48e16",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "This canvas retains the October 7 geometry as an explicitly historical route snapshot. The draft assistive implementation now records caller-reported task checks and can compare bounded declared source paths, explicitly named shared interfaces and common build controls without rescanning every source or dispatching a reviewer. Unchanged scoped bytes are partial applicability, not full dependency closure or passing test proof. A mixed old/new engine fixture checks byte-preserving upgrade, retained user stops, exact journal replay and older-client fail-closed behavior. Pending-prompt, full dependency, installed-host and release qualification remain incomplete. The historical approval arrows are not the current default. No release or installed-host qualification is implied.",
+  "summary": "This canvas preserves the original October 7 route geometry as historical. The draft PR now has bounded source-impact applicability and code-free retirement of provably unanswered legacy reconciliation, paired-approval, and ARMED prerequisite prompts without repeating approval codes. The original paired observer can publish a durable immutable reply observation before its native submission: cancellation now checks both, failing closed on ambiguous history. Older standalone approvals remain unprovable, and submitted decisions retain exact recovery. Full installed-host verification, complete dependency attestation, and universal upgrade/rollback remain incomplete. The historical approval arrows are not the new default. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "656aa91b4ca63a182e8676127c592c21414e26b7",
-      "summary": "The source-bound artifact guidance now explains optional shared input paths, targeted affected-check refresh, and explicit unassessed fallback. It also documents old-client refusal after modern schema writes and exact-operation forward recovery, not automatic downgrade. This still allows applicable in-scope work to proceed without approval codes or blanket reviewer redispatch.",
+      "blob": "b9618fe28700dd5fc56abb21ffd1e3b9ccbd0599",
+      "summary": "Canonical instructions distinguish ordinary permission-free artifact progress from rare historical cleanup. Paired cancellation refuses both persisted submissions and matching immutable observations written just before submission, even after a crash; ARMED prerequisites may retire without a reply code, while uncertain standalone approvals and actual user stops remain protected.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -282,11 +282,42 @@
     },
     {
       "path": "docs/artifacts/ASSISTIVE-UPGRADE.md",
-      "blob": "5656378811f6732d82edfb862ee083ca685274c9",
-      "summary": "The candidate-only human recovery guide distinguishes historical reads, the first new-format write, old-client closed refusal, journal replay, standalone export and the narrow non-destructive rollback policy. Its process requires preserving recorded user stops rather than silently restarting unfinished work.",
+      "blob": "17f0cedb203e71a53b8af1b9b3244d1c9eba1f60",
+      "summary": "The candidate-only runbook distinguishes 0.3.1/0.3.2 mixed-schema readers, exact replay and forward recovery while preserving recorded user stops. The paired prompt retirement scans immutable observed replies before calling a request unanswered; submitted or uncertain decisions are never erased. Older-client downgrade after modern edits remains unsupported.",
       "nodes": [
         "f-recovery",
         "f-accept",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "blob": "7f8efe8f462a3c1fc98f5c50fd449f7d03c4ef3d",
+      "summary": "The existing paired approval adapter can retire a genuinely unanswered 0.2 sprint-pair request using its serialized cancellation lock and submission check; a submitted decision must replay, while old standalone approval 0.1 intentionally refuses automatic retirement.",
+      "nodes": [
+        "f-approval",
+        "f-recovery",
+        "f-plan",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "blob": "200eb5eff23b78b810dd8fd9a7615a0e3352df7f",
+      "summary": "The existing prerequisite adapter can retire only a validated ARMED pending question under its original per-plan OS lock. Confirmed or captured decisions are not disposable; no authority receipt or new native permission API is created.",
+      "nodes": [
+        "f-selection",
+        "f-recovery",
+        "f-plan"
+      ]
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "blob": "7219fd881b203b917d2bec192c3c274d08c83fda",
+      "summary": "The old paired approval producer publishes a content-addressed observed reply before its durable submission. Cancellation checks the matching observation, content hash, prompt and frozen context under its existing lock, with a strict scan bound. A matching or uncertain pre-submission reply blocks automatic retirement; normal tasks and context reads have no added cost.",
+      "nodes": [
+        "f-approval",
+        "f-recovery",
         "c-proof"
       ]
     }
