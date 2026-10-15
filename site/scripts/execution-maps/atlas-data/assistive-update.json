@@ -1,12 +1,12 @@
 {
-  "revision": "739f0d2610a91055592ea560ac2d255f84ff4ea9",
+  "revision": "cffd553bddb4067c46abd3bc9b9b5c6ccd291702",
   "title": "Assistive overhaul: partial implementation",
-  "summary": "The original October 7 route geometry remains a historical snapshot. The current draft PR has already converted ordinary authoring, scheduling and execution callers; a new recovery slice retires only verified unanswered legacy reconciliation prompts without approval codes and preserves exact replay for requests with in-flight mutations. Advanced host prompts, other legacy pending kinds, evidence applicability, mixed-client upgrades and release qualification remain not fully converted. The original approval arrows are historical, not the new default. No release or installed-host qualification is implied.",
+  "summary": "The original October 7 route geometry remains a historical snapshot. This draft PR changes ordinary task authoring and execution, keeps genuine host decisions, allows selective reuse of unchanged reviews, safely retires unanswered legacy reconciliation prompts without user codes, and adds bounded caller-reported command pass/fail/skip/unknown histories which do not establish independent proof or source-file freshness. Old approval arrows are historical, not the current default. Other pending formats, full source-impact tracking, mixed-client upgrade and installed-host qualification remain not fully converted. No release or installed-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "03ddccce29d5143ec5cc3baa9af61126048ff46b",
-      "summary": "The canonical artifact guidance now distinguishes receipt-free progress from obsolete approval prompts: an unanswered, route-bound legacy reconciliation request can be superseded without a code after actual worker/state inspection, but in-flight operations must still replay their exact journaled request.",
+      "blob": "09df53c69c42b1f24472e6947a3eeac1b4f369a8",
+      "summary": "Normal state progression is advisory, with bounded task context and task-check reported command outcomes separate from verified evidence; failure/unknown remains visible without another approval or routine review cascade. Exact operation replay and host permissions remain independent.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -142,8 +142,8 @@
     },
     {
       "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-      "blob": "7cf67e11069e08032e492b9bd29060161a964f2c",
-      "summary": "The implementation loop uses low-token read-only task-context with source-bound criteria and prerequisite facts, direct work or useful delegation, honest test reporting, and risk-specific review without a compulsory reviewer fleet.",
+      "blob": "7c138152ca71a6be8749efafc5c7839c0f850534",
+      "summary": "The execution skill uses bounded task-context and real tool checks, then records command-level pass/fail/skip/unknown through task-check without inventing named-test proof. It does not require approval or reviewer fleets.",
       "nodes": [
         "f-selection",
         "f-verify",
@@ -182,8 +182,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/task_context.go",
-      "blob": "e20cde3d78df68ee68f39ebe465da614ed2b25ab",
-      "summary": "Read-only task-context assembles one complete task, directly referenced spec criteria, dependency states, and scoped/unscoped prerequisites in a bounded response. It rejects stale plan identity and oversized packets; it never runs tools, takes a full source snapshot, or grants authority.",
+      "blob": "96755ea79cb00a6b4d9640bd484dc36e95779a55",
+      "summary": "Read-only task-context now exposes the last three bounded reported command results with a latest failure or unknown diagnostic, without tool execution, authority codes or source snapshots.",
       "nodes": [
         "f-selection",
         "f-spec-review",
@@ -194,8 +194,8 @@
     },
     {
       "path": "core/pysrc/_reconciliationlib.py",
-      "blob": "2d96de2b1fa66689b0c70ea254075f498861c6eb",
-      "summary": "Under the existing per-artifact lock, an unanswered legacy reconciliation prompt may be retired only when the stored registered route matches and no durable mutation attempt exists. The result is an explicit non-authorizing superseded disposition; user stops and receipts remain intact.",
+      "blob": "0dd404865b5e526ce6a91c470a558cc8c4e9f08a",
+      "summary": "An unanswered legacy reconciliation can be superseded only when registered route and pending state agree and no durable attempt exists; macOS system parent aliases are canonicalized while symlinked selected repository roots remain forbidden. In-flight operations retain exact replay.",
       "nodes": [
         "f-recovery",
         "f-accept",
@@ -205,9 +205,66 @@
     {
       "path": "core/pysrc/artifact-reconcile.py",
       "blob": "bc765277a82628343e547c03043283a042e5202f",
-      "summary": "The existing artifact-reconcile helper adds a reason-bound --supersede switch with no old approval token. It refuses conflicting modes and retains the exact --recover path for uncertain or committed writes.",
+      "summary": "The old CLI helper has a reason-bound --supersede mode to retire only unanswered prompt routing. A committed or unknown mutation outcome retains its exact --recover path.",
       "nodes": [
         "f-recovery",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/task_check.go",
+      "blob": "5a5d1c17d69edc4de4903b01c0e16944c8d075f5",
+      "summary": "Reported task-check records an inert, CAS-protected command observation with pass, fail, skip or unknown status and bounded source/excerpt. No command execution or independent review is manufactured.",
+      "nodes": [
+        "f-verify",
+        "f-quality",
+        "c-read",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/model/assistive.go",
+      "blob": "c972944dde5a4bb3e2d67d232a73a474f5ad2970",
+      "summary": "Task-subject identity covers declared checks, task paths and referenced criteria while excluding method-only steps. Worktree freshness remains explicitly unassessed; old results remain historical.",
+      "nodes": [
+        "f-verify",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/read/read.go",
+      "blob": "0f8d47a56cf2753b99141b43db466e76210c185a",
+      "summary": "Exact and batch symbol retrieval exposes reported check history under existing response budgets, without a snapshot or approval ticket.",
+      "nodes": [
+        "c-read",
+        "f-selection"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/render/render.go",
+      "blob": "658b93f23b7719802f11630af8f45d825a98f24d",
+      "summary": "Human HTML presents reported command checks in an escaped, explicitly unverified section; implementation state and source validation remain distinct.",
+      "nodes": [
+        "f-quality",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/protocol.go",
+      "blob": "e7e30c7d43b2697adf8369b55045f25d77ac6df2",
+      "summary": "The closed task-check request accepts only bounded command observations; a declared command must match its plan definition. Invalid or stale CAS writes remain rejected.",
+      "nodes": [
+        "f-verify",
+        "f-recovery",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/artifacts/schemas/common.schema.json",
+      "blob": "2c5a502d0dbb73feb7576811bfec63cad2b0aa1a",
+      "summary": "Unpublished schema 0.3.2 includes a closed bounded caller-reported command observation, with explicit outcome, source, task-subject digest and an inert history record.",
+      "nodes": [
+        "f-verify",
         "c-read"
       ]
     }

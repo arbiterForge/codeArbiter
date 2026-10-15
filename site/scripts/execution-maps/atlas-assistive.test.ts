@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('partial assistive implementation versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('739f0d2610a91055592ea560ac2d255f84ff4ea9');
-    expect(update.changes).toHaveLength(18);
+    expect(update.revision).toBe('cffd553bddb4067c46abd3bc9b9b5c6ccd291702');
+    expect(update.changes).toHaveLength(24);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
@@ -41,7 +41,9 @@ describe('partial assistive implementation versus retained historical routes',()
     expect(allText).toContain('without replacing the original task review');
     expect(allText).toContain('Read-only task-context');
     expect(allText).toContain('unanswered legacy reconciliation');
-    expect(allText).toContain('in-flight');
+    expect(allText.toLowerCase()).toContain('in-flight');
+    expect(allText).toContain('Reported task-check');
+    expect(allText).toContain('Worktree freshness remains explicitly unassessed');
   });
 
   it('shows the distinction before the canvas, in affected node details, and in standalone exports',()=>{

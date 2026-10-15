@@ -17,8 +17,8 @@
 | T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
 | T06 | Compact task packet implemented in native source | Read-only `task-context` delivers one task, directly cited criteria, dependencies and scoped prerequisites without source snapshots/receipt chains, with stale-model and size-limit refusal. Complete installed-host/token-cost qualification remains. |
 | T07 | One interrupted-prompt recovery path implemented | Unanswered legacy reconciliation prompts can be superseded without a code after route binding and no-attempt checks; actual in-flight mutations still require exact replay. Pending approval/prerequisite conversion, mixed-client upgrade, rollback and installed-host qualification remain. |
-| T08 | Canonical execution and adapter surfaces synchronized | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; new task-check guidance is regenerated to three host adapters. Historical atlas source bindings will be updated against the exact seventh-slice commit before this branch is pushed. Final public claims/Academy/mixed-host qualification remain. |
-| T09 | Focused evidence collected | Native tests and source checks below are not final installed-candidate or publication qualification. |
+| T08 | Canonical execution and adapter surfaces synchronized | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; new task-check guidance is regenerated to three host adapters. Historical atlas is bound to 24 exact reviewed seventh-slice code-owner blobs at cffd553bddb4; older route geometry is clearly historical. Final public claims/Academy/mixed-host qualification remain. |
+| T09 | Local candidate suite completed | Full Windows native build and pinned Python/reference conformance pass against the same local candidate bytes, plus scoped Linux checks. Hosted matrix, model-backed installed-host canaries, migration/rollback and exact distributed artifact remain unqualified. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
 
@@ -68,8 +68,29 @@ and installed-host verification remain open.
 | Final legacy reconciliation adapter | **55 tests passed**, including macOS-alias-compatible canonical root, refusal of a linked repository root, bounded no-code unanswered-request retirement and exact recovery of in-flight mutations. The macOS alias itself still requires hosted macOS qualification. |
 | Ordinary check and task-context regression | Focused Go tests passed for pass/fail/skip/unknown, later-failure visibility, CAS/replay, task paths and criterion references, safe inert HTML, bounded history and refusal of invented named-test proof. Reported outcomes never become `ACCEPTED`. |
 | Existing interfaces and sources | 23 routing/index tests, 147 generated-surface tests with one skip, 53 cleanup/routing tests, 22 host descriptor tests and 18 consumer-closure tests passed before final subject-digest adjustment; final generated/embedded Go schemas and three Python/Markdown host projections match. |
-| Pinned authoring/bridge and reference conformance | Earlier final-before-subject-digest candidate passed 50 authoring, 17 bridge, 43 workflow, 13 farm, 39 package and 6 top-level conformance checks. The exact final binary's pinned conformance check is running separately; do not infer its result from the earlier candidate. |
+| **Final binary's pinned Python/reference conformance** | **All 6 top-level adversarial conformance cases passed against exact binary SHA-256 `2236f2e7ad6cd991596b33988ed89af86a6ea8d2a84cba66bf461ae230efb68d`**, including the complete strict 17 bridge, 50 authoring, 43 workflow, 13 farm and 39 package fixtures and the independent original JSON-schema/reference contract. Pinned dependencies were installed in an isolated test virtualenv; no skip or proof bypass. |
 | T06 small synthetic fixture | A task-only `task-context` response was **2,181 UTF-8 bytes**, versus **20,692 bytes** of full rendered HTML (**9.49x** size ratio) for the same tiny one-task example. One native task-context call per read; five samples had median **40.975 ms** on local Windows including process start and lock. No receipts were created and the plan identity was unchanged. These are different-content payloads, **not token counts**, a matched semantic benchmark or a cross-platform latency guarantee. |
+
+The code commit for this slice is
+`arbiterForge/codeArbiter@cffd553bddb4067c46abd3bc9b9b5c6ccd291702:/`.
+The documentation/site follow-up rebinds the historical atlas to that
+commit's exact source bytes, preserving old route geometry as historical.
+Local `npm run build` passed all generators, the diagram audit, Astro
+(**173 pages**), and the Pagefind integrity check; `npm run typecheck`
+passed. These tests do not assert a production website deployment.
+The atlas follow-up has **24 exact source-bound owners at
+`cffd553bddb4067c46abd3bc9b9b5c6ccd291702`**, preserving the
+original route geometry and distinguishing current source from old approval
+arrows. The complete dedicated atlas/source regression run passed
+**73 tests in four suites**. Invalid source/agent bindings and unreviewed
+owner drift remain negative tests; a changed capitalization in a prose
+assertion was normalized without dropping the underlying in-flight
+recovery claim. The full local site generation, diagram audit, Astro build,
+search-bundle check and TypeScript typecheck passed. Hosted deployment
+remains unverified for the new exact-head candidate.
+
+No tags, package registry writes, release objects, or end-user files were
+altered by this candidate build.
 
 **Still unverified:** exact-head hosted Mac result, independent real tool-execution
 attestation, shared-interface/file-content impact selection, full archived
