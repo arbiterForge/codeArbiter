@@ -48,6 +48,25 @@ Each canonical HTML contains one authoritative embedded JSON model, inline prese
 
 The canonical JSON domain intentionally permits only safe-range integers, booleans, strings, null, arrays and objects. Duplicate keys, invalid UTF-8, unpaired surrogates, fractional/exponent numbers, excessive depth and trailing data are rejected. It is a restricted canonical subset, **not** a general arbitrary-number RFC 8785 implementation. The schema evaluator similarly supports only the declared vocabulary used by the packaged schemas; it is not a general-purpose Draft 2020-12 library. Unknown schema keywords fail initialization.
 
+## Small default workflow; historical proof on demand
+
+The canonical model-facing `core/surface/includes/artifacts.md` owns ordinary
+authoring, structured retrieval, factual prerequisites, reported checks, and
+safe progress. It is intentionally compact. The much larger strict historical
+receipt, authority-producer, and legacy pending-request procedures are now in
+`core/surface/includes/artifacts-attestation.md`, loaded only when an actual
+claim, explicit human checkpoint, historical recovery, or independently
+applicable host/publication control requires that specific protocol.
+
+The split is a **presentation/context optimization**, not a new permission
+mode or an engine semantics change. Every original section is retained;
+the existing native evidence and recovery validators remain unchanged. The
+new reference is regenerated into Claude/Codex/Pi alongside the default
+include. Normal tasks do **not** need to consume legacy evidence machinery to
+read a task, update a plan, run a relevant check, or record `DONE`. Genuine
+user denials, sandbox policies, unsafe writes, and commit/release boundaries
+remain independently enforceable.
+
 ## Authoring is not an authority preflight
 
 The installation-pinned bridge checks the actual native writer capability before

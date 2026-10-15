@@ -16,6 +16,11 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Keep routine artifact context assistive and smaller: move optional strict
+  legacy receipt, approval, and recovery reference procedures out of the
+  default artifact include. Load them only when an explicit proof/old-state
+  consumer needs them. No artifact permission gate or model reviewer is added.
+
 - Keep command-result applicability aligned with the exact referenced
   acceptance criteria and bounded task/shared source inputs plus known build
   controls. Distinguish `scoped_changed`, `scoped_unchanged` and

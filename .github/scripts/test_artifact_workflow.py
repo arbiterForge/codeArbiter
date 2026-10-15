@@ -304,11 +304,15 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
 
 
     def test_authority_capture_is_bound_to_host_owned_source_bytes(self) -> None:
-        source = " ".join(
-            (REPO / "core/surface/includes/artifacts.md")
-            .read_text(encoding="utf-8")
-            .split()
-        )
+        # Historical receipt/producer fidelity must remain tested, but not
+        # loaded as a second permission system on ordinary task starts.
+        hot = (REPO / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
+        cold = (REPO / "core/surface/includes/artifacts-attestation.md").read_text(encoding="utf-8")
+        self.assertIn("artifacts-attestation.md", hot)
+        self.assertIn("Do not load historical review/approval machinery", hot)
+        self.assertNotIn("arm the exact current artifact", hot)
+        self.assertLess(len(hot.encode("utf-8")) * 2, len(cold.encode("utf-8")))
+        source = " ".join(cold.split())
         self.assertIn("arm the exact current artifact", source)
         self.assertIn("require that exact reply", source)
         self.assertIn("records the full armed reply as the host-observed policy-owned source", source)

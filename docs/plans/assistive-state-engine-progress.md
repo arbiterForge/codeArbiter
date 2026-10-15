@@ -88,7 +88,49 @@ T07 packaged mixed-client compatibility/rollback after later edits; exact
 installed-host exercise and distributed-artifact verification. This draft
 remains unmerged/unpublished regardless of local checks.
 
-### Tenth-slice final local atlas and build evidence
+### Eleventh slice: remove historical proof from everyday model context
+
+**Starting live PR head:** `4918e28e7d911dab8dfb4fb2b4b4e073238cec`,
+draft and unreleased. The Windows Pi 1.1.0 live child fixture previously
+returned a bounded safe degraded result on a GitHub-hosted Windows runner,
+while the adjacent process-tree tests succeeded. An ad-hoc unreviewed
+npm package graph reproduced a **different** startup failure because its
+transitive Pi dependency was incompatible. That is not a product regression.
+After installing **the repository's exact reviewed Pi 1.1.0 host lock** in a
+disposable local prefix, the unmodified production runner and child
+completed the existing deterministic live child fixture on Windows:
+**9 fixture tests passed; full live help and isolated child contract PASS**.
+The GitHub-hosted failure remains unconfirmed/intermittent; no isolation
+refusal was bypassed and no supervisor timeouts or credential handling changed.
+
+The main user-facing improvement is intentionally simpler. The prior
+default artifact include contained **44,216 UTF-8 bytes / 702 lines** of
+mixed ordinary guidance and rare approval/reviewer/recovery protocols.
+It is now **12,956 bytes / 217 lines** (**70.7% fewer bytes**) for the
+normal workflow. All twelve original headed sections survive verbatim
+across the default include and the opt-in
+`includes/artifacts-attestation.md` (**32,682 bytes / 510 lines**).
+Strict receipt/authority checks, old pending-request recovery, actual
+user denials, and safety controls are still available when genuinely
+applicable; they no longer compete with task context by default.
+
+The canonical generator emits both includes for Claude, Codex, and Pi.
+Tests that specifically enforce receipt, historical evidence, and host
+authority contracts now inspect the opt-in owner. Normal execution tests
+assert that the default include points to it without loading those
+procedures; the existing ship-set integrity requirements remain tested.
+No extra engine API, cache, reviewer, prompt, approval, or automated
+permission system was introduced.
+
+**Verification:** `build-surface.py --check` passed after regeneration;
+targeted prerequisite and historical reconciliation surface tests passed;
+all **16 artifact surface tests** passed; 53 routing/cleanup tests passed.
+The full historical ship-set and other native/host suites remain subject
+to final exact-head checks. Byte counts are rendered Markdown size,
+**not** model token usage or an end-to-end cost measurement. No published
+release or installed-host upgrade is claimed.
+
+## Tenth-slice final local atlas and build evidence
 
 Source commits: `1b48960b1f6c52b31733122268f01b1877ad47d3`
 for the paired/ARMED retirement helpers,

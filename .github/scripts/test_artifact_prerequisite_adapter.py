@@ -773,8 +773,12 @@ class PrerequisiteSurfaceTest(unittest.TestCase):
         self.assertIn("no certification code", text)
         self.assertIn("caller-reported", text)
         self.assertIn("legacy unscoped prerequisite", text.lower())
-        self.assertIn("Historical paired approval", text)
+        self.assertIn("artifacts-attestation.md", text)
         self.assertNotIn("--authority-kind", text)
+        cold = (REPO / "core" / "surface" / "includes"
+                / "artifacts-attestation.md").read_text(encoding="utf-8")
+        self.assertIn("Historical paired approval", cold)
+        self.assertIn("UserPromptSubmit", cold)
 
 
 class PrerequisiteProductionBoundaryTest(unittest.TestCase):

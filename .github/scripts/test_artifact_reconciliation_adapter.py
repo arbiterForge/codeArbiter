@@ -354,7 +354,7 @@ class ReconciliationTest(unittest.TestCase):
                          [n for n, _ in before if n == "task-reconcile"])
 
     def test_documented_recovery_commands_are_directly_runnable(self):
-        source = (HERE.parent.parent / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
+        source = (HERE.parent.parent / "core/surface/includes/artifacts-attestation.md").read_text(encoding="utf-8")
         command = 'python "{{PLUGIN_ROOT}}/hooks/artifact-reconcile.py" --root "{{PROJECT_DIR}}" --artifact-id <plan-id>'
         self.assertIn(command + ' --cancel --prompt "<exact returned reply>"', source)
         self.assertIn(command + " --cancel-orphan", source)
