@@ -94,12 +94,21 @@ def test_receipt_close():
 
 # ---- #82 + #83 sprint summary aligned (T-03) -----------------------------------
 def test_sprint_summary_aligned():
-    body = section(read(SPRINT), "Land & summarize")
+    # The assistive sprint reports work and actual checks, not an invented
+    # receipt/approval certification. Retain the useful closing information
+    # while explicitly refusing to promote local DONE into released proof.
+    body = section(read(SPRINT), "Return an honest result")
     low = body.lower()
-    check("receipt" in low, "SPRINT Phase 3: summary must align to the Receipt shape")
-    check("suite time" in low or "obligations" in low,
-          "SPRINT Phase 3: summary must carry Receipt fields")
-    check("warm" in low, "SPRINT Phase 3: must wire the one warm closing sentence")
+    check("implemented changes" in low and "actually run" in low,
+          "SPRINT Phase 3: must report implemented work and checks actually run")
+    check("unresolved defects/decisions" in low and "risk findings" in low,
+          "SPRINT Phase 3: must retain unresolved issues and risks")
+    check("what still requires verification" in low,
+          "SPRINT Phase 3: must identify verification not yet performed")
+    check("local `done` batch is not a shipped release" in low,
+          "SPRINT Phase 3: local DONE must not imply a release")
+    check("must not merge" in low and "without the appropriate separate authority" in low,
+          "SPRINT Phase 3: must preserve actual Git/release permissions")
 
 
 # ---- #84 stakes on tdd finding blocks (T-04) -----------------------------------

@@ -22,6 +22,28 @@
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
 
+## T04/T07 integration review and CI correction (current continuation)
+
+Live PR head `6b150fa68acdc21184fed1608901c73283c7fa30` already
+contains T04 bounded task/shared-input impact tracking and T07 actual
+0.3.1-to-0.3.2 mixed-binary upgrade tests. Those are development-source
+implementations, not released behavior or full dependency analysis.
+
+The latest hosted CI failure was `test_ux_conversion.py` on Ubuntu:
+three assertions required the old `Land & summarize` phase's Receipt
+shape and warm closing sentence. Current `SPRINT.md` instead has
+`Phase 3 - Return an honest result` with actual tests, unresolved
+risk and remaining verification, and forbids treating local DONE as
+shipped. The test now checks those real obligations and Git/release
+permission boundaries, not approval-era copy. All eight obligation
+groups passed locally; no gate was disabled.
+
+Outstanding T04: dependency-closure inference beyond declared source,
+actual tool attestation and host integration. Outstanding T07: other
+legacy pending formats, full backup/restore after later edits, and
+installed-host rollback qualification. Existing mixed-binary tests
+prove **fail-closed old-client behavior**, not a safe downgrade.
+
 ## Ninth slice: bounded T04 impact + mixed-version T07 recovery
 
 **Started from exact PR head** `036b129eed47bba3b332bf75fba540ff90cda51f`.
