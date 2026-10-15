@@ -397,6 +397,24 @@ The outer `/feature` human checkpoint and host scheduling policies are not repla
 
 ## Unanswered legacy prompt supersession (adapter; not a native permission)
 
+The canonical Python approval helper also offers internal
+`retire --root <repo> --artifact-id <plan> --reason <text>` for the
+historical **0.2 paired approval** only. It uses the existing serialized
+pair-cancellation handler and refuses a durable reply/submission.
+An old **0.1 single approval** cannot distinguish an unanswered prompt
+from a lost committed response and deliberately fails with
+`LEGACY_APPROVAL_RECOVERY_REQUIRED`. It must be inspected rather than
+automatically deleted.
+
+The canonical prerequisite helper offers
+`retire --root <repo> --artifact-id <plan> --prerequisite-id <id>
+--reason <text>` only for the validated **ARMED** state. Its existing
+per-artifact cross-process lock rejects `CONFIRMED` and `CAPTURED`
+states, which retain exact-source recovery. Both return a non-authorizing
+superseded disposition, without a new native API operation or another
+state store. They are *manual, narrow legacy recovery helpers*; normal
+execution never needs a new artifact approval/prerequisite code.
+
 The existing `artifact-reconcile.py` host helper has an explicit
 `--supersede --reason <nonblank-text>` path for a previously armed,
 **unanswered** task/scope reconciliation prompt. It takes only the repository

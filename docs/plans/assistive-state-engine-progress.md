@@ -16,11 +16,43 @@
 | T04 | Bounded partial impact assessment implemented in development source | Retained reviewed-task reruns remain reusable; reported command outcomes now bind exact referenced criteria and bounded task/shared source files plus known build controls. Only affected scoped reads turn stale; unsafe/unmodeled scope is unassessed, never a guarantee of full dependency closure or attested test proof. |
 | T05 | Main execution instruction path converted | Native writer/drafting plus canonical feature, sprint, brainstorming, TDD, batch coordination, subagent implementation, and commit/PR handoff now describe assistive execution instead of artifact approval ceremonies; generated into Claude, Codex, and Pi. Obsolete host hook/adapter pending-request cleanup and installed behavior still need work. |
 | T06 | Compact task packet implemented in native source | Read-only `task-context` delivers one task, directly cited criteria, dependencies and scoped prerequisites without source snapshots/receipt chains, with stale-model and size-limit refusal. Complete installed-host/token-cost qualification remains. |
-| T07 | Mixed-version read/write boundary tested in addition to prompt recovery | An unanswered legacy reconciliation prompt can be superseded without a code only before any durable attempt. New explicit mixed-binary compatibility fixture proves old 0.3.1 canonical bytes survive current read, first new field upgrades to 0.3.2, and old clients fail closed without changing state. Forward export works; full backup/rollback after subsequent edits, other pending kinds and installed-host qualification remain. |
+| T07 | Mixed-version boundary and three narrow unanswered-prompt paths | Reconciliation retirement refuses attempted work, paired approval retirement refuses any durable observed submission, and prerequisite retirement works only for ARMED. Legacy single-artifact approvals deliberately fail closed. Exact mixed-binary 0.3.1-to-0.3.2 upgrade/retry/readback remains tested. Complete snapshot/rollback after later edits and installed-host qualification remain. |
 | T08 | Canonical execution and adapter surfaces synchronized | Schema 0.3.2, candidate metadata, bridge/builder and farm bundle remain synchronized; new task-check guidance is regenerated to three host adapters. Historical atlas is bound to 24 exact reviewed seventh-slice code-owner blobs at cffd553bddb4; older route geometry is clearly historical. Final public claims/Academy/mixed-host qualification remain. |
 | T09 | Local candidate suite completed | Full Windows native build and pinned Python/reference conformance pass against the same local candidate bytes, plus scoped Linux checks. Hosted matrix, model-backed installed-host canaries, migration/rollback and exact distributed artifact remain unqualified. |
 
 Continue in this same PR. Do not create a second overhaul branch or mark this slice ready to merge.
+
+## Tenth slice: retire only provably unanswered legacy decision prompts
+
+The same draft PR gains two **internal Python adapter retirement operations**
+rather than extending the native artifact command catalog: paired-sprint
+approval format 0.2 and prerequisite prompts still in `ARMED`. The earlier
+reconciliation retirement remains intact. Each returns a bounded
+`unanswered_prompt_superseded` disposition and explicitly
+`authority_granted: false`, `mutation_attempted: false`.
+No approval, reviewer or test receipt is generated.
+
+Paired approval retirement delegates to the existing private serialized
+pair-cancellation handler. It validates the exact current pending marker
+and refuses any persisted user submission; a lost native reply must go
+through `resume-sprint` exact journal replay. Historical standalone
+approval 0.1 has no comparable durable observed-submission record, so
+the new helper **refuses** to declare it unanswered or delete its
+marker. Existing individual-approval inspection and recovery remain.
+The prerequisite retirement delegates to the existing bounded
+ARMED-only cancellation under the original per-plan OS lock; any
+CONFIRMED or CAPTURED state remains protected by the original recovery
+path. Validation requires specific IDs and a nonblank, bounded reason.
+No extra persistence or global cleanup daemon is created.
+
+Targeted tests exercise permitted retirement, both CLI entrypoints,
+malformed reason/ID refusal, preservation of old 0.1 markers, and
+rejection of submitted/confirmed cases. Real native source and host
+capability qualification remain distinct from these isolated adapter
+tests; no historical user repository was opened or migrated.
+Canonical instructions and the protocol are regenerated through the
+existing surface/host builders. This slice does not claim T07's complete
+post-upgrade snapshot/restore or a safe old-client downgrade.
 
 ## T04/T07 integration review and CI correction (current continuation)
 

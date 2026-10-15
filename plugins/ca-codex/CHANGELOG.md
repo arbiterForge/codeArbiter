@@ -40,6 +40,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   source/support/workspace integrity is still checked.
 - Align runtime adapter identities and the second Codex package manifest with
   the unreleased candidate versions.
+- Retire *unanswered* paired-approval and ARMED prerequisite prompts
+  through existing internal helpers without obtaining another code; submitted
+  pairs and confirmed prerequisites retain exact recovery, while old standalone
+  approvals fail closed rather than guessing that no user replied.
 - Retire unanswered legacy reconciliation prompts with an explicit superseded
   disposition, without a new approval code. Committed or uncertain attempts
   retain exact replay/recovery; no task state or evidence is forged by cleanup.

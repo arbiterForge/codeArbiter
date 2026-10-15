@@ -541,13 +541,40 @@ because a mutation may have started, use the exact `--recover` path below;
 read `identity` and `eligible`, then reconcile only what actual observed
 work requires. A cancelled question is not an accomplished task.
 
-An unanswered legacy prerequisite prompt may use the existing
-`_prerequisitelib` `cancel` operation for an **ARMED** state; a confirmed
-or captured user answer is **not** a disposable prompt and must use its
-specific recovery contract. Existing approval-pair cancellation likewise
-refuses a submitted reply. Neither path is needed to start ordinary
-already-authorized work. Do not bulk-delete markers, receipts, or Git-admin
-attempt state. Actual host permissions and explicit user denials remain final.
+An **unanswered** old paired-sprint approval can be retired through the
+existing approval adapter. The paired format persists any observed human
+reply as a separate exact submission before attempting the native write.
+The transition lock rechecks the current pair and **refuses a submitted
+approval**, which must use the existing `resume-sprint` recovery path:
+
+```sh
+python "{{PLUGIN_ROOT}}/hooks/_approvallib.py" retire --root "{{PROJECT_DIR}}" --artifact-id <plan-id> --reason "The old paired approval was never answered; the current authorized work does not require that question."
+```
+
+Old **single-artifact** approval format 0.1 cannot prove that a submitted
+reply was never captured or committed. Its no-code retirement therefore
+**fails closed** as `LEGACY_APPROVAL_RECOVERY_REQUIRED`; inspect the
+current artifact, actual authority history and journal instead of deleting
+the marker. A historical approval, refusal, or genuine user stop is not a
+routine progress permission and must not be silently inverted.
+
+An unanswered old prerequisite can use the same existing prerequisite
+helper when its validated state is exactly `ARMED`:
+
+```sh
+python "{{PLUGIN_ROOT}}/hooks/_prerequisitelib.py" retire --root "{{PROJECT_DIR}}" --artifact-id <plan-id> --prerequisite-id <prerequisite-id> --reason "No human reply was observed; use the real factual observation path if this condition still matters."
+```
+
+Its per-plan transition lock rejects `CONFIRMED` or `CAPTURED` requests:
+preserve the source and recover the actual submission instead. Either
+retirement reports `unanswered_prompt_superseded`,
+`authority_granted: false`, and `mutation_attempted: false`.
+Neither is an automatic prompt sweep or a native permission operation.
+No canonical task state, receipt history, or explicit user denial changes.
+**Inspect workers and actual state first**; do not invoke these commands
+for an actively handled request. Other older interrupted decisions use
+their specific recovery contract. Do not bulk-delete markers, receipts,
+or Git-admin attempt state. Actual host permissions remain final.
 
 ## Historical pending-request recovery
 
