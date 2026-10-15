@@ -180,7 +180,9 @@ class AuthoringRouteContractTest(unittest.TestCase):
         self.assertIn("`draft_preview`", writing_plans)
         self.assertIn("`plan-bind`", writing_plans)
         self.assertIn("source's exact artifact ID and normative digest", writing_plans)
-        self.assertIn("It does not require spec approval", writing_plans)
+        self.assertIn("not an artifact approval", writing_plans)
+        self.assertNotIn("_preflight_plan_verification", writing_plans)
+        self.assertNotIn("arm-sprint", writing_plans)
         self.assertIn("not a compulsory two-to-five-minute limit", writing_plans)
         self.assertIn("must not create `.codearbiter/plans/<slug>.md`", " ".join(writing_plans.split()))
 

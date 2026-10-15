@@ -772,7 +772,7 @@ class PrerequisiteSurfaceTest(unittest.TestCase):
         self.assertIn("bounded `observation`", text)
         self.assertIn("no certification code", text)
         self.assertIn("caller-reported", text)
-        self.assertIn("legacy unscoped prerequisite", text.lower())
+        self.assertIn("unscoped prerequisite has unknown applicability", text.lower())
         self.assertIn("artifacts-attestation.md", text)
         self.assertNotIn("--authority-kind", text)
         cold = (REPO / "core" / "surface" / "includes"

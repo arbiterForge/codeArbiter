@@ -18,15 +18,12 @@ load `{{PLUGIN_ROOT}}/includes/artifacts.md`. Read the source through typed
 `index`, `outline`, and symbol-scoped `read`, not rendered HTML. Retain the
 source's exact artifact ID and normative digest. `_preflight_plan_authoring`
 checks the current source identity, structural validity, and same-slug target.
-It does not require spec approval, a reviewer adapter, or a source snapshot.
-`draft_for_pair` is a compatibility keyword, not a separate permission mode.
+It requires source identity and structural validity, not an artifact approval or reviewer.
 
 Create `.codearbiter/plans/<slug>.html` as `draft_preview` and use `plan-bind`
-when selecting or refreshing its source binding. A genuine existing approval may
-remain historical provenance; do not manufacture one. This path must not create
+when selecting or refreshing its source binding. This path must not create
 `.codearbiter/plans/<slug>.md` or a second criterion ledger. An existing `.md`
-source remains on its legacy path without automatic conversion. Use its same
-format for the plan and preserve human edits and references.
+source stays in its original format. Preserve human edits and references.
 
 Check the installed capability before writing. A missing or invalid payload
 means the artifact write did not happen; it must not fall back to Markdown.
@@ -98,12 +95,10 @@ continue useful work. Structural errors or a conflicting write remain actual
 operation failures. Do not fill missing fields with fabricated evidence to make
 validation green.
 
-Do not call `_approvallib._preflight_plan_verification`, `arm-sprint`, or any
-approval/prerequisite adapter merely to author or maintain this plan. Do not
-freeze every test invocation, task boundary, or method as a new user decision.
-Changes within the agreed outcome can update steps, task decomposition, checks,
-and dependency-valid order with a concise reason. A material outcome change must
-remain visible and goes to its actual decision owner.
+Maintain the plan under existing authorization without extra artifact approvals
+or freezing each method or check as another decision. Update in-scope steps,
+tasks, checks and valid dependencies with a reason; material outcome changes
+go to their actual decision owner.
 
 Read back the saved identity and affected symbols. Return the plan location,
 useful next work, actual unresolved choices, and outstanding checks to the active
@@ -111,20 +106,17 @@ caller. Distinguish implemented progress from verified behavior; a plan or a
 `DONE` label is not test, review, or release evidence. Keep unrelated progress
 when correcting the plan, and do not restart brainstorming after an interruption.
 
-For legacy Markdown, retain its single task/status ledger and state verification
-separately in that document. Do not reinterpret old `ACCEPTED` text as fresh
-verification or convert formats as a shortcut. Preserve genuinely requested
-checkpoints while removing duplicate artifact permission ceremonies.
+Existing Markdown retains one ledger and its original representation.
+Never infer a passing check from an old status or duplicate approval prompts.
 
-## Explicit legacy farm requests
+## Explicit farm requests only
 
-For a requested Markdown `--farm` workflow only, retain the existing backend
-boundary in `{{PLUGIN_ROOT}}/includes/farm.md` and the package contract in
-`{{PLUGIN_ROOT}}/skills/writing-plans/references/farm-plan.md`. Confirm its actual
-prerequisites, including the required provider credential, without reading or
-printing credential contents. No farm canary, model dispatch, or new spending
-is implied by ordinary plan authoring. HTML farm remains disabled; do not
-silently select another backend. Preserve the requested provider and budget.
+For a user-selected Markdown `--farm` workflow, use
+`{{PLUGIN_ROOT}}/includes/farm.md` and
+`{{PLUGIN_ROOT}}/skills/writing-plans/references/farm-plan.md`. Preserve the
+requested provider/budget and actual credential boundaries. Do not read
+credential contents or trigger model spending during ordinary authoring.
+HTML farm is disabled; never silently change backends.
 
 Retain real out-of-scope follow-ups using `{{PLUGIN_ROOT}}/includes/harvest.md`
 when relevant. Do not turn routine drafting into an additional audit program,

@@ -22,20 +22,13 @@ Read the selected spec/plan, relevant `.codearbiter/CONTEXT.md`, and the needed 
 
 For HTML, use `identity`, `index`, `outline`, exact or batched symbol-scoped `read`, and `eligible`. The engine `eligible` response is **advisory scheduling**, not permission or evidence of a passing test. Read actual task dependencies and `waiting_prerequisites`; do not treat a checkpoint number or an unscoped legacy prerequisite as a universal dependency.
 
-**Low-token task context:** after `eligible` identifies a task, prefer the
-native read-only `task-context` request with that plan's current
-`model_sha256` and the selected task ID. It returns only the task,
-its referenced spec criteria, relevant dependency states, scoped factual
-prerequisites, and explicitly unknown legacy scope. It does not collect a
-verification snapshot, invoke tools, mint receipts, or authorize execution.
-A `binding_current: false` response means review affected requirements and
-reconcile the source, not assume the old plan is approved. The packet marks
-`context_complete: false` because unrelated spec material is deliberately
-omitted; expand exact symbols for material constraints. A stale model identity
-needs a fresh `identity` read. When an older installed engine lacks
-`task-context`, use existing bounded exact/`read-batch` symbol reads without
-claiming the new capability exists. On `RECORD_TOO_LARGE`, read complete
-needed records at a larger supported budget; never accept silent truncation.
+**Read only what matters:** use `task-context` with the current plan
+`model_sha256` and task ID. It returns referenced criteria, dependency states
+and scoped facts without claiming a snapshot or approval. If
+`binding_current: false`, inspect changed requirements. If
+`context_complete: false`, fetch necessary exact symbols. On `STALE_CURSOR`
+reread identity; on `RECORD_TOO_LARGE` fetch complete individual records.
+Without this operation, fall back to existing exact/`read-batch` reads.
 
 For a `fact` prerequisite, check it with ordinary authorized tools and record the actual `prerequisite` observation (satisfied/unsatisfied/unknown, source, outcome and reported origin). For a `decision`, apply the user's already-stated choice where it is actually supported; otherwise ask the consequential question in ordinary language. An agent report is not an authenticated user decision. An unresolved prerequisite affects only the tasks that depend on it; continue independent work.
 
@@ -61,7 +54,7 @@ A failing check is a reason to repair, investigate, or mark verification pending
 
 Review the combined relevant diff when risk or change size warrants it. Use a specialist reviewer only for an actual security/dependency/migration concern or an explicit policy requirement. Avoid duplicate security reviews and blanket per-task spec/quality fleets. Retain useful findings; revisit affected conclusions only when relevant code, requirements, supporting evidence, or the previously reviewed subject changes. A new receipt ID by itself is not an impact.
 
-An explicit receipt-backed review/verification claim remains available under the historical attestation section of `includes/artifacts.md` **only when an actual caller requires such proof**. Never create, auto-approve, relabel, or simulate a receipt to move ordinary progress. Host security controls, actual deny/stop instructions, and policy-required reviews are independent of the artifact status engine.
+For an explicitly required attested claim, load only the applicable part of `${CLAUDE_PLUGIN_ROOT}/includes/artifacts-attestation.md`. Never fabricate or auto-approve receipts. Actual user stops, host permissions and policy-required reviews still apply.
 
 For a real verification command that the host already ran, record its
 ordinary result via native `task-check` with `command_index` only when
@@ -86,7 +79,7 @@ turning this bookkeeping into an extra testing or approval phase.
 
 For HTML use `task-review` without receipts to record implementation ready for review; this is **not** a claim that an independent review or tests passed. For a completed implementation batch use `accept-scope` with its authored scope ID and a real reason, **without a receipt**, to record `DONE` (implementation complete; checks not assessed). It must not clear a pending/blocked member. Keep failures, outstanding checks, and uncertainty in the report or appropriate typed records. Do not upgrade `DONE` to `ACCEPTED` without genuine independent evidence.
 
-For Markdown preserve its canonical ledger and meaningful statuses. Do not equate an old Markdown `ACCEPTED` status with a new native receipt, or change representation as a shortcut.
+For Markdown, keep its one task ledger and original format; do not treat past status text as new verification.
 
 - **Scoped invocation:** return completed tasks, checks actually run, unresolved issues, and next work to `executing-plans`. Do not call `commit-gate` yourself.
 - **Full-plan invocation:** provide the same honest summary to `/sprint`; it owns the authorized commit and PR handoff. A completed implementation batch with failing or unrun required checks is not release-ready.
