@@ -6,7 +6,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 )
 
-func TestContextCapabilityRequiresPackageEvidence(t *testing.T) {
+func TestContextCapabilityUsesHostOwnedPermission(t *testing.T) {
 	value, err := Run(t.TempDir(), "capabilities", object{"protocol": Protocol})
 	if err != nil {
 		t.Fatal(err)
@@ -15,7 +15,7 @@ func TestContextCapabilityRequiresPackageEvidence(t *testing.T) {
 	if capability["kind_registered"] != true || capability["mutation_available"] != true {
 		t.Fatalf("native context operations are not registered: %v", capability)
 	}
-	if capability["host_default_enabled"] != false || capability["qualification"] != "package-required" {
-		t.Fatalf("source capability claimed package qualification: %v", capability)
+	if capability["host_default_enabled"] != true || capability["qualification"] != "native-tested-package" || capability["permission_model"] != "host-owned" {
+		t.Fatalf("ordinary context still requires workflow authority: %v", capability)
 	}
 }

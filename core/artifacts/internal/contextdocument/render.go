@@ -230,6 +230,9 @@ func RenderPreview(input, source []byte, exists bool, selections []PreviewSelect
 	if err != nil {
 		return Preview{}, err
 	}
+	if len(doc.Entries) == 1 && doc.Entries[0].Kind == "document" {
+		return renderDocumentSelection(doc, source, exists, selections)
+	}
 	identities := map[string]bool{}
 	for _, entry := range doc.Entries {
 		if entry.Kind == "identity" {

@@ -2,7 +2,7 @@
 
 **PR:** [arbiterForge/codeArbiter #983](https://github.com/arbiterForge/codeArbiter/pull/983)
 **Branch:** `overhaul/assistive-state-engine` — **draft, unmerged, unreleased**.
-**Implementation evidence commit:** `95e8e18c3d6c2f9fecb74bccc40416c7a684cce1`.
+**Earlier implementation evidence commit:** `95e8e18c3d6c2f9fecb74bccc40416c7a684cce1`.
 **Direction:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md).
 **Scope:** [single-PR task contract](assistive-state-engine-overhaul.md).
 
@@ -12,6 +12,41 @@ The agent reads the agreed outcome and bounded task context, implements useful
 work, records actual checks and progress, and continues without artifact-origin
 permission questions. True user stops, host security, journal/CAS integrity,
 commits and publication permissions are **not** bypassed.
+
+## Context and project catch-up expansion (2026-10-16)
+
+The user expanded this PR to refresh project context and reconcile the active
+project guidance with the assistive engine. Ordinary context preview/apply now
+uses the installed native writer under existing authorization, without artifact
+approval codes or a mandatory scout-qualification exchange. Exact source and
+document identities, explicit selection, bounds, locks, paired writes, retained
+before-images and recovery remain mandatory data-integrity controls.
+
+The initialized project has been refreshed across all five content documents.
+The native writer adopted four missing records and the legacy code-map record;
+an action-boundary assessment observed five current v2 document/source identities.
+The provenance records retain `semantic_review: unreviewed`: the independent
+bounded source review is evidence at its stated scope, not a manufactured native
+semantic attestation. Frontmatter and initialized state are preserved.
+
+The refresh keeps accepted license, host, release, coverage and audit decisions,
+and separates current instructions from dated results. Related release/authority
+documentation debts are repaired, and Pi's release declaration now includes both
+shipped helper bundles. Only evidenced board items are closed; independent feature
+requests, live-host obligations and unresolved user decisions remain visible.
+
+Current local proof includes the full native tests/vet, 28 context-workflow tests,
+17 bridge tests, provenance tests, source/surface parity, and actual ordinary
+create/update/recovery/refusal in isolated source-overlay fixtures for all three
+hosts. These overlays are not published packages or live model qualification.
+The independent release-owner exercise passed its bounded scenarios, and the
+complete expanded review batch passed triage and aggregation with no unresolved
+implementation finding. Both guard matrices pass 434 checks, the related hook
+suites pass 153 tests, and the artifact-package suite passes 38 cases with one
+Unix-only skip on Windows. Fresh hosted CI and diagram source pins still belong
+to this expanded head; earlier passes below do not cover later changes. The
+[catch-up record](../reviews/2026-10-16-pr983-context-catchup.md) records the nine
+evidenced task closures and the retained backlog and qualification boundaries.
 
 ## Task tracker
 
@@ -26,6 +61,7 @@ commits and publication permissions are **not** bypassed.
 | T07 | Captured replies survive cleanup and recover without recapture; safe replay; complete saved-store restore with old client; later edits retained | Unknown historical formats remain unsupported |
 | T08 | Three regenerated host adapters and 37 source-bound atlas owners; ordinary HTML labels corrected; explicit proof on demand | Actual deployment and release derivative readback |
 | T09 | Native, reconciliation, browser and mixed-client checks pass; hosted candidate matrix and installed Claude model canary passed | Final-head CI/package confirmation; publication readback after authorized release |
+| T10 | Assistive context writer, five-document refresh, evidenced project catch-up and completed independent review | Expanded-head hosted checks and source-pin confirmation; unrelated backlog and genuine user decisions remain separate |
 
 ## Verified candidate checks
 

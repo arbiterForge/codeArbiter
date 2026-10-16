@@ -143,7 +143,7 @@
     },
     "context-check": {
       "name": "context-check",
-      "description": "Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs.",
+      "description": "Inspect context drift and refresh selected source-backed documents under existing authorization.",
       "skillPath": "skills/ca-context-check/SKILL.md",
       "visibility": "alias",
       "workflow": "operate",
@@ -152,7 +152,7 @@
     },
     "create-context": {
       "name": "create-context",
-      "description": "Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates.",
+      "description": "Build source-backed project context through bounded inspection, optional agents, and safe selected writes.",
       "skillPath": "skills/ca-create-context/SKILL.md",
       "visibility": "alias",
       "workflow": "initialize",

@@ -167,6 +167,27 @@ Maintain this one PR with implementation, migration, generated changes, document
 
 ## Execution order
 
+### T10: Refresh project context and reconcile active guidance
+
+The owner expanded this PR on 2026-10-16 to include context coverage and project
+catch-up. Inspect all six context categories and refresh the five content
+documents from current source. Extend ordinary native preview/apply to this
+authorized work without per-document approval codes or compulsory qualified
+scout exchanges. Preserve initialized state, source identities, explicit selected
+scope, concurrent-edit checks, paired writes, before-images and recovery.
+
+Reconcile active documentation, metadata and release declarations with the
+implemented direction. Close inherited tasks only when their done-when is
+actually evidenced, through their existing writer. Preserve historical accepted
+results and unresolved user decisions. Fix concrete workflow defects exposed by
+this traversal, without weakening host permissions or repository safeguards.
+
+**Done when:** all five records bind the inspected current document/source bytes;
+independent semantic review and its limits are recorded separately; active
+callers and generated resources agree; relevant regressions, release-owner proof
+and exact-head hosted checks pass. Unrelated features, unexercised live model
+cells and publication are reported separately rather than declared complete.
+
 Main integration: **T01 -> T02 -> T03 -> T04 -> T05 -> T07 -> T08 -> T09**. T06 may proceed when the T02 model contract is stable. Migration design starts with that contract. Add tests alongside owning changes; T09 is final integration, not the first testing step.
 
 A secondary worker may own compact reads/HTML or docs/fixtures with separate file ownership and one integrator. Do not create coordination/review overhead larger than the work. All commits converge here; do not release half-updated engine/callers.

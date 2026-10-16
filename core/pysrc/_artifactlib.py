@@ -41,8 +41,8 @@ def _object(pairs):
     return value
 
 
-def _decode(raw: bytes) -> Any:
-    if len(raw) > MAX_RESPONSE:
+def _decode(raw: bytes, *, max_bytes: int = MAX_RESPONSE) -> Any:
+    if len(raw) > max_bytes:
         raise ArtifactError("INVALID_RESPONSE", "oversized JSON envelope")
     # Bound nesting independently of the interpreter's recursion-limit setting.
     depth = 0
@@ -97,7 +97,7 @@ def read_context_preview_request(root: str | Path, request_file: str | Path) -> 
             raw = os.read(fd, (1 << 20) + 1)
         finally:
             os.close(fd)
-        value = _decode(raw)
+        value = _decode(raw, max_bytes=1 << 20)
     except (OSError, ValueError) as exc:
         raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview request is unavailable or outside the repository") from exc
     if not isinstance(value, dict):
@@ -140,7 +140,7 @@ def context_writer_qualified() -> bool:
 
 
 def validate_context_writer_request(request: dict[str, Any]) -> tuple[str, dict]:
-    """Parse only the finite preview or receipt request for the native workflow."""
+    """Parse an inert preview or its exact apply reference; never infer approval."""
     if not isinstance(request, dict):
         raise ArtifactError("INVALID_CONTEXT_REQUEST", "context request must be an object")
     operation = request.get("operation")
@@ -161,22 +161,33 @@ def validate_context_writer_request(request: dict[str, Any]) -> tuple[str, dict]
                          for value in preview["expected"].values()))
         if not (regular or final):
             raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview must name one bounded context target")
+    elif operation == "apply" and set(request) == {"operation", "preview_ref", "preview_sha256"}:
+        preview_ref = request["preview_ref"]
+        preview_sha256 = request["preview_sha256"]
+        if (not isinstance(preview_ref, str) or re.fullmatch(
+                r"\.codearbiter/\.artifacts/context-previews/[0-9a-f]{64}\.json", preview_ref) is None
+                or not isinstance(preview_sha256, str)
+                or re.fullmatch(r"[0-9a-f]{64}", preview_sha256) is None):
+            raise ArtifactError("INVALID_CONTEXT_REQUEST", "apply requires an exact retained preview reference and digest")
+        return "apply", {"preview_ref": preview_ref, "preview_sha256": preview_sha256}
     elif operation == "apply" and set(request) == {"operation", "receipt"}:
         receipt = request["receipt"]
         if (not isinstance(receipt, str) or re.fullmatch(
                 r"\.codearbiter/\.artifacts/receipts/[0-9a-f]{64}\.json", receipt) is None):
             raise ArtifactError("INVALID_CONTEXT_REQUEST", "apply requires one receipt reference")
     else:
-        raise ArtifactError("INVALID_CONTEXT_REQUEST", "select a closed preview or receipt apply request")
+        raise ArtifactError("INVALID_CONTEXT_REQUEST", "select a closed preview or exact apply request")
 
     return ("preview", preview) if operation == "preview" else ("apply", {"receipt": receipt})
 
 
 def context_writer_client(root: str | Path) -> "ArtifactClient":
-    """Construct the installed native writer only after strict request validation."""
-    client = ArtifactClient(root, helper_installation(__file__))
-    client.require_context_workflow()
-    return client
+    """Construct the installed writer; each context call checks its capability.
+
+    Avoid a duplicate native probe here. Request validation precedes construction
+    and ArtifactClient.call admits the actual mutation through the pinned binary.
+    """
+    return ArtifactClient(root, helper_installation(__file__))
 
 
 def _open_pinned_regular(path: Path) -> int:
@@ -1035,22 +1046,26 @@ class ArtifactClient:
         return _installed_workflow_preflight(self.installation)
 
     def require_context_workflow(self) -> dict[str, object]:
-        """Admit only the packaged native context candidate on a supported host."""
-        installed = self.workflow_preflight()
+        """Check the installed writer's API, without a second host approval gate.
+
+        The capabilities call verifies the installation-pinned, native-tested
+        binary through the normal bridge. Package/host observations remain
+        evidence, not permission to update already-authorized context.
+        """
         capability = self.call("capabilities")
         context = capability.get("repository_context")
-        if (installed.get("resources_available") is not True
-                or installed.get("host") not in {"codex", "claude"}
-                or not isinstance(context, dict)
-                or set(context) != {"source_present", "kind_registered", "host_default_enabled", "qualification", "mutation_available"}
-                or context["source_present"] is not True
-                or context["kind_registered"] is not True
-                or context["host_default_enabled"] is not False
-                or context["qualification"] != "package-required"
-                or context["mutation_available"] is not True
-                or not _context_release_qualified(self.installation)):
-            raise ArtifactError("CONTEXT_WORKFLOW_UNAVAILABLE", "installed repository-context workflow is not qualified")
-        return {**context, "host_default_enabled": True, "qualification": "packaged-candidate"}
+        required = {"context-preview", "context-finalize-preview", "context-apply"}
+        operations = capability.get("operations")
+        if (not isinstance(context, dict)
+                or context.get("source_present") is not True
+                or context.get("kind_registered") is not True
+                or context.get("host_default_enabled") is not True
+                or context.get("permission_model") != "host-owned"
+                or context.get("mutation_available") is not True
+                or not isinstance(operations, list)
+                or any(name not in operations for name in required)):
+            raise ArtifactError("CONTEXT_WORKFLOW_UNAVAILABLE", "installed binary lacks the assistive repository-context writer")
+        return dict(context)
 
     def _open_binary(self) -> int:
         system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}.get(platform.system())
@@ -1120,7 +1135,7 @@ class ArtifactClient:
     def call(self, operation: str, request: dict[str, Any] | None = None, *, permit_invalid: bool = False) -> dict:
         if not re.fullmatch(r"[a-z][a-z-]{0,39}", operation):
             raise ArtifactError("UNKNOWN_OPERATION", "invalid internal operation name")
-        if operation in {"context-evidence-context", "context-finalize-evidence-context", "context-apply"}:
+        if operation in {"context-preview", "context-finalize-preview", "context-apply"}:
             self.require_context_workflow()
         request = dict(request or {})
         if "protocol" in request and request["protocol"] != PROTOCOL:

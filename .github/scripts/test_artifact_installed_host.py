@@ -696,13 +696,13 @@ class Workflow:
         self.mutate("accept-scope", plan["artifact_id"], scope="CP-01", receipt=receipt)
 
 
-def context_provenance(document: bytes, source: bytes, *, review: str) -> dict:
+def context_provenance(document: bytes, source: bytes) -> dict:
     return {
         "schema": 2, "doc": "CONTEXT", "created": "2026-09-27",
         "document": {"path": ".codearbiter/CONTEXT.md", "digest_method": "sha256-raw",
                      "digest": hashlib.sha256(document).hexdigest()},
         "fields": [{"id": "FIELD-NAME", "owner_ref": "project_name", "claims": [{
-            "id": "CLAIM-NAME", "semantic_review": {"state": "reviewed", "reference": review},
+            "id": "CLAIM-NAME", "semantic_review": {"state": "unreviewed", "reference": None},
             "evidence": [{"kind": "content", "path": "source.txt",
                           "digest_method": "sha256-raw",
                           "digest": hashlib.sha256(source).hexdigest()}],
@@ -729,58 +729,16 @@ def context_request(root: Path, *, mode: str) -> tuple[dict, bytes]:
             {"entry_id": "FIELD-NAME", "anchor": "project_name"}],
         "expected_document_sha256": None if mode == "create" else hashlib.sha256(target.read_bytes()).hexdigest(),
         "expected_provenance_sha256": None if mode == "create" else hashlib.sha256(prior.read_bytes()).hexdigest(),
-        "proposed_provenance": context_provenance(rendered, source,
-                                                   review="fixture:" + mode),
+        "proposed_provenance": context_provenance(rendered, source),
     }
     return request, rendered
-
-
-def context_fixture_receipt(client, root: Path, preview: dict, prompt: str) -> tuple[str, dict]:
-    """Stage a labeled synthetic observation; this is not host user authority."""
-    issued = client.call("context-evidence-context", {
-        **preview, "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
-    })
-    payload = {"preview_binding_sha256": issued["preview_binding_sha256"]}
-    producer = {"host": "fixture", "session_id": "cold-context",
-                "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest()}
-    observation = {
-        "format": "codearbiter.observation/0.2.0", "kind": "context_approval",
-        "subject": issued["subject"], "context_ref": issued["context_ref"],
-        "context_sha256": issued["context_sha256"],
-        "payload_sha256": canonical_hash(payload),
-        "producer_profile": "host-user-context-preview/0.1.0",
-        "producer_run_id": "fixture:cold-context", "producer_result": producer,
-        "producer_result_sha256": canonical_hash(producer),
-    }
-    def source(subdirectory: str, value: dict) -> tuple[str, str]:
-        raw = canonical_bytes(value)
-        digest = hashlib.sha256(raw).hexdigest()
-        relative = f".codearbiter/.artifacts/{subdirectory}/{digest}.json"
-        destination = root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with destination.open("xb") as stream:
-            stream.write(raw)
-        return relative, digest
-    observation_ref, observation_sha = source("observations", observation)
-    event = {
-        "format": "codearbiter.workflow-event/0.2.0", "kind": "context_approval",
-        "authority_kind": "user_workflow", "subject": issued["subject"],
-        "actor": "synthetic cold verifier", "origin": "fixture:UserPromptSubmit:cold-context",
-        "verdict": "approved", "payload": payload, "source_text": prompt,
-        "observation_ref": observation_ref, "observation_sha256": observation_sha,
-    }
-    source_ref, source_sha = source("authority-sources", event)
-    receipt = client.call("capture-observation", {
-        "source_ref": source_ref, "source_sha256": source_sha,
-    })["receipt"]
-    return receipt, issued
 
 
 def context_phase(args, bridge, installation: Path) -> dict[str, object]:
     client = bridge.context_writer_client(args.repository)
     admitted = client.require_context_workflow()
-    if admitted["qualification"] != "packaged-candidate":
-        raise AssertionError("installed context package admission did not bind candidate evidence")
+    if admitted["permission_model"] != "host-owned":
+        raise AssertionError("installed context writer did not advertise host-owned permissions")
     target = args.repository / ".codearbiter" / "CONTEXT.md"
     provenance = args.repository / ".codearbiter" / ".provenance" / "CONTEXT.json"
     if args.phase in {"context-create", "context-update"}:
@@ -792,14 +750,16 @@ def context_phase(args, bridge, installation: Path) -> dict[str, object]:
         if operation != "preview" or admitted_request != request:
             raise AssertionError("installed public context writer changed preview scope")
         before = target.read_bytes() if target.exists() else None
-        prompt = f"approve-context CONTEXT-CONTEXT fixture-{mode}-token"
-        receipt, issued = context_fixture_receipt(client, args.repository, request, prompt)
-        context = json.loads((args.repository / issued["context_ref"]).read_bytes())
+        issued = client.call("context-preview", request)
+        if issued.get("evidence_assessed") is not False or "reply" in issued or "receipt" in issued:
+            raise AssertionError("ordinary preview manufactured approval or evidence assessment")
+        context = json.loads((args.repository / issued["preview_ref"]).read_bytes())
         expected_before = base64.b64decode(context["before_document_base64"]) if context["before_document_base64"] is not None else None
         if expected_before != before:
             raise AssertionError("native context read did not match exact preimage")
         operation, admitted_request = bridge.validate_context_writer_request({
-            "operation": "apply", "receipt": receipt,
+            "operation": "apply", "preview_ref": issued["preview_ref"],
+            "preview_sha256": issued["preview_sha256"],
         })
         if operation != "apply":
             raise AssertionError("installed public context writer changed apply scope")
@@ -809,7 +769,9 @@ def context_phase(args, bridge, installation: Path) -> dict[str, object]:
         if target.read_bytes() != rendered:
             raise AssertionError("native context rendered bytes differ from preview")
         if provenance.read_bytes() != canonical_bytes(request["proposed_provenance"]):
-            raise AssertionError("native context provenance differs from approved proposal")
+            raise AssertionError("native context provenance differs from exact proposal")
+        if list((args.repository / ".codearbiter" / ".artifacts" / "receipts").glob("*.json")):
+            raise AssertionError("ordinary context write manufactured an approval receipt")
         return {"mode": mode, "state": applied["transaction"]["state"],
                 "document_sha256": hashlib.sha256(rendered).hexdigest(),
                 "operation_id": request["operation_id"], "read_preimage": True}
@@ -1105,8 +1067,6 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
 
 
 def orchestrate_context(args, installation: Path) -> dict[str, object]:
-    if args.host == "pi":
-        raise AssertionError("Pi context authority is not supported")
     bridge = load_bridge(args.plugin_root)
     if not all((args.plugin_root / "hooks" / name).is_file() for name in (
             "_contextreportlib.py", "_contextsnapshotlib.py", "_contextselectlib.py")):
@@ -1131,10 +1091,17 @@ def orchestrate_context(args, installation: Path) -> dict[str, object]:
     disabled_manifest = args.repository / "disabled-manifest"
     disabled_manifest.mkdir()
     release = json.loads((installation / "release.json").read_text(encoding="utf-8"))
-    release.pop("context_qualification", None)
+    for entry in release["binaries"].values():
+        entry["native_tested"] = False
+        shutil.copy2(installation / entry["file"], disabled_manifest / entry["file"])
     (disabled_manifest / "release.json").write_text(json.dumps(release), encoding="utf-8")
-    if bridge._context_release_qualified(disabled_manifest):
-        raise AssertionError("source-only package was incorrectly context-qualified")
+    try:
+        bridge.ArtifactClient(args.repository, disabled_manifest).call("context-preview", {})
+    except bridge.ArtifactError as error:
+        if error.code != "UNVERIFIED_PLATFORM":
+            raise AssertionError("untested native package reported the wrong diagnostic") from error
+    else:
+        raise AssertionError("untested native package admitted an ordinary context preview")
     try:
         bridge.ArtifactClient(args.repository, args.repository / "missing-installation")
     except bridge.ArtifactError as error:
@@ -1150,7 +1117,7 @@ def orchestrate_context(args, installation: Path) -> dict[str, object]:
         "candidate_manifest_sha256": args.candidate_manifest_sha256,
         "outcomes": {"read": "pass", "create": "committed", "update": "committed",
                      "recovery": "pass", "disabled": "refused", "missing": "refused"},
-        "authority_evidence_mode": "synthetic-fixture",
+        "authority_evidence_mode": "none-required-or-created",
         "proof_kind": "candidate-preflight", "live_qualified": False,
     }
 

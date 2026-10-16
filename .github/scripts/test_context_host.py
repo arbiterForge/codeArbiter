@@ -704,7 +704,7 @@ class ContextScoutContainmentSourceTest(unittest.TestCase):
         return None
 
     def test_t024_scout_containment_profile_positive_controls(self):
-        """Require an enforced profile, distinct children and report-only delivery."""
+        """Optional contained-profile fixtures keep their actual enforced boundary."""
         trusted_git = _fixture_git_identity()
         workflow = _text("core/surface/skills/context-creation/SKILL.md")
         scout = _text("core/surface/agents/scout.md")
@@ -714,28 +714,21 @@ class ContextScoutContainmentSourceTest(unittest.TestCase):
         self.assertFalse(hosts["codex"].capabilities["agents"])
         self.assertTrue(hosts["claude"].capabilities["agents"])
         self.assertTrue(hosts["pi"].capabilities["agents"])
-        self.assertIn("## Context-creation containment profile", workflow)
+        self.assertIn("## Phase 2 — Bounded inspection", workflow)
         for requirement in (
-            "fresh child identity", "host-enforced read-only", "source read",
-            "benign write", "denied", "bounded report", "report-only synthesis",
-            "unavailable", "BLOCK before dispatch",
+            "direct bounded inspection", "optional scoped agents",
+            "six logical categories", "actual host", "not evidence",
+            "source-bound", "source hash binds bytes",
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, workflow)
         self.assertIn("## Context-creation assignment", scout)
         self.assertIn("decision-variance", scout)
         self.assertIn("context-creation", scout)
-        self.assertIn("report-only synthesis", scout)
-
-        projections = {
-            "claude": ("plugins/ca/agents/scout.md", "plugins/ca/skills/context-creation/SKILL.md"),
-            "codex": ("plugins/ca-codex/agents/scout.md", "plugins/ca-codex/routines/context-creation/SKILL.md"),
-            "pi": ("plugins/ca-pi/agents/scout.md", "plugins/ca-pi/routines/context-creation/SKILL.md"),
-        }
-        for host, (scout_path, workflow_path) in projections.items():
-            with self.subTest(host=host):
-                self.assertIn("## Context-creation assignment", _text(scout_path))
-                self.assertIn("## Context-creation containment profile", _text(workflow_path))
+        self.assertIn("not evidence of containment", scout)
+        # All three composed installed instruction paths are covered by
+        # AssistiveCallerProjectionTest; these tests exercise the optional
+        # stricter fixture without making it an ordinary onboarding gate.
         self.assertTrue(callable(globals().get("prepare_context_scout_profile")))
         with tempfile.TemporaryDirectory() as location:
             source = Path(location).resolve()
@@ -857,14 +850,12 @@ class ContextScoutContainmentSourceTest(unittest.TestCase):
         self.assertIn("bash", pi_scout["tools"])
         self.assertFalse(any(role["name"] == "context-scout" for role in pi_roles))
         self.assertIn("decision-variance", scout)
-        self.assertIn("MUST NOT dispatch the existing `scout` role", workflow)
-        self.assertIn("Bash", workflow)
         self.assertIn("A role label", workflow)
-        self.assertIn("does not qualify", workflow)
-        self.assertIn("agents capability", workflow)
-        self.assertIn("No inline fallback", workflow)
-        self.assertIn("failed or missing report", workflow)
-        self.assertIn("MUST NOT proceed to Phase 3", workflow)
+        self.assertIn("not evidence", workflow)
+        self.assertIn("separately required containment policy", workflow)
+        self.assertNotIn("No inline fallback", workflow)
+        self.assertIn("failed or missing work never counts as inspected coverage", workflow)
+        self.assertIn("Recheck changed", workflow)
         self.assertTrue(callable(globals().get("context_scout_tool_decision")))
         with tempfile.TemporaryDirectory() as location:
             source = Path(location).resolve()

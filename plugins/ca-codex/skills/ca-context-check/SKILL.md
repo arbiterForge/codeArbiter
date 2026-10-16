@@ -1,20 +1,18 @@
 ---
 name: ca-context-check
-description: "Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs."
+description: "Inspect context drift and refresh selected source-backed documents under existing authorization."
 argument-hint: "(none)"
 ---
 
 # context-check
 
-An optional, on-demand drift audit for bypass cases: a merge or an external
-edit drifted a tracked source file you are not about to commit, so commit-gate's
-Phase 5.5 auto-heal did not fire. This skill reports stale docs and lets you
-act on each one individually.
+Inspect context drift or refresh selected source-backed documents. This includes
+drift from a merge or external edit that commit-gate's Phase 5.5 auto-heal did
+not cover, and an explicitly requested full refresh of initialized context.
 
 This skill is NOT in the daily loop. Commit-gate auto-heal (Phase 5.5,
-`heal_worklist`) owns the routine maintenance path. Invoke this only when drift
-was introduced outside a commit (e.g. a direct push, a merge you did not
-author, a manual file edit).
+`heal_worklist`) owns the routine maintenance path. Reuse existing selection and
+authorization for requested refresh; an audit-only request remains read-only.
 
 <!-- catalog-compatibility-notice:start -->
 > Compatibility route. Prefer `$ca-status drift` for new explicit usage. The retained entry
@@ -27,9 +25,11 @@ author, a manual file edit).
 Use this owner for a requested provenance drift audit, `$ca-status drift`, or
 the explicit `$ca-context-check` compatibility entry. Explanation-only questions
 and ordinary status snapshots remain read-only answers, not repair requests.
-Report first. Write only after the user selects re-scout or re-baseline for that
-document; never change an unselected derived document. This owner neither stages
-nor commits. Routine commit-gate auto-heal is unchanged.
+Report first for an audit-only request. A direct request to refresh selected
+documents or the full project context supplies that selection; reuse the
+existing authorization instead of asking again per document. Never change an
+unselected derived document. This owner neither stages nor commits. Routine
+commit-gate auto-heal is unchanged.
 
 An **initialized refresh** belongs to this existing owner after an explicit
 selection. It is separate from initial population: do not call the initialized
@@ -73,7 +73,7 @@ is unknown coverage, even when a neighboring v1 or v2 record is usable. Report
 the usable records and the unknowns separately; never turn an empty legacy
 drift report into a fresh verdict for v2. `v2_current` acknowledges matching
 identities only. `semantic: unverified` and `verified_fresh: false` remain in
-force until the owning semantic review and writer receipt establish otherwise;
+force: only actual evidence can support a narrower semantic claim;
 changing hashes or choosing re-baseline does not perform that review.
 
 Only if the relevant legacy drift report is empty and v2 coverage/identities
@@ -103,8 +103,7 @@ stale path. Do not offer an automatic write for an unbounded scope.
 ### Unsupported human content and owner reconciliation
 
 An unsupported human Markdown layout, ambiguous duplicate anchor, unparseable
-custom section, oversized document or absent managed ownership record is a
-write refusal for that document, not a reason to erase it or abandon safe
+custom section or oversized document is a write refusal for that document, not a reason to erase it or abandon safe
 task-time reading. An unrelated unknown section in an otherwise supported
 document remains unowned and byte-identical during a supported field update.
 Preserve exact bytes and report the specific unsupported or unowned span.
@@ -116,36 +115,38 @@ project. Surface a real conflict without silently displacing either source.
 
 If the requested change would adopt or replace normative instructions, route
 the proposal to its actual owner and obtain that owner's actual approval before
-any supported bounded update. An unsupported template needs explicit
-reconciliation or a qualified per-kind transition through the existing context
-writer. Its refusal never authorizes raw Write/Edit fallback or a regex rewrite.
+any supported bounded update. Missing or legacy v1 provenance may use explicit native `adopt` with current
+evidence and selected supported spans, preserving the old provenance preimage.
+An unsupported template still needs reconciliation through its actual owner or
+a supported writer transition. Its refusal never authorizes raw Write/Edit fallback or a regex rewrite.
 Task, question, audit, release and ADR files remain with their existing writers;
 do not normalize, recreate or edit their history during context refresh.
 
 ### Step 3 — Selected initialized refresh
 
-For each stale or bounded affected document, present supported re-scout,
-re-baseline and defer choices; wait for the user's selection. A user may instead
-explicitly select full refresh. Do not interpret
-`status drift`, the drift report itself or an ordinary status request as that
-selection. Record the selected documents and declared affected source paths
-before any scout or write. An incremental refresh re-scouts only the selected
-drifted paths and affected logical assignments. A full refresh declares all six
-logical assignments and all five content documents. Retain prior coverage as
-prior evidence; a scoped `join_scout_reports` result has `full_coverage: false`
-and must never be described as a newly completed full scan.
+Use the user's selected documents and affected scope. If only an audit was
+requested, offer reinspection, re-baseline and defer choices before writing.
+A request for full refresh already selects all five content documents and all
+six logical categories; do not repeat that question. Record the selection and
+source paths, then inspect only what those claims need. Keep the initialized
+marker and prior history. Full inspection accounts for all six categories;
+incremental inspection does not claim a new full scan.
 
-**re-scout** — dispatch an incremental re-scout of the drifted paths for this
-doc, scoped to those paths only. Use the context-creation containment profile,
-run budget, `admit_scout_attempt` and `join_scout_reports` contract for exactly
-the declared affected assignments. A missing/failed report, changed snapshot,
-contradiction or unresolved task-dependent decision blocks the selected write.
-If the claims still hold, a valid selected owned-field metadata refresh may
-keep document bytes identical only when proposed v2 provenance actually
-changes. Missing selection and unchanged proposed provenance refuse; retain
-the stale pair and do not claim freshness in those cases. Any update still
-requires current source evidence, exact preview approval and receipt-only
-apply. Surface the proposed content and provenance pair for exact review.
+**re-scout / reinspect** — use direct bounded inspection or optional scoped
+agents for the selected claims. The context-creation evidence and gap rules
+apply. When structured reports help, `join_scout_reports` tracks their declared
+coverage; a scoped result has `full_coverage: false`. The helper is not a
+permission or containment check. A missing report can be replaced by direct
+inspection, but failed or uninspected work never becomes evidence of absence.
+Recheck changed source snapshots and resolve contradictions before their
+claims are written. Unrelated gaps do not hold independent selected work.
+
+If claims still hold, a selected owned-field metadata refresh may keep document
+bytes identical when current evidence changes the v2 provenance. Missing
+selection and unchanged proposed provenance refuse rather than claim a refresh.
+Surface the proposed content and provenance pair, inspect its source bindings,
+and apply within the selected authorization. Review consequential or disputed
+claims independently when useful; a matching digest does not verify semantics.
 
 **re-baseline** — the legacy v1 provenance choice may acknowledge a verified
 cosmetic change through its existing owner, where applicable. For an enrolled
@@ -155,22 +156,56 @@ If no field is selected or the proposed pair is a true no-op, retain the stale
 pair and defer that selection. Never directly write the v2 provenance or use
 the legacy `rebaseline` helper as a fallback for it.
 
-**full refresh** — only after explicit selection, use the same qualified
-containment and bounded join with `mode: full` and six complete logical reports.
-Synthesize all five content documents from the new evidence and reconcile gaps
-under the context-creation Phase 3–4 rules. Do not enter its Phase 6 lock.
+**full refresh** — use bounded inspection across all six categories and
+synthesize all five content documents from current evidence. Preserve unknowns
+and reconcile material user decisions under context-creation Phase 3–4. Do not
+enter its Phase 6 lock for an already initialized repository.
 
-For each selected document, submit its finite typed `update` preview through
+For a selected whole-document refresh, prepare a UTF-8 draft inside the workspace
+that retains user-owned content outside the requested change. The installed CLI
+collects bounded source hashes and chooses create/adopt/update from the current
+pair. Substitute the actual inspected repository-relative source paths; repeat
+`--source` for each supporting file. For example:
+
+```text
+python "${PLUGIN_ROOT}/hooks/init-codearbiter.py" --root "<project-root>" --context-draft "context-code-map-draft.md" --document code-map --source "src/main.py"
+```
+
+This retains an internal preview but does not change the content document or
+provenance. Inspect the returned diff, then apply the exact returned reference
+and digest:
+
+```text
+python "${PLUGIN_ROOT}/hooks/init-codearbiter.py" --root "<project-root>" --context-apply "<preview_ref>" --preview-sha256 "<preview_sha256>"
+```
+
+The source list must support the draft; it is not an automatic semantic review.
+The convenience path records `semantic_review: unreviewed`. Use typed field
+previews below when only specific managed fields are selected.
+
+For each selected document, send the typed preview through
 `python "${PLUGIN_ROOT}/hooks/init-codearbiter.py" --root <exact-root> --context-request <request-file>`.
-The installed qualified context writer checks the existing document/provenance
-pair, current source evidence, field ownership and protected target set. Review
-the exact proposed pair and obtain its own native `approve-context` reply; apply
-only its receipt through the same `--context-request` bridge. Read back the
-committed pair and confirm the standalone `<!--INITIALIZED-->` marker remains
-for `CONTEXT.md`. The writer's five content targets exclude task, question and
-audit history. Never edit those owners as a side effect, hand-write a provenance
-record, bypass a refusal, stage or commit here. If the installed writer or
-qualified scout profile is unavailable, report that boundary and retain state.
+The request uses `operation: preview` and a `preview` object. Native
+`context-preview` supports `create` for a genuinely absent document, explicit
+`adopt` for supported missing/v1 provenance, and `update` for a managed v2 pair.
+Supply the exact expected document/provenance hashes, selected fields, typed
+content and source evidence. Keep request files inside the workspace.
+
+Inspect the returned diff and preserved content. Apply with `operation: apply`,
+`preview_ref` and `preview_sha256` through the same bridge;
+native `context-apply` rechecks the preview and current identities under its
+lock and writes the selected document/provenance pair together. No approval
+receipt, actor ticket or qualified scout profile is a prerequisite for ordinary
+already-authorized refresh. This is compare-and-swap protection, not a second
+permission system. A stale preview requires reinspection, never an overwrite.
+After a lost response, inspect the transaction and retry its identical request
+and operation ID or use native recovery; do not start a duplicate write.
+
+Read back the committed pair and confirm `<!--INITIALIZED-->` remains for
+`CONTEXT.md`. Keep unowned spans byte-identical and retain legacy provenance
+history. Task, question, audit, release and ADR history stay with their actual
+writers. Never hand-write a provenance record or bypass a refused unsupported
+shape. A missing safe writer stops that write, not authorized task-time reads.
 
 **defer** — do nothing for this doc now. The drift line will reappear at the
 next SessionStart. Use when the change is in-progress and the doc update should

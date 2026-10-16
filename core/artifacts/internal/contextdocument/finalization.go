@@ -61,6 +61,9 @@ func finalizationBinding(r Finalization) (string, error) {
 	return canonical.Hash(map[string]any{"renderer": "codearbiter.context-finalization/0.1.0", "operation_id": r.OperationID, "expected": expected})
 }
 
+// FinalizationBinding identifies the exact output set; it grants no authority.
+func FinalizationBinding(r Finalization) (string, error) { return finalizationBinding(r) }
+
 func finalizationLines(raw []byte) ([]string, error) {
 	lines, err := markdownLines(raw)
 	if err != nil {
@@ -251,18 +254,40 @@ func PreviewFinalization(f *store.FS, r Finalization) (FinalizationPreview, erro
 	for _, id := range finalizationDocuments {
 		path, provPath := ".codearbiter/"+id+".md", ".codearbiter/.provenance/"+id+".json"
 		body := actual[path]
-		parsed, err := ParseMarkdown(id, body)
-		if err != nil {
-			return FinalizationPreview{}, fault.New("INVALID_CONTEXT_OUTPUT", fmt.Sprintf("%s: %v", id, err))
-		}
+		parsed, parseErr := ParseMarkdown(id, body)
 		preview := Preview{DocumentID: id, TargetPath: path, AfterSHA256: canonical.BytesHash(body)}
 		_, fields, err := parseProvenanceV2(actual[provPath], preview)
 		if err != nil {
+			if parseErr != nil {
+				return FinalizationPreview{}, fault.New("INVALID_CONTEXT_OUTPUT", fmt.Sprintf("%s: %v", id, parseErr))
+			}
 			return FinalizationPreview{}, err
 		}
 		owners := map[string]bool{}
-		for _, candidate := range parsed.Candidates {
-			owners[candidate.Anchor] = true
+		wholeDocument := false
+		for _, field := range fields {
+			if field["owner_ref"] == "document" {
+				wholeDocument = true
+			}
+		}
+		if wholeDocument {
+			if len(fields) != 1 {
+				return FinalizationPreview{}, fault.New("OWNERSHIP_REQUIRED", "whole-document ownership cannot overlap fields")
+			}
+			// Validate the same inert document shape used by the writer. This
+			// does not fabricate a claim or require a synthetic review record.
+			doc := Document{DocumentID: id, TargetPath: path, Entries: []Entry{{ID: "FIELD-DOCUMENT", Kind: "document", Document: &DocumentContent{Markdown: string(body)}}}}
+			if _, err := renderDocumentSelection(doc, body, true, []PreviewSelection{{EntryID: "FIELD-DOCUMENT", Anchor: "document"}}); err != nil {
+				return FinalizationPreview{}, fault.New("INVALID_CONTEXT_OUTPUT", err.Error())
+			}
+			owners["document"] = true
+		} else {
+			if parseErr != nil {
+				return FinalizationPreview{}, fault.New("INVALID_CONTEXT_OUTPUT", fmt.Sprintf("%s: %v", id, parseErr))
+			}
+			for _, candidate := range parsed.Candidates {
+				owners[candidate.Anchor] = true
+			}
 		}
 		for _, field := range fields {
 			if !owners[model.S(field["owner_ref"])] {
@@ -309,13 +334,23 @@ func Finalize(f *store.FS, r Finalization, approved VerifiedAuthority) (store.Ou
 	if err != nil {
 		return store.Outcome{}, err
 	}
+	if approved == nil || approved.mutationBinding() != binding {
+		return store.Outcome{}, fault.New("AUTHORITY_REQUIRED", "exact finalization preview lacks owning-workflow approval")
+	}
+	return FinalizeOrdinary(f, r)
+}
+
+// FinalizeOrdinary records initialization after validating the exact output
+// set. The marker is not an approval, verified review or host qualification.
+func FinalizeOrdinary(f *store.FS, r Finalization) (store.Outcome, error) {
+	binding, err := finalizationBinding(r)
+	if err != nil {
+		return store.Outcome{}, err
+	}
 	if replay, err := f.Lookup(r.OperationID, binding); err != nil {
 		return store.Outcome{}, err
 	} else if replay != nil {
 		return *replay, nil
-	}
-	if approved == nil || approved.mutationBinding() != binding {
-		return store.Outcome{}, fault.New("AUTHORITY_REQUIRED", "exact finalization preview lacks owning-workflow approval")
 	}
 	preview, err := PreviewFinalization(f, r)
 	if err != nil {

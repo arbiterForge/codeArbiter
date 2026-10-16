@@ -6,78 +6,105 @@ stage: 2
 
 # Project: codeArbiter
 
-The orchestration framework itself, plus its host adapters and infrastructure sibling.
-The canonical governance kernel lives in `core/`; generated payloads carry it into the
-Claude Code adapter (`ca`), Codex adapter (`ca-codex`), and Pi adapter (`ca-pi`). A
-fourth sibling, `ca-sandbox`, is an infrastructure plugin (ADR-0007, ADR-0011,
-ADR-0013). The first three are the **three governance hosts**. This `.codearbiter/`
-directory is the v2
-project-state store — root-level, outside `.claude/`, so it survives even if the
-codeArbiter plugin is uninstalled. The `arbiter: enabled` frontmatter above is the
-single activation flag: it gates both the persona injection and the arbiter
-statusline segments, and every enforcement hook reads it — never the persona.
+codeArbiter is a shared orchestration framework with three governance host
+adapters and one infrastructure sibling. It helps an agent maintain a working
+agreement, coordinate tasks, retain honest progress and evidence, and follow
+the repository's independent engineering and publication controls.
 
-## Identity
-One canonical governance kernel, three generated host adapters, and one infrastructure
-sibling in the repository (ADR-0007, ADR-0011, ADR-0013):
+The project is maintained for a solo developer. Its stage remains 2. Version
+numbers belong to the package manifests, and current test/release evidence
+belongs to the relevant PR or release record; neither is inferred from this file.
 
-- **`core/` (governance)** — the canonical governance kernel: shared stdlib-only
-  Python and generated markdown sources. It is an internal source boundary, not a
-  separately published or runtime package (ADR-0031).
-- **`ca` (governance, Claude Code host)** — the Claude Code adapter. It routes work through
-  gated skills and reviewer agents, enforces spec-driven TDD and commit gates,
-  decides via SMARTS, and keeps an append-only audit trail. Decisive, terse,
-  high-authority. Its host-native identity and gates are unchanged by the siblings.
-- **`ca-codex` (governance, Codex CLI host)** — the Codex adapter. Generated from
-  shared sources (`core/pysrc/`, `core/surface/`) alongside `ca`; it packages the
-  shared role charters as resources for host-provided thread dispatch rather than
-  registering native plugin agents.
-  CI enforces byte-identity between `core/` and each plugin's vendored copy. One
-  `.codearbiter/` store per project serves all three governance hosts (ADR-0011).
-- **`ca-pi` (governance, Pi host)** — the Pi adapter: the same generated kernel behind a thin
-  TypeScript extension and the shared stdlib-only Python core. The Git-installed
-  package is independently versioned, requires Node 22.19+ and Python 3, and
-  shares the project's `.codearbiter/` store with Claude Code and Codex CLI.
-- **`ca-sandbox` (infrastructure)** — a locally-hosted GitHub-Codespace equivalent
-  that pulls an untrusted repo into an ephemeral, isolated container (no host-FS
-  access; configurable network), explore, tear down. Infrastructure, not governance —
-  arbiter knows about it and integrates with it, but it is not part of the governance
-  kernel. Independent of `ca`: CI is path-scoped and version bumps are per-plugin.
+## Product direction
 
-## Scope
-- Claude Code adapter: `plugins/ca/` — `arbiter.md` (the arbiter mode's body, formerly
-  `ORCHESTRATOR.md`), `includes/safety-core.md`, `skills/`, `commands/`, `agents/`, `hooks/`,
-  `tools/`.
-- Shared kernel sources: `core/pysrc/` (host-neutral hook logic) and `core/surface/`
-  (markdown templates), materialized into `plugins/ca/`, `plugins/ca-codex/`, and
-  `plugins/ca-pi/` by `tools/sync-core.py` / `tools/build-surface.py` (ADR-0011).
-- `ca-codex` host adapter: `plugins/ca-codex/` — `.codex-plugin/` manifest, hook shims,
-  generated skills/agents payloads.
-- `ca-pi` host adapter: `plugins/ca-pi/` — Git package metadata, generated policy
-  payloads, thin Python host shim, TypeScript extension sources, and built parent,
-  child, and Windows containment artifacts.
-- `ca-sandbox` infrastructure source: `plugins/ca-sandbox/` — `tools/`, `skills/`,
-  `commands/`. Adds host deps (Docker, nixpacks) scoped to this plugin only.
-- Shared project state lives here in `.codearbiter/`.
+ADR-0043 makes the state engine assistive. Already-authorized work proceeds
+without a second artifact permission exchange. Task selection, progress,
+in-scope plan maintenance, and resume do not require artifact approval codes,
+prerequisite certification replies, or context-delivery tickets.
+
+Observable prerequisites are checked through ordinary authorized tools.
+Only the affected work waits for a real dependency, explicit stop, or
+consequential unresolved decision. The agent may adjust methods while keeping
+the agreed outcome and recording the reason. Use SMARTS for difficult trade-offs
+when useful; a score is not permission to expand scope.
+
+Implementation progress and evidence assessment are different. Recording
+implementation complete does not claim tests passed, review occurred, or a
+release shipped. New check results and presentation changes do not automatically
+restart review. Refresh conclusions when relevant inputs, requirements, findings,
+or results change; disclose incomplete scope.
+
+Retain actual host permissions, explicit user denials/stops, filesystem and
+sandbox protections, repository controls, and authorized publication boundaries.
+Preserve stable IDs, bounded reads, safe rendering, revision checks, transactional
+writes/recovery, and history. ADR-0043 supersedes only ADR-0037's duplicate
+artifact authorization interpretation; it does not discard the shared file-backed
+engine or independent safety controls.
+
+## Components and ownership
+
+- **Shared kernel:** the canonical governance kernel lives in shared source.
+  `core/pysrc/` owns the stdlib Python hook and bridge code;
+  `core/surface/` owns shared instructions; `core/artifacts/` owns the native
+  Go artifact engine. `core/hosts.json` defines the three host projections.
+  The kernel is an internal source boundary, not a separately published runtime
+  package (ADR-0031).
+- **Claude Code adapter:** `plugins/ca/` contains the generated governance payload,
+  host manifest, and TypeScript farm dispatcher.
+- **Codex adapter:** `plugins/ca-codex/` contains generated entry skills, routines,
+  hooks, and resource charters for host-provided dispatch. Resource charters
+  are not native Codex plugin-agent registrations.
+- **Pi adapter:** `plugins/ca-pi/` adds a thin TypeScript extension and isolated-child
+  adapter. Its nested manifest owns the version; the generated root
+  `package.json` is the Git/npm install projection.
+- **Infrastructure:** `plugins/ca-sandbox/` provides ephemeral Docker-based
+  exploration of untrusted repositories. It is separate from governance.
+  Docker is required for the container path; installed nixpacks is the intended
+  builder where available, with the documented generated-Dockerfile fallback.
+- **Documentation:** `site/` builds the static product site and consumes
+  generated resources plus curated prose and the separately owned Academy
+  source. Editing this repository does not authorize editing that other repo.
+
+Shared Python and instruction payloads are generated into the host trees.
+Edit canonical sources, then regenerate with the owning tools; do not
+independently maintain rendered copies. See `code-map.md` for concern owners
+and `tech-stack.md` for build and verification commands.
+
+## Project state and document identity
+
+One root-level `.codearbiter/` store serves the governance hosts and survives
+plugin removal. The `arbiter: enabled` frontmatter is the activation flag.
+
+New full-lane feature/sprint pairs use typed HTML when the installation has its
+supported native payload. The embedded typed model is authoritative and the
+visible HTML is its deterministic view. Existing Markdown work stays on its
+selected legacy path until an explicit supported migration; small work remains
+inline. Neither a capability failure nor a format change authorizes a raw rewrite.
+
+The five project-context documents are Markdown; their safe writer and provenance
+format are separate from spec/plan HTML. Task boards, questions, audit logs,
+release targets, and ADR history retain their existing owners. Reading state
+does not establish that it is fresh, verified, accepted, or released.
 
 ## Domain vocabulary
-- **`mode`** — the orchestration posture a session is in, and the term that selects which
-  persona body is injected. Exactly three: **`arbiter`** (the governed default — routing,
-  skills, and gates in force), **`dangerous`** (a gates-off posture for local exploratory
-  work in any repo), and **`ops`** (arbiter, narrowed to permit starting, observing, and
-  exercising a running system in-channel). The canonical spelling is `_modelib.MODES`;
-  these names must match it exactly. A mode is **session-scoped and transient** — it is not
-  committed, and it never persists across sessions. Changing the mode changes only which
-  prose the model carries: **no enforcement hook reads the mode**, so every gate fires
-  identically in all three (ADR-0030).
-- **`mode body`** — the per-mode markdown injected after `safety-core.md` to form the
-  persona. `arbiter.md` is the arbiter mode's body, not an always-on kernel.
 
-## NOT this project
-Not a runtime-vendored framework — multi-host support is build-time generation from one
-core with CI-enforced byte-identity (ADR-0011), never v1's symlink/dual-root machinery.
-Not an enterprise compliance suite. Governance hosts are Claude Code, Codex CLI,
-and Pi; further hosts require a new ADR. Solo developer. `ca-sandbox` (ADR-0007),
-`ca-codex` (ADR-0011), and `ca-pi` (ADR-0013) are deliberate, recorded exceptions,
-not precedent for arbitrary co-location.
-See `legacy/ASSESSMENT.md` for the v2 cut list.
+- **Mode:** the session-scoped posture in `_modelib.MODES`: `arbiter`,
+  `dangerous`, or `ops`. `arbiter` provides normal routing; `dangerous`
+  suspends orchestration for local exploration; `ops` narrows the posture
+  toward operating a running system. Changing persona does not disable hooks
+  or host permissions. A new session restores the default.
+- **Skill:** a routed orchestration procedure. **Agent:** a dispatched author
+  or reviewer. **Stage:** project maturity. **Gate:** a phase exit condition.
+  **Severity:** a finding classification, separate from its gate action.
+- **Artifact revision/model hash:** write-conflict identity. **Normative hash:**
+  definition identity. **Reported check:** a retained command result or note,
+  not automatically host-attested or named-test proof.
+
+## Boundaries
+
+This is not an enterprise compliance suite, a database/daemon platform, or a
+general permission broker. The three governance hosts and infrastructure sibling
+are the explicit decisions in ADR-0007, ADR-0011, and ADR-0013; they are not
+precedent for arbitrary co-location or additional hosts. Preserve accepted ADRs
+and their lifecycle history. See `security-controls.md` for current controls
+and accepted residual risks.

@@ -222,27 +222,50 @@ def main(argv=None):
     ap.add_argument("--passive", action="store_true", help=(
         "inspect explicit root before host activation; no Git or network probes"))
     ap.add_argument("--context-request", help=argparse.SUPPRESS)
+    ap.add_argument("--context-draft", help="preview an explicit whole-document context refresh from a UTF-8 draft")
+    ap.add_argument("--document", choices=tuple(_artifactlib._CONTEXT_TARGETS))
+    ap.add_argument("--source", action="append", default=[], help="repository-relative source supporting the draft; repeat as needed")
+    ap.add_argument("--context-apply", help="apply the exact context preview reference returned by the writer")
+    ap.add_argument("--preview-sha256", help="SHA-256 of the retained context preview to apply")
     ap.add_argument("--repair-lock-exclusion", action="store_true", help=(
         "repair only Git-local info/exclude for an existing scaffold; retain the "
         "task-board OS lock, never rewrite project state (cannot combine with --check/--stage)"))
     args = ap.parse_args(argv)
-    if args.context_request:
+    context_modes = sum(bool(value) for value in (args.context_request, args.context_draft, args.context_apply))
+    if context_modes:
+        if context_modes != 1:
+            ap.error("select exactly one context request, draft, or apply")
         if not args.root or args.stage is not None or args.check or args.passive or args.repair_lock_exclusion:
-            ap.error("--context-request requires --root and excludes scaffold flags")
+            ap.error("context writing requires --root and excludes scaffold flags")
+        if (args.context_draft and (not args.document or not args.source or args.preview_sha256)
+                or args.context_apply and (not args.preview_sha256 or args.document or args.source)
+                or args.context_request and (args.document or args.source or args.preview_sha256)):
+            ap.error("a draft requires --document and --source; apply requires only --preview-sha256")
         try:
             root = _artifactlib._trusted_directory(args.root, "UNSAFE_ROOT")
-            request = _artifactlib.read_context_preview_request(root, args.context_request)
+            if args.context_draft:
+                from _contextwriterlib import prepare_document_preview
+                request = {"operation": "preview", "preview": prepare_document_preview(
+                    root, args.document, args.context_draft, args.source)}
+            elif args.context_apply:
+                request = {"operation": "apply", "preview_ref": args.context_apply,
+                           "preview_sha256": args.preview_sha256}
+            else:
+                request = _artifactlib.read_context_preview_request(root, args.context_request)
             operation, payload = _artifactlib.validate_context_writer_request(request)
             client = _artifactlib.context_writer_client(root)
             if operation == "preview":
-                from _artifactauthoritylib import arm_context_preview
-                result = arm_context_preview(root, client, payload)
+                native_operation = ("context-finalize-preview" if payload["mode"] == "finalize"
+                                    else "context-preview")
+                result = client.call(native_operation, payload)
             else:
                 result = client.call("context-apply", payload)
         except RuntimeError as exc:
             raise SystemExit(f"REFUSING context request: {exc}") from None
         print(json.dumps(result, sort_keys=True))
         return
+    if args.document or args.source or args.preview_sha256:
+        ap.error("context options require --context-draft or --context-apply")
     if args.passive:
         if not args.check or not args.root or args.stage is not None or args.repair_lock_exclusion:
             ap.error("--passive requires --check and --root; excludes --stage and repair")

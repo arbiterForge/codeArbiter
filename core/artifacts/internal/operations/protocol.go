@@ -48,7 +48,7 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -91,7 +91,7 @@ func RequestSchema(op string) (object, error) {
 		add("completion_context_ref", text(), false)
 		add("completion_context_sha256", digestType(), false)
 		add("verification_command_bindings", observation.QualifiedCommandBindingsSchema(), false)
-	case "context-evidence-context":
+	case "context-evidence-context", "context-preview":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("mode", enum("create", "adopt", "update"), true)
 		add("document_id", enum("CONTEXT", "tech-stack", "coding-standards", "security-controls", "code-map"), true)
@@ -102,16 +102,22 @@ func RequestSchema(op string) (object, error) {
 		add("expected_document_sha256", maybeHash, true)
 		add("expected_provenance_sha256", maybeHash, true)
 		add("proposed_provenance", object{"type": "object"}, true)
-		add("prompt_sha256", digestType(), true)
-	case "context-finalize-evidence-context":
+		if op == "context-evidence-context" {
+			add("prompt_sha256", digestType(), true)
+		}
+	case "context-finalize-evidence-context", "context-finalize-preview":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("mode", enum("finalize"), true)
 		add("document_id", enum("CONTEXT"), true)
 		add("target_path", enum(".codearbiter/CONTEXT.md"), true)
 		add("expected", object{"type": "object"}, true)
-		add("prompt_sha256", digestType(), true)
+		if op == "context-finalize-evidence-context" {
+			add("prompt_sha256", digestType(), true)
+		}
 	case "context-apply":
-		add("receipt", text(), true)
+		legacy := closed(object{"protocol": enum(Protocol), "receipt": text()}, "protocol", "receipt")
+		ordinary := closed(object{"protocol": enum(Protocol), "preview_ref": text(), "preview_sha256": digestType()}, "protocol", "preview_ref", "preview_sha256")
+		return object{"oneOf": []any{ordinary, legacy}}, nil
 	case "migration-preview", "migration-apply":
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")

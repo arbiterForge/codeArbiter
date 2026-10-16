@@ -46,10 +46,10 @@ bodies name *actions* — this file is where those actions map to this host.
   `CLAUDE_PLUGIN_ROOT` hook alias is matching corroboration only and emits a
   non-disruptive deprecation diagnostic. Dispatch an available host agent with
   the loaded charter and retain the returned thread ID when a workflow
-  needs an exact per-agent receipt. `context-creation` requires isolated scout
-  reports and MUST NOT run inline; it blocks if the host exposes no isolated
-  subagents. For other workflows on an older host, perform the role inline; a
-  review is never skipped because dispatch is unavailable.
+  needs an exact per-agent receipt. Context inspection may run directly or use
+  optional scoped agents; a role label does not prove isolation or verification.
+  On an older host, perform applicable work inline and disclose when independent
+  review was unavailable; never label self-review independent.
 - **Structured-artifact attestation uses native hook correlation** — load this
   adapter only for an explicitly required attested claim or historical recovery.
   Ordinary review and reported checks do not need this adapter. Attested review

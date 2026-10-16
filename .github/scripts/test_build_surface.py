@@ -1874,13 +1874,19 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
 
     def test_drift_and_cleanup_operational_bodies_are_preserved(self):
         import hashlib
-        expected = {'context-check': '06be2a22d9b9ddc28e4826fed24b9d6edad44deab2c241a5e20c02c41d343954', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
+        # Cleanup is unchanged; context-check intentionally adopts the assistive
+        # lifecycle and is covered by composed routing/evidence controls below.
+        expected = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
         for command, digest in expected.items():
             owner = self.OWNERS[command]
             text = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
             body = text.split('## Pre-flight\n', 1)[1]
             self.assertEqual(hashlib.sha256(body.encode()).hexdigest(), digest)
             self.assertIn('neither stages nor commits', ' '.join(text.split()))
+        refresh = (REPO_ROOT / 'core/surface/skills/context-check/SKILL.md').read_text(encoding='utf-8')
+        for control in ('assess_context_provenance', 'existing authorization',
+                        'No staging, no commits here', 'unowned', 'source evidence'):
+            self.assertIn(control, refresh)
         drift = (REPO_ROOT / 'core/surface/commands/status.md').read_text(encoding='utf-8')
         self.assertIn('{{PLUGIN_ROOT}}/skills/context-check/SKILL.md', drift)
         self.assertNotIn('{{PLUGIN_ROOT}}/commands/context-check.md', drift)
@@ -2485,7 +2491,7 @@ class RemainingWorkflowOwnerTest(unittest.TestCase):
 
     def test_public_invocations_receive_required_procedure_and_discovery(self):
         obligations = {
-            'create-context': ('## Phase 2', 'Scout A', 'Scout F', '<!--INITIALIZED-->'),
+            'create-context': ('## Phase 2', '**A — Tech stack.', '**F — Data model.', '<!--INITIALIZED-->'),
             'decompose': ('## Phase 1', 'Layer 1', 'Layer 6', '<!--INITIALIZED-->'),
             'release': ('## Targets', 'release_require_clean_tree', 'Receipt-only closeout', '--dry-run'),
         }
@@ -2590,6 +2596,40 @@ class AssistiveCallerProjectionTest(unittest.TestCase):
                                    'does not grant scope'):
                     self.assertTrue(obligation in tdd,
                                     f'{host}: missing sprint boundary: {obligation}')
+
+    def test_context_routes_allow_authorized_inspection_without_receipt_or_scout_gates(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            init = 'commands/init.md' if host == 'claude' else 'skills/ca-init/SKILL.md'
+            routes = [init, f'{routine}/context-creation/SKILL.md',
+                      f'{routine}/context-check/SKILL.md', 'agents/scout.md']
+            if host == 'codex':
+                routes.append('includes/codex-host-notes.md')
+            with self.subTest(host=host):
+                composed = ' '.join('\n'.join(surface[path].decode() for path in routes).split())
+                for obsolete in ('approve-context', 'receipt-only apply',
+                                 'No inline fallback', 'MUST NOT run Phase 2 inline',
+                                 'context-creation` requires isolated scout',
+                                 'When qualification is unavailable or unknown, stop here',
+                                 'qualified scout profile is unavailable'):
+                    self.assertFalse(obsolete in composed,
+                                     f'{host}: redundant context gate: {obsolete}')
+                creation = ' '.join(surface[f'{routine}/context-creation/SKILL.md'].decode().split())
+                for boundary in ('direct bounded inspection', 'optional scoped agents',
+                                 'six logical categories', 'five content documents',
+                                 'actual host permissions', 'not evidence of containment',
+                                 'source-bound', 'never convert a package script into a passed verification'):
+                    self.assertTrue(boundary in creation,
+                                    f'{host}: lost context boundary: {boundary}')
+                refresh = ' '.join(surface[f'{routine}/context-check/SKILL.md'].decode().split())
+                for boundary in ('existing authorization', 'selected documents',
+                                 'context-preview', 'preview_ref', 'preview_sha256',
+                                 '--context-draft', '--document code-map', '--source',
+                                 '--context-apply', '--preview-sha256',
+                                 'source evidence', 'unowned', 'exact bytes',
+                                 '<!--INITIALIZED-->', 'No staging, no commits here'):
+                    self.assertTrue(boundary in refresh,
+                                    f'{host}: lost refresh boundary: {boundary}')
 
 
 class LanguageCoveragePolicyTest(unittest.TestCase):

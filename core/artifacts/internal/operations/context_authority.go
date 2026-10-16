@@ -260,6 +260,9 @@ func (e *Engine) captureContextPreview(r object) (any, error) {
 }
 
 func (e *Engine) contextApply(r object) (any, error) {
+	if r["preview_ref"] != nil {
+		return e.contextOrdinaryApply(r)
+	}
 	receiptRef := model.S(r["receipt"])
 	receipt, err := authority.Load(e.FS, receiptRef)
 	if err != nil {

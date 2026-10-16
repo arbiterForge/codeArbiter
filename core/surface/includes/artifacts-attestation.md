@@ -144,10 +144,16 @@ python "{{PLUGIN_ROOT}}/hooks/artifact-authority.py" arm --root "{{PROJECT_DIR}}
 Use only the mappings actually named by that task; missing or extra labels fail
 closed. Run the returned request through one plain governed exec invocation (no
 compound shell expression), then publish only after the host's matching
-`PostToolUse` has corroborated the wrapper's completed request-bound result:
+`PostToolUse` has corroborated the wrapper's completed request-bound result.
+For the `verify` invocation, use literal absolute paths for both the installed
+script and repository root; do not submit an unexpanded plugin-root or project-root
+variable. The selector rejects `$` and other shell metacharacters before shell
+expansion on both supported hosts, so an exec shell exporting `PLUGIN_ROOT` does
+not make that spelling valid. On Claude, run the exact `verify_command` returned
+by `arm`. Otherwise substitute the resolved paths into this invocation:
 
 ```sh
-python "{{PLUGIN_ROOT}}/hooks/artifact-authority.py" verify --root "{{PROJECT_DIR}}" --request-id <request-id>
+python "<absolute-plugin-root>/hooks/artifact-authority.py" verify --root "<absolute-project-root>" --request-id <request-id>
 python "{{PLUGIN_ROOT}}/hooks/artifact-authority.py" publish --root "{{PROJECT_DIR}}" --request-id <request-id>
 ```
 
@@ -330,8 +336,13 @@ coordinator message, wait result, transcript assistant text or synthesized event
 On Claude Code, pass the envelope's four fields as the Agent tool's entire
 input: no `run_in_background`, `isolation` or other option. It launches the
 read-only `ca:authority-reviewer`; arming refuses while a project or user agent
-could shadow that name. While the reviewer runs, send no SendMessage from this
-session to any recipient: any message rejects the request. For verification,
+could shadow that name. A linked subdirectory anywhere under an inspected agent
+directory also blocks this authority review with `SHADOWED_REVIEWER`: the adapter
+does not traverse it and cannot rule out a shadowed definition. This includes
+project/session, shared Git worktree, user/configured and managed agent directories.
+Resolve the reported directory through the owning installation; do not bypass
+the check or treat the refusal as a completed review. While the reviewer runs,
+send no SendMessage from this session to any recipient: any message rejects the request. For verification,
 `arm` returns `verify_command` with literal absolute paths; run it unchanged as
 its own foreground Bash call, without disabling the sandbox. The hook refuses a
 command that still contains `$` or another shell metacharacter. A rejected

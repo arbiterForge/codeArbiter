@@ -69,4 +69,33 @@ describe('C04 cross-surface consistency', () => {
     expect(guide).toContain('legacy-unsealed');
     expect(guide).not.toContain('number is gap-free');
   });
+  it('keeps ordinary context inspection available without qualified scout ceremonies', () => {
+    for (const path of [
+      `${docs}guides/understand-an-existing-project.md`,
+      `${docs}concepts/workflow-routes.mdx`,
+      'src/curated/skills/context-creation.md',
+      'src/curated/commands/create-context.md',
+      'src/curated/agents/scout.md',
+    ]) {
+      const text = read(path).replace(/\s+/g, ' ');
+      expect(text, path).toContain('optional');
+      expect(text, path).toMatch(/direct|bounded inspection/);
+      expect(text, path).not.toMatch(/six (parallel|isolated) scout|route stops before dispatch|always uses six/);
+    }
+    const refresh = read('src/curated/commands/context-check.md');
+    expect(refresh).toContain('already selects');
+    expect(refresh).not.toContain('full brownfield re-scan from scratch is `/ca:create-context`');
+    const compatibility = read(`${docs}getting-started/compatibility.mdx`);
+    expect(compatibility).not.toContain('context creation blocks without isolated scouts');
+  });
+  it('describes current typed progress without restoring approval or context-ticket prerequisites', () => {
+    const format = read('../docs/artifacts/spec-and-plan-format.md').replace(/\s+/g, ' ');
+    expect(format).toContain('current write schema is `0.3.2`');
+    for (const term of ['`task-context`', '`task-check`', '`DONE`', 'actual user decisions']) expect(format).toContain(term);
+    expect(format).not.toContain('Execution obtains contextual reads and a final delivery ticket');
+    expect(format).not.toContain('passes the existing plan approval gate');
+    const recovery = read('../docs/artifacts/migration-and-recovery.md').replace(/\s+/g, ' ');
+    for (const term of ['context-preview', 'preview_ref', 'preview_sha256', 'forward recovery']) expect(recovery).toContain(term);
+    expect(recovery).not.toContain('until the normal workflow separately obtains and binds current approvals');
+  });
 });

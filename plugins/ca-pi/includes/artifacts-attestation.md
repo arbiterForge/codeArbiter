@@ -144,10 +144,16 @@ python "<plugin-root>/hooks/artifact-authority.py" arm --root "<project-root>" -
 Use only the mappings actually named by that task; missing or extra labels fail
 closed. Run the returned request through one plain governed exec invocation (no
 compound shell expression), then publish only after the host's matching
-`PostToolUse` has corroborated the wrapper's completed request-bound result:
+`PostToolUse` has corroborated the wrapper's completed request-bound result.
+For the `verify` invocation, use literal absolute paths for both the installed
+script and repository root; do not submit an unexpanded plugin-root or project-root
+variable. The selector rejects `$` and other shell metacharacters before shell
+expansion on both supported hosts, so an exec shell exporting `PLUGIN_ROOT` does
+not make that spelling valid. On Claude, run the exact `verify_command` returned
+by `arm`. Otherwise substitute the resolved paths into this invocation:
 
 ```sh
-python "<plugin-root>/hooks/artifact-authority.py" verify --root "<project-root>" --request-id <request-id>
+python "<absolute-plugin-root>/hooks/artifact-authority.py" verify --root "<absolute-project-root>" --request-id <request-id>
 python "<plugin-root>/hooks/artifact-authority.py" publish --root "<project-root>" --request-id <request-id>
 ```
 

@@ -1,6 +1,6 @@
 ---
 title: Understand an Existing Project
-description: "Initialize codeArbiter from existing source, review the scout-derived context, and resolve gaps without inventing a greenfield architecture."
+description: "Initialize codeArbiter from existing source, review the source-backed context, and resolve gaps without inventing a greenfield architecture."
 journey:
   level: Foundation
   time: "Repository-dependent guided extraction"
@@ -36,15 +36,17 @@ Describe the initialization goal or use an explicit entry:
 initialized, inspect it with status and the appropriate drift procedure rather than removing the
 initialization marker to force a fresh extraction.
 
-## Let the scouts establish facts
+## Inspect the source in bounded scope
 
-For initial or explicitly full work, the owning context-creation skill requires six logical
-scout categories: stack, infrastructure, architecture, security posture, testing and data model.
-A scoped refresh covers only the affected categories and preserves prior coverage separately.
-Each scout must run under a qualified, host-enforced read-only context profile and return a
-bounded report with paths and evidence rather than handing raw source to the synthesizing
-orchestrator. The current generated host surfaces do not provide that qualified profile, so the
-route stops before dispatch. The shared scout role and inline work cannot substitute for it.
+Initial population or explicit full refresh accounts for six logical categories: stack,
+infrastructure, architecture, security posture, testing and data model. Use direct bounded
+inspection or optional scoped agents; six categories do not require six children or a special
+qualified profile. Scoped refresh covers the affected categories and retains prior coverage
+separately. Actual host permissions and excluded source boundaries still apply.
+
+Record citations, source identities, inspected scope and unknowns. Agent labels, report shape
+and matching digests do not prove trusted containment or semantic correctness. Use independent
+review where it helps resolve consequential claims, and state what was actually checked.
 
 Review the returned boundaries. “No migration tool found” is a useful finding; silently assuming
 one is not. Security findings should identify relevant sites without exposing secret values.
@@ -58,7 +60,7 @@ one is not. Security findings should identify relevant sites without exposing se
 | `coding-standards.md` | Observed conventions distinguished from proposed improvements |
 | `security-controls.md` | Existing trust boundaries and project-owned controls, without invented compliance claims |
 | `code-map.md` and provenance records | Coarse concerns point to real paths; source-backed claims can later become stale |
-| `open-questions.md` | Every unresolved fact is explicitly answered or deliberately deferred |
+| `open-questions.md` | Material user-owned questions and actual answers or deferrals; other unknowns remain visible |
 | `release-targets.md`, when supported by evidence | The real manifests, changelog, tag convention and payload, not another project's release table |
 
 These paths are under `.codearbiter/`. Scaffolding also provides the task and audit-state files.
@@ -70,10 +72,15 @@ Do not approve an inferred architectural pattern as an observed fact without che
 
 ## Resolve the gaps
 
-High-confidence observations are grounded in source reports. Indirect signals should be labelled
-as inferences. Missing or conflicting facts become `[CONFIRM-NN]` questions. Answer the question,
-challenge the inference, or explicitly defer it. A deferred question remains visible and can
+Observations need source evidence. Label indirect signals as inferences and inspect conflicting
+facts where possible. Ask `[CONFIRM-NN]` questions only for material unresolved user decisions;
+reuse existing answers and authorization. Answer, challenge or explicitly defer such a question. A deferred question remains visible and can
 still stop later work that depends on its answer.
+
+The safe writer previews each selected document/provenance pair and applies it only while the
+source and target identities still match. Existing authorization is enough for those writes;
+there is no extra approval code for each document. Preserve human content outside selected spans.
+An initialized refresh retains its marker and never repeats finalization.
 
 On completion, review the populated tree and the `<!--INITIALIZED-->` body marker in `CONTEXT.md`.
 Activation, initialization and a successful live enforcement probe are different checks.

@@ -115,7 +115,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-create-context` | Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates. | `/ca-init --brownfield` |
+| `/ca-create-context` | Build source-backed project context through bounded inspection, optional agents, and safe selected writes. | `/ca-init --brownfield` |
 | `/ca-decompose` | Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates. | `/ca-init --greenfield` |
 
 ### Ship
@@ -129,7 +129,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `/ca-context-check` | Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs. | `/ca-status drift` |
+| `/ca-context-check` | Inspect context drift and refresh selected source-backed documents under existing authorization. | `/ca-status drift` |
 
 ## Internal
 

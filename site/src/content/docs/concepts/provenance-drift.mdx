@@ -111,8 +111,12 @@ entry remains available as `/ca:context-check`, `$ca-context-check`, or `/ca-con
 depending on the host. The catalog also advertises the canonical status-drift route; inspect the
 installed command reference rather than inventing a new command.
 
-The manual skill reports first, asks for a disposition per stale document, and summarizes the
-result. It **does not stage or commit**. Any revised provenance or document rides a later
+For an audit-only request, the owner reports first and waits for a selected disposition. A
+direct request to refresh named documents or full context already authorizes that selection;
+it does not need repeated per-document permission. Inspection may be direct or use optional
+scoped agents. The writer previews selected changes and rechecks the source and target identities
+before applying the document/provenance pair; supported missing/v1 provenance can be explicitly
+adopted while its prior bytes are retained. Unowned content and initialization state stay intact. It **does not stage or commit**. Any revised provenance or document rides a later
 user-authorized commit. See the [context-check reference](/reference/commands/context-check/)
 and [commit gate](/reference/skills/commit-gate/).
 

@@ -1,6 +1,6 @@
 ---
 name: ca-create-context
-description: Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates.
+description: Build source-backed project context through bounded inspection, optional agents, and safe selected writes.
 argument-hint: (none)
 ---
 
@@ -40,226 +40,106 @@ absent ones; an initialized, malformed or conflicting scaffold requires review.
 Never clear the directory, reset a marker, or replace an existing task board,
 question board or append-only audit record to make a retry pass.
 
-For each content document, compare the document and its v2 provenance as a
-pair. A missing or mismatched companion is incomplete, not usable context.
-Identify the last approved preview, receipt and operation ID; inspect its
-native transaction outcome before retrying an apply whose response was lost.
-Use the existing engine's `recover` protocol for a pending transaction with
-that same operation ID and a justified complete or rollback choice. A committed
-result is read back and retained; do not repeat its write. An absent output may
-be created only through a fresh typed preview and its own approval. A diverged
-human file, unknown journal, stale expected identity or unresolved ownership
-returns a precise conflict and leaves current bytes intact. Resume independent
-valid outputs without claiming that individual replacements made the entire
-set atomically visible.
+For each content document, compare the current document and provenance pair.
+Missing, v1 or mismatched provenance is incomplete evidence, not proof that the
+human document is disposable. Use explicit `adopt` for supported missing/v1
+pairs and `update` for managed v2 pairs; preserve existing content and history.
+Inspect the previous operation ID and native transaction before retrying a write
+whose response was lost. Retry the identical request and operation ID, or use
+native `recover` for a pending transaction. A committed result is read back and
+retained. A changed human file, unknown journal or stale expected identity
+requires a fresh bounded preview; never overwrite it to make a retry pass.
+Resume independent outputs without claiming all documents commit atomically.
 
 Check finalization separately. An initialized marker with matching current
-`CONTEXT` provenance is the committed outcome; retain it and route to normal
-operation. Without that proven outcome, re-inventory all 13 required output
-identities and use a fresh `finalize` preview and its own host-observed receipt.
-If a prior finalization transaction is pending or its result is uncertain,
-inspect or recover that operation first. Never append the marker by hand or
-reuse a document approval for finalization. Initialized projects use the
-existing scoped refresh lifecycle, with their marker and history retained.
+`CONTEXT` provenance is a committed outcome; retain it and route to normal
+operation. Otherwise inspect all 13 required output identities and prepare the
+native finalization preview. Recover an uncertain earlier finalization first.
+Never append the marker by hand. Initialized projects use selected refresh,
+with their marker and history retained.
 
 ## Phase 1 — Pre-flight confirmation · gate: BLOCK
 
-Confirm the repository is a brownfield codebase safe for scout-based extraction:
+Confirm the repository is a brownfield codebase ready for bounded source inspection:
 
 1. Confirm `<!--INITIALIZED-->` is absent from `CONTEXT.md`.
 2. Confirm meaningful source code is present beyond the excluded set.
 3. Identify the primary source directories (`src/`, `backend/`, `frontend/`, `lib/`, `app/`, or equivalent).
 
-State the finding to the user: existing source detected, beginning scout-based extraction.
+State the finding to the user: existing source detected, beginning bounded source inspection.
 
 Gate: `<!--INITIALIZED-->` absent AND meaningful source present. If the marker is present, stop and route to normal operation. If no meaningful source exists, stop and route to `decompose`. Neither condition met → do not proceed.
 
-## Phase 2 — Scout dispatch · gate: BLOCK
+## Phase 2 — Bounded inspection
 
-A context scout reads one targeted slice of the codebase and returns a bounded
-findings report — file paths, line numbers, and named values only, never raw
-code excerpts. Scouts are internal to this skill; they are never invoked from a
-command.
+Use direct bounded inspection or optional scoped agents, whichever reduces
+repeated reading for this repository. Cover six logical categories for initial
+or explicitly full work; a scoped refresh inspects only the selected affected
+categories and retains prior coverage separately. Six categories do not require
+six agents or parallel execution. Start with paths and targeted searches, then
+read only the source needed to support the current claims. Keep actual host
+permissions, excluded paths and secret-handling rules in force. Do not run
+repository scripts merely because a manifest declares them.
 
-## Context-creation containment profile
+When delegation helps, give each agent a finite path/category assignment,
+current source identity, output limit and stopping condition. Respect the host's
+actual concurrency and tool limits. Retain failed, partial and conflicting
+reports; narrow an oversized assignment instead of truncating it or repeatedly
+relaunching unchanged work. Direct inspection may resolve missing coverage or
+check a contested claim. A role label or a read-only instruction is not evidence
+of containment or independent verification. Describe the tools and boundaries
+actually observed, without claiming a trusted sandbox from an agent name.
+A separately required containment policy still applies to its own scope; a
+repository-only profile fixture does not impose that policy on ordinary work.
 
-BLOCK before dispatch unless the active host actually exposes a context-specific
-child profile with a fresh child identity and host-enforced read-only containment.
-The profile may use a read-only sandbox or a tool set limited to source read and
-report delivery. A context-specific profile with Bash is eligible only when the
-actual read-only OS boundary also contains the parent and every child, and a
-closed guard permits exact frozen `git hash-object -- '<source path>'` reads only.
-It must deny every other shell command, mutating file tool, nested Agent call,
-unsandboxed retry and unknown child. A role label, an
-agents capability, or a promise in the prompt does not qualify containment.
-MUST NOT dispatch the existing `scout` role as this profile: its shared
-frontmatter permits Bash for `decision-variance`. The current generated host
-surfaces do not themselves provide a qualified context-specific restriction.
-Without an explicitly prepared and observed caller profile, report
-context-creation scout dispatch as unavailable and BLOCK before dispatch.
-Do not invent per-dispatch tool flags, a model-tier mapping, or an inline
-substitute. This restriction does not change `decision-variance` dispatch.
+The categories are:
 
-One candidate caller route is Claude Code's documented session-only `--agents`
-inline JSON defining `context-scout` with `Read`, `Grep`, `Glob`, `Bash`, an exact
-caller-selected model, and the context assignment prompt. The codeArbiter
-CI-only fixture `.github/scripts/test_context_host.py` provides
-`--prepare-context-profile` and `--guard-context-profile` for that route. The
-fixture is not shipped in installed plugins. A separately prepared caller must
-pin this repository source before using the preparation CLI below; ordinary
-consumers cannot assume that file exists in their project or installation. The
-former requires an explicit A–F assignment-to-file map, rejects `.git`, `.env`,
-other private `.env.*` paths and symlink components, then freezes each
-assignment's regular files, their raw SHA-256 values, the union source-list
-digest, package digest, runtime identity, model and exact Git command strings.
-The caller must supply a trusted, pinned absolute Git executable and its
-SHA-256 from outside the source snapshot. The preparer rejects source-root Git
-and a different executable selected by `PATH` before any Git invocation; a
-hash of an untrusted `PATH` candidate is not provenance.
-The guard consumes a native `PreToolUse` JSON event. It admits only a bound
-child's assigned file to Read or Grep; Glob requires an exact assigned filename
-with no wildcard, and Bash requires an exact assigned hash command. A parent
-may only dispatch the session-only `context-scout` during this phase. Active
-Git clean filters are rejected before preparation can finish; the guard
-rechecks the frozen Git executable, effective config, filter attributes and
-relevant environment before each Bash hash. The caller must start the native
-phase with a sanitized Bash and Git environment: no shell startup hooks,
-exported Bash functions, dynamic-loader injection variables, Git trace output
-variables, or other rejected
-environment keys. The preparer and guard reject such keys, but they cannot
-prove the native Bash process inherited that environment; the caller must
-verify it at the OS boundary. The parent `Agent` hook check limits agent type
-and observes bound-child count, but repeated calls before `SubagentStart` can
-all pass. The trusted caller must atomically reserve exactly one launch per
-assignment, at most six total, before dispatch and bind each resulting native
-child ID; hook decisions alone never establish that bound. Protect the resulting profile and
-hook command from the solver, use the host's documented hook settings, and retain the exact
-settings, agent definition and installed package bytes. The preparer never
-invokes a host or qualifies containment. It does not set an OS sandbox, admit
-children, collect reports or grant native task authority. A caller must supply
-and qualify those missing layers before any dispatch. A settings declaration
-alone is not a host observation. Native Windows Bash is not an eligible OS
-read-only boundary for this route; a supported Linux/WSL2 sandbox must fail if
-unavailable and refuse unsandboxed retries. Unknown platform or settings
-behavior leaves this route unavailable. Native file tools need their own
-source-scoped permission boundary because the Bash sandbox alone does not
-contain them. A caller must also retain and independently validate all six
-read, hash, guard-denied write, OS-denied write and report observations with
-distinct native child IDs. The preparer's supplied-observation completeness
-check always returns `unverified`; it is not a native receipt.
+- **A — Tech stack.** Read `package.json`, lockfiles, `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `*.gemspec`, `Gemfile`. Report languages, runtime versions, frameworks, key dependencies, the dependency manager, license fields. Additionally report, at the repository root only: which of `package.json` / `pyproject.toml` / `Cargo.toml` / `composer.json` carry a version field (candidate release manifests), which of `CHANGELOG.md` / `CHANGES.md` / `HISTORY.md` are present (candidate changelogs), and any existing tag naming convention visible in the repo (e.g. a `v*` tag) — the inputs Phase 3/5 use to draft `.codearbiter/release-targets.md`.
+- **B — Infrastructure.** Read CI/CD config (`.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/config.yml`), `Dockerfile*`, `docker-compose*.yml`, `Makefile`, `*.tf`, IaC. Report CI/CD platform, build/test/lint commands, deployment targets, environment names, containerization, IaC tool.
+- **C — Architecture.** Read the source tree (names and structure only), entry points (`main.ts`, `index.ts`, `app.py`, `server.go`), and imports in entry points only. Report component list, entry points, module boundaries, architectural pattern, public interfaces.
+- **D — Security posture.** Read auth files (`auth*`, `middleware*`, `guard*`, `jwt*`, `session*`, `oauth*`), crypto import lines, secret-loading sites (`process.env`, `os.environ`, vault/KMS call sites — paths and line numbers only, never values), `.env.example` (never `.env`). Report auth mechanism, crypto libraries, secret-loading patterns (paths + lines, no values), vault/KMS integration, hardcoded-secret risk files (paths only).
+- **E — Testing.** Read test files and test config (`vitest.config.*`, `jest.config.*`, `pytest.ini`, Makefile test flags), coverage config. Report test framework, runner command, coverage tool, coverage thresholds in config, naming convention, approximate test count by type, fixtures.
+- **F — Data model.** Read migration files (`migrations/`, `drizzle/`, `alembic/`, `db/migrate/`), schema definitions (`schema.ts`, `*.prisma`, `*.sql`, `models/`), ORM config, DB connection config (keys only, never credentials). Report database type, ORM/query builder, entity names, migration tool, approximate entity count, multi-tenancy patterns.
 
-The exact inert preparation CLI is `python <pinned-source>/test_context_host.py
---prepare-context-profile <repo-root> <assignment-map.json>
-<union-source-list-sha256> <installed-package-sha256> <runtime-id>
-<exact-model> <trusted-git-absolute-path> <trusted-git-sha256>
-<protected-profile.json>`. It creates that profile and its
-`<protected-profile.json>.settings.json` template only at absent paths. Pass
-the profile's `agents` object as inline JSON to the documented session-only
-`--agents` flag; the caller installs and verifies the protected settings and
-OS read-only phase separately. On each real `SubagentStart`, the trusted caller
-binds its native `agent_id` to the predeclared assignment with
-`bind_context_child` before the child's first tool. Unknown or extra children
-are denied, and the caller retains each bound input/result/denial/report rather
-than inserting synthetic answers into the report. The CLI's guard mode is
-`python <pinned-source>/test_context_host.py --guard-context-profile
-<protected-profile.json>` with the native hook event on stdin. These source
-helpers expose a repository-only caller preparation interface; they do not make any installed
-plugin host qualified by themselves.
 
-Before treating a newly supported host profile as qualified, observe distinct
-child identities for all six assignments, a successful source read and a
-bounded report from each child, and a benign write attempt denied by the
-actual host boundary. Check that the attempted write left the target bytes unchanged. A
-missing or inconclusive observation leaves the profile unavailable. If source
-hashes cannot be obtained through the qualified exact-command Bash route or
-another trusted deterministic read-only collector, the profile remains
-unavailable. Verify that each cited command actually ran against the frozen
-source and retain its result; the preparer's source-list digest is not a scout
-report digest. Keep `git-blob-normalized-sha1` and `sha256-raw` method identities
-distinct in `_contextreportlib`.
-The orchestrator receives only reports after Phase 1, preserving report-only synthesis.
-Never count a failed or missing report as completed coverage.
+Keep a source-bound evidence inventory: category, searched scope and predicates,
+claim, path/line citation, content or membership digest and its method, and
+observed/inferred/unknown status. Preserve the difference between
+`git-blob-normalized-sha1` and `sha256-raw`. A source hash binds bytes; it does
+not verify a claim's meaning. Never forward secret values. Negative findings
+state where and how the search ran, not universal absence.
 
-When the profile is actually qualified, create one full run with six root
-assignments, one for each logical category below. Queue launches within the
-host's qualified concurrency limit; simultaneous execution is not required.
-For an affected-scope refresh, create only the affected root assignments and
-retain the extent of prior coverage separately. A scoped run cannot assert a
-new full scan. Fix the run's source snapshot, deadline and host-specific time,
-token and tool budgets before any authorized dispatch. If a mandatory budget
-or qualified profile is unavailable, block before dispatch.
+`_contextreportlib.admit_scout_attempt` and `join_scout_reports` remain useful
+for bounded structured agent reports when that transport is used. They validate
+report shape and declared coverage, not permission, containment or semantic
+truth. A scoped join has `full_coverage: false`; do not relabel it as a full
+scan. Plain evidence from direct inspection needs the same truthful scope and
+source bindings, without a synthetic scout envelope or delivery ticket.
 
-Use `_contextreportlib.admit_scout_attempt` before each launch and retain every
-admitted assignment/attempt pair in the same run ledger, including failed,
-oversize, retry and child attempts. The aggregate limit is 24 launches, one
-retry per unchanged assignment, subdivision depth 3 and fanout 4. Subdivision
-keeps the parent assignment ID and uses a finite set of preflight coverage
-paths: the children's union must equal the parent's set. Name any intentional
-overlap in the child assignments, then reconcile the returned observations;
-unexplained overlap or contradictory overlap blocks. No renamed child or retry
-starts a new run budget or deadline. A failed parent is still counted when its
-work is subdivided. A parent that completed cannot be silently replaced by
-children.
-
-Each report must pass the versioned closed `_contextreportlib` decoder with
-its exact assignment, attempt, snapshot and scope binding; the
-legacy `decision-variance` Markdown report does not satisfy this transport.
-No inline fallback is allowed: this skill's report-only
-synthesis boundary depends on the orchestrator never loading the scouts' raw
-source into its own context.
-Each reads only its assigned slice:
-
-- **Scout A — Tech stack.** Read `package.json`, lockfiles, `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `*.gemspec`, `Gemfile`. Report languages, runtime versions, frameworks, key dependencies, the dependency manager, license fields. Additionally report, at the repository root only: which of `package.json` / `pyproject.toml` / `Cargo.toml` / `composer.json` carry a version field (candidate release manifests), which of `CHANGELOG.md` / `CHANGES.md` / `HISTORY.md` are present (candidate changelogs), and any existing tag naming convention visible in the repo (e.g. a `v*` tag) — the inputs Phase 3/5 use to draft `.codearbiter/release-targets.md`.
-- **Scout B — Infrastructure.** Read CI/CD config (`.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/config.yml`), `Dockerfile*`, `docker-compose*.yml`, `Makefile`, `*.tf`, IaC. Report CI/CD platform, build/test/lint commands, deployment targets, environment names, containerization, IaC tool.
-- **Scout C — Architecture.** Read the source tree (names and structure only), entry points (`main.ts`, `index.ts`, `app.py`, `server.go`), and imports in entry points only. Report component list, entry points, module boundaries, architectural pattern, public interfaces.
-- **Scout D — Security posture.** Read auth files (`auth*`, `middleware*`, `guard*`, `jwt*`, `session*`, `oauth*`), crypto import lines, secret-loading sites (`process.env`, `os.environ`, vault/KMS call sites — paths and line numbers only, never values), `.env.example` (never `.env`). Report auth mechanism, crypto libraries, secret-loading patterns (paths + lines, no values), vault/KMS integration, hardcoded-secret risk files (paths only).
-- **Scout E — Testing.** Read test files and test config (`vitest.config.*`, `jest.config.*`, `pytest.ini`, Makefile test flags), coverage config. Report test framework, runner command, coverage tool, coverage thresholds in config, naming convention, approximate test count by type, fixtures.
-- **Scout F — Data model.** Read migration files (`migrations/`, `drizzle/`, `alembic/`, `db/migrate/`), schema definitions (`schema.ts`, `*.prisma`, `*.sql`, `models/`), ORM config, DB connection config (keys only, never credentials). Report database type, ORM/query builder, entity names, migration tool, approximate entity count, multi-tenancy patterns.
-
-The orchestrator reads only the scout reports in later phases — never the raw source — to preserve working context. A scout that finds nothing returns an explicit "not found" report, never silence.
-
-**Content hashes:** Each cited file needs a digest and method accepted by the
-closed report decoder. The legacy scout's `git hash-object <path>` instruction
-belongs to `decision-variance`; context-creation needs a trusted read-only
-collector with the decoder's declared method and shape. No raw content is
-forwarded to the orchestrator.
-
-Before synthesis call `_contextreportlib.join_scout_reports` with the unchanged
-run, complete attempt ledger and every returned transport payload. The join
-requires six complete logical categories for an initial or explicitly full
-run, or exactly the declared affected categories for a scoped refresh.
-Complete ambiguous, not-inspected, failed or oversize category outcomes enter
-gap handling; a missing, failed or oversize **report transport** blocks the
-join. The normalized joined input is capped at 48 KiB; overflow is a named
-scope/report-size blocker, never truncation or quiet omission. Recheck the
-source snapshot at join through the source-snapshot owner before relying on
-retained evidence. These pure helpers do not supply dispatch, containment,
-freshness, authorization or live qualification.
-
-Gate: an observed containment boundary and complete transports for every
-declared logical assignment, including all six on a full run.
-MUST NOT proceed to Phase 3 on an unavailable profile, failed or missing report,
-or an unobserved read/write/report boundary. Re-dispatch a failing scout only
-through the qualified profile after its failure is understood.
+Proceed with supported claims and explicit gaps. A full run accounts for all
+six logical categories, including justified inapplicability and named unknowns;
+failed or missing work never counts as inspected coverage. Recheck changed
+sources before a dependent write. Independent work can continue while a
+material unresolved fact or actual decision is addressed.
 
 ## Phase 3 — Synthesis · gate: BLOCK
 
-Draft every surviving project-state doc from the admitted joined reports,
-working only from those reports. For initial or explicitly full onboarding,
-the join covers all six logical domains; a scoped refresh changes only its
+Draft the five content documents from current inspection evidence and any
+agent reports. For initial or explicitly full onboarding, account for all six
+logical domains; a scoped refresh changes only its
 declared affected domains and makes no new full-coverage claim. Map source to
 destination:
 
-| Scout source | Destination |
+| Evidence category | Destination |
 |---|---|
 | Stack, infrastructure/commands, tests/verification | `tech-stack.md` |
-| Architecture/source ownership, tests/structure | `coding-standards.md` |
+| Architecture/source ownership, tests/structure | `coding-standards.md` and `code-map.md` |
 | Security boundaries | `security-controls.md` (thin) |
 | Stack/release candidates | `.codearbiter/release-targets.md` when supported |
 | All applicable domains | `CONTEXT.md` (project identity, purpose, scope, NOT-building) |
 
 For each retained claim, name its purpose, owning source and actual consumer
-(or a specific retention reason), with the report citation and source snapshot.
+(or a specific retention reason), with its citation and source snapshot.
 Separate observed, inferred, proposed and approved content. Keep command
 declarations inert, with their actual cwd and declared/verified state: never convert a package script into a passed verification. Keep unsupported fields
 unknown; make no blanket security claim from absence. Confidence describes
@@ -277,13 +157,12 @@ without manufacturing a local decision. If an upstream rule conflicts with a
 local constraint, keep both citations for Phase 4 and do not silently displace
 either. There is no new task or ADR from an observed pattern.
 
-Distinguish report transport from category outcome. A complete transport with
-`observed`, `not_applicable`, `not_found_in_scope`, `not_inspected` or
-`ambiguous` still counts as a returned report; a missing, failed or oversized
-transport blocks Phase 3. A justified `not_applicable` records why the domain
-does not apply. A `not_found_in_scope` records its searched scope and predicates;
-it does not prove universal absence. In a small static project with known tests
-and justified no-storage evidence, ask no database question for a scoped test
+Distinguish evidence availability from category outcome. Record `observed`,
+`not_applicable`, `not_found_in_scope`, `not_inspected` or `ambiguous` with its
+scope and reason; failed or oversized reports are gaps, not evidence of absence.
+A `not_found_in_scope` records its searched scope and predicates; it does not
+prove universal absence. In a small static project with known tests and
+justified no-storage evidence, ask no database question for a scoped test
 change. Keep partial-domain uncertainty visible, but ask the user only if a
 missing decision affects the current output or selected task.
 
@@ -312,15 +191,15 @@ latest-eligible: true
 
 Gate: every surviving doc drafted with supported claims and explicit material
 unknowns. No silent omission, invented approval or invented verification. A
-domain with no scout signal has its coverage and uncertainty represented in the
+domain with no observed evidence has its coverage and uncertainty represented in the
 relevant draft; it does not force an irrelevant interview or an empty file.
 
 ## Phase 4 — Gap interview · gate: BLOCK
 
 First reconcile contradictory reports without picking the highest confidence:
 retain both conflicting citations and request the smallest independent reinspection
-of the disputed source, predicate and snapshot through the
-qualified read-only profile. A changed or missing source snapshot requires
+of the disputed source, predicate and snapshot using direct inspection or an
+independent agent when useful. A changed or missing source snapshot requires
 fresh evidence. If the conflict survives, expose both claims and the precise
 choice requiring a user ruling; do not overwrite either source.
 
@@ -349,7 +228,7 @@ solvable work is not held by an irrelevant domain interview.
 
 ## Phase 5 — Project-state write · gate: BLOCK
 
-Prepare the five surviving content documents with the installed context writer's typed preview, actual source evidence and file-specific provenance. Review and approve each exact preview through its native `approve-context` reply before receipt-only apply; an approval for one document does not approve another or the final marker. Preserve existing human content and ownership. Every doc carries actual content — no unresolved placeholder may remain where a value was determined:
+Prepare the five content documents with the installed writer's `context-preview`, actual source evidence and file-specific provenance. Inspect the proposed diff and source bindings, then use `context-apply` with `preview_ref` and `preview_sha256` under the existing authorization. No document approval receipt or qualified agent profile is required. Preserve existing human content and ownership; review uncertain or consequential claims independently when useful, without treating a review label as proof. Every doc carries actual content — no unresolved placeholder may remain where a value was determined:
 
 | File | Content |
 |---|---|
@@ -376,13 +255,15 @@ Write the file, then:
 rm -f "$(git rev-parse --show-toplevel)/.codearbiter/.markers/release-targets-authoring"
 ```
 
-Skip both commands entirely when this run is not writing `release-targets.md` — a marker minted for a write that never happens is a 30-minute window nothing needed. No other file in the table above is enrolled, so none of them take a marker.
+Skip both commands when this run is not writing `release-targets.md`. No other
+table entry uses this release-target marker; content documents use the native
+paired writer, and task/question/audit history retains its existing owners.
 
-If scouts found existing decision records (`docs/decisions/`, `adr/`), summarize them as entries under `.codearbiter/decisions/` in the standard ADR format. If a record cannot be fully parsed, summarize what is known, flag the uncertainty, and note the source path for review.
+If inspection finds existing decision records (`docs/decisions/`, `adr/`), reference their source and actual status. Do not create local ADRs or infer acceptance from their existence. Keep an unparseable record as a cited uncertainty; a new local decision belongs to its actual owner.
 
 **Provenance and code-map:**
 
-- The installed context writer commits each selected document and its v2 `.codearbiter/.provenance/<doc>.json` record together. Bind each claim to current content or membership evidence, its source, owner and actual consumer. An identity acknowledgement does not stand in for semantic review or approval. Never write either side of this pair directly.
+- The installed context writer commits each selected document and its v2 `.codearbiter/.provenance/<doc>.json` record together. Bind each claim to current content or membership evidence, its source, owner and actual consumer. An identity acknowledgement does not stand in for semantic review or an actual user decision. Never write either side of this pair directly.
 - Synthesize `.codearbiter/code-map.md` (concern → path → ≤1-line role) from architecture evidence. Use concern headings (`## <concern>`) and column-0 bullets (`- \`path\` — role`). Keep it coarse — module/concern granularity only, no full file listing.
 
 Do NOT scaffold any cut doc — see [includes/cut-docs.md](../../includes/cut-docs.md) for the canonical never-scaffold list. Maturity lives in the `stage:` frontmatter of `CONTEXT.md`, not a separate file.
@@ -393,22 +274,36 @@ Gate: all five content documents and their matching v2 provenance pairs are pres
 
 Lock the project state as initialized and return to normal orchestration:
 
-1. Gather exact SHA-256 identities for the five content documents, their five v2 provenance records, and `open-tasks.md`, `open-questions.md`, `overrides.log`. Submit the closed `finalize` preview through `init-codearbiter.py --context-request FILE` with those 13 path identities. The installed native writer validates each file by its own contract, checks all current source evidence and addressed/deferred questions, and previews the marker plus updated `CONTEXT` provenance. A missing, malformed or changed file blocks without reporting completion.
-2. Review the exact finalization preview and capture its own host-observed `approve-context` reply. Apply only that receipt through the same request bridge. The writer rechecks all relevant identities under its lock and commits `<!--INITIALIZED-->` in the body of `CONTEXT.md` with the new full-document provenance digest as one transaction. Do not append the marker directly or reuse a content-write receipt.
-3. List `.codearbiter/` and confirm the committed result and current provenance. State the return to normal operation: extraction complete, project state initialized and locked, `$ca-feature` available to begin work. Deferred questions live in `open-questions.md`.
+1. Gather exact SHA-256 identities for the five content documents, their five
+   v2 provenance records, and `open-tasks.md`, `open-questions.md`, `overrides.log`.
+   Submit the typed `finalize` preview through
+   `init-codearbiter.py --context-request FILE`; the bridge calls native
+   `context-finalize-preview`. The writer validates those 13 outputs and their
+   current source bindings before proposing the marker and updated provenance.
+2. Inspect that preview and apply its `preview_ref` and `preview_sha256` through
+   the same bridge. The writer rechecks current identities under its lock and
+   commits the marker and matching `CONTEXT` provenance together. No separate
+   approval reply is needed. A stale, malformed or missing input remains a
+   precise refusal; do not append the marker or bypass the writer.
+3. Read back the committed files. Report which categories were inspected,
+   remaining unknowns, documents changed and actual checks. The marker records
+   completed population; it is not a certification of semantic truth, host
+   enforcement or test success. Return to normal authorized work.
 
-Gate: the qualified native transaction reports committed, `arbiter: enabled` and the standalone body marker are present, and all required outputs remain valid. Header-only empty boards, justified inapplicable domains and a zero-event audit header satisfy their real contracts. Existing initialized repositories use refresh; never remove their marker to repeat onboarding.
+Completion: the native transaction reports committed, the activation flag and
+standalone body marker are present, and the required outputs remain valid.
+Valid empty boards and a zero-event audit header satisfy their real contracts.
+Existing initialized repositories use refresh; never remove their marker to
+repeat onboarding.
 
 ## Hard rules
 
 - MUST NOT finalize while any `[CONFIRM-NN]` is unaddressed — every gap must be resolved or explicitly deferred to `open-questions.md` first.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing — surface the question to the user or defer it.
-- MUST NOT proceed past Phase 2 without all six complete logical reports for
-  initial or explicitly full onboarding; a scoped refresh needs its declared
-  affected assignments and must not claim new full coverage.
-- MUST NOT use a writable role with Bash as a context scout or infer read-only containment from an `agents` capability.
-- MUST NOT run Phase 2 inline — isolated scout subagents are required for the report-only synthesis boundary.
-- MUST NOT load raw source into the orchestrator context after Phase 1 — synthesize from scout reports only.
+- Account for all six logical categories on initial or explicitly full work;
+  scoped refresh covers its selected categories without claiming a new full scan.
+- Do not claim host containment, independent review or verified semantics from
+  an agent label, report shape, source digest or artifact write.
 - MUST NOT record a scout finding that exposes a secret value — paths and line numbers only.
 - MUST NOT scaffold a cut doc — see [includes/cut-docs.md](../../includes/cut-docs.md) for the canonical never-scaffold list. Maturity is the `stage:` frontmatter number in `CONTEXT.md`.
 - MUST NOT run when `CONTEXT.md` already carries `<!--INITIALIZED-->` — stop and route to normal operation.

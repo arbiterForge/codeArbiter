@@ -1787,7 +1787,7 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         context_tests: list[dict[str, str]] = []
         context_stdout_sha256: str | None = None
         context_scope = "unsupported" if host == "pi" else "unqualified"
-        if require_production and host in {"claude", "codex"}:
+        if require_production:
             if expected_platform not in manifest.get("context_qualification", {}):
                 raise RuntimeError("required cold context cell lacks native package qualification")
             copied_cohort = extracted / "artifact-package-cohort.json"
@@ -1873,7 +1873,7 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         "all_accepted_and_current": True,
         "markdown_shadow_count": 0,
     }
-    if require_production and host in {"claude", "codex"}:
+    if require_production:
         cold_receipt.update({
             "context_workflow_scope": context_scope,
             "context_installed_tests": context_tests,
