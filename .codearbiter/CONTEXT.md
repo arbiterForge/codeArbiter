@@ -88,7 +88,7 @@ does not establish that it is fresh, verified, accepted, or released.
 
 ## Domain vocabulary
 
-- **Mode:** the session-scoped posture in `_modelib.MODES`: `arbiter`,
+- **mode**: the session-scoped posture in `_modelib.MODES`: `arbiter`,
   `dangerous`, or `ops`. `arbiter` provides normal routing; `dangerous`
   suspends orchestration for local exploration; `ops` narrows the posture
   toward operating a running system. Changing persona does not disable hooks

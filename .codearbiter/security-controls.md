@@ -185,15 +185,63 @@ and source, original operation ID and revision binding. Ambiguous/missing inputs
 stay unresolved without inventing authority. Migration/rollback preserves later
 work and complete-store history; it is explicit, not an automatic rewrite.
 
-## Hosted publication and distribution
+## Published tag immutability
 
-Published tags across all four declared series are immutable: no movement,
-deletion, override or break-glass exception. Corrections receive a new version.
-Rulesets prevent mutation; the ledger detects drift. The closed legacy ledger
-retains its original 44-entry scope and evidence grades under ADR-0034; do not
-extend or relabel it. ADR-0040's ordinary-check warning for an unrecorded new tag
-does not relax strict release preflight. No historical GitHub capability snapshot
-should be treated as a current external-service guarantee.
+The four installable release series are `v*` (ca), `ca-sandbox-v*`,
+`ca-codex-v*` and `ca-pi-v*`. Consumers pin tags as payload identities.
+**A published tag is immutable: there is no break-glass.** Moving, retargeting
+or deleting one is prohibited for every actor, including administrators.
+Correct a bad release with a new version. This preserves the maintainer's
+2026-07-25 ruling on issue #386; no standing bypass credential is justified
+by a recovery action the project expressly forbids.
+
+A mutable tag can redirect a pinned install to unreviewed code while its old
+release notes still imply the reviewed payload; deletion breaks availability.
+Preserve the two independent controls:
+
+1. Repository tag rulesets prevent deletion and non-fast-forward movement over
+   the release namespaces, without bypass actors for this immutability control.
+   Rulesets are external settings, not source files; a historical setting
+   snapshot does not prove current configuration.
+2. `.github/scripts/check_tag_immutability.py` detects drift against the disjoint
+   union of `.github/published-tags.json` (original-publication receipts) and
+   `.github/legacy-published-tags.json` (closed historical baselines). The
+   `[CHECK] | [REPO] | Published tag immutability` job is read-only. Detection
+   cannot prevent an install between a ref change and the next audit, so it
+   does not replace the preventive ruleset.
+
+The original-publication ledger retains both the tag object and peeled commit.
+A current API ref or mutable Release `target_commitish` cannot reconstruct a
+lost original identity. Ledger integrity rests on reviewed Git history and
+protected-main updates; changing a recorded identity to silence a red drift
+check is never a repair. Authenticate the original publisher run/artifact before
+reconciliation, bind its expected identity independently, and preserve uncertainty
+when that evidence is unavailable. A retained receipt is not a completed ledger
+handoff: only its reviewed addition merged to main completes ingestion.
+
+ADR-0034 fixes the legacy epoch at **44 records observed at
+`2026-09-04T20:45:43Z`**. It is **not original-publication proof**: a historical
+ref could have moved before observation. Its canonical identity-and-grade digest,
+source-matrix digest, timestamp, record count and **15/28/1 evidence-grade
+distribution** stay bound. The baseline provides forward detection only.
+Publishers and receipt reconcilers cannot grow the closed set. Adding or
+replacing an identity, source or grade requires a **new accepted, user-attributed
+ADR and architectural review**. Later tags use original-publication receipts;
+none may be relabelled as legacy to clear a failure. There is no break-glass
+for deletion, retargeting or movement; correction remains a new version.
+
+ADR-0040's accepted exception is narrow: required CI and the release workflow's
+preflight run without `--require-recorded`. A recorded tag that moved or
+disappeared, or invalid/unreadable inventory, still fails; an unrecorded new tag
+warns. Do not describe either workflow as strict missing-receipt enforcement.
+The checker still supports an explicitly selected `--require-recorded` audit;
+that capability is not evidence that every caller selects it. Receipt
+reconciliation remains separately authenticated and reviewed. Publication and
+ledger-PR merge are not transactional, and a later publication can race an
+already-green check. Preserve the accepted provenance-warning residual rather
+than inventing original-publication evidence or bypassing a drift failure.
+
+## Hosted publication and distribution
 
 Governance publication uses exact retained qualified cohort bytes. Local source,
 hosted candidate, published archive, npm/cold install, marketplace and actual
@@ -250,9 +298,24 @@ SHA-256 JWTs, verified TLS API calls and exit cleanup; only masked token outputs
 cross the intended step handoff. Job-scoped OIDC availability to all steps is
 an accepted residual, not a step-local capability.
 
-Release-target commands remain bounded executable input. Release hashes bind
-ordered pre-tag and build declarations; the exact hosted-cohort sentinel must
-never become a generic failed-build fallback. Package identity/version,
+Release-target rows declare `pre-tag`, `rebuild`, `generate` and optional
+`release-build` as operator-authored executable inputs, length-capped to 1,024
+characters. Release hashes bind the ordered `pre-tag` list plus `release-build`,
+`rebuild` and `generate`; changing any one invalidates the per-target
+confirmation. Read every declared executable input before recording that
+confirmation, and check it before the first executable declaration runs.
+Dry runs only list the commands and never mint a durable confirmation. `pre-tag` is
+check-only and mechanically guarded by `run-pre-tag`. The reviewed hosted-build
+path runs `release-build` only in the exact-candidate publisher, with a newly
+empty `RELEASE_ASSET_DIR`, a clean tracked tree before and after, and exact
+asset-inventory verification.
+
+The alternative retained-cohort path treats its exact fail-closed sentinel as
+policy, never as a locally runnable builder. It accepts only retained CI packages
+whose digests, receipts, source commit and flat names bind to the exact candidate;
+arbitrary build failures cannot select this exception. H-22 protects the declaring
+file with its actual authoring marker. This remains a cooperative governance
+boundary, not shell sandboxing or filesystem confinement. Package identity,
 deterministic contents, registry ownership, provenance and public cold install
 are verified before marketplace promotion. Preserve explicit publication
 authorization and exact distributed-byte readback.

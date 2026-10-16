@@ -59,7 +59,7 @@ evidenced task closures and the retained backlog and qualification boundaries.
 | T05 | Feature, sprint, TDD, planning, execution and status adapted for Claude, Codex and Pi; ordinary installed Claude model journey passed | Codex and Pi live model cells remain unverified |
 | T06 | Complete selected criteria and applicable constraints; bounded readback and named omissions; measured native orientation | End-to-end model cost unmeasured |
 | T07 | Captured replies survive cleanup and recover without recapture; safe replay; complete saved-store restore with old client; later edits retained | Unknown historical formats remain unsupported |
-| T08 | Three regenerated host adapters and 37 source-bound atlas owners; ordinary HTML labels corrected; explicit proof on demand | Actual deployment and release derivative readback |
+| T08 | Three regenerated host adapters and 51 source-bound atlas owners; current chapter maps and ordinary HTML labels corrected; explicit proof on demand | Actual deployment and release derivative readback |
 | T09 | Native, reconciliation, browser and mixed-client checks pass; hosted candidate matrix and installed Claude model canary passed | Final-head CI/package confirmation; publication readback after authorized release |
 | T10 | Assistive context writer, five-document refresh, evidenced project catch-up and completed independent review | Expanded-head hosted checks and source-pin confirmation; unrelated backlog and genuine user decisions remain separate |
 

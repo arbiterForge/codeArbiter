@@ -36,8 +36,12 @@ Current contracts live in `core/artifacts/internal/model/`, `schemas/`,
 Claude, Codex and Pi projections differ according to `core/hosts.json`, with
 adapter payloads at `plugins/ca/`, `plugins/ca-codex/` and `plugins/ca-pi/`.
 Codex resource charters support host dispatch; they are not native plugin-agent
-registrations. Pi's exact runtime compatibility input lives in the host
-registry; upgrading it requires the owning promotion checks.
+registrations. The external Pi runtime is a test/install input, never a
+checked-in or runtime dependency of this package. The supported promotion version is exact Pi 1.1.0.
+The accepted Pi support record and promotion targets own that version;
+`core/hosts.json` binds its skill-expansion fingerprint. Upgrading it requires
+the owning promotion checks. The `latest` compatibility probe is nonblocking;
+it does not expand the supported version set.
 
 Published releases from 0.7.5 record complete Codex resource-charter packaging
 in the adapter changelog. Current static package checks verify resource closure
@@ -81,8 +85,83 @@ python .github/scripts/test_artifact_surface.py
 python .github/scripts/test_persona_composition.py
 python .github/scripts/test_mode_surface.py
 python .github/scripts/test_ci_impact.py
+python .github/scripts/test_tag_immutability.py
+python .github/scripts/test_tag_publication_receipt.py
+python .github/scripts/test_reconcile_tag_receipt.py
 python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 ```
+
+The three tag suites above cover original-publication receipts, the closed
+legacy epoch and append-only reconciliation. They are offline tests, not a live
+tag-inventory check or authority to publish. For the affected subsystem, retain
+the additional named local checks below; this is an impact-selected catalog,
+not a requirement to run all of them for unrelated changes:
+
+```text
+# Command declarations, packaged resources and discovery
+python .github/scripts/test_codex_skill_resources.py
+python .github/scripts/check_command_route_release_state.py declarations
+python .github/scripts/test_command_route_release_state.py
+python .github/scripts/test_badge_consistency.py
+
+# Artifact representation, workflow, compatibility adapters and package closure
+python .github/scripts/test_artifact_consumers.py
+python .github/scripts/test_artifact_approval_adapter.py
+python .github/scripts/test_artifact_authoring.py
+python .github/scripts/test_artifact_workflow.py
+python .github/scripts/test_artifact_farm.py
+python .github/scripts/test_artifact_native.py
+python .github/scripts/test_artifact_package.py
+python .github/scripts/test_artifact_conformance.py
+
+# ADR lifecycle, destructive-command registry and security boundaries
+python .github/scripts/test_adr_lifecycle.py
+python .github/scripts/check_adr_lifecycle.py
+python .github/scripts/check_destructive_registry.py
+python .github/scripts/test_hook_guards.py
+python .github/scripts/test_hooks_cold_install.py
+python .github/scripts/test_preview_lib.py
+python .github/scripts/test_migration_backstop.py
+
+# Tasks, release, provenance, context injection and mode behavior
+python .github/scripts/test_metrics_lib.py
+python .github/scripts/test_taskboardlib.py
+python .github/scripts/test_taskwriter.py
+python .github/scripts/test_release_lib.py
+python .github/scripts/test_release_trace.py
+python .github/scripts/test_board_sync.py
+python .github/scripts/test_provenancelib.py
+python .github/scripts/test_provenance_wiring.py
+python .github/scripts/test_readinjectlib.py
+python .github/scripts/test_pre_read.py
+python .github/scripts/test_modelib.py
+python .github/scripts/test_prompt_submit.py
+python .github/scripts/test_startup_emitters.py
+python .github/scripts/test_mode_readers.py
+python .github/scripts/test_mode_compaction.py
+python .github/scripts/test_prune_nudge.py
+python .github/scripts/test_ux_conversion.py
+python .github/scripts/test_coverage_union.py
+```
+
+Artifact conformance runs with Python 3.14 in a fresh environment installed
+from its adjacent hashed lock, using the workflow's wheel-only/no-deps controls.
+The release trace requires full Git history and all tags; an absent prerequisite
+is an explicit failure, not permission to claim the trace passed. Cross-host
+coverage-union tests require the Pi tools dependencies below.
+
+The ADR acceptance protocol is independent of ordinary task progress. Its first
+commit uses `.github/scripts/prepare_adr_acceptance.py` to create a worktree-local
+transition packet bound to the exact HEAD/index, accepted ADR bytes, decision-log
+append, sealed obligations, expiry and independent reviewer identity. Only that
+exact pending transition is admitted locally; explicit-revision, export,
+clean-tree and GitHub-event validation remain strict. After the source commit,
+stage its acceptance binding, run both lifecycle commands above and commit that
+sole ledger append through the commit owner. Clear the packet with
+`python .github/scripts/prepare_adr_acceptance.py --clear` only after that commit
+succeeds. Legacy `baseline` bindings remain closed to the original migration
+snapshot `10d9b012d91681498bdf911dd82ffa28e112407f`; later commits cannot acquire
+legacy status instead of the acceptance protocol.
 
 Run Python syntax compilation for changed canonical modules. Shared hook tests
 are maintained in `plugins/ca/hooks/tests/`; `.github/scripts/` owns additional
@@ -117,6 +196,28 @@ and retained stops.
 | `plugins/ca-sandbox/tools/` | Same commands; Docker-dependent tests require Docker and must report any skips. |
 | `plugins/ca-pi/tools/` | `npm ci --ignore-scripts`, `npm run typecheck`, `npm test`, `npm run build`; `npm run coverage` for coverage. |
 | `site/` | `npm ci`, `npm run typecheck`, `npm test`, `npm run build`, `npm run link-audit`; `npm run coverage` for coverage. |
+
+When Pi source, shared core or Pi package generators change, install the tools
+dependencies before invoking the platform aggregate or its fixture subprocesses.
+The Pi tools install is an aggregate prerequisite: `npm --prefix plugins/ca-pi/tools ci --ignore-scripts`.
+Missing Vitest is a missing prerequisite, not a passing or silently skipped
+platform result. From the repository root:
+
+```text
+npm --prefix plugins/ca-pi/tools ci --ignore-scripts
+npm --prefix plugins/ca-pi/tools run typecheck
+npm --prefix plugins/ca-pi/tools test
+npm --prefix plugins/ca-pi/tools run build
+python .github/scripts/test_pi_package.py
+python .github/scripts/test_pi_parity.py
+python .github/scripts/test_public_pi_docs.py
+python .github/scripts/test_pi_platform_contract.py --fixtures-only
+```
+
+A supported-version aggregate adds `--pi-version 1.1.0` after installing that
+exact external Pi version from its reviewed host lock with scripts disabled.
+CI owns the supported Windows/macOS/Linux matrix. Fixture-only success does not
+establish a live runtime or another platform; report unavailable cells as such.
 
 Site scripts own generation through pre-hooks. `npm test` also runs Academy
 non-root-base and rendered-release checks. Rebuilt tracked bundles and generated

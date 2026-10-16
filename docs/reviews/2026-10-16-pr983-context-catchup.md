@@ -7,7 +7,8 @@ unrelated features, publish packages, or replace actual host permissions.
 ## Context coverage
 
 The six-domain source audit covered stack, infrastructure, architecture,
-security, tests and data model. It inspected 64 distinct direct source files;
+security, tests and data model. Including the CI-driven policy repair, it
+inspected 68 distinct direct source files, with 64 retained in final provenance;
 none of the five target context documents was used as evidence for itself.
 The code map contains 48 existing paths and passes the existing map linter.
 
@@ -85,3 +86,27 @@ the ambient runtime version; its other 55 cases passed. The repository's pinned
 runtime and full platform matrix remain exact-head CI responsibilities. No test,
 version check, security rule or coverage scope was weakened for a pass.
 Codex/Pi live model qualification and publication readback remain unclaimed.
+
+## CI-driven completion repairs
+
+The first expanded CI run exposed omitted accepted guidance: exact mode
+vocabulary, Pi 1.1.0 and aggregate-install prerequisites, provenance test owners,
+the immutable-tag legacy epoch and review rules, and release-build safeguards.
+Those details were restored through native preview/apply. The release provenance
+guide now states ADR-0040's existing missing-receipt warning policy accurately;
+recorded tag drift and invalid inventory remain failures.
+
+The context-apply schema now exposes its closed union envelope while preserving
+exclusive ordinary and legacy request shapes. Its existing closure regression
+was moved out of a Linux-only file: Windows then reproduced RED before the fix
+and GREEN after it. Full Windows native tests and vet passed. Exact context-owner
+fingerprints were updated after review without relaxing compatibility checks.
+The sandbox metadata correction advances its candidate version to 0.1.7 and
+remains Unreleased.
+
+Current brownfield and sprint chapter maps now follow assistive orchestration;
+historical quotations retain their original source identity. Atlas validation
+batches its offline Git reads while retaining per-path identity, symlink,
+missing-object, replacement-ref and drift rejection. The full local site suite
+passed 1,089 tests under unchanged limits. Subsequent focused checks cover the
+reviewed direct-validation branch and explicit handling of remaining unknowns.
