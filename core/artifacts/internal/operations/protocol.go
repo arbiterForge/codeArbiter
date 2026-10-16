@@ -117,7 +117,12 @@ func RequestSchema(op string) (object, error) {
 	case "context-apply":
 		legacy := closed(object{"protocol": enum(Protocol), "receipt": text()}, "protocol", "receipt")
 		ordinary := closed(object{"protocol": enum(Protocol), "preview_ref": text(), "preview_sha256": digestType()}, "protocol", "preview_ref", "preview_sha256")
-		return object{"oneOf": []any{ordinary, legacy}}, nil
+		add("receipt", text(), false)
+		add("preview_ref", text(), false)
+		add("preview_sha256", digestType(), false)
+		request := closed(p)
+		request["oneOf"] = []any{ordinary, legacy}
+		return request, nil
 	case "migration-preview", "migration-apply":
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")

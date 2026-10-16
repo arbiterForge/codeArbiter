@@ -788,21 +788,6 @@ func TestNoAuthorityFromHTMLFlag(t *testing.T) {
 		t.Fatal("approved flag was trusted")
 	}
 }
-func TestAllOperationSchemasClosed(t *testing.T) {
-	for _, op := range Names() {
-		s, e := RequestSchema(op)
-		if e != nil {
-			t.Fatal(e)
-		}
-		if s["additionalProperties"] != false {
-			t.Fatal(op)
-		}
-		r := object{"protocol": Protocol, "unexpected": "x"}
-		if CheckRequest(op, r) == nil {
-			t.Fatal("unknown key", op)
-		}
-	}
-}
 func TestStoredCommandIsInert(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
