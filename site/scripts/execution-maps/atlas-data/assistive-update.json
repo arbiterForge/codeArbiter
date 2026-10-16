@@ -1,7 +1,7 @@
 {
-  "revision": "7623d82085ec1c398d4213904535224863c35312",
+  "revision": "5e637bba2011e9b13afadb5c3032f0d8f9f3cfd8",
   "title": "Assistive overhaul: implemented candidate",
-  "summary": "Candidate codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. The October 7 diagram layout is a historical visual reference, not the current executable workflow. One installed Claude model journey passed; Codex and Pi live model cells remain unverified. Final-head package confirmation and release qualification remain incomplete. No release or all-host qualification is implied.",
+  "summary": "Candidate codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. Authorized context population and refresh now use bounded inspection, optional agents and exact native preview/apply without per-document approval receipts. Source bindings describe implementation, not semantic verification or host qualification. The October 7 diagram layout is a historical visual reference, not the current executable workflow. One installed Claude model journey passed before this context extension; Codex and Pi live model cells remain unverified. Final-head package confirmation and release qualification remain incomplete. No release or all-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
@@ -40,15 +40,18 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "cabf7d4367498b0f5ee6666206ce9bdbffb63a80",
-      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow.",
+      "blob": "10ba7b2ee2403676b715d44c532766ea1c487a1b",
+      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow.",
       "nodes": [
         "f-entry",
         "f-plan",
         "f-approval",
         "f-capability",
         "c-spec",
-        "c-plan"
+        "c-plan",
+        "b-preview",
+        "b-apply",
+        "b-finalize"
       ]
     },
     {
@@ -66,23 +69,29 @@
     },
     {
       "path": "core/surface/includes/routing-table.md",
-      "blob": "074e4fbf17134d73fbf0487be0f0bfe8aac787f3",
-      "summary": "The user-facing route table now points feature and sprint work at useful planned execution rather than per-task reviewer chains; real destructive actions still use their owning host/commit controls.",
+      "blob": "14568c091e7eba245f6061d9ee5808ed9891d7e8",
+      "summary": "The user-facing route table points feature and sprint work at useful planned execution and selected context refresh at its existing owner. Existing authorization covers ordinary work; actual host, destructive-action and commit controls remain.",
       "nodes": [
         "f-entry",
         "f-selection",
-        "o-runtime"
+        "o-runtime",
+        "o-init",
+        "o-status",
+        "k-drift"
       ]
     },
     {
       "path": "core/surface/skills/INDEX.md",
-      "blob": "3d804cf2718eda3b4212b550e6c8a741fe60947f",
-      "summary": "The skill index now labels brainstorming, planning, execution and optional reviewers as assistive instead of mandatory approval and double-review stages.",
+      "blob": "b13a0feea057964a279615f1b2f2159ec7609ed7",
+      "summary": "The skill index labels planning, execution and optional reviewers as assistive. Context creation uses bounded inspection with optional agents; selected refresh reuses existing authorization instead of a repeated per-document approval stage.",
       "nodes": [
         "f-spec",
         "f-plan",
         "f-selection",
-        "f-verify"
+        "f-verify",
+        "o-brown",
+        "c-brown",
+        "k-drift"
       ]
     },
     {
@@ -250,12 +259,16 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "00a3b252b0801f057564ecdc274b4d463b6c464d",
-      "summary": "The closed task-check request accepts only bounded command observations; a declared command must match its plan definition. Invalid or stale CAS writes remain rejected.",
+      "blob": "8613ffc1df5b5e3c3bb30af146953babae3d39f4",
+      "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected.",
       "nodes": [
         "f-verify",
         "f-recovery",
-        "c-proof"
+        "c-proof",
+        "b-preview",
+        "b-approve",
+        "b-apply",
+        "b-finalize"
       ]
     },
     {
@@ -322,14 +335,15 @@
     },
     {
       "path": "core/surface/includes/artifacts-attestation.md",
-      "blob": "d35847cb4c7e50cc1c8e5ef42491b16bc7512577",
-      "summary": "The optional reference retains every original strict historical evidence input and reviewer protocol without replacing the original task review; it also retains paired approval, confirmed or captured decisions, content-addressed observed reply, strict scan bound, in-flight write recovery, and older installed-client limitations. It is read on demand for actual policy proof or historical work, not for ordinary task start.",
+      "blob": "9c261559f19b716125de1f7f9aa8bd4e02597e8c",
+      "summary": "The optional reference retains the strict historical evidence inputs without replacing the original task review, including paired approval, captured decisions and in-flight recovery. Its verify command requires literal absolute paths; linked agent subdirectories remain unsupported for strict authority review. These limitations apply to requested attestation, not ordinary task start.",
       "nodes": [
         "f-approval",
         "f-recovery",
         "f-quality",
         "f-accept",
-        "c-proof"
+        "c-proof",
+        "b-approve"
       ]
     },
     {
@@ -369,11 +383,14 @@
     },
     {
       "path": "core/surface/includes/codex-host-notes.md",
-      "blob": "fd078c9988a31883712fe3d4828a8b18493ba512",
-      "summary": "Codex dispatch requires attestation only for explicitly claimed host proof; an unavailable requested farm backend is reported without silently switching provider or model.",
+      "blob": "d04519e834ea85105e9b503f42396690568c4add",
+      "summary": "Codex dispatch requires attestation only for explicitly claimed host proof; an unavailable requested farm backend is reported without silently switching provider or model. Ordinary context inspection can proceed inline within actual host permissions; an agent label supplies no containment or semantic verification.",
       "nodes": [
         "f-selection",
-        "c-proof"
+        "c-proof",
+        "b-profile",
+        "b-scouts",
+        "c-brown"
       ]
     },
     {
@@ -391,6 +408,186 @@
       "summary": "The public Codex farm boundary matches its caller: report the unavailable backend and use another provider or model only within existing authorization.",
       "nodes": [
         "f-selection"
+      ]
+    },
+    {
+      "path": "core/pysrc/_contextwriterlib.py",
+      "blob": "7a91de9546b83c732630571624a0326caa33588c",
+      "summary": "The context preparation helper reads a bounded UTF-8 draft and explicit source files, selects the whole named document and binds exact existing document/provenance bytes. It chooses create, missing-or-v1 adopt, or v2 update; claims remain semantically unreviewed and malformed provenance is preserved for inspection.",
+      "nodes": [
+        "b-preview",
+        "b-preserve",
+        "b-refresh",
+        "k-drift"
+      ]
+    },
+    {
+      "path": "core/pysrc/init-codearbiter.py",
+      "blob": "820223ee921e7e40136795c763b08fd6e97acc92",
+      "summary": "The installed --context-draft/--document/--source command prepares a native preview; --context-apply with --preview-sha256 applies that exact reference. Preview retention does not write the content pair. These context modes avoid the scaffolder and do not reset initialized repositories.",
+      "nodes": [
+        "o-init",
+        "b-new",
+        "b-refresh",
+        "b-preview",
+        "b-apply",
+        "b-refreshed",
+        "k-init-alias"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/context_assistive.go",
+      "blob": "27180f138f74586fa4a170716ee5e269008beb1c",
+      "summary": "Ordinary context-preview retains an inert proposal and exact preimages without approval or review claims. context-apply revalidates the digest, closed request and preview binding before the native paired transaction; context-finalize-preview uses the same exact-reference path for initial population. No approve-context reply is required.",
+      "nodes": [
+        "b-preview",
+        "b-approve",
+        "b-apply",
+        "b-finalize",
+        "b-recover-entry",
+        "b-recover"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/contextdocument/contract.go",
+      "blob": "6c3fd897e1dbe6c4933dce6bab55fbd4f81a5860",
+      "summary": "The finite context contract permits a whole-document Markdown entry only as the sole entry for one of five named content targets. Explicit typed field entries remain available; the writer does not expose arbitrary repository-file writes.",
+      "nodes": [
+        "b-docs",
+        "b-preview",
+        "b-preserve",
+        "c-store"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/contextdocument/document_selection.go",
+      "blob": "9ff5b8ab4cdda001bf027dbb4aca0906e2df8b3a",
+      "summary": "Whole-document replacement requires the explicit document selection and exact existing bytes. It preserves CONTEXT frontmatter and initialization state, checks the named document identity and Markdown structure, and retains the code-map size limit. Human content outside the authorized change remains the caller's preservation obligation.",
+      "nodes": [
+        "b-docs",
+        "b-preview",
+        "b-preserve",
+        "b-refreshed",
+        "c-store"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/contextdocument/operations.go",
+      "blob": "ff0c467801679f74b7b8b4638c773e390de5102d",
+      "summary": "Ordinary create/adopt/update preserves the same source-evidence, selection and compare-and-swap checks as the native transaction. Missing or matching v1 provenance can be adopted; existing v2 ownership can transition through explicit whole-document selection. Original document/provenance preimages remain in transaction history for exact recovery.",
+      "nodes": [
+        "b-apply",
+        "b-preserve",
+        "b-recover",
+        "c-heal",
+        "c-decisions"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/contextdocument/finalization.go",
+      "blob": "e48bb44dfae84966fc976d6850bc82d561e8dc6b",
+      "summary": "Initial finalization binds thirteen output identities, rechecks supporting source evidence, and changes the initialization marker with its paired provenance digest. Ordinary finalization requires no artifact approval receipt and does not certify semantic correctness. Already initialized repositories refuse a new finalization.",
+      "nodes": [
+        "o-knowledge",
+        "b-finalize",
+        "b-refreshed",
+        "b-recover",
+        "c-store"
+      ]
+    },
+    {
+      "path": "core/artifacts/schemas/context.schema.json",
+      "blob": "92e82ffe9d677df3b856df04fcd33e90f703aadb",
+      "summary": "The context schema describes both finite field entries and the explicit whole-document entry for the five supported content documents. Its typed structure records evidence references; schema validity does not establish that the claims were independently reviewed.",
+      "nodes": [
+        "b-docs",
+        "b-preview",
+        "c-store"
+      ]
+    },
+    {
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "blob": "55350b45f16b40c9d969df1fc49cd59a781cb8e2",
+      "summary": "Brownfield population covers six logical categories and five content documents through direct bounded inspection or optional scoped agents. A qualified scout profile and per-document approve-context receipts are no longer routine prerequisites. Actual host permissions, source-bound unknowns, material owner decisions, protected content and initial-only finalization remain.",
+      "nodes": [
+        "o-brown",
+        "o-knowledge",
+        "c-brown",
+        "b-new",
+        "b-profile",
+        "b-scouts",
+        "b-join",
+        "b-gaps",
+        "b-docs",
+        "b-approve",
+        "b-finalize",
+        "b-recover-entry"
+      ]
+    },
+    {
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "blob": "83f05b0f40d94c318dac97cc5417611f93542d4d",
+      "summary": "A drift audit stays read-only; an already authorized selected or full refresh proceeds without asking again per document. The installed draft/preview/apply example preserves source bindings and selected content. Matching hashes establish identity only; initialized refresh never reruns scaffolding, clears the marker or repeats finalization.",
+      "nodes": [
+        "o-status",
+        "b-refresh",
+        "b-preview",
+        "b-approve",
+        "b-preserve",
+        "b-refreshed",
+        "c-heal",
+        "c-decisions",
+        "k-drift",
+        "k-stateout",
+        "r-c2"
+      ]
+    },
+    {
+      "path": "core/surface/commands/init.md",
+      "blob": "2a1469c2634fac42366c4709782d45e07bd2eef5",
+      "summary": "Initial brownfield setup checks the intended repository and actual host permissions, then uses bounded inspection and the installed safe context writer. Ordinary Windows work needs no special scout profile or per-document artifact approval. An existing initialized repository routes to selected refresh instead of another scaffold or population cycle.",
+      "nodes": [
+        "o-init",
+        "o-brown",
+        "b-new",
+        "b-profile",
+        "b-refreshed",
+        "k-init-alias"
+      ]
+    },
+    {
+      "path": "core/surface/agents/scout.md",
+      "blob": "74f7fd0c5da221ac0e70151ffb24e6dec6b4f472",
+      "summary": "Optional context scouts report only their assigned scope, source identities, coverage, conflicts and unknowns. Six logical categories do not require six child agents. A role label or read-only instruction proves neither sandbox containment nor independent semantic verification; actual host permissions and excluded paths still apply.",
+      "nodes": [
+        "b-profile",
+        "b-scouts",
+        "b-join",
+        "c-brown"
+      ]
+    },
+    {
+      "path": "core/surface/skills/release/SKILL.md",
+      "blob": "e0b7e396954cc65efe3e7f24c93fa36f75ae123d",
+      "summary": "Release preparation inserts a new version below the entire Unreleased section and above prior versions, preserving pending notes. This guidance correction does not grant publication authority or replace the existing release-PR and hosted qualification boundaries.",
+      "nodes": [
+        "o-release",
+        "r-release",
+        "r-policy",
+        "r-publish"
+      ]
+    },
+    {
+      "path": "core/surface/includes/reference-map.md",
+      "blob": "b999ea47d91b914aade3ad8cdd66c214cb4c43c2",
+      "summary": "The lazy reference map routes provenance drift or requested initialized refresh to context-check after reading selected documents, provenance and the code map. The owner reuses selected scope and existing authorization.",
+      "nodes": [
+        "o-runtime",
+        "c-lazy",
+        "c-heal",
+        "b-refresh",
+        "b-preview",
+        "b-apply"
       ]
     }
   ]

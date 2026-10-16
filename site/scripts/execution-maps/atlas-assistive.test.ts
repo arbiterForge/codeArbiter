@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('7623d82085ec1c398d4213904535224863c35312');
-    expect(update.changes).toHaveLength(37);
+    expect(update.revision).toBe('5e637bba2011e9b13afadb5c3032f0d8f9f3cfd8');
+    expect(update.changes).toHaveLength(51);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
@@ -66,6 +66,34 @@ describe('assistive candidate versus retained historical routes',()=>{
     for(const view of atlas.views)expect(renderAtlasSvg(atlas,view,theme)).toContain('HISTORICAL ROUTES  /  CODEARBITER');
     const exported=new URL(`../../../site/public/workflow-atlas/${REVIEWED_AT}/sources.json`,import.meta.url);
     expect(JSON.parse(readFileSync(exported,'utf8')).sourceUpdate).toEqual(atlas.sourceUpdate);
+  });
+
+  it('exposes current context callers and native writers at the historical permission and recovery nodes',()=>{
+    const boundaries:Record<string,string[]>={
+      'b-profile':['core/surface/skills/context-creation/SKILL.md','core/surface/agents/scout.md'],
+      'b-refresh':['core/surface/skills/context-check/SKILL.md','core/pysrc/init-codearbiter.py'],
+      'b-preview':['core/pysrc/_contextwriterlib.py','core/artifacts/internal/operations/context_assistive.go'],
+      'b-approve':['core/surface/skills/context-creation/SKILL.md','core/artifacts/internal/operations/context_assistive.go'],
+      'b-apply':['core/artifacts/internal/operations/context_assistive.go','core/artifacts/internal/contextdocument/operations.go'],
+      'b-preserve':['core/artifacts/internal/contextdocument/document_selection.go','core/artifacts/internal/contextdocument/operations.go'],
+      'b-finalize':['core/surface/skills/context-creation/SKILL.md','core/artifacts/internal/contextdocument/finalization.go'],
+      'b-refreshed':['core/surface/skills/context-check/SKILL.md','core/artifacts/internal/contextdocument/document_selection.go'],
+      'b-recover':['core/artifacts/internal/operations/context_assistive.go','core/artifacts/internal/contextdocument/operations.go'],
+    };
+    const brownfield=atlas.views.find(view=>view.id==='brownfield-lifecycle')!;
+    for(const [id,owners] of Object.entries(boundaries)) {
+      const node=brownfield.nodes.find(node=>node.id===id)!;
+      const changes=atlas.sourceUpdate!.changes.filter(change=>change.nodes.includes(id));
+      expect(changes.map(change=>change.path),id).toEqual(expect.arrayContaining(owners));
+      const details=nodeDetails(atlas,node);
+      expect(details,id).toContain('data-atlas-source-update');
+      expect(details.indexOf('data-atlas-source-update'),id).toBeLessThan(details.indexOf('<h4>Related entries'));
+      for(const path of owners)expect(details,id).toContain(
+        `https://github.com/arbiterForge/codeArbiter/blob/${atlas.sourceUpdate!.revision}/${path}`,
+      );
+    }
+    const original=originalAtlas().views.find(view=>view.id==='brownfield-lifecycle')!;
+    expect(brownfield).toEqual(original);
   });
 
   it('rejects invalid source references or affected nodes and escapes explanatory text',()=>{

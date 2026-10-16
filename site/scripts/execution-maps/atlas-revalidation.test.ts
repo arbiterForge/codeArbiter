@@ -245,15 +245,20 @@ describe('atlas source compatibility revalidation', () => {
     expect(observed).toHaveLength(paths.length);
     expect(reviewed).toHaveLength(paths.length);
     const changed = paths.filter((_, index) => observed[index] !== reviewed[index]);
-    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
-      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
-      'core/surface/commands/feature.md', 'core/surface/commands/init.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md', 'core/surface/includes/artifacts.md',
-      'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
-      'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
-      'core/surface/skills/finishing-a-development-branch/SKILL.md',
-      'core/surface/skills/subagent-driven-development/SKILL.md', 'core/surface/skills/tdd/SKILL.md',
-      'docs/hooks.md', 'docs/parity.md']);
+    expect(changed).toEqual([
+      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
+      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md',
+      'core/surface/arbiter.md', 'core/surface/commands/feature.md',
+      'core/surface/commands/init.md', 'core/surface/commands/sprint.md',
+      'core/surface/commands/status.md', 'core/surface/includes/artifacts.md',
+      'core/surface/includes/reference-map.md', 'core/surface/includes/routing-table.md',
+      'core/surface/skills/INDEX.md', 'core/surface/skills/commit-gate/SKILL.md',
+      'core/surface/skills/context-check/SKILL.md', 'core/surface/skills/context-creation/SKILL.md',
+      'core/surface/skills/debug/SKILL.md', 'core/surface/skills/finishing-a-development-branch/SKILL.md',
+      'core/surface/skills/release/SKILL.md', 'core/surface/skills/subagent-driven-development/SKILL.md',
+      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md',
+      'docs/parity.md',
+    ]);
     expect(DRAFT_PREVIEW_SOURCE_BLOBS).toEqual({
       'core/surface/SPRINT.md': 'c3c47d38028fb3a8141fe1235957e827031acd43',
       'core/surface/includes/artifacts.md': '8a834b919fb81c77213086a1b1661d16b5290bbe',
@@ -284,16 +289,17 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
-      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
-      'core/surface/commands/feature.md',
+      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md',
+      'core/surface/arbiter.md', 'core/surface/commands/feature.md',
       'core/surface/commands/init.md', 'core/surface/commands/sprint.md',
-      'core/surface/commands/status.md',
-      'core/surface/includes/artifacts.md', 'core/surface/includes/routing-table.md',
+      'core/surface/commands/status.md', 'core/surface/includes/artifacts.md',
+      'core/surface/includes/reference-map.md', 'core/surface/includes/routing-table.md',
       'core/surface/skills/INDEX.md', 'core/surface/skills/commit-gate/SKILL.md',
-      'core/surface/skills/debug/SKILL.md',
-      'core/surface/skills/finishing-a-development-branch/SKILL.md',
-      'core/surface/skills/subagent-driven-development/SKILL.md',
-      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md', 'docs/parity.md',
+      'core/surface/skills/context-check/SKILL.md', 'core/surface/skills/context-creation/SKILL.md',
+      'core/surface/skills/debug/SKILL.md', 'core/surface/skills/finishing-a-development-branch/SKILL.md',
+      'core/surface/skills/release/SKILL.md', 'core/surface/skills/subagent-driven-development/SKILL.md',
+      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md',
+      'docs/parity.md',
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
@@ -320,7 +326,7 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
+      expect(git('hash-object', '--', path).trim()).toBe(ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
@@ -432,15 +438,20 @@ describe('atlas source compatibility revalidation', () => {
       offset = end + 2 + size;
     }
     expect(offset).toBe(reviewed.length);
-    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
-      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
-      'core/surface/commands/feature.md', 'core/surface/commands/init.md',
-      'core/surface/commands/sprint.md', 'core/surface/commands/status.md', 'core/surface/includes/artifacts.md',
-      'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
-      'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
-      'core/surface/skills/finishing-a-development-branch/SKILL.md',
-      'core/surface/skills/subagent-driven-development/SKILL.md', 'core/surface/skills/tdd/SKILL.md',
-      'docs/hooks.md', 'docs/parity.md']);
+    expect(changed).toEqual([
+      'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
+      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md',
+      'core/surface/arbiter.md', 'core/surface/commands/feature.md',
+      'core/surface/commands/init.md', 'core/surface/commands/sprint.md',
+      'core/surface/commands/status.md', 'core/surface/includes/artifacts.md',
+      'core/surface/includes/reference-map.md', 'core/surface/includes/routing-table.md',
+      'core/surface/skills/INDEX.md', 'core/surface/skills/commit-gate/SKILL.md',
+      'core/surface/skills/context-check/SKILL.md', 'core/surface/skills/context-creation/SKILL.md',
+      'core/surface/skills/debug/SKILL.md', 'core/surface/skills/finishing-a-development-branch/SKILL.md',
+      'core/surface/skills/release/SKILL.md', 'core/surface/skills/subagent-driven-development/SKILL.md',
+      'core/surface/skills/tdd/SKILL.md', 'docs/hooks.md',
+      'docs/parity.md',
+    ]);
     expect(BROWNFIELD_SOURCE_BLOBS).toEqual({
       'core/surface/commands/init.md': 'c3de948de1617aa323e310eefee7fde2bd8a65fc',
       'core/surface/skills/debug/SKILL.md': '6a791230cdbfa0916c63d2b1dcc6431d1625b1a3',
@@ -454,14 +465,16 @@ describe('atlas source compatibility revalidation', () => {
       'core/surface/skills/commit-gate/SKILL.md': 'bbfc5054fe7ac94309ded7b8cdd6073b3ad65c9d',
       'core/surface/skills/finishing-a-development-branch/SKILL.md': 'c9b8bc36934e5b79f0e4ec72c35c69997519378f',
     });
-    for (const [path, blob] of Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
+    const owners = Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
-      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS})) {
-      expect(git('ls-files', '--error-unmatch', '--', path).trim()).toBe(path);
-      expect(execFileSync('git', ['hash-object', '--stdin'], {cwd: root, input: current(path), encoding: 'utf8'}).trim()).toBe(blob);
-      expect(git('--no-replace-objects', 'cat-file', 'blob', blob)).toBe(current(path));
-    }
+      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS});
+    // One tracked-path query and one strict offline blob batch preserve exact
+    // byte checks without three Git launches per owner on Windows.
+    const ownerPaths = owners.map(([path]) => path).sort();
+    expect(git('ls-files', '--error-unmatch', '--', ...ownerPaths).trim().split('\n').sort()).toEqual(ownerPaths);
+    const ownerBytes = historicalBlobBatch(owners.map(([, blob]) => blob));
+    for (const [index, [path]] of owners.entries()) expect(ownerBytes[index].toString('utf8')).toBe(current(path));
     expect(retainsReviewedChangelog(current('CHANGELOG.md'),
       git('--no-replace-objects', 'cat-file', 'blob', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
