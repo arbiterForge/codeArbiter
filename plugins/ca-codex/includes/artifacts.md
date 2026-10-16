@@ -34,11 +34,42 @@ authorized work. Do not invent criteria, decisions or test results to pass
 validation. A changed outcome goes to the actual decision owner; in-scope
 methods and task decomposition can be updated with a reason.
 
-Call only the operation-specific `schema` needed by the next action; do not
-preload the entire schema. The packaged bridge invokes the verified native
+Query an operation-specific `schema` only when its request shape is unknown;
+reuse known shapes for subsequent calls instead of querying on every read.
+Do not preload the entire schema. The packaged bridge invokes the verified native
 binary as `ca-artifact <operation> --root <project-root> --request -`
 with one JSON request on stdin; never resolve it from PATH. Requests use
 protocol `codearbiter.artifact-api/0.1.0`; failed writes remain failures.
+
+From the workspace root, pass this block on Python 3's stdin (`python -B -
+'<absolute-installed-plugin-root>' '<plan-id>' '<task-id>'`, using your shell's
+multiline stdin syntax and quoting). Use the host's loaded plugin root, not a
+guessed project path. No helper script or directory outside the workspace is
+needed. The client adds the protocol field; its second argument is the helper
+installation, **not** the plugin root. Add `--schema` only when you need the
+operation's request schema instead of the task packet.
+
+```python
+import json
+import sys
+from pathlib import Path
+
+plugin = Path(sys.argv[1])
+plan_id, task_id = sys.argv[2:4]
+sys.path.insert(0, str(plugin / "hooks"))
+from _artifactlib import ArtifactClient, helper_installation
+
+client = ArtifactClient(Path.cwd(), helper_installation(str(plugin / "hooks/_artifactlib.py")))
+if "--schema" in sys.argv[4:]:
+    print(json.dumps(client.call("schema", {"name": "operation", "operation": "task-context"})))
+else:
+    identity = client.call("identity", {"artifact_id": plan_id})
+    packet = client.call("task-context", {
+        "artifact_id": plan_id, "task": task_id,
+        "model_sha256": identity["model_sha256"],
+    })
+    print(json.dumps(packet))
+```
 
 ## Read the smallest useful context
 

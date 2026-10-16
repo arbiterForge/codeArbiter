@@ -13,6 +13,7 @@ import io
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import shutil
 import sys
@@ -1203,6 +1204,44 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.root = physical_test_directory(self.temporary.name) / "repo"
         self.root.mkdir()
         self.harness = WorkflowHarness(self.root, self.installation)
+
+    def test_installed_bootstrap_example_reads_native_task_context(self) -> None:
+        self.harness.create_pair()
+        plugin = self.installation.parent.parent
+        guide = plugin / "includes/artifacts.md"
+        examples = re.findall(r"```python\n(.*?)\n```", guide.read_text(encoding="utf-8"), re.S)
+        self.assertEqual(len(examples), 1, "installed guide needs one runnable Python bootstrap")
+        before = {p.relative_to(self.root): p.read_bytes()
+                  for p in (self.root / ".codearbiter").rglob("*") if p.is_file()}
+        def run_example(*arguments: str) -> dict:
+            result = subprocess.run(
+                [sys.executable, "-I", "-B", "-", str(plugin), "PLAN-FLOW", "T-001", *arguments],
+                input=examples[0], cwd=self.root, capture_output=True, text=True,
+                encoding="utf-8", timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            return json.loads(result.stdout)
+
+        packet = run_example()
+        request_schema = run_example("--schema")
+        self.assertEqual(request_schema["type"], "object")
+        self.assertFalse(request_schema["additionalProperties"])
+        self.assertEqual(set(request_schema["required"]),
+                         {"protocol", "artifact_id", "task", "model_sha256"})
+        self.assertNotIn("task_id", request_schema["properties"])
+        self.assertEqual(packet["task"]["id"], "T-001")
+        self.assertEqual(packet["task"]["verification"][0]["argv"],
+                         ["python", "-m", "unittest", "-v", "tests.test_config"])
+        self.assertEqual([criterion["ref"] for criterion in packet["criteria"]],
+                         ["SPEC-FLOW#AC-001"])
+        self.assertEqual(packet["criteria"][0]["verification"]["planned_target"],
+                         "test_environment_overrides")
+        self.assertTrue(packet["binding_current"])
+        self.assertFalse(packet["context_complete"])
+        self.assertFalse(packet["evidence_assessed"])
+        self.assertLess(len(json.dumps(packet).encode("utf-8")), 65536)
+        self.assertEqual(before, {p.relative_to(self.root): p.read_bytes()
+                                 for p in (self.root / ".codearbiter").rglob("*") if p.is_file()})
 
     def test_intent_cli_accepts_ready_spec_from_native_engine(self) -> None:
         self.harness.create_spec()
