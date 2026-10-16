@@ -44,10 +44,13 @@ EXPECTED_LEGACY_BODY_SHA256 = {
 
 # The init body includes T-020's bounded passive inspection before the normal
 # scaffold procedure. T-027 adds its refresh pointer inside the additive mode.
+# PR #983 intentionally updates the status body to distinguish DONE progress,
+# verification and actual user stops. AssistiveCallerProjectionTest checks that
+# behavior across all three hosts; routing and additive modes remain unchanged.
 EXPECTED_DEFAULT_BODY_SHA256 = {
     "pr": "068521a57a408bfaa9ca84f8ae6b5ccd5292c81e3030b9a7522add07122a7ad7",
     "init": "14a38ed019243f3998b8f2f37b671b0c792f75f0052e0ef0e897903e2677e8d2",
-    "status": "0888f248ea6848d93201fa96ea167ae9575a55055b5518d58a74b323e6144f80",
+    "status": "5e10b6af44eeb4257329a1dbeeadf83b04e342cbc7e7fdb216b29147d71fd2a9",
 }
 
 NOTICE_RE = re.compile(
