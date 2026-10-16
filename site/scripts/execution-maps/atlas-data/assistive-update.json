@@ -1,12 +1,12 @@
 {
-  "revision": "0ed5cbe993022da446eb4f9df7b3bbfd2c50e154",
-  "title": "Assistive overhaul: partial implementation",
-  "summary": "Draft codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. The October 7 diagram layout is a historical visual reference, not the current executable workflow. Model-backed host and release qualification remain incomplete. No release or installed-host qualification is implied.",
+  "revision": "7623d82085ec1c398d4213904535224863c35312",
+  "title": "Assistive overhaul: implemented candidate",
+  "summary": "Candidate codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. The October 7 diagram layout is a historical visual reference, not the current executable workflow. One installed Claude model journey passed; Codex and Pi live model cells remain unverified. Final-head package confirmation and release qualification remain incomplete. No release or all-host qualification is implied.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "f01d3195289c97de502b01b6a300ed9d167c09dc",
-      "summary": "Routine artifact instructions now focus on the installed writer, typed plan, bounded task reads, factual prerequisites, actual checks and safe retry. The default leaf is about 5.9 KB; explicit attestation remains available on demand without burdening ordinary task context.",
+      "blob": "c8598042988989e182eb01f524b5012df2936f3b",
+      "summary": "Routine artifact instructions now focus on the installed writer, typed plan, bounded task reads, factual prerequisites, actual checks and safe retry. The default leaf is about 7.3 KB and includes an executable stdin bootstrap with optional operation-schema discovery; explicit attestation remains available on demand without burdening ordinary task context.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",

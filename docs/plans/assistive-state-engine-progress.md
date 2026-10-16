@@ -18,14 +18,14 @@ commits and publication permissions are **not** bypassed.
 | Task | Source state | Remaining |
 |---|---|---|
 | T01 | Approved direction and owning-callers inventory | None for design approval |
-| T02 | Advisory scheduling; receipt-free task and batch progress; affected resident/catalog/status callers converted | Exact-head integration checks |
+| T02 | Advisory scheduling; receipt-free task and batch progress; affected resident/catalog/status callers converted | Final-head hosted confirmation after any later source change |
 | T03 | Scoped factual prerequisites and real user-decision records; old unknown scope retained | No additional source gap demonstrated |
 | T04 | Reported checks; selected/shared inputs and applicable constraint bodies bound; native signed and Windows DWORD exit codes retained | Transitive dependencies remain explicitly unassessed; reported results are not host attestation |
-| T05 | Feature, sprint, TDD, planning, execution and status adapted for Claude, Codex and Pi | Successful installed model exercise blocked by host policy |
+| T05 | Feature, sprint, TDD, planning, execution and status adapted for Claude, Codex and Pi; ordinary installed Claude model journey passed | Codex and Pi live model cells remain unverified |
 | T06 | Complete selected criteria and applicable constraints; bounded readback and named omissions; measured native orientation | End-to-end model cost unmeasured |
 | T07 | Captured replies survive cleanup and recover without recapture; safe replay; complete saved-store restore with old client; later edits retained | Unknown historical formats remain unsupported |
 | T08 | Three regenerated host adapters and 37 source-bound atlas owners; ordinary HTML labels corrected; explicit proof on demand | Actual deployment and release derivative readback |
-| T09 | Native, reconciliation, browser and mixed-client checks pass locally; actual candidate installed through Codex marketplace | Hosted exact-head matrix and successful model canary; publication readback after authorized release |
+| T09 | Native, reconciliation, browser and mixed-client checks pass; hosted candidate matrix and installed Claude model canary passed | Final-head CI/package confirmation; publication readback after authorized release |
 
 ## Verified candidate checks
 
@@ -63,6 +63,20 @@ commits and publication permissions are **not** bypassed.
   historical proof passed on all three adapters before this correction.
   Those results do not establish this candidate's hosted package matrix,
   model behavior, numerical coverage or release status.
+- **Hosted candidate:** CI run `38829939794` passed all 71 jobs for
+  `ab6ebd3a1d2b77e9b4048bde350d34d8f056a018`; Docs run `38829939798`
+  passed. This includes six native platforms and all 18 cold package cells.
+  Native statement coverage was 8,234 / 9,820 (83.8493%), above the 70% floor;
+  lines and branches were unmeasured. Readback verified all three archive
+  hashes and 892 file records. Later commits need their own hosted result;
+  the PR description records the final exact-head runs.
+- **Installed bootstrap correction:** an actual model attempt exposed missing
+  runnable bridge guidance. Commit `7623d82085ec1c398d4213904535224863c35312`
+  supplies the correct helper installation and bounded request fields through
+  stdin, with optional operation-schema discovery. The executable regression
+  failed before the correction and passed afterward; all 51 authoring tests,
+  16 surface tests and 151 generator tests passed (one Windows symlink skip).
+  Independent review found no actionable issue.
 
 ## Bounded context measurement
 
@@ -82,7 +96,7 @@ references. This is native orientation, not identical payloads or an end-to-end
 model/token benchmark. Neither measured path issues an explicit snapshot,
 permission prompt or reviewer launch; internal file reads were not instrumented.
 
-## Actual installed model attempt
+## Actual installed model attempts
 
 The candidate was installed and enabled as ca-codex 0.18.0 through a real
 isolated local marketplace. Installed source members and the native binary
@@ -96,18 +110,53 @@ check or `DONE` was recorded. CLI exit 0 represents conversational completion,
 not qualification. The attempt took 92.056 seconds. Temporary authentication
 was removed, and no sandbox, trust or approval policy was bypassed.
 
-This establishes a real host refusal, **not a successful model canary**.
-The local evidence directory beside the managed checkout retains
-`canary-events.jsonl`, `canary-final.txt`, `canary-run.json` and
-`context-benchmark.json`; these are local evidence, not published receipts.
+That first refusal came from the isolated Codex home omitting its Windows
+sandbox implementation. A second invocation selected the existing restricted
+token implementation, retained `workspace-write` and approvals `never`, and
+correctly reported workspace-write. Its PowerShell reads stalled; the model
+stopped without changing repository state. The owned stalled CLI was terminated.
+Neither attempt qualifies Codex, and no full-access fallback was used.
+
+Claude Code 2.1.296 then loaded the actual CI ca 3.0.0 archive through its
+session-only plugin directory, using existing `auto` permissions. The first
+attempt guessed the undocumented bridge initialization and request fields;
+it also created an out-of-scope temporary helper. It was stopped after task
+start and failing regressions, before implementation completion. This failed
+attempt motivated the bootstrap correction above; it is not qualification.
+
+The corrected local candidate reused that verified archive and native binary,
+with only generated `includes/artifacts.md` replaced. Claude Code 2.1.296 /
+`claude-opus-5-5` completed a fresh disposable configuration task in 81.516
+seconds with normal `auto` permissions: bounded context, actual failing tests
+(exit 1), implementation, the exact planned test command passing (exit 0),
+reported checks and `DONE`. Fresh native readback returned plan revision 5,
+current binding, `checks_are_verified: false` and `evidence_assessed: false`.
+An independent rerun passed all three tests. No attestation was fabricated.
+
+The successful run made 15 native operations (six identity, two task-context,
+three operation-schema, one start, two check and one accept-scope), nine shell
+calls and two source/test writes. It asked zero artifact permission questions,
+launched zero reviewers and made zero explicit snapshot calls. Eleven tool
+permission decisions were accepted by the host's existing configuration;
+observed file changes stayed within the disposable repository. This is one
+Claude model/session, not an all-host or all-model qualification claim.
+
+Base archive SHA-256:
+`38b6f755f637bc5285d706a032d0dfa1fe6fc9ecc63e1528512a60ef6641ddd5`.
+Replacement guide SHA-256:
+`219d3179edcd564a119982ed36768394c9af367f66a6482ab4d86f9977e98cbf`.
+The local evidence directory beside the managed checkout retains the original
+and corrected attempts, `claude-canary-v2-verification.json`, fresh readback,
+independent test output and `context-benchmark.json`. These are local evidence,
+not published receipts; final packaged-byte confirmation is recorded on the PR.
 
 ## Next executable work
 
 1. Complete exact-head CI and correct proven failures without replacing source
    checks with looser assertions or adding new approval machinery.
-2. Complete the ordinary installed model workflow in a host that actually
-   grants the required writes and test execution. Retain the refusal above;
-   do not turn a fixture or host-policy bypass into qualification.
+2. Confirm the final candidate package against the successful installed model
+   exercise, rerunning from final bytes when they differ. Retain all failed
+   attempts and keep unexercised live-host cells unverified.
 3. After authorized merge/publication, verify exact distributed package,
    marketplace, website and derivative bytes. Publication is not performed by
    this implementation task; no published tag is moved.

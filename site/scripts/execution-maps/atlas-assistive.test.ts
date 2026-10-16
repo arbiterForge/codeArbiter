@@ -10,10 +10,10 @@ const root=fileURLToPath(new URL('../../../',import.meta.url));
 let atlas:ReturnType<typeof loadAtlas>;
 beforeAll(()=>{atlas=loadAtlas(root);});
 
-describe('partial assistive implementation versus retained historical routes',()=>{
+describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('0ed5cbe993022da446eb4f9df7b3bbfd2c50e154');
+    expect(update.revision).toBe('7623d82085ec1c398d4213904535224863c35312');
     expect(update.changes).toHaveLength(37);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
@@ -23,7 +23,9 @@ describe('partial assistive implementation versus retained historical routes',()
       expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
     }
     expect(update.summary).toContain('remain incomplete');
-    expect(update.summary).toContain('No release or installed-host qualification');
+    expect(update.summary).toContain('One installed Claude model journey passed');
+    expect(update.summary).toContain('Codex and Pi live model cells remain unverified');
+    expect(update.summary).toContain('No release or all-host qualification');
   });
 
   it('retains original geometry and immutable source links while exposing the current difference',()=>{
