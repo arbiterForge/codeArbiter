@@ -229,7 +229,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 if slug == "pr":
                     procedure = body.split("### Open-PR procedure\n", 1)[1]
                     procedure = procedure[procedure.index("1. **Confirm"):].split("\n## Phase 4", 1)[0].strip()
-                    self.assertEqual(digest(procedure), "a49ba77501e05e32326004ba872e2d391a20317c48e03260ff9b91a2e382c644")
+                    self.assertEqual(digest(procedure), "bad0d9f173db7ef0c7fe5ff9ddb2aed6fc5176a8fd82d59110fe27e75cd51af0")
                     self.assertNotIn("{{PLUGIN_ROOT}}/commands/pr.md", body)
                 else:
                     self.assertEqual(digest(MODES_RE.sub("", body)), expected)

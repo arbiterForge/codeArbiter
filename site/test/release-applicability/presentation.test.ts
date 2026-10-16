@@ -4,9 +4,11 @@ import sitePackage from "../../package.json";
 import { presentProofApplicability } from "../../src/release-applicability-presentation";
 
 describe("release applicability presentation", () => {
-  it("generates applicability once before top-level test and coverage runners", () => {
-    expect(sitePackage.scripts.pretest).toBe("npm run gen");
-    expect(sitePackage.scripts.precoverage).toBe("npm run gen");
+  it("generates and builds fresh fixtures before top-level test and coverage runners", () => {
+    expect(sitePackage.scripts.pretest).toBe("npm run build");
+    expect(sitePackage.scripts.precoverage).toBe("npm run build");
+    expect(sitePackage.scripts.prebuild).toBe("npm run gen");
+    expect(sitePackage.scripts.build).toBe("astro build");
     expect(sitePackage.scripts["test:release-applicability-rendered"]).toBe(
       "astro build && tsx test/release-applicability/rendered.ts",
     );

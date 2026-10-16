@@ -253,13 +253,14 @@ describe("generateAcademy", () => {
   const integrationLessonHtml = new Map<string, string>();
 
   beforeAll(() => {
-    const npmCli = process.env.npm_execpath;
-    if (!npmCli) throw new Error("npm_execpath is required to run the Academy integration build");
-
-    execFileSync(process.execPath, [npmCli, "run", "build"], {
-      cwd: siteRoot,
-      stdio: "pipe",
-    });
+    if (process.env.VITEST_MODE === "WATCH") {
+      const npmCli = process.env.npm_execpath;
+      if (!npmCli) throw new Error("npm_execpath is required to rebuild Academy fixtures in watch mode");
+      execFileSync(process.execPath, [npmCli, "run", "build"], {
+        cwd: siteRoot,
+        stdio: "pipe",
+      });
+    }
 
     integrationAcademyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
     for (const lessonSlug of ["p01-feature-through-plan", "u01-autonomous-sprint"]) {
