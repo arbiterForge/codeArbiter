@@ -314,6 +314,8 @@ func Render(d *model.Document) ([]byte, error) {
 	if e := CheckLogo(model.S(p["logo_data_uri"])); e != nil {
 		return nil, e
 	}
+	version := model.S(d.Data["schema_version"])
+	historical := version == "0.3.0" || version == "0.3.1"
 	w := writer{d: d}
 	w.raw("<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"color-scheme\" content=\"light\"><meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'\"><meta name=\"ca-artifact-format\" content=\"codearbiter.artifact/0.1.0\"><title>")
 	w.text(model.S(d.Norm()["title"]))
@@ -348,7 +350,12 @@ func Render(d *model.Document) ([]byte, error) {
 	w.text(model.S(p["brand_name"]) + " / " + d.Kind())
 	w.raw(`</p><span class="status">`)
 	w.text(strings.ToUpper(model.S(model.M(d.Data["governance"])["state"])))
-	w.raw(` · authority must be verified at use</span><h1>`)
+	if !historical {
+		w.raw(` · progress and verification tracked separately</span><h1>`)
+	} else {
+		// Frozen historical schemas retain their exact readable rendering.
+		w.raw(` · authority must be verified at use</span><h1>`)
+	}
 	w.text(model.S(d.Norm()["title"]))
 	w.raw(`</h1><p class="deck">`)
 	w.text(model.S(d.Norm()["summary"]))
@@ -378,7 +385,12 @@ func Render(d *model.Document) ([]byte, error) {
 			group(k)
 		}
 	}
-	w.raw(`<section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Execution must verify current receipt sources and binding.</p>`)
+	w.raw(`<section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. `)
+	if !historical {
+		w.raw(`Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p>`)
+	} else {
+		w.raw(`Execution must verify current receipt sources and binding.</p>`)
+	}
 	w.value(d.Data["governance"], "governance")
 	w.raw(`</section><footer class="footer"><p>`)
 	w.text(Version + " · self-contained, static HTML · no runtime network resources")

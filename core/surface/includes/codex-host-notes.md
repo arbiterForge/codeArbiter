@@ -50,8 +50,10 @@ bodies name *actions* — this file is where those actions map to this host.
   reports and MUST NOT run inline; it blocks if the host exposes no isolated
   subagents. For other workflows on an older host, perform the role inline; a
   review is never skipped because dispatch is unavailable.
-- **Structured-artifact authority uses native hook correlation** — production
-  review requests must dispatch the exact `launch_envelope` returned by
+- **Structured-artifact attestation uses native hook correlation** — load this
+  adapter only for an explicitly required attested claim or historical recovery.
+  Ordinary review and reported checks do not need this adapter. Attested review
+  requests must dispatch the exact `launch_envelope` returned by
   `artifact-authority.py`; do not rewrite its prompt, task name, or isolation
   fields. For explicit historical attestation, verification must run the exact plain `verify` command shown in `artifacts-attestation.md`,
   using the request ID returned by `arm`, so Pre/PostToolUse can authorize and
@@ -77,8 +79,9 @@ bodies name *actions* — this file is where those actions map to this host.
   reason to try a source checkout or plugin cache.
 - **No `--farm` backend** — the farm worker files (`tools/farm.js`,
   `tools/plan.schema.json`) are not vendored into this plugin yet (M5
-  distribution decision). A `--farm` flag degrades to the normal
-  premium-subagent path; say so rather than failing quietly.
+  distribution decision). For an explicit `--farm` request, report the unavailable backend.
+  Do not silently switch to another provider or model; continue independent authorized work
+  and use another backend only when the caller's authorization covers that choice.
 
 ## Sandbox and git caveats
 

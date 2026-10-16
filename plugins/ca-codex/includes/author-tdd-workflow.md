@@ -9,7 +9,7 @@ Use the Phase 1 checklist for the owning route. For a bug-origin `/fix`, carry t
 current expectation, cited evidence, supported cause, and regression oracle into
 the existing obligation ledger; confirm the original caller's repair authority and
 source freshness through the fix owner. Do not fabricate a feature artifact. For
-`/feature`, keep the approved spec and its criteria; for `/refactor`, keep its
+`/feature`, keep the agreed spec and its criteria; for `/refactor`, keep its
 approved surface and parity contract. An ADR remains a user-attributed decision
 through `/adr`, never an author shortcut.
 

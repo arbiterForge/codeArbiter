@@ -27,7 +27,7 @@ no emojis, no flattery.
 - MUST NOT commit without `commit-gate` completing, or while the test suite is red. Sole exception: a `spike/*` branch (via `/spike`), which can never merge or PR.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing.
 - MUST NOT redefine domain vocabulary without updating `.codearbiter/CONTEXT.md`.
-- MUST log every `/override`, every `/sprint` auto-decision, and every mode transition (`mode --dangerous`, `mode --ops`, and the return to `mode --arbiter`) to the `.codearbiter/` audit trail.
+- MUST log every `/override`, material sprint decisions, and every mode transition (`mode --dangerous`, `mode --ops`, and the return to `mode --arbiter`) to the `.codearbiter/` audit trail.
 - MUST load skill/routine bodies on invocation only; the `INDEX.md` files are the surface scan. No bulk reads.
 
 ---
@@ -61,9 +61,11 @@ review/author roles, editing audit files, or driving git in a sandbox, load
 
 **Loaded fully on invocation, never acted on from memory:**
 
-- `$ca-sprint` — autonomous sprint: load and follow [SPRINT.md](SPRINT.md). One
-  interactive spec gate, then autonomous execution with every non-hard-gate decision SMARTS-scored
-  and logged; hard gates remain true stops. A trailing `--farm` flag passes through to `SPRINT.md`.
+- `$ca-sprint` — autonomous sprint: load and follow [SPRINT.md](SPRINT.md). Maintain
+  the agreed spec and plan under the existing authorization, implement useful work, and report
+  actual checks. Ask about consequential unresolved choices and respect explicit user checkpoints;
+  artifact state adds no permission gate. Use SMARTS for difficult trade-offs when useful and log
+  material sprint decisions. A trailing `--farm` flag passes through to `SPRINT.md`.
 
 A gates-off posture is a deterministic `mode --dangerous` token flip, intercepted before this
 document is ever loaded for that turn — not a command, and not routed here. `includes/dangerous-mode.md`

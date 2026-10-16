@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 )
@@ -129,6 +130,56 @@ func TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits(t *testing.T
 		t.Fatalf("relevant criterion change failed to stale earlier reported check: %v", got)
 	}
 	f.assertNoAuthorityFiles()
+}
+
+func TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding(t *testing.T) {
+	f := newAssistiveFixture(t)
+	addTaskConstraints(f)
+	reportFor(f, "pass", true)
+	for _, id := range []string{"CON-UNRELATED", "CON-REFERENCED", "CON-APPLICABLE", "CON-SCOPE", "CON-GLOBAL"} {
+		f.call("apply", f.mutation("SPEC-EXAMPLE", object{"changes": []any{object{
+			"op": "record.update", "symbol": id,
+			"fields": object{"statement": "Changed normative requirement for " + id},
+		}}}))
+		f.mutate("plan-bind", object{"spec_id": "SPEC-EXAMPLE"})
+		if packetFor(f, "T-001")["binding_current"] != true {
+			t.Fatal("fixture did not rebind the changed specification")
+		}
+		wantCurrent := id == "CON-UNRELATED"
+		if got := scopedLatest(f); got["definition_current"] != wantCurrent || got["reported_outcome"] != "pass" {
+			t.Errorf("constraint %s applicability: got %v; want current=%v with historical outcome preserved", id, got, wantCurrent)
+		}
+		reportFor(f, "pass", true)
+		if scopedLatest(f)["definition_current"] != true {
+			t.Fatal("new observation did not bind the current requirement bodies")
+		}
+	}
+	f.assertNoAuthorityFiles()
+}
+
+func TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage(t *testing.T) {
+	for _, withConstraints := range []bool{false, true} {
+		f := newAssistiveFixture(t)
+		if withConstraints {
+			addTaskConstraints(f)
+		}
+		reportFor(f, "pass", true)
+		spec := f.doc("SPEC-EXAMPLE")
+		legacy, err := canonical.Hash(object{
+			"format": "task-criteria/1", "spec_id": spec.ID(),
+			"criteria": []any{object{"ref": "SPEC-EXAMPLE#AC-001", "record": spec.Symbols.ByID["AC-001"].Value}},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		doc := f.doc("PLAN-EXAMPLE")
+		entry := model.M(model.A(model.M(model.M(doc.Data["execution"])["task_check_observations"])["T-001"])[0])
+		entry["criterion_subject_sha256"] = legacy
+		checks, _ := model.TaskCheckAssessments(doc, spec, "T-001")
+		if got := model.M(checks[0])["definition_current"]; got != !withConstraints {
+			t.Fatalf("legacy applicability changed incorrectly: constraints=%v current=%v", withConstraints, got)
+		}
+	}
 }
 
 func TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed(t *testing.T) {

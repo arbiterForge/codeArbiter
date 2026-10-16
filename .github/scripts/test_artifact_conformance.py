@@ -31,12 +31,12 @@ CURRENT_GOLDEN = {
     "spec": {
         "normative": "5d06ff20cbd6fb199e9bdd7902cb192c3c52c33d71bd154a033932ce1e588036",
         "model": "ee590d45fe1d8071b0b8b62b3472fc2581a7a64c9b054b564709f7563fd076fb",
-        "html": "b4336d5b8c1246b93f25c68aed36514fb797a426af4c99572853878c1013cf36",
+        "html": "a730bed74f47d2f21d88e2750ef4b3ad60beaa042af939866835b33e55d4400b",
     },
     "plan": {
         "normative": "e80ebda32b93aacc855dba5b9ee8f005dd3815895cb83c04c03072069461920b",
         "model": "48eed5fb661d5a1fd85fe6784cc1c5fa260a27b5ec9e1beb6afefa4bbb097acb",
-        "html": "442f90d8db4ba745a5d5745e996a9de154cac7a4c070976f8267359a972b3419",
+        "html": "fd1ca610fd7a5d1a6d703003e60f73ba3a60733808e99b8a699eb3ece709bd36",
     },
 }
 

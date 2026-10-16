@@ -1,8 +1,11 @@
 package model
 
 import (
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"sort"
 	"strings"
+
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
 )
 
 // HasAssistiveFields prevents new semantics from being stored under an old
@@ -105,27 +108,77 @@ func TaskCheckDefinition(task map[string]any) (string, error) {
 	return canonical.Hash(fields)
 }
 
-// TaskCriterionSubject hashes exactly the declared normative criteria used by
-// the selected task. Unlike a whole-spec digest, a different unrelated
-// criterion or a presentation-only change does not automatically invalidate
-// this task's observations. An incomplete reference fails closed.
-func TaskCriterionSubject(spec *Document, task map[string]any) (string, error) {
-	refs := Strings(task["criterion_refs"])
-	rows := []any{}
-	for _, ref := range refs {
+// TaskRequirementRecords resolves the selected criteria and their declared
+// constraints: explicit references, applicability to a selected criterion or
+// its intent scope, and "all". It does not infer a transitive source graph.
+func TaskRequirementRecords(spec *Document, task map[string]any) ([]symbol.Record, []symbol.Record, error) {
+	criteria := []symbol.Record{}
+	selected := map[string]bool{"all": true}
+	referenced := map[string]bool{}
+	for _, ref := range Strings(task["criterion_refs"]) {
 		specID, id, ok := strings.Cut(ref, "#")
 		if !ok || specID != spec.ID() {
-			return "", canonicalError("task criterion is not bound to the selected spec")
+			return nil, nil, canonicalError("task criterion is not bound to the selected spec")
 		}
 		record, found := spec.Symbols.ByID[id]
 		if !found || record.Retired || record.Kind != "criteria" {
-			return "", canonicalError("task criterion is missing or retired")
+			return nil, nil, canonicalError("task criterion is missing or retired")
 		}
-		rows = append(rows, map[string]any{"ref": ref, "record": record.Value})
+		criteria = append(criteria, record)
+		selected[id] = true
+		for _, scope := range Strings(record.Value["intent_refs"]) {
+			selected[scope] = true
+		}
+		for _, id := range Strings(record.Value["constraint_refs"]) {
+			constraint, found := spec.Symbols.ByID[id]
+			if !found || constraint.Retired || constraint.Kind != "constraints" {
+				return nil, nil, canonicalError("task constraint is missing or retired")
+			}
+			referenced[id] = true
+		}
 	}
-	return canonical.Hash(map[string]any{
+	constraints := []symbol.Record{}
+	for _, value := range A(spec.Norm()["constraints"]) {
+		record := M(value)
+		id := S(record["id"])
+		include := referenced[id]
+		for _, target := range Strings(record["applies_to"]) {
+			include = include || selected[target]
+		}
+		if include {
+			constraints = append(constraints, spec.Symbols.ByID[id])
+		}
+	}
+	// Collection ordering is presentation, not a changed constraint body.
+	sort.Slice(constraints, func(i, j int) bool { return constraints[i].ID < constraints[j].ID })
+	return criteria, constraints, nil
+}
+
+// TaskCriterionSubject binds check applicability to selected criterion and
+// constraint bodies. Unrelated specification edits remain outside its scope.
+func TaskCriterionSubject(spec *Document, task map[string]any) (string, error) {
+	criteria, constraints, err := TaskRequirementRecords(spec, task)
+	if err != nil {
+		return "", err
+	}
+	rows := []any{}
+	for _, record := range criteria {
+		rows = append(rows, map[string]any{"ref": spec.ID() + "#" + record.ID, "record": record.Value})
+	}
+	subject := map[string]any{
 		"format": "task-criteria/1", "spec_id": spec.ID(), "criteria": rows,
-	})
+	}
+	if len(constraints) > 0 {
+		// Preserve existing no-constraint identities, but never promote an old
+		// digest that did not assess constraint bodies into this wider scope.
+		subject["format"] = "task-criteria/2"
+		rows := []any{}
+		for _, record := range constraints {
+			rows = append(rows, map[string]any{"ref": spec.ID() + "#" + record.ID, "record": record.Value})
+		}
+		subject["constraints"] = rows
+	}
+	return canonical.Hash(subject)
 }
 
 type canonicalError string

@@ -1,4 +1,9 @@
-# Sprint approval and delegated method authority
+# Historical sprint approval and delegated method authority
+
+This is an explicit historical attestation and recovery reference, not the normal sprint
+workflow. Load it only for a requested attestation claim or an already-observed transaction
+that needs recovery. Ordinary planning, method changes and execution use `SPRINT.md` under
+the existing authorization; do not arm this protocol to obtain permission for them.
 
 This private extension adds no registered command, skill or agent. Check that the verified installed
 native capability lists `sprint-approval-context`, `sprint-approve` and `smarts-apply`; a schema name

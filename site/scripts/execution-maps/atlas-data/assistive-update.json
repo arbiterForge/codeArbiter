@@ -155,7 +155,7 @@
     },
     {
       "path": "core/surface/skills/tdd/SKILL.md",
-      "blob": "9141a05379daa4c35bf96373adf1a21c50b17d44",
+      "blob": "5944fa7362fab4805eed9473cae20c3756ddbffc",
       "summary": "TDD uses the authoritative selected spec, exact criterion IDs and plan binding. Matching an agreed criterion needs no additional artifact approval or reviewer; only material outcome changes or real security/host decisions escalate to their owner. A planned command or reported UNKNOWN is never fabricated passing evidence.",
       "nodes": [
         "f-spec",
@@ -182,8 +182,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/task_context.go",
-      "blob": "3cdec8f620265b48fc2ad4fdc65625f4c7c0783b",
-      "summary": "Read-only task-context reassesses the bounded source subset and reports scoped_changed, scoped_unchanged or unassessed with scope_complete false; relevant changes guide targeted retests.",
+      "blob": "3f574dc57a0a40be4dfae3b67dd9b006abcbe8c6",
+      "summary": "Read-only task-context includes complete selected criteria and relevant constraints, names omitted source and intent references, and reports scoped_changed, scoped_unchanged or unassessed without claiming full dependency coverage.",
       "nodes": [
         "f-selection",
         "f-spec-review",
@@ -194,8 +194,8 @@
     },
     {
       "path": "core/pysrc/_reconciliationlib.py",
-      "blob": "0dd404865b5e526ce6a91c470a558cc8c4e9f08a",
-      "summary": "An unanswered legacy reconciliation can be superseded only when registered route and pending state agree and no durable attempt exists; macOS system parent aliases are canonicalized while symlinked selected repository roots remain forbidden. In-flight operations retain exact replay.",
+      "blob": "394a2212fac91ea597a9989414cae10ee004e915",
+      "summary": "An unanswered legacy reconciliation can be superseded only when route and pending state agree and no durable attempt or matching observed reply exists. Captured replies recover through their original immutable source and receipt; in-flight mutations retain exact replay and real user stops.",
       "nodes": [
         "f-recovery",
         "f-accept",
@@ -204,11 +204,10 @@
     },
     {
       "path": "core/pysrc/artifact-reconcile.py",
-      "blob": "bc765277a82628343e547c03043283a042e5202f",
-      "summary": "The old CLI helper has a reason-bound --supersede mode to retire only unanswered prompt routing. A committed or unknown mutation outcome retains its exact --recover path.",
+      "blob": "d80602a85ea9e79a64523bfbc8014bd2ca97f538",
+      "summary": "The installed recover command finishes a captured original reply or replays an in-flight mutation without asking for a new user answer.",
       "nodes": [
-        "f-recovery",
-        "c-read"
+        "f-recovery"
       ]
     },
     {
@@ -224,8 +223,8 @@
     },
     {
       "path": "core/artifacts/internal/model/assistive.go",
-      "blob": "03665300ecbea35ea9d050400ed3e43ca598b969",
-      "summary": "Historical check observations keep whole-spec applicability while new ones bind only referenced criterion definitions, avoiding irrelevant spec changes without falsely claiming verified work.",
+      "blob": "36e672682e209a5e0b9cfc67b3fdfaff7166b912",
+      "summary": "New checks bind the selected criterion and applicable constraint bodies, including explicit references and scope applicability. Unrelated constraints remain outside the digest; old observations never gain unassessed constraint coverage.",
       "nodes": [
         "f-verify",
         "c-read"
@@ -242,7 +241,7 @@
     },
     {
       "path": "core/artifacts/internal/render/render.go",
-      "blob": "658b93f23b7719802f11630af8f45d825a98f24d",
+      "blob": "8a68afc89f0098bfa59cf10134e07d54047343de",
       "summary": "Human HTML presents reported command checks in an escaped, explicitly unverified section; implementation state and source validation remain distinct.",
       "nodes": [
         "f-quality",
@@ -251,7 +250,7 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "e7e30c7d43b2697adf8369b55045f25d77ac6df2",
+      "blob": "00a3b252b0801f057564ecdc274b4d463b6c464d",
       "summary": "The closed task-check request accepts only bounded command observations; a declared command must match its plan definition. Invalid or stale CAS writes remain rejected.",
       "nodes": [
         "f-verify",
@@ -261,7 +260,7 @@
     },
     {
       "path": "core/artifacts/schemas/common.schema.json",
-      "blob": "1cb30c77e225715cd8f15b0cfda03ed6f2db68d7",
+      "blob": "fa7ff1a977d9c3a7fe1a0213a554e71b117dd1c0",
       "summary": "The unpublished 0.3.2 native schema adds optional shared_inputs and scoped task-check fields without silently relabeling old records.",
       "nodes": [
         "f-verify",
@@ -330,6 +329,59 @@
         "f-recovery",
         "f-quality",
         "f-accept",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/surface/COMMANDS.md",
+      "blob": "c5a9ae434a0857ee49441c0bceeb948f11e9bfbe",
+      "summary": "The command catalog starts from the agreed outcome and maintained plan; SMARTS is useful for difficult tradeoffs and does not authorize a changed outcome.",
+      "nodes": [
+        "o-runtime",
+        "f-entry"
+      ]
+    },
+    {
+      "path": "core/surface/arbiter.md",
+      "blob": "f20ad8f517e0ab2f48558d0d794e5857fec65d3e",
+      "summary": "Resident instructions preserve existing work authorization and actual owner decisions without another spec approval or a SMARTS record for every routine step.",
+      "nodes": [
+        "o-runtime",
+        "f-selection"
+      ]
+    },
+    {
+      "path": "core/surface/commands/status.md",
+      "blob": "525c0de94917cadbf16414e5049474b601a39ce5",
+      "summary": "Status separates reported DONE from independently ACCEPTED work, shows actual blocked decisions, and does not infer an approval request from draft governance state.",
+      "nodes": [
+        "f-accept",
+        "c-accept"
+      ]
+    },
+    {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "blob": "34c8222bc73399a43677d9b0c8bd764b79463b6f",
+      "summary": "Authors derive tests from agreed criteria; routine work does not wait for a separate approval artifact.",
+      "nodes": [
+        "f-verify"
+      ]
+    },
+    {
+      "path": "core/surface/includes/codex-host-notes.md",
+      "blob": "fd078c9988a31883712fe3d4828a8b18493ba512",
+      "summary": "Codex dispatch requires attestation only for explicitly claimed host proof; an unavailable requested farm backend is reported without silently switching provider or model.",
+      "nodes": [
+        "f-selection",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/surface/includes/sprint-authority.md",
+      "blob": "dd9bdb78ba3a363b5a70724e4b1535dbd7e1f2d7",
+      "summary": "Historical sprint approval and SMARTS proof instructions remain available only for existing explicit attestation, outside the ordinary execution path.",
+      "nodes": [
+        "f-approval",
         "c-proof"
       ]
     }

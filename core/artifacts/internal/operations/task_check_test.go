@@ -1,6 +1,7 @@
 package operations
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,6 +10,58 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 )
+
+func TestTaskCheckPreservesNativeFailureExitCodes(t *testing.T) {
+	for _, exit := range []int64{-2147483648, -15, 256, 3221225477, 4294967295} {
+		t.Run(fmt.Sprint(exit), func(t *testing.T) {
+			f := newAssistiveFixture(t)
+			report := reportedCommand("fail", true)
+			model.M(report["check"])["exit_code"] = exit
+			f.mutate("task-check", report)
+			got := model.M(reportedChecks(f)[0])
+			if got["exit_code"] != exit || got["reported_outcome"] != "fail" {
+				t.Fatalf("native failure code was changed or hidden: %v", got)
+			}
+			if _, err := model.Check(f.doc("PLAN-EXAMPLE").Data); err != nil {
+				t.Fatalf("stored native failure code rejected: %v", err)
+			}
+			f.assertNoAuthorityFiles()
+		})
+	}
+}
+
+func TestTaskCheckNativeExitBoundsAndOutcomeSemantics(t *testing.T) {
+	f := newAssistiveFixture(t)
+	for _, tc := range []struct {
+		outcome  string
+		exit     int64
+		declared bool
+	}{
+		{"fail", -2147483649, true}, {"fail", 4294967296, true},
+		{"pass", -15, true}, {"pass", 3221225477, true},
+		{"pass", -15, false}, {"pass", 3221225477, false},
+		{"unknown", -15, false}, {"skip", 3221225477, false},
+	} {
+		report := reportedCommand(tc.outcome, tc.declared)
+		model.M(report["check"])["exit_code"] = tc.exit
+		before := f.doc("PLAN-EXAMPLE").Hash()
+		if _, err := f.request("task-check", f.mutation("PLAN-EXAMPLE", report)); err == nil {
+			t.Errorf("accepted invalid %s exit=%d declared=%v", tc.outcome, tc.exit, tc.declared)
+		}
+		if f.doc("PLAN-EXAMPLE").Hash() != before {
+			t.Fatal("rejected exit code changed persisted state")
+		}
+	}
+	reportFor(f, "fail", true)
+	for _, exit := range []int64{-2147483649, 4294967296} {
+		d := f.doc("PLAN-EXAMPLE")
+		stored := model.M(model.A(model.M(model.M(d.Data["execution"])["task_check_observations"])["T-001"])[0])
+		stored["exit_code"] = exit
+		if _, err := model.Check(d.Data); err == nil {
+			t.Errorf("stored schema accepted out-of-range exit %d", exit)
+		}
+	}
+}
 
 // The fixture's plan declares this check, but the test does not actually run
 // it. These are caller-reported results, never host-attested proof.

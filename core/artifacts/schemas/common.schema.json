@@ -1250,8 +1250,8 @@
         },
         "exit_code": {
           "type": "integer",
-          "minimum": 0,
-          "maximum": 255
+          "minimum": -2147483648,
+          "maximum": 4294967295
         },
         "summary": {
           "type": "string",

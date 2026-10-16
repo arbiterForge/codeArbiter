@@ -244,12 +244,14 @@ func RequestSchema(op string) (object, error) {
 	case "task-check":
 		cas()
 		add("task", idType(), true)
+		// Preserve signed process status/signal reports and unsigned Windows
+		// DWORD exits without truncating them to a POSIX shell status byte.
 		check := closed(object{
 			"argv":           object{"type": "array", "items": object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, "minItems": int64(1), "maxItems": int64(24)},
 			"cwd":            object{"type": "string", "minLength": int64(1), "maxLength": int64(512)},
 			"command_index":  object{"type": "integer", "minimum": int64(0), "maximum": int64(128)},
 			"outcome":        enum("pass", "fail", "skip", "unknown"),
-			"exit_code":      object{"type": "integer", "minimum": int64(0), "maximum": int64(255)},
+			"exit_code":      object{"type": "integer", "minimum": int64(-2147483648), "maximum": int64(4294967295)},
 			"summary":        object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
 			"source":         object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
 			"origin":         enum("tool_result", "agent_report"),

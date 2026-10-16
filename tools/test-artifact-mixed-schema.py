@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import re
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -95,6 +96,10 @@ def exercise(old: Path, current: Path) -> dict:
         plan_file = root / ".codearbiter" / "plans" / "flow.html"
         before_bytes = plan_file.read_bytes()
         before = identity(old, root, "PLAN-FLOW")
+        # Retain the complete affected store, including indexes and journal,
+        # before upgrading. A single HTML before-image cannot restore a store.
+        backup = root / "store-backup"
+        shutil.copytree(root / ".codearbiter", backup)
         assert identity(current, root, "PLAN-FLOW")["model_sha256"] == before["model_sha256"]
         assert plan_file.read_bytes() == before_bytes, "current reader silently rewrote old bytes"
         assert re.search(rb'"schema_version"\s*:\s*"0\.3\.1"', before_bytes)
@@ -210,6 +215,24 @@ def exercise(old: Path, current: Path) -> dict:
         )
         assert plan_file.read_bytes() == after_later_edit, "standalone export modified canonical plan"
 
+        # Restore into a separate disposable repository, never over later work.
+        # The old engine must read the complete saved state with its stop intact.
+        restored_root = root / "restored"
+        shutil.copytree(backup, restored_root / ".codearbiter")
+        restored = identity(old, restored_root, "PLAN-FLOW")
+        assert restored["model_sha256"] == before["model_sha256"]
+        assert (restored_root / ".codearbiter/plans/flow.html").read_bytes() == before_bytes
+        restored_packet = ok(current, restored_root, "task-context", {
+            "artifact_id": "PLAN-FLOW", "task": "T-001",
+            "model_sha256": restored["model_sha256"],
+        })
+        assert restored_packet["state"] == "BLOCKED"
+        assert "user stop" in restored_packet["reason"]
+        for saved in backup.rglob("*"):
+            if saved.is_file():
+                assert (restored_root / ".codearbiter" / saved.relative_to(backup)).read_bytes() == saved.read_bytes()
+        assert plan_file.read_bytes() == after_later_edit, "restore discarded newer work"
+
         return {
             "old_schema": old_caps["schema_version"],
             "candidate_schema": new_caps["schema_version"],
@@ -224,6 +247,8 @@ def exercise(old: Path, current: Path) -> dict:
             "post_upgrade_edits_preserved": True,
             "earlier_committed_retry_never_rolls_back_later_work": True,
             "forward_export_includes_later_edit": True,
+            "complete_store_restore_readable_by_old_client": True,
+            "restore_retains_user_stop_and_all_saved_bytes": True,
             "latest_revision": newer["revision"],
         }
 

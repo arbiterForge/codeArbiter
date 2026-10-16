@@ -31,6 +31,32 @@ func TestRenderRoundTrip(t *testing.T) {
 		}
 	}
 }
+
+func TestAssistiveRenderSeparatesProgressFromVerifiedClaims(t *testing.T) {
+	s := testutil.Seal(t, testutil.Spec())
+	p := testutil.Plan(s)
+	model.M(model.M(p["execution"])["tasks"])["T-001"] = map[string]any{
+		"state": "DONE", "evidence_refs": []any{}, "reason": "Implementation finished; verification pending.",
+	}
+	for _, d := range []*model.Document{s, testutil.Seal(t, p)} {
+		b, err := render.Render(d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, obsolete := range []string{"authority must be verified at use", "Execution must verify current receipt sources and binding"} {
+			if bytes.Contains(b, []byte(obsolete)) {
+				t.Errorf("assistive %s view still requires artifact permission: %s", d.Kind(), obsolete)
+			}
+		}
+		if !bytes.Contains(b, []byte("DRAFT · progress and verification tracked separately")) ||
+			!bytes.Contains(b, []byte("Explicit verification or approval claims require their own evidence")) {
+			t.Errorf("assistive %s view lost truthful progress/proof distinction", d.Kind())
+		}
+		if d.Kind() == "plan" && (!bytes.Contains(b, []byte("DONE")) || !bytes.Contains(b, []byte("verification pending"))) {
+			t.Fatal("draft plan view hid completed implementation or outstanding verification")
+		}
+	}
+}
 func TestRenderDriftNormalRead(t *testing.T) {
 	d := testutil.Seal(t, testutil.Spec())
 	b, e := render.Render(d)

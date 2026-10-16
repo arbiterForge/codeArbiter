@@ -17,11 +17,11 @@
   "artifacts": {
     "spec": {
       "path": ".codearbiter/specs/html-specs-and-plans.html",
-      "sha256": "6432d7bb6241c6ae620bcda669698f9985ae4e57f949b2f5292de5e72771d043"
+      "sha256": "a730bed74f47d2f21d88e2750ef4b3ad60beaa042af939866835b33e55d4400b"
     },
     "plan": {
       "path": ".codearbiter/plans/html-specs-and-plans.html",
-      "sha256": "977ee61b675d717a33519d07cb9a06b3f5b3195aad9c312e661d8b792b7b8626"
+      "sha256": "fd1ca610fd7a5d1a6d703003e60f73ba3a60733808e99b8a699eb3ece709bd36"
     }
   },
   "viewports": [

@@ -245,9 +245,10 @@ describe('atlas source compatibility revalidation', () => {
     expect(observed).toHaveLength(paths.length);
     expect(reviewed).toHaveLength(paths.length);
     const changed = paths.filter((_, index) => observed[index] !== reviewed[index]);
-    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
+    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
+      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/commands/feature.md', 'core/surface/commands/init.md',
-      'core/surface/commands/sprint.md', 'core/surface/includes/artifacts.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/status.md', 'core/surface/includes/artifacts.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',
@@ -283,8 +284,10 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
-      'core/surface/SPRINT.md', 'core/surface/commands/feature.md',
+      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
+      'core/surface/commands/feature.md',
       'core/surface/commands/init.md', 'core/surface/commands/sprint.md',
+      'core/surface/commands/status.md',
       'core/surface/includes/artifacts.md', 'core/surface/includes/routing-table.md',
       'core/surface/skills/INDEX.md', 'core/surface/skills/commit-gate/SKILL.md',
       'core/surface/skills/debug/SKILL.md',
@@ -429,9 +432,10 @@ describe('atlas source compatibility revalidation', () => {
       offset = end + 2 + size;
     }
     expect(offset).toBe(reviewed.length);
-    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/surface/SPRINT.md',
+    expect(changed).toEqual(['CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py',
+      'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/commands/feature.md', 'core/surface/commands/init.md',
-      'core/surface/commands/sprint.md', 'core/surface/includes/artifacts.md',
+      'core/surface/commands/sprint.md', 'core/surface/commands/status.md', 'core/surface/includes/artifacts.md',
       'core/surface/includes/routing-table.md', 'core/surface/skills/INDEX.md',
       'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/debug/SKILL.md',
       'core/surface/skills/finishing-a-development-branch/SKILL.md',

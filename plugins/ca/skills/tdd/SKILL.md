@@ -119,8 +119,11 @@ Review any proposed obligation beyond that supported correction under its actual
 remains a user-attributed decision through `/adr`; neither a handoff nor this ledger creates one.
 For `/refactor`, retain its user-approved surface table and parity gates; backfill only the named
 uncovered behavior or seam. The TDD checklist does not amend that table.
-Under `/sprint`, spec-derived obligations auto-pass the same way and beyond-spec additions are
-SMARTS-decided and logged like any other auto-decision. A partial list never passes either way.
+Under `/sprint`, derive spec obligations and necessary Contract and Security checks within the
+already-authorized outcome. If an addition materially changes that outcome or needs new authority,
+ask the actual owner; a score or ledger entry does not grant scope. SMARTS is optional for a
+difficult in-scope method choice, and material decisions retain their reasons in the sprint log.
+A partial obligation list never passes.
 
 ## Phase 2 — Red · gate: BLOCK
 

@@ -21,9 +21,10 @@ POLICY_STARTUP_FIXTURES = (
 )
 # Historical artifact-policy baseline is immutable. PR843 separately reviewed
 # the resident routing body; PR872 reviewed initialized-state parsing and bounded
-# context-coverage notices. Keep both content pins separate from the pilot.
+# context-coverage notices. PR983 aligns resident sprint guidance with assistive
+# execution. Keep current content pins separate from the historical pilot.
 STARTUP_CONTENT_SHA256 = {
-    "core/surface/arbiter.md": "4bbe2beb49d1026271025d2553709728af1b300a9fdabd7c9d80978925faeb14",
+    "core/surface/arbiter.md": "a938c8e6e8849c1859c0c56c558c60ede1c7b12ec3a069181a06215ce2072e49",
     "core/pysrc/session-start.py": "2cc0d575e3f85824a3eba4b21e54cca9d0285f4ce4bf8c41e5331344c18c9c80",
 }
 

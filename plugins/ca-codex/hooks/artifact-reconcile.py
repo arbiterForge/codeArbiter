@@ -23,7 +23,7 @@ def main(argv=None):
     parser.add_argument("--assessment")
     parser.add_argument("--cancel", action="store_true", help="cancel an armed request before its mutation attempt")
     parser.add_argument("--cancel-orphan", action="store_true", help="cancel a pending request whose prompt route was never registered")
-    parser.add_argument("--recover", action="store_true", help="replay an in-flight mutation before clearing its marker")
+    parser.add_argument("--recover", action="store_true", help="recover an observed reply or replay an in-flight mutation before clearing its marker")
     parser.add_argument("--supersede", action="store_true", help="retire a verified unanswered legacy prompt without a code (never discards a durable attempt)")
     parser.add_argument("--prompt", help="exact armed prompt required for --cancel")
     args = parser.parse_args(argv)

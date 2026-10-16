@@ -3,6 +3,7 @@ package operations
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -16,6 +17,61 @@ func packetFor(f *assistiveFixture, task string) object {
 		"artifact_id": "PLAN-EXAMPLE", "task": task,
 		"model_sha256": f.doc("PLAN-EXAMPLE").Hash(),
 	})
+}
+
+func addTaskConstraints(f *assistiveFixture) {
+	f.t.Helper()
+	f.call("apply", f.mutation("SPEC-EXAMPLE", object{"changes": []any{
+		object{"op": "record.add", "collection": "constraints", "record": object{
+			"id": "CON-REFERENCED", "statement": "Preserve validated false values.", "applies_to": empty(), "source_refs": empty(),
+		}},
+		object{"op": "record.add", "collection": "constraints", "record": object{
+			"id": "CON-APPLICABLE", "statement": "Report ambiguous configuration.", "applies_to": model.List("AC-001"), "source_refs": empty(),
+		}},
+		object{"op": "record.add", "collection": "constraints", "record": object{
+			"id": "CON-SCOPE", "statement": "Preserve the input scope contract.", "applies_to": model.List("SCOPE-01"), "source_refs": empty(),
+		}},
+		object{"op": "record.add", "collection": "constraints", "record": object{
+			"id": "CON-GLOBAL", "statement": "Never expose secret configuration values.", "applies_to": model.List("all"), "source_refs": empty(),
+		}},
+		object{"op": "record.add", "collection": "constraints", "record": object{
+			"id": "CON-UNRELATED", "statement": "Parsing remains out of scope.", "applies_to": model.List("NON-GOAL-01"), "source_refs": empty(),
+		}},
+		object{"op": "record.update", "symbol": "AC-001", "fields": object{"constraint_refs": model.List("CON-REFERENCED")}},
+	}}))
+	f.mutate("plan-bind", object{"spec_id": "SPEC-EXAMPLE"})
+}
+
+func TestTaskContextIncludesSelectedCriterionAndApplicableConstraints(t *testing.T) {
+	f := newAssistiveFixture(t)
+	addTaskConstraints(f)
+	packet := packetFor(f, "T-001")
+	criterion := model.M(model.A(packet["criteria"])[0])
+	for field, want := range f.doc("SPEC-EXAMPLE").Symbols.ByID["AC-001"].Value {
+		if !reflect.DeepEqual(criterion[field], want) {
+			t.Errorf("task context omitted or changed criterion field %s: got %v; want %v", field, criterion[field], want)
+		}
+	}
+	constraints := model.A(packet["constraints"])
+	if len(constraints) != 4 {
+		t.Fatalf("task context should include exactly its referenced, applicable, scope and global constraints: %v", constraints)
+	}
+	for _, value := range constraints {
+		got := model.M(value)
+		id := model.S(got["id"])
+		if id == "CON-UNRELATED" || got["ref"] != "SPEC-EXAMPLE#"+id {
+			t.Fatalf("constraint is unrelated or not source-bound: %v", got)
+		}
+		for field, want := range f.doc("SPEC-EXAMPLE").Symbols.ByID[id].Value {
+			if !reflect.DeepEqual(got[field], want) {
+				t.Errorf("constraint %s omitted field %s", id, field)
+			}
+		}
+	}
+	if packet["context_complete"] != false || len(model.A(packet["omitted_references"])) == 0 {
+		t.Fatal("packet hid the remaining referenced intent/source context")
+	}
+	f.assertNoAuthorityFiles()
 }
 
 func TestTaskContextReturnsBoundedReferencedContextWithoutAuthority(t *testing.T) {

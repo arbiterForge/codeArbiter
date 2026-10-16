@@ -3736,6 +3736,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "site/src/content/docs/**",
             "site/src/curated/**",
             "tools/build-artifacts.py",
+            "tools/test-artifact-mixed-schema.py",
             "tools/build-host-packages.py",
             "tools/install-artifact-payload.py",
             "tools/generate-artifact-types.py",
@@ -3780,6 +3781,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "site/src/curated/commands/sprint.md",
             "tools/create-artifact-examples.py",
             ".github/scripts/test_artifact_conformance.py",
+            "tools/test-artifact-mixed-schema.py",
             ".github/requirements/artifact-conformance-py314.lock",
         ):
             result = module.evaluate(real_map, [path], hosts())

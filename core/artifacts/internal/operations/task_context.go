@@ -2,10 +2,10 @@ package operations
 
 import (
 	"encoding/json"
+	"sort"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
 )
 
 // taskContext is a bounded, read-only orientation packet. It does not inspect
@@ -24,23 +24,38 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 	}
 	bound := model.S(model.M(d.Norm()["spec_ref"])["normative_sha256"])
 	current := spec.Doc.NormHash() == bound
-	criteria := []any{}
-	for _, ref := range model.Strings(task.Value["criterion_refs"]) {
-		artifact, criterionID, err := symbol.Split(ref)
-		if err != nil || artifact != spec.Doc.ID() {
-			return nil, fault.At("DANGLING_REFERENCE", id, "criterion_refs", "task criterion is not in the selected source")
-		}
-		record, found := spec.Doc.Symbols.ByID[criterionID]
-		if !found || record.Retired || record.Kind != "criteria" {
-			return nil, fault.At("DANGLING_REFERENCE", id, "criterion_refs", "task references an absent or retired criterion")
-		}
-		criteria = append(criteria, object{
-			"ref": ref, "title": record.Value["title"], "statement": record.Value["statement"],
-			"trigger": record.Value["trigger"], "preconditions": record.Value["preconditions"],
-			"guarantees": record.Value["guarantees"], "verification": record.Value["verification"],
-			"full_symbol": criterionID,
-		})
+	criterionRecords, constraintRecords, err := model.TaskRequirementRecords(spec.Doc, task.Value)
+	if err != nil {
+		return nil, fault.At("DANGLING_REFERENCE", id, "criterion_refs", err.Error())
 	}
+	criteria, constraints := []any{}, []any{}
+	omitted := map[string]bool{}
+	for _, ref := range model.Strings(task.Value["source_refs"]) {
+		omitted[d.ID()+"#"+ref] = true
+	}
+	project := func(record object) object {
+		out := object{"ref": spec.Doc.ID() + "#" + model.S(record["id"]), "full_symbol": record["id"]}
+		for field, value := range record {
+			out[field] = value
+		}
+		for _, field := range []string{"intent_refs", "source_refs"} {
+			for _, ref := range model.Strings(record[field]) {
+				omitted[spec.Doc.ID()+"#"+ref] = true
+			}
+		}
+		return out
+	}
+	for _, record := range criterionRecords {
+		criteria = append(criteria, project(record.Value))
+	}
+	for _, record := range constraintRecords {
+		constraints = append(constraints, project(record.Value))
+	}
+	omittedRefs := []string{}
+	for ref := range omitted {
+		omittedRefs = append(omittedRefs, ref)
+	}
+	sort.Strings(omittedRefs)
 
 	waiting := []any{}
 	dependencies := []any{}
@@ -127,14 +142,15 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 			"criterion_refs": task.Value["criterion_refs"], "verification": task.Value["verification"],
 			"done_when": task.Value["done_when"], "source_refs": task.Value["source_refs"],
 		},
-		"state": status, "reason": state(d, id)["reason"], "criteria": criteria,
+		"state": status, "reason": state(d, id)["reason"], "criteria": criteria, "constraints": constraints,
 		"dependencies": dependencies, "waiting_on": waiting,
 		"prerequisites": prerequisites, "unscoped_prerequisites": unscoped,
 		"waiting_prerequisites": waitingOnFacts,
 		"reported_checks":       shown, "check_reports_omitted": int64(len(checks) - len(shown)),
 		"check_history_bounded": historyBounded, "checks_are_verified": false,
-		"next_action":     "Inspect the recorded dependencies and checks; execute work through existing host permissions.",
-		"omitted_context": model.List("unrelated tasks", "broader specification decisions", "full source and test output"),
+		"next_action":        "Inspect the recorded dependencies and checks; execute work through existing host permissions.",
+		"omitted_context":    model.List("unrelated tasks", "broader specification decisions", "constraints without declared applicability", "referenced intent and source records", "full source and test output"),
+		"omitted_references": model.List(omittedRefs...),
 	}
 	if !current {
 		out["next_action"] = "Source binding changed; inspect affected requirements and reconcile the plan without resetting unrelated work."

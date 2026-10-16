@@ -2516,6 +2516,82 @@ class RemainingWorkflowOwnerTest(unittest.TestCase):
                     self.assertEqual(catalog['commands'][command]['description'], description)
 
 
+class AssistiveCallerProjectionTest(unittest.TestCase):
+    """Resident guidance and public routes must agree on the working lifecycle."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.surfaces = {host: B.render_all(REPO_ROOT, host)
+                        for host in ('claude', 'codex', 'pi')}
+
+    def test_sprint_composition_has_no_implicit_approval_or_per_step_scoring(self):
+        for host, surface in self.surfaces.items():
+            entry = ('commands/sprint.md' if host == 'claude'
+                     else 'skills/ca-sprint/SKILL.md')
+            with self.subTest(host=host):
+                composed = ' '.join('\n'.join(surface[path].decode() for path in (
+                    'includes/safety-core.md', 'arbiter.md', 'COMMANDS.md',
+                    entry, 'SPRINT.md')).split())
+                for obsolete in ('One interactive spec gate',
+                                 'every non-hard-gate decision SMARTS-scored',
+                                 'every `/sprint` auto-decision',
+                                 'Approve a spec and plan',
+                                 'Run one approved spec'):
+                    self.assertFalse(obsolete in composed, f'{host}: obsolete rule: {obsolete}')
+                for obligation in ('material sprint decisions',
+                                   'genuinely difficult trade-off',
+                                   'An explicit requested human approval checkpoint remains real',
+                                   'without a second artifact approval system',
+                                   'merge to the default branch',
+                                   'release and tag publication'):
+                    self.assertTrue(obligation in composed, f'{host}: missing rule: {obligation}')
+
+    def test_status_distinguishes_implementation_checks_and_real_decisions(self):
+        for host, surface in self.surfaces.items():
+            entry = ('commands/status.md' if host == 'claude'
+                     else 'skills/ca-status/SKILL.md')
+            with self.subTest(host=host):
+                status = ' '.join(surface[entry].decode().split())
+                for obsolete in ('spec awaiting approval', 'spec approved / no plan',
+                                 'plan 3/7 ACCEPTED'):
+                    self.assertFalse(obsolete in status, f'{host}: obsolete status: {obsolete}')
+                for obligation in ('`DONE` and historical `ACCEPTED`',
+                                   'implementation complete', 'verification separately',
+                                   'pending, failed, unknown',
+                                   'A draft spec or plan is not awaiting permission',
+                                   'explicit user checkpoint', '`BLOCKED`',
+                                   'bounded structured reads',
+                                   'MUST NOT modify any file'):
+                    self.assertTrue(obligation in status, f'{host}: missing status rule: {obligation}')
+
+    def test_codex_host_notes_do_not_restore_default_attestation_or_switch_backends(self):
+        notes = ' '.join(self.surfaces['codex']['includes/codex-host-notes.md'].decode().split())
+        for obsolete in ('production review requests must dispatch',
+                         'A `--farm` flag degrades to the normal premium-subagent path'):
+            self.assertFalse(obsolete in notes, f'obsolete host rule: {obsolete}')
+        for obligation in ('only for an explicitly required attested claim',
+                           'Ordinary review and reported checks do not need this adapter',
+                           'report the unavailable backend',
+                           'Do not silently switch to another provider or model'):
+            self.assertTrue(obligation in notes, f'missing host rule: {obligation}')
+
+    def test_tdd_keeps_sprint_obligations_inside_authorized_outcome(self):
+        for host, surface in self.surfaces.items():
+            entry = ('skills/tdd/SKILL.md' if host == 'claude'
+                     else 'routines/tdd/SKILL.md')
+            with self.subTest(host=host):
+                tdd = ' '.join(surface[entry].decode().split())
+                self.assertFalse('beyond-spec additions are SMARTS-decided' in tdd,
+                                 f'{host}: SMARTS must not authorize scope expansion')
+                for obligation in ('Contract and Security checks',
+                                   'already-authorized outcome',
+                                   'ask the actual owner',
+                                   'SMARTS is optional',
+                                   'does not grant scope'):
+                    self.assertTrue(obligation in tdd,
+                                    f'{host}: missing sprint boundary: {obligation}')
+
+
 class LanguageCoveragePolicyTest(unittest.TestCase):
     """The policy delivered to every host binds the metric to the language."""
 
