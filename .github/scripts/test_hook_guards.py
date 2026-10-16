@@ -25,7 +25,10 @@ import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
-HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
+# Default remains the generated installed surface. --source runs the identical
+# entry-point matrix against canonical helpers while a fix awaits generation.
+HOOKS = (os.path.join(REPO, "core", "pysrc") if "--source" in sys.argv
+         else os.path.join(REPO, "plugins", "ca", "hooks"))
 PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
 SECURITY_PASS = os.path.join(HOOKS, "security-pass.py")
 
@@ -162,6 +165,60 @@ def check_commit_pathspecs():
           "a bareword after a redirect must still be over-included (no under-scan)")
 
 
+def check_taskwrite_audit_arguments(fixture):
+    """Exercise real pre-bash admission; none of these command strings execute."""
+    helper = os.path.join(HOOKS, "taskwrite.py").replace("\\", "/")
+    title = ("'Add .codearbiter/decisions/decision-log.md to security-controls.md''s "
+             "append-only audit inventory so the documented inventory matches H-05 enforcement.'")
+    direct = f'C:/Python314/python.exe -B "{helper}"'
+    # The reported Windows invocation and other supported task operations pass
+    # audit names as title data to the helper shipped beside this exact guard.
+    for command in (
+        f'{direct} start --as context.docs -- {title}',
+        f'python "{helper}" add --from review -- "Document overrides.log ownership"',
+        f'python3 "{helper}" done --date 2026-10-16 -- "Document triage.log ownership"',
+        f'py "{helper}" archive --allow-undated -- "Document sprint-log.md ownership"',
+    ):
+        expect_allow(fixture, command, f"H-05 trusted task title data: {command}")
+    if not any(character.isspace() for character in helper):
+        expect_allow(
+            fixture, f'C:/Python314/python.exe -B {helper} start --as context.docs -- {title}',
+            "H-05 reported Windows invocation with literal unquoted helper path",
+        )
+
+    lookalike = os.path.join(fixture, "taskwrite.py").replace("\\", "/")
+    with open(lookalike, "w", encoding="utf-8") as stream:
+        stream.write("raise RuntimeError('untrusted fixture; must never run')\n")
+    for command in (
+        f'python "{lookalike}" start --as context.docs -- {title}',
+        f'python taskwrite.py start --as context.docs -- {title}',
+        f'{direct} rewrite -- {title}',
+        f'{direct} start --unknown-option value -- {title}',
+        f'{direct} start --as -- {title}',
+        f'{direct} start -- {title} extra',
+        f'{direct} start -- {title}; echo unrelated',
+        f'{direct} start -- {title} && rm .codearbiter/overrides.log',
+        f'{direct} start -- {title} > .codearbiter/overrides.log',
+        f'env python "{helper}" start -- {title}',
+        f'pwsh -Command \'python "{helper}" start -- "decision-log.md"\'',
+        f'python -c "exec(open(\'{helper}\').read())" -- "decision-log.md"',
+        f'python -m taskwrite start -- "decision-log.md"',
+        f'{direct} start -- "$(echo decision-log.md)"',
+        f'{direct} start -- "`echo decision-log.md`"',
+        f'{direct} start -- "Document decision-log.md %PAYLOAD%"',
+        f'{direct} start -- "Document decision-log.md !PAYLOAD!"',
+        f'{direct} start -- "Document decision-log.md ^escaped"',
+    ):
+        expect_block(fixture, command, "H-05", f"H-05 unsafe task-shaped command: {command}")
+
+    # No cross-guard exemption: even the shipped helper's argv does not disable
+    # activation or protected-state checks, and redirects still hit H-05.
+    expect_block(fixture, f'python "{helper}" add -- "Document .codearbiter/CONTEXT.md"',
+                 "H-18", "task helper does not exempt activation protection")
+    expect_block(fixture, f'python "{helper}" add -- "tee open-tasks.md"',
+                 "H-22", "task helper does not exempt protected-state write verbs")
+
+
 def main():
     for s in (sys.stdout, sys.stderr):
         try:
@@ -174,6 +231,7 @@ def main():
         check_commit_pathspecs()                    # pure parser units (no fixture)
         fx = make_fixture(base, "feat/work")        # the normal case: a feature branch
         fx_main = make_fixture(base, "main")        # only for on-main push/commit cases
+        check_taskwrite_audit_arguments(fx)
 
         # ---- H-03: staging must name explicit files --------------------------
         for cmd in ("git add -A", "git add .", "git add --all", "git add -u",
@@ -922,4 +980,9 @@ def main():
 
 
 if __name__ == "__main__":
+    if "--taskwrite-only" in sys.argv:
+        with tempfile.TemporaryDirectory(prefix="ca-taskwrite-guard-") as base:
+            check_taskwrite_audit_arguments(make_fixture(base, "feat/taskwrite"))
+        print(f"{checks} assertions, {len(failures)} failed")
+        sys.exit(bool(failures))
     main()
