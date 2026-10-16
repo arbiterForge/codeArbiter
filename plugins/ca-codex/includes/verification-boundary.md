@@ -25,3 +25,10 @@ gates. It never waives focused regression proof, coverage thresholds, lint or
 type-check failures, security and secret controls, dependency review, migration
 review, release invariants, ADR lifecycle proof, deployment review, or exact-head
 merge protection.
+
+Use the host relevant to the change for a needed live check. Do not require users
+to install, configure, or switch hosts to complete ordinary work. Cross-adapter
+compatibility belongs to maintainer CI; additional live-host trials require an
+explicit acceptance requirement. If the available host denies a needed action,
+report that limitation once and continue independent authorized work. Do not retry
+an unchanged denial or seek another host merely to obtain a passing result.

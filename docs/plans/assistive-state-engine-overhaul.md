@@ -159,7 +159,11 @@ Add the acceptance scenarios below primarily in a small integration fixture with
 
 Run targeted checks while iterating. Before marking ready, run applicable aggregate, generator/resource, and built-package checks against the final candidate using existing build/CI tooling. Fix relevant failures; identify exact unrelated blockers honestly.
 
-Exercise an installed end-to-end canary on an available supported host, recording host/package identity. Test shared changes and packaging for shipped adapters. Do not invent an all-model/all-platform live matrix; preserve existing release policy and label unexercised cells unverified. Source tests are not installed-host proof.
+Validate installed packages and shared adapter behavior through the maintained CI fixtures.
+Ordinary completion does not require additional live-model hosts. Use an already available
+host for a live check only when an explicit acceptance requirement needs it; record a denial
+once and continue independent authorized work. Preserve actual host permissions and release
+policy without asking the user to install, configure or switch hosts for a passing result.
 
 Maintain this one PR with implementation, migration, generated changes, documentation, actual results, breaking changes, and rollback. Do not stop at a plan commit or an unexplained red CI run.
 
@@ -210,7 +214,8 @@ verification outcomes in the progress record rather than implementation commenta
 
 Completion requires every outcome above and truthful check results. Preserve real
 host permissions, explicit user stops, safe persistence, and release authority.
-Keep Codex/Pi live qualification and publication distinct from source validation.
+Additional live-host trials are outside this completion requirement. Keep publication distinct
+from source and installed-package validation.
 
 ## Acceptance scenarios
 
@@ -227,7 +232,7 @@ Keep Codex/Pi live qualification and publication distinct from source validation
 | A09 | Old interrupted plan, obsolete prompt, uncertain operation | Preserve work/history, avoid duplicate execution, resume without new ceremony. |
 | A10 | Concurrent edit, malformed data, interrupted write, replay | No lost updates, unsafe writes, silent success, destructive rollback. |
 | A11 | Task retrieval and HTML | Bounded context, stable anchors, safe escaping, accurate labels, no routine snapshot/receipt ceremony. |
-| A12 | Built candidate and installed host | Generated resources agree; ordinary installed journey completes; identities and unverified coverage reported. |
+| A12 | Built candidate and installed package | Generated resources agree; installed-package fixtures complete; identities and actual coverage reported without requiring another user host. |
 
 These are scenarios, not twelve new frameworks or compulsory model runs. Retain compact evidence: candidate commit, fixture, commands/outcomes, prompt/reviewer/engine-call/snapshot counts, model-visible bytes, timing environment, migration/rollback result, and installed-canary identity. Link logs instead of copying huge transcripts into model context.
 

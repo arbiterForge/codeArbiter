@@ -48,6 +48,10 @@ its checks without weakening assertions, lowering coverage requirements or suppr
 checks. The commit owner uses this evidence for the selected changes; exact-head hosted CI remains
 required before merge. Implementation, verification, review and release are distinct results.
 
+Use the available host for relevant live checks; ordinary work does not require installing or
+switching to another host. Maintainer CI checks adapter compatibility. Report a host denial once
+and continue unaffected authorized work; do not keep retrying or search for a host that will pass.
+
 [Test-first evidence](/concepts/test-first/) follows verification within a change and its delivery
 handoff. Direct implementation reads relevant context; actual delegation receives a bounded
 packet. An advisory delivery result does not require another retry.

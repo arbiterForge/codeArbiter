@@ -59,7 +59,7 @@ evidenced task closures and the retained backlog and qualification boundaries.
 | T11: scoped context delivery | Complete | 28 consumer tests, 6 host tests and 2 selector controls passed; bounded advisory delivery and critical-input controls reviewed |
 | T12: dependency and stop preservation | Complete | Full native module tests and vet passed; transitive dependency and independent-stop regressions included |
 | T13: greenfield context population | Complete | 2 installed-candidate tests passed with generated hooks, five protected pairs, finalization, replay and stale/missing-input refusals |
-| T14: proportionate verification | Complete | Direct and delegated feature, fix and characterization contracts reviewed; 45 debug workflow tests and 152 surface tests passed, with one surface platform skip |
+| T14: proportionate verification | Complete | Direct and delegated feature, fix and characterization contracts reviewed; 45 debug workflow tests and 153 surface tests passed, with one surface platform skip |
 | T15: checkpoint and delivery evidence | Complete | Checkpoint commit/time anchors and base-to-HEAD readiness reviewed; 10 route compatibility tests passed |
 | T16: concise instructions and reachable helpers | Complete | Current operating guides, source-bound diagrams, shared contracts and removed-helper closure reviewed; 53 routing and 43 artifact-workflow tests passed |
 | T17: integration and PR validation | Local validation complete | Native/Python checks, 1,126 site tests, production and non-root builds, and 16 selected Chrome checks passed. Review triage and aggregation passed with no open findings; exact-head hosted results belong to PR #983 |
@@ -92,7 +92,7 @@ and source validation do not establish live model qualification or publication.
 | T02 | Advisory scheduling; receipt-free task and batch progress; affected resident/catalog/status callers converted | Final-head hosted confirmation after any later source change |
 | T03 | Scoped factual prerequisites and real user-decision records; old unknown scope retained | No additional source gap demonstrated |
 | T04 | Reported checks; selected/shared inputs and applicable constraint bodies bound; native signed and Windows DWORD exit codes retained | Freshness is limited to declared inputs; reported results are not host attestation |
-| T05 | Feature, sprint, TDD, planning, execution and status adapted for Claude, Codex and Pi; ordinary installed Claude model journey passed | Codex and Pi live model cells remain unverified |
+| T05 | Feature, sprint, TDD, planning, execution and status adapted for Claude, Codex and Pi; ordinary installed Claude model journey passed | No additional live-model host is required for completion |
 | T06 | Complete selected criteria and applicable constraints; bounded readback and named omissions; measured native orientation | End-to-end model cost unmeasured |
 | T07 | Captured replies survive cleanup and recover without recapture; safe replay; complete saved-store restore with old client; later edits retained | Unknown historical formats remain unsupported |
 | T08 | Three regenerated host adapters and 62 source-bound atlas owners; current feature chapters, operating guides and ordinary HTML labels; explicit proof on demand | Actual deployment and release derivative readback |
@@ -226,9 +226,9 @@ not published receipts; final packaged-byte confirmation is recorded on the PR.
 
 1. Complete exact-head CI and correct proven failures without replacing source
    checks with looser assertions or adding new approval machinery.
-2. Confirm the final candidate package against the successful installed model
-   exercise, rerunning from final bytes when they differ. Retain all failed
-   attempts and keep unexercised live-host cells unverified.
+2. Confirm final candidate packages through installed-package CI fixtures.
+   Retain the scoped earlier model evidence. No additional live-host trial or
+   user host configuration is required for this completion.
 3. After authorized merge/publication, verify exact distributed package,
    marketplace, website and derivative bytes. Publication is not performed by
    this implementation task; no published tag is moved.

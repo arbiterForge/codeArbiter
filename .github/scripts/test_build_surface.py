@@ -1316,8 +1316,10 @@ class VerificationBoundaryContractTest(unittest.TestCase):
             "live device",
             "private",
             "environment",
+            "Do not require users to install, configure, or switch hosts",
+            "additional live-host trials require an explicit acceptance requirement",
         ):
-            self.assertIn(required.lower(), policy.lower())
+            self.assertIn(required.lower(), " ".join(policy.lower().split()))
 
     def test_local_lanes_defer_exhaustive_suites_to_hosted_ci(self):
         paths = (
@@ -1363,34 +1365,59 @@ class VerificationBoundaryContractTest(unittest.TestCase):
         self.assertNotIn("Typically: run this test, run full suite", plan_schema)
         self.assertIn("exhaustive exact-head proof runs in hosted CI", plan_schema)
 
-    def test_tracked_curated_docs_do_not_restore_the_obsolete_local_rule(self):
-        paths = (
-            "site/src/curated/commands/chore.md",
-            "site/src/curated/commands/commit.md",
-            "site/src/curated/commands/feature.md",
-            "site/src/curated/commands/refactor.md",
-            "site/src/curated/skills/commit-gate.md",
-            "site/src/curated/skills/refactor.md",
-            "site/src/curated/skills/tdd.md",
-        )
+    CURATED_BOUNDARIES = {
+        "site/src/curated/commands/chore.md": "impact-bounded",
+        "site/src/curated/commands/commit.md": "impact-bounded",
+        "site/src/curated/commands/feature.md": "Local checks cover the affected scope",
+        "site/src/curated/commands/refactor.md": "post-backfill parity tests",
+        "site/src/curated/skills/commit-gate.md": "impact-bounded",
+        "site/src/curated/skills/refactor.md": "Run the baseline parity tests locally",
+        "site/src/curated/skills/tdd.md": "Implement the scoped change and run affected checks",
+    }
+
+    def assert_curated_boundary(self, path, text):
+        text = " ".join(text.split())
         obsolete = (
             "full suite must pass",
             "Run the full suite",
             "Running full suite",
             "before opening a PR",
         )
-        for path in paths:
-            text = self.read(path)
-            with self.subTest(path=path):
-                for phrase in obsolete:
-                    self.assertNotIn(phrase, text)
-                self.assertIn("impact-bounded", text)
-                self.assertIn("exact-head", text)
-                self.assertIn("hosted CI", text)
+        for phrase in obsolete:
+            self.assertNotIn(phrase, text)
+        self.assertIn(self.CURATED_BOUNDARIES[path], text)
+        self.assertIn("exact-head", text)
+        self.assertIn("hosted CI", text)
+        if path == "site/src/curated/commands/refactor.md":
+            self.assertIn("preserve their behavioral assertions", text)
+            self.assertIn("Necessary import or symbol-reference updates", text)
+            self.assertNotIn("no pre-existing parity test files modified", text)
+            self.assertNotIn("zero test files touched", text)
 
-        refactor = self.read("site/src/curated/commands/refactor.md")
-        self.assertIn("no pre-existing parity test files modified", refactor)
-        self.assertNotIn("zero test files touched", refactor)
+    def test_tracked_curated_docs_do_not_restore_the_obsolete_local_rule(self):
+        for path in self.CURATED_BOUNDARIES:
+            with self.subTest(path=path):
+                self.assert_curated_boundary(path, self.read(path))
+
+    def test_curated_boundary_rejects_missing_checks_and_changed_refactor_contract(self):
+        for path, local_check in self.CURATED_BOUNDARIES.items():
+            text = " ".join(self.read(path).split())
+            for required in (local_check, "exact-head", "hosted CI"):
+                with self.subTest(path=path, missing=required):
+                    with self.assertRaises(AssertionError):
+                        self.assert_curated_boundary(path, text.replace(required, ""))
+        path = "site/src/curated/commands/refactor.md"
+        text = " ".join(self.read(path).split())
+        for changed in (
+            text.replace("preserve their behavioral assertions", "change assertions"),
+            text.replace("Necessary import or symbol-reference updates", "Unspecified edits"),
+            text + " no pre-existing parity test files modified",
+            text + " zero test files touched",
+            text + " Run the full suite before opening a PR",
+        ):
+            with self.subTest(changed=changed):
+                with self.assertRaises(AssertionError):
+                    self.assert_curated_boundary(path, changed)
 
     def test_every_host_projection_carries_the_same_boundary(self):
         rendered = {
