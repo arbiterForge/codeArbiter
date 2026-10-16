@@ -1,5 +1,5 @@
 {
-  "revision": "b7681d9857b954d60cee91e28ba5590e984ebbf0",
+  "revision": "95e8e18c3d6c2f9fecb74bccc40416c7a684cce1",
   "title": "Assistive overhaul: partial implementation",
   "summary": "Draft codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. The October 7 diagram layout is a historical visual reference, not the current executable workflow. Model-backed host and release qualification remain incomplete. No release or installed-host qualification is implied.",
   "changes": [
