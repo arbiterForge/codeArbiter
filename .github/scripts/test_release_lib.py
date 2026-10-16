@@ -9173,6 +9173,8 @@ class ThisRepoRowsTest(unittest.TestCase):
     # -- an EXACT list per target, so a deleted or reordered artifact line
     # cannot survive: "each artifacts path exists" alone does not catch a
     # deletion, since every surviving path in a shortened list still exists.
+    # PR #983 reconciles Pi with all four shipped outputs in tools/build.mjs,
+    # including its private approval helper and Windows process supervisor.
     _EXPECTED_ARTIFACTS = {
         "ca": ["plugins/ca/tools/farm.js"],
         "ca-codex": [],
@@ -9183,6 +9185,8 @@ class ThisRepoRowsTest(unittest.TestCase):
         "ca-pi": [
             "plugins/ca-pi/extensions/codearbiter.js",
             "plugins/ca-pi/extensions/codearbiter-child.js",
+            "plugins/ca-pi/helpers/windows-supervisor.js",
+            "plugins/ca-pi/helpers/approval-dialog.js",
         ],
     }
 
