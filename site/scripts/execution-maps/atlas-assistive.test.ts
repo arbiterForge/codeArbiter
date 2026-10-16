@@ -13,7 +13,7 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('5e637bba2011e9b13afadb5c3032f0d8f9f3cfd8');
+    expect(update.revision).toBe('ed1d9a332d6dd6d67e0de98a96d430832336bab2');
     expect(update.changes).toHaveLength(51);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {

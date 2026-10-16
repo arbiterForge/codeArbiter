@@ -1,5 +1,5 @@
 {
-  "revision": "5e637bba2011e9b13afadb5c3032f0d8f9f3cfd8",
+  "revision": "ed1d9a332d6dd6d67e0de98a96d430832336bab2",
   "title": "Assistive overhaul: implemented candidate",
   "summary": "Candidate codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. Authorized context population and refresh now use bounded inspection, optional agents and exact native preview/apply without per-document approval receipts. Source bindings describe implementation, not semantic verification or host qualification. The October 7 diagram layout is a historical visual reference, not the current executable workflow. One installed Claude model journey passed before this context extension; Codex and Pi live model cells remain unverified. Final-head package confirmation and release qualification remain incomplete. No release or all-host qualification is implied.",
   "changes": [
@@ -259,7 +259,7 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "8613ffc1df5b5e3c3bb30af146953babae3d39f4",
+      "blob": "0a4233799d11055c17135bafefd677994c5f43d3",
       "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected.",
       "nodes": [
         "f-verify",

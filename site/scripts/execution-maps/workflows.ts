@@ -7,17 +7,17 @@ export interface WorkflowDefinition {
 export const workflows: readonly WorkflowDefinition[] = [
   {
     "id": "sprint",
-    "title": "An approved sprint reaches a PR",
-    "summary": "Review the pair → execute within scope → inspect the PR",
-    "endpoint": "Open PR; merge is a separate decision.",
+    "title": "An authorized sprint reaches a PR",
+    "summary": "Agree the outcome → implement within scope → report and hand off",
+    "endpoint": "An honest implementation report and authorized PR; merge remains separate.",
     "guide": "/guides/autonomous-sprints/",
     "asset": "lane-sprint.svg",
     "map": {
       "id": "sprint",
-      "title": "An approved sprint reaches a PR",
+      "title": "An authorized sprint reaches a PR",
       "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
-      "boundary": "Historical sprint source-traced route at reviewedAt, not the currently installed workflow. Current assistive drafts require no pair approval; no artificial per-batch pause or receipt-driven reviewer chain is required. Preserve actual host/security/commit permissions. This is not a captured live host run.",
-      "outcome": "An open PR and sprint receipt with current evidence, decisions and remaining work. The sprint never merges or discards the branch.",
+      "boundary": "Current assistive source flow with retained historical citations. The user's request authorizes the agreed work; ordinary drafts, task progress and in-scope methods require no second artifact approval, context ticket or receipt-driven reviewer chain. Actual user stops, host/security controls and commit/publication permissions remain. This source explanation is not a captured live host run.",
+      "outcome": "An implementation report and authorized open PR with actual checks, meaningful decisions and remaining work. Reported DONE does not certify verification or release; the sprint never merges or discards work without separate authority.",
       "sources": {
         "autonomy": {
           "path": "core/surface/SPRINT.md",
@@ -71,9 +71,9 @@ export const workflows: readonly WorkflowDefinition[] = [
       "chapters": [
         {
           "id": "review-pair",
-          "title": "Review the whole sprint",
-          "question": "What must be approved before autonomy begins?",
-          "output": "Both exact artifact identities are approved and bound. A draft, a generic yes or an unobserved reply cannot begin execution.",
+          "title": "Establish the working agreement",
+          "question": "What outcome and constraints define the work?",
+          "output": "A maintained spec and plan for the authorized outcome. Material unresolved product choices go to the actual owner; ordinary planning does not wait for an artifact approval receipt.",
           "nodes": [
             {
               "id": "sprint-entry",
@@ -96,7 +96,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "brainstorming: sprint definition",
               "href": "/reference/skills/brainstorming/",
               "source": "sprint",
-              "detail": "Capture the outcome, exclusions, priorities and hard constraints. Consult recorded intent before asking for approval.",
+              "detail": "Capture the outcome, exclusions, priorities and real constraints. Read relevant recorded intent and existing decisions; ask only consequential unresolved owner questions.",
               "output": "A ready draft specification and surfaced decisions."
             },
             {
@@ -108,20 +108,21 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "writing-plans: linked draft",
               "href": "/reference/skills/writing-plans/",
               "source": "pair",
-              "detail": "For the initial pair, use the draft-for-pair path. Review criteria, tasks, tests, paths, dependencies and checkpoints together.",
-              "output": "A same-slug draft plan. Draft readiness is not authority."
+              "detail": "Maintain a same-format spec/plan pair with useful criteria, tasks, dependencies and checks. A draft_preview binding identifies current source; ordinary in-scope plan maintenance needs no separate artifact permission.",
+              "output": "A structurally valid linked draft for the agreed outcome."
             },
             {
               "id": "sprint-approve",
-              "role": "command",
+              "role": "skill",
               "label": [
-                "Approve pair"
+                "Working",
+                "agreement"
               ],
-              "title": "/ca:sprint: initial pair approval",
+              "title": "/ca:sprint: maintain the agreement",
               "href": "/reference/commands/sprint/",
               "source": "pair",
-              "detail": "The qualified adapter arms both definitions. Its exact reply names both artifacts and approve-only or delegate-methods. One observed reply commits approval and binding in a recoverable transaction.",
-              "output": "Both current approved identities, not two invented receipts."
+              "detail": "Continue under the user's existing authorization with the maintained spec and plan. Do not arm pair approval or delegate-methods for ordinary work. Explicit requested checkpoints and material outcome changes still belong to their actual owner.",
+              "output": "A bounded working agreement, without invented approval or new permission receipts."
             }
           ],
           "edges": [
@@ -138,15 +139,15 @@ export const workflows: readonly WorkflowDefinition[] = [
               "kind": "sequence",
               "label": "draft pair",
               "source": "pair",
-              "detail": "Planning may read this ready draft only through the initial sprint pair path.",
+              "detail": "Derive useful tasks and checks from the current agreed specification.",
               "from": "sprint-spec"
             },
             {
               "to": "sprint-approve",
               "kind": "return",
-              "label": "review together",
+              "label": "agreed scope",
               "source": "pair",
-              "detail": "Present the complete pair and exact delegation terms before the host observes approval.",
+              "detail": "Keep the linked plan aligned with the authorized outcome; no artifact approval ceremony is required.",
               "from": "sprint-plan"
             }
           ]
@@ -155,7 +156,7 @@ export const workflows: readonly WorkflowDefinition[] = [
           "id": "execute-tasks",
           "title": "Build and verify each task",
           "question": "What replaces the attended batch coordinator?",
-          "output": "Each task has specification review and fresh verification. Typed REVIEW remains provisional until scope acceptance.",
+          "output": "Useful implementation and actual check results. Reported progress remains separate from independent review, passing verification and release readiness.",
           "nodes": [
             {
               "id": "sprint-engine",
@@ -166,20 +167,21 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "subagent-driven-development: select",
               "href": "/reference/skills/subagent-driven-development/",
               "source": "autonomy",
-              "detail": "The sprint hands the approved plan directly to the task engine rather than inserting executing-plans human checkpoints. Eligibility and current context tickets still constrain the task.",
-              "output": "One eligible task inside the approved scope."
+              "detail": "Read compact task-context or exact symbols, inspect actual dependencies and select useful work. eligible is advisory scheduling; a missing context-delivery ticket is not a permission stop. Inspect existing IN_PROGRESS work before redispatch.",
+              "output": "One coherent task inside the agreed scope with relevant current facts."
             },
             {
               "id": "sprint-author",
-              "role": "agent",
+              "role": "skill",
               "label": [
-                "Fresh author"
+                "Implement",
+                "or delegate"
               ],
-              "title": "Scope-selected author",
-              "href": "/concepts/persona-and-context/",
+              "title": "Task engine: implement or delegate",
+              "href": "/reference/skills/subagent-driven-development/",
               "source": "task",
-              "detail": "Dispatch the appropriate backend, frontend or infrastructure author with the task context. The author is not the reviewer who accepts its result.",
-              "output": "Bounded implementation work in a fresh author context."
+              "detail": "Work directly for a focused change or delegate a coherent unit when useful. Supply relevant criteria, paths, constraints and checks within actual host permissions. A fresh author and two reviewers per task are not mandatory.",
+              "output": "Implementation work with bounded relevant context."
             },
             {
               "id": "sprint-tdd",
@@ -191,54 +193,55 @@ export const workflows: readonly WorkflowDefinition[] = [
               "href": "/concepts/test-first/",
               "source": "tdd",
               "detail": "Derive obligations, demonstrate the intended RED failure, then satisfy the same assertion and the declared quality requirements.",
-              "output": "Evidence returned to the caller, not permission to commit."
+              "output": "Evidence returned to the caller, not permission to commit.",
+              "conditional": true
             },
             {
               "id": "sprint-proof",
               "role": "skill",
               "label": [
-                "Review +",
-                "verify"
+                "Actual checks",
+                "+ findings"
               ],
-              "title": "Task engine: specification review and verification",
+              "title": "Task engine: verify truthfully",
               "href": "/reference/skills/subagent-driven-development/",
               "source": "taskReview",
-              "detail": "Inspect specification compliance and run the plan verification afresh. A self-reported author pass cannot supply required host authority.",
-              "output": "Current per-task evidence before combined review."
+              "detail": "Compare work with the agreed criteria and run relevant checks through the host-governed tool. Record actual command outcomes and limitations with task-check; caller-reported results do not certify an independent review or passing named-test proof.",
+              "output": "Actual checks, failures and unrun obligations, with no fabricated evidence."
             }
           ],
           "edges": [
             {
               "to": "sprint-author",
-              "kind": "dispatch",
-              "label": "eligible task",
+              "kind": "sequence",
+              "label": "useful unit",
               "source": "task",
-              "detail": "Select a fresh author for this bounded task.",
+              "detail": "Implement directly or delegate when useful within actual host permissions.",
               "from": "sprint-engine"
             },
             {
               "to": "sprint-tdd",
-              "kind": "dispatch",
-              "label": "test first",
+              "kind": "sequence",
+              "label": "behavioral task",
               "source": "task",
-              "detail": "TDD happens inside the task, not after all authoring is done.",
+              "detail": "Use test-first work for behavior changes; documentation or non-runnable work uses concrete relevant validation.",
               "from": "sprint-author"
             },
             {
               "to": "sprint-proof",
               "kind": "return",
-              "label": "independent proof",
+              "label": "actual results",
               "source": "taskReview",
-              "detail": "The task caller obtains the separate review and fresh verification.",
+              "detail": "Record checks actually run and inspect the result against the agreed criteria.",
               "from": "sprint-tdd"
             }
           ]
         },
         {
           "id": "accept-scope",
-          "title": "Accept the combined scope",
+          "title": "Assess risks and report progress",
           "question": "What prevents a green task from becoming a false completion claim?",
-          "output": "Complete current scope acceptance, or a persisted block. Only independently eligible work may continue after a blocked task.",
+          "output": "Relevant findings, actual check outcomes and honest implementation state. A failing or unrun check remains visible; an actual user stop remains blocked.",
           "nodes": [
             {
               "id": "sprint-quality",
@@ -250,7 +253,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "Combined quality reviewers",
               "href": "/reference/skills/subagent-driven-development/",
               "source": "taskReview",
-              "detail": "Review the combined diff once the tasks have their required proof. Security, dependency and migration reviewers are path-selected rather than an unconditional roster.",
+              "detail": "Review the relevant diff when risk or change size warrants it. Select specialist review for actual security, dependency or migration concerns or an applicable policy; a receipt change alone does not require another reviewer.",
               "output": "Applicable quality findings against the whole scope.",
               "conditional": true
             },
@@ -263,7 +266,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "finding-triage",
               "href": "/reference/agents/finding-triage/",
               "source": "taskReview",
-              "detail": "Classify findings and keep out-of-scope work separate. Correct the affected work and rerun invalidated evidence instead of redispatching to evade a gate.",
+              "detail": "Classify actual findings and preserve out-of-scope follow-ups. Correct affected work and revisit only conclusions changed by relevant source, requirements or evidence.",
               "output": "A disposition for the current findings.",
               "conditional": true
             },
@@ -271,13 +274,14 @@ export const workflows: readonly WorkflowDefinition[] = [
               "id": "sprint-accepted",
               "role": "skill",
               "label": [
-                "Accept scope"
+                "Report",
+                "progress"
               ],
-              "title": "Task engine: current acceptance",
+              "title": "Task engine: honest implementation progress",
               "href": "/reference/skills/subagent-driven-development/",
               "source": "sprintRecovery",
-              "detail": "Use the installed authority and current typed identities to accept the required scope. Missing or stale authority remains a stop; the board cannot substitute for the plan.",
-              "output": "Accepted scope evidence, or an explicit blocked state."
+              "detail": "Use receipt-free task-review and accept-scope to record implementation readiness or DONE with a real reason. These labels do not certify tests, independent review or release. Preserve blocked members, real user stops and outstanding checks.",
+              "output": "Reported implementation progress with evidence and remaining work kept distinct."
             }
           ],
           "edges": [
@@ -292,9 +296,9 @@ export const workflows: readonly WorkflowDefinition[] = [
             {
               "to": "sprint-accepted",
               "kind": "return",
-              "label": "no blocker",
+              "label": "honest progress",
               "source": "sprintRecovery",
-              "detail": "Only applicable current evidence permits acceptance.",
+              "detail": "Record actual implementation progress without claiming that pending verification passed.",
               "from": "sprint-triage"
             }
           ]
@@ -303,7 +307,7 @@ export const workflows: readonly WorkflowDefinition[] = [
           "id": "handoff",
           "title": "Commit and hand off the PR",
           "question": "Where does autonomous authority end?",
-          "output": "Inspect the actual PR head, observed checks, low-confidence decisions and unresolved findings. A merge requires its own authority.",
+          "output": "Inspect the actual PR head, observed checks, meaningful decisions and unresolved findings. Commit and PR actions use existing authorization; merge and publication remain separate.",
           "nodes": [
             {
               "id": "sprint-commit",
@@ -314,7 +318,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "commit-gate",
               "href": "/reference/skills/commit-gate/",
               "source": "sprintExit",
-              "detail": "Plan completion returns through the normal permission, selected-file and fresh-evidence gate. Recovery is not additional commit or publication authority.",
+              "detail": "When a commit is authorized, retain staged-diff inspection, secrets checks and applicable tests through commit-gate. Artifact progress does not create commit, merge or publication authority.",
               "output": "The gated commit and its actual evidence."
             },
             {
@@ -353,7 +357,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "href": "/reference/commands/pr/",
               "source": "pr",
               "detail": "Complete the applicable review and resolve blockers before opening. The sprint summary includes logged decisions, low-confidence calls and follow-ups.",
-              "output": "An open PR and an inspectable sprint receipt."
+              "output": "An open PR with an honest sprint report and unresolved obligations."
             }
           ],
           "edges": [
@@ -387,26 +391,42 @@ export const workflows: readonly WorkflowDefinition[] = [
       "alternatives": [
         {
           "to": "sprint-engine",
-          "kind": "dispatch",
-          "label": "After both approvals",
+          "kind": "sequence",
+          "label": "authorized work",
           "source": "autonomy",
-          "detail": "The sprint calls the task engine without attended batch pauses.",
+          "detail": "The maintained plan reaches implementation without artificial batch pauses or pair approval.",
           "from": "sprint-approve"
+        },
+        {
+          "to": "sprint-proof",
+          "kind": "return",
+          "label": "concrete validation",
+          "source": "task",
+          "detail": "Documentation-only or other work without a runnable test uses concrete relevant validation and records the actual result.",
+          "from": "sprint-author"
         },
         {
           "to": "sprint-engine",
           "kind": "repeat",
           "label": "More eligible tasks",
           "source": "taskReview",
-          "detail": "Finish the remaining tasks before combined scope review.",
+          "detail": "Continue independent dependency-clean work while preserving real blockers and outstanding checks.",
           "from": "sprint-proof"
         },
         {
           "to": "sprint-quality",
-          "kind": "sequence",
-          "label": "Task evidence complete",
+          "kind": "dispatch",
+          "label": "review warranted",
           "source": "taskReview",
-          "detail": "Combined quality review follows per-task review and verification.",
+          "detail": "Obtain useful independent or policy-required review for the actual risk and scope.",
+          "from": "sprint-proof"
+        },
+        {
+          "to": "sprint-accepted",
+          "kind": "sequence",
+          "label": "no extra review needed",
+          "source": "taskReview",
+          "detail": "When no additional review is warranted or required, report implementation progress with actual checks and limitations.",
           "from": "sprint-proof"
         },
         {
@@ -414,28 +434,28 @@ export const workflows: readonly WorkflowDefinition[] = [
           "kind": "return",
           "label": "Correction inside scope",
           "source": "sprintRecovery",
-          "detail": "Rerun the original gate and every invalidated review. A security or authority stop is not an ordinary retry.",
+          "detail": "Repair affected work and rerun relevant checks; preserve explicit user stops and actual security or host denials.",
           "from": "sprint-triage"
         },
         {
           "to": "sprint-commit",
           "kind": "sequence",
-          "label": "Plan complete",
+          "label": "authorized handoff",
           "source": "sprintExit",
-          "detail": "Only the completed selected plan reaches commit and PR delivery.",
+          "detail": "Return the honest report to sprint, which owns any authorized commit and PR action. DONE is not release readiness.",
           "from": "sprint-accepted"
         }
       ]
     },
     "notes": [
       {
-        "title": "Initial approval is one exact pair transaction",
-        "detail": "This is a current source capability for a qualified installed host. An unsupported host retains drafts; it cannot invent a receipt or silently switch to Markdown. Interrupted observed approval resumes its stored transaction.",
+        "title": "Existing authorization covers ordinary progress",
+        "detail": "Maintain the agreed spec and plan without arm-sprint, sprint-approve or delegate-methods. Historical pair transactions remain evidence for historical work; no receipt is manufactured to start a task.",
         "source": "pair"
       },
       {
         "title": "Autonomy is bounded",
-        "detail": "SMARTS logs non-hard-gate choices. Delegate-methods only permits the defined steps-only revision path; it does not satisfy prerequisites, broaden scope or grant security, provider, spending or publication authority.",
+        "detail": "Choose reversible in-scope methods from the user's intent; use SMARTS for a difficult tradeoff when useful and record material decisions. Changed outcomes, spending, credentials, irreversible actions, merge and publication retain their actual authority boundaries.",
         "source": "sprint"
       },
       {
@@ -445,7 +465,7 @@ export const workflows: readonly WorkflowDefinition[] = [
       },
       {
         "title": "HTML farm remains disabled",
-        "detail": "The HTML route refuses --farm before canary or dispatch. The separate legacy farm path is not implied by this premium-path map.",
+        "detail": "HTML --farm remains disabled. A separately requested legacy Markdown farm uses real provider configuration, budget and circuit-breaker controls; unavailable backends are reported without silent provider/model switches.",
         "source": "sprint"
       }
     ]
@@ -1440,20 +1460,21 @@ export const workflows: readonly WorkflowDefinition[] = [
   {
     "id": "brownfield",
     "title": "Initialize existing code from evidence",
-    "summary": "Scaffold → qualify scouts → collect reports → initialize",
-    "endpoint": "Qualified full run: source-backed context; otherwise stop before dispatch.",
+    "summary": "Scaffold → inspect bounded source → preview and apply → initialize",
+    "endpoint": "Source-backed context with explicit gaps and retained provenance.",
     "guide": "/guides/understand-an-existing-project/",
     "asset": "lane-init-brownfield.svg",
     "map": {
       "id": "brownfield",
       "title": "Initialize existing code from evidence",
       "reviewedAt": "929229354e3a15ae3002c82116b66c837ab43729",
-      "boundary": "Choose this route when meaningful source exists. Initial or full runs require six logical scout categories through an observed, read-only host boundary; scoped refreshes cover only declared affected categories. Current generated host surfaces lack that qualified context profile and must stop before dispatch.",
-      "outcome": "Populated source-backed project state, provenance and a code map, with each gap resolved or explicitly deferred before initialization. It does not invent the three greenfield planning documents.",
+      "boundary": "Choose this route when meaningful source exists. Initial or full work covers six logical categories through direct bounded inspection or optional scoped agents; scoped refreshes cover only declared affected categories through context-check. Actual host permissions and excluded paths apply. An agent label does not prove containment or semantic correctness.",
+      "outcome": "Populated source-backed project state, provenance and a code map. Material user-owned questions retain actual resolutions or explicit deferrals; other unknowns remain visible with their inspected scope. It does not invent the three greenfield planning documents.",
       "sources": {
         "brownLock": {
           "path": "core/surface/skills/context-creation/SKILL.md",
-          "quote": "## Phase 6 — Initialization lock · gate: BLOCK"
+          "quote": "## Phase 6 — Initialization lock · gate: BLOCK",
+          "currentQuote": "context-finalize-preview"
         },
         "context": {
           "path": "core/surface/skills/context-creation/SKILL.md",
@@ -1470,7 +1491,7 @@ export const workflows: readonly WorkflowDefinition[] = [
         "scouts": {
           "path": "core/surface/skills/context-creation/SKILL.md",
           "quote": "Dispatch six isolated `scout` subagents simultaneously.",
-          "currentQuote": "When the profile is actually qualified, create one full run with six root"
+          "currentQuote": "Use direct bounded inspection or optional scoped agents, whichever reduces"
         },
         "synthesis": {
           "path": "core/surface/skills/context-creation/SKILL.md",
@@ -1478,15 +1499,16 @@ export const workflows: readonly WorkflowDefinition[] = [
         },
         "writeContext": {
           "path": "core/surface/skills/context-creation/SKILL.md",
-          "quote": "## Phase 5 — Project-state write · gate: BLOCK"
+          "quote": "## Phase 5 — Project-state write · gate: BLOCK",
+          "currentQuote": "No document approval receipt or qualified agent profile is required."
         }
       },
       "chapters": [
         {
           "id": "inspect-code",
-          "title": "Qualify and collect bounded reports",
+          "title": "Inspect bounded source evidence",
           "question": "Who reads the code, and what crosses the context boundary?",
-          "output": "On a qualified initial/full run, all six logical reports return. A scoped refresh returns its declared affected reports. Missing transport blocks synthesis.",
+          "output": "Initial/full work accounts for all six categories with inspected evidence and explicit unknowns. Scoped refresh retains the declared affected coverage; missing reports can be resolved through direct inspection.",
           "nodes": [
             {
               "id": "brown-init",
@@ -1523,21 +1545,21 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: confirm the source",
               "href": "/reference/skills/context-creation/",
               "source": "context",
-              "detail": "Confirm meaningful code and identify its primary source directories. Block before dispatch unless the host proves a context-specific read-only child profile.",
+              "detail": "Confirm meaningful code, an uninitialized context and primary source directories. Check actual host permissions before reading; ordinary work does not require a special scout profile.",
               "output": "A bounded source surface to inspect."
             },
             {
               "id": "brown-scouts",
-              "role": "agent",
+              "role": "skill",
               "label": [
-                "Qualified",
-                "scouts"
+                "Bounded",
+                "inspection"
               ],
-              "title": "context scouts: assigned source slices",
+              "title": "context-creation: direct or delegated inspection",
               "href": "/reference/skills/context-creation/",
               "source": "scouts",
-              "detail": "A qualified initial/full run covers stack, infrastructure, architecture, security, testing and data model. A scoped refresh covers only affected categories. Queue within host limits; return bounded reports and trusted hashes, never raw code or secrets.",
-              "output": "Bounded reports for the declared scope, if host containment is qualified."
+              "detail": "Inspect stack, infrastructure, architecture, security, testing and data model for initial/full work; scoped refresh covers affected categories. Optional agents receive finite assignments within host limits. Retain citations, source identities, conflicts and unknowns without secret values.",
+              "output": "Bounded evidence for the declared scope; agent labels and hashes do not verify semantics."
             }
           ],
           "edges": [
@@ -1559,10 +1581,10 @@ export const workflows: readonly WorkflowDefinition[] = [
             },
             {
               "to": "brown-scouts",
-              "kind": "dispatch",
-              "label": "qualified slices",
+              "kind": "sequence",
+              "label": "bounded inspection",
               "source": "scouts",
-              "detail": "Block on unqualified host containment; otherwise dispatch every declared assignment.",
+              "detail": "Inspect the selected source directly or delegate finite assignments within actual host permissions.",
               "from": "brown-preflight"
             }
           ]
@@ -1571,19 +1593,19 @@ export const workflows: readonly WorkflowDefinition[] = [
           "id": "synthesize-context",
           "title": "Resolve the evidence gaps",
           "question": "Which claims are known, and which need the user?",
-          "output": "Real values are written from cited reports and explicit answers. Open uncertainty is recorded, not quietly upgraded to fact.",
+          "output": "Real values come from cited inspection and actual owner decisions. Uncertainty remains visible; independent solvable work need not wait for unrelated gaps.",
           "nodes": [
             {
               "id": "brown-synthesis",
               "role": "skill",
               "label": [
                 "Synthesize",
-                "reports"
+                "evidence"
               ],
-              "title": "context-creation: report-only synthesis",
+              "title": "context-creation: source-backed synthesis",
               "href": "/reference/skills/context-creation/",
               "source": "synthesis",
-              "detail": "Map the returned evidence into context, stack, standards and security drafts. Classify confidence; the orchestrator does not reopen raw source after the scout phase.",
+              "detail": "Map inspected evidence into context, stack, standards, security and code-map drafts. Reinspect disputed or changed sources directly or with an independent agent when useful; do not turn an inferred claim into a verified fact.",
               "output": "Draft state with the evidence and unresolved facts visible."
             },
             {
@@ -1595,8 +1617,8 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: resolve or defer",
               "href": "/reference/skills/context-creation/",
               "source": "gaps",
-              "detail": "Ask the focused missing questions. Resolve each gap or explicitly defer it to open-questions before initialization; do not infer user decisions.",
-              "output": "Reviewed values and named deferred questions."
+              "detail": "Ask only missing material user-owned decisions. Record actual resolutions or explicit deferrals through the question owner. Real unresolved prerequisites stop dependent work; unrelated uncertainty stays visible without blocking independent work.",
+              "output": "Actual decisions and explicit gaps, without invented approval or deferral."
             },
             {
               "id": "brown-write",
@@ -1607,8 +1629,8 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: write project state",
               "href": "/reference/skills/context-creation/",
               "source": "writeContext",
-              "detail": "Write the surviving state documents and route board mutations through the helper. A release-target row is conditional on real evidence or a resolved declaration, not mandatory boilerplate.",
-              "output": "Populated context and the authorized task state."
+              "detail": "Prepare the five content documents with context-preview, inspect the exact diff and source bindings, then apply preview_ref and preview_sha256 under existing authorization. No per-document approval receipt is required. Board mutations retain their own helper; a release-target row remains conditional on real evidence or a resolved declaration.",
+              "output": "Selected content/provenance pairs and separately maintained task state."
             }
           ],
           "edges": [
@@ -1625,7 +1647,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "kind": "sequence",
               "label": "resolved or deferred",
               "source": "writeContext",
-              "detail": "Populate from reports and explicit answers without retaining placeholders as resolved values.",
+              "detail": "Apply supported claims and actual decisions while preserving human content, protected owners and explicit unknowns.",
               "from": "brown-gaps"
             }
           ]
@@ -1646,7 +1668,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: record evidence",
               "href": "/concepts/provenance-drift/",
               "source": "writeContext",
-              "detail": "Write per-document provenance using scout source hashes and claims. Build the coarse concern-to-path code map from architecture findings.",
+              "detail": "The native writer pairs each selected content document with its v2 provenance. Keep exact source evidence, original preimages and transaction history; missing/v1 adoption and v2 updates do not manufacture semantic review.",
               "output": "Traceable source pointers and the current code map."
             },
             {
@@ -1658,7 +1680,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "title": "context-creation: initialization lock",
               "href": "/reference/skills/context-creation/",
               "source": "brownLock",
-              "detail": "Write the initialized body marker only after gaps have been resolved or explicitly deferred. Show the populated tree and return to ordinary operation.",
+              "detail": "For initial population only, prepare context-finalize-preview with all thirteen required output identities, inspect it and apply its exact reference. The writer rechecks source/output identities and commits the marker with matching provenance. Initialized refresh retains its marker and never finalizes again.",
               "output": "Initialized source-backed context, not an implemented change."
             }
           ],
@@ -1668,7 +1690,7 @@ export const workflows: readonly WorkflowDefinition[] = [
               "kind": "sequence",
               "label": "inspect completeness",
               "source": "brownLock",
-              "detail": "Validate populated state before returning to normal work.",
+              "detail": "Validate all thirteen outputs and their source bindings before the native initialization transaction.",
               "from": "brown-provenance"
             }
           ]
@@ -1678,17 +1700,17 @@ export const workflows: readonly WorkflowDefinition[] = [
         {
           "to": "brown-synthesis",
           "kind": "return",
-          "label": "declared reports",
+          "label": "bounded evidence",
           "source": "scouts",
-          "detail": "Join six complete logical categories for initial/full runs, or exactly the affected categories for scoped refresh. Missing transport blocks.",
+          "detail": "Account for six logical categories for initial/full work, or exactly the affected categories for scoped refresh. Direct inspection may resolve missing coverage; failed or uninspected work remains unknown.",
           "from": "brown-scouts"
         },
         {
           "to": "brown-scouts",
           "kind": "repeat",
-          "label": "Missing or failed report",
+          "label": "Missing or contested evidence",
           "source": "scouts",
-          "detail": "Retry only through the qualified profile and bounded run ledger after understanding the failure.",
+          "detail": "Narrow the assignment or directly reinspect the source within actual host permissions. Retain the failed attempt and unknown scope; do not invent a successful report.",
           "from": "brown-scouts"
         },
         {
@@ -1708,8 +1730,8 @@ export const workflows: readonly WorkflowDefinition[] = [
         "source": "context"
       },
       {
-        "title": "Containment is a real prerequisite",
-        "detail": "Current generated host surfaces cannot qualify context scout dispatch. The shared scout role is not a substitute for host-enforced read-only containment.",
+        "title": "Use actual permissions and bounded evidence",
+        "detail": "Direct bounded inspection and optional scoped agents support the same source-backed claims. Neither an agent label nor a report format proves containment or semantic correctness. Actual host controls remain binding.",
         "source": "scouts"
       },
       {

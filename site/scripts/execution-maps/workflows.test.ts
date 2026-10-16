@@ -103,34 +103,53 @@ describe('C04 distinct workflow routes', () => {
     const scouts = brownfield.chapters.flatMap(chapter => chapter.nodes).find(node => node.id === 'brown-scouts')!;
     const scoutSource = brownfield.sources.scouts;
     expect(scoutSource.quote).toContain('Dispatch six isolated `scout` subagents simultaneously.');
-    expect(scoutSource.currentQuote).toContain('one full run with six root');
+    expect(scoutSource.currentQuote).toContain('direct bounded inspection or optional scoped agents');
     expect(read(scoutSource.path)).toContain(scoutSource.currentQuote!);
-    expect(read(scoutSource.path)).toContain('For an affected-scope refresh, create only the affected root assignments');
-    expect(brownfield.boundary).toContain('six logical scout categories');
+    expect(brownfield.boundary).toContain('six logical categories');
     expect(brownfield.boundary).toContain('scoped refreshes cover only declared affected categories');
-    expect(brownfield.boundary).toContain('must stop before dispatch');
+    expect(brownfield.boundary).toContain('Actual host permissions');
     expect(scouts.href).toBe('/reference/skills/context-creation/');
-    expect(scouts.detail).toContain('Queue within host limits');
-    expect(scouts.detail).not.toContain('in parallel');
+    expect(scouts.role).toBe('skill');
+    expect(brownfield.chapters[0].edges.find(edge => edge.to === scouts.id)?.kind).toBe('sequence');
+    expect(scouts.detail).toContain('Optional agents');
     expect(brownfield.alternatives.find(edge => edge.from === 'brown-scouts' && edge.to === 'brown-synthesis')?.detail)
       .toContain('exactly the affected categories for scoped refresh');
     for (const page of [
       'site/src/content/docs/concepts/workflow-routes.mdx',
       'site/src/content/docs/guides/understand-an-existing-project.md',
     ]) {
-      const prose = read(page);
+      const prose = read(page).replace(/\s+/g, ' ');
       expect(prose).toContain('six logical');
-      expect(prose).toContain('scoped refresh');
-      expect(prose).toContain('current generated host surfaces');
+      expect(prose.toLowerCase()).toContain('scoped refresh');
+      expect(prose).toContain('optional scoped agents');
     }
+    expect(brownfield.sources.writeContext.currentQuote).toContain('No document approval receipt');
+    expect(brownfield.sources.brownLock.currentQuote).toBe('context-finalize-preview');
     expect(mapText('brownfield')).toContain('does not invent');
     expect(mapText('brownfield')).toContain('conditional on real evidence');
+    expect(brownfield.outcome).toContain('Material user-owned questions');
+    expect(brownfield.outcome).toContain('other unknowns remain visible');
   });
-  it('sprint goes directly to the task engine and preserves initial-pair approval', () => {
+  it('sprint proceeds under existing authorization and keeps progress separate from verification', () => {
     const map = getWorkflow('sprint').map;
     expect(ids('sprint').indexOf('sprint-approve')).toBeLessThan(ids('sprint').indexOf('sprint-engine'));
     expect(ids('sprint')).not.toContain('executing-plans');
-    expect(mapText('sprint')).toContain('in a recoverable transaction');
+    const nodes = map.chapters.flatMap(chapter => chapter.nodes);
+    expect(nodes.find(node => node.id === 'sprint-approve')?.title).toContain('maintain the agreement');
+    expect(nodes.find(node => node.id === 'sprint-author')?.role).toBe('skill');
+    expect(nodes.find(node => node.id === 'sprint-tdd')?.conditional).toBe(true);
+    expect(map.alternatives.find(edge => edge.from === 'sprint-author' && edge.to === 'sprint-proof')?.label)
+      .toBe('concrete validation');
+    expect(map.alternatives.find(edge => edge.from === 'sprint-approve' && edge.to === 'sprint-engine')?.label)
+      .toBe('authorized work');
+    expect(map.alternatives.find(edge => edge.from === 'sprint-proof' && edge.to === 'sprint-quality')?.kind)
+      .toBe('dispatch');
+    expect(map.alternatives.find(edge => edge.from === 'sprint-proof' && edge.to === 'sprint-accepted')?.kind)
+      .toBe('sequence');
+    expect(nodes.find(node => node.id === 'sprint-quality')?.conditional).toBe(true);
+    expect(nodes.find(node => node.id === 'sprint-accepted')?.detail).toContain('do not certify');
+    expect(map.sources.pair.quote).toContain('recoverable native transaction');
+    expect(read(map.sources.pair.path)).toContain(map.sources.pair.currentQuote!);
     expect(mapText('sprint')).toContain('not re-invoked');
     expect(map.outcome).toContain('never merges');
     expect(mapText('sprint')).toContain('HTML'); expect(mapText('sprint')).toContain('farm');
