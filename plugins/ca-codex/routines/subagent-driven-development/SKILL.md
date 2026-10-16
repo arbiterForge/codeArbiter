@@ -10,9 +10,7 @@ Execute an existing plan. The plan helps the agent remember the intended result;
 
 ## Format and capability boundary
 
-New full-lane workflows default to HTML through the installed engine. Existing authoritative Markdown pairs remain in their original format without automatic conversion. Load [includes/artifacts.md](../../includes/artifacts.md) before HTML I/O; use the pinned native writer, typed operations, and symbol-bound records. Do not scrape HTML or maintain a shadow Markdown ledger. If the HTML writer is unavailable or an artifact write fails, say precisely what was not saved; do not invent a fallback artifact or report success. Safe authorized inspection and repair can continue where the missing artifact is not needed.
-
-HTML `--farm` is disabled. An explicitly selected, existing Markdown `plan.json` farm workflow retains its separate dispatch procedure in [routines/subagent-driven-development/references/farm-dispatch.md](references/farm-dispatch.md), including its real provider/budget/circuit-breaker protections. This assistive default does not silently switch backends or imply farm qualification.
+Load [includes/artifacts.md](../../includes/artifacts.md) for artifact I/O and preserve the selected spec/plan representation. For an explicitly selected Markdown `plan.json` farm workflow, follow [routines/subagent-driven-development/references/farm-dispatch.md](references/farm-dispatch.md) and its provider, budget and circuit-breaker requirements.
 
 **Scope:** with an explicit `scope` from `executing-plans`, work only on the named tasks; without it, `/sprint` works across the plan. A checkpoint is an organizing group, not independent permission to do the next task.
 

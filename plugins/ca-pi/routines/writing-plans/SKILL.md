@@ -13,24 +13,12 @@ plan. An explicitly requested human checkpoint still belongs to the caller.
 
 ## Select the source and representation
 
-For a new full-lane HTML spec, use the installed structured-artifact engine and
-load `<plugin-root>/includes/artifacts.md`. Read the source through typed
-`index`, `outline`, and symbol-scoped `read`, not rendered HTML. Retain the
-source's exact artifact ID and normative digest. `_preflight_plan_authoring`
-checks the current source identity, structural validity, and same-slug target.
-It requires source identity and structural validity, not an artifact approval or reviewer.
-
-Create `.codearbiter/plans/<slug>.html` as `draft_preview` and use `plan-bind`
-when selecting or refreshing its source binding. This path must not create
-`.codearbiter/plans/<slug>.md` or a second criterion ledger. An existing `.md`
-source stays in its original format. Preserve human edits and references.
-
-Check the installed capability before writing. A missing or invalid payload
-means the artifact write did not happen; it must not fall back to Markdown.
-Report the repair needed and continue safe, already-authorized investigation
-where useful. Never report a failed or unsaved artifact as saved. A duplicate,
-mixed-format, or missing source needs reconciliation, not an invented substitute.
-HTML `--farm` dispatch remains disabled.
+Load `<plugin-root>/includes/artifacts.md` for artifact I/O. Read the selected
+specification's criterion records and retain its artifact ID and normative digest.
+For HTML, `_preflight_plan_authoring` checks that identity, structural validity,
+and the same-slug target. Create the matching plan as `draft_preview`; use
+`plan-bind` when selecting or refreshing its specification binding. Preserve human
+edits and stable references in the selected representation.
 
 Read relevant project context and the build/test commands in
 `<project-root>/.codearbiter/tech-stack.md`; use

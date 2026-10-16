@@ -1,6 +1,6 @@
 ---
 name: decompose
-description: Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates.
+description: Develop greenfield context from a durable interview and initialize it through the native context writer.
 argument-hint: (none)
 ---
 
@@ -9,180 +9,152 @@ argument-hint: (none)
 <!-- catalog-compatibility-notice:start -->
 > Compatibility route. Prefer `/ca-init --greenfield` for new usage. This installed route remains
 > functional under the command-route compatibility policy at <plugin-root>/includes/command-compatibility.md;
-> continue with the unchanged greenfield workflow below.
+> continue with the greenfield workflow below.
 <!-- catalog-compatibility-notice:end -->
 
-Spec the project before a line of code exists. Routed to at greenfield startup, or by `/decompose`.
+Develop the project specification before implementation. Keep actual user decisions,
+planned architecture and observed repository facts distinct.
 
-## Pre-flight
+## 1. Inspect and resume
 
-Run these ordered checks. Each passes silently or hard-stops with a routing action — never guess:
+Read `.codearbiter/CONTEXT.md`. An initialized project returns to normal operation;
+context changes use `/ca-context-check`. Meaningful implementation source routes
+to `/ca-create-context`. If the scaffold is absent, run `/ca-init` first.
 
-1. Read `<project-root>/.codearbiter/CONTEXT.md`. If it already carries the `<!--INITIALIZED-->` body marker on its own line, STOP — context exists. Route to normal operation.
-2. Scan for meaningful source code: any file outside `.git/`, `.codearbiter/`, `.claude/`, `arbiter.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`, `.gitignore`, `.gitmodules`, and standard tooling dotfiles. If any exist, STOP and route to `/create-context`.
-3. Confirm `<project-root>/.codearbiter/` exists and is writable. If not, surface the gap and STOP.
+Keep the interview in `.codearbiter/plans/decomposition/`: `_session.md` records the
+current phase, remaining questions and actual user confirmations; each completed
+layer has its own file. Read this state and resume the first unfinished step. Do not
+repeat settled questions or require another approval of unchanged accepted work.
+An explicit restart preserves earlier interview and decision history.
 
-All three pass → proceed to Phase 1. Later phases consume this pass-status; they do not re-run it.
+If `.codearbiter/.decompose-draft/` contains an interrupted interview, copy its session
+and layer records to the durable directory before using them as source evidence.
+Compare existing destinations byte-for-byte: retain identical files, and reconcile
+conflicting versions without overwriting either. Temporary drafts remain until
+initialization completes. Never cite a temporary file that cleanup will remove.
 
-## Phase 1 — Persona adoption · gate: BLOCK
+## 2. Capture the interview
 
-Announce the role switch to the user, verbatim:
+Explain briefly that you will establish scope, architecture and a build sequence.
+Ask focused questions only where existing answers do not establish the needed facts
+or choices. Use these six layers; record an inapplicable category with its reason.
+Persist each layer before proceeding. Each record contains the question, actual
+answer, relevant trade-offs and unresolved `[CONFIRM-NN]` items. Keep each source
+file within 1 MiB; split a long layer into named parts. Exclude secret values.
 
-> "Switching to decomposition mode. For this session I operate as a senior software architect and technical lead, decomposing your project vision into a complete, unambiguous specification before any code is written. Vague language will be challenged, hidden complexity surfaced, and trade-offs forced. This is a thorough interview — typically 60–110 questions across six layers; every layer persists to disk, so you can stop at any point and resume in a later session. Orchestrator mode resumes when this decomposition is locked."
-
-State the Rules of Engagement, verbatim:
-
-> **Rules of Engagement**
->
-> - **Pacing:** ONE LAYER AT A TIME. One focused question at a time within a layer (cluster only when tightly coupled). Never advance until the current layer is solid — no hand-wavy answers, no deferred decisions, no unchallenged vague language.
-> - **Three lenses on every answer:**
->   1. **Vague requirements** — Challenge hand-wavy language. Force concrete nouns, numbers, and verbs. "Manage" is not a verb. "We'll figure that out later" is not acceptable; every "later" becomes a `[CONFIRM-NN]` placeholder.
->   2. **Hidden complexity** — After each layer, name what the user assumes is easy but is hard: state management, real-time sync, edge cases, data migration, multi-tenancy, role matrices, offline behavior, failure modes — anything that grows non-linearly with scale.
->   3. **Trade-off forcing** — When a real architectural or product decision exists, frame it: "X gives you A but costs B; Y gives you C but costs D — choose." Record every forced choice as a DRAFT ADR.
-> - **Suggestions calibrated to confidence:** HIGH → recommend one option, one-line justification. MEDIUM → present 2–3 options with trade-offs, ask the deciding question. LOW → flag the gap, explain why it matters, ask the unlocking question. Never skip a gap silently; never suggest an integration without stating why.
-
-No interview question is asked yet — the Layer 1 question is asked at the end of Phase 2, after draft persistence exists, so the first answer lands on disk.
-
-Gate: persona and Rules of Engagement stated. Advance to Phase 2, never directly to Phase 3.
-
-## Phase 2 — Draft persistence (or resume) · gate: BLOCK
-
-The Phase 3 interview accumulates 60–110 Q/A turns across six layers. Without per-layer disk persistence, an auto-compaction event silently destroys earlier reasoning and any DRAFT ADRs. This phase plus the per-layer write rule in Phase 3 plus the disk re-read in Phase 4/5 make the skill compaction-resilient: every layer is durable the moment its gate clears.
-
-Check for an existing draft directory at `<project-root>/.codearbiter/.decompose-draft/`.
-
-**If it exists with `_session.md` and one or more `layer-N-*.md` files — Resume mode:**
-
-- Read `_session.md` and every `layer-*.md` present. Read every `<project-root>/.codearbiter/decisions/*.md` with `status: draft` (prior-session draft ADRs to carry forward).
-- Present a numbered summary: prior-session timestamp, captured layers by name, count of DRAFT ADRs.
-- Ask the user to choose: **(a) Resume** — continue from the next unfinished layer, treating captured layers as solid; **(b) Restart** — delete the draft directory and every `status: draft` ADR, begin fresh; **(c) Abort** — exit the skill, leave draft directory and DRAFT ADRs intact.
-- On Resume: re-establish each captured layer as solid, then enter Phase 3 at the next unfinished layer. On Restart: delete `.decompose-draft/` and every DRAFT ADR, then fresh-init below. On Abort: exit cleanly; never silently delete.
-
-**If no draft directory exists (or after Restart) — fresh init:**
-
-- Create `<project-root>/.codearbiter/.decompose-draft/`.
-- Write `_session.md` recording the ISO-8601 start timestamp, the invoking identity (`git config user.email`), `Status: in-progress`, and a note that this directory is session state, auto-deleted on Phase 6 completion, and that re-invoking `/decompose` after interruption enters Resume mode.
-- Ensure `.codearbiter/.decompose-draft/` is gitignored — append the entry to `<project-root>/.gitignore` if absent.
-
-Then ask the first Layer 1 question to open the interview:
-
-> "Describe your solution vision in your own words. What problem does it solve, and for whom?"
-
-Gate: Phase 3 does not begin until either (a) the draft directory exists with `_session.md` and is otherwise empty (fresh start), or (b) prior layers are replayed and the user explicitly chose Resume.
-
-## Phase 3 — Layered interview · gate: BLOCK
-
-Run the six layers in strict sequence. Never skip a layer. Never advance until the current layer is solid — no open "later" items unless recorded as `[CONFIRM-NN]`, no unchallenged vague language, no forced trade-off left unresolved.
-
-**Per-layer disk write (compaction contract):** when a layer's "advance when" checklist is satisfied, BEFORE the first question of the next layer, write the completed layer's full Q/A record to disk:
-
-| Layer | Draft file |
+| Layer and file | Required outcomes |
 |---|---|
-| 1 — Vision & Problem | `.decompose-draft/layer-1-vision.md` |
-| 2 — Users & Flows | `.decompose-draft/layer-2-flows.md` |
-| 3 — Functional Scope | `.decompose-draft/layer-3-functional-scope.md` |
-| 4 — Technical Shape | `.decompose-draft/layer-4-tech-shape.md` |
-| 5 — Integrations & Infrastructure | `.decompose-draft/layer-5-integrations.md` |
-| 6 — Risks & Unknowns | `.decompose-draft/layer-6-risks.md` |
+| 1 — `layer-1-vision.md` | Problem, primary users, demonstrable success and exclusions. |
+| 2 — `layer-2-flows.md` | User journey, non-human actors, failure experience and privilege boundaries. |
+| 3 — `layer-3-functional-scope.md` | Capabilities with initiators, inputs and outputs; MVP/v1/later classification; hardest user-facing risk. |
+| 4 — `layer-4-tech-shape.md` | Components and ownership, entities, state/write paths, stack and other hard constraints, technical risks, copyright holder, actual architectural choices and release intent. |
+| 5 — `layer-5-integrations.md` | External dependencies, available contracts/authentication, ownership, reliability, cost and fallback requirements. |
+| 6 — `layer-6-risks.md` | Material risks with mitigations, unresolved questions, bounded spikes and architecture-change triggers. |
 
-(All under `<project-root>/.codearbiter/`.) Each file holds every question asked, the user's verbatim answer (or a faithful paraphrase), every challenge made under the three lenses, every `[CONFIRM-NN]` raised, and every DRAFT-ADR title generated. These files are the authoritative record — Phases 4 and 5 read from them, not from conversation context. The next layer does not begin until the prior layer's file exists on disk and is non-empty; if a write fails, surface the error and do not advance.
+Record a user-decided architectural choice through `decision-lifecycle` at
+`<plugin-root>/routines/decision-lifecycle/SKILL.md`. It owns ADR numbering,
+attribution, authoring and status transitions. Preserve draft choices as drafts
+until the user actually decides; do not create an ADR merely to fill a quota.
 
-**Layer 4 immediate ADR drafts:** each forced architectural choice in Layer 4 is written at the moment it is made as `<project-root>/.codearbiter/decisions/NNNN-<slug>.md`, numbered sequentially across the existing `decisions/` directory. Do not batch the writes. Author each using the canonical ADR template — `<plugin-root>/routines/decision-lifecycle/references/adr-template.md` (the single source of truth, shared with `decision-lifecycle`) — with frontmatter `status: draft` and `decided-by:` set to the user (or "user" if anonymous). Fill `## Context`, `## Decision`, and `## Consequences` from the forced choice; leave `## Alternatives considered` and `## Risks` populated where the interview surfaced them, or as `<none recorded>`. Phase 5 promotes each to `status: accepted`.
+Release intent is elicited here: capture the **tag prefix** preference and
+**changelog kept** yes/no in Layer 4. No `.codearbiter/release-targets.md` row is ever written by this skill.
+Greenfield runs before any manifest or tag exists. `/ca-release` or a subsequent
+context refresh derives a target from the actual manifest and delivery structure.
 
-**Layer 1 — Vision & Problem.** Unlock: the specific problem and the evidence it is real (not assumed); the primary user and any conflicting user types (name and resolve the conflict, or flag it); the demo-to-a-skeptic definition of "working"; what this project explicitly is NOT building. Advance when: problem concrete, primary user named, "working" demonstrable, NOT-building list explicit.
+An unresolved consequential choice blocks its dependent output. Record other gaps
+as questions; a user's explicit deferral remains unresolved and is not permission.
 
-**Layer 2 — Users & Flows.** Unlock: the core user journey from first touch to value delivered, in specific steps; every non-human actor at MVP (scheduled jobs, webhooks, callbacks, external triggers); failure-mode UX (concrete, not "we'll show an error"); admin/ops/internal privilege model. Advance when: end-to-end journey specific, non-human actors named, failure UX defined, privilege model sketched.
+## 3. Synthesize and confirm
 
-**Layer 3 — Functional Scope.** Unlock: every capability, challenged individually — what it does (concrete verbs), who initiates it, inputs and outputs; each capability classified MVP / v1 / later; the hardest user-facing problem (the one that invalidates the product if wrong); every "later" forced to closure or recorded as `[CONFIRM-NN]`. Advance when: capability list complete and every item classified; no unresolved "later" except as `[CONFIRM-NN]`.
+Re-read the retained layer records and relevant ADRs. Write these three artifacts
+under `.codearbiter/plans/`, using the recorded evidence:
 
-**Layer 4 — Technical Shape.** Unlock: components and ownership (what each owns, where the boundaries are); core data entities, relationships, cardinality; where state lives and how it changes (write paths); the hardest technical problem; hard constraints (stack, runtime, cloud, compliance, budget, team size and skill); the copyright holder for new-file headers (record in `coding-standards.md`; if undecided, record as `[CONFIRM-NN]`); a forced trade-off for every major architectural decision (e.g. monolith vs. services, sync vs. async); **release intent** — the tag prefix the user wants (e.g. `v`), and whether a `CHANGELOG.md` is kept at all. Each forced choice is written immediately as a `status: draft` ADR per the rule above. Advance when: all components named, all entities sketched, all hard constraints recorded, every major trade-off resolved or deferred as `[CONFIRM-NN]`, release intent captured, AND `layer-4-tech-shape.md` is on disk with one DRAFT ADR per forced choice.
+- `01-architecture-breakdown.md`: components, responsibilities, connections,
+  integration boundaries and remaining architectural questions.
+- `02-phased-build-plan.md`: MVP and subsequent phases, scope, risks, deferrals and
+  measurable completion criteria.
+- `03-task-backlog.md`: prioritized, bounded tasks with roles, dependencies and
+  time-boxed spikes.
 
-**Release intent is elicited here, but no `.codearbiter/release-targets.md` row is ever written by this skill.** This lane runs before any manifest or tag exists — greenfield has no `package.json` version field, no `Cargo.toml`, no committed tag to anchor a `prefix` against — so there is nothing yet to substantiate a full row (`manifest`, `payload`, an actual declared file `load_targets` could parse). Record the two answers (tag prefix preference; changelog kept y/n) in `layer-4-tech-shape.md` alongside the rest of the layer's Q/A, for `context-creation`'s back-fill (once source exists) or `/release`'s own back-fill lane (once a manifest and tag exist) to substantiate later. Writing a guessed row now, ahead of anything to check it against, is exactly the invented-shape failure both of those later lanes exist to refuse.
+Present the files for review. Apply corrections and record the user's actual
+confirmation in `_session.md`; existing confirmation covers unchanged artifacts.
+Proceed when the artifacts accurately represent the user's choices and each gap is
+resolved or explicitly retained on the question board.
 
-**Layer 5 — Integrations & Infrastructure.** Unlock: every external dependency (APIs, services, data sources, auth providers, payment processors, notification services), each named; commodity vs. differentiator for each; actual API contracts, data formats, and auth mechanisms for any system being integrated with; integration risks per dependency (rate limits, reliability and fallback, data ownership and portability, cost at scale). Advance when: all dependencies named, commodity/differentiator classified, integration risks surfaced for each.
+## 4. Populate context
 
-**Layer 6 — Risks & Unknowns.** Unlock: the top three build-killing risks, each with probability, impact, mitigation; the lowest-confidence areas; spike candidates (what question each answers, cost of being wrong, time-box); the signals and decision points that would force a major architecture change mid-build. Advance when: top three risks named with mitigations, spike candidates identified, architecture-change triggers named.
+Re-read the approved artifacts and retained interview sources. Prepare UTF-8 drafts
+outside the five target paths, each at most 128 KiB. Use only relevant retained
+sources for each document; planned choices must not be described as implemented facts.
+Use the matching document title: `# Project: <name>`, `# Tech stack`,
+`# Coding standards`, `# Security controls` or `# Code map`.
+Preserve existing CONTEXT frontmatter exactly; the scaffold owns activation and stage.
 
-Gate: all six layers complete (no open "later" except as `[CONFIRM-NN]`); all six `layer-*-*.md` files on disk and non-empty; at least one `status: draft` ADR present if any Layer 4 trade-off was forced — a Layer 4 with zero forced trade-offs is suspicious and is re-examined before advancing.
-
-## Phase 4 — Synthesis · gate: BLOCK
-
-Begin by re-reading every `layer-*-*.md` and every `status: draft` ADR from disk. Do NOT rely on conversation context — by now an auto-compaction may have erased the original Q/A. The on-disk drafts are authoritative; this re-read makes the phase idempotent across compaction. If any expected layer file is missing, BLOCK and surface the gap rather than synthesizing from incomplete context.
-
-Produce three artifacts and write each to disk under `<project-root>/.codearbiter/plans/` BEFORE asking for review (the user reviews from disk, which survives a session restart):
-
-1. `01-architecture-breakdown.md` — every component with responsibility and connections; a text/ASCII system diagram; every integration with its type (sync/async), protocol, and owner; every open architectural decision flagged with a `[CONFIRM-NN]` marker (numbered sequentially with `open-questions.md`).
-2. `02-phased-build-plan.md` — MVP → v1 → v2 phases; per phase a one-sentence goal, what is included, what is deferred and why (explicit rationale), key risks, and a measurable definition of done.
-3. `03-task-backlog.md` — a flat prioritized task list; each task estimable (1–5 days), assignable to one role (frontend/backend/infra/etc.), phase-grouped (MVP first), with dependencies flagged and spikes time-boxed.
-
-Present all three. Request explicit review:
-
-> "These three artifacts are written to `.codearbiter/plans/`. Open and review each one. Tell me what is wrong, incomplete, or misrepresents your intent. They are on disk now and survive a session restart, but Phase 5 will not run until you confirm they are correct."
-
-Iterate on the on-disk files in place until the user explicitly approves.
-
-Gate: all three artifact files on disk AND the user explicitly approves all three, with no unresolved objections.
-
-## Phase 5 — project-state population · gate: BLOCK
-
-Re-read every input from disk — the three approved artifacts, all six `layer-*-*.md` files, and every `status: draft` ADR. This makes population idempotent across compaction: a user may approve Phase 4, suffer a compaction, re-invoke `/decompose` (Phase 2 enters Resume, Phase 4 sees its artifacts already approved on disk), and Phase 5 proceeds from disk.
-
-Promote each `status: draft` ADR to `status: accepted` — an in-place edit of the frontmatter `status:` line (and its `## Status` body mirror) only; do not duplicate or rewrite the ADR body.
-
-Then write the surviving project-state docs. Every file holds actual content derived from the interview — no template boilerplate left unfilled:
-
-| Source | Destination |
+| Document ID | Content |
 |---|---|
-| Layer 1 problem + users + NOT-building, with `arbiter: enabled` and `stage:` frontmatter | `CONTEXT.md` |
-| Layer 4 stack + hard constraints + tracker command (e.g. `gh issue create`) | `tech-stack.md` |
-| Layer 4 lint, format, naming + copyright holder | `coding-standards.md` |
-| Layer 4 compliance + crypto + trust-boundary notes (thin — banned-primitive posture only) | `security-controls.md` |
-| Layer 6 unknowns + spike candidates | `open-questions.md` (`[CONFIRM-NN]` format) |
-| Task backlog | `open-tasks.md` |
-| Carried from the `/ca-init` scaffold — confirm present, create empty if absent | `overrides.log` (append-only audit sink, with its audit header), `last-checkpoint` (`0`) |
-| Each Layer 4 forced choice | `decisions/000N-<slug>.md` — already written in Layer 4; Phase 5 only promotes Status to Accepted |
-| The three Phase 4 artifacts | `plans/01-…`, `plans/02-…`, `plans/03-…` — already written and approved; Phase 5 only verifies they exist |
+| `CONTEXT` | Identity, purpose, users, scope and exclusions; frontmatter `arbiter: enabled` and one `stage:` number. |
+| `tech-stack` | Intended runtime, frameworks, tooling and confirmed conventions. Mark commands without a real manifest as planned, not verified executable commands. |
+| `coding-standards` | Confirmed structural/style conventions and copyright holder. |
+| `security-controls` | Actual trust boundaries, authentication requirements, secret handling and prohibited primitives. |
+| `code-map` | Planned concerns and ownership. Distinguish proposed paths from existing paths; state when no implementation paths exist yet. |
 
-(All under `<project-root>/.codearbiter/`.) Set the `stage:` frontmatter value in `CONTEXT.md` to the maturity number for the MVP phase of the build plan (a single number — there is no promotion ladder).
+For each of the five documents, invoke the installed writer:
 
-**Provenance stubs and code-map stub:** once the project-state docs above are on disk, write a provenance stub per derived doc to `.codearbiter/.provenance/<doc>.json` via `_provenancelib.write_stub` (`interview_derived: true`, empty `entries`) — one stub for each scout/source-derived doc (`CONTEXT`, `tech-stack`, `coding-standards`, `security-controls`). Also write a `.codearbiter/code-map.md` stub — a placeholder empty coarse map. WHY: greenfield has no source code yet, so real provenance entries and code-map contents populate on the first commit-gate auto-heal (or `/ca-context-check`) once code exists.
+```bash
+python3 "<plugin-root>/hooks/init-codearbiter.py" --root "<project-root>" --context-draft "<draft.md>" --document "<document-id>" --source ".codearbiter/plans/decomposition/<layer-file.md>"
+```
 
-After initialization, the first real package manifest is acquired through the
-normal `/ca-context-check` route, not another decomposition interview. An
-empty interview-derived `tech-stack` stub is intended context only. At task
-time, use a source/target snapshot with root `manifests` membership and call
-`_provenancelib.assess_context_provenance` for the selected document. Its
-`first_input_pending` state names the newly observed manifest paths and only
-`tech-stack` as a bounded refresh candidate. Inspect those real files through
-the selected refresh, reconcile facts with the intended architecture, and use
-the existing owner preview and receipt before any update. An empty membership
-or an uninspected boundary supplies no package command, dependency, database
-claim, or nested guidance. Preserve the initialized marker and interview
-history; the first input is not authority to rewrite them.
+Repeat `--source` for each relevant retained source, up to 64 per document. Inspect
+the returned preview, exact preimage and source bindings, then apply that preview
+under the existing authorization:
 
-Gate: every project-state doc written with real content; no `status: draft` ADRs remain in `decisions/`; `[CONFIRM-NN]` items are acceptable in `open-questions.md` for genuinely unresolved items; provenance stubs and code-map stub written.
+```bash
+python3 "<plugin-root>/hooks/init-codearbiter.py" --root "<project-root>" --context-apply "<preview_ref>" --preview-sha256 "<preview_sha256>"
+```
 
-## Phase 6 — Initialization lock & cleanup · gate: BLOCK
+The writer commits each document and its v2 provenance record together. Do not write
+those protected pairs directly. A digest records inspected bytes; it does not certify
+semantic review or user authority. If source or output bytes change, inspect the
+changed input and prepare a fresh preview. Reuse the same retained preview after an
+uncertain response; recovery determines whether its transaction committed.
 
-1. Write the `<!--INITIALIZED-->` body marker on its own line in `<project-root>/.codearbiter/CONTEXT.md`. A marker embedded in a template instruction comment does not satisfy the gate.
-2. List `<project-root>/.codearbiter/` and show the populated tree to the user.
-3. Confirm each required file is present and non-empty: `CONTEXT.md` (with `arbiter: enabled` + `stage:` frontmatter and `<!--INITIALIZED-->` body), `tech-stack.md`, `coding-standards.md`, `security-controls.md`, `open-questions.md`, `open-tasks.md`, `overrides.log` (append-only audit sink — create with its audit header if the scaffold left it absent), `last-checkpoint`, `decisions/` (at least one ADR, all `status: accepted`, none `status: draft`), and `plans/01-…`, `plans/02-…`, `plans/03-…`.
-4. Delete `<project-root>/.codearbiter/.decompose-draft/` and all its contents. This is mandatory — a leftover draft directory signals a still-in-progress decomposition to Phase 2 of any future `/decompose`.
-5. Announce return to normal operation:
+Populate the other records through their owners:
 
-   > "Decomposition complete. Project state is initialized and locked, draft directory removed. Returning to codeArbiter orchestrator mode. Use `/ca-feature` to begin implementation, or any other command. Open questions are recorded in `.codearbiter/open-questions.md`."
+- Add each approved backlog item with `python3 "<plugin-root>/hooks/taskwrite.py" add "<task>"`.
+  Compare the existing board before retrying so resumed population does not duplicate
+  tasks. Never write task rows directly or mark planned work done.
+- Record unresolved questions in `open-questions.md`, retaining the scaffold and
+  actual resolution or deferral history. An empty question board is valid.
+- Preserve `overrides.log`, `last-checkpoint` and all ADR history. The scaffold owns
+  their creation; initialization does not invent audit events or acceptance evidence.
 
-Gate: `<!--INITIALIZED-->` present on its own line in `CONTEXT.md`; all required files present and non-empty; no `status: draft` ADRs in `decisions/`; `.decompose-draft/` no longer exists on disk.
+Verify all five v2 pairs, the task/question boards and audit header are present.
+Do not scaffold cut documents listed in `<plugin-root>/includes/cut-docs.md`.
 
-## Hard rules
+## 5. Finalize and return to work
 
-- MUST NOT write any project-state file before all six layers are solid and on disk.
-- MUST NOT scaffold any cut doc — see `<plugin-root>/includes/cut-docs.md` for the canonical never-scaffold list. Maturity is the single `stage:` value in `CONTEXT.md` frontmatter.
-- MUST NOT advance a layer until its draft file exists on disk and is non-empty.
-- MUST NOT advance past a layer holding an unresolved "later" item unless it is recorded as `[CONFIRM-NN]`.
-- MUST NOT resolve a `[CONFIRM-NN]` by guessing — surface the question and record it in `open-questions.md`.
-- MUST NOT synthesize artifacts (Phase 4) or populate context (Phase 5) from conversation context — re-read the on-disk drafts first.
-- MUST NOT proceed past Phase 4 without explicit user approval of all three artifacts.
-- MUST NOT leave any `status: draft` ADR in `decisions/` after Phase 5.
-- MUST NOT close the skill while `.decompose-draft/` still exists, or while `CONTEXT.md` lacks the `<!--INITIALIZED-->` body marker on its own line.
-- MUST NOT silently delete a draft directory on Resume — the user chooses Resume, Restart, or Abort.
+Preview initialization against the exact five document/provenance pairs and the
+three independent board/audit outputs:
+
+```bash
+python3 "<plugin-root>/hooks/init-codearbiter.py" --root "<project-root>" --context-finalize
+```
+
+Inspect the result and apply its `preview_ref` and `preview_sha256` with
+`--context-apply`. The writer validates current outputs and source evidence, then
+commits the standalone `<!--INITIALIZED-->` marker and matching CONTEXT provenance
+together. Missing, stale or malformed input names the repair needed; never append
+the marker manually. Recover an uncertain transaction before preparing another.
+
+Read back the committed result and all required outputs. Keep
+`.codearbiter/plans/decomposition/`, approved plans and decision history. Remove only
+this run's temporary drafts after confirming no provenance source refers to them.
+Record completion in `_session.md`. Report the populated context, unresolved choices
+and actual checks, then continue authorized work. Initialization records population;
+it does not certify host enforcement, semantic review or passing tests.
+
+When source and manifests arrive, `/ca-context-check` refreshes the selected
+context against those files. Use `_provenancelib.assess_context_provenance` to inspect
+current evidence. An existing `first_input_pending` result names the bounded refresh;
+otherwise select the documents affected by the new source. Preserve interview
+history and the initialized marker while reconciling intended and implemented facts.

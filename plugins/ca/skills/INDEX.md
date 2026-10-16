@@ -12,7 +12,7 @@ not both merely to repeat the same procedure. This index lists what each skill O
 
 | Skill | Routed to by | Owns |
 |---|---|---|
-| [tdd](tdd/SKILL.md) | `/feature` (with its selected spec), `/fix`, `/refactor` | The test-first gate: six phases — obligation scan → red → green → obligation verify → coverage → lint. No implementation before Phase 1; no path to `commit-gate` until all six gates are green. |
+| [tdd](tdd/SKILL.md) | `/feature` (with its selected spec), `/fix`, `/refactor` | Scoped verification: regression-first fixes, behavioral feature checks, characterization baselines, coverage and lint; return observed evidence to the commit owner. |
 | [commit-gate](commit-gate/SKILL.md) | `/commit` | The commit gate: nine phases — permission, branch, classification, impact-bounded local verification under the shared [verification boundary](../includes/verification-boundary.md), behavioral proof, diff review, selective stage, message, commit. No commit while an applicable check is red, the behavior unproven, or secrets/cruft present; exhaustive exact-head proof remains a hosted-CI merge gate. |
 | [decision-variance](decision-variance/SKILL.md) | Architectural reconciliation or variance report; explicit `/reconcile` retained | One SMARTS arbitration owner; report-only is non-mutating. Analysis card loads on demand; only explicit user choices enter the append-only log. |
 | [debug](debug/SKILL.md) | Diagnosis intent or `/debug` | Investigate-then-decide root-cause analysis: five phases. Investigation only, no code change here; returns one evidence-backed result: confirmed_code_defect, confirmed_noncode_cause, design_question, no_action, or unresolved. Follow-up action retains caller authority; no default task or ADR write. |

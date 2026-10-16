@@ -57,18 +57,9 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 	}
 	sort.Strings(omittedRefs)
 
-	waiting := []any{}
-	dependencies := []any{}
-	for _, dep := range model.Strings(task.Value["depends_on"]) {
-		predecessor, found := d.Symbols.ByID[dep]
-		if !found || predecessor.Retired || predecessor.Kind != "tasks" {
-			return nil, fault.At("DANGLING_REFERENCE", id, "depends_on", "task depends on an absent or retired task")
-		}
-		status := model.S(state(d, dep)["state"])
-		dependencies = append(dependencies, object{"id": dep, "title": predecessor.Value["title"], "state": status})
-		if status != "REVIEW" && status != "DONE" && status != "ACCEPTED" {
-			waiting = append(waiting, dep)
-		}
+	dependencies, waiting, err := dependencyAdvice(d, task.Value)
+	if err != nil {
+		return nil, err
 	}
 
 	prerequisites := []any{}
@@ -156,6 +147,8 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 		out["next_action"] = "Source binding changed; inspect affected requirements and reconcile the plan without resetting unrelated work."
 	} else if status == "BLOCKED" {
 		out["next_action"] = "Inspect the recorded stop; do not clear it or redispatch until the actual condition or user decision is resolved."
+	} else if len(waiting) != 0 {
+		out["next_action"] = "Inspect unresolved dependencies and preserve their recorded stops; continue independent work while those conditions remain unresolved."
 	} else if len(shown) > 0 {
 		latest := model.M(shown[len(shown)-1])
 		switch model.S(latest["reported_outcome"]) {

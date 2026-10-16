@@ -115,7 +115,7 @@ skill is invoked — never bulk-read this directory.
 | Skill | Purpose | Replacement |
 |---|---|---|
 | `$ca-create-context` | Build source-backed project context through bounded inspection, optional agents, and safe selected writes. | `$ca-init --brownfield` |
-| `$ca-decompose` | Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates. | `$ca-init --greenfield` |
+| `$ca-decompose` | Develop greenfield context from a durable interview and initialize it through the native context writer. | `$ca-init --greenfield` |
 
 ### Ship
 

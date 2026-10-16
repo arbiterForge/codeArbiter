@@ -73,23 +73,16 @@ def test_register_split():
     check("flattery" in t, "ORCHESTRATOR: must forbid flattery")
 
 
-# ---- #82 Receipt close (T-02) --------------------------------------------------
-def test_receipt_close():
-    t = read(FINISH)
-    low = t.lower()
-    check("receipt" in low, "finishing: must add a Receipt close")
-    check("obligations" in low, "Receipt: must list obligations covered")
-    check("caught" in low, "Receipt: must list gates fired + what each caught")
-    check("smarts" in low, "Receipt: must list the SMARTS decisions the user made")
-    check("secret" in low and "prevented" in low,
-          "Receipt: must list secrets/regressions prevented")
-    check("suite time" in low, "Receipt: must list suite time")
-    # sourcing: Phase-1 state + last-checkpoint only, no fresh crawl
-    check("last-checkpoint" in low, "Receipt: must source from last-checkpoint")
-    check("phase 1" in low, "Receipt: must source from Phase 1 state")
-    check("no fresh audit" in low or "not a fresh audit" in low,
-          "Receipt: must forbid a fresh audit-trail crawl")
-    check("warm" in low, "finishing: must wire the one warm closing sentence")
+def test_delivery_report():
+    body = " ".join(section(read(FINISH), "Delivery report").lower().split())
+    check("phase 1 state" in body and "observed action result" in body,
+          "delivery report must use observed branch/check evidence")
+    check("remaining work" in body and "pending" in read(FINISH).lower(),
+          "delivery must preserve outstanding work and missing evidence")
+    check("verification, merge and publication distinct" in body,
+          "delivery must distinguish checks, merge, and publication")
+    check("infer verification from a checkpoint counter" in body,
+          "checkpoint counters cannot establish verification")
 
 
 # ---- #82 + #83 sprint summary aligned (T-03) -----------------------------------
@@ -111,22 +104,16 @@ def test_sprint_summary_aligned():
           "SPRINT Phase 3: must preserve actual Git/release permissions")
 
 
-# ---- #84 stakes on tdd finding blocks (T-04) -----------------------------------
-def test_tdd_stakes():
-    t = read(TDD)
-    verify = section(t, "Obligation verify")  # Phase 4 — MISSING
-    check("**stakes:**" in verify.lower(),
-          "tdd Phase 4: a **Stakes:** line must state the consequence of a MISSING obligation")
-    coverage = section(t, "Coverage")  # Phase 5 — below threshold
-    check("**stakes:**" in coverage.lower(),
-          "tdd Phase 5: a **Stakes:** line must state the consequence of coverage below threshold")
-    # mechanical surfaces stay terse
-    scan = section(t, "Obligation scan")  # Phase 1
-    check("**stakes:**" not in scan.lower(),
-          "tdd Phase 1 (obligation scan) must stay terse — no Stakes line")
-    pre = t.split("## Phase 1")[0]  # pre-flight
-    check("**stakes:**" not in pre.lower(),
-          "tdd pre-flight must stay terse — no Stakes line")
+def test_verification_approaches():
+    t = " ".join(read(TDD).lower().split())
+    check("regression failing for the defect before repair" in t,
+          "confirmed fixes require genuine regression evidence")
+    check("an initially passing test is a valid baseline" in t,
+          "characterization accepts existing correct behavior")
+    check("record only observed results" in t,
+          "verification must not invent test history")
+    check("reuse current results" in t and "relevant source and inputs are unchanged" in t,
+          "verification reuse must remain source-applicable")
 
 
 # ---- #84 stakes on caught-secret (T-05) ----------------------------------------
@@ -215,9 +202,9 @@ def test_standup_sweep():
 TESTS = [
     test_standup_sweep,
     test_register_split,
-    test_receipt_close,
+    test_delivery_report,
     test_sprint_summary_aligned,
-    test_tdd_stakes,
+    test_verification_approaches,
     test_secret_stakes,
     test_commit_gate_stakes,
     test_no_ledger_or_statusline,

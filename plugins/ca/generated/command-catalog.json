@@ -170,7 +170,7 @@
     },
     "decompose": {
       "name": "decompose",
-      "description": "Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates.",
+      "description": "Develop greenfield context from a durable interview and initialize it through the native context writer.",
       "commandPath": "commands/decompose.md",
       "visibility": "alias",
       "workflow": "initialize",

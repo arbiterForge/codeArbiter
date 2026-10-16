@@ -154,6 +154,30 @@ describe('C04 distinct workflow routes', () => {
     expect(map.outcome).toContain('never merges');
     expect(mapText('sprint')).toContain('HTML'); expect(mapText('sprint')).toContain('farm');
   });
+  it('current sprint advice preserves ancestry, bounded delivery and proportional checks', () => {
+    const nodes = getWorkflow('sprint').map.chapters.flatMap(chapter => chapter.nodes);
+    expect(nodes.find(node => node.id === 'sprint-engine')?.detail).toContain('full dependency ancestry');
+    expect(nodes.find(node => node.id === 'sprint-engine')?.detail).toContain('independently blocked tasks');
+    expect(nodes.find(node => node.id === 'sprint-author')?.detail).toContain('two attempts');
+    expect(nodes.find(node => node.id === 'sprint-author')?.detail).toContain('advisory unknown observation');
+    const verify=nodes.find(node => node.id === 'sprint-tdd')!.detail;
+    expect(verify).toContain('regression RED/GREEN for fixes');
+    expect(verify).toContain('criterion-focused checks for features');
+    expect(verify).toContain('passing characterization baselines for refactors');
+  });
+  it('greenfield retains interview evidence and uses paired native population and finalization', () => {
+    const nodes=getWorkflow('greenfield').map.chapters.flatMap(chapter=>chapter.nodes);
+    expect(nodes.find(node=>node.id==='green-resume')?.detail).toContain('plans/decomposition/');
+    const populate=nodes.find(node=>node.id==='green-populate')!.detail;
+    for(const operation of ['--context-draft','--context-apply','taskwrite.py','decision-lifecycle'])
+      expect(populate).toContain(operation);
+    expect(populate).toContain('document and v2 provenance together');
+    const finalize=nodes.find(node=>node.id==='green-lock')!.detail;
+    expect(finalize).toContain('--context-finalize');
+    expect(finalize).toContain('all thirteen required outputs');
+    expect(finalize).toContain('retain plans/decomposition source records');
+    expect(mapText('greenfield')).not.toContain('provenance stubs');
+  });
   it('dependency review returns before installation and invents no intermediate skill', () => {
     expect(ids('dependency')).toEqual(['dep-entry', 'dep-reviewer', 'dep-confirm', 'dep-change']);
     expect(getWorkflow('dependency').map.chapters.flatMap(chapter => chapter.nodes).some(node => node.role === 'skill')).toBe(false);

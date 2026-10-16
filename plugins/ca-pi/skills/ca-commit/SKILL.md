@@ -20,7 +20,7 @@ Read these, or STOP and surface the gap — never guess a command:
 - `<project-root>/.codearbiter/tech-stack.md` — test, lint, and secrets-scan invocations. Stop if missing; do not guess.
 - `<plugin-root>/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - A git repository must be present and `git status` available.
-- The `tdd` skill must have cleared all six phases for any new or modified feature code in the staged set. If `tdd` is incomplete, STOP and surface the gap.
+- Read the scoped obligations and observed evidence under `<plugin-root>/routines/tdd/SKILL.md`. Confirmed fixes require regression RED/GREEN; features require current criterion-focused checks; refactors require passing characterization/parity evidence. Apply the relevant coverage and lint requirements. Resolve missing evidence for the staged change using its selected verification approach.
 - The discovered authoritative spec/plan pair, when relevant to this commit. For HTML,
   load `<plugin-root>/includes/artifacts.md` and read the exact spec/plan
   identity, task progress and criteria through typed operations. `eligible`

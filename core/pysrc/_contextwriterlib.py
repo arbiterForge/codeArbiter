@@ -94,3 +94,21 @@ def prepare_document_preview(root: str | Path, document_id: str,
     identity = hashlib.sha256(json.dumps(request, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
     request["operation_id"] = "context-refresh-" + identity[:32]
     return request
+
+
+def prepare_finalization_preview(root: str | Path) -> dict:
+    """Bind initialization to the exact required outputs without changing them."""
+    root = _artifactlib._trusted_directory(root, "UNSAFE_ROOT")
+    expected = {}
+    for path in sorted(_artifactlib._CONTEXT_FINALIZE_PATHS):
+        try:
+            expected[path] = _contextsnapshotlib.digest_file(root, path)["digest"]
+        except _contextsnapshotlib.DigestError as exc:
+            raise _artifactlib.ArtifactError(
+                "INVALID_CONTEXT_FINALIZATION", f"required output unavailable or unsafe: {path} ({exc})") from exc
+    identity = hashlib.sha256(json.dumps(expected, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return {
+        "operation_id": "context-finalize-" + identity[:32], "mode": "finalize",
+        "document_id": "CONTEXT", "target_path": ".codearbiter/CONTEXT.md",
+        "expected": expected,
+    }

@@ -236,6 +236,15 @@ class TestPassiveBeforeActivation(unittest.TestCase):
 
 
 class TestAssistiveContextBridge(unittest.TestCase):
+    def test_greenfield_owner_uses_paired_writer_and_retained_evidence(self):
+        owner = (ROOT / "core/surface/skills/decompose/SKILL.md").read_text(encoding="utf-8")
+        for required in ("--context-draft", "--context-apply", "--context-finalize",
+                         "plans/decomposition/", "decision-lifecycle", "taskwrite.py",
+                         "five", "v2"):
+            self.assertIn(required, owner)
+        self.assertNotIn("write_stub", owner)
+        self.assertNotIn("Write the `<!--INITIALIZED-->` body marker", owner)
+
     def test_document_preparation_preserves_legacy_bytes_and_records_unreviewed_sources(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp).resolve()
@@ -322,9 +331,7 @@ class TestAssistiveContextBridge(unittest.TestCase):
             client = _artifactlib.ArtifactClient(root, root)
             with (mock.patch.object(client, "call", return_value=capability) as call,
                   mock.patch.object(client, "workflow_preflight",
-                                    side_effect=AssertionError("unrelated host capture gate")),
-                  mock.patch.object(_artifactlib, "_context_release_qualified",
-                                    side_effect=AssertionError("context-only permission gate"))):
+                                    side_effect=AssertionError("unrelated host capture gate"))):
                 self.assertEqual(client.require_context_workflow(), capability["repository_context"])
                 call.assert_called_once_with("capabilities")
             for malformed in ({}, {"operations": capability["operations"], "repository_context": {}},
@@ -619,6 +626,29 @@ class TestContextFinalization(unittest.TestCase):
         path = self.root / "request.json"
         path.write_text(json.dumps(value), encoding="utf-8")
         return path
+
+    def test_finalization_preparation_binds_exact_outputs_without_writes(self):
+        for relative in _artifactlib._CONTEXT_FINALIZE_PATHS:
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes((relative + "\n").encode())
+        before = {relative: (self.root / relative).read_bytes()
+                  for relative in _artifactlib._CONTEXT_FINALIZE_PATHS}
+        preview = context_writer.prepare_finalization_preview(self.root)
+        self.assertEqual(preview["mode"], "finalize")
+        self.assertEqual(preview["expected"], {
+            relative: hashlib.sha256(content).hexdigest()
+            for relative, content in before.items()})
+        self.assertEqual(preview, context_writer.prepare_finalization_preview(self.root))
+        self.assertEqual(before, {relative: (self.root / relative).read_bytes()
+                                  for relative in before})
+        target = self.root / ".codearbiter/open-questions.md"
+        target.write_bytes(b"changed\n")
+        self.assertNotEqual(preview["operation_id"],
+                            context_writer.prepare_finalization_preview(self.root)["operation_id"])
+        target.unlink()
+        with self.assertRaisesRegex(_artifactlib.ArtifactError, "unavailable"):
+            context_writer.prepare_finalization_preview(self.root)
 
     def _native(self, name):
         result = subprocess.run(

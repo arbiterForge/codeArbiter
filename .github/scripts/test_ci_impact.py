@@ -2940,12 +2940,9 @@ class GateCommandTest(unittest.TestCase):
         "audit": re.compile(r"npm audit\b[^\n]*--audit-level=high"),
     }
 
-    # Deliberately keyed on the canonical phrasing the gates use. Tokens named
-    # only in list form ("run lint, the type-check ..., and coverage, all from
-    # tech-stack.md") are NOT discovered, and that limit is recorded rather than
-    # papered over: widening the pattern to prose-match those would produce
-    # false demanders, which is worse than a known gap.
-    DEMAND = re.compile(r"\b([a-z][a-z-]*) command from `tech-stack\.md`")
+    DEMAND = re.compile(
+        r"\b([a-z][a-z-]*)(?: command from `tech-stack\.md`|"
+        r", coverage, and lint\s+commands in `[^`]*tech-stack\.md`)")
 
     # `site/` is a tested TypeScript tree with no coverage command (issue #514).
     # Named here so the gap is a reviewed decision rather than a scoping accident,
@@ -3975,6 +3972,16 @@ class ContextImpactClosureTest(unittest.TestCase):
     def shortDescription(self):
         return None
 
+    def _greenfield_step(self, engine):
+        lines = engine.splitlines(keepends=True)
+        starts = [index for index, line in enumerate(lines) if line.startswith("      - ")]
+        steps = ["".join(lines[start:end]) for start, end in
+                 zip(starts, starts[1:] + [len(lines)])]
+        selected = [step for step in steps if
+                    "        run: python .github/scripts/test_greenfield_context.py\n" in step]
+        self.assertEqual(len(selected), 1)
+        return selected[0]
+
     def _assert_context_closure(self, ci, impact):
         jobs = workflow_jobs(ci)
         hooks = jobs["hooks"]
@@ -4009,6 +4016,7 @@ class ContextImpactClosureTest(unittest.TestCase):
             (".github/scripts/_contextverificationlib.py", {"artifact-engine"}),
             (".github/scripts/test_context_native.py", {"artifact-engine"}),
             (".github/scripts/test_context_workflow.py", {"artifact-engine"}),
+            (".github/scripts/test_greenfield_context.py", {"artifact-engine"}),
             (".github/scripts/test_context_host.py", {"hooks"}),
             (".github/scripts/test_context_consumers.py", {"hooks"}),
         ):
@@ -4018,8 +4026,17 @@ class ContextImpactClosureTest(unittest.TestCase):
         for path in (".github/scripts/_contextverificationlib.py",
                      ".github/scripts/test_context_native.py",
                      ".github/scripts/test_context_verification.py",
+                      ".github/scripts/test_greenfield_context.py",
                      ".github/scripts/test_context_workflow.py"):
             self.assertIn(path, paths_filter(ci, "artifacts"))
+        greenfield = run_step_index(engine, "python .github/scripts/test_greenfield_context.py")
+        self.assertGreater(greenfield, run_step_index(engine,
+            'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"'))
+        step = self._greenfield_step(engine)
+        environments = re.findall(r"(?m)^        env:\n((?:          [^\n]*\n)*)", step)
+        self.assertEqual(len(environments), 1)
+        self.assertIn("          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate\n",
+                      environments[0])
         self.assertIn(".github/fixtures/context-onboarding/**", paths_filter(ci, "hooks"))
 
     def test_t043_context_impact_closure_positive_controls(self):
@@ -4027,6 +4044,19 @@ class ContextImpactClosureTest(unittest.TestCase):
             CI_WORKFLOW.read_text(encoding="utf-8"),
             module.load_map(REPO_ROOT / ".github/ci-impact-map.json"),
         )
+
+    def test_greenfield_candidate_binding_negative_controls(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        impact = module.load_map(REPO_ROOT / ".github/ci-impact-map.json")
+        step = self._greenfield_step(workflow_jobs(ci)["artifact-engine"])
+        binding = "          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate\n"
+        self.assertIn(binding, step)
+        for replacement in ("", binding.replace("/artifact-candidate", "/different-candidate")):
+            with self.subTest(binding=replacement or "removed"):
+                changed = ci.replace(step, step.replace(binding, replacement), 1)
+                self.assertIn(binding, workflow_jobs(changed)["artifact-engine"])
+                with self.assertRaises(AssertionError):
+                    self._assert_context_closure(changed, impact)
 
     def test_t043_context_impact_closure_negative_controls(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")

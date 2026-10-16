@@ -34,10 +34,10 @@ export const featureMap: ExecutionMap = {
     task: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'The subagent works test-first by routing through the `tdd` skill', currentQuote: 'Work directly when a focused change is clearer and cheaper.' },
     taskReview: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'Runs ONCE per scope — after every task in the current scope has cleared Phase 3 and Phase 5', currentQuote: '## 3. Verify truthfully and assess only relevant risks' },
     scope: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'batch complete and return to `executing-plans`. Do NOT hand to `commit-gate`', currentQuote: '**Scoped invocation:** return completed tasks' },
-    tdd: { path: 'core/surface/skills/tdd/SKILL.md', quote: 'A `MISSING` obligation returns the workflow to Phase 2' },
+    tdd: { path: 'core/surface/skills/tdd/SKILL.md', quote: 'A `MISSING` obligation returns the workflow to Phase 2', currentQuote: 'Select the verification approach before changing code.' },
     commit: { path: 'core/surface/skills/commit-gate/SKILL.md', quote: '# commit-gate' },
     finish: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '**execute those steps here; do not re-invoke `{{CMD:pr}}`**', currentQuote: 'execute the **Open-PR procedure** below in this owner. Do not load or re-invoke the PR command wrapper.' },
-    pr: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '`commit-gate` MUST have cleared on the current HEAD.' },
+    pr: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '`commit-gate` MUST have cleared on the current HEAD.', currentQuote: 'Establish applicable verification for the current HEAD.' },
     dispatch: { path: 'core/surface/skills/dispatching-parallel-agents/SKILL.md', quote: 'finding-triage' },
   },
   chapters: [

@@ -240,30 +240,13 @@ def test_context_creation_provenance():
         check(phrase in words, f"context native-writer contract must retain {phrase!r}")
 
 
-# ---- AC-18: decompose writes provenance stubs + code-map stub (T-19) ----------
-def test_decompose_provenance_stub():
-    skill = read_repo("plugins/ca/skills/decompose/SKILL.md")
-
-    # write_stub or "provenance stub" must appear
-    check(
-        any(phrase in skill for phrase in ["write_stub", "provenance stub"]),
-        "decompose SKILL.md: must mention 'write_stub' or 'provenance stub' "
-        "(AC-18: greenfield stubs written via _provenancelib.write_stub)",
-    )
-
-    # interview_derived must appear
-    check(
-        "interview_derived" in skill,
-        "decompose SKILL.md: must mention 'interview_derived' "
-        "(AC-18: stubs carry interview_derived: true)",
-    )
-
-    # code-map stub must appear
-    check(
-        "code-map" in skill,
-        "decompose SKILL.md: must mention a 'code-map' stub "
-        "(AC-18: greenfield code-map.md stub written alongside provenance stubs)",
-    )
+def test_decompose_native_population():
+    skill = read_repo("core/surface/skills/decompose/SKILL.md")
+    for phrase in ("--context-draft", "--context-apply", "--context-finalize",
+                   "v2 provenance", "plans/decomposition/", "code-map",
+                   "decision-lifecycle", "taskwrite.py"):
+        check(phrase in skill, f"greenfield population must retain {phrase!r}")
+    check("write_stub" not in skill, "greenfield population requires paired v2 provenance")
 
 
 # ---- AC-16: code-map is read-on-demand (T-20) ---------------------------------
@@ -608,7 +591,7 @@ TESTS = [
     # --- APPEND NEW TESTS HERE --------------------------------------------------
     test_context_creation_provenance,
     test_context_creation_bounded_optional_delegation,
-    test_decompose_provenance_stub,
+    test_decompose_native_population,
     test_code_map_read_on_demand,
     test_context_check_command,
     test_code_map_provenance_identities_are_current,

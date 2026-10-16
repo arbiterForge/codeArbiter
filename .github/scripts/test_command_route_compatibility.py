@@ -83,7 +83,7 @@ OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0
 # initialized lock and routing refresh through the existing context-check owner.
 OWNER_OPERATIONAL_SHA256.update({
     'create-context': '84ae53fb9d0ee29103bffa87d8a36d83b4433ba2ca52535b72d0c73ddee13e92',
-    'decompose': 'a39e4078ebfc81e6d83fe961a2570ebb04fd76b72fb6719a9baa7c8501b175d4',
+    'decompose': 'e5952b1ac6cf42a77abbd9048c75a3918d01d413dfa4ff790edb967a688e70a0',
 })
 
 # PR #983 extends the reviewed assistive context lifecycle to initialization and
@@ -93,7 +93,7 @@ EXPECTED_DEFAULT_BODY_SHA256.update({
     'init': '3161379ff0803d7c412fdadc9887e2692caf84ae03efd5c23a75461a60b44fc3',
 })
 OWNER_OPERATIONAL_SHA256.update({
-    'create-context': 'b9821b18e290a74800067e386d18a73a34b100d8e4fc0ded4bf3df081966dcd5',
+    'create-context': '406291d45c2f8566d91db595d6c4f97ba8324adfadb6fac6778f19e170e015b1',
     'context-check': '77a8eb3a8500f46ebd158bd97e356c0564f8a8f8baccbfdaad65969490a3b17a',
 })
 
@@ -212,7 +212,9 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 body = command_body(slug)
                 self.assertEqual(len(NOTICE_RE.findall(body)), 1)
                 if slug in OWNER_OPERATIONAL_SHA256:
-                    self.assertEqual(digest(body.split("## Pre-flight\n", 1)[1]),
+                    heading = ("## 1. Inspect and resume\n" if slug == "decompose"
+                               else "## Pre-flight\n")
+                    self.assertEqual(digest(body.split(heading, 1)[1]),
                                      OWNER_OPERATIONAL_SHA256[slug])
                     if slug in ('cleanup', 'context-check'):
                         self.assertIn("neither stages nor commits", " ".join(body.split()))
@@ -227,7 +229,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 if slug == "pr":
                     procedure = body.split("### Open-PR procedure\n", 1)[1]
                     procedure = procedure[procedure.index("1. **Confirm"):].split("\n## Phase 4", 1)[0].strip()
-                    self.assertEqual(digest(procedure), "7c7dc99c1202125e59851396a9c077dcf6b992dddcce28bae1b5b58df52b3b00")
+                    self.assertEqual(digest(procedure), "a49ba77501e05e32326004ba872e2d391a20317c48e03260ff9b91a2e382c644")
                     self.assertNotIn("{{PLUGIN_ROOT}}/commands/pr.md", body)
                 else:
                     self.assertEqual(digest(MODES_RE.sub("", body)), expected)

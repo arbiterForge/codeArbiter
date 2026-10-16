@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('ed1d9a332d6dd6d67e0de98a96d430832336bab2');
-    expect(update.changes).toHaveLength(51);
+    expect(update.revision).toBe('0b41fc6b7e4e86a117227b7776937c083211526f');
+    expect(update.changes).toHaveLength(62);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
@@ -22,10 +22,9 @@ describe('assistive candidate versus retained historical routes',()=>{
       expect(bytes.toString('utf8')).toBe(current);
       expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
     }
-    expect(update.summary).toContain('remain incomplete');
-    expect(update.summary).toContain('One installed Claude model journey passed');
-    expect(update.summary).toContain('Codex and Pi live model cells remain unverified');
-    expect(update.summary).toContain('No release or all-host qualification');
+    expect(update.summary).toContain('Exact blob bindings identify inspected source bytes');
+    expect(update.summary).toContain('linked revision is the committed source base');
+    expect(update.summary).toContain('live host qualification and release remain separate claims');
   });
 
   it('retains original geometry and immutable source links while exposing the current difference',()=>{
@@ -39,10 +38,14 @@ describe('assistive candidate versus retained historical routes',()=>{
     expect(validateAtlas(atlas)).toEqual([]);
     const allText=atlas.sourceUpdate!.changes.map(change=>change.summary).join('\n');
     expect(allText).toContain('author a structurally valid draft');
-    expect(atlas.sourceUpdate!.summary).toContain('no duplicate permission ceremony');
+    expect(atlas.sourceUpdate!.summary).toContain('real user stops and host permissions remain effective');
     expect(allText).toContain('without replacing the original task review');
     expect(allText).toContain('Read-only task-context');
-    expect(allText).toContain('Matching an agreed criterion needs no additional artifact approval');
+    expect(allText).toContain('Features use current criterion-focused checks');
+    expect(allText).toContain('passing characterization baselines');
+    expect(allText).toContain('Two delivery attempts end with an advisory unknown observation');
+    expect(allText).toContain('full dependency ancestry');
+    expect(allText).toContain('independently BLOCKED task and its reason');
     expect(allText).toContain('unanswered legacy reconciliation');
     expect(allText).toContain('paired approval');
     expect(allText).toContain('Confirmed or captured decisions');
@@ -94,6 +97,20 @@ describe('assistive candidate versus retained historical routes',()=>{
     }
     const original=originalAtlas().views.find(view=>view.id==='brownfield-lifecycle')!;
     expect(brownfield).toEqual(original);
+  });
+
+  it('binds greenfield finalization and advisory context to their current owners',()=>{
+    const updates=atlas.sourceUpdate!.changes;
+    const green=updates.find(change=>change.path==='core/surface/skills/decompose/SKILL.md')!;
+    expect(green.nodes).toEqual(expect.arrayContaining(['o-green','c-green','c-store']));
+    expect(green.summary).toContain('Five document/v2-provenance pairs');
+    expect(green.summary).toContain('all thirteen outputs');
+    const selector=updates.find(change=>change.path==='core/pysrc/_contextselectlib.py')!;
+    expect(selector.nodes).toEqual(expect.arrayContaining(['c-select','c-compose','c-deliver','c-reselect']));
+    expect(selector.summary).toContain('task-critical reference and constraint checks');
+    expect(selector.summary).toContain('without another retry or an invented receipt');
+    expect(updates.find(change=>change.path==='core/surface/commands/audit.md')!.summary)
+      .toContain('timestamp and an ancestor commit');
   });
 
   it('rejects invalid source references or affected nodes and escapes explanatory text',()=>{

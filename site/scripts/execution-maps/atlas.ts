@@ -224,7 +224,7 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
   atlas.sourceUpdate=structuredClone(assistiveUpdate);
-  atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Partial assistive changes are bound to ${assistiveUpdate.revision}; remaining hook, recovery, migration and installed qualification are not a completed or released workflow. `+atlas.scope;
+  atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Current assistive source bindings identify inspected implementation bytes, with ${assistiveUpdate.revision} as the committed source base. Live host qualification and release are separate evidence. `+atlas.scope;
   atlas.caveats=atlas.caveats.map(note=>`Historical snapshot: ${note}`);
   const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
   return atlas;

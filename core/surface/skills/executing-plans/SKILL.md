@@ -10,7 +10,7 @@ Coordinate implementation of an already-authorized `/feature` plan. The spec/pla
 
 ## Structured-artifact format boundary
 
-New full-lane workflows default to HTML through the installed engine. Existing authoritative Markdown pairs retain their exact legacy representation. Load `{{PLUGIN_ROOT}}/includes/artifacts.md` before HTML I/O. For HTML, use typed identity/read/progress operations, not scraped status cells or a shadow ledger. A missing writer fails the artifact write and must be reported; never claim an unsaved plan was saved or quietly create a Markdown counterpart. HTML `--farm` is disabled.
+Load `{{PLUGIN_ROOT}}/includes/artifacts.md` for artifact I/O and preserve the selected spec/plan representation.
 
 An HTML checkpoint is **not a new user checkpoint in `/sprint`**. The sprint route hands the whole plan directly to `subagent-driven-development`. For `/feature`, checkpoints group meaningful progress. A user-requested attended pause is respected, but no artifact-created approval prompt is required between routine batches.
 

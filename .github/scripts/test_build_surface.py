@@ -1709,7 +1709,7 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
         for host, target in (('claude', 'commands/refactor.md'), ('codex', 'skills/ca-refactor/SKILL.md'), ('pi', 'skills/ca-refactor/SKILL.md')):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[target].decode()
-                for obligation in ('## Phase 6', 'user-signed-off surface table', 'unmodified pre-existing tests', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
+                for obligation in ('## Phase 6', 'user-signed-off surface table', 'preserve the baseline assertions', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
                     self.assertIn(obligation, entry)
 
     def test_new_owner_metadata_routes_intent_not_required_syntax(self):
@@ -2492,7 +2492,8 @@ class RemainingWorkflowOwnerTest(unittest.TestCase):
     def test_public_invocations_receive_required_procedure_and_discovery(self):
         obligations = {
             'create-context': ('## Phase 2', '**A — Tech stack.', '**F — Data model.', '<!--INITIALIZED-->'),
-            'decompose': ('## Phase 1', 'Layer 1', 'Layer 6', '<!--INITIALIZED-->'),
+            'decompose': ('## 1. Inspect and resume', 'layer-1-vision.md',
+                          'layer-6-risks.md', '--context-finalize', '<!--INITIALIZED-->'),
             'release': ('## Targets', 'release_require_clean_tree', 'Receipt-only closeout', '--dry-run'),
         }
         for host in ('claude', 'codex', 'pi'):
@@ -2589,11 +2590,10 @@ class AssistiveCallerProjectionTest(unittest.TestCase):
                 tdd = ' '.join(surface[entry].decode().split())
                 self.assertFalse('beyond-spec additions are SMARTS-decided' in tdd,
                                  f'{host}: SMARTS must not authorize scope expansion')
-                for obligation in ('Contract and Security checks',
-                                   'already-authorized outcome',
-                                   'ask the actual owner',
-                                   'SMARTS is optional',
-                                   'does not grant scope'):
+                for obligation in ('applicable contract and security boundaries',
+                                   'existing feature criteria',
+                                   'ask only about a consequential missing choice',
+                                   'Record only observed results'):
                     self.assertTrue(obligation in tdd,
                                     f'{host}: missing sprint boundary: {obligation}')
 

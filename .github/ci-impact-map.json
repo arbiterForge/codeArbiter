@@ -232,6 +232,10 @@
       "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
+      "glob": ".github/scripts/test_greenfield_context.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
       "glob": ".github/scripts/test_context_verification.py",
       "checks": ["artifact-engine", "artifact-package-cold"]
     },

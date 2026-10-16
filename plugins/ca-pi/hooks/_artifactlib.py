@@ -474,20 +474,6 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
     return result
 
 
-def _require_host_workflow(client: "ArtifactClient") -> None:
-    readiness = client.workflow_preflight()
-    if readiness["resources_available"] is not True:
-        raise ArtifactError(
-            "HOST_WORKFLOW_UNAVAILABLE",
-            ("installed HTML workflow prerequisites are unavailable: "
-             + ", ".join(readiness["missing"]))[:400]
-            + "; repair this package or use a supported host; no fallback artifacts",
-        )
-
-
-# The native engine ships only through the release distribution channels, never
-# through a main-branch checkout, so the repair is always "install from the
-# channel". Named concretely so the user is not left to guess (ADR-0040).
 PAYLOAD_REPAIR_HINT = (
     "Claude Code: /plugin marketplace update codearbiter, then /plugin update ca@codearbiter; "
     "Codex (registered without --ref): codex plugin remove ca-codex@codearbiter, "
@@ -966,51 +952,6 @@ def _bounded_child(argv: list[str], request: bytes, fd: int | None, timeout: flo
     return process.returncode, bytes(buffers[0]), bytes(buffers[1])
 
 
-_CONTEXT_NATIVE_CASES = [
-    "TestContextBoundedRender", "TestContextDocumentContract",
-    "TestContextMarkdownPreservation", "TestContextMutationAdmission",
-    "TestContextRecoveryAndPaths", "TestContextRepresentationBoundary",
-]
-
-
-def _context_release_qualified(installation: Path) -> bool:
-    """Require exact context evidence added by the native receipt assembler."""
-    system = {"Linux": "linux", "Darwin": "darwin", "Windows": "windows"}.get(platform.system())
-    arch = {"x86_64": "amd64", "amd64": "amd64", "aarch64": "arm64", "arm64": "arm64"}.get(platform.machine().lower())
-    if system is None or arch is None:
-        return False
-    try:
-        fd = _open_pinned_regular(installation / "release.json")
-        try:
-            if os.fstat(fd).st_size > 65_536:
-                return False
-            manifest = _decode(os.read(fd, 65_537))
-        finally:
-            os.close(fd)
-        entry = manifest["binaries"][f"{system}/{arch}"]
-        record = manifest["context_qualification"][f"{system}/{arch}"]
-        return (
-            isinstance(record, dict)
-            and set(record) == {"source_commit", "workflow", "run_id", "binary_sha256",
-                                "observation_sha256", "module_sha256", "native_cases"}
-            and isinstance(record["source_commit"], str)
-            and re.fullmatch(r"[0-9a-f]{40}", record["source_commit"]) is not None
-            and record["workflow"] == ".github/workflows/ci.yml"
-            and isinstance(record["run_id"], str)
-            and re.fullmatch(r"[1-9][0-9]*", record["run_id"]) is not None
-            and record["binary_sha256"] == entry["sha256"]
-            and all(isinstance(record[field], str)
-                    and re.fullmatch(r"[0-9a-f]{64}", record[field]) is not None
-                    for field in ("observation_sha256", "module_sha256"))
-            and record["native_cases"] == _CONTEXT_NATIVE_CASES
-        )
-    except (ArtifactError, OSError, KeyError, TypeError, ValueError):
-        return False
-
-
-# A whole-tree input snapshot on a large repository can take ~30s on Windows,
-# so the old 30s bound timed out every publish, arm and verify. The bound is a
-# wait limit, never a gate: raising it relaxes no check.
 DEFAULT_ENGINE_TIMEOUT_SECONDS = 120
 ENGINE_TIMEOUT_ENV = "CODEARBITER_ENGINE_TIMEOUT"
 _MAX_ENGINE_TIMEOUT_SECONDS = 3600

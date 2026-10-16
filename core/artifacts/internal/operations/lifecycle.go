@@ -260,7 +260,7 @@ func invalidateDependents(d *model.Document, id, reason string) {
 					changed[tid] = true
 					again = true
 					s := state(d, tid)
-					if model.S(s["state"]) != "PENDING" {
+					if status := model.S(s["state"]); status != "PENDING" && status != "BLOCKED" {
 						s["state"] = "STALE"
 						s["reason"] = "Dependency invalidated: " + reason
 					}

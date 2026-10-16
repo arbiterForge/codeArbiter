@@ -1266,8 +1266,10 @@ class TestContextResumeEpochs(unittest.TestCase):
                 receipt=asserted_without_epoch)["action"], "deliver")
             exhausted = selector.prepare_actor_delivery(
                 packet, **args, attempts=[first["attempt"], second["attempt"]])
-            self.assertEqual(exhausted["action"], "blocked")
+            self.assertEqual(exhausted["action"], "advisory")
             self.assertEqual(exhausted["observation"], "unknown")
+            self.assertIsNone(exhausted["attempt"])
+            self.assertIsNone(exhausted["delivery_text"])
             stale = {"binding": first["binding"], "actor": "reviewer-1",
                      "observed": True, "source": "host-load-event"}
             self.assertEqual(selector.prepare_actor_delivery(

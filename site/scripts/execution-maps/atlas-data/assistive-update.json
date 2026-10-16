@@ -1,7 +1,7 @@
 {
-  "revision": "ed1d9a332d6dd6d67e0de98a96d430832336bab2",
-  "title": "Assistive overhaul: implemented candidate",
-  "summary": "Candidate codeArbiter: agreed spec, maintained plan, useful implementation, actual checks and honest DONE; no duplicate permission ceremony. Authorized context population and refresh now use bounded inspection, optional agents and exact native preview/apply without per-document approval receipts. Source bindings describe implementation, not semantic verification or host qualification. The October 7 diagram layout is a historical visual reference, not the current executable workflow. One installed Claude model journey passed before this context extension; Codex and Pi live model cells remain unverified. Final-head package confirmation and release qualification remain incomplete. No release or all-host qualification is implied.",
+  "revision": "0b41fc6b7e4e86a117227b7776937c083211526f",
+  "title": "Assistive workflow: source-bound implementation",
+  "summary": "An agreed outcome becomes a maintained plan, direct or delegated implementation, proportional verification and an honest delivery report. Task context and dependency advice support progress; real user stops and host permissions remain effective. Greenfield and brownfield population use the paired native writer and exact finalization. Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims.",
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
@@ -31,8 +31,8 @@
     },
     {
       "path": "core/surface/skills/writing-plans/SKILL.md",
-      "blob": "3c55b31be1ff74df3421856c7b13c1d8ec2e9792",
-      "summary": "Plan authoring preserves agreed criteria, useful tasks, real dependencies and bounded shared inputs. It maintains structurally valid drafts without separate user approval codes or repetitive historical workflow guidance.",
+      "blob": "5daa1cff676a3180f35cbc7d11e235ee4a352f51",
+      "summary": "Plans preserve agreed criteria, useful tasks, dependency ancestry, bounded shared inputs and observable checks. Stable source identities and typed maintenance keep changes within the selected outcome.",
       "nodes": [
         "o-feature-spec",
         "f-plan"
@@ -40,7 +40,7 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "10ba7b2ee2403676b715d44c532766ea1c487a1b",
+      "blob": "6a4dde7237a6284a02a3637be5c8e4e17c60803a",
       "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow.",
       "nodes": [
         "f-entry",
@@ -82,8 +82,8 @@
     },
     {
       "path": "core/surface/skills/INDEX.md",
-      "blob": "b13a0feea057964a279615f1b2f2159ec7609ed7",
-      "summary": "The skill index labels planning, execution and optional reviewers as assistive. Context creation uses bounded inspection with optional agents; selected refresh reuses existing authorization instead of a repeated per-document approval stage.",
+      "blob": "0d8848447ddb7207209b3366dd80f71b20b1c2ca",
+      "summary": "The skill index connects planning, direct or delegated implementation, proportional verification and selected context maintenance to their owning workflows.",
       "nodes": [
         "f-spec",
         "f-plan",
@@ -130,7 +130,7 @@
     },
     {
       "path": "core/surface/skills/brainstorming/SKILL.md",
-      "blob": "500946da52405f7e0d516a766c0525113fdf3f63",
+      "blob": "95571e2d062d175a4beb9aa1395d297f3c1d36cf",
       "summary": "Source refinement respects recorded deferrals and accepted ADR conflicts without turning each ordinary method adjustment into a separate authorization interview.",
       "nodes": [
         "o-feature-spec",
@@ -141,7 +141,7 @@
     },
     {
       "path": "core/surface/skills/executing-plans/SKILL.md",
-      "blob": "aed94fc1bee8c0552d0c5abc6059de555d343331",
+      "blob": "7565e41307fc398ffca8be0839f4d9b373c60467",
       "summary": "Attended feature execution now treats checkpoints as progress groups, not compulsory approval stops; it forwards real failures and continues independent work.",
       "nodes": [
         "f-selection",
@@ -151,8 +151,8 @@
     },
     {
       "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-      "blob": "8c512286553765e01fc2540aab3b82686e578c9f",
-      "summary": "Execution reads one bounded task, does relevant work, rechecks affected inputs and records observed outcomes. No compulsory reviewer chain or receipt-driven restarts; genuine host/security controls and user stops still apply.",
+      "blob": "4fd4a0baab56f464d0c34be44e8456b36149dc76",
+      "summary": "Implementation works directly or delegates a coherent unit when useful. Bounded task context, applicable dependency advice and observed checks support progress while preserving actual user stops and host permissions.",
       "nodes": [
         "f-selection",
         "f-verify",
@@ -164,8 +164,8 @@
     },
     {
       "path": "core/surface/skills/tdd/SKILL.md",
-      "blob": "5944fa7362fab4805eed9473cae20c3756ddbffc",
-      "summary": "TDD uses the authoritative selected spec, exact criterion IDs and plan binding. Matching an agreed criterion needs no additional artifact approval or reviewer; only material outcome changes or real security/host decisions escalate to their owner. A planned command or reported UNKNOWN is never fabricated passing evidence.",
+      "blob": "749f9cd768db4e19d8a3e40b9f7712d962c3d143",
+      "summary": "Confirmed fixes require regression RED/GREEN. Features use current criterion-focused checks and meaningful negative controls where needed; refactors preserve passing characterization baselines. Coverage, lint and applicable security requirements remain explicit.",
       "nodes": [
         "f-spec",
         "f-verify"
@@ -173,8 +173,8 @@
     },
     {
       "path": "core/surface/skills/commit-gate/SKILL.md",
-      "blob": "3c6f5e1f7bbd0f73e38cc7762e4ee8ef4949357b",
-      "summary": "The commit owner retains actual user commit permission, staged diff inspection, secrets and focused tests without requiring an artifact-specific acceptance receipt to stage.",
+      "blob": "1e07d5fa76d653a13f3943da24bb97190c08ada5",
+      "summary": "The commit owner checks authorization, the staged diff, secrets and the verification approach appropriate to the change. Current criterion checks, genuine fix regressions and refactor parity retain their distinct evidence requirements.",
       "nodes": [
         "f-accept",
         "o-runtime"
@@ -182,8 +182,8 @@
     },
     {
       "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
-      "blob": "6edfb9de2e22e739cca9bc127c5984cc49865b61",
-      "summary": "PR preparation now reports unfinished implementation and verification honestly while retaining Git, merge ancestry and exact-head hosted CI controls.",
+      "blob": "429f1e396b851bf7dd801ae5920c1a3fbbb644dd",
+      "summary": "PR readiness uses the explicit base-to-HEAD subject for current checks, secrets scanning and applicable specialized review. Existing evidence is reused only while its source and inputs match. Merge requires authorization and exact-head hosted CI.",
       "nodes": [
         "f-accept",
         "o-runtime"
@@ -191,8 +191,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/task_context.go",
-      "blob": "3f574dc57a0a40be4dfae3b67dd9b006abcbe8c6",
-      "summary": "Read-only task-context includes complete selected criteria and relevant constraints, names omitted source and intent references, and reports scoped_changed, scoped_unchanged or unassessed without claiming full dependency coverage.",
+      "blob": "06906d2b87401aec09bfa57385b4e9750ce897fa",
+      "summary": "Read-only task-context reports direct dependencies and unresolved ancestors, scoped_changed, scoped_unchanged or unassessed inputs, and actual check observations. Missing broader context remains explicit; the packet does not certify verification.",
       "nodes": [
         "f-selection",
         "f-spec-review",
@@ -412,8 +412,8 @@
     },
     {
       "path": "core/pysrc/_contextwriterlib.py",
-      "blob": "7a91de9546b83c732630571624a0326caa33588c",
-      "summary": "The context preparation helper reads a bounded UTF-8 draft and explicit source files, selects the whole named document and binds exact existing document/provenance bytes. It chooses create, missing-or-v1 adopt, or v2 update; claims remain semantically unreviewed and malformed provenance is preserved for inspection.",
+      "blob": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3",
+      "summary": "The preparation helper binds bounded drafts and retained sources to exact document/provenance preimages. Finalization preparation hashes all thirteen required outputs and retains missing output failures without modifying files.",
       "nodes": [
         "b-preview",
         "b-preserve",
@@ -423,8 +423,8 @@
     },
     {
       "path": "core/pysrc/init-codearbiter.py",
-      "blob": "820223ee921e7e40136795c763b08fd6e97acc92",
-      "summary": "The installed --context-draft/--document/--source command prepares a native preview; --context-apply with --preview-sha256 applies that exact reference. Preview retention does not write the content pair. These context modes avoid the scaffolder and do not reset initialized repositories.",
+      "blob": "4de4c71968c7dd81c44898604fa70df928f04fc3",
+      "summary": "The installed context-draft command prepares a paired document preview; context-finalize prepares initial finalization. context-apply commits the exact selected preview and digest. Context modes preserve scaffold and initialized refresh boundaries.",
       "nodes": [
         "o-init",
         "b-new",
@@ -507,8 +507,8 @@
     },
     {
       "path": "core/surface/skills/context-creation/SKILL.md",
-      "blob": "55350b45f16b40c9d969df1fc49cd59a781cb8e2",
-      "summary": "Brownfield population covers six logical categories and five content documents through direct bounded inspection or optional scoped agents. A qualified scout profile and per-document approve-context receipts are no longer routine prerequisites. Actual host permissions, source-bound unknowns, material owner decisions, protected content and initial-only finalization remain.",
+      "blob": "799a9a46055346da4eb948c73010ffd3b3bf4163",
+      "summary": "Brownfield population covers six logical categories and five content documents through direct bounded inspection or optional scoped agents. The paired writer preserves source bindings and protected content; initial finalization checks all required outputs.",
       "nodes": [
         "o-brown",
         "o-knowledge",
@@ -588,6 +588,126 @@
         "b-refresh",
         "b-preview",
         "b-apply"
+      ]
+    },
+    {
+      "path": "core/pysrc/_contextselectlib.py",
+      "blob": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532",
+      "summary": "Authors and reviewers share task-critical reference and constraint checks. Missing or stale provenance remains advisory. Two delivery attempts end with an advisory unknown observation, without another retry or an invented receipt.",
+      "nodes": [
+        "c-select",
+        "c-compose",
+        "c-deliver",
+        "c-reselect",
+        "c-author",
+        "c-review",
+        "f-selection",
+        "r-fleet"
+      ]
+    },
+    {
+      "path": "core/pysrc/_artifactpromptlib.py",
+      "blob": "e9f2faeef57008fc202ef05f1693f9afdaaed099",
+      "summary": "Feature actors receive scoped requirements, named critical references and observed evidence. Applicable conflicts or missing required inputs stop dependent work; provenance warnings remain visible and advisory.",
+      "nodes": [
+        "c-compose",
+        "c-author",
+        "c-review",
+        "f-selection"
+      ]
+    },
+    {
+      "path": "core/surface/commands/fix.md",
+      "blob": "17e0852bec6c6f83f1779b31b94cd313731281e8",
+      "summary": "Confirmed fixes preserve causal evidence and a named regression. Delegated input retains critical requirements; advisory delivery exhaustion ends retries while actual missing inputs and conflicts retain their dependent-work boundary.",
+      "nodes": [
+        "o-fix",
+        "o-tdd-direct",
+        "c-compose",
+        "c-deliver"
+      ]
+    },
+    {
+      "path": "core/surface/commands/review.md",
+      "blob": "4f5006012726a87a1d40d4931308fe2e6d26c95c",
+      "summary": "A review binds one resolved diff and supplies scoped inputs to each reviewer. Missing critical references or applicable conflicts prevent a substantive verdict; provenance and unobserved delivery diagnostics remain advisory.",
+      "nodes": [
+        "o-review",
+        "r-entry",
+        "r-fleet",
+        "c-review",
+        "c-deliver"
+      ]
+    },
+    {
+      "path": "core/surface/skills/refactor/SKILL.md",
+      "blob": "78142bc659c8a4a827a44e1e0bae5319fa675a1d",
+      "summary": "Characterization tests can pass against existing correct behavior. Preserve behavioral assertions against the post-backfill baseline; mechanical import or symbol-reference updates retain the same oracle. Coverage and parity checks remain required.",
+      "nodes": [
+        "o-fix",
+        "o-tdd-direct",
+        "f-verify"
+      ]
+    },
+    {
+      "path": "core/surface/skills/decompose/SKILL.md",
+      "blob": "512b19931223adb849c211cc90af0c0d1bffa24d",
+      "summary": "Greenfield interviews persist under plans/decomposition and retain actual decisions. Five document/v2-provenance pairs use context-draft and context-apply; context-finalize binds all thirteen outputs. ADRs and task rows use their owners, and retained interview evidence survives finalization.",
+      "nodes": [
+        "o-green",
+        "c-green",
+        "o-knowledge",
+        "c-store",
+        "k-init-alias"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/assistive.go",
+      "blob": "78f927889878ae1022ecea9bb66ae7505b729a7b",
+      "summary": "Scheduling follows the full dependency ancestry and exposes unresolved ancestor IDs and reasons. Reconciled progress remains advisory; blocked ancestors prevent premature downstream readiness while independent tasks remain available.",
+      "nodes": [
+        "f-selection",
+        "f-recovery",
+        "c-read",
+        "c-decisions"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/lifecycle.go",
+      "blob": "6be8000f9805b826d54c35f9185fb2a65fda4090",
+      "summary": "Dependency invalidation preserves an independently BLOCKED task and its reason. Changed ancestry remains visible without replacing a recorded user stop.",
+      "nodes": [
+        "f-recovery",
+        "c-decisions",
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/surface/commands/checkpoint.md",
+      "blob": "fc392105511c9664ed4d8868c1fd66a999cf4bc8",
+      "summary": "A checkpoint retains the reviewed commit, UTC review-start time and worktree dirty state, then writes the report through its aggregator. last-checkpoint holds only the override count.",
+      "nodes": [
+        "r-entry",
+        "o-report",
+        "k-audit"
+      ]
+    },
+    {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "blob": "383e8310c380a84970a0811965f85c9fe0669d96",
+      "summary": "Checkpoint reports persist observed source_commit, recorded_at and worktree_dirty values together with every review finding. Missing anchors remain unknown.",
+      "nodes": [
+        "r-entry",
+        "k-audit"
+      ]
+    },
+    {
+      "path": "core/surface/commands/audit.md",
+      "blob": "4db6302b48e2dbe759dc1e132679e36861f78af4",
+      "summary": "Checkpoint audit windows use the report timestamp and an ancestor commit. Invalid or missing anchors require an explicit ref/date window; dirty review scope remains a stated limitation.",
+      "nodes": [
+        "o-report",
+        "k-audit"
       ]
     }
   ]

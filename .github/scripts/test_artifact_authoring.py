@@ -139,12 +139,12 @@ class AuthoringRouteContractTest(unittest.TestCase):
             source = sources[name]
             self.assertIn("includes/artifacts.md", source, name)
             self.assertIn("`_select_authoring_route`", source, name)
-            self.assertIn("canonical HTML", source, name)
+            self.assertEqual(self._contract(source + sources["artifacts-include"]), expected)
             self.assertNotIn("html_requested", source, name)
             self.assertNotIn("pilot", source.lower(), name)
             self.assertNotIn("Markdown by default", source, name)
         self.assertIn("HTML `--farm` dispatch remains disabled", sources["sprint"])
-        self.assertIn("Existing Markdown", sources["brainstorming"])
+        self.assertIn("includes/artifacts.md", sources["brainstorming"])
 
     def test_html_is_the_full_lane_default_without_markdown_fallback(self) -> None:
         include = ARTIFACTS_INCLUDE.read_text(encoding="utf-8")
@@ -158,7 +158,7 @@ class AuthoringRouteContractTest(unittest.TestCase):
         for source in (sprint, brainstorming):
             self.assertIn("includes/artifacts.md", source)
             self.assertIn("`_select_authoring_route`", source)
-            self.assertIn("canonical HTML", source)
+            self.assertEqual(self._contract(source + include), self._contract(include))
         for source in (feature, sprint, brainstorming, include):
             self.assertNotIn("pilot", source.lower())
             self.assertNotIn("html_requested", source)
@@ -175,26 +175,25 @@ class AuthoringRouteContractTest(unittest.TestCase):
         writing_plans = WRITING_PLANS_SKILL.read_text(encoding="utf-8")
 
         self.assertIn("`_preflight_plan_authoring`", writing_plans)
-        self.assertIn("new full-lane HTML spec", writing_plans)
-        self.assertIn("installed structured-artifact engine", writing_plans)
-        self.assertIn("`.codearbiter/plans/<slug>.html`", writing_plans)
+        self.assertIn("includes/artifacts.md", writing_plans)
         self.assertIn("`draft_preview`", writing_plans)
         self.assertIn("`plan-bind`", writing_plans)
-        self.assertIn("source's exact artifact ID and normative digest", writing_plans)
-        self.assertIn("not an artifact approval", writing_plans)
+        self.assertIn("artifact ID and normative digest", writing_plans)
+        self.assertIn("checks that identity", writing_plans)
         self.assertNotIn("_preflight_plan_verification", writing_plans)
         self.assertNotIn("arm-sprint", writing_plans)
         self.assertIn("not a compulsory two-to-five-minute limit", writing_plans)
-        self.assertIn("must not create `.codearbiter/plans/<slug>.md`", " ".join(writing_plans.split()))
+        self.assertIn("without extra artifact approvals", writing_plans)
 
     def test_tdd_reads_typed_obligations_without_parsing_rendered_html(self) -> None:
         tdd = TDD_SKILL.read_text(encoding="utf-8")
 
-        self.assertIn("installed structured-artifact engine", tdd)
-        self.assertIn("typed `index`, `outline`, and symbol-scoped `read`", tdd)
-        self.assertIn("exact artifact ID and criterion ID", tdd)
-        self.assertIn("must not parse rendered HTML", tdd)
-        self.assertIn("caller-supplied labels cannot manufacture obligations", tdd)
+        self.assertIn("includes/artifacts.md", tdd)
+        self.assertIn("typed criterion records", tdd)
+        self.assertIn("selected", tdd)
+        self.assertIn("spec/plan identities", tdd)
+        self.assertIn("Retain the existing feature criteria", " ".join(tdd.split()))
+
 
 
 
@@ -264,11 +263,12 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
             return _artifactlib._select_authoring_route(
                 self.root, "fresh", workflow=workflow, lane="full", client=client)
 
-    def refused(self, client):
+    def assert_missing_resources(self, client):
         before = sorted(str(p.relative_to(self.root)) for p in self.root.rglob("*"))
-        with self.assertRaises(ArtifactError) as caught:
-            _artifactlib._require_host_workflow(client)
-        self.assertEqual(caught.exception.code, "HOST_WORKFLOW_UNAVAILABLE")
+        status = client.workflow_preflight()
+        self.assertFalse(status["resources_available"])
+        self.assertTrue(status["missing"])
+        self.assertFalse(status["live_host_verified"])
         self.assertEqual(before, sorted(str(p.relative_to(self.root)) for p in self.root.rglob("*")))
 
     def registry(self):
@@ -293,7 +293,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
 
     def test_pi_native_authoring_does_not_require_legacy_authority(self):
         client = self.client("ca-pi")
-        self.refused(client)
+        self.assert_missing_resources(client)
         self.assertEqual(self.select(client)["format"], "html")
         self.assertEqual(list(self.root.iterdir()), [])
 
@@ -307,7 +307,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         self.assertEqual(status["missing"], ["Pi production prompt, verification and review authority"])
         self.assertFalse(status["resources_available"])
         self.assertFalse(status["live_host_verified"])
-        self.refused(client)
+        self.assert_missing_resources(client)
         for wrong_name in ("ca-pi", "@arbiterforge/unrelated"):
             with self.subTest(name=wrong_name):
                 manifest.write_text(json.dumps({**original, "name": wrong_name}), encoding="utf-8")
@@ -315,7 +315,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
                 self.assertIsNone(status["host"])
                 self.assertEqual(status["missing"], ["matching installed host identity"])
                 self.assertFalse(status["resources_available"])
-                self.refused(client)
+                self.assert_missing_resources(client)
 
     def test_admission_refuses_missing_producers_and_host_helpers(self):
         client = self.client()
@@ -326,7 +326,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
             original = path.read_bytes()
             path.unlink()
             with self.subTest(resource=name):
-                self.refused(client)
+                self.assert_missing_resources(client)
             path.write_bytes(original)
         self.assertEqual(self.select(client)["format"], "html")
 
@@ -334,7 +334,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         client = self.client()
         self.select(client)
         (self.plugin / "hooks/_prerequisitelib.py").write_bytes(b"")
-        self.refused(client)
+        self.assert_missing_resources(client)
 
     def test_admission_requires_every_authority_event(self):
         client = self.client()
@@ -344,7 +344,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
             del value["hooks"][event]
             self.save_registry(value)
             with self.subTest(event=event):
-                self.refused(client)
+                self.assert_missing_resources(client)
 
     def test_admission_requires_native_codex_refusal_and_steering_seams(self):
         client = self.client()
@@ -360,7 +360,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
                             group["matcher"] = "|".join(
                                 name for name in group.get("matcher", "").split("|") if name != tool)
                     self.save_registry(value)
-                    self.refused(client)
+                    self.assert_missing_resources(client)
 
     def test_admission_requires_claude_failure_event_and_reviewer_charter(self):
         client = self.client("ca")
@@ -368,10 +368,10 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         value = json.loads(json.dumps(original))
         del value["hooks"]["PostToolUseFailure"]
         self.save_registry(value)
-        self.refused(client)
+        self.assert_missing_resources(client)
         self.save_registry(original)
         (self.plugin / "agents/authority-reviewer.md").unlink()
-        self.refused(client)
+        self.assert_missing_resources(client)
 
     def test_admission_rejects_wrong_matchers_redirected_commands_and_async_hooks(self):
         client = self.client()
@@ -391,14 +391,14 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
                         entry["commandWindows"] = 'python "C:/elsewhere/artifact-authority-hook.py"'
             self.save_registry(value)
             with self.subTest(mutation=mutation):
-                self.refused(client)
+                self.assert_missing_resources(client)
 
     def test_admission_rejects_malformed_duplicate_and_oversized_registry(self):
         client = self.client()
         path = self.plugin / "hooks/hooks.json"
         for raw in (b"[]", b'{"hooks":{},"hooks":{}}', b" " * 65537):
             path.write_bytes(raw)
-            self.refused(client)
+            self.assert_missing_resources(client)
 
     def test_admission_rejects_unknown_ambiguous_or_missing_host_identity(self):
         client = self.client()
@@ -407,14 +407,14 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         value = json.loads(original)
         value["name"] = "unknown"
         manifest.write_text(json.dumps(value), encoding="utf-8")
-        self.refused(client)
+        self.assert_missing_resources(client)
         manifest.unlink()
-        self.refused(client)
+        self.assert_missing_resources(client)
         manifest.write_bytes(original)
         duplicate = self.plugin / ".claude-plugin/plugin.json"
         duplicate.parent.mkdir()
         duplicate.write_text('{"name":"ca","version":"1.0.0"}', encoding="utf-8")
-        self.refused(client)
+        self.assert_missing_resources(client)
 
     def test_admission_does_not_follow_environment_or_project_host_claims(self):
         client = self.client("ca-pi")
@@ -422,7 +422,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         (self.root / ".claude-plugin/plugin.json").write_text('{"name":"ca"}', encoding="utf-8")
         with mock.patch.dict(os.environ, {"PLUGIN_ROOT": str(REPO / "plugins/ca-codex"),
                                          "CLAUDE_PLUGIN_ROOT": str(REPO / "plugins/ca")}):
-            self.refused(client)
+            self.assert_missing_resources(client)
 
     def test_admission_preserves_small_lane_and_existing_markdown_on_pi(self):
         client = self.client("ca-pi")
@@ -443,7 +443,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
                 entry["command"] = malformed
                 entry["commandWindows"] = malformed
             self.save_registry(value)
-            self.refused(client)
+            self.assert_missing_resources(client)
 
     def test_admission_checks_the_platform_specific_hook_command(self):
         client = self.client()
@@ -451,7 +451,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         del value["hooks"]["SubagentStop"][0]["hooks"][0]["commandWindows"]
         self.save_registry(value)
         with mock.patch.object(_artifactlib.platform, "system", return_value="Windows"):
-            self.refused(client)
+            self.assert_missing_resources(client)
         with mock.patch.object(_artifactlib.platform, "system", return_value="Linux"):
             self.assertEqual(self.select(client)["format"], "html")
 
@@ -468,7 +468,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         else:
             hooks.symlink_to(physical, target_is_directory=True)
         try:
-            self.refused(client)
+            self.assert_missing_resources(client)
         finally:
             if os.name == "nt":
                 hooks.rmdir()
@@ -480,7 +480,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         path = self.plugin / "hooks/_approvallib.py"
         path.unlink()
         path.mkdir()
-        self.refused(client)
+        self.assert_missing_resources(client)
 
     def test_plan_authoring_needs_native_identity_not_future_reviewers(self):
         client = self.client()
@@ -518,7 +518,7 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
     def test_admission_rejects_bare_engine_installation(self):
         payload = self.base / "bare-engine"
         payload.mkdir()
-        self.refused(ArtifactClient(self.root, payload))
+        self.assert_missing_resources(ArtifactClient(self.root, payload))
 
 class AuthoringRouteSelectionTest(unittest.TestCase):
     @classmethod

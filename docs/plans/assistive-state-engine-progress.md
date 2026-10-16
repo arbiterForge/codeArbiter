@@ -52,6 +52,32 @@ evidenced task closures and the retained backlog and qualification boundaries.
 
 ## Task tracker
 
+### Session completion
+
+| Task | Status | Evidence |
+|---|---|---|
+| T11: scoped context delivery | Complete | 28 consumer tests, 6 host tests and 2 selector controls passed; bounded advisory delivery and critical-input controls reviewed |
+| T12: dependency and stop preservation | Complete | Full native module tests and vet passed; transitive dependency and independent-stop regressions included |
+| T13: greenfield context population | Complete | 2 installed-candidate tests passed with generated hooks, five protected pairs, finalization, replay and stale/missing-input refusals |
+| T14: proportionate verification | Complete | Feature, fix, characterization and documentation contracts reviewed; 152 surface tests ran, with one platform skip |
+| T15: checkpoint and delivery evidence | Complete | Checkpoint commit/time anchors and base-to-HEAD readiness reviewed; 10 route compatibility tests passed |
+| T16: concise instructions and reachable helpers | Complete | Shared contract references, direct implementation and removed-helper closure reviewed; generated Python/instruction parity passed |
+| T17: integration and PR validation | Local validation complete | 51 authoring tests, 30 context-workflow tests, 103 CI-impact tests, 11 provenance checks and 434 guard assertions passed; final hosted results are recorded on PR #983 |
+
+The native candidate was built with Go 1.27.1 on Windows/amd64; its binary SHA-256
+is `ab34ac91d222f7724556ed63ca6898086596b330f192556bf629f34ac78c38c6`.
+The installed greenfield tests used that candidate and regenerated Codex resources
+without a source overlay. They completed in 16.470 seconds. The native writer
+refreshed the five context source bindings without changing document bytes;
+coverage is complete and identity current, with semantic review unverified.
+
+Independent source and security review found no unresolved implementation issue.
+Numeric native coverage belongs to the required six-host exact-head CI aggregate;
+local passing tests do not substitute for that measurement. Current implementation
+and source validation do not establish live model qualification or publication.
+
+### Core delivery
+
 | Task | Source state | Remaining |
 |---|---|---|
 | T01 | Approved direction and owning-callers inventory | None for design approval |

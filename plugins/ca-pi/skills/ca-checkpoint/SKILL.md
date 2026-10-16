@@ -24,7 +24,7 @@ Periodic sweep of the entire codebase with the reviewer fleet, funneled to a sin
 
 2. Route to `dispatching-parallel-agents` (`<plugin-root>/routines/dispatching-parallel-agents/SKILL.md`) with that unit list (read-only batch). It dedupes, then
    funnels through `finding-triage` → `verdict-aggregator` and returns the single read-only verdict.
-3. After the verdict returns, separately dispatch `checkpoint-aggregator` with that verdict. It writes the dated report to
+3. After the verdict returns, separately dispatch `checkpoint-aggregator` with that verdict and the reviewed commit from `git rev-parse HEAD`, the UTC review-start time, and whether the reviewed worktree was dirty. Retain these observed values from before the sweep. It writes the dated report to
    `<project-root>/.codearbiter/checkpoints/YYYY-MM-DD.md`: findings by severity with
    file:line, and out-of-scope items marked inline `[NEEDS-TRIAGE]`.
 4. Write the current override **count** to `<project-root>/.codearbiter/last-checkpoint` — the

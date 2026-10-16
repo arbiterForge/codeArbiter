@@ -8,6 +8,41 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
 )
 
+// dependencyAdvice follows the full dependency chain without changing progress.
+func dependencyAdvice(d *model.Document, task object) (dependencies, waiting []any, err error) {
+	dependencies, waiting = []any{}, []any{}
+	seen := map[string]bool{model.S(task["id"]): true}
+	queue := model.Strings(task["depends_on"])
+	direct := map[string]bool{}
+	for _, id := range queue {
+		direct[id] = true
+	}
+	for i := 0; i < len(queue); i++ {
+		id := queue[i]
+		if seen[id] {
+			continue
+		}
+		seen[id] = true
+		predecessor, found := d.Symbols.ByID[id]
+		if !found || predecessor.Retired || predecessor.Kind != "tasks" {
+			return nil, nil, fault.At("DANGLING_REFERENCE", model.S(task["id"]), "depends_on", "task depends on an absent or retired task")
+		}
+		s := state(d, id)
+		status := model.S(s["state"])
+		dependency := object{"id": id, "title": predecessor.Value["title"], "state": status}
+		unfinished := status != "REVIEW" && status != "ACCEPTED" && status != "DONE"
+		if unfinished {
+			waiting = append(waiting, id)
+			dependency["reason"] = s["reason"]
+		}
+		if direct[id] || unfinished {
+			dependencies = append(dependencies, dependency)
+		}
+		queue = append(queue, model.Strings(predecessor.Value["depends_on"])...)
+	}
+	return dependencies, waiting, nil
+}
+
 // eligible is scheduling advice, not authorization or verification. In particular,
 // it must not snapshot source files or load approval/review receipt chains merely
 // to tell the caller which recorded dependencies are available.
@@ -28,14 +63,9 @@ func (e *Engine) eligible(d *model.Document) (any, error) {
 		task := model.M(value)
 		id := model.S(task["id"])
 		status := model.S(state(d, id)["state"])
-		waiting := []any{}
-		for _, dep := range model.Strings(task["depends_on"]) {
-			// REVIEW records finished implementation, not proof that checks ran.
-			// Evidence applicability is assessed separately when making a claim.
-			depState := model.S(state(d, dep)["state"])
-			if depState != "REVIEW" && depState != "ACCEPTED" && depState != "DONE" {
-				waiting = append(waiting, dep)
-			}
+		_, waiting, err := dependencyAdvice(d, task)
+		if err != nil {
+			return nil, err
 		}
 		conditions := []any{}
 		for _, value := range prerequisites {

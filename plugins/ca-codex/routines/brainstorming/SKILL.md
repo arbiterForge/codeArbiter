@@ -10,7 +10,7 @@ Refine the agreed outcome before implementation. This is intent clarification an
 
 ## Format and caller
 
-For new full-lane work or an existing HTML pair, load [includes/artifacts.md](../../includes/artifacts.md) and select the actual source via `_select_authoring_route`. New full-lane specs use the pinned native engine and canonical HTML; existing Markdown keeps its representation. Do not write or regex-edit HTML, create a Markdown shadow, or claim a failed artifact write succeeded. HTML farm remains disabled.
+For artifact I/O, load [includes/artifacts.md](../../includes/artifacts.md) and select the source with `_select_authoring_route`. Retain that source identity through specification authoring.
 
 The calling feature or sprint owns scope and the next step. A sprint may include several related features under one coherent goal. A small inline feature remains the caller's mini-spec lane. Specification authoring itself does not grant commit, publication, override, provider spending, or irreversible-operation authority.
 

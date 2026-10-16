@@ -192,6 +192,26 @@ Main integration: **T01 -> T02 -> T03 -> T04 -> T05 -> T07 -> T08 -> T09**. T06 
 
 A secondary worker may own compact reads/HTML or docs/fixtures with separate file ownership and one integrator. Do not create coordination/review overhead larger than the work. All commits converge here; do not release half-updated engine/callers.
 
+## Session completion work
+
+The following tasks complete the authorized session workflow. Product instructions
+and source comments describe current behavior and essential invariants. Keep
+verification outcomes in the progress record rather than implementation commentary.
+
+| Task | Outcome and scope | Verification | Dependencies |
+|---|---|---|---|
+| T11 | Deliver bounded actor context with advisory receipt/provenance diagnostics; block only on applicable critical missing or conflicting inputs. Own `_contextselectlib.py`, `_artifactpromptlib.py`, fix/review delivery instructions and their tests. Covers C1/C2. | Context consumer and host suites exercise bounded retries, unknown epochs, stale unrelated provenance, and genuine critical conflicts. | None |
+| T12 | Keep scheduling and task-context dependency assessments consistent across reconciliation; preserve independent blocked states and reasons. Own native operations and regressions. Covers N1/N2. | Three-task chains, independent user stops, safe resume, CAS/replay, and native package tests. | None |
+| T13 | Complete greenfield context population through native preview/apply/finalization with five v2 provenance pairs and actual interview evidence. Own decompose/context workflow integration. Covers C3. | Protected installed-writer greenfield completion, malformed/incomplete evidence, and retry/finalization tests. | None |
+| T14 | Define one proportionate verification contract from execution through commit: regression-first confirmed fixes, behavioral feature checks, passing characterization baselines for refactors, and explicit observed evidence. Own TDD, refactor and commit guidance. Covers S1/S3. | Affected workflow/surface contracts and review of feature, fix, refactor and direct/delegated paths. | None |
+| T15 | Use current applicable check evidence for branch finishing and real commit/time anchors for checkpoint audit windows; preserve the override counter's distinct meaning. Own checkpoint/audit/finishing instructions and any necessary helper/tests. Covers S2. | Checkpoint window resolution, missing-anchor behavior, and branch-finishing contract checks. | None |
+| T16 | Keep shared instructions concise and consistent, scope actor delivery to actual delegation, centralize artifact I/O, and retain only reachable bridge helpers. Own shared artifact references and private helper cleanup. Covers S4/S5. | Reference searches, bridge/surface suites, and generated resource closure. | T11, T13, T14, T15 |
+| T17 | Regenerate all host projections, run impact-selected Python/native checks, independently review the combined result, and update PR #983 with exact verification scope. | Generation parity, relevant hook/context/artifact suites, Go test/vet, review findings resolved, exact-head hosted CI after push. | T11–T16 |
+
+Completion requires every outcome above and truthful check results. Preserve real
+host permissions, explicit user stops, safe persistence, and release authority.
+Keep Codex/Pi live qualification and publication distinct from source validation.
+
 ## Acceptance scenarios
 
 | ID | Scenario | Required observation |

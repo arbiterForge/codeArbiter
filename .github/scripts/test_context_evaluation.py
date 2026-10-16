@@ -480,7 +480,7 @@ def prepare_qualification_delivery(pair, *, arm, selected_packet, actor, task_id
     if process.returncode != 0 or len(process.stdout) > 128 * 1024:
         raise ValueError('installed selector failed')
     result = json.loads(process.stdout)
-    if type(result) is not dict or result.get('action') not in ('deliver', 'blocked', 'observed'):
+    if type(result) is not dict or result.get('action') not in ('deliver', 'advisory', 'observed'):
         raise ValueError('installed selector returned invalid delivery')
     return {**result, 'delivery_mode': 'installed_candidate',
             'candidate_sha256': candidate_sha256,
@@ -1924,6 +1924,19 @@ class TestObservationAccounting(unittest.TestCase):
                 candidate_sha256='a' * 64)
             self.assertEqual(installed_b['delivery_text'], 'INSTALLED-SELECTOR')
             self.assertEqual(installed_b['candidate_sha256'], 'a' * 64)
+            helper.write_text('def prepare_actor_delivery(packet, **kw):\n'
+                              '    return {"action": "advisory", "delivery_text": None, '
+                              '"attempt": None, "observation": "unknown", '
+                              '"gap": "ACTOR_DELIVERY_UNOBSERVED"}\n', encoding='utf-8')
+            advisory_b = prepare_qualification_delivery(
+                pair, arm='B', selected_packet=selected, actor='author-1',
+                task_id='tiny-python', host_epoch=None, mode='controlled_host',
+                installed_selector=helper, selector_sha256=_trial_digest(helper.read_bytes()),
+                candidate_sha256='a' * 64)
+            self.assertEqual(advisory_b['action'], 'advisory')
+            self.assertEqual(advisory_b['observation'], 'unknown')
+            self.assertIsNone(advisory_b['delivery_text'])
+            self.assertIsNone(advisory_b['attempt'])
             baseline_a = prepare_qualification_delivery(
                 pair, arm='A', selected_packet=selected, actor='author-1',
                 task_id='tiny-python', host_epoch='host-v1', mode='controlled_host',

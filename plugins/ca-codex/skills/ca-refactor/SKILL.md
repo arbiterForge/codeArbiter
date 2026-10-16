@@ -65,7 +65,7 @@ Where the surface has no coverage tooling, take the no-tooling exemption in
 section that omits a command for this surface — and the per-symbol direct-test proof stands alone.
 Without that citation the phase STOPs rather than passing on an unverifiable claim.
 
-If surface coverage is below the maturity threshold on any required metric, OR any public method has zero direct tests, halt and route to the `tdd` skill ([routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)) Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
+If surface coverage is below the maturity threshold on any required metric, or a public method has no direct test, use the characterization/backfill approach in [routines/tdd/SKILL.md](../../routines/tdd/SKILL.md). Add tests for the existing behavior and run them before restructuring; initially passing tests establish the baseline. Use a meaningful isolated negative control where needed to check the oracle. Record the passing post-backfill baseline, including test identities and assertions. Resume with that measured coverage and preserve the baseline assertions through implementation.
 
 Gate: surface coverage at or above the maturity threshold on every required metric in the declared coverage profile, the shared critical-path evidence present, AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
 
@@ -87,15 +87,22 @@ Gate: the refactor confined to the surface table, with any Phase 3 seam tests no
 
 ## Phase 5 — Parity verification · gate: BLOCK
 
-Run every impact-bounded local parity test identified in Phase 2, following `verification-boundary.md`. Each MUST pass with NO modification to its source — inspect the diff and confirm zero edits to any pre-existing test file. A modified pre-existing test is, by definition, evidence the surface's observable behavior changed: revert it. If it cannot pass after revert, the refactor introduced a behavior change and is routed to `tdd` as a feature or fix. Phase 3 seam tests (if any) MUST pass. Record the pass/fail tally and any modified-test detection. The exhaustive pre-existing suite remains a required exact-head hosted-CI merge gate.
+Run the impact-bounded parity tests recorded in the post-backfill Phase 2 baseline,
+following `verification-boundary.md`. Compare test changes made during implementation
+against that baseline, including characterization cases added to existing test files.
+Preserve their assertions. Necessary import or symbol-reference updates must retain
+the same behavioral oracle. If implementation requires changing an expected result,
+resolve the behavior change through the feature or fix owner. Phase 3 seam tests
+must also pass. Record current results and any permitted mechanical test changes.
 
-Gate: scoped parity tests green with zero pre-existing tests modified. BLOCK if any pre-existing test was modified to pass, or if any applicable test fails; the branch still MUST NOT merge until exhaustive exact-head hosted CI passes.
+Gate: baseline parity and new seam checks pass with preserved behavioral assertions.
+The exhaustive pre-existing suite remains an exact-head hosted-CI merge requirement.
 
 ## Phase 6 — Lint and coverage · gate: BLOCK
 
 Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold on every required metric in the same declared coverage profile. A refactor MUST NOT reduce coverage of the surface it touched on any required metric or drop its critical-path evidence.
 
-Where the surface has no coverage tooling, the same clause as Phase 2 applies — the no-tooling exemption in [includes/maturity-coverage.md](../../includes/maturity-coverage.md), citation included — and parity is verified through Phase 5's unmodified pre-existing tests alone. Phase 2 and Phase 6 MUST NOT give different answers about the same surface, which is why both defer to the one shared clause rather than restating its conditions.
+Where the surface has no coverage tooling, the same clause as Phase 2 applies — the no-tooling exemption in [includes/maturity-coverage.md](../../includes/maturity-coverage.md), citation included — and parity is verified through Phase 5's post-backfill baseline and preserved behavioral assertions. Phase 2 and Phase 6 MUST NOT give different answers about the same surface, which is why both defer to the one shared clause rather than restating its conditions.
 
 Gate: clean lint and type-check, zero errors, and no coverage regression on the named surface. "Mostly passes" is not passing — this is what clears the path to `commit-gate`.
 
@@ -104,7 +111,7 @@ Gate: clean lint and type-check, zero errors, and no coverage regression on the 
 - MUST NOT begin Phase 2 without a precise, user-signed-off surface table.
 - MUST NOT proceed past Phase 2 if surface coverage is below the maturity threshold or any public method has zero direct tests — route to `tdd` Phase 1 to backfill.
 - MUST NOT introduce new behavior in Phase 4. A diff that classifies as `feat` under `commit-gate` is not a refactor.
-- MUST NOT modify any pre-existing test to make it pass. A modified test is a behavior change.
+- MUST NOT weaken a baseline assertion to make the refactor pass. Mechanical test-reference changes must preserve the behavioral oracle.
 - MUST NOT reduce coverage of the named surface during the refactor.
 - MUST NOT extend the surface mid-flight without an explicit user-approved amendment to the Phase 1 table.
 - MUST NOT inline-suppress a lint rule to clear Phase 6, and never to bypass a security-relevant rule.

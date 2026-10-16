@@ -226,20 +226,23 @@ def main(argv=None):
     ap.add_argument("--document", choices=tuple(_artifactlib._CONTEXT_TARGETS))
     ap.add_argument("--source", action="append", default=[], help="repository-relative source supporting the draft; repeat as needed")
     ap.add_argument("--context-apply", help="apply the exact context preview reference returned by the writer")
+    ap.add_argument("--context-finalize", action="store_true", help="preview initialization of the five populated context documents")
     ap.add_argument("--preview-sha256", help="SHA-256 of the retained context preview to apply")
     ap.add_argument("--repair-lock-exclusion", action="store_true", help=(
         "repair only Git-local info/exclude for an existing scaffold; retain the "
         "task-board OS lock, never rewrite project state (cannot combine with --check/--stage)"))
     args = ap.parse_args(argv)
-    context_modes = sum(bool(value) for value in (args.context_request, args.context_draft, args.context_apply))
+    context_modes = sum(bool(value) for value in (
+        args.context_request, args.context_draft, args.context_apply, args.context_finalize))
     if context_modes:
         if context_modes != 1:
-            ap.error("select exactly one context request, draft, or apply")
+            ap.error("select exactly one context request, draft, finalize, or apply")
         if not args.root or args.stage is not None or args.check or args.passive or args.repair_lock_exclusion:
             ap.error("context writing requires --root and excludes scaffold flags")
         if (args.context_draft and (not args.document or not args.source or args.preview_sha256)
                 or args.context_apply and (not args.preview_sha256 or args.document or args.source)
-                or args.context_request and (args.document or args.source or args.preview_sha256)):
+                or (args.context_request or args.context_finalize)
+                and (args.document or args.source or args.preview_sha256)):
             ap.error("a draft requires --document and --source; apply requires only --preview-sha256")
         try:
             root = _artifactlib._trusted_directory(args.root, "UNSAFE_ROOT")
@@ -250,6 +253,9 @@ def main(argv=None):
             elif args.context_apply:
                 request = {"operation": "apply", "preview_ref": args.context_apply,
                            "preview_sha256": args.preview_sha256}
+            elif args.context_finalize:
+                from _contextwriterlib import prepare_finalization_preview
+                request = {"operation": "preview", "preview": prepare_finalization_preview(root)}
             else:
                 request = _artifactlib.read_context_preview_request(root, args.context_request)
             operation, payload = _artifactlib.validate_context_writer_request(request)

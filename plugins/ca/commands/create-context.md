@@ -274,12 +274,11 @@ Gate: all five content documents and their matching v2 provenance pairs are pres
 
 Lock the project state as initialized and return to normal orchestration:
 
-1. Gather exact SHA-256 identities for the five content documents, their five
-   v2 provenance records, and `open-tasks.md`, `open-questions.md`, `overrides.log`.
-   Submit the typed `finalize` preview through
-   `init-codearbiter.py --context-request FILE`; the bridge calls native
-   `context-finalize-preview`. The writer validates those 13 outputs and their
-   current source bindings before proposing the marker and updated provenance.
+1. Run `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/init-codearbiter.py" --root "${CLAUDE_PROJECT_DIR}" --context-finalize`.
+   The bridge binds the five content documents, their five v2 provenance records,
+   and `open-tasks.md`, `open-questions.md`, `overrides.log` to their exact identities.
+   Native `context-finalize-preview` validates those 13 outputs and their current
+   source bindings before proposing the marker and updated provenance.
 2. Inspect that preview and apply its `preview_ref` and `preview_sha256` through
    the same bridge. The writer rechecks current identities under its lock and
    commits the marker and matching `CONTEXT` provenance together. No separate
