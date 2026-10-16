@@ -1202,12 +1202,14 @@ def has_html(root: str | Path) -> bool:
 
 
 def checked_spec_index(root, installation) -> list[dict]:
-    """Fresh per-call authority validation, deliberately not an mtime cache."""
+    """Fresh validated advisory pointers, including receipt-free draft specs."""
     if not has_html(root):
         return []
     client = ArtifactClient(root, installation)
-    return [{"spec": x["artifact_id"], "path": x["path"], "globs": x.get("governs") or [], "artifact_html": True}
-            for x in client.index("spec") if x["authority"]["authority_verified"] and x.get("governs")]
+    return [{"spec": x["artifact_id"], "path": x["path"], "globs": x["governs"],
+             "artifact_html": True, "governance_state": x["authority"]["state"]}
+            for x in client.index("spec")
+            if x["authority"].get("state") in ("draft", "ready", "approved") and x.get("governs")]
 
 
 def resolve_spec_file(filename, installation) -> tuple[ArtifactClient, dict]:

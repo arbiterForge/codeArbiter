@@ -19,8 +19,9 @@ judgment, and the factors the rubric does not cover. It is useful when a change 
 one plausible approach. It is not a numerical score that automatically selects the winner.
 
 The surrounding lane determines who can make the decision. Interactive reconciliation needs an
-explicit user choice. An approved sprint decides non-hard-gate questions inside its existing scope,
-including close calls. Both use SMARTS, but they do not have the same authority.
+explicit user choice. A requested sprint makes reversible method decisions inside its existing
+scope, including close calls. Use SMARTS when a difficult trade-off warrants comparison; routine
+steps need no scoring exercise. Neither caller gains authority beyond the user's actual request.
 
 ## Begin with recorded intent
 
@@ -92,29 +93,24 @@ observed lens pattern. Thin history cannot support an invented precedent, and pr
 outranks an explicit higher-authority decision. A strong recommendation remains a recommendation
 until the user makes or explicitly accepts the choice.
 
-During an approved sprint, moderate and tied non-hard-gate choices do not create new routine human
+During a sprint, moderate and tied in-scope choices do not create new routine human
 checkpoints. The sprint breaks a tie using its stated priorities and the existing conflict hierarchy.
 It logs **low** confidence for moderate/tied choices and **high** for strong choices. An answered
 recorded-intent choice is logged with high confidence and its citation. Confidence is not a
 probability estimate or a verification result. Security boundaries, irreversible actions, overrides,
 missing user authority, conflicting accepted decisions and merge remain actual stop boundaries.
 
-## Typed method changes need their own authority
+## Maintain methods within the agreed outcome
 
-For an existing typed plan, the current source defines a separate, explicit `delegate-methods`
-grant and a private `smarts-apply` producer. After the pair's required approvals, that bounded
-producer can revise an existing task's method **steps** under the original scope. It cannot expand
-paths, tests, criteria, dependencies, prerequisites, rollback or checkpoint membership.
+Update implementation steps, verification runners and task decomposition through the existing
+typed plan writer when they remain within the authorized outcome. Record the reason, preserve
+stable references and user stops, and inspect concurrent work before changing an active task.
+Ordinary method maintenance needs no separate artifact approval or method grant.
 
-The producer checks current plan identity, refuses active affected writers and invalidates affected
-proof before another attempt. It keeps blocked states and their reasons. The next attempt still
-needs current eligibility, verification and review. A matrix pasted into chat or a line appended to
-the sprint log is not that authority, and the method grant does not confer prerequisite, security,
-backend or publication authority. Read the [artifact-review host boundary](/guides/review-artifacts/#check-your-hosts-authority-capability)
-and use the actual installed capability rather than inferring support from a shared name.
-
-This distinction matters during recovery: changing an approach inside an approved task is different
-from weakening its test or silently widening the task to make a failure disappear.
+Reuse checks and review conclusions while their relevant source, requirements and inputs still
+match. Recheck affected evidence after a material change, and keep new failures visible. A changed
+receipt or session alone does not restart review. A different product outcome, spending outside
+the agreed limit or an irreversible action still belongs to the actual decision owner.
 
 ## Audit a Verdict
 

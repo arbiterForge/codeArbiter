@@ -4,7 +4,7 @@ related: [feature, fix, skills/refactor]
 gates:
   - gate: named surface
     when: before the restructure starts
-    effect: the exact files, functions, or methods in scope must be stated; a vague target like "the auth module" is rejected
+    effect: inspect the requested outcome and name the exact files, functions and consumers; ask only about consequential missing choices
   - gate: parity coverage
     when: before any code moves
     effect: pre-existing tests must already cover the named surface, with at least one direct test per public method — an under-covered surface halts and backfills first
@@ -22,6 +22,9 @@ passing characterization tests where coverage is missing, then preserve their be
 Necessary import or symbol-reference updates may adapt tests to the new structure while retaining
 the same oracle. A changed expected result belongs to feature or fix work. Required direct tests,
 coverage metrics and critical-path evidence still apply.
+
+The existing request authorizes the named refactor. Present its inspected scope table and
+continue; only a material expansion or changed outcome needs another decision.
 
 ## Usage
 

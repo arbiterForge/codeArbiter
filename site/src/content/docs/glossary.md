@@ -155,8 +155,8 @@ justified which claim), used to detect when that source has since drifted. See
 
 ## SMARTS
 
-The named framework an autonomous `/ca:sprint` uses to decide "as the user" on non-hard-gate
-points, scoring each auto-decision and logging it with a confidence flag. See
+Six engineering lenses for comparing consequential trade-offs. A sprint uses it when helpful
+within the authorized outcome and records material decisions with their uncertainty. See
 [SMARTS](/concepts/smarts/).
 
 ## Severity
@@ -179,9 +179,9 @@ never merges and never becomes the implementation. Only its written findings sur
 
 ## Sprint
 
-An autonomous, multi-task run via `/ca:sprint`: one interactive spec gate, then execution to a
-shipped PR with every auto-decision SMARTS-scored and logged to `sprint-log.md`. Hard gates
-remain true stops even under autonomy. See
+An autonomous, multi-task run via `/ca:sprint` from the requested outcome through a maintained
+plan, implementation, checks and an open PR. Material decisions go in `sprint-log.md`.
+Actual user stops, host permissions and delivery boundaries remain in force. See
 [Run an Autonomous Sprint](/guides/autonomous-sprints/).
 
 ## Stage

@@ -222,11 +222,31 @@ and corrected attempts, `claude-canary-v2-verification.json`, fresh readback,
 independent test output and `context-benchmark.json`. These are local evidence,
 not published receipts; final packaged-byte confirmation is recorded on the PR.
 
+## Final review remediation
+
+The review at `3a8b6e0d` produced ten medium findings. Tasks T18–T27 in the
+overhaul plan own their resolution and final integration.
+
+| Tasks | Status | Evidence |
+|---|---|---|
+| T18–T19 | Complete | Bounded scheduling, report matching, recovery and capture-order regressions passed on Windows/WSL; final CLI integration 18/18, model/observation/schema checks and vet passed. |
+| T20–T21 | Complete | 153 provenance, 204 read-injection and 18 pre-read tests passed; nine targeted diagnostic tests passed after the final wording correction. Native paired refresh reports all five context identities current with document bytes preserved. |
+| T22–T25 | Complete | Instructions and public guidance reuse current checks/reviews and existing scope authorization. Harvest's actual parser regression passed; taskwriter suite 88/88. |
+| T26 | Implemented | Existing Ubuntu test chain emits source-bound numeric coverage; 107 CI contract tests passed. The current PR run retains the actual measurement and source identity. |
+| T27 | Local integration and review complete | Host projections regenerated; 155 surface tests (one intentional platform skip), 18 artifact-consumer tests, 11 provenance wiring checks, all 1,130 site tests, site typecheck and voice audit passed. Independent review completed 2/2 units with zero open findings. Current hosted results are recorded on PR #983. |
+
+Local integration reused the existing tested native payload for 17 Python bridge
+tests; those passed without rebuilding or claiming new native qualification.
+Full local Windows native tests and coverage each reached the default ten-minute
+timeout in the existing Git-snapshot-heavy `TestEvidenceObjectsReadOnce`; neither
+is reported as passing. Focused native regressions and vet passed. The current
+PR's ordinary hosted jobs own the complete platform suites and numeric coverage.
+
 ## Next executable work
 
-1. Complete exact-head CI and correct proven failures without replacing source
-   checks with looser assertions or adding new approval machinery.
-2. Confirm final candidate packages through installed-package CI fixtures.
+1. Finish the affected integration checks, update PR #983, and complete its
+   current-head CI, numeric coverage and installed-package fixtures.
+2. Record the actual hosted results against the pushed source.
    Retain the scoped earlier model evidence. No additional live-host trial or
    user host configuration is required for this completion.
 3. After authorized merge/publication, verify exact distributed package,

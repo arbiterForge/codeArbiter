@@ -1,5 +1,5 @@
 {
-  "revision": "0b41fc6b7e4e86a117227b7776937c083211526f",
+  "revision": "3a8b6e0d18de66ff7148424bd4864e2409587986",
   "title": "Assistive workflow: source-bound implementation",
   "summary": "An agreed outcome becomes a maintained plan, direct or delegated implementation, proportional verification and an honest delivery report. Task context and dependency advice support progress; real user stops and host permissions remain effective. Greenfield and brownfield population use the paired native writer and exact finalization. Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims.",
   "changes": [
@@ -40,7 +40,7 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "6a4dde7237a6284a02a3637be5c8e4e17c60803a",
+      "blob": "e74c83c6692bd208bb2368d6391034e34cb828f3",
       "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow.",
       "nodes": [
         "f-entry",
@@ -173,8 +173,8 @@
     },
     {
       "path": "core/surface/skills/commit-gate/SKILL.md",
-      "blob": "1e07d5fa76d653a13f3943da24bb97190c08ada5",
-      "summary": "The commit owner checks authorization, the staged diff, secrets and the verification approach appropriate to the change. Current criterion checks, genuine fix regressions and refactor parity retain their distinct evidence requirements.",
+      "blob": "169ddacca081f9d58e0fdfc70812c1815d2e60e9",
+      "summary": "The commit owner checks authorization, the staged diff, secrets and the verification approach appropriate to the change. Current criterion checks, genuine fix regressions and refactor parity retain their distinct evidence requirements. Reuse applicable observed checks and reviews across phases. Managed v2 maintenance selects affected claims and uses native paired writes; unknown evidence defers that document.",
       "nodes": [
         "f-accept",
         "o-runtime"
@@ -182,7 +182,7 @@
     },
     {
       "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
-      "blob": "429f1e396b851bf7dd801ae5920c1a3fbbb644dd",
+      "blob": "3ada3cfe61bb300ca0ec3cb91d4441a88bb1810c",
       "summary": "PR readiness uses the explicit base-to-HEAD subject for current checks, secrets scanning and applicable specialized review. Existing evidence is reused only while its source and inputs match. Merge requires authorization and exact-head hosted CI.",
       "nodes": [
         "f-accept",
@@ -191,7 +191,7 @@
     },
     {
       "path": "core/artifacts/internal/operations/task_context.go",
-      "blob": "06906d2b87401aec09bfa57385b4e9750ce897fa",
+      "blob": "b8e43e1ea1def4a33b44dafb3c23fde83fbc2b17",
       "summary": "Read-only task-context reports direct dependencies and unresolved ancestors, scoped_changed, scoped_unchanged or unassessed inputs, and actual check observations. Missing broader context remains explicit; the packet does not certify verification.",
       "nodes": [
         "f-selection",
@@ -221,7 +221,7 @@
     },
     {
       "path": "core/artifacts/internal/operations/task_check.go",
-      "blob": "b66f26e0153c2e14266b076b61162d0570e76878",
+      "blob": "9e5f7e8d7d882736edc83c8c506ccbfd4dc3a81e",
       "summary": "Task-check observations now retain directly referenced criterion identity and an optional bounded source-input fingerprint or an explicit unassessed reason, without executing tests or minting approval receipts.",
       "nodes": [
         "f-verify",
@@ -273,7 +273,7 @@
     },
     {
       "path": "core/artifacts/schemas/common.schema.json",
-      "blob": "fa7ff1a977d9c3a7fe1a0213a554e71b117dd1c0",
+      "blob": "89f187bbf955793aad9b5f0d79dbd3ab922231ba",
       "summary": "The unpublished 0.3.2 native schema adds optional shared_inputs and scoped task-check fields without silently relabeling old records.",
       "nodes": [
         "f-verify",
@@ -526,7 +526,7 @@
     },
     {
       "path": "core/surface/skills/context-check/SKILL.md",
-      "blob": "83f05b0f40d94c318dac97cc5417611f93542d4d",
+      "blob": "d7a10332a0157e0931a97e90f1f83046924306ab",
       "summary": "A drift audit stays read-only; an already authorized selected or full refresh proceeds without asking again per document. The installed draft/preview/apply example preserves source bindings and selected content. Matching hashes establish identity only; initialized refresh never reruns scaffolding, clears the marker or repeats finalization.",
       "nodes": [
         "o-status",
@@ -641,8 +641,8 @@
     },
     {
       "path": "core/surface/skills/refactor/SKILL.md",
-      "blob": "78142bc659c8a4a827a44e1e0bae5319fa675a1d",
-      "summary": "Characterization tests can pass against existing correct behavior. Preserve behavioral assertions against the post-backfill baseline; mechanical import or symbol-reference updates retain the same oracle. Coverage and parity checks remain required.",
+      "blob": "fffd20cbdcfc4b99065f11e9f53c21d317ea10a3",
+      "summary": "Characterization tests can pass against existing correct behavior. Preserve behavioral assertions against the post-backfill baseline; mechanical import or symbol-reference updates retain the same oracle. Coverage and parity checks remain required. A precise surface table proceeds under existing user authorization; only material expansion or a changed outcome needs another decision.",
       "nodes": [
         "o-fix",
         "o-tdd-direct",
@@ -663,8 +663,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/assistive.go",
-      "blob": "78f927889878ae1022ecea9bb66ae7505b729a7b",
-      "summary": "Scheduling follows the full dependency ancestry and exposes unresolved ancestor IDs and reasons. Reconciled progress remains advisory; blocked ancestors prevent premature downstream readiness while independent tasks remain available.",
+      "blob": "887bed0f0972b68855a18cb3d0d34a4e9e8af767",
+      "summary": "Scheduling follows the full dependency ancestry and exposes unresolved ancestor IDs and reasons. Reconciled progress remains advisory; blocked ancestors prevent premature downstream readiness while independent tasks remain available. Response-budget omissions are explicit, retain the global scheduling decision and direct callers to supported detail reads.",
       "nodes": [
         "f-selection",
         "f-recovery",
@@ -674,8 +674,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/lifecycle.go",
-      "blob": "6be8000f9805b826d54c35f9185fb2a65fda4090",
-      "summary": "Dependency invalidation preserves an independently BLOCKED task and its reason. Changed ancestry remains visible without replacing a recorded user stop.",
+      "blob": "0a40a9e6c50f1b1da06967dc806eef117f7d5a16",
+      "summary": "Dependency invalidation preserves an independently BLOCKED task and its reason. Changed ancestry remains visible without replacing a recorded user stop. Verification summaries disclose applicable conflicting caller reports separately from receipt freshness; later successful verification covers only reports present when its context was issued.",
       "nodes": [
         "f-recovery",
         "c-decisions",
@@ -708,6 +708,25 @@
       "nodes": [
         "o-report",
         "k-audit"
+      ]
+    },
+    {
+      "path": "core/pysrc/_readinjectlib.py",
+      "blob": "4005b00ef43f9c45cd179553bce9f970eb613290",
+      "summary": "Bounded read-time pointers include ordinary draft and ready HTML specs as advisory context. Rejected or withdrawn specs stay excluded; no pointer confers approval.",
+      "nodes": [
+        "c-readhint",
+        "c-spec"
+      ]
+    },
+    {
+      "path": "core/pysrc/_provenancelib.py",
+      "blob": "790ec8470991180dacace9455d22da59fb16faec",
+      "summary": "Routine maintenance selects changed v2 claims intersecting staged sources using a current bounded snapshot. Unknown evidence defers the affected document; native paired writes preserve owned fields and current identities.",
+      "nodes": [
+        "c-store",
+        "b-refresh",
+        "b-refreshed"
       ]
     }
   ]

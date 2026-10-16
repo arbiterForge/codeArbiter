@@ -8,13 +8,13 @@ disable-model-invocation: true
 
 Select this owning procedure for a behavior-preserving restructure, whether requested
 in plain language or through `/refactor`. Entry syntax is not an additional gate;
-the approved-surface, parity, and verification requirements below still apply.
+the authorized scope, parity, and verification requirements below still apply.
 Externally observable behavior before equals after, proven rather than assumed.
 
 ## Entry boundaries
 
 - Identify both the surface and the motivation. Phase 1 owns the precise surface
-  table and its approval; knowing a command name does not establish either.
+  table under existing authorization. Ask only about a missing consequential scope decision.
 - New behavior, including a new error path, side effect, or public method beyond
   a Phase 3 seam, belongs to `/feature`. Incorrect existing behavior belongs to `/fix`.
 - An explanation-only question stays in the non-mutating question-answer path,
@@ -36,7 +36,9 @@ The working tree MUST be clean over the named surface before Phase 1. A dirty su
 
 ## Phase 1 — Surface identification · gate: BLOCK
 
-Enumerate the exact blast radius before any other work. Restate the planned refactor in one sentence and confirm it back to the user, then record a surface table:
+Inspect the requested refactor and record its precise surface before restructuring.
+Present the table and continue when the existing request covers it; no second
+signoff is required. Ask only about a genuinely unresolved scope or outcome:
 
 - Files (repo-relative paths).
 - Top-level symbols touched — function, class, and exported member names.
@@ -45,7 +47,10 @@ Enumerate the exact blast radius before any other work. Restate the planned refa
 
 Reject vague surfaces. "the auth module", "the user service", "some helpers in utils" are categories, not surfaces. A surface is acceptable only when a reader could grep the repo for the listed symbols and arrive at the same file set. The table is the parity contract for Phases 2–6.
 
-Gate: a precise, complete surface table, user-signed-off. A vague or category-level surface does not pass — "the functions `signToken`, `verifyToken`, and `rotateKey` in `src/auth/tokens.ts`" passes; "the auth module" does not.
+Gate: a precise, complete surface table covered by existing user authorization.
+Resolve category-level requests through source inspection where their outcome is
+clear. Ask only when inspection exposes a consequential missing choice. Include
+necessary consumer updates within the requested restructure and record their scope.
 
 ## Phase 2 — Behavioral parity coverage proof · gate: BLOCK
 
@@ -83,7 +88,10 @@ Apply the restructure with zero behavior change, to the conventions in `coding-s
 
 Unacceptable inside a refactor: adding a behavior, branch, error path, or side effect; changing the value any public method returns for any pre-existing input; adding a public method beyond a Phase 3 seam; changing observable order of operations (event emission, logging, IO). Classify the resulting staged diff against `commit-gate` classification criteria — a diff that classifies as `feat` is not a refactor; halt and route to `tdd`.
 
-Gate: the refactor confined to the surface table, with any Phase 3 seam tests now green. BLOCK if the diff classifies as `feat`, or if any edit falls outside the Phase 1 surface table without an explicit user-approved amendment.
+Gate: the refactor remains within the authorized outcome, with any Phase 3 seam
+tests now green. Maintain the surface table for discovered consumer updates within
+that scope. BLOCK if the diff classifies as `feat` or requires a scope expansion
+without the actual owner's authorization.
 
 ## Phase 5 — Parity verification · gate: BLOCK
 
@@ -108,11 +116,11 @@ Gate: clean lint and type-check, zero errors, and no coverage regression on the 
 
 ## Hard rules
 
-- MUST NOT begin Phase 2 without a precise, user-signed-off surface table.
+- MUST identify the precise surface and existing authorization before Phase 2; do not request duplicate signoff.
 - MUST NOT proceed past Phase 2 if surface coverage is below the maturity threshold or any public method has zero direct tests — route to `tdd` Phase 1 to backfill.
 - MUST NOT introduce new behavior in Phase 4. A diff that classifies as `feat` under `commit-gate` is not a refactor.
 - MUST NOT weaken a baseline assertion to make the refactor pass. Mechanical test-reference changes must preserve the behavioral oracle.
 - MUST NOT reduce coverage of the named surface during the refactor.
-- MUST NOT extend the surface mid-flight without an explicit user-approved amendment to the Phase 1 table.
+- MUST keep the surface table current and obtain authorization for a material scope expansion or changed outcome.
 - MUST NOT inline-suppress a lint rule to clear Phase 6, and never to bypass a security-relevant rule.
 - MUST NOT guess the test, coverage, lint, or type-check command — read `tech-stack.md` or STOP.

@@ -87,31 +87,7 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 	}
 
 	status := model.S(state(d, id)["state"])
-	checks, historyBounded := model.TaskCheckAssessments(d, spec.Doc, id)
-	scopeDigest, scopeReason := "", "not_recorded"
-	if len(checks) != 0 {
-		scopeDigest, scopeReason = scopedInputDigest(e.FS, task.Value)
-		for _, value := range checks {
-			note := model.M(value)
-			stored := model.S(note["recorded_scoped_inputs_sha256"])
-			status := "unassessed"
-			switch {
-			case stored == "":
-				if model.S(note["scope_reason"]) == "" {
-					note["scope_reason"] = "historical_unbound_report"
-				}
-			case scopeDigest == "":
-				note["scope_reason"] = scopeReason
-			case stored != scopeDigest:
-				status = "scoped_changed"
-			default:
-				status = "scoped_unchanged"
-			}
-			note["worktree_freshness"] = status
-			// Partial source coverage is *not* a reviewer/host attestation.
-			note["scope_complete"] = false
-		}
-	}
+	checks, historyBounded := e.assessTaskChecks(d, spec.Doc, id)
 	// Small model-facing packet: last three reports only. The typed HTML
 	// includes the bounded recorded history; native transaction before-images
 	// retain older reports. Neither claims source-file applicability.

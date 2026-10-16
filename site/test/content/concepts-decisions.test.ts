@@ -45,12 +45,17 @@ describe('C02 source and evidence distinctions', () => {
     finally { auditCases[0].label = label; }
     expect(validateDecisionEvidence()).toEqual([]);
   });
-  it('distinguishes sprint delegation, arbitration choice and typed steps-only authority', () => {
-    const smarts = page('smarts');
-    for (const phrase of ['recorded-intent check', 'Step 0 applies to sprint and brainstorming', 'moderate and tied non-hard-gate choices', '`delegate-methods`', '`smarts-apply`', 'does not confer prerequisite, security,', 'Artifact-section-hash']) expect(smarts).toContain(phrase);
+  it('distinguishes in-scope sprint methods from user-owned reconciliation choices', () => {
+    const smarts = page('smarts').replace(/\s+/g, ' ');
+    for (const phrase of ['recorded-intent check', 'Step 0 applies to sprint and brainstorming', 'moderate and tied in-scope choices', 'existing typed plan writer', 'no separate artifact approval or method grant', 'Reuse checks and review conclusions', 'Artifact-section-hash']) expect(smarts).toContain(phrase);
+    expect(smarts).not.toMatch(/`delegate-methods`|`smarts-apply`|pair's required approvals/);
     expect(decisionRoutes.map(route => route.id)).toEqual(['reconcile','sprint']);
     expect(decisionRoutes[0].endpoint).toContain('separately directed');
     expect(decisionRoutes[1].endpoint).toContain('not an autonomous merge');
+    const sprintSteps = decisionRoutes[1].steps.map(step => step.detail).join(' ');
+    expect(sprintSteps).toContain('existing authorization');
+    expect(sprintSteps).toContain('material decisions');
+    expect(sprintSteps).not.toMatch(/additional scoped grant|Satisfy the actual installed approval requirements|each auto-decision/);
   });
   it('separates governance, immutable record identity and derived current delivery', () => {
     const adr = page('adrs');

@@ -223,8 +223,10 @@ func (e *Engine) verificationStatus(d *model.Document) (any, error) {
 		id := model.S(model.M(value)["id"])
 		status := model.S(state(d, id)["state"])
 		fresh := status == "ACCEPTED" && evidence.AcceptedFresh(e.FS, d, spec, id, input) == nil
-		rows = append(rows, object{"task": id, "state": status, "current_evidence": fresh})
-		allAccepted = allAccepted && fresh
+		row := e.checkConflicts(d, spec, id, e.verifiedReportBoundary(d, spec, id, input))
+		row["task"], row["state"], row["current_evidence"] = id, status, fresh
+		rows = append(rows, row)
+		allAccepted = allAccepted && fresh && row["has_conflicting_check_reports"] == false && row["check_history_unassessed"] == false
 	}
 	return object{"artifact_id": d.ID(), "model_sha256": d.Hash(), "input_sha256": input,
 		"assessment": "verification", "evidence_assessed": true,

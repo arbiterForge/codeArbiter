@@ -1,6 +1,8 @@
 package operations
 
 import (
+	"encoding/json"
+
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
@@ -100,9 +102,48 @@ func (e *Engine) eligible(d *model.Document) (any, error) {
 	if spec, err := e.Catalog.Spec(d); err == nil {
 		bindingCurrent = spec.Doc.NormHash() == model.S(model.M(d.Norm()["spec_ref"])["normative_sha256"])
 	}
-	return object{"artifact_id": d.ID(), "model_sha256": d.Hash(),
+	compact := []any{}
+	for _, value := range prerequisites {
+		assessment := model.M(value)
+		row := object{"details_omitted": true}
+		for _, field := range []string{"id", "kind", "scope", "task_refs", "outcome", "recorded_state", "definition_current", "provenance", "needs_decision", "evidence_assessed"} {
+			row[field] = assessment[field]
+		}
+		compact = append(compact, row)
+	}
+	out := object{"artifact_id": d.ID(), "model_sha256": d.Hash(),
 		"assessment": "advisory", "evidence_assessed": false, "binding_current": bindingCurrent,
-		"next_task": next, "tasks": rows, "prerequisites": prerequisites}, nil
+		"next_task": next, "tasks": []any{}, "prerequisites": []any{}, "context_complete": false,
+		"tasks_total": int64(len(rows)), "tasks_omitted": int64(len(rows)),
+		"prerequisites_total": int64(len(compact)), "prerequisites_omitted": int64(len(compact)),
+		"omitted_context": model.List("prerequisite titles, requirements and observations", "task or prerequisite rows that exceed the response budget"),
+		"detail_read":     "Use outline for symbol IDs and read with mode exact for prerequisite details, task definitions and reported checks. Use task-context for state and reason; an indivisible oversized record may return RECORD_TOO_LARGE."}
+	// Count JSON-escaped bytes, retaining headroom for the CLI envelope. A
+	// large row cannot hide the global next-task decision or smaller rows.
+	encoded, err := json.Marshal(out)
+	if err != nil {
+		return nil, err
+	}
+	remaining := 65536 - 1024 - len(encoded)
+	for _, group := range []struct {
+		key  string
+		rows []any
+	}{{"tasks", rows}, {"prerequisites", compact}} {
+		shown := []any{}
+		for _, row := range group.rows {
+			encoded, err := json.Marshal(row)
+			if err != nil {
+				return nil, err
+			}
+			if len(encoded)+1 <= remaining {
+				shown = append(shown, row)
+				remaining -= len(encoded) + 1
+			}
+		}
+		out[group.key] = shown
+		out[group.key+"_omitted"] = int64(len(group.rows) - len(shown))
+	}
+	return out, nil
 }
 
 // recordWork changes progress only. The existing write journal retains the

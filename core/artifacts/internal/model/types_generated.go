@@ -216,6 +216,7 @@ type TaskCheckObservation struct {
 	CriterionSubjectSHA256 string   `json:"criterion_subject_sha256,omitempty"`
 	ScopedInputsSHA256     string   `json:"scoped_inputs_sha256,omitempty"`
 	ScopeUnassessedReason  string   `json:"scope_unassessed_reason,omitempty"`
+	RecordingOperationID   string   `json:"recording_operation_id,omitempty"`
 }
 type Spec struct {
 	RetiredSymbols []Retired      `json:"retired_symbols"`

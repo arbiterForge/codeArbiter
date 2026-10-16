@@ -201,15 +201,23 @@ current-head verification and authorized commit handling. It is shared by direct
 and caller handoffs; it is not a second host-command invocation.
 
 1. **Confirm current-head readiness** from the applicable observed checks and review assembled in Phase 1. If a commit is needed, use `commit-gate` under the existing authorization.
-2. **Path matrix** — inspect the diff and dispatch the reviewer agents the change demands:
+2. **Review coverage** — inspect the base-to-HEAD diff and identify the required review subjects:
    - auth / crypto / middleware paths → `auth-crypto-reviewer` + `security-reviewer`
    - CI / deployment / infrastructure paths → `security-reviewer`
    - migration files → `migration-reviewer`
    - dependency manifests → `dependency-reviewer`
-   - all paths → `coverage-auditor`
-3. **Run reviewers** in parallel where there are no dependencies.
+   - executable source or verification-contract changes → `coverage-auditor`
+   - prose-only changes → applicable documentation/reference checks
+   Reuse inspected review conclusions when their source, requirements, findings and
+   verification inputs still cover this subject. A commit, PR handoff or new receipt
+   identity alone does not require redispatch. A newly failing check or relevant edit
+   requires reassessing the affected conclusions. Honor an explicit request for a
+   fresh independent review.
+3. **Run missing or affected reviews** in parallel where there are no dependencies.
+   If existing reviews cover every required subject, proceed with those results.
 4. **BLOCK check** — any CRITICAL or HIGH finding STOPs the flow; present it and do not draft the PR.
-   Correct within existing scope and authority, then re-run the commit and review gates.
+   Correct within existing scope and authority, then rerun affected checks and reviews.
+   Reuse unaffected evidence and invoke commit handling only for changes needing a commit.
    Do not require the user to repeat command spellings; no unresolved blocker is waived.
 5. **Stage the PR** once all BLOCK findings clear: concise title; summary of what changed and why; a
    bulleted test plan; a conflict-hierarchy tradeoff citation for any non-obvious tradeoff; a link to

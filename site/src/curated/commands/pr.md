@@ -5,9 +5,9 @@ gates:
   - gate: current-head readiness
     when: before a PR is drafted
     effect: applicable tests, secrets scanning and specialized review cover the actual base-to-HEAD diff; missing or failing checks remain pending
-  - gate: path-matrix review dispatch
+  - gate: path-matrix review coverage
     when: assessing the current branch
-    effect: auth/crypto, CI/deploy/infrastructure, migration and dependency paths select their required reviewers, and a coverage check always runs
+    effect: identify required specialized reviews and executable coverage; reuse current conclusions and dispatch missing or affected reviews
   - gate: BLOCK check
     when: after reviewers report
     effect: any CRITICAL or HIGH finding stops the PR from being drafted until you resolve it
@@ -24,8 +24,11 @@ an already committed branch does not require a new commit.
 
 The diff selects the required reviewers: authentication, crypto and CI/deploy/infrastructure
 changes pull in security review, a migration
-file pulls in a migration reviewer, a changed dependency manifest pulls in a supply-chain check, and
-a coverage check runs on every PR regardless. Any finding at CRITICAL or HIGH severity stops the
+file requires migration review, and a changed dependency manifest requires a supply-chain check.
+Executable source and verification contracts require coverage review; prose uses its applicable
+documentation checks. Reuse inspected reviews covering the same source, requirements, findings
+and verification inputs. Dispatch only missing or affected reviews, or a fresh review explicitly
+requested by the user. Any finding at CRITICAL or HIGH severity stops the
 draft cold until it's addressed. Once everything clears, the PR itself gets written with a real
 summary, a test plan, and links to any decision record it touches — then, if you've opted into CI
 babysitting, a watcher attaches to follow the checks through to green.
@@ -67,7 +70,7 @@ discard still require explicit authority and their applicable proof.
 Current-head checks cover the base-to-HEAD diff; tests and secrets scan passed.
 Diff touches: src/auth/session.ts, src/auth/session.test.ts.
 Path matrix: auth path detected — dispatching auth-crypto-reviewer and security-reviewer.
-Dispatching coverage-auditor (all paths).
+Coverage review already covers this unchanged executable diff; reusing its inspected findings.
 Reviewers report: 0 CRITICAL, 0 HIGH, 1 LOW (naming suggestion, non-blocking).
 Drafting PR: "fix(auth): rotate session token on privilege change"...
 PR opened: https://github.com/org/repo/pull/482

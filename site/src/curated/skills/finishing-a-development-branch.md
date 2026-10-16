@@ -20,7 +20,9 @@ For a committed branch, derive obligations from the explicit base-to-HEAD diff. 
 secrets scanning and specialized security/migration checks to that same subject, then apply the
 review matrix, including security review for CI/deployment/infrastructure changes. An empty index
 does not establish branch readiness. Reuse applicable results only while their source and inputs
-match; run missing or affected checks without creating an unnecessary commit.
+match; run missing or affected checks without creating an unnecessary commit. Reuse current
+review conclusions covering the same source, requirements and verification inputs. Dispatch
+only missing or affected reviews, or a fresh review explicitly requested by the user.
 
 Authorized uncommitted work goes through the commit owner. An ordinary authorized PR does not
 require an artifact acceptance receipt. `DONE` describes implementation progress; unfinished work,

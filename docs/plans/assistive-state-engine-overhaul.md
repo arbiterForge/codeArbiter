@@ -217,6 +217,31 @@ host permissions, explicit user stops, safe persistence, and release authority.
 Additional live-host trials are outside this completion requirement. Keep publication distinct
 from source and installed-package validation.
 
+## Final review remediation
+
+Complete the ten findings from the review of `3a8b6e0d` in this PR. Changes
+describe the final operating contract. Preserve existing authorization, actual
+host permissions, explicit user stops, historical evidence and safe persistence.
+
+| Task | Required outcome | Completion evidence | Dependencies |
+|---|---|---|---|
+| T18 | Keep `eligible` responses bounded for valid prerequisite records; retain exact access to omitted detail. | A populated-prerequisite regression passes through the CLI response boundary. | None |
+| T19 | Expose relevant newer failed checks in verification summaries while retaining receipt freshness and progress as separate facts. | Accepted-plan regression covers later failure, recovery, unrelated or stale reports, and no approval/reviewer restart. | None |
+| T20 | Maintain affected v2 context claims during normal commit preparation through the native paired writer, retaining the legacy v1 path. | Changed-source selection, unchanged-source exclusion, unknown evidence and bounded writer tests; no direct v2 rebaseline. | None |
+| T21 | Deliver applicable ordinary HTML specs as advisory read context with truthful state labels. | Receipt-free and historical-spec injection tests, applicability and deduplication controls. | None |
+| T22 | Reuse current verification and review results across execution, commit and PR preparation; run missing or affected work only. | Caller contracts retain specialized controls and reject unconditional repeated test/reviewer dispatch. | None |
+| T23 | Continue a precisely authorized refactor without another scope-table approval; preserve real scope-change decisions and parity checks. | Refactor source and public guidance agree on existing authorization and consequential scope changes. | None |
+| T24 | Persist terminal follow-ups with the documented task-writer invocation. | A parser/CLI regression accepts options before the description terminator. | None |
+| T25 | Align sprint, SMARTS, command catalogue and glossary guidance with ordinary assistive execution. | Current references and operating guides agree; affected content, link and rendered checks pass. | T22, T23 |
+| T26 | Measure the existing site-script coverage profile and retain its source-bound report. | Ubuntu line and branch metrics meet the declared stage-2 threshold; failures receive targeted corrections. | T25 |
+| T27 | Regenerate host resources, inspect the combined changes, run affected checks and update PR #983. | Projection parity, focused Python/native/site regressions, independent review, current PR CI and accurate PR summary. | T18–T26 |
+
+Work proceeds in the existing PR worktree. Independent native and Python fixes
+may run in parallel with instruction and documentation work under separate file
+ownership. No extra user host, live-model canary, merge or publication is part of
+this remediation. Reuse observed evidence while its relevant source and inputs
+match. Record outcomes and any remaining work in the progress record.
+
 ## Acceptance scenarios
 
 | ID | Scenario | Required observation |

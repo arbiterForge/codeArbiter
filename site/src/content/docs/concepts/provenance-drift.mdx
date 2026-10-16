@@ -95,15 +95,18 @@ that distinction.
 
 ## The commit path and manual audit are different
 
-During commit-gate Phase 5.5, **before the commit lands**, `heal_worklist` intersects staged paths
-with changed or absent drift-trigger entries. An empty worklist skips re-scouting; that does not
-mean the entire commit has zero cost. For a nonempty worklist, the skill requires an incremental
-re-scout of those paths.
+During commit-gate Phase 5.5, **before the commit lands**, maintenance selects claims whose
+recorded sources intersect staged paths. Legacy v1 records use `heal_worklist`; managed v2
+pairs use `v2_heal_worklist` with a current bounded source and document snapshot. An empty
+legacy worklist does not establish v2 freshness. Reinspect only selected claims. Unknown
+evidence defers that document's automatic update without blocking independent commit work.
 
-If the claims still hold, the updated provenance file is staged by its exact path to ride the
-same commit, with the required secrets re-scan. If claims changed, the proposed document or
-code-map edits go into the normal diff review. Auto-heal is not an unconditional hash refresh
-and does not silently rewrite conclusions.
+If claims still hold, a managed pair uses native preview/apply for its selected owned fields,
+retaining document bytes and updating inspected source evidence. The writer rechecks source
+and target identities and writes the pair together. Legacy v1 re-baselining remains separate;
+it never writes v2 records. Stage the resulting paths explicitly with the required secrets
+re-scan. Changed claims enter normal diff review. Auto-heal does not silently rewrite conclusions
+or require another approval for maintenance already authorized by the commit request.
 
 The manual context-check route is for drift outside that particular commit path: a merge you did
 not author, an external edit, or a recorded source you are not staging now. Its compatibility

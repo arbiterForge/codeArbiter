@@ -181,7 +181,17 @@ operation and does not claim model comprehension or independent test proof.
 `eligible` returns scheduling advice from the recorded task states and explicit
 task dependencies. Its result is labeled `assessment: advisory` and
 `evidence_assessed: false`. It returns `next_task`, per-task `waiting_on`, current
-recorded reasons, binding currency, and the recorded prerequisite requirements.
+recorded reasons, binding currency, and compact prerequisite assessments.
+Prerequisite rows retain IDs, scoped task references and recorded status, with
+`details_omitted: true`; full titles, requirements and observations remain in
+exact symbol reads. The response has `context_complete: false`, `tasks_total`,
+`tasks_omitted`, `prerequisites_total` and `prerequisites_omitted`. Rows that
+cannot fit within the CLI response limit are omitted without changing the
+global `next_task` decision. Use `outline` for symbol IDs and `read` with
+`mode: exact` for prerequisite details, task definitions and reported checks.
+`task-context` provides task state and reason. These reads retain their own
+response bounds: an indivisible oversized record or reason can still produce
+`RECORD_TOO_LARGE`. No stored content is truncated.
 Legacy prerequisites have `scope: unspecified`; they are neither silently
 satisfied nor automatically treated as plan-wide permission gates. The caller
 must assess their actual applicability. Checkpoint order alone does not require
@@ -191,7 +201,41 @@ not proposed as a new start.
 This query performs no source snapshot and validates no approval or review
 receipt chain. It deliberately does not return `all_accepted_and_current` or a
 verification-input digest. `verification-status` owns those explicit legacy
-evidence-assessment fields and retains the real receipt/freshness checks. Do
+evidence-assessment fields and retains the real receipt/freshness checks.
+Its per-task `current_evidence` describes receipt freshness separately from
+`has_conflicting_check_reports` and `conflicting_check_reports`. A failed
+declared command with matching task/criterion definitions remains a conflict
+until a later matching caller-reported pass has unchanged declared source
+inputs. Ad-hoc reports, skipped/unknown checks, obsolete definitions and
+changed source inputs cannot erase a current failure. Unbound failures are
+shown with `worktree_freshness: unassessed`. These reports remain
+`caller_reported`, with incomplete source coverage; they never become receipts.
+A failing unindexed report also conflicts with each current declared command
+whose `argv` and `cwd` match exactly, under the same task/criterion and source
+applicability checks. Its summary uses `matched_command_index` and
+`command_match: exact_argv_cwd`; the original report stays unindexed. Unrelated
+ad-hoc failures do not conflict, and unindexed passes do not acquire declared
+success semantics.
+Existing verification captures also record the hashes of up to 16 retained
+task reports. A successful, currently applicable verification receipt can
+supersede reports included in its captured boundary and older report history;
+attaching a receipt later does not cover reports made after that capture.
+Capture retains the issued report boundary while revalidating source and
+normative identities; reports made after issuance neither replace that boundary
+nor invalidate otherwise current evidence. Old pending contexts without a
+boundary remain capturable without acquiring an ordering claim.
+New reports include the engine-owned `recording_operation_id`, so repeated
+identical outcomes remain distinct even within the same clock second.
+Historical reports and evidence contexts remain readable; a context without
+the optional boundary does not establish report ordering.
+`check_reports_total`, `check_reports_ignored`, `check_reports_superseded`, `check_history_bounded` and
+`check_history_unassessed` disclose retained history and its limits. If history
+was trimmed and a declared command has no retained applicable pass/fail,
+absence of contrary reports remains unassessed. `all_accepted_and_current`
+requires fresh acceptance receipts, no unresolved conflicting reports and no
+such history uncertainty. Recording a current recovery report can resolve a
+conflict without changing progress, deleting receipts or repeating approvals
+and reviews. Full report content remains available through exact task reads. Do
 not substitute its result back into ordinary task selection. The Python
 acceptance-proof helper uses that evidence query, retaining its legacy result
 key `eligible` only for existing proof consumers pending the caller overhaul.

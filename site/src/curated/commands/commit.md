@@ -41,8 +41,8 @@ Takes no arguments — everything it needs comes from the current git state.
 Branch: feat/export-csv (not protected — OK).
 Classification: feat, scope export.
 Running tests... 214 passed. Running lint... clean. Scanning staged files for secrets... clean.
-Behavioral proof: re-running the export endpoint against the spec's acceptance criterion — a saved
-search with zero results returns a header-only CSV. Confirmed by fresh output.
+Behavioral proof: inspected the existing export regression output and unchanged source binding.
+The criterion is covered: a saved search with zero results returns a header-only CSV.
 Reviewing the staged diff... no unexpected files, no TODO markers, nothing out of scope.
 Staged set matches intended files exactly.
 Commit message drafted:

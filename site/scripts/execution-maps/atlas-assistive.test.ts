@@ -13,15 +13,30 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('0b41fc6b7e4e86a117227b7776937c083211526f');
-    expect(update.changes).toHaveLength(62);
+    expect(update.revision).toBe('3a8b6e0d18de66ff7148424bd4864e2409587986');
+    expect(update.changes).toHaveLength(64);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
+    const objects=execFileSync('git',['--no-replace-objects','cat-file','--batch'],{
+      cwd:root,input:update.changes.map(change=>`${change.blob}\n`).join(''),maxBuffer:4*1024*1024,
+    });
+    let offset=0;
     for(const change of update.changes) {
-      const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});
+      const end=objects.indexOf(10,offset);
+      expect(end).toBeGreaterThanOrEqual(offset);
+      const header=/^([0-9a-f]{40}) blob (\d+)$/.exec(objects.subarray(offset,end).toString('utf8'));
+      if(!header)throw new Error(`Invalid source object: ${change.path}`);
+      expect(header[1]).toBe(change.blob);
+      const size=Number(header[2]);
+      expect(Number.isSafeInteger(size)).toBe(true);
+      const bytes=objects.subarray(end+1,end+1+size);
+      expect(bytes.length).toBe(size);
+      expect(objects[end+1+size]).toBe(10);
+      offset=end+2+size;
       const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
       expect(bytes.toString('utf8')).toBe(current);
       expect(change.summary).not.toMatch(/fully converted|released in|all hosts qualified/);
     }
+    expect(offset).toBe(objects.length);
     expect(update.summary).toContain('Exact blob bindings identify inspected source bytes');
     expect(update.summary).toContain('linked revision is the committed source base');
     expect(update.summary).toContain('live host qualification and release remain separate claims');

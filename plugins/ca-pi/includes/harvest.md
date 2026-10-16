@@ -43,14 +43,14 @@ as a **GitHub issue**, not the board.
      the board BUT record one audit line (`harvest declined: N candidates from <origin>`)
      to `triage.log` (append-only — use Edit/`>>`, never Write) so the decline is
      recoverable, not invisible.
-   - **Autonomous (`/sprint`):** SMARTS-score the batch, auto-promote, and append each
+   - **Autonomous (`/sprint`):** promote in-scope follow-ups and append each
      promotion (id + `(from origin)`) to `sprint-log.md` — append-only, so use Edit/`>>`,
      never Write (H-05 blocks a Write to it). A blocking decision is never auto-promoted
      — it escalates and STOPs.
 4. **Apply.** On confirm, route each:
    - **work → `open-tasks.md`** — a queued, ID-less `- [ ] <desc>  (from <origin>)` via
-     `/ca-task add -- "<desc>" --from <origin>` (the `--` lets a desc start with `-`;
-     add `--boundaries a,b` when the extractor supplied them).
+     `/ca-task add --from <origin> -- "<desc>"`. Put optional
+     `--boundaries a,b` before `--`; the terminator lets a description start with `-`.
    - **non-blocking decision → `open-questions.md`** "Deferred decisions" (a
      non-`CONFIRM-NN` bullet with the back-ref).
    - **blocking decision → ESCALATE**, never the Deferred-decisions section: `promote`

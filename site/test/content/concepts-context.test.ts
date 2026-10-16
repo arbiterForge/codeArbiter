@@ -102,9 +102,9 @@ describe('C03 teaching and historical boundaries', () => {
   });
   it('keeps advisory read behavior distinct from typed execution authority', () => {
     const jit = page('jit-context-injection');
-    for (const phrase of ['ordered collection', 'not a first-match-only switch', 'ceil(character_count / 4)', 'deduplication epoch', 'diagnostic is not an approved-spec pointer', 'must stop']) expect(jit).toContain(phrase);
+    for (const phrase of ['ordered collection', 'not a first-match-only switch', 'ceil(character_count / 4)', 'deduplication epoch', 'diagnostic is not a spec pointer', 'independent authorized work', 'draft, ready and approved specs']) expect(jit).toContain(phrase);
     expect(source('core/pysrc/pre-read.py')).toContain('except Exception');
-    expect(source('core/pysrc/_readinjectlib.py')).toContain('authority_verified');
+    expect(source('core/pysrc/_readinjectlib.py')).toContain('"governance_state"');
     expect(jit).toContain("does not parse that document into a complete security map");
   });
   it('does not promise universal provenance or silently convert missing data to fresh', () => {

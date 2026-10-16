@@ -24,6 +24,36 @@ const reference = (type: RenderedPage['type'], slug: string) => {
 };
 
 describe('composed assistive workflow references', () => {
+  it('reuses current checks and reviews across commit and PR phases', () => {
+    for (const slug of ['commit-gate', 'finishing-a-development-branch']) {
+      const {guidance, source} = reference('skill', slug);
+      for (const text of [guidance, source]) {
+        expect(text).toMatch(/[Rr]euse/);
+        expect(text).toContain('affected');
+      }
+    }
+    const commit = reference('skill', 'commit-gate');
+    expect(commit.source).toContain('Never pass v2 records to `rebaseline`');
+    expect(commit.guidance).toContain('managed v2 pairs');
+    const guide = read('src/content/docs/guides/first-feature.mdx');
+    expect(guide).toContain('reuse applicable checks and reviews on unchanged inputs');
+    expect(guide).not.toMatch(/collect fresh evidence for `REVIEW`|Pi has no qualified prompt-approval seam/);
+  });
+  it('uses existing sprint and refactor authorization throughout public guidance', () => {
+    for (const type of ['command', 'skill'] as const) {
+      const refactor = reference(type, 'refactor');
+      for (const text of [refactor.guidance, refactor.source]) {
+        expect(text).toContain('existing');
+        expect(text).not.toMatch(/user-signed-off surface table|explicit user-approved amendment/);
+      }
+    }
+    const pages = [reference('command', 'sprint').guidance,
+      reference('command', 'commands').guidance,
+      read('src/content/docs/glossary.md'), read('src/content/docs/concepts/smarts.mdx')];
+    for (const text of pages) {
+      expect(text).not.toMatch(/every auto-decision|every non-hard-gate decision|spec and plan must be approved|delegate-methods|smarts-apply/);
+    }
+  });
   it('retains real greenfield confirmation and native population without discarding sources', () => {
     for (const type of ['command', 'skill'] as const) {
       const { guidance, source } = reference(type, 'decompose');

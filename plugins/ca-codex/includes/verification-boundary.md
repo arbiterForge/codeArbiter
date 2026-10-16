@@ -1,10 +1,12 @@
 # Local and hosted verification boundary
 
 Use **impact-bounded local verification** for the contributor loop. Before a
-commit or pull request, run the smallest fresh set that directly proves the
+commit or pull request, establish the smallest applicable set that directly proves the
 changed obligations and affected contracts, plus applicable lint/type-check,
 coverage, generated-artifact parity, staged secret scanning, and specialized
-security, dependency, migration, release, ADR, or deployment gates. A failing
+security, dependency, migration, release, ADR, or deployment gates. Reuse inspected
+results while their relevant source, inputs, command and obligations still match;
+run missing or affected checks. A phase transition alone does not require a rerun. A failing
 local check blocks. Do not require a repository-wide or cross-platform suite on
 the contributor's machine merely to create a commit or open a pull request.
 

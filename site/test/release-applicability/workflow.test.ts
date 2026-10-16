@@ -75,7 +75,7 @@ describe("documentation release-applicability workflow contract", () => {
     const siteCheck = jobBody(workflow, "site-check");
     const generate = runStepIndex(siteCheck, "npm run gen");
     const typecheck = runStepIndex(siteCheck, "npm run typecheck");
-    const tests = runStepIndex(siteCheck, "npm test");
+    const tests = runStepIndex(siteCheck, "npm run coverage");
 
     expect(generate, "site-check has no executable generation step").toBeGreaterThan(-1);
     expect(typecheck, "site-check has no typecheck step").toBeGreaterThan(generate);

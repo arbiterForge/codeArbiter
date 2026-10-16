@@ -11,7 +11,8 @@ drift from a merge or external edit that commit-gate's Phase 5.5 auto-heal did
 not cover, and an explicitly requested full refresh of initialized context.
 
 This skill is NOT in the daily loop. Commit-gate auto-heal (Phase 5.5,
-`heal_worklist`) owns the routine maintenance path. Reuse existing selection and
+`heal_worklist` for v1 and `v2_heal_worklist` for managed pairs) owns routine
+maintenance. Reuse existing selection and
 authorization for requested refresh; an audit-only request remains read-only.
 
 <!-- catalog-compatibility-notice:start -->

@@ -247,6 +247,7 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => observed[index] !== reviewed[index]);
     expect(changed).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
+      'core/pysrc/_readinjectlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
@@ -292,6 +293,7 @@ describe('atlas source compatibility revalidation', () => {
     const changed = paths.filter((_, index) => current[index] !== reviewed[index]);
     expect(changed.sort()).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
+      'core/pysrc/_readinjectlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',
@@ -446,6 +448,7 @@ describe('atlas source compatibility revalidation', () => {
     expect(offset).toBe(reviewed.length);
     expect(changed).toEqual([
       'CHANGELOG.md', 'core/pysrc/_artifactauthoritylib.py', 'core/pysrc/_contextselectlib.py',
+      'core/pysrc/_readinjectlib.py',
       'core/surface/COMMANDS.md', 'core/surface/SPRINT.md', 'core/surface/arbiter.md',
       'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md',
       'core/surface/commands/feature.md', 'core/surface/commands/fix.md',

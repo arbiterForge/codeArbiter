@@ -2,9 +2,9 @@
 entity: skills/refactor
 related: [commands/refactor, tdd]
 gates:
-  - gate: surface sign-off
+  - gate: authorized surface
     when: before any coverage work begins
-    effect: the exact files, symbols, and signatures being restructured must be named precisely and confirmed with you — a vague description does not pass
+    effect: inspect and name the exact files, symbols and signatures; proceed under existing authorization and ask only about a consequential missing scope decision
   - gate: parity coverage
     when: before implementation
     effect: every public method needs at least one direct test; passing characterization tests can establish missing baseline coverage before restructuring
@@ -24,12 +24,14 @@ as a feature or fix instead of proceeding as a refactor.
 
 ## Phases
 
-1. Name the exact files, symbols, and signatures the refactor will touch, and get it confirmed.
+1. Inspect and name the exact files, symbols and signatures covered by the request. Present the
+   scope table and continue without duplicate signoff when the existing authorization covers it.
 2. Prove pre-existing tests already cover that surface well enough to catch a behavior change,
    adding passing characterization tests before restructuring if they don't. Record the
    post-backfill baseline and its behavioral assertions.
 3. Where the refactor exposes a genuinely new seam, pin its contract with a failing test first.
-4. Apply the restructure, confined strictly to the named surface, with no added behavior.
+4. Apply the restructure with no added behavior. Maintain the table for necessary in-scope
+   consumer updates; obtain authorization for a materially broader outcome.
 5. Run the baseline parity tests locally. Preserve behavioral assertions; necessary import or
    symbol-reference updates must retain the same oracle. Require exhaustive exact-head hosted CI
    before merge.

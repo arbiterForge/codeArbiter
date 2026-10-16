@@ -1736,12 +1736,14 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
                     assert_contract(default_board)
 
     def test_refactor_entry_preserves_scope_and_parity_gates(self):
-        """Single ownership does not weaken approval, parity or verification."""
+        """Existing authorization preserves precise scope, parity and verification."""
         for host, target in (('claude', 'commands/refactor.md'), ('codex', 'skills/ca-refactor/SKILL.md'), ('pi', 'skills/ca-refactor/SKILL.md')):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[target].decode()
-                for obligation in ('## Phase 6', 'user-signed-off surface table', 'preserve the baseline assertions', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
+                for obligation in ('## Phase 6', 'covered by existing user authorization', 'preserve the baseline assertions', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'authorization for a material scope expansion'):
                     self.assertIn(obligation, entry)
+                self.assertNotIn('user-signed-off surface table', entry)
+                self.assertNotIn('explicit user-approved amendment', entry)
 
     def test_new_owner_metadata_routes_intent_not_required_syntax(self):
         """Descriptions identify the task rather than demanding a command wrapper."""
@@ -2561,6 +2563,32 @@ class AssistiveCallerProjectionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.surfaces = {host: B.render_all(REPO_ROOT, host)
                         for host in ('claude', 'codex', 'pi')}
+
+    def test_delivery_phases_reuse_current_checks_and_reviews(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            with self.subTest(host=host):
+                fresh = ' '.join(surface['includes/fresh-verification.md'].decode().split())
+                commit = ' '.join(surface[f'{routine}/commit-gate/SKILL.md'].decode().split())
+                finish = ' '.join(surface[f'{routine}/finishing-a-development-branch/SKILL.md'].decode().split())
+                self.assertIn('inputs still match', fresh)
+                self.assertIn('phase', fresh)
+                self.assertIn('Run a separate proving command only when existing evidence is missing, affected or insufficient', commit)
+                self.assertIn('Dispatch only missing or affected review work', commit)
+                self.assertIn('reuse', finish.lower())
+                self.assertIn('Required security and migration markers', commit)
+
+    def test_commit_maintenance_covers_v2_without_using_legacy_writer(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            with self.subTest(host=host):
+                commit = ' '.join(surface[f'{routine}/commit-gate/SKILL.md'].decode().split())
+                for obligation in ('v2_heal_worklist', 'assess_context_provenance',
+                                   'context-preview', 'context-apply',
+                                   'Never pass v2 records to `rebaseline`',
+                                   'do not label it fresh or block independent commit work',
+                                   'secrets-scan every newly staged file'):
+                    self.assertIn(obligation, commit)
 
     def test_sprint_composition_has_no_implicit_approval_or_per_step_scoring(self):
         for host, surface in self.surfaces.items():
