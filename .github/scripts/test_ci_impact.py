@@ -3322,14 +3322,34 @@ class SiteCoverageEvidenceTest(unittest.TestCase):
                     self._execute(self._script("coverage-summary"), site, temp)
                 self.assertFalse((temp / "site-coverage/coverage-summary.json").exists())
 
+    def test_python_bytecode_cache_is_not_a_coverage_input(self):
+        import py_compile
+        with tempfile.TemporaryDirectory() as raw:
+            site, temp = self._fixture(Path(raw))
+            helper = site / "scripts/helper.py"
+            helper.write_text("value = 1\n", encoding="utf-8")
+            self._execute(self._script("coverage-source"), site, temp)
+            cache = Path(py_compile.compile(str(helper), doraise=True))
+            self.assertTrue(cache.is_file())
+            totals = self._report(site)
+            self._execute(self._script("coverage-summary"), site, temp)
+            source = json.loads((temp / "site-coverage/source.json").read_text(encoding="utf-8"))
+            self.assertIn("scripts/helper.py", source["inputs"])
+            self.assertNotIn(cache.relative_to(site).as_posix(), source["inputs"])
+            self.assertEqual(source["totals"], totals)
+
     def test_changed_added_or_removed_measured_input_invalidates_source_binding(self):
-        for change in ("edit", "add", "remove"):
+        for change in ("edit", "add", "remove", "add-cache-source"):
             with self.subTest(change=change), tempfile.TemporaryDirectory() as raw:
                 site, temp = self._fixture(Path(raw))
                 self._execute(self._script("coverage-source"), site, temp)
                 self._report(site)
                 if change == "remove":
                     (site / "scripts/model.ts").unlink()
+                elif change == "add-cache-source":
+                    cache = site / "scripts/__pycache__"
+                    cache.mkdir()
+                    (cache / "new.ts").write_text("changed", encoding="utf-8")
                 else:
                     (site / "scripts" / ("new.ts" if change == "add" else "model.ts")).write_text(
                         "changed", encoding="utf-8")

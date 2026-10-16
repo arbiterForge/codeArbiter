@@ -125,7 +125,8 @@ jobs:
         run: |
           import hashlib, json, os, subprocess
           from pathlib import Path
-          paths = sorted({p for folder in ("scripts", "test") for p in Path(folder).rglob("*") if p.is_file()}
+          paths = sorted({p for folder in ("scripts", "test") for p in Path(folder).rglob("*")
+                          if p.is_file() and not (p.suffix == ".pyc" and "__pycache__" in p.parts)}
                          | {Path(p) for p in ("package.json", "package-lock.json", "vitest.config.ts")})
           evidence = Path(os.environ["RUNNER_TEMP"]) / "site-coverage"
           evidence.mkdir()
@@ -150,7 +151,8 @@ jobs:
           from pathlib import Path
           evidence = Path(os.environ["RUNNER_TEMP"]) / "site-coverage"
           source = json.loads((evidence / "source.json").read_text(encoding="utf-8"))
-          paths = sorted({p for folder in ("scripts", "test") for p in Path(folder).rglob("*") if p.is_file()}
+          paths = sorted({p for folder in ("scripts", "test") for p in Path(folder).rglob("*")
+                          if p.is_file() and not (p.suffix == ".pyc" and "__pycache__" in p.parts)}
                          | {Path(p) for p in ("package.json", "package-lock.json", "vitest.config.ts")})
           inputs = {p.as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
           if inputs != source["inputs"]:
