@@ -1,7 +1,9 @@
 # Assistive state engine — current implementation status
 
 **PR:** [arbiterForge/codeArbiter #983](https://github.com/arbiterForge/codeArbiter/pull/983)
-**Branch:** `overhaul/assistive-state-engine` — **draft, unmerged, unreleased**.
+**Branch:** `overhaul/assistive-state-engine` — **unmerged, unreleased**.
+The PR records current review readiness and final exact-head validation; the
+results below retain their stated source and execution scope.
 **Earlier implementation evidence commit:** `95e8e18c3d6c2f9fecb74bccc40416c7a684cce1`.
 **Direction:** [ADR-0043](../../.codearbiter/decisions/0043-assistive-state-engine.md).
 **Scope:** [single-PR task contract](assistive-state-engine-overhaul.md).

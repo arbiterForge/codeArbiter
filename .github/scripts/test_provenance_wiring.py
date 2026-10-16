@@ -20,6 +20,7 @@ Run (filtered): python .github/scripts/test_provenance_wiring.py commit_gate_hea
 import copy
 import json
 import re
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -411,12 +412,12 @@ def test_context_creation_bounded_optional_delegation():
     )
 
 
-def code_map_snapshot(record):
+def record_snapshot(record, root=ROOT):
     """Acquire only the source identities declared by this enrolled v2 record."""
     evidence = [item for field in record["fields"] for claim in field["claims"]
                 for item in claim["evidence"]]
     return snapshots.context_snapshot(
-        ROOT,
+        root,
         source_paths=sorted({item["path"] for item in evidence if item["kind"] == "content"}),
         membership=sorted({(item["predicate"], tuple(item["scope_paths"]))
                            for item in evidence if item["kind"] == "membership"}),
@@ -432,7 +433,7 @@ def test_code_map_provenance_identities_are_current():
     if not valid:
         return
     status = provenance.assess_context_provenance(
-        ROOT / ".codearbiter/.provenance", ["code-map"], code_map_snapshot(record))
+        ROOT / ".codearbiter/.provenance", ["code-map"], record_snapshot(record))
     check(status["coverage"] == "complete" and status["identity"] == "current"
           and status["documents"] == {"code-map": "v2_current"},
           f"code-map document/source identities must match current bytes: {status}")
@@ -443,7 +444,7 @@ def test_code_map_provenance_identities_are_current():
 def test_code_map_provenance_rejects_stale_or_incomplete_evidence():
     """A fixture probe cannot make stale, malformed or legacy evidence current."""
     good = json.loads(read_repo(".codearbiter/.provenance/code-map.json"))
-    snapshot = code_map_snapshot(good)
+    snapshot = record_snapshot(good)
     stale_document = copy.deepcopy(good)
     stale_document["document"]["digest"] = "0" * 64
     stale_source = copy.deepcopy(good)
@@ -487,6 +488,72 @@ def test_code_map_manifest_ownership_matches_sources():
           "the coarse map must direct mutable version/catalog queries to their owners")
 
 
+def test_context_provenance_preserves_checkout_bytes():
+    """A real autocrlf checkout preserves bound bytes; genuine edits stay stale."""
+    record_paths = [f".codearbiter/.provenance/{doc}.json"
+                    for doc in provenance.V2_DOCUMENTS]
+    records = [json.loads(read_repo(path)) for path in record_paths]
+    if not all(provenance.valid_provenance_record(record)
+               and record.get("schema") == 2 for record in records):
+        raise ValueError("checkout fixture requires valid enrolled v2 records")
+    sources = {item["path"] for record in records for field in record["fields"]
+               for claim in field["claims"] for item in claim["evidence"]
+               if item["kind"] == "content"}
+    paths = sorted(sources | set(record_paths) | {".gitattributes"}
+                   | {record["document"]["path"] for record in records})
+    expected = {path: (ROOT / path).read_bytes() for path in paths}
+    with tempfile.TemporaryDirectory(prefix="ca-context-checkout-") as directory:
+        checkout = Path(directory).resolve()
+
+        def git(*args, **kwargs):
+            return subprocess.run(["git", "-C", str(checkout), *args],
+                                  check=True, capture_output=True, **kwargs)
+
+        # Index the actual selected worktree bytes, including uncommitted
+        # attributes or native provenance updates. Never substitute HEAD's
+        # older records or change the source repository's index/configuration.
+        git("init", "--quiet")
+        git("config", "core.autocrlf", "false")
+        for path, raw in expected.items():
+            target = checkout / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+        git("add", "--", *paths)
+        git("config", "core.autocrlf", "true")
+        # Force materialization through Git's filters rather than letting its
+        # unchanged-index stat cache retain the bytes used to seed the fixture.
+        for path in paths:
+            (checkout / path).unlink()
+        git("checkout-index", "--force", "--all")
+        for path, raw in expected.items():
+            check((checkout / path).read_bytes() == raw,
+                  f"autocrlf checkout must preserve exact context/evidence bytes: {path}")
+
+        store = checkout / ".codearbiter/.provenance"
+        for record in records:
+            snapshot = record_snapshot(record, checkout)
+            status = provenance.assess_context_provenance(store, [record["doc"]], snapshot)
+            check(status["coverage"] == "complete" and status["identity"] == "current"
+                  and status["documents"] == {record["doc"]: "v2_current"},
+                  f"unaltered autocrlf checkout must retain current {record['doc']} identity")
+            check(status["semantic"] == "unverified" and not status["verified_fresh"],
+                  "byte-preserving checkout must not manufacture semantic verification")
+        record = next(record for record in records if record["doc"] == "code-map")
+        source = next(item["path"] for field in record["fields"]
+                      for claim in field["claims"] for item in claim["evidence"]
+                      if item["kind"] == "content")
+        for path in (record["document"]["path"], source):
+            before = (checkout / path).read_bytes()
+            snapshot = record_snapshot(record, checkout)
+            (checkout / path).write_bytes(before + b"\nActual content edit.\n")
+            status = provenance.assess_context_provenance(store, ["code-map"], snapshot)
+            check(status["identity"] == "stale"
+                  and status["documents"].get("code-map") == "v2_stale"
+                  and not status["verified_fresh"],
+                  f"real edit must remain stale after byte-preserving checkout: {path}")
+            (checkout / path).write_bytes(before)
+
+
 def test_code_map_manifest_claim_rejects_version_prefix_collision():
     """Retained legacy version claims still need exact matching when present."""
     claim = "npm package manifest for ca-pi (v0.14.30, @arbiterforge/ca-pi)"
@@ -522,6 +589,15 @@ REQUIRED_FILES = [
     "plugins/ca/commands/context-check.md",
     ".codearbiter/code-map.md",
     ".codearbiter/.provenance/code-map.json",
+    ".codearbiter/CONTEXT.md",
+    ".codearbiter/.provenance/CONTEXT.json",
+    ".codearbiter/tech-stack.md",
+    ".codearbiter/.provenance/tech-stack.json",
+    ".codearbiter/coding-standards.md",
+    ".codearbiter/.provenance/coding-standards.json",
+    ".codearbiter/security-controls.md",
+    ".codearbiter/.provenance/security-controls.json",
+    ".gitattributes",
     "plugins/ca/.claude-plugin/plugin.json",
     "plugins/ca-codex/.codex-plugin/plugin.json",
     "plugins/ca-pi/package.json",
@@ -538,6 +614,7 @@ TESTS = [
     test_code_map_provenance_identities_are_current,
     test_code_map_provenance_rejects_stale_or_incomplete_evidence,
     test_code_map_manifest_ownership_matches_sources,
+    test_context_provenance_preserves_checkout_bytes,
     test_code_map_manifest_claim_rejects_version_prefix_collision,
 ]
 # ---------------------------------------------------------------------------

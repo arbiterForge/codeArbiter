@@ -110,3 +110,12 @@ batches its offline Git reads while retaining per-path identity, symlink,
 missing-object, replacement-ref and drift rejection. The full local site suite
 passed 1,089 tests under unchanged limits. Subsequent focused checks cover the
 reviewed direct-validation branch and explicit handling of remaining unknowns.
+
+Windows checkout conversion exposed another real provenance failure: sixteen
+bound files changed bytes under `core.autocrlf=true`. Exact-path attributes now
+preserve the selected context pairs and source bytes; unrelated audit logs and
+task boards keep their existing rules. The coding-standards source binding was
+refreshed through native preview/apply. A real disposable checkout preserves all
+74 selected files and all five current identities; genuine source/document edits
+still become stale. The regression failed with the old attribute policy and
+passed with the repair. No digest normalization or semantic attestation was added.
