@@ -14,7 +14,7 @@ describe('partial assistive implementation versus retained historical routes',()
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
     expect(update.revision).toBe('95e8e18c3d6c2f9fecb74bccc40416c7a684cce1');
-    expect(update.changes).toHaveLength(36);
+    expect(update.changes).toHaveLength(37);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     for(const change of update.changes) {
       const bytes=execFileSync('git',['--no-replace-objects','cat-file','blob',change.blob],{cwd:root});

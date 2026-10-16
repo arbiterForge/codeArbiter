@@ -24,7 +24,7 @@ commits and publication permissions are **not** bypassed.
 | T05 | Feature, sprint, TDD, planning, execution and status adapted for Claude, Codex and Pi | Successful installed model exercise blocked by host policy |
 | T06 | Complete selected criteria and applicable constraints; bounded readback and named omissions; measured native orientation | End-to-end model cost unmeasured |
 | T07 | Captured replies survive cleanup and recover without recapture; safe replay; complete saved-store restore with old client; later edits retained | Unknown historical formats remain unsupported |
-| T08 | Three regenerated host adapters and 36 source-bound atlas owners; ordinary HTML labels corrected; explicit proof on demand | Actual deployment and release derivative readback |
+| T08 | Three regenerated host adapters and 37 source-bound atlas owners; ordinary HTML labels corrected; explicit proof on demand | Actual deployment and release derivative readback |
 | T09 | Native, reconciliation, browser and mixed-client checks pass locally; actual candidate installed through Codex marketplace | Hosted exact-head matrix and successful model canary; publication readback after authorized release |
 
 ## Verified candidate checks
@@ -53,6 +53,12 @@ commits and publication permissions are **not** bypassed.
   host surfaces, generated types and embedded schemas match; site generation
   and the existing npm audit gate pass. Independent reviews found no remaining
   actionable implementation issue. Staged secret scanning found no leaks.
+- **Public-doc integration:** both Codex farm cells and built-HTML assertions
+  now report unavailability without an automatic provider/model switch. All
+  1,072 site tests pass with two local workers and unchanged timeouts, followed
+  by the Academy non-root-base and rendered-release checks. The unrestricted
+  local worker count had exhausted timeout budgets; no test was skipped or
+  relaxed to obtain the passing run.
 - **Earlier offline installed fixtures:** ordinary progress and separate
   historical proof passed on all three adapters before this correction.
   Those results do not establish this candidate's hosted package matrix,

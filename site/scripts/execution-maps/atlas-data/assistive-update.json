@@ -384,6 +384,14 @@
         "f-approval",
         "c-proof"
       ]
+    },
+    {
+      "path": "docs/parity.md",
+      "blob": "f91816230979baf2863ee5071431c2fdc8aec276",
+      "summary": "The public Codex farm boundary matches its caller: report the unavailable backend and use another provider or model only within existing authorization.",
+      "nodes": [
+        "f-selection"
+      ]
     }
   ]
 }

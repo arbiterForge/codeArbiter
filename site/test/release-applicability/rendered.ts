@@ -46,9 +46,20 @@ if (compatibilityText.includes("no compiled binaries") || compatibilityText.incl
 const farmRow = compatibilityHtml.match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g)
   ?.find((row) => row.match(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/)?.[1]
     .replace(/<[^>]+>/g, " ").trim() === "/ca:sprint --farm");
-const codexFarmCell = farmRow?.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)?.[2];
-if (!codexFarmCell?.includes("premium-subagent path") || !codexFarmCell.includes("backend is not packaged")) {
-  throw new Error("Built Compatibility output does not preserve the Codex farm fallback in its host cell");
+const codexFarmCell = farmRow?.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)?.[2]
+  .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+for (const boundary of [
+  "backend is not packaged",
+  "Reports the unavailable backend",
+  "no silent provider/model switch",
+  "another backend only within existing authorization",
+]) {
+  if (!codexFarmCell?.includes(boundary)) {
+    throw new Error(`Built Compatibility output is missing the Codex farm boundary: ${boundary}`);
+  }
+}
+if (/premium-subagent path|falls back|degraded/i.test(codexFarmCell!)) {
+  throw new Error("Built Compatibility output still promises an automatic Codex farm fallback");
 }
 
 function requireBuiltValue(value: string, description: string): void {
