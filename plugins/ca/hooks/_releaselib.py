@@ -2834,12 +2834,12 @@ def _targets_error_exit_code(exc):
            skill's "Targets" section and must never be mistaken for
            "safe to back-fill".
 
-    Exit code 2 is deliberately NOT reused for either state here: it already
-    means "bad CLI invocation" or "unrecognised target name" elsewhere in
-    this dispatcher, neither of which is a statement about the declared
-    file's own state -- collapsing them together is exactly how the
-    original defect made "absent" and "exists but broken" indistinguishable
-    from the CLI."""
+    Exit code 2 is deliberately NOT reused for either declared-file state.
+    This module's dispatcher uses 2 for bad CLI invocation or an unrecognised
+    target name; releasehash.py instead reserves 2 for "never confirmed"
+    and uses 64/65 for usage/unknown-target errors. Neither caller may
+    collapse its own exit-2 meaning into the distinction between an absent
+    declared file and an existing but broken one."""
     return 3 if isinstance(exc, AbsentBlockError) else 4
 
 
