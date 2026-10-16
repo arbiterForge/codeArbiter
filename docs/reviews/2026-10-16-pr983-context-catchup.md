@@ -8,7 +8,7 @@ unrelated features, publish packages, or replace actual host permissions.
 
 The six-domain source audit covered stack, infrastructure, architecture,
 security, tests and data model. Including the CI-driven policy repair, it
-inspected 68 distinct direct source files, with 64 retained in final provenance;
+inspected 69 distinct direct source files, with 64 retained in final provenance;
 none of the five target context documents was used as evidence for itself.
 The code map contains 48 existing paths and passes the existing map linter.
 

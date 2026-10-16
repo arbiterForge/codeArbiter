@@ -142,9 +142,20 @@ is a lightweight staleness warning with the best-effort gate-events sink. Sink
 failure/lock contention must not reverse a guard's verdict. Warnings are advisory
 and not persisted as fabricated events. `/override` is not staleness-tracked.
 
-The ADR ledger CI comparison requires the prior base prefix and rejects unknown
-or all-zero base identities; immutable accepted packets retain their exact
-bindings. Successful local checks do not rewrite accepted historical evidence.
+`.codearbiter/decisions/adr-lifecycle.jsonl` is the append-only decision-lifecycle
+ledger. Its exact repository-relative path is authoritative; hook classification
+also compares it case-folded so mixed-case aliases cannot evade protection on
+supported case-insensitive filesystems. Tail append is its only permitted write
+shape. H-05 enforces append-only write shape by blocking rewrites, truncation,
+deletion and non-tail edits. The lifecycle checker separately validates JSONL
+syntax, event completeness, schema, and committed-prefix integrity after writes
+and in CI; H-05 does not validate appended content. H-11 separately protects
+governed decision-document paths.
+
+In CI, the lifecycle checker compares the base and current ledger as committed Git blobs
+and requires the base to be an exact byte prefix of the current blob. Missing,
+unresolvable or all-zero base identities fail closed. Immutable accepted packets
+retain their exact bindings; local checks do not rewrite historical evidence.
 Sanctioned marker producers are cooperative attestations; never mint a marker,
 approval source or test/review result without its actual underlying action.
 

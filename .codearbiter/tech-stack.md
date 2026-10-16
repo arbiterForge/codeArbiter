@@ -51,8 +51,8 @@ Windows uses native Windows Git/Python; Linux/macOS use native tools. Git owns
 config parsing and hook execution. The default worktree geometry is supported;
 separate-Git-dir, UNC, and WSL combinations are not universally qualified by a
 single successful probe. ADR-0038's bounded WSL path translation does not expand
-the general platform matrix. ADR lifecycle proof reads require Git >=2.45 for
-the no-lazy-fetch boundary. Preserve normal trust and safe.directory behavior.
+the general platform matrix. ADR lifecycle proof reads require Git 2.45.0+ with
+`--no-lazy-fetch`. Preserve normal trust and safe.directory behavior.
 
 CI owns six native platform cells: Linux, Windows and macOS on amd64/arm64.
 Source pins include Python 3.14, Node 22.19 and Go 1.27.1 for native packaging;
