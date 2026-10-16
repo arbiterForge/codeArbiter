@@ -316,7 +316,10 @@ class TestAssistiveContextBridge(unittest.TestCase):
                                    "mutation_available": True, "permission_model": "host-owned"},
         }
         with tempfile.TemporaryDirectory() as tmp:
-            client = _artifactlib.ArtifactClient(tmp, tmp)
+            # Canonicalize this owned fixture: macOS temp paths can cross /var.
+            # ArtifactClient must still reject caller-supplied linked roots.
+            root = Path(tmp).resolve()
+            client = _artifactlib.ArtifactClient(root, root)
             with (mock.patch.object(client, "call", return_value=capability) as call,
                   mock.patch.object(client, "workflow_preflight",
                                     side_effect=AssertionError("unrelated host capture gate")),
