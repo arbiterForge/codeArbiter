@@ -103,6 +103,11 @@ test('the first peer has no layout privilege when content and order change', asy
 /** Exercise every native disclosure, including both independent init routes. */
 async function readImplementation(page: Page, slug: string, script: boolean) {
   const disclosures = page.locator('details.ca-implementation-view');
+  if (slug === 'feature-lane') {
+    await expect(disclosures).toHaveCount(0);
+    await expect(page.locator('[data-reader-journey]')).toContainText('implementation progress, not independent verification');
+    return;
+  }
   await expect(disclosures).toHaveCount(slug === 'opt-in-a-repo' ? 3 : 1);
   for (const detail of await disclosures.all()) await expect(detail).not.toHaveAttribute('open');
   // DOM order is outer-first. Scope to the immediate summary, never descendants.
@@ -110,10 +115,6 @@ async function readImplementation(page: Page, slug: string, script: boolean) {
     const summary = detail.locator(':scope > summary');
     await summary.focus(); await summary.press('Enter');
     await expect(detail).toHaveAttribute('open', '');
-  }
-  if (slug === 'feature-lane') {
-    await expect(disclosures.locator('img')).toBeVisible();
-    return;
   }
   for (const id of slug === 'opt-in-a-repo' ? ['greenfield', 'brownfield'] : ['sprint']) {
     const model = getWorkflow(id).map;
@@ -143,9 +144,9 @@ test('reader maps precede optional implementation detail and preserve authority 
     const result = await new AxeBuilder({ page }).include('[data-reader-journey]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(result.violations).toEqual([]);
   }
-  await expect(page.locator('[data-reader-journey]')).toContainText('currently limited to Codex and Claude Code');
-  await expect(page.locator('[data-reader-journey]')).toContainText('a generic reply or an unobserved approval cannot start execution');
-  await expect(page.locator('[data-reader-journey]')).toContainText('One host-observed reply approving both exact initial artifact identities');
+  await expect(page.locator('[data-reader-journey]')).toContainText('Ordinary plan maintenance and task progress need no additional artifact approval');
+  await expect(page.locator('[data-reader-journey]')).toContainText('REVIEW and DONE describe implementation progress');
+  await expect(page.locator('[data-reader-journey]')).toContainText('Merge and publication need their own authorization');
 });
 
 test('maps and implementation disclosure work without JavaScript', async ({ browser }) => {
@@ -171,12 +172,12 @@ test('maps and implementation disclosure work without JavaScript', async ({ brow
 
 test('maps retain focus in forced colors, reduced motion, and printable implementation detail', async ({ page }) => {
   await page.emulateMedia({ forcedColors: 'active', reducedMotion: 'reduce' });
-  await page.goto('/guides/feature-lane/');
+  await page.goto('/guides/autonomous-sprints/');
   const summary = page.locator('.ca-implementation-view > summary');
   await summary.focus();
   expect(await summary.evaluate(node => getComputedStyle(node).outlineStyle)).not.toBe('none');
   await page.keyboard.press('Enter');
-  await expect(page.locator('.ca-implementation-view img')).toBeVisible();
+  await expect(page.locator('.ca-implementation-view [data-workflow="sprint"]')).toBeVisible();
   await summary.click();
   await page.emulateMedia({ media: 'print', forcedColors: 'none' });
   await expect(page.locator('.ca-reader-journey__step')).toHaveCount(4);

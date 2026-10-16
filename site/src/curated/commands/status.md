@@ -5,12 +5,13 @@ related: [metrics, audit, task]
 
 ## What it does
 
-A read-only snapshot of `.codearbiter/` state: the project's `stage:` maturity value, every
-in-flight pipeline under `specs/` and `plans/` with how far each got (spec awaiting approval, spec
-approved with no plan, a plan in progress with its `ACCEPTED` task count, or complete), the open
-task and open-question counts, overrides logged since the last checkpoint, and the current git
-branch. No skill is routed to and no file is modified — if `[CONFIRM-NN]` placeholders are open, it
-surfaces them without resolving them.
+A read-only snapshot of project maturity, pipeline progress, open tasks and questions,
+override count and Git branch. `DONE` and historical `ACCEPTED` contribute to implementation
+completion, with their labels retained. Verification is reported separately: a completed task
+does not establish a passing check, review or release. Missing state remains unknown.
+
+Drafts do not create a permission wait. The snapshot shows genuine decisions and blocked tasks
+with their actual reasons, without resolving them or changing files.
 
 ## Usage
 
@@ -18,19 +19,20 @@ surfaces them without resolving them.
 /ca:status
 ```
 
-Takes no arguments.
+With no arguments, show the snapshot. `/ca:status drift` routes to the context audit;
+refreshing documents requires an explicit scoped selection after its report.
 
 ## Example
 
 ```text
 > /ca:status
 
-## Project status — 2026-07-02
+## Project status — YYYY-MM-DD
 
 Stage:            3
-Branch:           docs/site-curated-commands-b
+Branch:           feature/export
 Pipelines:
-  docs-site-overhaul   plan 4/12 ACCEPTED — resume with /ca:feature "docs-site-overhaul"
+  export   implementation 4/12 complete (4 DONE); verification pending — resume with /ca:feature "export"
 Open tasks:       2
 Open questions:   1 ([CONFIRM-11] unresolved)
 Overrides since last checkpoint: 2

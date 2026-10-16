@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { featureMap, validateExecutionMap } from './model';
 import { renderChapterSvg, renderExecutionSvg } from './render';
@@ -22,12 +23,21 @@ describe('source-traced execution map', () => {
     for (const source of Object.values(featureMap.sources)) {
       expect(source.path).toMatch(/^core\/surface\//);
       expect(readFileSync(new URL(source.currentPath ?? source.path, root), 'utf8')).toContain(source.currentQuote ?? source.quote);
+      expect(execFileSync('git', ['show', `${featureMap.reviewedAt}:${source.path}`], { cwd: root, encoding: 'utf8' })).toContain(source.quote);
     }
     for (const chapter of featureMap.chapters) {
       for (const node of chapter.nodes) expect(featureMap.sources[node.source]).toBeDefined();
       for (const edge of chapter.edges) expect(featureMap.sources[edge.source]).toBeDefined();
     }
     for (const edge of featureMap.alternatives) expect(featureMap.sources[edge.source]).toBeDefined();
+  });
+  it('teaches current authorized progress, proportional verification and real delivery boundaries', () => {
+    expect(featureMap.reviewedAt).toBe('a9f63fc481385680987f2ccbecede82603f011eb');
+    const text = JSON.stringify(featureMap);
+    for (const phrase of ['direct implementation', 'characterization', 'advisory', 'DONE', 'base-to-HEAD', 'user-requested pause']) expect(text).toContain(phrase);
+    expect(text).not.toMatch(/Historical attended|fresh author|Wait for acknowledgement|scope acceptance through|current context ticket|Missing obligation returns to red/);
+    const author = featureMap.chapters.flatMap(chapter => chapter.nodes).find(node => node.id === 'author');
+    expect(author?.conditional).toBe(true);
   });
   it('rejects duplicate IDs, orphan edges, missing owners and lost outcomes', () => {
     const copy = () => structuredClone(featureMap);
@@ -59,6 +69,11 @@ describe('source-traced execution map', () => {
     }
     expect(svg).not.toContain('<foreignObject');
     expect(svg).not.toContain('<script');
+  });
+  it('publishes the same current feature map in the downloadable diagram', () => {
+    const asset = readFileSync(new URL('site/public/diagrams/lane-feature.svg', root), 'utf8');
+    expect(asset.replace(/\r\n/g, '\n')).toBe(renderExecutionSvg(featureMap));
+    expect(asset).not.toMatch(/Fresh author|Human checkpoint|scope acceptance/);
   });
   it('escapes authored diagram text and rejects markup-like IDs', () => {
     const altered = structuredClone(featureMap.chapters[0]);

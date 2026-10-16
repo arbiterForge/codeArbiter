@@ -69,7 +69,8 @@ describe('C02 source and evidence distinctions', () => {
   });
   it('does not turn packet assembly into historical reconstruction or missing evidence into none', () => {
     const audit = page('auditability');
-    for (const phrase of ['small-lane classifications', 'currently unresolved', 'most recent', 'integer override-count baseline', 'source-contract discrepancy', 'labelled redacted derivative', 'not a byte-exact copy']) expect(audit).toContain(phrase);
+    for (const phrase of ['small-lane classifications', 'currently unresolved', 'most recent', 'integer override-count baseline', '`source_commit`', '`recorded_at`', '`worktree_dirty`', 'ancestor of HEAD', 'labelled redacted derivative', 'not a byte-exact copy']) expect(audit).toContain(phrase);
+    expect(audit).not.toContain('source-contract discrepancy');
     expect(read('src/curated/commands/audit.md')).toContain('not a commit or date');
     const record = read('reviews/CONCEPTS-C02-SOURCES.md');
     expect(record).toContain('State: OPEN'); expect(record).toContain('last-checkpoint');

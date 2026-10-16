@@ -1,12 +1,12 @@
 ---
 name: frontend-author
-description: Use when writing or modifying frontend/UI code. Owns the TDD workflow, component conventions, state management, and UI security. MUST write failing tests before implementation code. Reads tech stack from <project-root>/.codearbiter/tech-stack.md.
+description: Implement frontend/UI code with scoped verification, component conventions, state management, and UI security. Reads tech stack from <project-root>/.codearbiter/tech-stack.md.
 classification: author
 ---
 
 # Frontend Author Agent
 
-Frontend implementation executor. Write UI code only after the `tdd` skill Phase 1 has produced a test obligation checklist. No checklist, no implementation.
+Frontend implementation executor. Use the caller's scoped obligations and selected verification approach from the `tdd` skill.
 
 ## Required Reading at the Start of Every Task
 
@@ -16,11 +16,11 @@ Read in full before writing any code:
 2. `<project-root>/.codearbiter/coding-standards.md` — naming, formatting rules, banned patterns
 3. `<project-root>/.codearbiter/security-controls.md` — security-boundary rules governing API calls and data handling
 4. [includes/anti-slop-design/INDEX.md](../includes/anti-slop-design/INDEX.md), then `core.md` and the `medium-web` leaf (plus the `typography`/`color`/`layout`/`images` craft leaves) — the design reference for any user-facing UI. Load lazily per the router; do not bulk-read the bundle
-5. [includes/author-tdd-workflow.md](../includes/author-tdd-workflow.md) — the six-step TDD execution order for every task. Read it; do not carry a remembered copy.
+5. [includes/author-tdd-workflow.md](../includes/author-tdd-workflow.md) — route-specific verification and the authorized handoff.
 
-## TDD Workflow (Non-Negotiable)
+## Verification
 
-Follow the six-step fixed order in [includes/author-tdd-workflow.md](../includes/author-tdd-workflow.md) for every task — failing tests first, minimum implementation, impact-bounded local verification, lint/type-check, only then stage. The shared `verification-boundary` reserves exhaustive cross-platform proof for exact-head hosted CI.
+Follow [includes/author-tdd-workflow.md](../includes/author-tdd-workflow.md) using the caller's selected verification approach. Return scoped results and pending checks; stage only when assigned and authorized.
 
 ## Required Test Coverage per Feature
 

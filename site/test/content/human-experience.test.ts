@@ -76,9 +76,11 @@ describe("human-operable product window", () => {
     expect(normal).toContain("no certification code");
     const guide = read("src/content/docs/guides/review-artifacts.md");
     expect(guide).toContain("## Check your host's authority capability");
-    expect(guide).toContain("| Claude Code | Host-observed prompt approval | Production adapters");
-    expect(guide).toContain("| Codex | Host-observed prompt approval | Production adapters");
-    expect(guide).toContain("| Pi | Not supported | Not supported");
+    expect(guide).toContain("| Artifact integrity |");
+    expect(guide).toContain("| Work authorization |");
+    expect(guide).toContain("| Explicit attestation |");
+    expect(guide).toContain("Native writer support includes Pi");
+    expect(guide.replace(/\s+/g, " ")).toContain("not a prerequisite for ordinary drafting or implementation");
     for (const path of ["guides/first-feature.mdx", "guides/feature-lane.mdx", "guides/autonomous-sprints.mdx", "concepts/artifacts.md"]) {
       expect(read(`src/content/docs/${path}`)).toContain("/guides/review-artifacts/#check-your-hosts-authority-capability");
     }
@@ -86,7 +88,7 @@ describe("human-operable product window", () => {
     expect(read("src/components/HostViews.astro")).toContain("verification and review authority are not supported");
   });
 
-  it("separates current assisted execution from retained historical authority evidence", () => {
+  it("separates current assisted execution from explicit attestation", () => {
     const adapter = read("../core/pysrc/_approvallib.py");
     expect(adapter).toContain("PENDING_APPROVAL");
     expect(adapter).toContain('reply = f"approve {artifact_id} {token}"');
@@ -95,14 +97,12 @@ describe("human-operable product window", () => {
     expect(sprint).toContain("without a second artifact approval system");
     expect(sprint).toContain("Do not arm");
     expect(sprint).toContain("a local `DONE` batch is not a shipped release".replace("a local", "A local"));
-    expect(guide).toContain("arm-sprint");
-    expect(guide).toContain("Historical receipt-based workflow");
-    expect(guide).toContain("sprint-approve");
-    expect(guide).toContain("Later single-artifact changes");
-    expect(guide).not.toContain("This is not two approvals.");
+    expect(guide).toContain("Explicit attestation has separate host support requirements");
+    expect(guide).not.toContain("Historical receipt-based workflow");
+    expect(guide).toContain("Ordinary plan maintenance and task progress need no additional artifact approval");
+    expect(guide).toContain("REVIEW and DONE describe implementation progress");
     expect(guide).not.toContain("record the accepted task state on disk");
-    expect(guide).toContain("checkpoint scope together");
-    expect(guide).toContain("SMARTS prerequisite authority is not supported");
+    expect(guide).toContain("Merge and publication need their own authorization");
   });
 
   it("keeps old authority receipts inspection-only rather than relabelling them after upgrade", () => {
@@ -121,8 +121,10 @@ describe("human-operable product window", () => {
 
   it("keeps curated review guidance aligned with the producer contract", () => {
     const decompose = read("src/curated/commands/decompose.md");
-    expect(decompose).toContain("all three planning documents are written, reviewed, and explicitly approved");
-    expect(read("../core/surface/skills/decompose/SKILL.md")).toContain("the user explicitly approves all three");
+    expect(decompose.replace(/\s+/g, " ")).toContain("Review all three planning documents");
+    const source = read("../core/surface/skills/decompose/SKILL.md").replace(/\s+/g, " ");
+    expect(source).toContain("record the user's actual confirmation in `_session.md`");
+    expect(source).toContain("existing confirmation covers unchanged artifacts");
     expect(read("src/curated/skills/brainstorming.md")).not.toContain("single test");
     expect(read("src/curated/skills/brainstorming.md")).toContain("one or more named tests");
     expect(read("../core/surface/skills/brainstorming/SKILL.md")).toContain("one or more focused tests");

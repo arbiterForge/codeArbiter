@@ -20,6 +20,10 @@ count to `.codearbiter/last-checkpoint`, re-zeroing the overrides-since-checkpoi
 integer is neither a timestamp nor a commit-gate receipt. A periodic report provides no promotion
 sign-off and does not satisfy typed task acceptance.
 
+The caller captures the reviewed commit, UTC review-start time and whether the worktree was dirty
+before dispatch. The report retains these as `source_commit`, `recorded_at` and `worktree_dirty`;
+missing observations remain unknown. Audit windows use these report anchors, not the counter.
+
 [Checkpoints in context](/concepts/checkpoints/) explains the complete handoff and how to inspect
 missing review evidence before routing follow-up work.
 

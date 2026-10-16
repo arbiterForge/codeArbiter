@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 2208" role="img" data-diagram-system="ca-v2" data-execution-map="feature">
-<title>A feature request becomes a reviewed pull request</title><desc>Historical attended full-lane snapshot at reviewedAt, not current executable guidance. The assistive overhaul removes artifact reapproval, mandatory reviewer chains, context-ticket permission and routine acknowledgement stops. Current source quotes are checked separately; completion is not installed-host proof. Actual endpoint: An open PR, its source identity and observed check state. Merging and publishing remain separate decisions. Conditions and return paths remain in the companion reading view.</desc>
+<title>A feature request becomes a reviewed pull request</title><desc>The requested outcome authorizes scoped feature work. Maintain its spec and plan, follow actual dependencies, implement directly or delegate useful units, and report observed checks. Real user stops, host permissions, security controls and delivery authority remain effective. Actual endpoint: An open PR, its source identity and observed check state. Merging and publishing remain separate decisions. Conditions and return paths remain in the companion reading view.</desc>
 <rect width="900" height="2208" fill="#090d12"/>
 <text x="24" y="35" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="14" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="852">FEATURE • COMMANDS / SKILLS / AGENTS</text>
-<text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Definition → task loop → scope acceptance → PR handoff</text>
+<text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Definition → implementation and checks → progress → PR handoff</text>
 <svg x="0" y="94" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="define">
-<title>Define the change</title><desc>command: /ca:feature → skill: brainstorming → skill: writing-plans → skill: executing-plans. A specification, a linked plan, and the current approvals required by the selected artifact format.</desc>
+<title>Define the change</title><desc>command: /ca:feature → skill: brainstorming → skill: writing-plans → skill: executing-plans. A maintained specification and linked plan with observable criteria, actual dependencies and unresolved choices kept visible.</desc>
 <defs><marker id="asset-feature-define-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Define the change</text>
@@ -18,24 +18,24 @@
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
 <path data-map-edge="entry:spec" data-relation="sequence" d="M299 120H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>full lane: New full-lane work enters brainstorming.</title></path>
-<path data-map-edge="spec:plan" data-relation="sequence" d="M488 252H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>approved: Specification approval precedes implementation planning.</title></path>
-<path data-map-edge="plan:batch" data-relation="sequence" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>ready plan: The attended coordinator receives the approved, bound plan.</title></path>
-<g data-map-node="entry" data-role="command"><title>/ca:feature. Resolve existing work before classifying a new request. This map follows new full-lane work; small and resume routes are separate.</title>
+<path data-map-edge="spec:plan" data-relation="sequence" d="M488 252H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>criteria: Return the selected specification and actual open decisions directly to planning.</title></path>
+<path data-map-edge="plan:batch" data-relation="sequence" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>ready plan: The coordinator receives the maintained plan and selects useful authorized work.</title></path>
+<g data-map-node="entry" data-role="command"><title>/ca:feature. Resolve existing work before classifying a new request. Resume its actual unfinished step and preserve the selected representation.</title>
 <rect x="130" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
 <text x="143" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">01</text>
 <text x="214.5" y="128" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:feature</text>
 </g>
-<g data-map-node="spec" data-role="skill"><title>brainstorming. Turn the request into concrete acceptance criteria. Surface unresolved questions and obtain the required specification approval before planning.</title>
+<g data-map-node="spec" data-role="skill"><title>brainstorming. Refine the agreed outcome into observable criteria and exclusions. Ask about consequential unresolved choices while retaining decisions already made.</title>
 <rect x="319" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="332" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">02</text>
 <text x="403.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">brainstorming</text>
 </g>
-<g data-map-node="plan" data-role="skill"><title>writing-plans. Map the specification into tasks, paths, dependencies and verification. Preserve the selected format and its approval binding.</title>
+<g data-map-node="plan" data-role="skill"><title>writing-plans. Describe coherent tasks, relevant paths, actual dependencies and checks under existing authorization. Maintain in-scope methods with a reason and preserve source identity.</title>
 <rect x="508" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="521" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">03</text>
 <text x="592.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">writing-plans</text>
 </g>
-<g data-map-node="batch" data-role="skill"><title>executing-plans. Coordinate attended work. On HTML, use authored checkpoint membership rather than inventing smaller acceptance scopes.</title>
+<g data-map-node="batch" data-role="skill"><title>executing-plans. Select meaningful work using actual task dependencies. Preserve blocked members and authored scope while allowing independent work to continue.</title>
 <rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">04</text>
 <text x="781.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">executing-</text>
@@ -45,7 +45,7 @@
 </svg>
 <text x="24" y="586" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Build and verify each task</text>
 <svg x="0" y="620" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="task">
-<title>Build and verify each task</title><desc>skill: subagent-driven-development: select → agent: backend-author, frontend-author or infra-author → skill: tdd: six gated phases → skill: subagent-driven-development: review and verify. Per-task specification review and fresh verification. This is not yet whole-scope acceptance.</desc>
+<title>Build and verify each task</title><desc>skill: subagent-driven-development: select → agent: Optional backend, frontend or infrastructure author → skill: tdd: select and prove the approach → skill: subagent-driven-development: verify. Implemented work with actual check results and pending verification, returned to the caller.</desc>
 <defs><marker id="asset-feature-task-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Build and verify each task</text>
@@ -58,38 +58,37 @@
 <rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
-<path data-map-edge="task-select:author" data-relation="dispatch" d="M299 252H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>dispatch: One fresh, scope-selected author receives the task.</title></path>
-<path data-map-edge="author:tdd" data-relation="dispatch" d="M488 384H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>uses tdd: The author follows the test-first procedure, not a separate later test service.</title></path>
-<path data-map-edge="tdd:task-proof" data-relation="return" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>return: The caller performs specification review and fresh verification after authoring.</title></path>
-<g data-map-node="task-select" data-role="skill"><title>subagent-driven-development: select. Select eligible work inside the caller’s scope and retain its requirement, target paths and verification command. Typed work uses engine eligibility and a current context ticket.</title>
+<path data-map-edge="task-select:author" data-relation="dispatch" d="M299 252H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>implement: Implement directly or assign a useful bounded unit; delegation is conditional.</title></path>
+<path data-map-edge="author:tdd" data-relation="reuse" d="M488 384H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="5 4" marker-end="url(#asset-feature-task-arrow)"><title>verify approach: The implementer follows the verification approach suited to the assigned work.</title></path>
+<path data-map-edge="tdd:task-proof" data-relation="return" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>return: Return actual results so the caller can assess criteria, source applicability and remaining work.</title></path>
+<g data-map-node="task-select" data-role="skill"><title>subagent-driven-development: select. Inspect the selected scope, criteria, actual dependencies and current work. Engine eligibility is advisory; inspect outstanding workers before redispatch after interruption.</title>
 <rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">05</text>
 <text x="214.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Task engine</text>
 </g>
-<g data-map-node="author" data-role="agent"><title>backend-author, frontend-author or infra-author. Select the author from the project’s scope mapping. The author runs the test-first procedure inside this task; authoring is not a completed stage before TDD.</title>
-<rect x="319" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7"/>
-<text x="332" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">06</text>
-<text x="403.5" y="392" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Fresh author</text>
+<g data-map-node="author" data-role="agent"><title>Optional backend, frontend or infrastructure author. Choose direct implementation for focused work. Delegate when isolation, parallel work or expertise helps, supplying bounded relevant context. A delivery receipt does not grant execution permission.</title>
+<rect x="319" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7" stroke-dasharray="5 4"/>
+<text x="332" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">06 · if applicable</text>
+<text x="403.5" y="392" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Scoped author</text>
 </g>
-<g data-map-node="tdd" data-role="skill"><title>tdd: six gated phases. Derive obligations, observe a meaningful failing test, implement the minimum change, then verify coverage of the obligations and project quality requirements.</title>
+<g data-map-node="tdd" data-role="skill"><title>tdd: select and prove the approach. Use genuine regression RED/GREEN for confirmed fixes, criterion-focused feature checks and passing characterization baselines for refactors. Non-executable changes use relevant validation.</title>
 <rect x="508" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="521" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">07</text>
 <text x="592.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">tdd</text>
 </g>
-<g data-map-node="task-proof" data-role="skill"><title>subagent-driven-development: review and verify. Check the change against its task obligation and run the plan’s verification afresh. An author’s report does not substitute for this evidence.</title>
+<g data-map-node="task-proof" data-role="skill"><title>subagent-driven-development: verify. Compare the result with criteria and run applicable checks. Record commands, working directories, outcomes and limitations. Reuse evidence only while its checked source and inputs remain applicable.</title>
 <rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">08</text>
-<text x="781.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Spec review</text>
-<text x="781.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">+ fresh verify</text>
+<text x="781.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Check result</text>
 </g>
 <text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
 </svg>
-<text x="24" y="1112" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Accept the scope, then checkpoint</text>
+<text x="24" y="1112" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Review and report progress</text>
 <svg x="0" y="1146" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="accept">
-<title>Accept the scope, then checkpoint</title><desc>agent: Scope-selected quality reviewers → agent: finding-triage → skill: subagent-driven-development: accept → skill: executing-plans: human checkpoint. Accepted scope evidence and a human acknowledgement before the next attended batch.</desc>
+<title>Review and report progress</title><desc>agent: Risk-selected reviewers → agent: finding-triage → skill: subagent-driven-development: record progress → skill: executing-plans: report and continue. Current implementation progress, applicable review and check results, and the next authorized work.</desc>
 <defs><marker id="asset-feature-accept-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
-<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Accept the scope, then checkpoint</text>
+<text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Review and report progress</text>
 <rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 120H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="125" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#f0b92f" text-anchor="start" data-max-width="91">Commands</text>
@@ -99,36 +98,37 @@
 <rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
-<path data-map-edge="quality:triage" data-relation="sequence" d="M299 384H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>findings: Applicable reviewer findings are classified before the scope can be accepted.</title></path>
-<path data-map-edge="triage:accept-scope" data-relation="return" d="M488 384H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>no blocker: Return quality results to the task engine; current evidence still governs acceptance.</title></path>
-<path data-map-edge="accept-scope:checkpoint" data-relation="return" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>to caller: A scoped invocation returns to executing-plans, not directly to commit-gate.</title></path>
-<g data-map-node="quality" data-role="agent"><title>Scope-selected quality reviewers. Review the combined diff once per scope after task review and verification. Dispatch security, auth/crypto, dependency or migration reviewers only where applicable; ordinary work retains its TDD/coverage quality bar.</title>
+<path data-map-edge="quality:triage" data-relation="sequence" d="M299 384H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>findings: When independent reviewers are dispatched, aggregate their complete findings and unit outcomes.</title></path>
+<path data-map-edge="triage:accept-scope" data-relation="return" d="M488 384H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>results: Return applicable review results; implementation status must not conceal failures or missing checks.</title></path>
+<path data-map-edge="accept-scope:checkpoint" data-relation="return" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>to caller: The scoped invocation returns to its coordinator with work and evidence, not directly to commit.</title></path>
+<g data-map-node="quality" data-role="agent"><title>Risk-selected reviewers. Review the combined relevant diff when risk or policy requires it. Use specialist reviewers for applicable security, dependency or migration concerns and avoid duplicate per-task reviewer cascades.</title>
 <rect x="130" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7" stroke-dasharray="5 4"/>
 <text x="143" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">09 · if applicable</text>
 <text x="214.5" y="381" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Applicable</text>
 <text x="214.5" y="403" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">reviewers</text>
 </g>
-<g data-map-node="triage" data-role="agent"><title>finding-triage. Classify the dispatched findings. Security CRITICAL stops the loop; HIGH returns the affected work for correction. The active caller owns lower-severity disposition.</title>
+<g data-map-node="triage" data-role="agent"><title>finding-triage. Route a dispatched review batch through finding triage and verdict aggregation. Preserve blockers, incomplete units and out-of-scope findings without inventing a successful review.</title>
 <rect x="319" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7" stroke-dasharray="5 4"/>
 <text x="332" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">10 · if applicable</text>
 <text x="403.5" y="392" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">finding-triage</text>
 </g>
-<g data-map-node="accept-scope" data-role="skill"><title>subagent-driven-development: accept. Accept only after task proof and combined quality review. The HTML path records current whole-scope acceptance through the installed authority and engine, not an edited checkbox.</title>
+<g data-map-node="accept-scope" data-role="skill"><title>subagent-driven-development: record progress. Use the selected writer to record completed implementation. HTML accept-scope can record DONE without a receipt; it cannot clear pending or blocked members. Keep verification and independent acceptance distinct.</title>
 <rect x="508" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="521" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">11</text>
-<text x="592.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Accept scope</text>
+<text x="592.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Record</text>
+<text x="592.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">progress</text>
 </g>
-<g data-map-node="checkpoint" data-role="skill"><title>executing-plans: human checkpoint. Report what landed, what is next and what remains open. Wait for acknowledgement. This attended stop is different from a periodic checkpoint report and from an HTML acceptance scope.</title>
+<g data-map-node="checkpoint" data-role="skill"><title>executing-plans: report and continue. Report changes, checks and next work, then continue within existing authorization. Honor a user-requested pause, consequential decision, or actual host/security restriction for the affected work.</title>
 <rect x="697" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="710" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">12</text>
-<text x="781.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Human</text>
-<text x="781.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">checkpoint</text>
+<text x="781.5" y="249" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Progress</text>
+<text x="781.5" y="271" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">report</text>
 </g>
 <text x="24" y="443" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#91a0b2" text-anchor="start" data-max-width="852" data-label-kind="annotation">Order → across rows. Full step names, results and conditions are in the reading view.</text>
 </svg>
 <text x="24" y="1638" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Commit and open the PR</text>
 <svg x="0" y="1672" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="deliver">
-<title>Commit and open the PR</title><desc>skill: commit-gate → skill: finishing-a-development-branch → command: /ca:pr procedure, reused by finishing → agent: PR reviewers, finding-triage and verdict-aggregator. The chosen Open a PR outcome, with current source and evidence. The PR is not an automatic merge or release.</desc>
+<title>Commit and open the PR</title><desc>skill: commit-gate → skill: finishing-a-development-branch → command: /ca:pr procedure, reused by finishing → agent: PR reviewers, finding-triage and verdict-aggregator. An authorized open PR with its current source and observed checks. Merge and publication remain separate actions.</desc>
 <defs><marker id="asset-feature-deliver-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Commit and open the PR</text>
@@ -141,26 +141,26 @@
 <rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
-<path data-map-edge="commit:finish" data-relation="sequence" d="M299 252H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-deliver-arrow)"><title>committed: The finishing procedure requires a cleared commit gate on current work.</title></path>
+<path data-map-edge="commit:finish" data-relation="sequence" d="M299 252H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-deliver-arrow)"><title>committed: The branch-finishing owner checks current-head readiness and the selected delivery action.</title></path>
 <path data-map-edge="finish:pr-contract" data-relation="reuse" d="M488 252H493V120H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="5 4" marker-end="url(#asset-feature-deliver-arrow)"><title>reuse: Execute the PR contract in place; do not re-invoke its command.</title></path>
 <path data-map-edge="pr-contract:pr-review" data-relation="dispatch" d="M677 120H682V384H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-deliver-arrow)"><title>review: PR creation includes its own path-selected review and verdict.</title></path>
-<g data-map-node="commit" data-role="skill"><title>commit-gate. The coordinator hands off only after all required scopes and acknowledgements. The commit gate checks permission, selected work and fresh evidence; /ca:commit is also a standalone entry, not an extra command this path must type.</title>
+<g data-map-node="commit" data-role="skill"><title>commit-gate. Use the commit owner only when committing is authorized. It checks the selected staged work, applicable tests, secrets and specialized controls, with fresh behavioral proof.</title>
 <rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">13</text>
 <text x="214.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">commit-gate</text>
 </g>
-<g data-map-node="finish" data-role="skill"><title>finishing-a-development-branch. Present the supported terminal choices with actual state. This illustration follows the user choosing Open a PR; merging via PR and confirmed discard are separate outcomes.</title>
+<g data-map-node="finish" data-role="skill"><title>finishing-a-development-branch. Retain an existing open-PR choice. Ask for branch disposition only if it is unclear. Merge and discard require their own explicit authorization and applicable evidence.</title>
 <rect x="319" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="332" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">14</text>
 <text x="403.5" y="260" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">Finish branch</text>
 </g>
-<g data-map-node="pr-contract" data-role="command"><title>/ca:pr procedure, reused by finishing. Finishing executes the PR procedure here. The command is not re-invoked: routing back into it would create a loop. A standalone /ca:pr remains an entry to the same contract.</title>
+<g data-map-node="pr-contract" data-role="command"><title>/ca:pr procedure, reused by finishing. Finishing executes the PR procedure in place; the command is not re-invoked. For a committed branch, verify the explicit base-to-HEAD subject, including secrets and specialized checks, without creating another commit.</title>
 <rect x="508" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
 <text x="521" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">15</text>
 <text x="592.5" y="117" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">/ca:pr</text>
 <text x="592.5" y="139" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">procedure</text>
 </g>
-<g data-map-node="pr-review" data-role="agent"><title>PR reviewers, finding-triage and verdict-aggregator. Apply the PR path matrix and read-only review funnel. Resolve blocking findings before opening. The final handoff names the PR URL, current head and actually observed checks.</title>
+<g data-map-node="pr-review" data-role="agent"><title>PR reviewers, finding-triage and verdict-aggregator. Apply the PR path matrix and review funnel, including security review for CI/deployment/infrastructure changes. Resolve blockers and report the PR URL, current head and observed checks.</title>
 <rect x="697" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7"/>
 <text x="710" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">16</text>
 <text x="781.5" y="381" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#f6f7f9" text-anchor="middle" data-max-width="153">PR review</text>

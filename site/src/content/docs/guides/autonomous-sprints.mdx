@@ -1,18 +1,15 @@
 ---
 title: Run an Autonomous Sprint
-description: "Approve one sprint package, then let codeArbiter execute the plan to a pull request while SMARTS records non-hard-gate decisions."
+description: "Set a sprint outcome, then let codeArbiter maintain the plan, implement and verify the work, and prepare a pull request within your stated boundaries."
 journey:
   level: Power user
   time: 15–20 min
-  outcome: "a safe operating model for autonomous plan-to-PR work, including resumability, SMARTS decisions, hard stops, and exact-head evidence."
+  outcome: "A practical operating model for autonomous plan-to-PR work, including resumability, meaningful decisions, real stops and exact-head evidence."
   prerequisites:
     - Comfortable with the feature lane
     - A scoped sprint goal
-  proof: "You can identify the combined review package, its actual authority prompts, every persisted restart artifact, and every condition that still stops for the user."
+  proof: "You can inspect the working spec and plan, distinguish progress from verification, resume interrupted work, and identify decisions that still belong to you."
 ---
-
-> **Historical receipt-based workflow (released-adapter documentation):** The receipt/approval examples below describe older installed packages. The **unreleased** assistive overhaul in [PR #983](https://github.com/arbiterForge/codeArbiter/pull/983) removes artifact-origin approval from ordinary drafting and progress. These instructions do not establish new package behavior or qualify any host; follow the exact package installed until a new version is published. Real host permissions and explicit user stops still apply.
-
 
 import WorkflowMap from '../../../components/WorkflowMap.astro';
 
@@ -21,36 +18,37 @@ import ReaderJourney from '../../../components/ReaderJourney.astro';
 export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 Use an autonomous sprint when you can describe a substantial outcome and want codeArbiter to carry
-the approved work through implementation, review, commits, and a pull request without stopping
-between task batches. Autonomy begins only after the review package has current spec and plan
-approvals and the required host capabilities. A sprint is never authorized to merge.
+the work through implementation, verification and a pull request without stopping between task
+batches. Your request establishes the working scope. codeArbiter maintains a specification and
+plan, asks about consequential missing choices, and continues within your stated limits. A sprint
+request does not authorize merging or publication.
 
 <ReaderJourney
   id={"sprint-reading-map"}
-  title={"Approve the boundaries before autonomous work"}
-  boundary={"Sprint overview, not a promise of host parity. Typed verification and review authority are currently limited to Codex and Claude Code. Unsupported host boundaries remain stops."}
+  title={"Set the outcome and inspect real progress"}
+  boundary={"Artifact progress supports the work. Actual host permissions, user decisions, security controls and delivery authority remain separate."}
   steps={[
   {
     "actor": "You bound the work",
-    "title": "Review one package",
+    "title": "Maintain one working agreement",
     "artifact": "A linked specification and implementation plan for the requested sprint outcome.",
-    "review": "Inspect scope, exclusions, test coverage, dependencies and spending or external-side-effect limits together.",
+    "review": "Inspect scope, exclusions, criterion coverage, dependencies and spending or external-side-effect limits together.",
     "href": "/guides/review-artifacts/",
     "linkLabel": "Review the package"
   },
   {
-    "actor": "You grant specific approval",
-    "title": "Clear the authority gates",
-    "artifact": "One host-observed reply approving both exact initial artifact identities and their binding.",
-    "review": "Use the qualified initial-pair prompt. It names both files and approve-only or delegate-methods; a generic reply or an unobserved approval cannot start execution.",
+    "actor": "You resolve consequential choices",
+    "title": "Answer only what remains open",
+    "artifact": "Actual decisions and explicit limits recorded with the work they affect.",
+    "review": "Already answered choices stay settled. Ordinary plan maintenance and task progress need no additional artifact approval.",
     "href": "/guides/review-artifacts/#check-your-hosts-authority-capability",
     "linkLabel": "Check your host capability"
   },
   {
     "actor": "codeArbiter executes within scope",
-    "title": "Run resumable cells",
-    "artifact": "Test and review evidence, durable task states and logged non-hard-gate decisions.",
-    "review": "Hard gates still stop for you. Typed REVIEW is provisional; fresh verification and combined review precede checkpoint-scope acceptance.",
+    "title": "Implement and verify coherent tasks",
+    "artifact": "Observed check results, required review findings, durable task progress and material decisions.",
+    "review": "Work runs directly or through useful delegation. REVIEW and DONE describe implementation progress; passing checks and independent review require their own evidence.",
     "href": "/guides/resume-and-recover/",
     "linkLabel": "Understand stops and recovery"
   },
@@ -58,7 +56,7 @@ approvals and the required host capabilities. A sprint is never authorized to me
     "actor": "You inspect the handoff",
     "title": "Finish at a pull request",
     "artifact": "Commits, the PR and a record of completed and blocked work.",
-    "review": "Inspect exact-head checks and unresolved decisions. Autonomy does not authorize merging to the default branch.",
+    "review": "Inspect actual local results, exact-head hosted checks and unresolved decisions. Merge and publication need their own authorization.",
     "href": "/reference/commands/sprint/",
     "linkLabel": "Inspect the sprint exit contract"
   }
@@ -67,9 +65,8 @@ approvals and the required host capabilities. A sprint is never authorized to me
 
 <details class="ca-implementation-view">
   <summary>Implementation routing: commands, skills and agents</summary>
-<p>This map explains the current assistive candidate source. It preserves historical citations;
-the older receipt examples elsewhere on this page are not prerequisites to that candidate flow.
-Source alignment does not establish installed-host qualification.</p>
+<p>Follow the public command through planning, execution and delivery. Internal skills and agent
+roles are routing choices, not additional commands you must invoke.</p>
 <WorkflowMap id="sprint-execution-map" workflow="sprint" />
 <p><a href={`${baseUrl}/diagrams/lane-sprint.svg`}>Open the full three-row diagram</a>.</p>
 </details>
@@ -79,18 +76,17 @@ Source alignment does not establish installed-host qualification.</p>
   <code>$ca-sprint</code>; Pi uses <code>/ca-sprint</code>. Examples below use Claude Code syntax.
 </div>
 
-For new HTML work, prompt approval alone is not end-to-end capability. Verification and review
-authority are currently limited to Codex and Claude Code; Pi must stop at unsupported typed boundaries.
-Check the [host authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability)
-against your exact installed package. The syntax examples do not guarantee that every host can
-finish a new HTML sprint.
+New HTML work uses the installed native writer on supported hosts. Its capability check protects
+artifact integrity; it does not grant tool permissions or establish live-host qualification.
+Explicit attestation has separate host support requirements. See the
+[capability boundaries](/guides/review-artifacts/#check-your-hosts-authority-capability).
 
 ## Before you begin
 
 - Start on a non-default branch or allow the sprint to create an isolated worktree.
 - State the outcome, boundaries, and any spending or external-side-effect limits.
-- Resolve any existing `[CONFIRM-NN]` that the goal depends on.
-- Expect one review package containing both the written spec and implementation plan.
+- Identify any unresolved user decisions the goal depends on; independent work can continue.
+- Expect a maintained specification and implementation plan. State any review pauses you want.
 
 Invoke the sprint with the outcome, not a list of implementation guesses:
 
@@ -98,7 +94,7 @@ Invoke the sprint with the outcome, not a list of implementation guesses:
 /ca:sprint "Add an export flow for saved searches, including empty-state behavior, audit records, and user documentation"
 ```
 
-## The combined review package
+## The working spec and plan
 
 codeArbiter investigates the repository and prepares two linked artifacts:
 
@@ -106,104 +102,93 @@ codeArbiter investigates the repository and prepares two linked artifacts:
 2. **Implementation plan:** exact tasks, files, tests, dependencies, ordering, and verification
    mapped back to every acceptance criterion.
 
-The sprint procedure calls for one combined review gate. Review the spec and plan together,
-request changes, or decline. If the plan exposes a weakness in the spec, revise the package
-before implementation rather than treating the two definitions independently.
-
-**Initial typed HTML pair:** current source defines one exact, host-observed reply for the
-ready draft specification and its same-slug draft-for-pair plan. The qualified adapter arms both
-identities through `arm-sprint`. The reply names both artifacts and `approve-only` or
-`delegate-methods`; `sprint-approve` commits both approvals and the plan binding in one
-recoverable transaction. This does not authorize a draft merely because both files exist.
-
-Do not separately approve or bind the initial pair as a substitute for that ceremony. After an
-interruption, the matching `resume-sprint` path can finish an already-observed reply; it cannot
-invent one. Later single-artifact changes and ordinary attended features retain their own
-approval paths. Check the installed adapter's capability before relying on this current-source
-behavior. A generic yes, model-authored receipt or SMARTS recommendation supplies no missing
-approval, execution, security, provider or publication authority.
+Read them together to see whether the plan covers the intended outcome. If planning reveals a
+consequential missing requirement, codeArbiter asks its owner once and keeps the affected work
+waiting. An implementation method, test runner or task breakdown can change within the agreed
+outcome with a recorded reason. Neither file introduces a second permission interview.
 
 ## Inspect the durable package
 
 New full-lane work uses `.codearbiter/specs/<slug>.html` and
-`.codearbiter/plans/<slug>.html` when the installed adapter has the qualified native capability.
+`.codearbiter/plans/<slug>.html` through the installed native writer.
 Existing Markdown pairs remain on their exact legacy path. Open both files and inspect the
-criteria, exclusions, task coverage, dependencies and verification before approving the package.
+criteria, exclusions, task coverage, dependencies and verification.
 [Review specifications and plans](/guides/review-artifacts/) explains the distinction between a
-browser view, readiness, approval and authority to execute.
+browser view, structural readiness, implementation progress and actual evidence.
 
-For the [saved-search example](/guides/first-feature/), approving CSV export must not silently
-include account sharing, external spending or publication. Request revisions to the combined
-package if the plan reveals a missing requirement.
+For the [saved-search example](/guides/first-feature/), a request for CSV export must not silently
+include account sharing, external spending or publication. Request a scoped revision if the plan
+misstates the outcome.
 
-## What happens after approval
+## Execution and resumption
 
-The sprint executes the plan in resumable task cells:
+The sprint executes coherent tasks through their actual dependencies:
 
-1. derive test obligations for the next task;
-2. observe the new tests fail for the intended reason;
-3. implement the smallest change that satisfies them;
-4. run the task's verification and reviewer checks;
-5. record the task's review-stage evidence; and
-6. continue only to tasks that the current eligibility check permits.
+1. read the selected task's criteria, relevant source and prerequisites;
+2. select verification appropriate to the change;
+3. implement directly or delegate a bounded unit when useful;
+4. run applicable checks and obtain independent review where required;
+5. record actual results, failures, unrun checks and implementation progress; and
+6. continue independent work while affected blockers remain visible.
 
-For typed HTML, a task in `REVIEW` is not accepted. Reverify the current source snapshot and
-complete the combined quality review before accepting the checkpoint scope together. Do not
-accept tasks individually or count provisional dependency progress as completion.
+A confirmed bug needs a genuine failing regression before its fix. Feature work verifies the
+selected criteria and reports the observed test sequence; a behavior-preserving refactor uses
+passing characterization checks. Tests and review follow the work's obligations and risk.
+Typed `REVIEW` means implementation is ready; `DONE` means implementation is reported complete.
+Neither status certifies passing checks, independent review or user acceptance.
 
 An interrupted session re-enters through the existing spec, plan, task states and sprint log.
-It does not automatically accept unfinished work. Typed `IN_PROGRESS` requires reconciliation;
-`REVIEW` requires fresh evidence. Bounded recovery may select another strategy inside existing
-authority, while a blocked or exhausted task remains excluded until its condition is resolved.
-See [Resume and recover](/guides/resume-and-recover/).
+Inspect running workers, partial changes and committed work before reconciling an `IN_PROGRESS`
+task. Preserve user stops and do not redispatch an uncertain attempt because its reply was lost.
+Recheck evidence affected by source or result changes; resuming alone does not require a new
+reviewer fleet. See [Resume and recover](/guides/resume-and-recover/).
 
 ## How autonomous decisions work
 
-For a choice that is not a hard gate, the sprint compares options with
-[SMARTS](/concepts/smarts/): Scalable, Maintainable, Available, Reliable, Testable, and Securable.
-The options, lens verdicts, decision, and confidence are appended to
-`.codearbiter/sprint-log.md`.
+The sprint makes reversible implementation decisions within the requested outcome. Use
+[SMARTS](/concepts/smarts/) when a difficult trade-off warrants comparison across Scalable,
+Maintainable, Available, Reliable, Testable and Securable. Material choices, their reasons and
+meaningful uncertainty are recorded in `.codearbiter/sprint-log.md`.
 
 Low-confidence decisions are called out in the pull request so you can review the places where the
 evidence was genuinely close. Spending outside your stated limit is not treated as an ordinary
 SMARTS choice.
 
-On the typed path, SMARTS reasoning is not itself a receipt producer. SMARTS prerequisite authority is not supported
-by the current adapter; an unsatisfied prerequisite requires its genuine host-observed user
-workflow decision. A passing verification command cannot confer prerequisite authority either.
-Autonomy must stop where an actual authority producer is missing.
+Factual prerequisites can be checked through ordinary authorized tools. Record what was observed
+and which tasks it affects. A tool result does not settle a user-owned product choice, and a SMARTS
+recommendation does not authorize spending or a broader outcome.
 
 ## Stops that remain yours
 
-Autonomy never clears these boundaries:
+Stop affected work for:
 
-- authentication, cryptography, secrets, or a declared security control;
-- irreversible deletion or another destructive operation;
-- `/ca:override`, which is itself a user-authorized bypass;
-- an unresolved `[CONFIRM-NN]`;
-- external spending or side effects outside the approved scope; and
-- merging to the default branch.
+- an explicit user stop or requested review pause;
+- a consequential missing product decision;
+- a real host or tool permission denial;
+- an applicable security, secrets, migration or publication control; or
+- irreversible operations, overrides, external spending or side effects beyond existing authority.
 
-When one hard gate affects only one task, the sprint leaves that cell stopped and continues
-independent safe work. It returns to the blocked cell once the required decision exists.
+Already-authorized security work does not automatically need another user reply. Resolve actual
+risks and preserve required review. A failing test calls for diagnosis and correction, not a new
+permission code. If one task is blocked, independent safe work continues.
 
 ## Pull request and verification
 
 The normal sprint exit is a pull request, not a merge. The PR should contain:
 
-- the approved spec and plan;
+- the maintained spec and plan;
 - acceptance-criterion to task/test coverage;
 - verification commands and results;
 - reviewer findings and their dispositions;
 - SMARTS decisions, with low-confidence calls highlighted; and
-- remaining hard-gated or out-of-scope work.
+- remaining blocked, unverified or out-of-scope work.
 
 Confirm the PR is draft when you want a deliberate merge barrier. Hosted checks still need to run
 against the exact current PR head before the work is treated as ready.
 
 ## Optional farm backend
 
-**HTML plans cannot use `--farm` until the separate current-model qualification is complete.**
+**HTML plans cannot use `--farm`.**
 The following example applies only to an existing authoritative legacy Markdown pair. Do not
 convert a new HTML plan to Markdown to make the flag work.
 
@@ -213,8 +198,9 @@ For that existing legacy backend, `--farm` selects a configured OpenAI-compatibl
 /ca:sprint "Normalize the public API error contract" --farm
 ```
 
-The same spec package, hard gates, task checks, review, and PR boundary apply. Farm use is a Feature
-Forge preview and requires provider configuration. It may transmit secret-redacted, byte-capped
+The same working scope, applicable controls, checks, review and PR boundary apply. Farm use is a
+separately requested preview backend requiring provider configuration, a budget and circuit-breaker
+limits. Failure does not authorize a silent backend switch. It may transmit secret-redacted, byte-capped
 task context to the endpoint you configure; read [Compatibility: Network Calls](/getting-started/compatibility/#network-calls)
 before enabling it.
 
@@ -226,7 +212,7 @@ After the PR opens:
 2. review low-confidence SMARTS entries in `.codearbiter/sprint-log.md`;
 3. confirm every required local verification is present;
 4. wait for hosted checks on the exact PR head; and
-5. make the merge decision yourself.
+5. authorize merge separately when the required evidence supports it.
 
 For the exact orchestration contract, see the [`sprint` command](/reference/commands/sprint/) and
 the [`subagent-driven-development` skill](/reference/skills/subagent-driven-development/).

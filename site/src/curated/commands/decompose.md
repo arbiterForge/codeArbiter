@@ -4,43 +4,43 @@ related: [create-context, init, skills/decompose]
 gates:
   - gate: greenfield check
     when: before the interview starts
-    effect: any meaningful source code already in the repo redirects to create-context instead
-  - gate: layer-by-layer persistence
-    when: throughout the interview
-    effect: each of the six layers writes to disk as it's answered, so closing the session mid-interview loses nothing
-  - gate: initialization lock
-    when: after explicit approval and project-state population
-    effect: the completion marker is written only after all three planning documents are approved and every required populated doc is present and non-empty
+    effect: meaningful implementation source routes to create-context; initialized projects return to normal work
+  - gate: consequential decisions
+    when: an unanswered choice affects the planned result
+    effect: resolve that choice before its dependent output; retain other gaps on the question board
+  - gate: initialization
+    when: the planning documents are confirmed and context is populated
+    effect: the native writer validates current document/provenance pairs and board/audit outputs before recording initialization
 ---
 
 ## What it does
 
-This is the populator for a project that has no code yet to read. Rather than guessing at
-architecture, it runs a long, structured interview — six layers covering purpose, scope, users,
-vocabulary, and constraints — pushing back on vague answers and naming the complexity a quick answer
-tends to hide. Because a real interview like this can span multiple sessions, every layer is saved as
-it's completed rather than held in memory until the end, so a context reset or a closed terminal
-doesn't cost you the earlier answers. Once all six layers are solid, all three planning documents are written, reviewed, and explicitly approved
-before project-state population and the initialization lock. Completing the interview alone
-does not mark the project initialized.
+Develops context for a project without meaningful implementation source. The interview covers
+vision, users and flows, functional scope, technical shape, integrations, and risks. It asks for
+missing facts and consequential choices, using answers already recorded.
 
-## What you receive and approve
+Completed layers persist under `.codearbiter/plans/decomposition/`. `_session.md` records the
+current phase, open questions and actual user confirmations. Resume the first unfinished step;
+existing confirmation covers unchanged artifacts. Restart preserves interview and decision history.
 
-Decomposition writes three project-planning deliverables under `.codearbiter/plans/`:
+## What you receive and review
+
+Decomposition writes three project-planning documents under `.codearbiter/plans/`:
 
 | File | Job |
 |---|---|
 | `01-architecture-breakdown.md` | Components, boundaries, integrations and unresolved architectural choices |
-| `02-phased-build-plan.md` | MVP, v1 and v2 outcomes, deferrals, risks and measurable completion |
-| `03-task-backlog.md` | Prioritized, phase-grouped tasks, roles, dependencies and time-boxed spikes |
+| `02-phased-build-plan.md` | Phase outcomes, deferrals, risks and measurable completion |
+| `03-task-backlog.md` | Prioritized tasks, roles, dependencies and time-boxed spikes |
 
-Open and review all three. Explicit approval of the complete set precedes project-state
-population and the initialization lock. Later reconciliation locates these exact filenames;
-they remain Markdown and are distinct from typed feature execution plans.
+Review all three planning documents. Corrections and your actual confirmation are recorded before
+context population. Unresolved consequential choices hold their dependent output; explicitly
+retained questions stay visible. These Markdown files are distinct from typed feature plans.
 
-Use [Plan a new project](/guides/plan-a-new-project/) for preparation, examples, review criteria
-and safe resumption. `init --greenfield` is the canonical strategy selector; this command remains
-its compatibility entry.
+The native context writer prepares and applies five document/provenance pairs, then
+`--context-finalize` validates all required outputs and records initialization. Retain the
+interview, plans and decision history as source evidence. Initialization does not establish
+passing tests, installed-host qualification, or permission to merge.
 
 ## Usage
 
@@ -48,31 +48,21 @@ its compatibility entry.
 /ca:decompose
 ```
 
-No arguments — the interview itself elicits everything it needs; you can hand it a summary at any
-point if you already have one written down.
+`init --greenfield` is the preferred strategy selector; this command remains its compatibility
+entry. Supply existing requirements or a sketch so the interview can focus on unanswered choices.
 
 ## Example
 
 ```text
+Illustrative exchange, not captured execution:
 > /ca:decompose
 
-Switching to decomposition mode. Six layers, one question at a time — typically 60-110 questions
-total, all persisted so you can pick this back up later.
+I found the recorded purpose and primary users. The next unresolved choice is whether a garden
+plot signup is confirmed immediately or requires an organizer's decision.
+> An organizer confirms it.
 
-Layer 1 — Purpose. What problem does this project solve, in one sentence?
-> a scheduling tool for community garden plot signups
-
-"Scheduling tool" is broad — walk me through one signup, start to finish: who initiates it, what do
-they choose, what confirms it?
-...
-[layers 2-6 continue; each completed layer is persisted before the next begins]
-
-All six layers complete. Writing the architecture breakdown, phased build plan and task backlog
-under .codearbiter/plans/. Open and review all three; population waits for your approval.
-[after explicit approval] Populating project context and confirming the initialization lock.
+Recorded in the user-flow layer. The plan will include pending and confirmed signup states.
 ```
 
-## When to reach for it
-
-Reach for `/ca:decompose` on a genuinely greenfield project with `.codearbiter/` already scaffolded
-by `/ca:init`. If source code already exists, `/ca:create-context` is the right populator instead.
+Use [Plan a new project](/guides/plan-a-new-project/) for preparation, review and safe resumption.
+If meaningful source already exists, use `/ca:create-context` instead.

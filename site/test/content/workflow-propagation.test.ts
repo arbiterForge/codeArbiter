@@ -34,7 +34,7 @@ describe('C04 cross-surface consistency', () => {
     expect(init).toContain('/diagrams/lane-opt-in.svg');
     expect(init).toContain('alternatives, not consecutive phases');
   });
-  it('separates current assistive sprint from historical pair attestation', () => {
+  it('teaches current assistive work and keeps pinned attestation evidence separately scoped', () => {
     const source = read('../core/surface/SPRINT.md');
     expect(source).toContain('without a second artifact approval system');
     expect(source).toContain('does **not** grant arbitrary future scope expansion');
@@ -42,11 +42,14 @@ describe('C04 cross-surface consistency', () => {
     expect(historical).toContain('commits approval plus plan binding in one recoverable native transaction.');
     for (const path of ['guides/autonomous-sprints.mdx', 'guides/review-artifacts.md']) {
       const text = read(docs + path);
-      for (const term of ['arm-sprint', 'sprint-approve', 'resume-sprint', 'approve-only', 'delegate-methods']) expect(text).toContain(term);
+      expect(text).toContain('DONE');
+      expect(text).toMatch(/[Ee]xplicit attestation/);
+      expect(text).toContain('exact-head');
+      expect(text).not.toContain('Historical receipt-based workflow');
       expect(text).not.toContain('current typed adapter arms one artifact at a time');
     }
-    expect(read(docs + 'guides/review-artifacts.md')).toContain('Historical receipt-based workflow');
-    expect(read(docs + 'guides/autonomous-sprints.mdx')).toContain('Historical receipt-based workflow');
+    expect(read(docs + 'guides/review-artifacts.md').replace(/\s+/g, ' ')).toContain('without requesting separate artifact approval');
+    expect(read(docs + 'guides/autonomous-sprints.mdx')).toContain('Work runs directly or through useful delegation');
   });
   it('states release dry-run exclusions and the mandatory PR, hosted and receipt boundaries', () => {
     const source = read('../core/surface/skills/release/SKILL.md');

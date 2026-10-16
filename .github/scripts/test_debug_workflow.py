@@ -466,6 +466,56 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         self.assertEqual(set(result), {"protocol", "valid", "errors", "truncated"})
         return json.loads(raw), completed.returncode, result
 
+    def _assert_author_verification_modes(self, author, charters):
+        normalized = " ".join(author.lower().split())
+        forbidden = r"fixed order|must write failing tests before implementation|for every task.{0,80}failing tests"
+        self.assertNotRegex(normalized, forbidden)
+        self.assertIn("skills/tdd/skill.md", normalized)
+        self.assertIn("selected verification approach", normalized)
+        rows = {line.split("|")[1].strip().lower(): " ".join(line.lower().split())
+                for line in author.splitlines() if line.startswith("| /")}
+        self.assertRegex(rows.get("/fix", ""), r"target red.{0,100}before.{0,60}repair")
+        self.assertIn("criterion-focused", rows.get("/feature", ""))
+        self.assertIn("existing implementation", rows["/feature"])
+        self.assertIn("observed sequence", rows["/feature"])
+        self.assertIn("passing characterization", rows.get("/refactor", ""))
+        self.assertIn("baseline assertions", rows["/refactor"])
+        self.assertRegex(normalized, r"stage only.{0,100}assigned.{0,100}authorized")
+        for name, charter in charters.items():
+            source = " ".join(charter.lower().split())
+            self.assertIn("includes/author-tdd-workflow.md", source, name)
+            self.assertIn("selected verification approach", source, name)
+            self.assertNotRegex(source, forbidden, name)
+
+    def _author_mode_sources(self):
+        author = (ROOT / "core/surface/includes/author-tdd-workflow.md").read_text(encoding="utf-8")
+        charters = {name: (ROOT / f"core/surface/agents/{name}.md").read_text(encoding="utf-8")
+                    for name in ("backend-author", "frontend-author", "infra-author")}
+        return author, charters
+
+    def test_authors_follow_selected_verification_mode(self):
+        self._assert_author_verification_modes(*self._author_mode_sources())
+
+    def test_author_modes_reject_unconditional_red_and_missing_route_controls(self):
+        author, charters = self._author_mode_sources()
+        self._assert_author_verification_modes(author, charters)
+        for before, after in (
+            ("target RED", "passing sample"),
+            ("criterion-focused", "unrelated"),
+            ("passing characterization", "failing characterization"),
+            ("assigned and authorized", "assigned"),
+        ):
+            with self.subTest(removed=before):
+                self.assertIn(before, author)
+                with self.assertRaises(AssertionError):
+                    self._assert_author_verification_modes(author.replace(before, after), charters)
+        unconditional = "\nMUST write failing tests before implementation code.\n"
+        with self.assertRaises(AssertionError):
+            self._assert_author_verification_modes(author + unconditional, charters)
+        for name in charters:
+            with self.subTest(author=name), self.assertRaises(AssertionError):
+                self._assert_author_verification_modes(author, {**charters, name: charters[name] + unconditional})
+
     def test_host_trace_records_real_consumer_call_return_and_tdd_obligations(self):
         """Validate D-layer inputs, without claiming a Claude/Codex model journey."""
         call = self.calls["V23/direct_fix_diagnostic_prerequisite"]
@@ -774,18 +824,18 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         scan = tdd.split("## Phase 1", 1)[1].split("## Phase 2", 1)[0].lower()
         author = (ROOT / "core/surface/includes/author-tdd-workflow.md").read_text(
             encoding="utf-8").lower()
-        for source in (preflight, scan, author):
-            self.assertIn("bug-origin", source)
-            self.assertIn("regression", source)
-            self.assertIn("expectation", source)
-        self.assertIn("source binding", preflight)
-        self.assertIn("caller authority", preflight)
+        self.assertIn("bug-origin evidence and the named regression", preflight)
+        self.assertIn("expected behavior for a fix", preflight)
+        self.assertIn("source binding", consumer)
+        self.assertIn("caller authority", consumer)
+        self.assertIn("fix expectation", scan)
         self.assertIn("evidence", scan)
-        self.assertIn("oracle", scan)
-        self.assertIn("existing ledger", scan)
-        self.assertIn("feature artifact", scan)
-        self.assertIn("red for the right reason", author)
-        self.assertIn("before", author)
+        self.assertIn("each required claim with an id, its source, and its proving check", scan)
+        self.assertIn("named regression failing for the defect before repair", scan)
+        for field in ("bug-origin", "expectation", "cited evidence", "regression oracle",
+                      "existing obligation ledger", "repair authority", "source freshness"):
+            self.assertIn(field, author)
+        self.assertIn("do not fabricate a feature artifact", author)
         for name in ("backend-author", "frontend-author", "infra-author"):
             charter = (ROOT / f"core/surface/agents/{name}.md").read_text(
                 encoding="utf-8").lower()
@@ -804,17 +854,16 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         scan = tdd.split("## Phase 1", 1)[1].split("## Phase 2", 1)[0].lower()
         author = (ROOT / "core/surface/includes/author-tdd-workflow.md").read_text(
             encoding="utf-8").lower()
-        self.assertIn("authoritative selected spec", preflight)
-        self.assertIn("exact binding", preflight)
-        self.assertIn("selected spec", scan)
-        self.assertIn("acceptance criterion", scan)
-        self.assertIn("not another artifact approval", scan)
+        self.assertIn("selected specification or inline criteria for a feature", preflight)
+        self.assertIn("spec/plan identities and typed criterion records for html", preflight)
+        self.assertIn("existing feature criteria", scan)
+        self.assertIn("criterion-focused tests", scan)
         self.assertNotIn("already-approved spec", scan)
         self.assertIn("refactor", preflight)
-        self.assertIn("surface table", preflight)
-        self.assertIn("parity", preflight)
-        self.assertIn("adr", scan)
-        self.assertIn("user", scan)
+        self.assertIn("agreed surface plus existing behavior", preflight)
+        self.assertIn("preserve that baseline and its assertions", scan)
+        self.assertIn("approved surface and parity contract", author)
+        self.assertRegex(" ".join(author.split()), r"adr remains a user-attributed decision through `/adr`")
         self.assertIn("feature", author)
         self.assertIn("refactor", author)
         self.assertIn("adr", author)
@@ -825,13 +874,12 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         red = " ".join(tdd.split("## Phase 2", 1)[1].split("## Phase 3", 1)[0].lower().split())
         author = " ".join((ROOT / "core/surface/includes/author-tdd-workflow.md")
                           .read_text(encoding="utf-8").lower().split())
-        for source in (red, author):
-            self.assertRegex(source, r"existing.{0,100}(test|regression).{0,120}target.{0,50}red")
-            self.assertRegex(source, r"(name|identify).{0,100}(test|regression).{0,100}(id|identity|name)")
-            self.assertRegex(source, r"(oracle|assertion).{0,160}(adequate|matches|target)")
-            self.assertRegex(source, r"reuse.{0,160}(existing|named|test|regression)")
-            self.assertRegex(source, r"(no|do not|never).{0,100}duplicate.{0,160}(age|predat)")
-            self.assertRegex(source, r"(add|write).{0,80}(tests?|regressions?).{0,100}(only|for).{0,100}(uncovered|missing)")
+        self.assertIn("named regression fails for the target assertion", red)
+        self.assertRegex(red, r"reuse.{0,40}existing test.{0,60}rather than duplicating")
+        self.assertIn("add tests for uncovered behavior", red)
+        self.assertIn("reuse an adequate current bug-origin red", tdd.lower())
+        self.assertRegex(author, r"name the existing target test.{0,80}reuse.{0,80}assertion matches the defect")
+        self.assertIn("add tests for uncovered obligations", author)
 
     def test_unrelated_and_setup_failures_cannot_count_as_target_red(self):
         """T022/V25: baseline and setup failures remain visible and block gates."""
@@ -839,12 +887,14 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         red = " ".join(tdd.split("## Phase 2", 1)[1].split("## Phase 3", 1)[0].lower().split())
         author = " ".join((ROOT / "core/surface/includes/author-tdd-workflow.md")
                           .read_text(encoding="utf-8").lower().split())
-        for source in (red, author):
-            self.assertRegex(source, r"(record|report|preserve).{0,100}(unrelated|pre.existing).{0,100}(failure|red)")
-            self.assertRegex(source, r"(unrelated|pre.existing).{0,120}(failure|red).{0,160}(not|never|cannot).{0,70}target red")
-            self.assertRegex(source, r"(import|setup).{0,100}(error|failure).{0,160}(not|never|cannot).{0,70}target red")
-            self.assertRegex(source, r"(required|commit).{0,100}(gate|check).{0,120}(block|fail|remain red)")
-            self.assertRegex(source, r"(do not|never).{0,100}(skip|suppress|waive).{0,100}(test|failure|gate)")
+        self.assertIn("target assertion, not an import, setup, or unrelated error", red)
+        self.assertIn("keep unrelated baseline failures separately identified", red)
+        self.assertIn("never weaken assertions or suppress failures", red)
+        obligations = " ".join(tdd.split("## Phase 4", 1)[1].split("## Phase 5", 1)[0].lower().split())
+        self.assertRegex(obligations, r"unexplained failure.{0,100}remains `missing`.{0,100}repair")
+        self.assertRegex(author, r"import, setup or unrelated failure is not target red")
+        self.assertIn("retain unrelated baseline failures and their outputs", author)
+        self.assertIn("never skip tests, suppress failures or waive required checks", author)
 
     def test_repair_requires_target_red_then_fresh_green_with_unchanged_assertions(self):
         """T023/V26: the same target goes red before repair and green on repaired source."""
@@ -853,11 +903,13 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         green = " ".join(tdd.split("## Phase 3", 1)[1].split("## Phase 4", 1)[0].lower().split())
         author = " ".join((ROOT / "core/surface/includes/author-tdd-workflow.md")
                           .read_text(encoding="utf-8").lower().split())
-        self.assertRegex(red, r"(target|regression).{0,140}red.{0,160}(before|prior).{0,80}(repair|implementation)")
-        for source in (green, author):
-            self.assertRegex(source, r"(same|named).{0,80}(target|regression|test).{0,140}(fresh|rerun|re.run).{0,80}green")
-            self.assertRegex(source, r"assertions?.{0,100}unchanged.{0,140}(red|green)")
-            self.assertRegex(source, r"(fresh|rerun|re.run).{0,120}(affected|impact.bounded).{0,100}(test|contract)")
+        self.assertIn("confirmed fix requires its genuine target red", red)
+        self.assertIn("named regression failing for the defect before repair", " ".join(tdd.lower().split()))
+        self.assertIn("same named test for fresh green", green)
+        self.assertIn("assertions unchanged between red and green", green)
+        self.assertRegex(green, r"run the proving checks on the resulting source.{0,100}affected pre-existing contracts")
+        self.assertRegex(author, r"target red before repair.{0,100}fresh green.{0,100}same named regression with unchanged assertions")
+        self.assertRegex(author, r"run.{0,80}proving checks.{0,80}affected existing contracts on the resulting source")
 
     def test_material_fixture_changes_require_renewed_red(self):
         """T023/V27: material fixture or setup changes invalidate earlier target red."""
@@ -866,9 +918,7 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         author = " ".join((ROOT / "core/surface/includes/author-tdd-workflow.md")
                           .read_text(encoding="utf-8").lower().split())
         for source in (red_green, author):
-            self.assertRegex(source, r"material.{0,100}(fixture|setup).{0,160}(change|alter)")
-            self.assertRegex(source, r"(renew|repeat|re.observe|rerun|re.run).{0,100}(target.)?red.{0,140}(broken|before|prior)")
-            self.assertRegex(source, r"(earlier|previous|prior).{0,100}red.{0,100}(invalid|no longer|cannot|not)")
+            self.assertRegex(source, r"material fixture or setup change requires renewed target red.{0,60}broken source.{0,60}before claiming")
 
     def test_intermittent_oracles_retain_stochastic_limits(self):
         """T023/V27: timing evidence has a finite oracle and an honest limit."""
@@ -877,10 +927,10 @@ class DebugTransportSourceTest(CollectorCompatibleTestCase):
         author = " ".join((ROOT / "core/surface/includes/author-tdd-workflow.md")
                           .read_text(encoding="utf-8").lower().split())
         for source in (red, author):
-            self.assertRegex(source, r"(intermittent|timing).{0,200}(deterministic|finite)")
-            self.assertRegex(source, r"(finite|bounded).{0,100}(trial|repeat)")
-            self.assertRegex(source, r"stochastic.{0,120}(limit|sample|claim)")
-            self.assertRegex(source, r"(no|never|do not).{0,100}(deterministic|unbounded|retry)")
+            self.assertRegex(source, r"timing defects.{0,80}deterministic seam")
+            self.assertRegex(source, r"finite.{0,80}trial.{0,80}bound.{0,80}failure oracle before running")
+            self.assertRegex(source, r"report.{0,30}sample limits")
+            self.assertRegex(source, r"(passing sample is not deterministic proof|do not claim deterministic proof from a passing sample)")
 
     def test_internal_debug_prerequisite_returns_without_public_recursion(self):
         """T020/V23: direct fix takes at most one diagnostic return."""

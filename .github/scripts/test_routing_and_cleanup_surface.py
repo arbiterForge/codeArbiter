@@ -657,7 +657,11 @@ class TestCallerAwareSpecAndCheckpointContract(unittest.TestCase):
         for host, text in self.skills('brainstorming'):
             with self.subTest(host=host):
                 self.assertIn('HTML', text)
-                self.assertIn('Markdown shadow', text)
+                self.assertIn('includes/artifacts.md', text)
+                include = ('core/surface/includes/artifacts.md' if host == 'core'
+                           else f'{host}/includes/artifacts.md')
+                self.assertIn('silently convert it or create a shadow ledger', read(include))
+                self.assertIn('Retain that source identity', text)
                 self.assertIn('typed `create`', text)
 
 

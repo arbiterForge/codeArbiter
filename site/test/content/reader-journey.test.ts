@@ -10,7 +10,7 @@ describe('reader-first workflow contract', () => {
     const source = readFileSync(join(process.cwd(), `src/content/docs/guides/${route}.mdx`), 'utf8');
     const match = source.match(/steps=\{(\[[\s\S]*?\])\}/);
     const steps = match ? JSON.parse(match[1]) : [];
-    it(`${route} retains its route, diagram and four actionable reading steps`, () => {
+    it(`${route} retains its route and four actionable reading steps`, () => {
       expect(existsSync(join(process.cwd(), `src/content/docs/guides/${route}.md`))).toBe(false);
       expect(steps).toHaveLength(4);
       for (const step of steps) {
@@ -20,10 +20,11 @@ describe('reader-first workflow contract', () => {
         const path = step.href.split('#')[0].replace(/^\//, '').replace(/\/$/, '');
         expect(['.md', '.mdx'].some(extension => existsSync(join(process.cwd(), `src/content/docs/${path}${extension}`))), step.href).toBe(true);
       }
-      expect(source.indexOf('<ReaderJourney')).toBeLessThan(source.indexOf('<details class="ca-implementation-view"'));
       if (route === 'feature-lane') {
-        expect(source).toMatch(/<details class="ca-implementation-view">[\s\S]*<figure class="ca-diagram">[\s\S]*<\/figure>\s*<\/details>/);
+        expect(source).not.toContain('lane-feature.svg');
+        expect(source).toContain('Choose direct implementation or useful delegation');
       } else {
+        expect(source.indexOf('<ReaderJourney')).toBeLessThan(source.indexOf('<details class="ca-implementation-view"'));
         expect(source).toMatch(/<details class="ca-implementation-view"[^>]*>[\s\S]*<WorkflowMap[\s\S]*<\/details>/);
         const asset = route === 'opt-in-a-repo' ? 'lane-opt-in.svg' : 'lane-sprint.svg';
         expect(source).toContain(`/diagrams/${asset}`);

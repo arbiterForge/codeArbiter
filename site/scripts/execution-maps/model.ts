@@ -23,111 +23,478 @@ export interface ExecutionMap {
 }
 
 export const featureMap: ExecutionMap = {
-  id: 'feature', title: 'A feature request becomes a reviewed pull request',
-  reviewedAt: '29f84168ab7592a5d7bb0550cb1f25cf29608a9d',
-  boundary: 'Historical attended full-lane snapshot at reviewedAt, not current executable guidance. The assistive overhaul removes artifact reapproval, mandatory reviewer chains, context-ticket permission and routine acknowledgement stops. Current source quotes are checked separately; completion is not installed-host proof.',
-  outcome: 'An open PR, its source identity and observed check state. Merging and publishing remain separate decisions.',
-  sources: {
-    feature: { path: 'core/surface/commands/feature.md', quote: 'Route through the pipeline in order; each step gates the next:' },
-    batch: { path: 'core/surface/skills/executing-plans/SKILL.md', quote: 'Do not implement anything here — the author agents,', currentQuote: 'Coordinate implementation of an already-authorized `/feature` plan.' },
-    checkpoint: { path: 'core/surface/skills/executing-plans/SKILL.md', quote: 'Do not begin the next batch until the user acknowledges.', currentQuote: 'continue to the next authorized batch without waiting for the user to acknowledge a routine status report.' },
-    task: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'The subagent works test-first by routing through the `tdd` skill', currentQuote: 'Work directly when a focused change is clearer and cheaper.' },
-    taskReview: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'Runs ONCE per scope — after every task in the current scope has cleared Phase 3 and Phase 5', currentQuote: '## 3. Verify truthfully and assess only relevant risks' },
-    scope: { path: 'core/surface/skills/subagent-driven-development/SKILL.md', quote: 'batch complete and return to `executing-plans`. Do NOT hand to `commit-gate`', currentQuote: '**Scoped invocation:** return completed tasks' },
-    tdd: { path: 'core/surface/skills/tdd/SKILL.md', quote: 'A `MISSING` obligation returns the workflow to Phase 2', currentQuote: 'Select the verification approach before changing code.' },
-    commit: { path: 'core/surface/skills/commit-gate/SKILL.md', quote: '# commit-gate' },
-    finish: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '**execute those steps here; do not re-invoke `{{CMD:pr}}`**', currentQuote: 'execute the **Open-PR procedure** below in this owner. Do not load or re-invoke the PR command wrapper.' },
-    pr: { path: 'core/surface/skills/finishing-a-development-branch/SKILL.md', quote: '`commit-gate` MUST have cleared on the current HEAD.', currentQuote: 'Establish applicable verification for the current HEAD.' },
-    dispatch: { path: 'core/surface/skills/dispatching-parallel-agents/SKILL.md', quote: 'finding-triage' },
+  "id": "feature",
+  "title": "A feature request becomes a reviewed pull request",
+  "reviewedAt": "a9f63fc481385680987f2ccbecede82603f011eb",
+  "boundary": "The requested outcome authorizes scoped feature work. Maintain its spec and plan, follow actual dependencies, implement directly or delegate useful units, and report observed checks. Real user stops, host permissions, security controls and delivery authority remain effective.",
+  "outcome": "An open PR, its source identity and observed check state. Merging and publishing remain separate decisions.",
+  "sources": {
+    "feature": {
+      "path": "core/surface/commands/feature.md",
+      "quote": "Route through the pipeline in order; each step gates the next:"
+    },
+    "batch": {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "quote": "Coordinate implementation of an already-authorized `/feature` plan."
+    },
+    "checkpoint": {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "quote": "continue to the next authorized batch without waiting for the user to acknowledge a routine status report."
+    },
+    "task": {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "quote": "Work directly when a focused change is clearer and cheaper."
+    },
+    "taskReview": {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "quote": "## 3. Verify truthfully and assess only relevant risks"
+    },
+    "scope": {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "quote": "**Scoped invocation:** return completed tasks"
+    },
+    "tdd": {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "quote": "Select the verification approach before changing code."
+    },
+    "commit": {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "quote": "# commit-gate"
+    },
+    "finish": {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "quote": "execute the **Open-PR procedure** below in this owner. Do not load or re-invoke the PR command wrapper."
+    },
+    "pr": {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "quote": "Establish applicable verification for the current HEAD."
+    },
+    "dispatch": {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "quote": "finding-triage"
+    },
+    "brainstorm": {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "quote": "## Phase 5 - Self-review and handoff"
+    },
+    "planning": {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "quote": "## Build useful tasks"
+    }
   },
-  chapters: [
+  "chapters": [
     {
-      id: 'define', title: 'Define the change', question: 'What behavior is being agreed to?',
-      output: 'A specification, a linked plan, and the current approvals required by the selected artifact format.',
-      nodes: [
-        { id: 'entry', role: 'command', label: ['/ca:feature'], title: '/ca:feature', href: '/reference/commands/feature/', source: 'feature',
-          detail: 'Resolve existing work before classifying a new request. This map follows new full-lane work; small and resume routes are separate.', output: 'A selected lane and exact artifact route.' },
-        { id: 'spec', role: 'skill', label: ['brainstorming'], title: 'brainstorming', href: '/reference/skills/brainstorming/', source: 'feature',
-          detail: 'Turn the request into concrete acceptance criteria. Surface unresolved questions and obtain the required specification approval before planning.', output: 'The reviewed specification, not implementation code.' },
-        { id: 'plan', role: 'skill', label: ['writing-plans'], title: 'writing-plans', href: '/reference/skills/writing-plans/', source: 'feature',
-          detail: 'Map the specification into tasks, paths, dependencies and verification. Preserve the selected format and its approval binding.', output: 'An executable plan only when its required bindings are current.' },
-        { id: 'batch', role: 'skill', label: ['executing-', 'plans'], title: 'executing-plans', href: '/reference/skills/executing-plans/', source: 'batch',
-          detail: 'Coordinate attended work. On HTML, use authored checkpoint membership rather than inventing smaller acceptance scopes.', output: 'One complete scope delegated to the task engine.' },
+      "id": "define",
+      "title": "Define the change",
+      "question": "What behavior is being agreed to?",
+      "output": "A maintained specification and linked plan with observable criteria, actual dependencies and unresolved choices kept visible.",
+      "nodes": [
+        {
+          "id": "entry",
+          "role": "command",
+          "label": [
+            "/ca:feature"
+          ],
+          "title": "/ca:feature",
+          "href": "/reference/commands/feature/",
+          "source": "feature",
+          "detail": "Resolve existing work before classifying a new request. Resume its actual unfinished step and preserve the selected representation.",
+          "output": "The selected lane, current scope and exact artifact route."
+        },
+        {
+          "id": "spec",
+          "role": "skill",
+          "label": [
+            "brainstorming"
+          ],
+          "title": "brainstorming",
+          "href": "/reference/skills/brainstorming/",
+          "source": "brainstorm",
+          "detail": "Refine the agreed outcome into observable criteria and exclusions. Ask about consequential unresolved choices while retaining decisions already made.",
+          "output": "A saved specification with criteria and actual open decisions."
+        },
+        {
+          "id": "plan",
+          "role": "skill",
+          "label": [
+            "writing-plans"
+          ],
+          "title": "writing-plans",
+          "href": "/reference/skills/writing-plans/",
+          "source": "planning",
+          "detail": "Describe coherent tasks, relevant paths, actual dependencies and checks under existing authorization. Maintain in-scope methods with a reason and preserve source identity.",
+          "output": "A useful working plan; missing requirements and structural failures remain explicit."
+        },
+        {
+          "id": "batch",
+          "role": "skill",
+          "label": [
+            "executing-",
+            "plans"
+          ],
+          "title": "executing-plans",
+          "href": "/reference/skills/executing-plans/",
+          "source": "batch",
+          "detail": "Select meaningful work using actual task dependencies. Preserve blocked members and authored scope while allowing independent work to continue.",
+          "output": "A bounded task scope handed to the implementation owner."
+        }
       ],
-      edges: [
-        { from: 'entry', to: 'spec', kind: 'sequence', label: 'full lane', source: 'feature', detail: 'New full-lane work enters brainstorming.' },
-        { from: 'spec', to: 'plan', kind: 'sequence', label: 'approved', source: 'feature', detail: 'Specification approval precedes implementation planning.' },
-        { from: 'plan', to: 'batch', kind: 'sequence', label: 'ready plan', source: 'feature', detail: 'The attended coordinator receives the approved, bound plan.' },
-      ],
+      "edges": [
+        {
+          "from": "entry",
+          "to": "spec",
+          "kind": "sequence",
+          "label": "full lane",
+          "source": "feature",
+          "detail": "New full-lane work enters brainstorming."
+        },
+        {
+          "from": "spec",
+          "to": "plan",
+          "kind": "sequence",
+          "label": "criteria",
+          "source": "brainstorm",
+          "detail": "Return the selected specification and actual open decisions directly to planning."
+        },
+        {
+          "from": "plan",
+          "to": "batch",
+          "kind": "sequence",
+          "label": "ready plan",
+          "source": "feature",
+          "detail": "The coordinator receives the maintained plan and selects useful authorized work."
+        }
+      ]
     },
     {
-      id: 'task', title: 'Build and verify each task', question: 'Who writes, and what proves this task?',
-      output: 'Per-task specification review and fresh verification. This is not yet whole-scope acceptance.',
-      nodes: [
-        { id: 'task-select', role: 'skill', label: ['Task engine'], title: 'subagent-driven-development: select', href: '/reference/skills/subagent-driven-development/', source: 'task',
-          detail: 'Select eligible work inside the caller’s scope and retain its requirement, target paths and verification command. Typed work uses engine eligibility and a current context ticket.', output: 'One eligible task, dispatched with bounded context.' },
-        { id: 'author', role: 'agent', label: ['Fresh author'], title: 'backend-author, frontend-author or infra-author', href: '/concepts/persona-and-context/', source: 'task',
-          detail: 'Select the author from the project’s scope mapping. The author runs the test-first procedure inside this task; authoring is not a completed stage before TDD.', output: 'One fresh author context, not a persistent team of simultaneous writers.' },
-        { id: 'tdd', role: 'skill', label: ['tdd'], title: 'tdd: six gated phases', href: '/reference/skills/tdd/', source: 'tdd',
-          detail: 'Derive obligations, observe a meaningful failing test, implement the minimum change, then verify coverage of the obligations and project quality requirements.', output: 'Test-first work returned to its caller, not permission to commit.',
-          checks: ['Obligation scan: identify each verifiable claim.', 'Red: the new test fails for the intended behavior.', 'Green: satisfy the same assertion with the minimum change.', 'Obligation verify: every claim has meaningful passing evidence.', 'Coverage: apply the declared threshold or cited no-tooling treatment.', 'Lint: pass the declared lint and applicable type checks.'] },
-        { id: 'task-proof', role: 'skill', label: ['Spec review', '+ fresh verify'], title: 'subagent-driven-development: review and verify', href: '/reference/skills/subagent-driven-development/', source: 'taskReview',
-          detail: 'Check the change against its task obligation and run the plan’s verification afresh. An author’s report does not substitute for this evidence.', output: 'The task’s review and verification results; typed REVIEW remains provisional.' },
+      "id": "task",
+      "title": "Build and verify each task",
+      "question": "Who writes, and what proves this task?",
+      "output": "Implemented work with actual check results and pending verification, returned to the caller.",
+      "nodes": [
+        {
+          "id": "task-select",
+          "role": "skill",
+          "label": [
+            "Task engine"
+          ],
+          "title": "subagent-driven-development: select",
+          "href": "/reference/skills/subagent-driven-development/",
+          "source": "task",
+          "detail": "Inspect the selected scope, criteria, actual dependencies and current work. Engine eligibility is advisory; inspect outstanding workers before redispatch after interruption.",
+          "output": "Useful next work with the relevant requirements and checks."
+        },
+        {
+          "id": "author",
+          "role": "agent",
+          "label": [
+            "Scoped author"
+          ],
+          "title": "Optional backend, frontend or infrastructure author",
+          "href": "/concepts/persona-and-context/",
+          "source": "task",
+          "detail": "Choose direct implementation for focused work. Delegate when isolation, parallel work or expertise helps, supplying bounded relevant context. A delivery receipt does not grant execution permission.",
+          "output": "Scoped work performed directly or by an appropriate author.",
+          "conditional": true
+        },
+        {
+          "id": "tdd",
+          "role": "skill",
+          "label": [
+            "tdd"
+          ],
+          "title": "tdd: select and prove the approach",
+          "href": "/reference/skills/tdd/",
+          "source": "tdd",
+          "detail": "Use genuine regression RED/GREEN for confirmed fixes, criterion-focused feature checks and passing characterization baselines for refactors. Non-executable changes use relevant validation.",
+          "output": "Observed evidence and pending checks returned to the caller.",
+          "checks": [
+            "Obligations: map required claims to meaningful proving checks.",
+            "Baseline: observe target RED for a fix or passing characterization before refactoring; prefer test-first features.",
+            "Implement: run the scoped proving checks and affected existing contracts, preserving assertions.",
+            "Verify obligations: keep missing or failed evidence visible and rerun affected checks.",
+            "Coverage: meet the declared profile and critical-path requirements; report unmeasured scope.",
+            "Lint and handoff: run applicable quality tools and return actual commands, results and limitations."
+          ]
+        },
+        {
+          "id": "task-proof",
+          "role": "skill",
+          "label": [
+            "Check result"
+          ],
+          "title": "subagent-driven-development: verify",
+          "href": "/reference/skills/subagent-driven-development/",
+          "source": "taskReview",
+          "detail": "Compare the result with criteria and run applicable checks. Record commands, working directories, outcomes and limitations. Reuse evidence only while its checked source and inputs remain applicable.",
+          "output": "Observed verification and pending checks; task status is not test evidence."
+        }
       ],
-      edges: [
-        { from: 'task-select', to: 'author', kind: 'dispatch', label: 'dispatch', source: 'task', detail: 'One fresh, scope-selected author receives the task.' },
-        { from: 'author', to: 'tdd', kind: 'dispatch', label: 'uses tdd', source: 'task', detail: 'The author follows the test-first procedure, not a separate later test service.' },
-        { from: 'tdd', to: 'task-proof', kind: 'return', label: 'return', source: 'taskReview', detail: 'The caller performs specification review and fresh verification after authoring.' },
-      ],
+      "edges": [
+        {
+          "from": "task-select",
+          "to": "author",
+          "kind": "dispatch",
+          "label": "implement",
+          "source": "task",
+          "detail": "Implement directly or assign a useful bounded unit; delegation is conditional."
+        },
+        {
+          "from": "author",
+          "to": "tdd",
+          "kind": "reuse",
+          "label": "verify approach",
+          "source": "task",
+          "detail": "The implementer follows the verification approach suited to the assigned work."
+        },
+        {
+          "from": "tdd",
+          "to": "task-proof",
+          "kind": "return",
+          "label": "return",
+          "source": "taskReview",
+          "detail": "Return actual results so the caller can assess criteria, source applicability and remaining work."
+        }
+      ]
     },
     {
-      id: 'accept', title: 'Accept the scope, then checkpoint', question: 'What returns to the human coordinator?',
-      output: 'Accepted scope evidence and a human acknowledgement before the next attended batch.',
-      nodes: [
-        { id: 'quality', conditional: true, role: 'agent', label: ['Applicable', 'reviewers'], title: 'Scope-selected quality reviewers', href: '/reference/skills/subagent-driven-development/', source: 'taskReview',
-          detail: 'Review the combined diff once per scope after task review and verification. Dispatch security, auth/crypto, dependency or migration reviewers only where applicable; ordinary work retains its TDD/coverage quality bar.', output: 'Findings against the combined scope, not a blanket reviewer roster.' },
-        { id: 'triage', conditional: true, role: 'agent', label: ['finding-triage'], title: 'finding-triage', href: '/reference/agents/finding-triage/', source: 'taskReview',
-          detail: 'Classify the dispatched findings. Security CRITICAL stops the loop; HIGH returns the affected work for correction. The active caller owns lower-severity disposition.', output: 'A severity-aware result with out-of-scope work kept separate.' },
-        { id: 'accept-scope', role: 'skill', label: ['Accept scope'], title: 'subagent-driven-development: accept', href: '/reference/skills/subagent-driven-development/', source: 'scope',
-          detail: 'Accept only after task proof and combined quality review. The HTML path records current whole-scope acceptance through the installed authority and engine, not an edited checkbox.', output: 'A completed scope returned to executing-plans.' },
-        { id: 'checkpoint', role: 'skill', label: ['Human', 'checkpoint'], title: 'executing-plans: human checkpoint', href: '/reference/skills/executing-plans/', source: 'checkpoint',
-          detail: 'Report what landed, what is next and what remains open. Wait for acknowledgement. This attended stop is different from a periodic checkpoint report and from an HTML acceptance scope.', output: 'Acknowledgement, then another scope or the commit gate.' },
+      "id": "accept",
+      "title": "Review and report progress",
+      "question": "What evidence and next work return to the caller?",
+      "output": "Current implementation progress, applicable review and check results, and the next authorized work.",
+      "nodes": [
+        {
+          "id": "quality",
+          "conditional": true,
+          "role": "agent",
+          "label": [
+            "Applicable",
+            "reviewers"
+          ],
+          "title": "Risk-selected reviewers",
+          "href": "/reference/skills/subagent-driven-development/",
+          "source": "taskReview",
+          "detail": "Review the combined relevant diff when risk or policy requires it. Use specialist reviewers for applicable security, dependency or migration concerns and avoid duplicate per-task reviewer cascades.",
+          "output": "Applicable findings against the actual reviewed source."
+        },
+        {
+          "id": "triage",
+          "conditional": true,
+          "role": "agent",
+          "label": [
+            "finding-triage"
+          ],
+          "title": "finding-triage",
+          "href": "/reference/agents/finding-triage/",
+          "source": "dispatch",
+          "detail": "Route a dispatched review batch through finding triage and verdict aggregation. Preserve blockers, incomplete units and out-of-scope findings without inventing a successful review.",
+          "output": "One triaged verdict with its actual evidence limits."
+        },
+        {
+          "id": "accept-scope",
+          "role": "skill",
+          "label": [
+            "Record",
+            "progress"
+          ],
+          "title": "subagent-driven-development: record progress",
+          "href": "/reference/skills/subagent-driven-development/",
+          "source": "scope",
+          "detail": "Use the selected writer to record completed implementation. HTML accept-scope can record DONE without a receipt; it cannot clear pending or blocked members. Keep verification and independent acceptance distinct.",
+          "output": "Completed implementation, actual checks and unresolved issues returned to the caller."
+        },
+        {
+          "id": "checkpoint",
+          "role": "skill",
+          "label": [
+            "Progress",
+            "report"
+          ],
+          "title": "executing-plans: report and continue",
+          "href": "/reference/skills/executing-plans/",
+          "source": "checkpoint",
+          "detail": "Report changes, checks and next work, then continue within existing authorization. Honor a user-requested pause, consequential decision, or actual host/security restriction for the affected work.",
+          "output": "The next authorized scope or an honest delivery handoff."
+        }
       ],
-      edges: [
-        { from: 'quality', to: 'triage', kind: 'sequence', label: 'findings', source: 'taskReview', detail: 'Applicable reviewer findings are classified before the scope can be accepted.' },
-        { from: 'triage', to: 'accept-scope', kind: 'return', label: 'no blocker', source: 'scope', detail: 'Return quality results to the task engine; current evidence still governs acceptance.' },
-        { from: 'accept-scope', to: 'checkpoint', kind: 'return', label: 'to caller', source: 'scope', detail: 'A scoped invocation returns to executing-plans, not directly to commit-gate.' },
-      ],
+      "edges": [
+        {
+          "from": "quality",
+          "to": "triage",
+          "kind": "sequence",
+          "label": "findings",
+          "source": "dispatch",
+          "detail": "When independent reviewers are dispatched, aggregate their complete findings and unit outcomes."
+        },
+        {
+          "from": "triage",
+          "to": "accept-scope",
+          "kind": "return",
+          "label": "results",
+          "source": "scope",
+          "detail": "Return applicable review results; implementation status must not conceal failures or missing checks."
+        },
+        {
+          "from": "accept-scope",
+          "to": "checkpoint",
+          "kind": "return",
+          "label": "to caller",
+          "source": "scope",
+          "detail": "The scoped invocation returns to its coordinator with work and evidence, not directly to commit."
+        }
+      ]
     },
     {
-      id: 'deliver', title: 'Commit and open the PR', question: 'Which action is actually authorized?',
-      output: 'The chosen Open a PR outcome, with current source and evidence. The PR is not an automatic merge or release.',
-      nodes: [
-        { id: 'commit', role: 'skill', label: ['commit-gate'], title: 'commit-gate', href: '/reference/skills/commit-gate/', source: 'commit',
-          detail: 'The coordinator hands off only after all required scopes and acknowledgements. The commit gate checks permission, selected work and fresh evidence; /ca:commit is also a standalone entry, not an extra command this path must type.', output: 'A selectively staged commit after the applicable gates.' },
-        { id: 'finish', role: 'skill', label: ['Finish branch'], title: 'finishing-a-development-branch', href: '/reference/skills/finishing-a-development-branch/', source: 'finish',
-          detail: 'Present the supported terminal choices with actual state. This illustration follows the user choosing Open a PR; merging via PR and confirmed discard are separate outcomes.', output: 'An explicit terminal choice, with no direct write to main.' },
-        { id: 'pr-contract', role: 'command', label: ['/ca:pr', 'procedure'], title: '/ca:pr procedure, reused by finishing', href: '/reference/commands/pr/', source: 'finish',
-          detail: 'Finishing executes the PR procedure here. The command is not re-invoked: routing back into it would create a loop. A standalone /ca:pr remains an entry to the same contract.', output: 'The required PR preparation and review, not a new authorization.' },
-        { id: 'pr-review', role: 'agent', label: ['PR review', '+ verdict'], title: 'PR reviewers, finding-triage and verdict-aggregator', href: '/reference/commands/pr/', source: 'pr',
-          detail: 'Apply the PR path matrix and read-only review funnel. Resolve blocking findings before opening. The final handoff names the PR URL, current head and actually observed checks.', output: 'An open pull request. Exact-head merge readiness and merge permission remain separate.' },
+      "id": "deliver",
+      "title": "Commit and open the PR",
+      "question": "Which action is actually authorized?",
+      "output": "An authorized open PR with its current source and observed checks. Merge and publication remain separate actions.",
+      "nodes": [
+        {
+          "id": "commit",
+          "role": "skill",
+          "label": [
+            "commit-gate"
+          ],
+          "title": "commit-gate",
+          "href": "/reference/skills/commit-gate/",
+          "source": "commit",
+          "detail": "Use the commit owner only when committing is authorized. It checks the selected staged work, applicable tests, secrets and specialized controls, with fresh behavioral proof.",
+          "output": "A selectively staged commit and observed gate results."
+        },
+        {
+          "id": "finish",
+          "role": "skill",
+          "label": [
+            "Finish branch"
+          ],
+          "title": "finishing-a-development-branch",
+          "href": "/reference/skills/finishing-a-development-branch/",
+          "source": "finish",
+          "detail": "Retain an existing open-PR choice. Ask for branch disposition only if it is unclear. Merge and discard require their own explicit authorization and applicable evidence.",
+          "output": "The selected terminal action supported by current branch state."
+        },
+        {
+          "id": "pr-contract",
+          "role": "command",
+          "label": [
+            "/ca:pr",
+            "procedure"
+          ],
+          "title": "/ca:pr procedure, reused by finishing",
+          "href": "/reference/commands/pr/",
+          "source": "finish",
+          "detail": "Finishing executes the PR procedure in place; the command is not re-invoked. For a committed branch, verify the explicit base-to-HEAD subject, including secrets and specialized checks, without creating another commit.",
+          "output": "Current-head readiness and required review for the authorized PR."
+        },
+        {
+          "id": "pr-review",
+          "role": "agent",
+          "label": [
+            "PR review",
+            "+ verdict"
+          ],
+          "title": "PR reviewers, finding-triage and verdict-aggregator",
+          "href": "/reference/commands/pr/",
+          "source": "pr",
+          "detail": "Apply the PR path matrix and review funnel, including security review for CI/deployment/infrastructure changes. Resolve blockers and report the PR URL, current head and observed checks.",
+          "output": "An open PR. Exact-head hosted CI and explicit merge authority still govern integration."
+        }
       ],
-      edges: [
-        { from: 'commit', to: 'finish', kind: 'sequence', label: 'committed', source: 'finish', detail: 'The finishing procedure requires a cleared commit gate on current work.' },
-        { from: 'finish', to: 'pr-contract', kind: 'reuse', label: 'reuse', source: 'finish', detail: 'Execute the PR contract in place; do not re-invoke its command.' },
-        { from: 'pr-contract', to: 'pr-review', kind: 'dispatch', label: 'review', source: 'pr', detail: 'PR creation includes its own path-selected review and verdict.' },
-      ],
-    },
+      "edges": [
+        {
+          "from": "commit",
+          "to": "finish",
+          "kind": "sequence",
+          "label": "committed",
+          "source": "finish",
+          "detail": "The branch-finishing owner checks current-head readiness and the selected delivery action."
+        },
+        {
+          "from": "finish",
+          "to": "pr-contract",
+          "kind": "reuse",
+          "label": "reuse",
+          "source": "finish",
+          "detail": "Execute the PR contract in place; do not re-invoke its command."
+        },
+        {
+          "from": "pr-contract",
+          "to": "pr-review",
+          "kind": "dispatch",
+          "label": "review",
+          "source": "pr",
+          "detail": "PR creation includes its own path-selected review and verdict."
+        }
+      ]
+    }
   ],
-  alternatives: [
-    { from: 'batch', to: 'task-select', kind: 'dispatch', label: 'Delegate the complete scope', source: 'batch', detail: 'The attended coordinator calls the task engine with the authored scope, then waits for its return.' },
-    { from: 'task-proof', to: 'task-select', kind: 'repeat', label: 'More tasks in this scope', source: 'taskReview', detail: 'Build the remaining eligible tasks. Combined quality review occurs after task specification review and fresh verification, despite its earlier phase number.' },
-    { from: 'task-proof', to: 'quality', kind: 'sequence', label: 'Scope ready for quality review', source: 'taskReview', detail: 'Proceed only once every task has the required per-task evidence.' },
-    { from: 'tdd', to: 'tdd', kind: 'repeat', label: 'Missing obligation returns to red', source: 'tdd', detail: 'Phase 4 returns to Phase 2 for a meaningful failing test, then reruns implementation. Tests are not weakened to clear a gate.' },
-    { from: 'triage', to: 'author', kind: 'return', label: 'HIGH finding requires correction', source: 'taskReview', detail: 'Correct the affected task, repeat its proof and rerun the combined quality review. Real authority/security blocks remain stops.' },
-    { from: 'checkpoint', to: 'task-select', kind: 'repeat', label: 'Next acknowledged scope', source: 'checkpoint', detail: 'The coordinator delegates the next scope only after human acknowledgement. A changed typed partition uses the owning amendment path.' },
-    { from: 'checkpoint', to: 'commit', kind: 'sequence', label: 'Final scope acknowledged', source: 'checkpoint', detail: 'Current acceptance of the entire selected plan is checked again before commit handoff.' },
-  ],
+  "alternatives": [
+    {
+      "from": "batch",
+      "to": "task-select",
+      "kind": "dispatch",
+      "label": "Select useful scope",
+      "source": "batch",
+      "detail": "The coordinator hands the named scope to the implementation owner and resumes from its actual results."
+    },
+    {
+      "from": "task-proof",
+      "to": "task-select",
+      "kind": "repeat",
+      "label": "Continue independent work",
+      "source": "taskReview",
+      "detail": "Choose the next task by actual dependencies; an unrelated failure does not prohibit useful authorized work."
+    },
+    {
+      "from": "task-proof",
+      "to": "quality",
+      "kind": "sequence",
+      "label": "Review where warranted",
+      "source": "taskReview",
+      "detail": "Use applicable independent review for the combined change when risk or policy calls for it."
+    },
+    {
+      "from": "task-proof",
+      "to": "accept-scope",
+      "kind": "sequence",
+      "label": "Record scoped progress",
+      "source": "scope",
+      "detail": "Ordinary work can record implementation progress without manufacturing an independent review receipt."
+    },
+    {
+      "from": "tdd",
+      "to": "tdd",
+      "kind": "repeat",
+      "label": "Repair affected checks",
+      "source": "tdd",
+      "detail": "An unexplained failure or missing requirement remains outstanding. Repair the work and rerun the appropriate checks without weakening assertions."
+    },
+    {
+      "from": "triage",
+      "to": "author",
+      "kind": "return",
+      "label": "Correct blocking findings",
+      "source": "taskReview",
+      "detail": "Resolve affected findings within existing scope, rerun relevant checks and refresh changed review conclusions."
+    },
+    {
+      "from": "checkpoint",
+      "to": "task-select",
+      "kind": "repeat",
+      "label": "Next authorized scope",
+      "source": "checkpoint",
+      "detail": "Continue normal authorized work while preserving real dependencies and any explicit user-requested pause."
+    },
+    {
+      "from": "checkpoint",
+      "to": "commit",
+      "kind": "sequence",
+      "label": "Authorized delivery",
+      "source": "checkpoint",
+      "detail": "Hand current scope, actual check results and remaining work to the commit owner only when committing is authorized."
+    }
+  ]
 };
 
 /** Check presentation integrity; source tests and human tracing establish semantic fidelity. */

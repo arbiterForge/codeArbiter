@@ -375,8 +375,8 @@
     },
     {
       "path": "core/surface/includes/author-tdd-workflow.md",
-      "blob": "34c8222bc73399a43677d9b0c8bd764b79463b6f",
-      "summary": "Authors derive tests from agreed criteria; routine work does not wait for a separate approval artifact.",
+      "blob": "786ecd5aacc362799354c2616f6f0c1f799cfd82",
+      "summary": "Delegated authors preserve the caller-selected verification approach: genuine regression RED/GREEN for fixes, current criterion-focused feature checks and passing characterization baselines for refactors. Actual results and pending checks return to the caller; staging requires assigned scope and authorization.",
       "nodes": [
         "f-verify"
       ]

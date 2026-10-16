@@ -25,7 +25,7 @@ dispatches the reviewers its path matrix requires.
 <ReaderJourney
   id="review-delivery-map"
   title="Scope → verdict → commit → pull request"
-  boundary="For your own change. For an inbound PR, stop at the local verdict unless you explicitly ask to post a comment. Typed completion still requires the applicable installed-host authority."
+  boundary="For your own change, use actual authorization and current checks. For an inbound PR, stop at the local verdict unless you explicitly ask to post a comment. Implementation progress does not establish verification, merge or release."
   steps={[
     { actor: 'You choose the target', title: 'Confirm the scope',
       artifact: 'The named working diff, path or inbound PR diff, with its current source identity.',
@@ -37,7 +37,7 @@ dispatches the reviewers its path matrix requires.
       href: '/reference/commands/checkpoint/', linkLabel: 'Compare a saved checkpoint' },
     { actor: 'You authorize persistence', title: 'Check the commit receipt',
       artifact: 'A commit SHA, explicit changed-file list and fresh local verification results.',
-      review: 'Keep unrelated work out. A prose verdict or a rendered checkbox does not establish typed-plan acceptance.',
+      review: 'Keep unrelated work out. Read actual check outcomes; a prose verdict or progress checkbox does not prove the selected behavior.',
       href: '/reference/commands/commit/', linkLabel: 'Inspect the commit gate' },
     { actor: 'You retain merge authority', title: 'Inspect the PR handoff',
       artifact: 'A PR URL, its current head, verification scope and any unresolved follow-ups.',
@@ -57,8 +57,9 @@ dispatches the reviewers its path matrix requires.
 | Can this branch be proposed for integration? | `pr` | Additional required review, then a PR and its handoff. It is not permission to merge. |
 
 A periodic checkpoint is not a promotion gate or sign-off. Its `last-checkpoint` value is an
-integer override-count baseline, not proof that the commit gate passed. It is also different from
-the execution checkpoints used to accept a batch of typed-plan work.
+integer override-count baseline, not proof that the commit gate passed. The report's
+`source_commit`, `recorded_at` and `worktree_dirty` identify the reviewed source, time and scope
+limitation used by audit windows. Execution checkpoints separately organize plan progress.
 
 For a pre-implementation security analysis, use [threat modeling](/reference/commands/threat-model/)
 rather than pretending a diff review covers a design that has not been built.
@@ -98,11 +99,11 @@ Enter these in your coding host, not in the native shell. Replace `123` with the
 | Watch an existing PR | `/ca:pr --watch 123` | `$ca-pr --watch 123` | `/ca-pr --watch 123` |
 | Clean up after merge | `/ca:pr --cleanup` | `$ca-pr --cleanup` | `/ca-pr --cleanup` |
 
-Entry syntax does not establish equivalent host capability. For completed typed HTML work,
+Entry syntax does not establish equivalent host capability. When making an explicit attested
+verification or review claim,
 [check the installed host's authority support](/guides/review-artifacts/#check-your-hosts-authority-capability)
-first. Current implementation has production verification/review authority on Codex and Claude Code only; Pi lacks
-the qualified prompt-approval seam. A successful ordinary diff review does not supply those missing
-capabilities, create an acceptance receipt, or make a draft executable.
+and retain its evidence limits. Ordinary authorized work follows actual host permissions and
+applicable checks. A successful diff review does not manufacture a missing attestation receipt.
 
 ## 2. Read the verdict before requesting a fix
 
@@ -154,10 +155,11 @@ invented. Run the applicable impact-bounded local verification. Exhaustive repos
 checks belong to the exact-head hosted-CI merge boundary, not an improvised demand to run every
 platform locally.
 
-For a typed pair, the installed engine must establish `all_accepted_and_current: true` for the
-selected specification and plan, with current acceptance receipts. Neither this guide's map nor a
-periodic checkpoint report establishes that result. Stop at unsupported or stale authority and use
-[Resume and recover](/guides/resume-and-recover/).
+For a typed pair, read the selected specification, criteria and task state through the installed
+engine. `DONE` records implementation progress, not passing tests or independent review. List
+unfinished plan work and pending checks accurately. An acceptance receipt is not a prerequisite
+for an ordinary authorized commit or PR. Actual commit permission, applicable verification and
+independent security controls still apply.
 
 **Expected result:** the commit receipt gives the SHA, branch, explicit file list, message and fresh
 gate results. Inspect any remaining uncommitted work rather than calling it clean by assumption.
@@ -165,9 +167,17 @@ A failed hook is a stop to repair and rerun, not permission to bypass verificati
 
 ## 4. Open the PR and inspect its handoff
 
-The PR path confirms that the commit gate cleared in the current session, then applies its reviewer
-matrix. A standalone review is useful before this point but is not required as a redundant ceremony.
-Do not open the PR while a BLOCK-level finding remains.
+The PR path establishes current-head readiness. For a committed branch, derive paths and
+obligations from the explicit base-to-HEAD diff and bind tests, secrets scanning and specialized
+security/migration checks to that same subject. Reuse applicable observed results while their
+source and inputs match; run missing or affected checks. An empty staged set does not establish
+branch coverage. No extra commit is needed merely to prepare an already committed branch;
+authorized uncommitted work uses the commit owner.
+
+The path then applies its reviewer matrix, including security review for CI/deployment/infrastructure
+changes. A standalone review is useful but is not required as a redundant ceremony. Do not open
+the PR while a BLOCK-level finding remains. A direct request to open a PR retains that selection
+without another branch-disposition question.
 
 Read the PR body as a deliverable: what changed and why, how it was tested, what remains, and any
 applicable decision or tradeoff. Ask for source identities rather than “all green” without a scope.
@@ -217,7 +227,7 @@ A clean exit preserves unrelated work and makes the next repository session unde
 | Inbound PR cannot be read | Restore the CLI/authentication prerequisite or supply an accessible target. Keep the original scope visible. |
 | A verdict concerns the wrong revision | Resolve the current target and review that diff again. Do not reuse the old verdict as current proof. |
 | A blocking finding remains on your change | Make the bounded correction, rerun its proof, then return through commit and PR review. |
-| Typed authority is missing or stale | Use the supported host path and artifact recovery guidance. Do not edit receipts or acceptance labels. |
+| An explicit attestation claim lacks current evidence | Leave that claim unproved and inspect the supported host path. Ordinary authorized work still uses actual permissions and applicable checks; never manufacture receipts. |
 | Hosted checks are pending or red | Inspect the actual current-head run. Do not substitute a prior green SHA or an unrelated job. |
 | Cleanup would lose unique work | Keep or move the named item, or stop cleanup. Do not treat an override as ordinary lifecycle work. |
 

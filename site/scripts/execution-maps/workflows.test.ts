@@ -46,12 +46,13 @@ describe('C04 distinct workflow routes', () => {
   it('binds finishing reuse claims to actual historical and current procedure text', () => {
     for (const map of [featureMap, getWorkflow('sprint').map]) {
       const source = map.sources.finish;
-      expect(source.quote).toContain('do not re-invoke');
-      expect(source.currentQuote).toContain('execute the **Open-PR procedure**');
-      expect(source.currentQuote).toContain('Do not load or re-invoke the PR command wrapper.');
-      expect(read(source.path)).toContain(source.currentQuote);
+      const currentQuote = source.currentQuote ?? source.quote;
+      expect(source.quote).toMatch(/do not re-invoke|Do not load or re-invoke/);
+      expect(currentQuote).toContain('execute the **Open-PR procedure**');
+      expect(currentQuote).toContain('Do not load or re-invoke the PR command wrapper.');
+      expect(read(source.path)).toContain(currentQuote);
       expect(execFileSync('git', ['show', `${map.reviewedAt}:${source.path}`], { encoding: 'utf8' })).toContain(source.quote);
-      expect(source.currentQuote).not.toBe('MUST NOT auto-merge under `/sprint`');
+      expect(currentQuote).not.toBe('MUST NOT auto-merge under `/sprint`');
     }
     const empty = structuredClone(getWorkflow('sprint').map);
     empty.sources.finish.currentQuote = '  ';

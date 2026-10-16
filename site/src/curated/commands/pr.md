@@ -2,12 +2,12 @@
 entity: commands/pr
 related: [commit, watch, skills/finishing-a-development-branch]
 gates:
-  - gate: commit gate cleared
+  - gate: current-head readiness
     when: before a PR is drafted
-    effect: the commit gate must have already passed this session; a PR is not the place to catch up on skipped verification
+    effect: applicable tests, secrets scanning and specialized review cover the actual base-to-HEAD diff; missing or failing checks remain pending
   - gate: path-matrix review dispatch
-    when: after the commit gate check
-    effect: the diff decides which reviewers run — auth/crypto paths, migrations, dependency manifests each pull in a dedicated reviewer, and a coverage check always runs
+    when: assessing the current branch
+    effect: auth/crypto, CI/deploy/infrastructure, migration and dependency paths select their required reviewers, and a coverage check always runs
   - gate: BLOCK check
     when: after reviewers report
     effect: any CRITICAL or HIGH finding stops the PR from being drafted until you resolve it
@@ -16,14 +16,23 @@ gates:
 ## What it does
 
 Explicit PR entry and a direct request to open a PR use the same branch-finishing owner.
-Neither permits a direct push or force-push to the default branch. Before anything gets drafted, it confirms the commit gate
-already ran clean this session, then looks at what actually changed to decide which reviewers need
-to weigh in: touching authentication or crypto code pulls in a security-focused pass, a migration
+Neither permits a direct push or force-push to the default branch. It establishes current-head
+readiness from the actual base-to-HEAD diff, including secrets scanning and specialized checks
+against that same subject. Reuse applicable observed results while source and inputs match, and
+run missing or affected checks. An empty index does not establish branch readiness, and preparing
+an already committed branch does not require a new commit.
+
+The diff selects the required reviewers: authentication, crypto and CI/deploy/infrastructure
+changes pull in security review, a migration
 file pulls in a migration reviewer, a changed dependency manifest pulls in a supply-chain check, and
 a coverage check runs on every PR regardless. Any finding at CRITICAL or HIGH severity stops the
 draft cold until it's addressed. Once everything clears, the PR itself gets written with a real
 summary, a test plan, and links to any decision record it touches — then, if you've opted into CI
 babysitting, a watcher attaches to follow the checks through to green.
+
+Unfinished plan work and pending verification remain explicit. An artifact acceptance receipt is
+not a prerequisite for an ordinary authorized PR. Opening leaves the PR open; merge and discard
+require explicit authority. Exact-head hosted CI must pass before an authorized merge.
 
 Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
 host-provided agent threads. Exact static-package and route-closure checks gate release. A bounded
@@ -55,7 +64,7 @@ discard still require explicit authority and their applicable proof.
 ```text
 > /ca:pr
 
-commit-gate: confirmed clean this session.
+Current-head checks cover the base-to-HEAD diff; tests and secrets scan passed.
 Diff touches: src/auth/session.ts, src/auth/session.test.ts.
 Path matrix: auth path detected — dispatching auth-crypto-reviewer and security-reviewer.
 Dispatching coverage-auditor (all paths).
@@ -67,5 +76,5 @@ CODEARBITER_BABYSIT is off — no CI watcher attached. Run /ca:watch to follow i
 
 ## When to reach for it
 
-Reach for `/ca:pr` once work is committed and you're ready to open it for review. If changes are
-still only staged, run `/ca:commit` first; to review a diff without opening a PR, use `/ca:review`.
+Reach for `/ca:pr` when you're ready to propose the branch for integration. Authorized uncommitted
+work uses the commit owner first. To review a diff without opening a PR, use `/ca:review`.

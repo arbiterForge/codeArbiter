@@ -7,7 +7,7 @@ journey:
   outcome: "Choose a lane by its behavioral contract and explain the next owner, required evidence and stopping point."
   prerequisites:
     - Read What Is codeArbiter
-  proof: "You can follow a feature through task authorship, scope review, its human checkpoint and the PR boundary without confusing those stages."
+  proof: "You can follow a feature through implementation, actual checks, relevant review and authorized delivery without treating progress labels as proof."
 ---
 
 import ExecutionMap from '../../../components/ExecutionMap.astro';
@@ -18,15 +18,15 @@ checkboxes. A command can enter the lane, but much of the work is routed automat
 skills and bounded agent roles.
 
 A **gate** is a condition for leaving a phase. It prevents later work from assuming something
-that has not been established. A specification approval establishes agreed behavior; a failing
+that has not been established. Recorded criteria describe agreed behavior; a failing
 regression establishes a defect that the correction must address; fresh verification establishes
 what the current implementation does. None substitutes for the others.
 
 ## Choose a lane from the work, not its size
 
-**New observable behavior belongs to feature.** An approved specification or qualifying mini-spec
+**New observable behavior belongs to feature.** A maintained specification or qualifying mini-spec
 establishes the behavioral obligations before implementation. The full path includes planning and
-attended execution; a small lane trims the artifact ceremony only when all of its classification
+coordinated execution; a small lane trims artifact work only when all of its classification
 conditions hold.
 
 **A confirmed defect belongs to fix.** The regression must reproduce the reported behavior and
@@ -34,7 +34,8 @@ fail for the right reason before the minimum correction. An unknown cause starts
 [Investigate and fix](/guides/investigate-and-fix/) explains the evidence and named investigation exits.
 
 **A behavior-preserving change belongs to refactor.** Its primary obligation is parity through
-unmodified pre-existing behavioral tests. Changing an expected result to accommodate new behavior
+preserved behavioral assertions from its measured baseline, including characterization backfill.
+Necessary import or symbol-reference changes retain the same oracle. Changing an expected result to accommodate new behavior
 is not evidence of preservation. The [refactor contract](/reference/skills/refactor/) governs that
 route rather than the feature diagram below.
 
@@ -54,40 +55,43 @@ what must remain true.
 
 ## Follow the full feature path
 
-The following map uses the attended full lane. It expands the same task engine that the sprint
-path calls directly. It does not imply that you type a new command at every node or that every
-named reviewer is dispatched for every task.
+The map follows a maintained specification through useful task scopes and authorized delivery.
+The implementation owner chooses direct implementation or valuable delegation. Conditional author
+and reviewer roles run only when useful or required; rows identify roles, not mandatory staffing.
 
 <ExecutionMap id="lanes-feature" />
 
-The scope boundary is particularly important. `executing-plans` delegates one scope to
-`subagent-driven-development`. The task engine performs task work and the required combined
-review, then returns to that coordinator. It does not jump directly to commit just because one
-batch finished. The coordinator owns the next human acknowledgement and final handoff.
+`executing-plans` passes a task scope to `subagent-driven-development`. The implementation owner
+returns completed work, observed checks and remaining issues. It does not jump directly to commit
+just because a batch finished. The coordinator continues authorized work unless an explicit user
+pause, consequential unresolved choice or actual host boundary prevents the affected action.
 
 ## How many gates, concretely
 
-A phase count is less useful than its condition. TDD has six phases: obligation scan, red, green,
-obligation verification, coverage and lint. The [test-first concept](/concepts/test-first/) explains
-why each exists and why a test run alone is insufficient.
+A phase count is less useful than its condition. TDD selects the verification approach, establishes
+its baseline, implements and checks, verifies obligations, measures required coverage, then runs
+lint and hands off evidence. Confirmed fixes require target RED/GREEN; features use criterion-focused
+checks and refactors preserve passing characterization baselines. The
+[test-first concept](/concepts/test-first/) explains what those observations prove.
 
 The [commit gate](/reference/skills/commit-gate/) has nine numbered phases covering permission,
 branch, classification, verification, behavioral proof, diff review, selective staging, message and
 commit. Its conditional provenance auto-heal step is not a separate tenth ordinary phase. A prior
 passing result cannot certify a later staged diff merely because both used the same branch name.
 
-The HTML task model also separates task review from whole-scope acceptance. A task displayed as
-`REVIEW` is not automatically accepted. The installed engine and applicable host authority must
-establish current eligibility and acceptance for the selected identities. Existing Markdown pairs
-retain their own supported ledger path; a diagram is not permission to translate between formats.
+The HTML task model distinguishes progress from verification. `REVIEW` and `DONE` record
+implementation progress; check results establish what passed. Eligibility provides scheduling
+advice. Ordinary authorized progress does not require acceptance receipts. Existing Markdown pairs
+retain one ledger and their original format; a diagram does not authorize conversion.
 
 ## STOP, BLOCK and human authority
 
-**STOP surfaces a decision and waits.** A feature checkpoint is an example: the coordinator names
-what completed, what comes next and what is open, then waits for the human acknowledgement.
+**STOP respects an actual boundary.** An explicitly requested review pause or a consequential
+unanswered product choice can stop affected work. Routine progress reports do not create another
+approval request; independent authorized tasks may continue.
 
 **BLOCK refuses to advance until its condition is satisfied.** A failing regression, incomplete
-obligation map or missing current authority cannot become a pass through more confident prose.
+requirement or unresolved permission cannot become a pass through more confident prose.
 Repairing the actual problem and rerunning the check is different from requesting a bypass.
 
 A hard decision boundary can require explicit human authority even during a sprint. Security,
@@ -112,9 +116,10 @@ proof boundaries. The [enforcement model](/enforcement/) explains the distinctio
 
 ## The terminal lane
 
-When the current work clears commit, finishing offers the supported terminal choices. This map
-illustrates **Open a PR**. A separate authorized merge still requires the repository’s applicable
-exact-head checks. Sprint autonomy ends at the open PR, not at an automatic merge.
+Finishing retains an already selected action and asks for branch disposition only when it is
+unclear. This map illustrates **Open a PR**. It verifies a committed branch against the explicit
+base-to-HEAD diff; authorized uncommitted work uses the commit owner. A separate authorized merge
+still requires exact-head hosted checks. Sprint autonomy ends at an open PR.
 
 Finishing reuses the PR command’s documented procedure in place. It expressly does not call that
 entry again. This is why a chart showing an unconditional `/pr` call after every internal skill can

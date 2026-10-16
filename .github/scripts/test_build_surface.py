@@ -1331,6 +1331,7 @@ class VerificationBoundaryContractTest(unittest.TestCase):
             "core/surface/commands/refactor.md",
             "core/surface/agents/backend-author.md",
             "core/surface/agents/frontend-author.md",
+            "core/surface/agents/infra-author.md",
             "core/surface/skills/writing-plans/references/farm-plan.md",
             ".github/PULL_REQUEST_TEMPLATE.md",
             ".codearbiter/tech-stack.md",
@@ -1351,6 +1352,9 @@ class VerificationBoundaryContractTest(unittest.TestCase):
                     text, path, str(REPO_ROOT / "core/surface"), {}
                 )
             with self.subTest(path=path):
+                if path.startswith("core/surface/agents/"):
+                    self.assertIn("includes/author-tdd-workflow.md", text)
+                    text += self.read("core/surface/includes/author-tdd-workflow.md")
                 for phrase in obsolete:
                     self.assertNotIn(phrase, text)
                 self.assertIn("verification-boundary", text)

@@ -330,14 +330,14 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
 
     def test_execution_surfaces_share_the_enabled_default_format_contract(self) -> None:
         sources = [p.read_text(encoding="utf-8") for p in (EXECUTING_SKILL, SUBAGENT_SKILL)]
+        contract = (REPO / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
         for source in sources:
-            self.assertIn("New full-lane workflows default to HTML", source)
-            self.assertIn("Existing authoritative Markdown pairs", source)
-            self.assertIn("HTML", source)
-            self.assertIn("writer", source)
-            self.assertIn("shadow", source)
-        self.assertIn("HTML `--farm` is disabled", sources[1])
-        self.assertIn("HTML `--farm` is disabled", sources[0])
+            self.assertIn("includes/artifacts.md", source)
+            self.assertIn("preserve the selected spec/plan representation", source)
+        for obligation in ("default to canonical `.html`", "before writing",
+                           "must not fall back to Markdown", "remains Markdown in its original format",
+                           "silently convert it or create a shadow ledger", "HTML `--farm` dispatch remains disabled"):
+            self.assertIn(obligation, contract)
 
 
     def test_execution_consumers_define_process_recreation_resume(self) -> None:

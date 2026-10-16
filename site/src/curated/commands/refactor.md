@@ -10,18 +10,18 @@ gates:
     effect: pre-existing tests must already cover the named surface, with at least one direct test per public method — an under-covered surface halts and backfills first
   - gate: parity verification
     when: after the restructure
-    effect: impact-bounded pre-existing parity tests pass locally without edits; exhaustive exact-head proof runs in hosted CI before merge
+    effect: post-backfill baseline tests pass with preserved behavioral assertions; exhaustive exact-head proof runs in hosted CI before merge
 ---
 
 ## What it does
 
 This is the lane for moving or reshaping code without changing what it does — a rename, an extract,
 an inline, a dedup, or swapping an internal implementation for another one that behaves identically.
-The proof that nothing changed comes from tests that already existed before the restructure started;
-editing one of those tests to make it pass again is treated as a behavior change in disguise, not
-valid proof. If the surface isn't covered well enough to prove parity, the work pauses to add tests
-first. And if what comes out the other end would actually classify as new behavior, the whole thing
-reroutes to feature work instead of finishing as a refactor.
+The proof comes from a measured post-backfill baseline established before restructuring. Add
+passing characterization tests where coverage is missing, then preserve their behavioral assertions.
+Necessary import or symbol-reference updates may adapt tests to the new structure while retaining
+the same oracle. A changed expected result belongs to feature or fix work. Required direct tests,
+coverage metrics and critical-path evidence still apply.
 
 ## Usage
 
@@ -45,7 +45,7 @@ Parity coverage: each has a direct test; PaymentClient's covers only the success
 a failure-path test before continuing.
 [backfill test added, suite green]
 Applying the extraction... no new branches, no new error paths.
-Running affected parity tests unmodified: 37 passed, 0 failed; no pre-existing parity test files modified.
+Running the post-backfill parity tests: 37 passed, 0 failed; behavioral assertions preserved.
 Exhaustive exact-head GitHub Actions checks remain required before merge.
 Coverage on the named surface: unchanged. Parity proven.
 ```

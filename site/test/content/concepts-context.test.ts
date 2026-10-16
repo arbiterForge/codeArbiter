@@ -124,7 +124,7 @@ describe('C03 teaching and historical boundaries', () => {
     expect(source('core/pysrc/prompt-submit.py')).toContain('_compose_persona');
     expect(roles).toContain('initial="task"');
   });
-  it('preserves every packaged-role destination and the bounded release evidence', () => {
+  it('preserves every current packaged-role destination and its actual isolation boundary', () => {
     const roles = page('persona-and-context');
     const reference = roles.match(/<details data-role-reference="packaged-charters">([\s\S]*?)<\/details>/)?.[1] ?? '';
     const charters = readdirSync('../plugins/ca-codex/agents')
@@ -132,9 +132,10 @@ describe('C03 teaching and historical boundaries', () => {
       .map(name => name.slice(0, -3)).sort();
     const links = [...reference.matchAll(/\]\(\/reference\/agents\/([^/]+)\/\)/g)].map(match => match[1]).sort();
     expect(links).toEqual(charters);
-    expect(reference).toContain('complete packaged resource charter set for that release');
-    expect(reference).toContain('bounded 0.9.4 receipt');
-    expect(reference).toContain('canonical workflow explicitly permits it and isolation is not mandatory');
+    expect(reference).toContain('lookup destinations, not additional commands');
+    expect(reference).toContain('still determines which roles participate');
+    expect(roles).toContain('An allowed inline fallback is a particular contract exception');
+    expect(roles).toContain('not evidence of enforced read-only isolation on every path');
     expect(reference).toContain('writer remains distinct from the read-only funnel');
     expect(roles).not.toContain('Every reviewer is read-only by construction');
     expect(roles).not.toContain('Three agents carry write tools');

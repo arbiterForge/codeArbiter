@@ -1,17 +1,14 @@
 ---
 title: Review Specifications and Plans
-description: "Find, inspect, request changes to, and approve the right specification and plan without confusing a browser view with workflow authority."
+description: "Inspect the working specification and plan, request scoped changes, and distinguish implementation progress from verification and delivery."
 journey:
   level: Practitioner
   time: "15 min reading; review depends on scope"
-  outcome: "An informed review of the actual requirements and execution plan, with the right format and authority boundary."
+  outcome: "An informed review of the actual requirements, execution plan, observed results and remaining decisions."
   prerequisites:
     - A feature or sprint draft to inspect, or the read-only product example
-  proof: "You can distinguish requirements, planned verification, recorded evidence and current approval, and request a scoped revision safely."
+  proof: "You can distinguish requirements, planned verification, recorded progress and actual evidence, and request a scoped revision safely."
 ---
-
-> **Historical receipt-based workflow (released-adapter documentation):** The receipt/approval examples below describe older installed packages. The **unreleased** assistive overhaul in [PR #983](https://github.com/arbiterForge/codeArbiter/pull/983) removes artifact-origin approval from ordinary drafting and progress. These instructions do not establish new package behavior or qualify any host; follow the exact package installed until a new version is published. Real host permissions and explicit user stops still apply.
-
 
 A specification defines the behavior being agreed to. Its plan connects that definition to tasks,
 paths, dependencies and verification. **A plan is not a second independent requirements list.**
@@ -23,9 +20,9 @@ native-rendered draft pair without installing or approving anything.
 | Work | Expected form | Important boundary |
 |---|---|---|
 | Greenfield project planning | Three exact named Markdown documents under `.codearbiter/plans/` | Architecture, roadmap and project backlog, not feature execution artifacts |
-| New full-lane feature or sprint | `specs/<slug>.html` and `plans/<slug>.html` under `.codearbiter/` | Requires the installed adapter's qualified native artifact capability |
+| New full-lane feature or sprint | `specs/<slug>.html` and `plans/<slug>.html` under `.codearbiter/` | Uses the installed manifest-owned native writer |
 | An existing Markdown feature pair | Its existing matching `.md` specification and plan | Remains authoritative on that exact legacy path; no implicit conversion |
-| A small-lane change | Confirmed inline mini-spec and triage record | Does not require a new full HTML pair solely for consistency |
+| A small-lane change | Stated inline mini-spec and triage record | Does not require a new full HTML pair solely for consistency |
 
 See [Plan a new project](/guides/plan-a-new-project/) for the first row and
 [Build a feature](/guides/feature-lane/) for full-versus-small classification.
@@ -34,23 +31,26 @@ quietly substitute Markdown or an arbitrary executable.
 
 ## Check your host's authority capability
 
-A native artifact engine and a host authority adapter do different jobs. The engine validates
-content and transitions; the host adapter records an actual user prompt, verification run or
-review event. Installing the engine alone does not provide every authority adapter.
+The installed native writer validates content, preserves identity and performs recoverable writes.
+The workflow checks its declared capability before artifact I/O. Ordinary authoring and task
+progress use the existing user request; they do not require approval codes, context tickets or
+reviewer receipts. Native writer support includes Pi; that fact alone does not qualify every live
+host workflow.
 
-The [current source contract](https://github.com/arbiterForge/codeArbiter/blob/d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f/core/surface/includes/artifacts.md)
-distinguishes these implemented boundaries. This is not a release-to-release support guarantee:
-check your exact installed adapter and its qualification evidence before execution.
+Keep these boundaries distinct:
 
-| Host | Typed spec/plan approval | Typed verification and review authority |
-|---|---|---|
-| Claude Code | Host-observed prompt approval | Production adapters, reviewed by the read-only `ca:authority-reviewer` agent; exact installed capability still required |
-| Codex | Host-observed prompt approval | Production adapters; exact installed capability still required |
-| Pi | Not supported | Not supported; do not arm the prompt adapter |
+| Boundary | What to inspect |
+|---|---|
+| Artifact integrity | The installed writer, selected pair, current revision and successful save/readback |
+| Work authorization | The user's requested scope, actual unresolved decisions, explicit stops and real host/tool permissions |
+| Verification and review | What ran, the source and scope it examined, actual results, findings and missing evidence |
+| Explicit attestation | The requested evidence claim and the exact host adapter and producer that support it |
 
-These limits concern the typed HTML path, not every operation on those hosts. Existing Markdown
-pairs retain their legacy workflow, and small-lane work remains inline. Do not change the lane
-classification or replace a new HTML pair with Markdown to evade an unsupported boundary.
+Strict attestation is an on-demand evidence path, not a prerequisite for ordinary drafting or
+implementation. If it is explicitly requested, use its supported host-owned producer and preserve
+its actual limits; never manufacture a receipt or infer an event from a progress label. The owning
+workflow loads that contract when needed. A writer installation or package inventory does not
+prove a live approval capture, isolated review or verification run.
 
 ## Open the actual files
 
@@ -94,38 +94,35 @@ A test command should name its working directory, expected outcome and required 
 than merely saying “run tests.” Ask what existing code or prerequisite it depends on, and whether
 a failure would actually detect the intended defect.
 
-An incomplete draft can exist on disk. Structural validity, readiness, approval and permission to
-execute are different checks. A plan's `draft_preview` relationship does not authorize execution.
+An incomplete draft can exist on disk. Readiness diagnostics expose missing structure or coverage;
+they are not a second permission gate. A plan binding identifies the current specification, not
+proof of implementation. Missing requirements remain visible while independent authorized work
+can continue.
 
 ## Understand what your decision authorizes
 
-Use the approval boundary presented by the owning workflow. An attended feature normally approves
-its specification, binds the plan to that approved definition, and obtains the plan's own current
-approval. For later single-artifact changes, review the named content and follow its exact prompt.
+Your feature or sprint request establishes the intended working scope. codeArbiter records the
+requirements and plan, resolves consequential missing choices with their owner, and continues
+without requesting separate artifact approval. Settled decisions remain settled after a session
+restart or an in-scope plan revision.
 
-The **initial HTML sprint pair** has a distinct qualified path: a ready draft specification plus
-a draft-for-pair plan. `arm-sprint` freezes both identities and any exact delegation terms. One
-host-observed reply names both and `approve-only` or `delegate-methods`; `sprint-approve` commits
-the two approvals and binding in one recoverable native transaction. Do not simulate this by
-separately approving the initial files. `resume-sprint` is only for a matching already-observed
-reply after interruption, never permission to fabricate one. See the
-[sprint review boundary](/guides/autonomous-sprints/#inspect-the-durable-package) and the current
-[owning sprint contract](/reference/commands/sprint/).
+Ask for a review pause when you want one: “Show me the revised empty-state behavior before
+implementing it.” That pause is real. A change to the product outcome, unresolved architecture
+decision or external side effect beyond the agreed scope needs the appropriate owner's decision.
+A reversible implementation method or task decomposition can change with a recorded reason.
 
-These are current-source contracts, not proof that any installed package supports them. Require
-the relevant installed capability and fresh approved-gate evidence. A reply for another identity
-or a generic “yes” does not approve the selected content.
+Requirements and plan agreement do not grant arbitrary spending, credential access, irreversible
+changes, merge, publication or overrides. Existing host permissions and security controls still
+apply. See the [sprint working agreement](/guides/autonomous-sprints/#inspect-the-durable-package)
+and [owning sprint contract](/reference/commands/sprint/).
 
 Academy lessons have their own declared review and verifier contract; do not substitute a
 different ceremony into a pinned lesson.
 
-The trusted host observes the decision and binds it to exact content. The coordinator must not
-manufacture a successful event or receipt. Generic editing cannot make an artifact approved. A displayed approval is not proof of authenticated actor identity, and a
-hash is integrity evidence, not an identity check. Changing the normative definition can stale
-its approval and downstream bindings; re-review the actual changed definition.
-
-Approval of requirements is not a claim that code is implemented, tests passed, a reviewer ran,
-or a pull request was merged. Look for each kind of evidence separately.
+A content hash establishes integrity, not the identity of a decision-maker. Record actual user
+decisions honestly, keep the plan bound to the current specification, and inspect the affected
+criteria when the definition changes. Agreement on requirements does not establish that code is
+implemented, tests passed, a reviewer ran or a pull request was merged.
 
 ## Request changes, resume, or migrate
 
@@ -135,19 +132,21 @@ slug merely because a session ended. Use [Resume and recover](/guides/resume-and
 execution or a transaction was interrupted.
 
 Existing Markdown pairs stay in their original format. Explicit migration is a separate,
-pair-aware operation: it creates drafts, transfers no old approvals, and retains exact legacy
-bytes for guarded rollback. Do not convert Academy fixtures for visual consistency or edit one
-side of a pair independently. HTML plans cannot use `--farm` while that qualification remains
-closed.
+pair-aware operation: it creates drafts and retains exact legacy bytes for guarded rollback.
+Migration does not establish new verification or review. Do not convert Academy fixtures for
+visual consistency or edit one side of a pair independently. HTML plans cannot use `--farm`.
 
 ## Verify completion without guessing
 
-Ask for current criterion coverage, plan task and scope state, named-test evidence, required
-review results, and the commit/PR boundary. A passing focused test or an `ACCEPTED` label alone
-does not establish that all current evidence and bindings remain valid.
+Ask for current criterion coverage, task progress, checks actually run, required review results
+and the commit/PR boundary. Typed `REVIEW` means implementation is ready; `DONE` means implementation
+is reported complete. Neither proves passing tests, independent review or user acceptance.
+Distinguish command-level results from named-test evidence, preserve failures and unrun checks,
+and recheck results affected by changed source. A passing focused test does not replace the
+required exact-head hosted CI before merge.
 
 For protocol details, see the repository's
 [format contract](https://github.com/arbiterForge/codeArbiter/blob/main/docs/artifacts/spec-and-plan-format.md)
 and [migration/recovery contract](https://github.com/arbiterForge/codeArbiter/blob/main/docs/artifacts/migration-and-recovery.md).
-They describe current source. Confirm the installed package's capability and release evidence
-before applying a source-only feature to a deployed adapter.
+Use the installed package's supported operations for writes and recovery; inspect uncertain
+transaction state before retrying work.

@@ -56,5 +56,7 @@ Committed a1b2c3d. git status: clean.
 
 ## When to reach for it
 
-Reach for `/ca:commit` once staged work is ready to persist. `/ca:pr` builds on the same gate to
-check PR readiness, dispatching additional reviewers the diff's path demands.
+Reach for `/ca:commit` once selected work is ready to persist and committing is authorized.
+Ordinary commits do not require artifact acceptance receipts. `/ca:pr` verifies an already
+committed branch against its base-to-HEAD diff and dispatches the required reviewers; it uses
+the commit owner when authorized uncommitted work still needs recording.

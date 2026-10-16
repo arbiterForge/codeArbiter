@@ -59,10 +59,10 @@ evidenced task closures and the retained backlog and qualification boundaries.
 | T11: scoped context delivery | Complete | 28 consumer tests, 6 host tests and 2 selector controls passed; bounded advisory delivery and critical-input controls reviewed |
 | T12: dependency and stop preservation | Complete | Full native module tests and vet passed; transitive dependency and independent-stop regressions included |
 | T13: greenfield context population | Complete | 2 installed-candidate tests passed with generated hooks, five protected pairs, finalization, replay and stale/missing-input refusals |
-| T14: proportionate verification | Complete | Feature, fix, characterization and documentation contracts reviewed; 152 surface tests ran, with one platform skip |
+| T14: proportionate verification | Complete | Direct and delegated feature, fix and characterization contracts reviewed; 45 debug workflow tests and 152 surface tests passed, with one surface platform skip |
 | T15: checkpoint and delivery evidence | Complete | Checkpoint commit/time anchors and base-to-HEAD readiness reviewed; 10 route compatibility tests passed |
-| T16: concise instructions and reachable helpers | Complete | Shared contract references, direct implementation and removed-helper closure reviewed; generated Python/instruction parity passed |
-| T17: integration and PR validation | Local validation complete | 51 authoring tests, 30 context-workflow tests, 103 CI-impact tests, 11 provenance checks and 434 guard assertions passed; final hosted results are recorded on PR #983 |
+| T16: concise instructions and reachable helpers | Complete | Current operating guides, source-bound diagrams, shared contracts and removed-helper closure reviewed; 53 routing and 43 artifact-workflow tests passed |
+| T17: integration and PR validation | Local validation complete | Native/Python checks, 1,126 site tests, production and non-root builds, and 16 selected Chrome checks passed. Review triage and aggregation passed with no open findings; exact-head hosted results belong to PR #983 |
 
 The native candidate was built with Go 1.27.1 on Windows/amd64; its binary SHA-256
 is `ab34ac91d222f7724556ed63ca6898086596b330f192556bf629f34ac78c38c6`.
@@ -70,6 +70,14 @@ The installed greenfield tests used that candidate and regenerated Codex resourc
 without a source overlay. They completed in 16.470 seconds. The native writer
 refreshed the five context source bindings without changing document bytes;
 coverage is complete and identity current, with semantic review unverified.
+
+The final site checks cover current operating instructions, source-bound feature
+chapters, downloadable diagram parity and navigation under `/docs/`. Chrome
+154.0.8037.99 passed the 16 selected concept/reader checks with zero retries and
+unchanged timeouts, including mobile widths, no-JavaScript behavior, print,
+forced colors and enlarged text. Generation, typechecking and rendered release
+applicability passed. All 62 atlas bindings and 13 feature-map quotations match
+their inspected sources. The final two-unit follow-up review returned PASS.
 
 Independent source and security review found no unresolved implementation issue.
 Numeric native coverage belongs to the required six-host exact-head CI aggregate;
@@ -83,11 +91,11 @@ and source validation do not establish live model qualification or publication.
 | T01 | Approved direction and owning-callers inventory | None for design approval |
 | T02 | Advisory scheduling; receipt-free task and batch progress; affected resident/catalog/status callers converted | Final-head hosted confirmation after any later source change |
 | T03 | Scoped factual prerequisites and real user-decision records; old unknown scope retained | No additional source gap demonstrated |
-| T04 | Reported checks; selected/shared inputs and applicable constraint bodies bound; native signed and Windows DWORD exit codes retained | Transitive dependencies remain explicitly unassessed; reported results are not host attestation |
+| T04 | Reported checks; selected/shared inputs and applicable constraint bodies bound; native signed and Windows DWORD exit codes retained | Freshness is limited to declared inputs; reported results are not host attestation |
 | T05 | Feature, sprint, TDD, planning, execution and status adapted for Claude, Codex and Pi; ordinary installed Claude model journey passed | Codex and Pi live model cells remain unverified |
 | T06 | Complete selected criteria and applicable constraints; bounded readback and named omissions; measured native orientation | End-to-end model cost unmeasured |
 | T07 | Captured replies survive cleanup and recover without recapture; safe replay; complete saved-store restore with old client; later edits retained | Unknown historical formats remain unsupported |
-| T08 | Three regenerated host adapters and 51 source-bound atlas owners; current chapter maps and ordinary HTML labels corrected; explicit proof on demand | Actual deployment and release derivative readback |
+| T08 | Three regenerated host adapters and 62 source-bound atlas owners; current feature chapters, operating guides and ordinary HTML labels; explicit proof on demand | Actual deployment and release derivative readback |
 | T09 | Native, reconciliation, browser and mixed-client checks pass; hosted candidate matrix and installed Claude model canary passed | Final-head CI/package confirmation; publication readback after authorized release |
 | T10 | Assistive context writer, five-document refresh, evidenced project catch-up and completed independent review | Expanded-head hosted checks and source-pin confirmation; unrelated backlog and genuine user decisions remain separate |
 

@@ -25,6 +25,12 @@ whether the applicable local checks are green. It walks from confirming you actu
 commit through impact-bounded local verification, a behavioral proof, and a full diff review before
 anything lands. Exhaustive exact-head hosted CI remains mandatory before merge.
 
+Unfinished plan tasks stay visible in the report without blocking an otherwise valid scoped
+commit. Read the selected typed plan through its engine and distinguish implementation progress
+from verification. Ordinary authorized commits do not require an artifact acceptance receipt;
+explicit commit permission, applicable tests, secrets scanning and specialized security/migration
+controls still apply.
+
 ## Phases
 
 1. Confirm explicit authorization to commit.
