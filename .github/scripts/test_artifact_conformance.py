@@ -86,6 +86,7 @@ EXPECTED_SUITES = {
         "test_authoring_and_progress_need_no_authority_producers",
         "test_producers_create_and_read_canonical_html_pair",
         "test_intent_cli_accepts_ready_spec_from_native_engine",
+        "test_installed_bootstrap_example_reads_native_task_context",
         "test_incomplete_draft_is_named_without_inventing_contract_fields",
         "test_missing_payload_fails_closed_without_markdown_fallback",
         "test_resolves_a_test_owned_linked_ancestor",
