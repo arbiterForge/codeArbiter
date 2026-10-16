@@ -86,6 +86,17 @@ OWNER_OPERATIONAL_SHA256.update({
     'decompose': 'a39e4078ebfc81e6d83fe961a2570ebb04fd76b72fb6719a9baa7c8501b175d4',
 })
 
+# PR #983 extends the reviewed assistive context lifecycle to initialization and
+# refresh. Keep exact owner fingerprints as well as the historical route and
+# compatibility clocks; test_context_workflow.py checks the new behavior.
+EXPECTED_DEFAULT_BODY_SHA256.update({
+    'init': '3161379ff0803d7c412fdadc9887e2692caf84ae03efd5c23a75461a60b44fc3',
+})
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': 'b9821b18e290a74800067e386d18a73a34b100d8e4fc0ded4bf3df081966dcd5',
+    'context-check': '77a8eb3a8500f46ebd158bd97e356c0564f8a8f8baccbfdaad65969490a3b17a',
+})
+
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
     if slug in COMPOSED_OWNERS:
