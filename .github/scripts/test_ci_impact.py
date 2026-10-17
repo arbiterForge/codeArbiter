@@ -3934,6 +3934,13 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         aggregate = jobs["ci-passed"]
         self.assertRegex(aggregate, r"(?m)^      - artifact-engine$")
+        self.assertRegex(aggregate, r"(?m)^      - artifact-authority$")
+        self.assertIn("${{ needs['artifact-authority'].result }}", aggregate)
+        authority = jobs["artifact-authority"]
+        self.assertIn("run_artifact_authority_shard.py", authority)
+        self.assertIn("AUTHORITY_SHARD: ${{ matrix.shard }}", authority)
+        self.assertEqual(authority.count("            shard: "), 12)
+        self.assertNotIn("continue-on-error", authority)
         self.assertRegex(aggregate, r"(?m)^      - artifact-browser$")
         self.assertRegex(aggregate, r"(?m)^      - artifact-package-assembly$")
         self.assertRegex(aggregate, r"(?m)^      - artifact-package-cold$")
