@@ -161,7 +161,7 @@ def _normalized(rel: str) -> str:
 
 CI_WORKFLOW = ".github/workflows/ci.yml"
 SUITE_COMMAND = "python .github/scripts/test_ship_set_inputs.py"
-# The `artifacts` path filter starts the artifact-engine job; the ship-set
+# The `artifacts` path filter starts the artifact-native-default job; the ship-set
 # suite must be reachable from every path whose change can alter its verdict.
 REQUIRED_ARTIFACT_FILTER_PATHS = (
     "core/artifacts/**",
@@ -178,7 +178,7 @@ def _ci_block(text: str, start: str, end: str) -> str:
 class ShipSetInputs(unittest.TestCase):
     def test_suite_wired_into_ci(self):
         text = (REPO / CI_WORKFLOW).read_text(encoding="utf-8")
-        job = _ci_block(text, "\n  artifact-engine:\n", "\n  artifact-browser:\n")
+        job = _ci_block(text, "\n  artifact-native-default:\n", "\n  artifact-native-coverage:\n")
         self.assertIn("if: needs.changes.outputs.artifacts == 'true'", job)
         self.assertIn(SUITE_COMMAND, job)
         self.assertLess(job.index("Verify exact Go toolchain"), job.index(SUITE_COMMAND))
@@ -187,6 +187,12 @@ class ShipSetInputs(unittest.TestCase):
         # Linux only: the wrapper drives Linux-only packages through WSL elsewhere.
         self.assertIn("if: matrix.os == 'ubuntu-24.04'", step)
         self.assertNotIn("continue-on-error", job)
+        final = _ci_block(text, "\n  artifact-engine:\n", "\n  artifact-browser:\n")
+        self.assertIn("artifact-native-default", final.split("    needs:", 1)[1].splitlines()[0])
+        self.assertIn("artifact_ci.py gate", final)
+        aggregate = text.split("\n  ci-passed:\n", 1)[1]
+        self.assertIn("      - artifact-native-default\n", aggregate)
+        self.assertIn("${{ needs['artifact-native-default'].result }}", aggregate)
         # The filter block ends at the next sibling key or the next step.
         filter_block = re.split(
             r"\n            [A-Za-z-]+:\n|\n      - name:",

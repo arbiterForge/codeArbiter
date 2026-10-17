@@ -2,6 +2,7 @@
 """Independent cross-kind reference and whole-workflow conformance checks."""
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import json
 import hashlib
 import os
@@ -12,6 +13,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+
+from _artifactworkerlib import worker_directory
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "core/pysrc"))
@@ -457,27 +460,47 @@ class ArtifactConformanceTest(unittest.TestCase):
         self.assertIsNotNone(INSTALLATION)
         environment = dict(os.environ, ARTIFACT_TEST_INSTALLATION=str(INSTALLATION))
         self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
-        for script, expected in EXPECTED_SUITES.items():
-            with self.subTest(script=script):
-                self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+        def execute(script: str) -> subprocess.CompletedProcess[str]:
+            self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+            with worker_directory(prefix="ca-conformance-worker-") as temporary:
+                owned = Path(temporary)
+                for directory in ("home", "config", "data", "cache"):
+                    (owned / directory).mkdir()
+                isolated = dict(environment, HOME=str(owned / "home"), USERPROFILE=str(owned / "home"),
+                                TMP=str(owned), TEMP=str(owned), TMPDIR=str(owned),
+                                XDG_CONFIG_HOME=str(owned / "config"), XDG_DATA_HOME=str(owned / "data"),
+                                XDG_CACHE_HOME=str(owned / "cache"), PYTHONUTF8="1")
                 print(f"conformance suite start: {script}", flush=True)
                 result = self.run_checked(
-                    [sys.executable, str(REPO / ".github/scripts" / script)],
-                    env=environment,
+                    [sys.executable, str(REPO / ".github/scripts" / script)], env=isolated,
                 )
-                output = result.stderr + result.stdout
-                matches = re.findall(r"(?m)^(test_[a-z0-9_]+) \([^\r\n]+\) \.\.\. (ok|skipped .+)$", output)
-                names = [name for name, _ in matches]
-                self.assertEqual(len(names), len(set(names)), f"duplicate test result in {script}")
-                self.assertEqual(set(names), expected, f"unexpected suite membership in {script}")
-                print(f"conformance suite verified: {script} ({len(names)} cases)", flush=True)
-                self.assertIn(f"Ran {len(expected)} tests", output)
-                for name, status in matches:
-                    if name == "test_unix_parent_swap_after_validation_cannot_redirect_creation" and platform.system() == "Windows":
-                        self.assertTrue(status.startswith("skipped "), (name, status))
-                    else:
-                        self.assertEqual(status, "ok", (name, status))
                 self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+                return result
+
+        # Package and workflow suites were the longest measured children. Their
+        # priority is only scheduling: every EXPECTED_SUITES entry is submitted.
+        priority = {"test_artifact_package.py": 0, "test_artifact_workflow.py": 1}
+        ordered = sorted(EXPECTED_SUITES, key=lambda name: (priority.get(name, 2), name))
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            futures = {script: pool.submit(execute, script) for script in ordered}
+            for script, expected in EXPECTED_SUITES.items():
+                with self.subTest(script=script):
+                    self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+                    result = futures[script].result()
+                    output = result.stderr + result.stdout
+                    matches = re.findall(r"(?m)^(test_[a-z0-9_]+) \([^\r\n]+\) \.\.\. (ok|skipped .+)$", output)
+                    names = [name for name, _ in matches]
+                    self.assertEqual(len(names), len(set(names)), f"duplicate test result in {script}")
+                    self.assertEqual(set(names), expected, f"unexpected suite membership in {script}")
+                    print(f"conformance suite verified: {script} ({len(names)} cases)", flush=True)
+                    self.assertIn(f"Ran {len(expected)} tests", output)
+                    for name, status in matches:
+                        if name == "test_unix_parent_swap_after_validation_cannot_redirect_creation" and platform.system() == "Windows":
+                            self.assertTrue(status.startswith("skipped "), (name, status))
+                        else:
+                            self.assertEqual(status, "ok", (name, status))
+                    self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+        self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
 
 
 if __name__ == "__main__":
