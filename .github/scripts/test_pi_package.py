@@ -3544,7 +3544,7 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertEqual(producer_cold_receipt_keys(), helper.COLD_FIELDS)
         self.assertEqual(producer_installed_workflow_format(), helper.INSTALLED_WORKFLOW_FORMAT)
 
-    def test_exact_cold_matrix_rejects_schema_duplicate_and_member_digest_drift(self):
+    def test_context_qualified_pi_receipt_is_accepted_and_exact_matrix_rejects_schema_duplicate_and_member_digest_drift(self):
         helper = self._helper()
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); trusted = root / "trusted"; packages = root / "packages"
@@ -3558,10 +3558,16 @@ class NpmPublishContractTest(unittest.TestCase):
             cohort = {"promotion_receipt_sha256": "c" * 64, "packages": {}}
             binary = b"binary"; binary_sha = hashlib.sha256(binary).hexdigest()
             for host, prefix in prefixes.items():
-                manifest = json.dumps({"binaries": {
+                manifest_data = {"binaries": {
                     platform: {"file": "artifact-bin", "sha256": binary_sha}
                     for platform in platforms
-                }}, separators=(",", ":")).encode()
+                }}
+                if host == "pi":
+                    manifest_data["context_qualification"] = {
+                        platform: {"source_commit": "a" * 40, "binary_sha256": binary_sha}
+                        for platform in platforms
+                    }
+                manifest = json.dumps(manifest_data, separators=(",", ":")).encode()
                 manifest_sha = hashlib.sha256(manifest).hexdigest()
                 archive_path = packages / f"{host}.tgz"
                 with tarfile.open(archive_path, "w:gz") as archive:
@@ -3604,6 +3610,12 @@ class NpmPublishContractTest(unittest.TestCase):
                         "commit_proof": True, "finalization_proof": True,
                         "all_accepted_and_current": True, "markdown_shadow_count": 0,
                     }
+                    if host == "pi":
+                        receipt.update({
+                            "context_workflow_scope": "candidate-preflight",
+                            "context_installed_tests": helper.CONTEXT_COLD_TESTS,
+                            "context_installed_output_sha256": "f" * 64,
+                        })
                     (cell / "artifact-package-cold.json").write_text(json.dumps(receipt))
             (packages / "artifact-package-cohort.json").write_text(json.dumps(cohort))
             (trusted / "tools" / "build-host-packages.py").write_text(
@@ -3617,7 +3629,10 @@ class NpmPublishContractTest(unittest.TestCase):
                           workflow_sha="a" * 40)
             with mock.patch.object(helper, "validate_release_source_binding"):
                 helper.verify_release_cohort(**kwargs)
-            first = next(cold_root.glob("*/artifact-package-cold.json"))
+            first = next(
+                path for path in sorted(cold_root.glob("*/artifact-package-cold.json"))
+                if json.loads(path.read_text())["host"] == "claude"
+            )
             original = json.loads(first.read_text())
             for mutation, message in (
                 ({**original, "extra": True}, "schema is not exact"),
