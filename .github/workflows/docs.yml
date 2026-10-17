@@ -77,7 +77,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # release applicability validates historical manifests and proof bytes
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0
           cache: npm
@@ -172,7 +172,7 @@ jobs:
           print(json.dumps(totals, indent=2))
       - name: Upload site coverage evidence
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: site-coverage-${{ github.sha }}
           path: ${{ runner.temp }}/site-coverage
@@ -190,7 +190,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # release applicability validates historical manifests and proof bytes
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0; the action defaults to 20
           cache: npm
@@ -213,7 +213,7 @@ jobs:
         # Preserve completed captures even if a later browser assertion fails.
         # This does not turn a failed browser gate into a publishable build.
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: site-browser-evidence
           path: site/.astro/browser-evidence/
@@ -221,7 +221,7 @@ jobs:
           retention-days: 5
       - name: Retain browser failure diagnostics
         if: ${{ failure() && steps.browser-gate.outcome == 'failure' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: site-browser-failures
           path: site/.astro/playwright/
