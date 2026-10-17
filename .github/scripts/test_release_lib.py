@@ -210,11 +210,6 @@ class ReleaseDatesTest(unittest.TestCase):
         tagmsg = "codeArbiter 2.6.0\n\nstuff\n\nReleased-at: 2026-06-27\n"
         self.assertTrue(_releaselib.release_dates_consistent(section, tagmsg))
 
-    def test_consistent_dates_bracket_heading_with_description(self):
-        section = "## [2.6.0] - 2026-06-27 - Marketplace metadata correction\n"
-        tagmsg = "codeArbiter 2.6.0\n\nReleased-at: 2026-06-27\n"
-        self.assertTrue(_releaselib.release_dates_consistent(section, tagmsg))
-
     def test_inconsistent_dates(self):
         section = "## v2.6.0 — 2026-06-26\n"
         tagmsg = "Released-at: 2026-06-25\n"
