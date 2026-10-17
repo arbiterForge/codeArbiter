@@ -3591,7 +3591,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertEqual(set(suites), expected)
         self.assertIn("for script, expected in EXPECTED_SUITES.items():", source)
         self.assertIn("[sys.executable, str(REPO / \".github/scripts\" / script)]", source)
-        self.assertIn("env=environment", source)
+        self.assertIn("env=isolated", source)
+        self.assertIn("isolated = dict(environment", source)
         self.assertIn("ARTIFACT_TEST_INSTALLATION=str(INSTALLATION)", source)
         self.assertIn("self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)", source)
         for script in expected:
@@ -3939,9 +3940,9 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertRegex(aggregate, r"(?m)^      - artifact-platform$")
         self.assertIn("${{ needs['artifact-platform'].result }}", aggregate)
         authority = jobs["artifact-authority"]
-        self.assertIn("run_artifact_authority_shard.py", authority)
-        self.assertIn("AUTHORITY_SHARD: ${{ matrix.shard }}", authority)
-        self.assertIn("shard: [0, 1, 2, 3]", authority)
+        self.assertIn("run_artifact_authority_group.py", authority)
+        self.assertIn("AUTHORITY_GROUP: ${{ matrix.group }}", authority)
+        self.assertIn("group: [0, 1]", authority)
         self.assertEqual(jobs["artifact-platform"].count("expected_platform: "), 7)
         self.assertNotIn("continue-on-error", authority)
         self.assertRegex(aggregate, r"(?m)^      - artifact-browser$")
@@ -4270,7 +4271,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
             ("test_artifact_prerequisite_adapter.py", "artifact-bridges"),
             ("test_artifact_reconciliation_adapter.py", "artifact-bridges"),
             ("test_artifact_conformance.py", "artifact-conformance"),
-            ("run_artifact_authority_shard.py", "artifact-authority"),
+            ("run_artifact_authority_group.py", "artifact-authority"),
         ):
             self.assertIn(script, jobs[owner])
         self.assertIn("artifact_ci.py gate", jobs["artifact-engine"])

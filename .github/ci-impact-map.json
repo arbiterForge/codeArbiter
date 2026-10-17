@@ -76,6 +76,12 @@
   ],
   "edges": [
     {
+      "glob": ".github/scripts/run_artifact_authority_group.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
       "glob": ".github/workflows/ci-native-platform.yml",
       "checks": ["artifact-engine"]
     },

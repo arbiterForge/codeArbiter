@@ -296,8 +296,9 @@ class WorkflowClosureTest(unittest.TestCase):
         authority = self.jobs['artifact-authority']
         self.assertIn('fail-fast: false', authority)
         self.assertIn('AUTHORITY_SHARD_COUNT: "4"', authority)
-        self.assertIn('shard: [0, 1, 2, 3]', authority)
-        self.assertEqual(authority.count('run_artifact_authority_shard.py'), 1)
+        self.assertIn('group: [0, 1]', authority)
+        self.assertIn('AUTHORITY_GROUP: ${{ matrix.group }}', authority)
+        self.assertEqual(authority.count('run_artifact_authority_group.py'), 1)
 
     def test_context_observation_and_candidate_both_precede_qualification(self):
         self.assertIn('CONTEXT_NATIVE_OBSERVATION_OUTPUT:', self.jobs['artifact-context'])
@@ -325,12 +326,18 @@ class WorkflowClosureTest(unittest.TestCase):
     def test_every_pipeline_subject_reaches_native_jobs_and_early_contract_suite(self):
         self.assertIn('run: python .github/scripts/test_ci_native_pipeline.py', self.jobs['ci-impact'])
         subjects = ('.github/scripts/artifact_ci.py', '.github/scripts/run_artifact_authority_shard.py',
+                    '.github/scripts/run_artifact_authority_group.py', '.github/scripts/test_artifact_conformance.py',
                     '.github/scripts/test_ci_native_pipeline.py', '.github/fixtures/artifact-authority-timings.json',
                     '.github/workflows/ci-native-platform.yml', '.github/scripts/test_ship_set_inputs.py')
         for subject in subjects:
             for target in ('impact', 'artifacts'):
                 with self.subTest(subject=subject, target=target):
                     self.assertIn(subject, paths_filter(self.ci, target))
+
+    def test_reusable_definition_alone_triggers_main_push_ci(self):
+        triggers = self.ci.split("\njobs:\n", 1)[0]
+        self.assertIn('      - ".github/workflows/ci-native-platform.yml"', triggers)
+        self.assertIn('      - ".github/scripts/**"', triggers)
 
     def test_ship_set_wiring_contract_is_exercised_in_early_ci_too(self):
         # The hosted failure was missed because only Linux ran this contract.
@@ -413,6 +420,168 @@ class HostedCheckPaginationTest(unittest.TestCase):
                 mock.patch.object(self.module.subprocess, 'run',
                                   side_effect=self.module.subprocess.TimeoutExpired('gh', 30)):
             self.assertFalse(self.module._load_hosted_checks(REPO, self.commit))
+
+
+class AuthorityGroupTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import hashlib
+        import run_artifact_authority_group as group
+        cls.group = group
+        partitions, _ = shard.partition(shard.discover(), 4, shard.load_weights())
+        cls.plan = [[case.id() for case in part] for part in partitions]
+        cls.plan_hash = hashlib.sha256(json.dumps(cls.plan, separators=(",", ":")).encode()).hexdigest()
+
+    def report(self, index):
+        return {'format':'codearbiter.authority-shard-observation/1', 'shard':index,
+                'shard_count':4, 'discovered_count':sum(map(len,self.plan)),
+                'selected_ids':self.plan[index], 'plan_sha256':self.plan_hash,
+                'passed':True, 'tests_run':len(self.plan[index]), 'skipped':0,
+                'observations':[{'id':name, 'outcome':'pass'} for name in self.plan[index]]}
+
+    def test_groups_preserve_the_same_four_disjoint_complete_shards(self):
+        groups = [self.group.selected_group(str(index)) for index in range(2)]
+        self.assertEqual(sorted(index for pair in groups for index in pair), list(range(4)))
+        all_ids = [name for pair in groups for index in pair for name in self.plan[index]]
+        self.assertEqual(len(set(all_ids)), sum(map(len,self.plan)))
+        for raw in ('', '-1', '2', 'true', '00', '0 ', None, 0):
+            with self.assertRaises(ValueError):
+                self.group.selected_group(raw)
+
+    def test_child_proof_rejects_wrong_membership_skip_failure_and_duplicates(self):
+        self.group.validate_report(self.report(0), index=0, plan=self.plan, plan_sha256=self.plan_hash)
+        mutations = [('shard',1), ('shard_count',4.0), ('discovered_count',0),
+                     ('selected_ids',self.plan[1]), ('plan_sha256','wrong'), ('passed',False),
+                     ('tests_run',0), ('skipped',len(self.plan[0])), ('observations',[])]
+        for key,value in mutations:
+            record=self.report(0);record[key]=value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.group.validate_report(record,index=0,plan=self.plan,plan_sha256=self.plan_hash)
+        for mutation in ('duplicate','failed','unknown','nonstring','all-skipped'):
+            record=self.report(0)
+            if mutation=='duplicate':record['observations'][1]['id']=record['observations'][0]['id']
+            if mutation=='failed':record['observations'][0]['outcome']='failure'
+            if mutation=='unknown':record['observations'][0]['outcome']='unknown'
+            if mutation=='nonstring':record['observations'][0]['id']=None
+            if mutation=='all-skipped':
+                for item in record['observations']:item['outcome']='skip'
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                self.group.validate_report(record,index=0,plan=self.plan,plan_sha256=self.plan_hash)
+
+    def test_both_children_execute_concurrently_and_a_failed_child_cannot_pass(self):
+        import threading
+        for failed in (None, 0):
+            barrier=threading.Barrier(2,timeout=10)
+            invoked=[]
+            def child(index,root,environment):
+                invoked.append(index)
+                barrier.wait()
+                (root/f'shard-{index}.json').write_text(json.dumps(self.report(index)),encoding='utf-8')
+                return {'shard':index,'exit':1 if index==failed else 0}
+            with tempfile.TemporaryDirectory() as temporary, mock.patch.object(self.group,'run_child',side_effect=child):
+                result=self.group.run_group('0',Path(temporary)/'reports')
+                self.assertEqual(sorted(invoked),[0,2])
+                self.assertEqual(result['passed'],failed is None)
+                with self.assertRaises(FileExistsError):
+                    self.group.run_group('0',Path(temporary)/'reports')
+
+    def test_missing_or_stale_child_report_cannot_pass_even_after_zero_exit(self):
+        for stale in (False,True):
+            def child(index,root,environment):
+                if stale:
+                    record=self.report(index);record['plan_sha256']='stale'
+                    (root/f'shard-{index}.json').write_text(json.dumps(record),encoding='utf-8')
+                return {'shard':index,'exit':0}
+            with tempfile.TemporaryDirectory() as temporary, mock.patch.object(self.group,'run_child',side_effect=child):
+                result=self.group.run_group('1',Path(temporary)/'reports')
+                self.assertFalse(result['passed'])
+                self.assertEqual(len(result['errors']),2)
+
+    def test_worker_roots_are_shallow_unique_and_removed_after_children_finish(self):
+        from types import SimpleNamespace
+        seen=[]
+        def child(argv, *, env, **kwargs):
+            temporary=Path(env['TMPDIR'])
+            self.assertEqual(temporary.parent,Path(tempfile.gettempdir()))
+            self.assertEqual(Path(env['HOME']).parent,temporary)
+            self.assertTrue(temporary.is_dir())
+            seen.append(temporary)
+            return SimpleNamespace(returncode=0)
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.object(self.group.subprocess,'run',side_effect=child):
+            for index in (0,2):
+                outcome=self.group.run_child(index,Path(temporary),dict(os.environ))
+                self.assertEqual(outcome['exit'],0)
+        self.assertEqual(len(set(seen)),2)
+        self.assertTrue(all(not path.exists() for path in seen))
+
+    def test_diagnostics_are_attempt_scoped_and_do_not_upload_worker_homes(self):
+        jobs=workflow_jobs((REPO/'.github/workflows/ci-native-platform.yml').read_text(encoding='utf-8'))
+        body=jobs['artifact-authority']
+        self.assertIn('name: authority-timings-${{ inputs.os }}-group-${{ matrix.group }}-attempt-${{ github.run_attempt }}',body)
+        self.assertIn('authority-group/*.json',body)
+        self.assertIn('authority-group/*.log',body)
+        self.assertNotIn('path: ${{ runner.temp }}/authority-group\n',body)
+        self.assertIn('include-hidden-files: false',body)
+        self.assertIn('overwrite: false',body)
+        self.assertIn('timeout-minutes: 45',body)
+        template='authority-timings-{os}-group-{group}-attempt-{attempt}'
+        names={template.format(os=os,group=group,attempt=attempt)
+               for os in ('linux','windows','macos') for group in range(2) for attempt in (1,2)}
+        self.assertEqual(len(names),12)
+
+
+class ParallelConformanceTest(unittest.TestCase):
+    def exercise(self, *, failing=None, mutate=False):
+        import subprocess
+        import threading
+        import test_artifact_conformance as conformance
+        case=conformance.ArtifactConformanceTest('test_adversarial_native_candidate_suites_run_as_one_snapshot')
+        barrier=threading.Barrier(3,timeout=10)
+        first={'test_artifact_package.py','test_artifact_workflow.py','test_artifact_authoring.py'}
+        seen=[];homes=[];changed=threading.Event()
+        identity=('manifest','file','binary',1,2)
+        def current_identity():
+            return ('changed',)+identity[1:] if changed.is_set() else identity
+        def child(argv, *, env=None, cwd=None):
+            script=Path(argv[1]).name
+            seen.append(script);homes.append(env['HOME'])
+            self.assertTrue(Path(env['HOME']).is_dir())
+            self.assertNotEqual(env['HOME'],env['TMPDIR'])
+            self.assertEqual(env['ARTIFACT_TEST_INSTALLATION'],'fixture')
+            if script in first:barrier.wait()
+            if mutate and script=='test_artifact_bridge.py':changed.set()
+            if script==failing:raise AssertionError('deliberate child failure')
+            names=conformance.EXPECTED_SUITES[script]
+            lines=[]
+            for name in sorted(names):
+                status="skipped 'native Unix only'" if name=='test_unix_parent_swap_after_validation_cannot_redirect_creation' and conformance.platform.system()=='Windows' else 'ok'
+                lines.append(f'{name} (__main__.Example.{name}) ... {status}')
+            lines.append(f'Ran {len(names)} tests')
+            return subprocess.CompletedProcess(argv,0,'\n'.join(lines),'')
+        with mock.patch.object(conformance,'INSTALLATION',Path('fixture')), \
+             mock.patch.object(conformance,'CANDIDATE_IDENTITY',identity), \
+             mock.patch.object(conformance,'candidate_identity',side_effect=current_identity), \
+             mock.patch.object(case,'run_checked',side_effect=child):
+            result=unittest.TestResult();case.run(result)
+        self.assertLessEqual(set(seen),set(conformance.EXPECTED_SUITES))
+        if not mutate:
+            self.assertEqual(set(seen),set(conformance.EXPECTED_SUITES))
+        self.assertEqual(len(seen),len(set(seen)))
+        self.assertEqual(len(set(homes)),len(homes))
+        self.assertTrue(all(not Path(home).exists() for home in homes))
+        return result
+
+    def test_all_suites_overlap_with_isolated_homes_and_unchanged_membership(self):
+        result=self.exercise()
+        self.assertTrue(result.wasSuccessful(),result.errors+result.failures)
+
+    def test_parallel_child_failure_remains_a_failure_after_siblings_finish(self):
+        result=self.exercise(failing='test_artifact_package.py')
+        self.assertFalse(result.wasSuccessful())
+
+    def test_candidate_change_during_parallel_execution_is_rejected(self):
+        result=self.exercise(mutate=True)
+        self.assertFalse(result.wasSuccessful())
 
 
 if __name__ == '__main__':

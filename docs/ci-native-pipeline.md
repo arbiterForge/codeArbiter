@@ -12,8 +12,8 @@ qualification policy.
 | `artifact-platform` | Impact selection | Six independent calls to the native-platform workflow. Each call has its own build-to-consumer graph. |
 | `artifact-candidate` (called) | Its platform call | One normal CGO-disabled native test/vet/build and same-run candidate binding. |
 | `artifact-bridges` (called) | **Its own platform's** candidate | Greenfield, mixed-schema recovery, examples, approval, prerequisites, reconciliation and reply handling. |
-| `artifact-conformance` (called) | **Its own platform's** candidate | Complete cross-kind/reference conformance and debug handoff, with the locked reference interpreter. Runs alongside adapter and authority checks. |
-| `artifact-authority` (called) | **Its own platform's** candidate | Four duration-balanced, fixture-preserving authority shards. |
+| `artifact-conformance` (called) | **Its own platform's** candidate | Complete cross-kind/reference conformance and debug handoff, with the locked reference interpreter. Runs alongside adapter and authority checks; its five independent native suites overlap with a three-process bound. |
+| `artifact-authority` (called) | **Its own platform's** candidate | Four duration-balanced, fixture-preserving shards, executed as two jobs with two isolated child processes each. |
 | `artifact-platform-passed` (called) | All four local stages | Rejects missing, failed, skipped, pending or cancelled local stages. |
 | `artifact-native-default` | Impact selection | Default Go tests and vet; Linux race, generated-type, surface, consumer and ship-set checks. |
 | `artifact-native-coverage` | Impact selection | Actual instrumented CLI exercise and full instrumented Go statement run, preserving both profiles. |
@@ -85,6 +85,30 @@ expected-failure shard is not proof. Legitimate individual platform skips remain
 reported. Each shard emits selected IDs, a common partition digest, outcomes and
 actual per-case timings.
 
+`run_artifact_authority_group.py` schedules partitions `(0, 2)` and `(1, 3)`
+as two jobs per platform. Each group uses two child interpreters with separate
+homes, temporary paths, logs and observation files. Worker roots remain shallow
+and separate from the diagnostic directory. The parent independently
+rediscovers the partition and rejects missing reports, nonzero exits, wrong
+membership, stale partition digests, duplicated observations and wholly
+unexercised results. This retains all four partitions while removing twelve
+runner startups from a full six-platform run. It does not claim twice the
+available CPU or change a timeout.
+
+Timing artifacts include platform, group and workflow attempt. A failed-test
+attempt and its successful rerun therefore retain distinct diagnostics instead
+of colliding on an immutable fixed-name artifact. Only the top-level JSON and
+log files are uploaded, never worker home or temporary directories. Existing
+candidate reuse across a failed-consumer retry remains independently verified.
+
+The conformance harness starts all five existing native suites with at most
+three concurrent child processes. The measured longest package and workflow
+suites are submitted first. Each child inherits the same candidate and pinned
+reference interpreter but receives a separate home and temporary environment.
+The original exact membership, no-unexpected-skip, exit-status and before/after
+candidate-identity assertions remain. A failed child cannot be replaced by a
+successful sibling, and the parent waits for submitted work before returning.
+
 Initial hints are bound to Windows ARM64 jobs `117418643650` and `117418643661`
 in run `39039950454`, source `0312358ff7f84ade3855fdf670ba0b2117fb8e9b`.
 The old alphabetical halves contained 135 cases each but took 979.883 and 235.621
@@ -119,6 +143,30 @@ subject, including the reusable workflow and the contract suite itself. Filter
 closure has a regression test rather than relying on a workflow edit happening
 to trigger broad checks.
 
+## Successful intermediate run and remaining scheduling work
+
+Run `39060990810`, head `50ae5f148d3dd29a94a95b73f2bce823ce20111d`,
+completed successfully in **31m05s** with all **137 CI jobs** successful. This
+is a measured improvement over 49m21s, but it does not meet the under-20-minute
+target. Its Intel macOS conformance job ran for 607 seconds, with 485 seconds
+inside the conformance harness. The five native child suites still executed
+sequentially; the package and workflow suites accounted for roughly 251 and
+132 seconds respectively. The current bounded overlap addresses that serial
+work without creating additional conformance runner jobs.
+
+The run reached five simultaneous macOS runners and some macOS jobs waited
+more than ten minutes to start. Those observations do not establish the account's
+configured limit, but explain why simply adding more job shards is not a free
+wall-clock improvement. The two-job/four-process authority layout reduces queued
+runner requests and repeated setup. No account-concurrency setting or paid
+runner is introduced. Queueing still counts in end-to-end acceptance.
+
+Review identified an attempt-name collision in authority diagnostics. It is
+corrected with the attempt-qualified artifact names above. A further source
+review found that changing only the new reusable definition did not match the
+main-push trigger; that path is now explicit and regression-tested, in addition
+to its existing `impact` and `artifacts` filter registrations.
+
 ## Acceptance and rollback
 
 The engineering target remains a **full green run under 20 minutes**, followed
@@ -142,7 +190,8 @@ paginates all check pages and refuses incomplete or duplicate results.
 `test_ci_native_pipeline.py` covers both strict joins, substitution/retry cases,
 actual discovery and fixture-preserving partitioning, platform completeness,
 single-builder ownership, caller/callee dependencies, filter closure, ship-set
-wiring and check pagination. Existing context, coverage, package and release
+wiring, grouped child verification, conformance concurrency, attempt-qualified diagnostics
+and check pagination. Existing context, coverage, package and release
 contracts remain. Refresh enrolled source evidence through the native context
 writer; never silence stale-source refusals or change human documents just to
 update a digest.

@@ -58,6 +58,7 @@ on:
       - "README.md"
       - "LICENSE"
       - ".github/workflows/ci.yml"
+      - ".github/workflows/ci-native-platform.yml"
       - ".github/actionlint.yaml"
       - ".github/scripts/**"
       # ADR lifecycle integrity is enforced in the hooks job; a lifecycle-only
@@ -312,8 +313,10 @@ jobs:
               - 'plugins/ca-pi/routines/**'
             impact:
               - '.github/scripts/test_ci_native_pipeline.py'
+              - '.github/scripts/test_artifact_conformance.py'
               - '.github/scripts/artifact_ci.py'
               - '.github/scripts/run_artifact_authority_shard.py'
+              - '.github/scripts/run_artifact_authority_group.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/workflows/ci-native-platform.yml'
               - '.github/scripts/test_ship_set_inputs.py'
@@ -449,6 +452,7 @@ jobs:
               - '.github/scripts/test_artifact_native.py'
               - '.github/scripts/artifact_ci.py'
               - '.github/scripts/run_artifact_authority_shard.py'
+              - '.github/scripts/run_artifact_authority_group.py'
               - '.github/scripts/test_ci_native_pipeline.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/scripts/test_artifact_cli.py'
