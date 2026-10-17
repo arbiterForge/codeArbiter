@@ -4235,7 +4235,8 @@ class ContextImpactClosureTest(unittest.TestCase):
 class NativeQualificationTimeBudgetTest(unittest.TestCase):
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         source = CI_WORKFLOW.read_text(encoding="utf-8")
-        block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
+        block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-authority:\n", 1)[0]
+        authority = source.split("\n  artifact-authority:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
         # Retain the measured 45m Intel macOS and Windows budgets;
         # all other platforms keep 30m and every suite remains required.
         self.assertIn(
@@ -4243,10 +4244,14 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
             block,
         )
         for script in ("test_artifact_native.py",
-                       "test_artifact_approval_adapter.py", "test_artifact_authority_adapter.py",
+                       "test_artifact_approval_adapter.py",
                        "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",
                        "test_artifact_conformance.py"):
             self.assertIn(script, block)
+        self.assertIn("run_artifact_authority_shard.py", authority)
+        self.assertIn("timeout-minutes: 45", authority)
+        self.assertNotIn("continue-on-error:", authority)
+        self.assertIn("fail-fast: false", authority)
         self.assertNotIn("continue-on-error:", block)
         self.assertIn("fail-fast: false", block)
         for platform in ("linux/amd64", "linux/arm64", "windows/amd64",
