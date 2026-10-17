@@ -472,7 +472,7 @@ jobs:
             --output impact.json \
             --summary "$GITHUB_STEP_SUMMARY"
       - name: Store impact receipt
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ci-impact-receipt
           path: impact.json
@@ -524,7 +524,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.19.0
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -561,7 +561,7 @@ jobs:
           --expect-platform "${{ matrix.expected_platform }}"
           --extra-profile "${{ runner.temp }}/artifact-cli-statements.out"
       - name: Preserve the native statement profiles
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-statements-${{ matrix.os }}
           path: ${{ runner.temp }}/artifact-statements
@@ -667,7 +667,7 @@ jobs:
           --qualification-output "${{ runner.temp }}/artifact-qualification.json"
           --context-native-observation "${{ runner.temp }}/context-native-observation.json"
       - name: Preserve the exact native candidate and qualification receipt
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-native-${{ matrix.os }}
           path: |
@@ -763,7 +763,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22.23.2"
           cache: npm
@@ -772,7 +772,7 @@ jobs:
         with:
           python-version: "3.14"
       - name: Download this run's exact Linux amd64 candidate
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: artifact-native-ubuntu-24.04
           path: ${{ runner.temp }}/artifact-native
@@ -799,7 +799,7 @@ jobs:
         run: npm run test:browser -- artifact-review.spec.ts
       - name: Preserve browser qualification views
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-browser-review
           path: site/.astro/playwright
@@ -843,7 +843,7 @@ jobs:
       - name: Verify statement collector rejection and merge behavior
         run: python .github/scripts/test_artifact_coverage.py
       - name: Download this run's native statement profiles
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: artifact-statements-*
           path: ${{ runner.temp }}/artifact-statement-inputs
@@ -874,7 +874,7 @@ jobs:
           PY
       - name: Preserve the statement coverage verdict
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-statement-summary
           path: ${{ runner.temp }}/artifact-statement-summary.json
@@ -900,7 +900,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Download this workflow run's exact-host candidates
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: artifact-native-*
           path: ${{ runner.temp }}/artifact-native
@@ -959,7 +959,7 @@ jobs:
               )
           PY
       - name: Preserve the exact multi-host package overlay
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-host-payloads-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-host-payloads
@@ -967,7 +967,7 @@ jobs:
           retention-days: 14
           include-hidden-files: false
           overwrite: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22.23.2"
           registry-url: "https://registry.npmjs.org"
@@ -1030,7 +1030,7 @@ jobs:
           --trusted-workflow-run "${{ github.run_id }}"
           --promotion-receipt-sha256 "${{ steps.assemble.outputs.promotion-receipt-sha256 }}"
       - name: Preserve the exact normal release package cohort
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-release-packages-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-release-packages
@@ -1132,12 +1132,12 @@ jobs:
         with:
           python-version: "3.14"
       - name: Download this exact head's promoted host payloads
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: artifact-host-payloads-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-host-payloads
       - name: Download this exact head's normal release package cohort
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: artifact-release-packages-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-release-packages
@@ -1155,7 +1155,7 @@ jobs:
           --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
           --cold-receipt "${{ runner.temp }}/artifact-package-cold.json"
       - name: Preserve the exact cold-execution cell receipt
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-package-cold.json
@@ -1324,7 +1324,7 @@ jobs:
         working-directory: plugins/ca/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
@@ -1354,7 +1354,7 @@ jobs:
       - name: Recheck coverage inputs after execution
         if: always()
         run: python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
         # the merge job silently reported `blobs merged: 0` for every run since
@@ -1383,7 +1383,7 @@ jobs:
         working-directory: plugins/ca/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
@@ -1393,7 +1393,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: coverage-blob-ca-os-*
           merge-multiple: true
@@ -1459,7 +1459,7 @@ jobs:
         working-directory: plugins/ca-pi/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           # 22.19.0, not 20: ca-pi's engines require it and `ca-pi-tools` pins the
           # same. A coverage cell running a different runtime than the job that
@@ -1505,7 +1505,7 @@ jobs:
       - name: Recheck coverage inputs after execution
         if: always()
         run: python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
         # the merge job silently reported `blobs merged: 0` for every run since
@@ -1534,7 +1534,7 @@ jobs:
         working-directory: plugins/ca-pi/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           # 22.19.0, not 20: ca-pi's engines require it and `ca-pi-tools` pins the
           # same. A coverage cell running a different runtime than the job that
@@ -1547,7 +1547,7 @@ jobs:
           python-version: "3.x"
       - name: Install (locked)
         run: npm ci --ignore-scripts
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: coverage-blob-ca-pi-os-*
           merge-multiple: true
@@ -1585,7 +1585,7 @@ jobs:
         working-directory: plugins/ca/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
@@ -1692,7 +1692,7 @@ jobs:
         working-directory: plugins/ca-sandbox/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
@@ -1814,7 +1814,7 @@ jobs:
         working-directory: plugins/ca-pi/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.19.0
           cache: npm
@@ -1958,7 +1958,7 @@ jobs:
         working-directory: plugins/ca-pi/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.19.0
           cache: npm
@@ -2018,7 +2018,7 @@ jobs:
         working-directory: plugins/ca-pi/tools
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.19.0
           cache: npm
@@ -2097,7 +2097,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Initialize scoped Pi CodeQL database
-        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
         with:
           languages: javascript-typescript
           build-mode: none
@@ -2111,7 +2111,7 @@ jobs:
             paths-ignore:
               - plugins/ca-pi/tools/node_modules
       - name: Analyze Pi without duplicating default code-scanning uploads
-        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
         with:
           category: "/language:javascript-typescript"
           output: codeql-results
@@ -2808,7 +2808,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
       - name: Install the latest Codex runtime
@@ -3031,7 +3031,7 @@ jobs:
         # This mutation-proves the fail-closed hook and charter-route checks
         # that the required real-host probe below executes at both boundaries.
         run: python3 .github/scripts/test_check_codex_host.py
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
       - name: Install the pinned Codex runtime
