@@ -3629,7 +3629,10 @@ class NpmPublishContractTest(unittest.TestCase):
                           workflow_sha="a" * 40)
             with mock.patch.object(helper, "validate_release_source_binding"):
                 helper.verify_release_cohort(**kwargs)
-            first = next(cold_root.glob("*/artifact-package-cold.json"))
+            first = next(
+                path for path in sorted(cold_root.glob("*/artifact-package-cold.json"))
+                if json.loads(path.read_text())["host"] == "claude"
+            )
             original = json.loads(first.read_text())
             for mutation, message in (
                 ({**original, "extra": True}, "schema is not exact"),
