@@ -432,7 +432,10 @@ _DECLARED_HEADING_RE = re.compile(
 _LEGACY_DATE_H2_RE = re.compile(
     r"^##[ \t]+\[[0-9]{4}-[0-9]{2}-[0-9]{2}\]"
     r"(?:[ \t]+[^\r\n]*)?[ \t]*$")
-_CHANGELOG_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})[ \t]*$")
+_CHANGELOG_DATE_RE = re.compile(
+    r"(?: - | — )(\d{4}-\d{2}-\d{2})"
+    r"(?:[ \t]*(?: - | — ).*)?[ \t]*$"
+)
 _RELEASED_AT_RE = re.compile(
     r"^Released-at:[ \t]*(\d{4}-\d{2}-\d{2})[ \t]*$", re.MULTILINE)
 _BARE_RELEASE_VERSION_RE = re.compile(r"^" + _PLAIN_SEMVER_PATTERN + r"$")
