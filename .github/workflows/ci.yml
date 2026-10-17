@@ -691,20 +691,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1]
         include:
           - os: ubuntu-24.04
             expected_platform: linux/amd64
+            shard: 0
+          - os: ubuntu-24.04
+            expected_platform: linux/amd64
+            shard: 1
           - os: ubuntu-24.04-arm
             expected_platform: linux/arm64
+            shard: 0
+          - os: ubuntu-24.04-arm
+            expected_platform: linux/arm64
+            shard: 1
           - os: windows-2025
             expected_platform: windows/amd64
+            shard: 0
+          - os: windows-2025
+            expected_platform: windows/amd64
+            shard: 1
           - os: windows-11-arm
             expected_platform: windows/arm64
+            shard: 0
+          - os: windows-11-arm
+            expected_platform: windows/arm64
+            shard: 1
           - os: macos-15-intel
             expected_platform: darwin/amd64
+            shard: 0
+          - os: macos-15-intel
+            expected_platform: darwin/amd64
+            shard: 1
           - os: macos-26
             expected_platform: darwin/arm64
+            shard: 0
+          - os: macos-26
+            expected_platform: darwin/arm64
+            shard: 1
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
