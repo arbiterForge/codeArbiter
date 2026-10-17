@@ -29,7 +29,9 @@ content, model/view drift, unsupported renderers and remote branding resources.
 Opening the file in a browser performs no mutation and needs no JavaScript or
 network access.
 
-The current write schema is `0.3.1`; `0.3.0` remains readable. The document
+The current write schema is `0.3.2`; `0.3.0` and `0.3.1` remain readable without
+relabeling or rewriting their historical bytes. Older clients must refuse newer
+state they cannot interpret. The document
 format is `0.1.0`, the subprocess API is
 `codearbiter.artifact-api/0.1.0`, and workflow receipts use their own versioned
 formats. Schema, document format, renderer, protocol, artifact revision and
@@ -43,8 +45,8 @@ There is no second criterion ledger in the plan.
 Three hashes serve different purposes:
 
 - `normative_sha256` covers the normative definition. If that exact definition
-  has a current approval, changing it stales that approval and downstream
-  bindings.
+  has historical attestation, changing it stales that binding. Current spec
+  definitions also bind the plan's criteria and relevant task context.
 - `model_sha256` covers the complete model except its integrity fields. Status or
   presentation changes therefore remain guarded without pretending to change
   requirements.
@@ -54,9 +56,9 @@ CAS updates to an existing artifact compare both the last-read revision and
 model hash while holding the artifact lock. Create, receipt capture, recovery
 and pair migration use their own typed identities; migration binds its preview,
 journal and exact endpoint bytes as described in the recovery guide. Hash
-consistency is integrity, not authentication. Approval is a cooperative workflow
-attestation sourced from codeArbiter's existing user, SMARTS or review authority
-and bound to exact content.
+consistency is integrity, not authentication or semantic verification. Existing
+attestation records retain their historical meaning; ordinary authorized work
+does not need to create them.
 
 ## Existing workflow
 
@@ -68,30 +70,39 @@ The user still enters through the existing feature or sprint flow:
 2. `validate` with the ready gate checks structure, references, coverage and
    contracts. It cannot determine whether prose is true or whether a human
    approved it.
-3. The existing approval gate is captured as a workflow event and then bound to
-   the exact normative identity. Generic editing cannot set an approved state.
-4. Planning creates a `draft_preview`, reuses the spec's criterion IDs, binds to
-   the approved spec and passes the existing plan approval gate.
-5. Execution obtains contextual reads and a final delivery ticket, asks the
-   engine for the eligible task, then records start, actual named-test evidence,
-   review and one atomic scope acceptance. It does not accept tasks one by one.
-6. Resume re-enters the existing feature/sprint ladder. `IN_PROGRESS` requires
-   reconciliation and `REVIEW` requires fresh evidence; neither is silently
-   promoted after interruption.
+3. Respect actual user decisions, unresolved material scope choices and real
+   host permissions. An agreed draft does not need a separate artifact approval
+   event to permit already-authorized work.
+4. Planning reuses stable criterion IDs and binds the current spec with
+   `plan-bind`. Draft bindings are valid working state; a changed outcome goes
+   to its real owner, while authorized implementation details can be refined.
+5. Use `identity`, advisory `eligible` and bounded `task-context` with the
+   current model hash. Record ordinary `task-start`, actual `task-check` results
+   and `task-review`. `accept-scope` records implementation `DONE`; it does not
+   assert independent acceptance or that tests passed.
+6. Resume by checking the worktree, workers, recorded user stops and relevant
+   source changes. Reconcile actual task state with a reason. Do not rerun a
+   reviewer merely because a receipt identity or presentation changed, and
+   never clear an unresolved user stop or hide a newer failing check.
 
 All mutations are typed operations. Callers do not write, template or
-regular-expression-edit the HTML. Reads proceed from `index` to `outline` to
-symbol-scoped/contextual `read`; exact reads are intentionally
-context-incomplete. Every cursor and delivery ticket binds the plan, its spec
-and contributing authority records. A changed dependency yields a stale cursor,
-not partial context.
+regular-expression-edit the HTML. `task-context` supplies the task, referenced
+criteria and constraints, dependencies, scoped prerequisite observations and
+reported checks. It remains `context_complete: false`; expand only necessary
+exact symbols. It creates no approval or delivery ticket. Stale hashes and
+oversized packets refuse rather than truncate evidence.
 
-Internal preflight can use `read-batch` for 1–128 unique symbol IDs under one
-required `model_sha256`. Each bounded page returns whole exact records and an
-explicit continuation offset; every request validates the entire selection.
-Repeat the same selection, model identity and budget when continuing. These
-reads are context-incomplete and issue no delivery or approval receipt. Final
-snapshot, identity and approval-consumption checks still apply.
+Internal readers may use `read-batch` for 1–128 unique symbol IDs under one
+required `model_sha256`. Pages return whole exact records with explicit
+continuation offsets; repeat the selection, identity and budget to continue.
+These reads are context-incomplete and do not certify execution permission.
+
+Reported command results preserve their actual argv, cwd, exit status and
+pass/fail/skip/unknown outcome. Command success is not fabricated named-test
+proof. Declared-path freshness is partial source applicability, not a full
+dependency graph or verified test. A change to unrelated context alone does not
+invalidate a task's scoped evidence; an affected contract or source does need
+reinspection. Real tests, reviews and user checkpoints retain their own purpose.
 
 ## Capability and diagnostics
 
@@ -100,7 +111,8 @@ pins the correct native executable. The bridge selects that payload only: not
 `PATH`, a project-supplied binary or an environment override. The host's
 existing governed-execution rules and permissions still apply.
 
-Call `capabilities` before repository operations. The response reports the
+Check the installed capability before authoring; reuse its known operation
+shapes during ordinary bounded reads. The response reports the
 binary, protocol, schema and renderer versions; selected native platform and
 storage backend; available operations; whether repository operations are
 available; and the rollout values `public_registrations_added: 0`,
@@ -118,7 +130,9 @@ JSON arrives on standard input and carries
 `"protocol": "codearbiter.artifact-api/0.1.0"`. Output is one bounded JSON
 envelope. Operation-specific schemas are queried on demand; complete schemas and
 artifact bodies are not injected at startup. Nonzero exit is failure. A
-structured validation result with `valid: false` is also a failed gate.
+structured validation result with `valid: false` reports a failed structural or
+coverage check. It must not be called success, but does not invent another
+permission requirement for correcting the draft.
 
 Important diagnostics fail closed:
 
@@ -130,8 +144,9 @@ Important diagnostics fail closed:
   qualification;
 - `UNSUPPORTED_PLATFORM`: the host architecture or repository storage backend is
   not supported;
-- `AUTHORITY_UNVERIFIED`: no current receipt from an existing authority source;
-- `DRAFT_BINDING`: execution was requested from draft/unapproved content;
+- `AUTHORITY_UNVERIFIED` or `DRAFT_BINDING`: a separately selected historical
+  attestation operation lacks its required receipt or binding. These are not
+  ordinary draft task-start or context-read prerequisites;
 - `REVISION_CONFLICT` or `STALE_CURSOR`: reread and reconsider, never force;
 - `LOCK_BUSY`: another bounded writer owns the artifact lock;
 - `RECOVERY_REQUIRED` or `COMMIT_OUTCOME_UNKNOWN`: inspect the transaction with
@@ -142,9 +157,10 @@ Important diagnostics fail closed:
 ## Offline review
 
 Reviewers can open either HTML file directly and inspect its visible criteria,
-tasks, blockers, sources, bindings and governance labels. A displayed approval
-is only a recorded claim until the coordinator validates the corresponding
-captured workflow event/receipt and its current binding. That remains cooperative
+tasks, blockers, sources, bindings and governance labels. `DONE` describes
+implementation progress; verification is displayed separately. A historical
+approval is only a recorded claim until its captured workflow event/receipt
+and current binding are actually validated. That remains cooperative
 attestation, not actor identity authentication.
 For machine review, use the engine's validation and scoped-read operations so
 the embedded model, visible view, resource closure and hashes are checked
@@ -161,15 +177,15 @@ accessibility certification remain unqualified.
 
 ## Evidence boundary
 
-Fresh local conformance covers the original 41 reference regressions, current
+The original local conformance record covered 41 reference regressions,
 cross-kind identity vectors, hostile HTML/JSON inputs and the named workflow,
 migration, farm and package fixtures. Windows and native WSL Linux test, vet and
-Linux race runs are green. This supports the format behavior described above;
-it does not substitute for hosted exact-head Linux/macOS results, a real
+Linux race runs passed for that recorded revision. Those historical results
+do not substitute for current exact-head Linux/macOS results, a real
 production host trace, release-channel provenance, physical power-loss or
 network-filesystem qualification.
 
-A native-Windows pilot built from clean commit
+A historical native-Windows pilot built from clean commit
 `12ab0ef2d720420b90265f35675fb961375a439b` additionally observed draft dispatch
 rejected with `DRAFT_BINDING`, exact synthetic spec/plan approval and binding
 receipts, task transition to `IN_PROGRESS`, process recreation with the same
@@ -180,5 +196,7 @@ quality-review-bound atomic scope acceptance ending in `ACCEPTED` with
 the canonical receipt/event bytes plus returned transaction identities are retained in
 `docs/artifacts/T024-PILOT-EVIDENCE.json`. The receipts were synthetic fixture
 authority, not a claim that a production host or human identity was
-authenticated. No comparative agent-performance result was run. Any paid
-frontier/low-tier pilot requires separate budget approval.
+authenticated. That pilot predates the assistive schema and is not the default execution
+procedure or current installed-host proof. Comparative performance and live
+host claims require their own current observations; no such claim follows from
+these historical synthetic receipts.

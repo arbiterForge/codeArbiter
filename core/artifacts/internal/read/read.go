@@ -200,6 +200,16 @@ func Exact(d *model.Document, id string, budget int) (map[string]any, error) {
 		return nil, fault.New("SYMBOL_NOT_FOUND", "record does not exist")
 	}
 	out := map[string]any{"artifact_id": d.ID(), "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "mode": "exact", "context_complete": false, "record": r.Value}
+	if r.Kind == "prerequisites" && !r.Retired {
+		out["prerequisite_assessment"] = model.PrerequisiteAssessment(d, r.Value)
+	}
+	if r.Kind == "tasks" && !r.Retired {
+		checks, bounded := model.TaskCheckAssessments(d, nil, id)
+		if len(checks) > 0 {
+			out["reported_checks"] = checks
+			out["check_history_bounded"] = bounded
+		}
+	}
 	b, _ := json.Marshal(out)
 	if len(b)+1024 > budget {
 		return nil, fault.At("RECORD_TOO_LARGE", id, "", "whole record does not fit response budget; no partial record returned")
@@ -220,7 +230,15 @@ func ExactBatch(d *model.Document, ids []string, offset, budget int) (map[string
 			return nil, err
 		}
 		r := d.Symbols.ByID[id]
-		items = append(items, map[string]any{"id": id, "kind": r.Kind, "retired": r.Retired, "record": exact["record"]})
+		item := map[string]any{"id": id, "kind": r.Kind, "retired": r.Retired, "record": exact["record"]}
+		if assessment, exists := exact["prerequisite_assessment"]; exists {
+			item["prerequisite_assessment"] = assessment
+		}
+		if checks, exists := exact["reported_checks"]; exists {
+			item["reported_checks"] = checks
+			item["check_history_bounded"] = exact["check_history_bounded"]
+		}
+		items = append(items, item)
 	}
 	out := map[string]any{"artifact_id": d.ID(), "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "mode": "exact", "context_complete": false, "offset": int64(offset), "total": int64(len(ids)), "records": []any{}, "next_offset": nil}
 	selected := []any{}

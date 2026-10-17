@@ -586,8 +586,8 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
         self.assertIn(
             "<!-- codearbiter-codex-agent-route-contract: "
-            "literal_route_lines=23 literal_route_occurrences=25 "
-            "generic_route_lines=2 generic_route_occurrences=2 -->",
+            "literal_route_lines=18 literal_route_occurrences=20 "
+            "generic_route_lines=1 generic_route_occurrences=1 -->",
             index,
         )
         self.assertNotIn("\nmodel:", index)
@@ -1316,8 +1316,10 @@ class VerificationBoundaryContractTest(unittest.TestCase):
             "live device",
             "private",
             "environment",
+            "Do not require users to install, configure, or switch hosts",
+            "additional live-host trials require an explicit acceptance requirement",
         ):
-            self.assertIn(required.lower(), policy.lower())
+            self.assertIn(required.lower(), " ".join(policy.lower().split()))
 
     def test_local_lanes_defer_exhaustive_suites_to_hosted_ci(self):
         paths = (
@@ -1331,6 +1333,7 @@ class VerificationBoundaryContractTest(unittest.TestCase):
             "core/surface/commands/refactor.md",
             "core/surface/agents/backend-author.md",
             "core/surface/agents/frontend-author.md",
+            "core/surface/agents/infra-author.md",
             "core/surface/skills/writing-plans/references/farm-plan.md",
             ".github/PULL_REQUEST_TEMPLATE.md",
             ".codearbiter/tech-stack.md",
@@ -1351,6 +1354,9 @@ class VerificationBoundaryContractTest(unittest.TestCase):
                     text, path, str(REPO_ROOT / "core/surface"), {}
                 )
             with self.subTest(path=path):
+                if path.startswith("core/surface/agents/"):
+                    self.assertIn("includes/author-tdd-workflow.md", text)
+                    text += self.read("core/surface/includes/author-tdd-workflow.md")
                 for phrase in obsolete:
                     self.assertNotIn(phrase, text)
                 self.assertIn("verification-boundary", text)
@@ -1359,34 +1365,59 @@ class VerificationBoundaryContractTest(unittest.TestCase):
         self.assertNotIn("Typically: run this test, run full suite", plan_schema)
         self.assertIn("exhaustive exact-head proof runs in hosted CI", plan_schema)
 
-    def test_tracked_curated_docs_do_not_restore_the_obsolete_local_rule(self):
-        paths = (
-            "site/src/curated/commands/chore.md",
-            "site/src/curated/commands/commit.md",
-            "site/src/curated/commands/feature.md",
-            "site/src/curated/commands/refactor.md",
-            "site/src/curated/skills/commit-gate.md",
-            "site/src/curated/skills/refactor.md",
-            "site/src/curated/skills/tdd.md",
-        )
+    CURATED_BOUNDARIES = {
+        "site/src/curated/commands/chore.md": "impact-bounded",
+        "site/src/curated/commands/commit.md": "impact-bounded",
+        "site/src/curated/commands/feature.md": "Local checks cover the affected scope",
+        "site/src/curated/commands/refactor.md": "post-backfill parity tests",
+        "site/src/curated/skills/commit-gate.md": "impact-bounded",
+        "site/src/curated/skills/refactor.md": "Run the baseline parity tests locally",
+        "site/src/curated/skills/tdd.md": "Implement the scoped change and run affected checks",
+    }
+
+    def assert_curated_boundary(self, path, text):
+        text = " ".join(text.split())
         obsolete = (
             "full suite must pass",
             "Run the full suite",
             "Running full suite",
             "before opening a PR",
         )
-        for path in paths:
-            text = self.read(path)
-            with self.subTest(path=path):
-                for phrase in obsolete:
-                    self.assertNotIn(phrase, text)
-                self.assertIn("impact-bounded", text)
-                self.assertIn("exact-head", text)
-                self.assertIn("hosted CI", text)
+        for phrase in obsolete:
+            self.assertNotIn(phrase, text)
+        self.assertIn(self.CURATED_BOUNDARIES[path], text)
+        self.assertIn("exact-head", text)
+        self.assertIn("hosted CI", text)
+        if path == "site/src/curated/commands/refactor.md":
+            self.assertIn("preserve their behavioral assertions", text)
+            self.assertIn("Necessary import or symbol-reference updates", text)
+            self.assertNotIn("no pre-existing parity test files modified", text)
+            self.assertNotIn("zero test files touched", text)
 
-        refactor = self.read("site/src/curated/commands/refactor.md")
-        self.assertIn("no pre-existing parity test files modified", refactor)
-        self.assertNotIn("zero test files touched", refactor)
+    def test_tracked_curated_docs_do_not_restore_the_obsolete_local_rule(self):
+        for path in self.CURATED_BOUNDARIES:
+            with self.subTest(path=path):
+                self.assert_curated_boundary(path, self.read(path))
+
+    def test_curated_boundary_rejects_missing_checks_and_changed_refactor_contract(self):
+        for path, local_check in self.CURATED_BOUNDARIES.items():
+            text = " ".join(self.read(path).split())
+            for required in (local_check, "exact-head", "hosted CI"):
+                with self.subTest(path=path, missing=required):
+                    with self.assertRaises(AssertionError):
+                        self.assert_curated_boundary(path, text.replace(required, ""))
+        path = "site/src/curated/commands/refactor.md"
+        text = " ".join(self.read(path).split())
+        for changed in (
+            text.replace("preserve their behavioral assertions", "change assertions"),
+            text.replace("Necessary import or symbol-reference updates", "Unspecified edits"),
+            text + " no pre-existing parity test files modified",
+            text + " zero test files touched",
+            text + " Run the full suite before opening a PR",
+        ):
+            with self.subTest(changed=changed):
+                with self.assertRaises(AssertionError):
+                    self.assert_curated_boundary(path, changed)
 
     def test_every_host_projection_carries_the_same_boundary(self):
         rendered = {
@@ -1639,11 +1670,13 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[path].decode()
                 for obligation in ('Confirm the user explicitly authorized this commit.',
-                                   '_preflight_current_acceptance',
-                                   'all_accepted_and_current: true',
-                                   'verification-boundary', '## Phase 7', '## Phase 9',
-                                   'postponing a commit', 'never implies a push or PR'):
+                                   'current', 'verification-boundary', '## Phase 7',
+                                   '## Phase 9', 'postponing a commit',
+                                   'never implies a push or PR'):
                     self.assertIn(obligation, entry)
+                self.assertIn('Do not call', entry)
+                self.assertIn('_preflight_current_acceptance', entry)
+                self.assertNotIn('all_accepted_and_current: true', entry)
 
     def test_no_discovery_or_startup_registration_was_added(self):
         """Catalog visibility and compatibility inventory are unchanged on each host."""
@@ -1703,12 +1736,14 @@ class ActualConsolidatedOwnersTest(unittest.TestCase):
                     assert_contract(default_board)
 
     def test_refactor_entry_preserves_scope_and_parity_gates(self):
-        """Single ownership does not weaken approval, parity or verification."""
+        """Existing authorization preserves precise scope, parity and verification."""
         for host, target in (('claude', 'commands/refactor.md'), ('codex', 'skills/ca-refactor/SKILL.md'), ('pi', 'skills/ca-refactor/SKILL.md')):
             with self.subTest(host=host):
                 entry = B.render_all(REPO_ROOT, host)[target].decode()
-                for obligation in ('## Phase 6', 'user-signed-off surface table', 'unmodified pre-existing tests', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'explicit user-approved amendment'):
+                for obligation in ('## Phase 6', 'covered by existing user authorization', 'preserve the baseline assertions', 'every required metric in the declared coverage profile', 'maturity-coverage.md', 'No new seams', 'verification-boundary.md', 'MUST NOT inline-suppress', 'authorization for a material scope expansion'):
                     self.assertIn(obligation, entry)
+                self.assertNotIn('user-signed-off surface table', entry)
+                self.assertNotIn('explicit user-approved amendment', entry)
 
     def test_new_owner_metadata_routes_intent_not_required_syntax(self):
         """Descriptions identify the task rather than demanding a command wrapper."""
@@ -1872,13 +1907,19 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
 
     def test_drift_and_cleanup_operational_bodies_are_preserved(self):
         import hashlib
-        expected = {'context-check': '06be2a22d9b9ddc28e4826fed24b9d6edad44deab2c241a5e20c02c41d343954', 'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
+        # Cleanup is unchanged; context-check intentionally adopts the assistive
+        # lifecycle and is covered by composed routing/evidence controls below.
+        expected = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0ca9d09a4edd072bdda69645d'}
         for command, digest in expected.items():
             owner = self.OWNERS[command]
             text = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text(encoding='utf-8')
             body = text.split('## Pre-flight\n', 1)[1]
             self.assertEqual(hashlib.sha256(body.encode()).hexdigest(), digest)
             self.assertIn('neither stages nor commits', ' '.join(text.split()))
+        refresh = (REPO_ROOT / 'core/surface/skills/context-check/SKILL.md').read_text(encoding='utf-8')
+        for control in ('assess_context_provenance', 'existing authorization',
+                        'No staging, no commits here', 'unowned', 'source evidence'):
+            self.assertIn(control, refresh)
         drift = (REPO_ROOT / 'core/surface/commands/status.md').read_text(encoding='utf-8')
         self.assertIn('{{PLUGIN_ROOT}}/skills/context-check/SKILL.md', drift)
         self.assertNotIn('{{PLUGIN_ROOT}}/commands/context-check.md', drift)
@@ -1910,7 +1951,7 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
                                'dependency-reviewer', 'coverage-auditor', 'CRITICAL or HIGH',
                                'anti-slop-design', 'babysit.py', 'CODEARBITER_BABYSIT',
                                'Never enable the flag', '_preflight_current_acceptance',
-                               '--match-head-commit', 'all_accepted_and_current: true'):
+                               '--match-head-commit', 'exact-head hosted CI'):
                 self.assertIn(obligation, text)
 
     def test_pr_respects_direct_choice_and_caller_authority(self):
@@ -1928,7 +1969,14 @@ class FirstSliceDiscoveryOwnersTest(unittest.TestCase):
         import hashlib
         text = (REPO_ROOT / 'core/surface/skills/finishing-a-development-branch/SKILL.md').read_text(encoding='utf-8')
         section = text[text.index('## Pre-flight\n'):text.index('## Phase 2')]
-        self.assertEqual(hashlib.sha256(section.encode()).hexdigest(), '0df4e08d97542d6273ae5c7d7cf149daec423d7c7587f5123f4bafadb8dc146a')
+        # This contract was intentionally changed by ADR-0043. Assert the
+        # actual proof/authorization split instead of an obsolete fixed hash.
+        self.assertIn('advisory', section)
+        self.assertIn('not the mandatory permission gate', section)
+        self.assertIn('_preflight_current_acceptance', section)
+        self.assertIn('exact-head hosted CI', section)
+        self.assertNotIn('all_accepted_and_current: true', section)
+        self.assertNotEqual(hashlib.sha256(section.encode()).hexdigest(), '0df4e08d97542d6273ae5c7d7cf149daec423d7c7587f5123f4bafadb8dc146a')
         inventory = json.loads((REPO_ROOT / 'docs/artifacts/consumer-inventory.json').read_text(encoding='utf-8'))
         consumer = next(row for row in inventory['consumers']
                         if row['id'] == 'finalization-and-worktree-plan-readers')
@@ -2476,8 +2524,9 @@ class RemainingWorkflowOwnerTest(unittest.TestCase):
 
     def test_public_invocations_receive_required_procedure_and_discovery(self):
         obligations = {
-            'create-context': ('## Phase 2', 'Scout A', 'Scout F', '<!--INITIALIZED-->'),
-            'decompose': ('## Phase 1', 'Layer 1', 'Layer 6', '<!--INITIALIZED-->'),
+            'create-context': ('## Phase 2', '**A — Tech stack.', '**F — Data model.', '<!--INITIALIZED-->'),
+            'decompose': ('## 1. Inspect and resume', 'layer-1-vision.md',
+                          'layer-6-risks.md', '--context-finalize', '<!--INITIALIZED-->'),
             'release': ('## Targets', 'release_require_clean_tree', 'Receipt-only closeout', '--dry-run'),
         }
         for host in ('claude', 'codex', 'pi'):
@@ -2505,6 +2554,141 @@ class RemainingWorkflowOwnerTest(unittest.TestCase):
                     catalog = json.loads(B.render_all(REPO_ROOT, host)['generated/command-catalog.json'])
                     self.assertIn(command, catalog['commands'])
                     self.assertEqual(catalog['commands'][command]['description'], description)
+
+
+class AssistiveCallerProjectionTest(unittest.TestCase):
+    """Resident guidance and public routes must agree on the working lifecycle."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.surfaces = {host: B.render_all(REPO_ROOT, host)
+                        for host in ('claude', 'codex', 'pi')}
+
+    def test_delivery_phases_reuse_current_checks_and_reviews(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            with self.subTest(host=host):
+                fresh = ' '.join(surface['includes/fresh-verification.md'].decode().split())
+                commit = ' '.join(surface[f'{routine}/commit-gate/SKILL.md'].decode().split())
+                finish = ' '.join(surface[f'{routine}/finishing-a-development-branch/SKILL.md'].decode().split())
+                self.assertIn('inputs still match', fresh)
+                self.assertIn('phase', fresh)
+                self.assertIn('Run a separate proving command only when existing evidence is missing, affected or insufficient', commit)
+                self.assertIn('Dispatch only missing or affected review work', commit)
+                self.assertIn('reuse', finish.lower())
+                self.assertIn('Required security and migration markers', commit)
+
+    def test_commit_maintenance_covers_v2_without_using_legacy_writer(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            with self.subTest(host=host):
+                commit = ' '.join(surface[f'{routine}/commit-gate/SKILL.md'].decode().split())
+                for obligation in ('v2_heal_worklist', 'assess_context_provenance',
+                                   'context-preview', 'context-apply',
+                                   'Never pass v2 records to `rebaseline`',
+                                   'do not label it fresh or block independent commit work',
+                                   'secrets-scan every newly staged file'):
+                    self.assertIn(obligation, commit)
+
+    def test_sprint_composition_has_no_implicit_approval_or_per_step_scoring(self):
+        for host, surface in self.surfaces.items():
+            entry = ('commands/sprint.md' if host == 'claude'
+                     else 'skills/ca-sprint/SKILL.md')
+            with self.subTest(host=host):
+                composed = ' '.join('\n'.join(surface[path].decode() for path in (
+                    'includes/safety-core.md', 'arbiter.md', 'COMMANDS.md',
+                    entry, 'SPRINT.md')).split())
+                for obsolete in ('One interactive spec gate',
+                                 'every non-hard-gate decision SMARTS-scored',
+                                 'every `/sprint` auto-decision',
+                                 'Approve a spec and plan',
+                                 'Run one approved spec'):
+                    self.assertFalse(obsolete in composed, f'{host}: obsolete rule: {obsolete}')
+                for obligation in ('material sprint decisions',
+                                   'genuinely difficult trade-off',
+                                   'An explicit requested human approval checkpoint remains real',
+                                   'without a second artifact approval system',
+                                   'merge to the default branch',
+                                   'release and tag publication'):
+                    self.assertTrue(obligation in composed, f'{host}: missing rule: {obligation}')
+
+    def test_status_distinguishes_implementation_checks_and_real_decisions(self):
+        for host, surface in self.surfaces.items():
+            entry = ('commands/status.md' if host == 'claude'
+                     else 'skills/ca-status/SKILL.md')
+            with self.subTest(host=host):
+                status = ' '.join(surface[entry].decode().split())
+                for obsolete in ('spec awaiting approval', 'spec approved / no plan',
+                                 'plan 3/7 ACCEPTED'):
+                    self.assertFalse(obsolete in status, f'{host}: obsolete status: {obsolete}')
+                for obligation in ('`DONE` and historical `ACCEPTED`',
+                                   'implementation complete', 'verification separately',
+                                   'pending, failed, unknown',
+                                   'A draft spec or plan is not awaiting permission',
+                                   'explicit user checkpoint', '`BLOCKED`',
+                                   'bounded structured reads',
+                                   'MUST NOT modify any file'):
+                    self.assertTrue(obligation in status, f'{host}: missing status rule: {obligation}')
+
+    def test_codex_host_notes_do_not_restore_default_attestation_or_switch_backends(self):
+        notes = ' '.join(self.surfaces['codex']['includes/codex-host-notes.md'].decode().split())
+        for obsolete in ('production review requests must dispatch',
+                         'A `--farm` flag degrades to the normal premium-subagent path'):
+            self.assertFalse(obsolete in notes, f'obsolete host rule: {obsolete}')
+        for obligation in ('only for an explicitly required attested claim',
+                           'Ordinary review and reported checks do not need this adapter',
+                           'report the unavailable backend',
+                           'Do not silently switch to another provider or model'):
+            self.assertTrue(obligation in notes, f'missing host rule: {obligation}')
+
+    def test_tdd_keeps_sprint_obligations_inside_authorized_outcome(self):
+        for host, surface in self.surfaces.items():
+            entry = ('skills/tdd/SKILL.md' if host == 'claude'
+                     else 'routines/tdd/SKILL.md')
+            with self.subTest(host=host):
+                tdd = ' '.join(surface[entry].decode().split())
+                self.assertFalse('beyond-spec additions are SMARTS-decided' in tdd,
+                                 f'{host}: SMARTS must not authorize scope expansion')
+                for obligation in ('applicable contract and security boundaries',
+                                   'existing feature criteria',
+                                   'ask only about a consequential missing choice',
+                                   'Record only observed results'):
+                    self.assertTrue(obligation in tdd,
+                                    f'{host}: missing sprint boundary: {obligation}')
+
+    def test_context_routes_allow_authorized_inspection_without_receipt_or_scout_gates(self):
+        for host, surface in self.surfaces.items():
+            routine = 'skills' if host == 'claude' else 'routines'
+            init = 'commands/init.md' if host == 'claude' else 'skills/ca-init/SKILL.md'
+            routes = [init, f'{routine}/context-creation/SKILL.md',
+                      f'{routine}/context-check/SKILL.md', 'agents/scout.md']
+            if host == 'codex':
+                routes.append('includes/codex-host-notes.md')
+            with self.subTest(host=host):
+                composed = ' '.join('\n'.join(surface[path].decode() for path in routes).split())
+                for obsolete in ('approve-context', 'receipt-only apply',
+                                 'No inline fallback', 'MUST NOT run Phase 2 inline',
+                                 'context-creation` requires isolated scout',
+                                 'When qualification is unavailable or unknown, stop here',
+                                 'qualified scout profile is unavailable'):
+                    self.assertFalse(obsolete in composed,
+                                     f'{host}: redundant context gate: {obsolete}')
+                creation = ' '.join(surface[f'{routine}/context-creation/SKILL.md'].decode().split())
+                for boundary in ('direct bounded inspection', 'optional scoped agents',
+                                 'six logical categories', 'five content documents',
+                                 'actual host permissions', 'not evidence of containment',
+                                 'source-bound', 'never convert a package script into a passed verification'):
+                    self.assertTrue(boundary in creation,
+                                    f'{host}: lost context boundary: {boundary}')
+                refresh = ' '.join(surface[f'{routine}/context-check/SKILL.md'].decode().split())
+                for boundary in ('existing authorization', 'selected documents',
+                                 'context-preview', 'preview_ref', 'preview_sha256',
+                                 '--context-draft', '--document code-map', '--source',
+                                 '--context-apply', '--preview-sha256',
+                                 'source evidence', 'unowned', 'exact bytes',
+                                 '<!--INITIALIZED-->', 'No staging, no commits here'):
+                    self.assertTrue(boundary in refresh,
+                                    f'{host}: lost refresh boundary: {boundary}')
 
 
 class LanguageCoveragePolicyTest(unittest.TestCase):

@@ -4,6 +4,60 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-10-14
+
+### Changed
+
+- Keep routine artifact context assistive and smaller: move optional strict
+  legacy receipt, approval, and recovery reference procedures out of the
+  default artifact include. Load them only when an explicit proof/old-state
+  consumer needs them. No artifact permission gate or model reviewer is added.
+
+- Keep command-result applicability aligned with the exact referenced
+  acceptance criteria and bounded task/shared source inputs plus known build
+  controls. Distinguish `scoped_changed`, `scoped_unchanged` and
+  `unassessed` without pretending that a partial fingerprint proves tests,
+  shared imports or independent review.
+- Record mixed 0.3.1/0.3.2 engine compatibility and fail-closed old-client
+  behavior in disposable cross-binary fixtures; preserve historical files,
+  receipts and post-upgrade edits rather than promising a destructive downgrade.
+- Normal feature/sprint execution guidance uses advisory plan state and real
+  checks instead of mandatory artifact approval codes or per-task reviewer fleets.
+  Recorded-intent conflicts and material ADR supersession remain visible without
+  becoming an additional permission protocol.
+- Add read-only `task-context` to deliver one bounded task and its directly
+  referenced criteria/dependencies/prerequisites without an evidence snapshot,
+  reviewer dispatch, or persistent context ticket. Stale and oversized requests
+  fail explicitly; this is not a host-qualification claim.
+- Start the assistive state-engine overhaul in PR #983: native work tracking no
+  longer requires artifact approval codes or context tickets.
+- Record task-scoped prerequisite observations and completed implementation
+  batches separately from verified acceptance, with compact symbol reads and
+  human-readable HTML. New records use schema 0.3.2; historical reads retain
+  their bytes and evidence.
+- Native plan authoring no longer requires artifact approval or every future
+  reviewer/verification adapter; generated planning guidance uses coherent work
+  units rather than mandatory five-minute slices.
+- Explicit batch reviews can select fresh passing reruns of still-reviewed work
+  without recreating each task review. Original evidence remains distinct, and
+  source/support/workspace integrity is still checked.
+- Align runtime adapter identities and the second Codex package manifest with
+  the unreleased candidate versions.
+- Retire *unanswered* paired-approval and ARMED prerequisite prompts
+  through existing internal helpers without obtaining another code; submitted
+  pairs and confirmed prerequisites retain exact recovery, while old standalone
+  approvals fail closed rather than guessing that no user replied.
+- Retire unanswered legacy reconciliation prompts with an explicit superseded
+  disposition, without a new approval code. Committed or uncertain attempts
+  retain exact replay/recovery; no task state or evidence is forged by cleanup.
+- Preserve ordinary task command results as bounded, caller-reported
+  pass/fail/skip/unknown observations. Definition drift is visible, source
+  freshness remains explicitly unassessed, and no review/approval is invented.
+- Canonicalize macOS temporary-directory aliases before validating the native
+  reconciliation root, retaining the existing unsafe-path/attempt refusals.
+- This is an unreleased source candidate. Host-workflow conversion, full upgrade
+  qualification, and publication remain tracked by the overhaul PR.
+
 ## [0.18.4] - 2026-10-13
 
 ### Fixed

@@ -83,7 +83,7 @@ export function renderExecutionSvg(map: ExecutionMap, presentation?: MapPresenta
 <title>${xml(map.title)}</title><desc>${xml(map.boundary + ' Actual endpoint: ' + map.outcome)} Conditions and return paths remain in the companion reading view.</desc>
 <rect width="900" height="${height}" fill="#090d12"/>
 ${text(24, 35, presentation?.kicker ?? 'FEATURE • COMMANDS / SKILLS / AGENTS', 852, 14, '#f0b92f', true)}
-${text(24, 70, presentation?.summary ?? 'Definition → task loop → scope acceptance → PR handoff', 852, 20)}
+${text(24, 70, presentation?.summary ?? 'Definition → implementation and checks → progress → PR handoff', 852, 20)}
 ${chapters.join('\n')}
 </svg>\n`;
 }

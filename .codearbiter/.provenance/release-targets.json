@@ -4,27 +4,27 @@
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "99c4b0c1274934c0da9b528aa68794f2a894f876",
+      "hash": "2174353a7f4b169366984d53c363510f16bdddd8",
       "path": "CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "6c7307b05315598e26ddb0f7484e6b59d18f6597",
+      "hash": "4a991416b0f2be20428b1d1efdd69e4e3bea1081",
       "path": "package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "de6dac54f7cad2e54b4e694c3caa5e0ea6d38007",
+      "hash": "77ea1fc27d428ca1bfa3fccffd0f7c2ea7df3948",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "28df5da2f4f44d7be2b96c5b5acf69f762f71271",
+      "hash": "cc944ba6a07892fcd62733acbaab5f8a47024724",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "9149e0ae0c450c50fc15108e1ed6d7721a99deb1",
+      "hash": "cd4c8a79ff39b1a2fdb15c68d276d65362d124be",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -39,17 +39,27 @@
     },
     {
       "drift_trigger": true,
-      "hash": "303ad1b73b4354fc36cc8bc4b39fd92f30b80580",
+      "hash": "36bdd7a821e21b47a0de8a9e23e955affd980815",
+      "path": "plugins/ca-pi/helpers/approval-dialog.js"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "c0b640b4e0adb8de71a36f86793438b4c4d20d96",
+      "path": "plugins/ca-pi/helpers/windows-supervisor.js"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "4e78ad506f9116e12a0faf3d7e61de2c6d9d3631",
       "path": "plugins/ca-pi/package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "2c1cc323bc3049f6e6abc5124c167d607667a8b4",
+      "hash": "0e508144a466d3792383b6780f27478fd75dc359",
       "path": "plugins/ca-sandbox/.claude-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "e214498b4883046287d7dcb15c63014a287dfb27",
+      "hash": "ca3222b7b447f7cc98a6c90c7dce32aeebcdcb47",
       "path": "plugins/ca-sandbox/CHANGELOG.md"
     },
     {
@@ -64,12 +74,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "58de54e2a9588bfc4a8a2ceaec9595a5e851554a",
+      "hash": "94c6a619792de071341d35205cd2b9f213e52972",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "bf6a7b3f23f0a4342965b42c352f0b8ce9be1be0",
+      "hash": "79bc15849af7b9442af01ccb8f1a3d986d961cf3",
       "path": "plugins/ca/tools/farm.js"
     }
   ],

@@ -15,7 +15,7 @@ describe('C02 source and evidence distinctions', () => {
   it('binds editorial claims to inspected current and pinned canonical source', () => {
     expect(validateDecisionEvidence()).toEqual([]);
     for (const source of Object.values(evidenceSources)) {
-      expect(read(`../${source.path}`)).toContain(source.quote);
+      expect(read(`../${source.path}`)).toContain("currentQuote" in source ? source.currentQuote : source.quote);
       const revision = 'revision' in source ? source.revision : evidenceSourceRevision;
       expect(execFileSync('git', ['show', `${revision}:${source.path}`], { encoding: 'utf8' })).toContain(source.quote);
     }
@@ -45,12 +45,17 @@ describe('C02 source and evidence distinctions', () => {
     finally { auditCases[0].label = label; }
     expect(validateDecisionEvidence()).toEqual([]);
   });
-  it('distinguishes sprint delegation, arbitration choice and typed steps-only authority', () => {
-    const smarts = page('smarts');
-    for (const phrase of ['recorded-intent check', 'Step 0 applies to sprint and brainstorming', 'moderate and tied non-hard-gate choices', '`delegate-methods`', '`smarts-apply`', 'does not confer prerequisite, security,', 'Artifact-section-hash']) expect(smarts).toContain(phrase);
+  it('distinguishes in-scope sprint methods from user-owned reconciliation choices', () => {
+    const smarts = page('smarts').replace(/\s+/g, ' ');
+    for (const phrase of ['recorded-intent check', 'Step 0 applies to sprint and brainstorming', 'moderate and tied in-scope choices', 'existing typed plan writer', 'no separate artifact approval or method grant', 'Reuse checks and review conclusions', 'Artifact-section-hash']) expect(smarts).toContain(phrase);
+    expect(smarts).not.toMatch(/`delegate-methods`|`smarts-apply`|pair's required approvals/);
     expect(decisionRoutes.map(route => route.id)).toEqual(['reconcile','sprint']);
     expect(decisionRoutes[0].endpoint).toContain('separately directed');
     expect(decisionRoutes[1].endpoint).toContain('not an autonomous merge');
+    const sprintSteps = decisionRoutes[1].steps.map(step => step.detail).join(' ');
+    expect(sprintSteps).toContain('existing authorization');
+    expect(sprintSteps).toContain('material decisions');
+    expect(sprintSteps).not.toMatch(/additional scoped grant|Satisfy the actual installed approval requirements|each auto-decision/);
   });
   it('separates governance, immutable record identity and derived current delivery', () => {
     const adr = page('adrs');
@@ -69,7 +74,8 @@ describe('C02 source and evidence distinctions', () => {
   });
   it('does not turn packet assembly into historical reconstruction or missing evidence into none', () => {
     const audit = page('auditability');
-    for (const phrase of ['small-lane classifications', 'currently unresolved', 'most recent', 'integer override-count baseline', 'source-contract discrepancy', 'labelled redacted derivative', 'not a byte-exact copy']) expect(audit).toContain(phrase);
+    for (const phrase of ['small-lane classifications', 'currently unresolved', 'most recent', 'integer override-count baseline', '`source_commit`', '`recorded_at`', '`worktree_dirty`', 'ancestor of HEAD', 'labelled redacted derivative', 'not a byte-exact copy']) expect(audit).toContain(phrase);
+    expect(audit).not.toContain('source-contract discrepancy');
     expect(read('src/curated/commands/audit.md')).toContain('not a commit or date');
     const record = read('reviews/CONCEPTS-C02-SOURCES.md');
     expect(record).toContain('State: OPEN'); expect(record).toContain('last-checkpoint');

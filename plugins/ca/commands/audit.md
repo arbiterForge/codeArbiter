@@ -13,14 +13,14 @@ authorized it, and what is still open.* Read-only over every source; its only wr
 ## Window
 
 - `<from-ref> <to-ref>` — two tags/SHAs (e.g. `v1.2.0 v1.3.0`).
-- `--since-checkpoint` — from the `last-checkpoint` record to HEAD.
+- `--since-checkpoint` — use `source_commit` and `recorded_at` from the latest checkpoint report under `.codearbiter/checkpoints/` as the commit and UTC time anchors.
 - `--since <date>` — ISO date to HEAD.
 - No argument → from the most recent tag to HEAD (no tags → last checkpoint; neither → BLOCK and
   ask for an explicit window).
 
 ## Flow
 
-1. Resolve the window to a commit range and a time range; both appear in the packet header.
+1. Resolve the window to a commit range and a time range; both appear in the packet header. For a checkpoint window, select the report with the latest valid `recorded_at`, verify its `source_commit` resolves to a commit and is an ancestor of HEAD, and cite the report. Include its `worktree_dirty` value as a review-scope limitation. Missing or invalid anchors require an explicit ref/date window; never infer one from the report filename or the integer override counter in `last-checkpoint`.
 2. Gather, citing each source file:
    - **Commits** — `git log` over the range, grouped by Conventional-Commit type; merge commits
      listed with their PR reference.

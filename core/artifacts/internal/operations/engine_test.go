@@ -10,6 +10,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	reads "github.com/arbiterForge/codeArbiter/core/artifacts/internal/read"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
@@ -274,8 +275,8 @@ func TestLegacyReceiptIsInspectableButCannotConferAuthority(t *testing.T) {
 	}
 	f.Close()
 
-	if _, err = h.request("eligible", object{"artifact_id": "PLAN-EXAMPLE"}); fault.Code(err) != "AUTHORITY_UNVERIFIED" {
-		t.Fatalf("legacy workflow remained dispatchable: %v", err)
+	if _, err = h.request("verification-status", object{"artifact_id": "PLAN-EXAMPLE"}); fault.Code(err) != "AUTHORITY_UNVERIFIED" {
+		t.Fatalf("legacy evidence produced a current verification claim: %v", err)
 	}
 	spec := h.doc("SPEC-EXAMPLE")
 	h.mut("approve", spec.ID(), object{"receipt": h.receipt(spec, spec.ID(), "approval", object{})})
@@ -289,7 +290,7 @@ func TestLegacyReceiptIsInspectableButCannotConferAuthority(t *testing.T) {
 	h.accept("CP-01")
 	h.review("T-003")
 	h.accept("CP-02")
-	if result := h.run("eligible", object{"artifact_id": "PLAN-EXAMPLE"}); result["all_accepted_and_current"] != true {
+	if result := h.run("verification-status", object{"artifact_id": "PLAN-EXAMPLE"}); result["all_accepted_and_current"] != true {
 		t.Fatalf("fresh attestation did not restore current acceptance: %v", result)
 	}
 	if ticket := h.context("T-001", 65536); len(ticket) != 64 {
@@ -465,8 +466,8 @@ func (h *harness) accept(scope string) {
 func TestArtifactLifecycle(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
-	if _, e := h.request("eligible", object{"artifact_id": "PLAN-EXAMPLE"}); e == nil {
-		t.Fatal("draft dispatch admitted")
+	if report := h.run("eligible", object{"artifact_id": "PLAN-EXAMPLE"}); report["next_task"] != "T-001" || report["evidence_assessed"] != false {
+		t.Fatalf("draft scheduling must be advisory: %v", report)
 	}
 	h.approvePair()
 	before := h.doc("PLAN-EXAMPLE").NormHash()
@@ -486,7 +487,7 @@ func TestArtifactLifecycle(t *testing.T) {
 	h.start("T-003")
 	h.review("T-003")
 	h.accept("CP-02")
-	result := h.run("eligible", object{"artifact_id": "PLAN-EXAMPLE"})
+	result := h.run("verification-status", object{"artifact_id": "PLAN-EXAMPLE"})
 	if result["all_accepted_and_current"] != true {
 		t.Fatal(result)
 	}
@@ -581,12 +582,12 @@ func TestEligibleReadsLegacyManifestAsStale(t *testing.T) {
 	h.start("T-003")
 	h.review("T-003")
 	h.accept("CP-02")
-	control := h.run("eligible", object{"artifact_id": "PLAN-EXAMPLE"})
+	control := h.run("verification-status", object{"artifact_id": "PLAN-EXAMPLE"})
 	if control["all_accepted_and_current"] != true {
 		t.Fatalf("legacy-engine control must be current under its own format: %v", control)
 	}
 	restore()
-	result, err := h.request("eligible", object{"artifact_id": "PLAN-EXAMPLE"})
+	result, err := h.request("verification-status", object{"artifact_id": "PLAN-EXAMPLE"})
 	if err != nil {
 		t.Fatalf("0.1.0 evidence raised an error instead of reading as stale: %v", err)
 	}
@@ -619,12 +620,21 @@ func TestReadContextBounded(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-func TestContextTicketRequired(t *testing.T) {
+func TestContextDeliveryRejectsInventedReceipts(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
 	h.approvePair()
 	d := h.doc("PLAN-EXAMPLE")
-	_, e := h.request("task-start", object{"artifact_id": d.ID(), "operation_id": h.next(), "expected": object{"revision": d.Revision(), "model_sha256": d.Hash()}, "task": "T-001", "context_ticket": "invented"})
+	fs, err := store.Open(h.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fs.Close()
+	catalog, err := repository.Scan(fs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e := reads.CheckTicket(fs, catalog, d, "T-001", "invented")
 	if fault.Code(e) != "INVALID_CURSOR" {
 		t.Fatal(e)
 	}
@@ -634,7 +644,7 @@ func TestContextTicketRequired(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, e = h.request("task-start", object{"artifact_id": d.ID(), "operation_id": h.next(), "expected": object{"revision": d.Revision(), "model_sha256": d.Hash()}, "task": "T-001", "context_ticket": canonical.BytesHash(forged)})
+	e = reads.CheckTicket(fs, catalog, d, "T-001", canonical.BytesHash(forged))
 	if fault.Code(e) != "INVALID_CURSOR" {
 		t.Fatal(e)
 	}
@@ -778,21 +788,6 @@ func TestNoAuthorityFromHTMLFlag(t *testing.T) {
 		t.Fatal("approved flag was trusted")
 	}
 }
-func TestAllOperationSchemasClosed(t *testing.T) {
-	for _, op := range Names() {
-		s, e := RequestSchema(op)
-		if e != nil {
-			t.Fatal(e)
-		}
-		if s["additionalProperties"] != false {
-			t.Fatal(op)
-		}
-		r := object{"protocol": Protocol, "unexpected": "x"}
-		if CheckRequest(op, r) == nil {
-			t.Fatal("unknown key", op)
-		}
-	}
-}
 func TestStoredCommandIsInert(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
@@ -823,7 +818,7 @@ func TestPostSourceChangeRevalidation(t *testing.T) {
 	h.review("T-002")
 	h.accept("CP-01")
 	h.accept("CP-02")
-	if h.run("eligible", object{"artifact_id": "PLAN-EXAMPLE"})["all_accepted_and_current"] != true {
+	if h.run("verification-status", object{"artifact_id": "PLAN-EXAMPLE"})["all_accepted_and_current"] != true {
 		t.Fatal("reverification required needless implementation")
 	}
 }

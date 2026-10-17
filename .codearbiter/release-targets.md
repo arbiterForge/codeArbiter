@@ -94,6 +94,8 @@ payload-exclude: plugins/ca-pi/tools/
 rebuild: cd plugins/ca-pi/tools && node build.mjs
 artifacts: plugins/ca-pi/extensions/codearbiter.js
 artifacts: plugins/ca-pi/extensions/codearbiter-child.js
+artifacts: plugins/ca-pi/helpers/windows-supervisor.js
+artifacts: plugins/ca-pi/helpers/approval-dialog.js
 provenance-manifest: .github/published-tags.json
 latest-eligible: false
 pre-tag: "$PY" tools/build-host-packages.py --check

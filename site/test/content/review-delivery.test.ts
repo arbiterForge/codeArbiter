@@ -45,13 +45,18 @@ describe('review-to-delivery guidance', () => {
     const source = read('../core/surface/commands/checkpoint.md');
     expect(source).toContain('current override **count**');
     expect(guide).toContain('integer override-count baseline, not proof that the commit gate passed');
-    expect(guide).toContain('all_accepted_and_current: true');
-    expect(guide).toContain('production verification/review authority on Codex and Claude Code only');
+    expect(guide).toContain('`source_commit`, `recorded_at` and `worktree_dirty`');
+    expect(guide.replace(/\s+/g, ' ')).toContain('An acceptance receipt is not a prerequisite for an ordinary authorized commit or PR');
+    expect(guide.replace(/\s+/g, ' ')).toContain('explicit attested verification or review claim');
     expect(guide).toContain('/guides/review-artifacts/#check-your-hosts-authority-capability');
   });
   it('keeps automatic review distinct from a redundant standalone ceremony', () => {
     expect(read('../core/surface/commands/pr.md')).toBe('{{SKILL_ENTRY:finishing-a-development-branch}}\n');
-    expect(read('../core/surface/skills/finishing-a-development-branch/SKILL.md')).toContain('Confirm the commit gate cleared');
+    const source = read('../core/surface/skills/finishing-a-development-branch/SKILL.md').replace(/\s+/g, ' ');
+    expect(source).toContain('Confirm current-head readiness');
+    expect(source).toContain('explicit base-to-HEAD diff');
+    expect(source).toContain('An empty staged set does not establish branch coverage');
+    expect(source).toContain('Bind secrets scanning and specialized security/migration checks to that same base-to-HEAD subject');
     expect(guide).toContain('not required as a redundant ceremony');
     expect(guide).toContain('missing, pending, cancelled, stale, mismatched or failing');
     expect(guide).toContain('Sprint autonomy ends with opening the PR');
@@ -60,7 +65,7 @@ describe('review-to-delivery guidance', () => {
   });
   it('asks for branch disposition only when no action is already selected', () => {
     const text = read('src/curated/skills/finishing-a-development-branch.md');
-    expect(text).toContain('when: after the commit gate clears, when no action is selected');
+    expect(text).toContain('when: current-head verification is assembled and no action is selected');
     expect(text).toContain('If no action is selected, it presents exactly three ways');
     expect(text).toContain('If the request or caller has not selected an action, present the three terminal options');
     expect(text).toContain('A direct open-PR request keeps that selection');

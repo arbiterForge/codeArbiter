@@ -73,6 +73,7 @@ func ContextSchema() map[string]any {
 	taskProps["task_sha256"] = hash()
 	taskProps["task"] = map[string]any{"type": "object"}
 	taskProps["commands"] = map[string]any{"type": "array", "items": closed(map[string]any{"definition_sha256": hash(), "definition": map[string]any{"type": "object"}}, "definition_sha256", "definition")}
+	taskProps["task_check_report_sha256"] = map[string]any{"type": "array", "items": hash(), "maxItems": int64(16), "uniqueItems": true}
 	task := closed(taskProps, "format", "activity", "subject", "input_sha256", "input_manifest", "spec_sha256", "plan_sha256", "task_sha256", "task", "commands")
 	scopeProps := map[string]any{}
 	for k, v := range common {

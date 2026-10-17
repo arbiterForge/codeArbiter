@@ -1,6 +1,6 @@
 ---
 title: Project Knowledge and Change Artifacts
-description: "Understand what each project record owns, how a specification binds its plan, and why readable HTML, approval, verification and delivery are different claims."
+description: "Understand what each project record owns, how a specification binds its plan, and why agreed scope, implementation progress, verification and delivery are different claims."
 journey:
   level: Foundation
   time: "Read and inspect an example"
@@ -91,44 +91,46 @@ project story and local fixture tests are not approval or execution evidence for
 
 ## Format and authority are separate
 
-**New full-lane feature/sprint work uses typed HTML when the installed package has the qualified
-native capability.** Each document contains an authoritative typed model and a deterministic
-readable view. Normal machine reads validate their agreement. The file can be opened offline
+**New full-lane feature/sprint work uses typed HTML through the installed native writer.** The
+workflow checks that writer's manifest-owned capability before saving. Each document contains an
+authoritative typed model and a deterministic readable view. Normal machine reads validate their
+agreement. The file can be opened offline
 without JavaScript; opening it does not approve or execute anything.
 
 **Existing Markdown pairs stay on their exact legacy path.** Their continued use is a deliberate
 compatibility boundary, not a reason to silently migrate them. A mixed or duplicate pair requires
 resolution, not a guessed authority.
 
-**Small-lane work uses a confirmed inline mini-spec and triage record.** It does not need a full
+**Small-lane work uses a stated inline mini-spec and triage record.** It does not need a full
 HTML pair solely to make the folder look uniform. The classification conditions, not aesthetic
 preference, determine that path.
 
 **Greenfield Markdown remains project-level planning.** It is not an old typed feature pair awaiting
 conversion. These four cases differ in scope and lifecycle as well as file format.
 
-The native engine validates structure, identity, relationships and allowed transitions. The
-installed host authority observes the applicable approval, review or verification events.
-**The native engine is not a substitute for a host authority adapter.** Shared paths or command
-spellings do not establish equal support. Check the
-[host-authority boundary](/guides/review-artifacts/#check-your-hosts-authority-capability)
-for the exact installed adapter; this concept explanation is not a release qualification.
+The native engine preserves structure, identity, relationships and safe writes. Ordinary drafting
+and task progress use the user's existing request; they do not require artifact approval receipts.
+Actual host permissions, unresolved user decisions and explicit stops still apply. Strict
+attestation is a separate, explicitly requested evidence path with its own supported-host limits.
+See the [capability boundaries](/guides/review-artifacts/#check-your-hosts-authority-capability).
 
-## Six claims that should never collapse into “done”
+## Keep progress and evidence distinct
 
 A **readable document** can be inspected. A **valid model and matching view** have the required
 structure and integrity. Neither claim decides whether the requirements are adequate.
 
-An **approved normative definition** has the applicable current approval bound to that content.
-Changing its normative content can stale approval and downstream plan bindings. A hash supports
-integrity; it does not authenticate the human actor by itself.
+An **agreed requirement** reflects the user's request and actual decisions. A consequential change
+to that outcome needs its owner's decision; an in-scope implementation adjustment can be recorded
+with its reason. Keep the plan bound to the current spec. A hash establishes content identity,
+not who approved it or whether it was implemented.
 
 A **verification definition** says what should be run. A **verification result** records what was
 actually observed. Planned commands and copied successful output are not interchangeable.
 
-**Task review and scope acceptance** have different boundaries. On the typed path, task `REVIEW`
-is provisional until the required current task evidence and combined quality review support
-whole-scope acceptance. A displayed status is not permission to hand-edit the transition.
+**Implementation progress** is recorded separately from verification and review. On the typed
+path, `REVIEW` means implementation is ready and `DONE` means it is reported complete. Neither
+status proves passing tests, independent review or user acceptance. Record actual results and
+preserve failures and unrun checks; use the supported writer for status changes.
 
 An **open PR** proposes integration. A **merged PR** and a **published release** require additional
 independent facts. None follows merely because a browser view or task board looks complete.
@@ -137,11 +139,12 @@ independent facts. None follows merely because a browser view or task board look
 
 Find the exact selected specification and plan through the owning lane. Ask which criterion IDs
 the next task advances, which paths it changes, which test would distinguish failure from success,
-and which dependencies or approvals currently permit it to run.
+and which dependencies, unresolved decisions or host permissions affect it.
 
 Then compare planned verification with actual evidence. A command in a plan is not a past run.
 An observation from an earlier source revision is not automatically current. An incomplete draft
-is useful to review, but it must not be presented as executable work.
+can guide independent authorized work while its missing requirements remain visible. Structural
+readiness diagnostics do not establish implementation or verification.
 
 Request changes through the existing artifact-owning procedure instead of editing the generated
 HTML or embedded JSON. Preserve IDs and the actual selected pair. After an interruption, use

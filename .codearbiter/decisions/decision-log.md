@@ -2180,3 +2180,28 @@ Reliable: unrelated runtime appends no longer stale evidence or stall a round. S
 ADR-0042. Changes core/artifacts/internal/evidence/snapshot.go and store/fs_portable.go (bounded handle opens), plus docs/artifacts/PROTOCOL.md and core/surface/includes/artifacts.md. Rides with the #931 prompt-submit timeout fix.
 
 ---
+
+## DECISION-0076 — adr-0043-ratified — Assistive state rather than duplicate permission
+
+**Date:** 2026-10-14
+**Status:** accepted
+**Supersedes:** Artifact-origin permission interpretation of ADR-0037; preserves its storage and recovery kernel.
+**Decided by:** SUaDtL@users.noreply.github.com — product owner directed the streamlined overhaul and explicitly requested the PR and initial implementation.
+**Decision category:** product-architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The state engine should help maintain the plan, render readable HTML, and provide compact symbol-bound context without a second always-ask system.
+- **Scaffold position:** Artifact approvals, prerequisite certification, context tickets, reconciliation codes, and review/verification freshness currently control ordinary progress.
+- **Status type:** owner-directed-correction
+
+### Decision
+Adopt ADR-0043 and execute the nine-task handoff in one overhaul PR. Separate work progress from evidence claims. Remove artifact-owned permission dependencies while retaining actual host permissions, explicit user stops, write integrity, and honest historical evidence.
+
+### SMARTS rationale
+This is the owner's direct product decision, not a scored delegation or a claim of independent review. Less duplicate ceremony and smaller contextual reads serve the stated goal; no score or fabricated approval event is needed to restate it.
+
+### Implementation implication
+The initial native scheduling/progress slice does not complete host orchestration, scoped prerequisite observations, evidence-impact selection, migration, or release qualification. Keep the PR draft until those compatible changes are integrated. See docs/plans/assistive-state-engine-overhaul.md and assistive-state-engine-progress.md for exact scope and progress. Acceptance is not implementation or verification.
+
+---

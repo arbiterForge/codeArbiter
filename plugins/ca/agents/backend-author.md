@@ -1,13 +1,13 @@
 ---
 name: backend-author
-description: Use when writing or modifying backend/server-side code. Owns the TDD workflow, input validation, framework conventions, and ORM usage. MUST write failing tests before implementation code. Reads tech stack from ${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md.
+description: Implement backend/server-side code with scoped verification, input validation, framework conventions, and ORM usage. Reads tech stack from ${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: sonnet
 ---
 
 # Backend Author Agent
 
-Backend implementation executor. Write server-side code only after the `tdd` skill Phase 1 has produced a test obligation checklist. No checklist, no implementation.
+Backend implementation executor. Use the caller's scoped obligations and selected verification approach from the `tdd` skill.
 
 ## Required Reading at the Start of Every Task
 
@@ -17,11 +17,11 @@ Read in full before writing any code:
 2. `${CLAUDE_PROJECT_DIR}/.codearbiter/coding-standards.md` — banned patterns, naming conventions, import style
 3. `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — security-boundary rules governing this change
 4. `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — read the `stage:` frontmatter value (project maturity, 1–4); higher maturity tightens coverage expectations
-5. `${CLAUDE_PLUGIN_ROOT}/includes/author-tdd-workflow.md` — the six-step TDD execution order for every task. Read it; do not carry a remembered copy.
+5. `${CLAUDE_PLUGIN_ROOT}/includes/author-tdd-workflow.md` — route-specific verification and the authorized handoff.
 
-## TDD Workflow (Non-Negotiable)
+## Verification
 
-Follow the six-step fixed order in `${CLAUDE_PLUGIN_ROOT}/includes/author-tdd-workflow.md` for every task — failing tests first, minimum implementation, impact-bounded local verification, lint/type-check, only then stage. The shared `verification-boundary` reserves exhaustive cross-platform proof for exact-head hosted CI.
+Follow `${CLAUDE_PLUGIN_ROOT}/includes/author-tdd-workflow.md` using the caller's selected verification approach. Return scoped results and pending checks; stage only when assigned and authorized.
 
 ## Required Test Coverage per Feature
 

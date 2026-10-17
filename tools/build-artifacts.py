@@ -115,7 +115,7 @@ def write_qualification(candidate: Path, destination: Path,
     if (not isinstance(manifest, dict) or manifest.get("format") != QUALIFICATION_FORMAT.replace(
             "qualification", "release") or manifest.get("version") != "0.1.0"
             or manifest.get("protocol") != "codearbiter.artifact-api/0.1.0"
-            or manifest.get("schema_version") != "0.3.1"):
+            or manifest.get("schema_version") != "0.3.2"):
         raise SystemExit("candidate identity is not eligible for native qualification")
     entries = manifest.get("binaries")
     if not isinstance(entries, dict) or len(entries) != 1:
@@ -194,7 +194,7 @@ def main():
     if goos != "windows":
         executable.chmod(0o755)
     digest = hashlib.sha256(executable.read_bytes()).hexdigest()
-    manifest = {"format":"codearbiter.artifact-release/0.1.0", "version":"0.1.0", "protocol":"codearbiter.artifact-api/0.1.0", "schema_version":"0.3.1", "binaries":{f"{goos}/{goarch}":{"file":name,"sha256":digest,"native_tested":not args.skip_tests}}}
+    manifest = {"format":"codearbiter.artifact-release/0.1.0", "version":"0.1.0", "protocol":"codearbiter.artifact-api/0.1.0", "schema_version":"0.3.2", "binaries":{f"{goos}/{goarch}":{"file":name,"sha256":digest,"native_tested":not args.skip_tests}}}
     (output/"release.json").write_text(json.dumps(manifest,indent=2)+"\n")
     print(json.dumps({"binary":str(executable),"sha256":digest,"toolchain":subprocess.check_output(["go","version"],text=True).strip(),"platform":platform.platform(),"module_tests_passed":not args.skip_tests,"upstream_host_qualified":False},indent=2))
 

@@ -1,94 +1,84 @@
 # Code map — codeArbiter
 
-Coarse concern → path → role orientation, synthesized from Scout C (architecture)
-evidence per `context-creation` Phase 5, against the tree as of the
-`fix/mode-write-clobber` merge with `origin/main` (2026-09-15), with plugin version
-metadata refreshed on 2026-10-13. Module/concern
-granularity only — not a file listing. Kept in sync via `.provenance/code-map.json`.
+Concern-level source orientation. Edit canonical sources and regenerate host
+copies. Read versions and command membership from their owning manifests and
+catalogs; source inspection is not live-host or publication qualification.
 
-## Shared hook library (core/pysrc)
+## Shared source and generation
 
-- `core/pysrc/session-start.py` — SessionStart hook; detects an arbiter-enabled repo, injects the ORCHESTRATOR persona and live project state
-- `core/pysrc/prompt-submit.py`, `pre-write.py`, `pre-edit.py`, `pre-read.py`, `pre-bash.py`, `babysit.py` — the remaining hook entry points, each a thin dispatcher into the shared libraries below
-- `core/pysrc/_hooklib.py` — hook dispatch kernel; host DI seam, gate evaluation, marker/project-root resolution
-- `core/pysrc/_approvallib.py` — host-owned structured-artifact approval capture; typed-plan preflight validates bounded `plan-verification` pages and command definitions before source snapshot and final identity checks
-- `core/pysrc/_bashguardlib.py`, `_protectedstatelib.py`, `_provenancelib.py`, `_sensitivelib.py`, `_releaselib.py`, `_taskboardlib.py`, `_modelib.py`, `_adrlifecycle.py`, `_appendonlyconflictlib.py`, etc. — one domain library per module (shell guarding, protected-state registry, provenance/drift, crypto/secret detection, release orchestration, task board, mode state, ADR lifecycle, sanctioned append-only-conflict resolution)
+- `core/pysrc/` — Canonical stdlib Python hook entry points, host seams, integrity guards, state helpers, and native artifact bridge.
+- `core/surface/` — Canonical commands, routines, agents, includes, and persona instructions; its README defines projection conventions.
+- `core/hosts.json` — Host capabilities, command forms, tool classes, permission policies, and surface projections for Claude, Codex, and Pi.
+- `tools/host_descriptors.py` — Strict loader for immutable host descriptors.
+- `tools/sync-core.py` — Byte-identical shared Python projection into governance plugin hooks.
+- `tools/build-surface.py` — Host-specific instruction projection and generated catalogs.
+- `tools/build-host-packages.py` — Generated root Pi manifest and verified native-payload package cohorts.
 
-## Host registry and generated-kernel build (ADR-0031)
+## Native artifact engine
 
-- `core/hosts.json` — single source of truth for the three hosts (claude, codex, pi): plugin dirs, command forms, surface rules, tool classes, permission policies
-- `tools/host_descriptors.py` — strict loader/validator for `core/hosts.json`, exposing immutable per-host descriptor objects
-- `tools/build-surface.py` — descriptor-driven generator; renders `core/surface/` templates through `core/hosts.json` rules into each plugin's byte-identical command/skill/include tree (e.g. a command becomes a Codex/Pi `SKILL.md` via the applicable surface rule)
-- `tools/build-host-packages.py` — generates the ca-pi npm `package.json` (scoped name, provenance, files whitelist)
-- `tools/sync-core.py` — byte-identical vendoring of `core/pysrc` into each `plugins/ca*/hooks/`; the CI parity gate (`--check`) enforces zero drift
-- `plugins/ca/generated/`, `plugins/ca-codex/generated/`, `plugins/ca-pi/generated/` — build-generated `command-catalog.json` (all three) and `roles.json` (ca-pi only); consumed by each host's runtime skill dispatch
+- `core/artifacts/cmd/ca-artifact/` — Native CLI accepting bounded JSON requests and returning protocol envelopes.
+- `core/artifacts/internal/operations/` — Closed reads and mutations, advisory eligibility, task context, reported checks, progress, migration, and context-document operations.
+- `core/artifacts/internal/model/` — Validated artifact records, stable IDs, canonical identities, scoped definitions, and distinct progress/evidence fields.
+- `core/artifacts/schemas/` — Versioned JSON contracts for typed artifacts and operations.
+- `core/artifacts/internal/kind/` — Closed representation registry for spec/plan HTML and project-context Markdown.
+- `core/artifacts/internal/read/` — Exact/contextual/batch reads, bounded pages, and explicit incomplete scope.
+- `core/artifacts/internal/symbol/` — Stable symbol references and resolution.
+- `core/artifacts/internal/evidence/` — Evidence assessment and retained review/verification history; ordinary execution is not receipt-gated.
+- `core/artifacts/internal/render/` — Deterministic offline HTML with stable anchors, safe escaping, and separate progress/evidence labels.
+- `core/artifacts/internal/store/` — Platform filesystem boundaries, revision checks, locks, journals, before-images, replay, and recovery.
+- `core/artifacts/internal/contextdocument/` — Five-document Markdown ownership, bounded typed content, preview/apply, and provenance contracts.
+- `tools/build-artifacts.py` — Pinned-toolchain native payload build and qualification metadata.
+- `tools/generate-artifact-types.py` — Generated schema and typed-view consistency.
+- `tools/test-artifact-mixed-schema.py` — Disposable old/current-client compatibility, retained stops, replay, complete-store restore, and forward export.
 
-## Shared surface definitions (core/surface)
+## Python runtime and compatibility
 
-- `core/surface/skills/INDEX.md` — skills directory index; catalogs the full workflow set (context-creation, brainstorming, release, commit-gate, tdd, decision-lifecycle, tribunal, etc.)
-- `core/surface/skills/*/SKILL.md` — one multi-phase workflow definition per skill; single source of truth, generated into each plugin
-- `core/surface/commands/*.md` — one slash-command definition per file (38 commands: feature, fix, release, sprint, adr, pr, review, override, …); routes to a skill
-- `core/surface/agents/INDEX.md`, `core/surface/agents/scout.md` — dispatched-subagent persona directory and the read-only evidence-gatherer role
+- `core/pysrc/_artifactlib.py` — Installation-pinned native bridge, request bounds, payload validation, and exact-format routing; no runtime PATH lookup or download.
+- `core/pysrc/_modelib.py` — Per-session arbiter, dangerous, and ops mode state; dangerous suspends persona orchestration, not enforcement.
+- `core/pysrc/_reconciliationlib.py` — Legacy reconciliation history and captured-reply recovery preserving original observations, operation IDs, and revision bindings.
+- `core/pysrc/_contextsnapshotlib.py` — Bounded repository-context acquisition and source identity.
+- `core/pysrc/_provenancelib.py` — Document provenance, source drift, and bounded code-map validation.
+- `core/pysrc/_taskboardlib.py` — Board schema and counters; taskwrite.py owns mutations and archival.
+- `core/pysrc/_releaselib.py` — Declared release targets, preflight, publication helpers, and recovery diagnostics.
 
-## Plugin implementations (four sibling plugins)
+Hook coverage is host-specific. Loaded instructions and named tools alone do not
+prove enforcement; the cooperative-agent and MCP boundaries remain documented
+in security-controls.md. Compatibility producers retain historical evidence
+without restoring an extra permission layer for already-authorized work.
 
-- `plugins/ca/` (v2.26.4) — the Claude Code plugin; `.claude-plugin/plugin.json` manifest, `hooks/*.py` (vendored from `core/pysrc`), `skills/`/`commands/`/`agents/`/`generated/` (generated from `core/surface`+`core/hosts.json`)
-- `plugins/ca-codex/` (v0.17.4) — the Codex CLI plugin; `.codex-plugin/plugin.json` manifest; commands render as `skills/ca-codex/SKILL.md`-style dispatch entries (no native slash commands)
-- `plugins/ca-pi/` (v0.18.4, npm-published as `@arbiterforge/ca-pi`) — the Pi governance plugin; `package.json` manifest declares JS `extensions/codearbiter.js` (bundled) plus `skills/`; skills carry a `ca-` name prefix
-- `plugins/ca-sandbox/` (v0.1.6) — infrastructure/testing plugin; Docker-based untrusted-code isolation, ephemeral containers, no persistent `.codearbiter/` inside the container
+## Host and infrastructure adapters
 
-## Release provenance and tag immutability (ADR-0029, ADR-0032, ADR-0034)
+- `plugins/ca/` — Claude manifest, generated governance resources, hooks, and TypeScript farm dispatcher with built farm.js.
+- `plugins/ca-codex/` — Codex manifest, generated entry skills/routines/hooks, and resource charters; no native plugin-agent registration.
+- `plugins/ca-pi/tools/src/` — Trusted-runtime extension, project-trust checks, Python bridge, tool wrapping, isolated child runner, and parent inference broker.
+- `plugins/ca-pi/extensions/` — Built parent and child extensions shipped to Pi.
+- `plugins/ca-pi/helpers/` — Packaged native helpers including the Windows supervisor.
+- `plugins/ca-sandbox/tools/` — Docker lifecycle, mount/network isolation, installed-nixpacks detection, and generated-Dockerfile fallback.
 
-- `.github/RELEASE-PROVENANCE.md` — prose contract: immutability rules, receipt capture, legacy-epoch governance
-- `.github/published-tags.json` — append-only ledger of original-publication receipts (tag, commit sha, evidence grade) for the four installable tag series
-- `.github/legacy-published-tags.json` — ADR-0034's closed, immutable 44-tag legacy epoch; forward-detection only, never original-publication proof
-- `.github/scripts/check_tag_immutability.py` — the merge-gate check comparing every live tag ref against the two ledgers above
+## Documentation and Academy
 
-## Academy integration (submodule, currently unpopulated)
+- `site/src/curated/` — Maintained Astro/Starlight product prose.
+- `site/scripts/` — Site and diagram generation, Academy consumption, link/applicability auditing, and fixture capture.
+- `site/test/` — Site unit, generated-content, browser, and offline artifact-view checks.
+- `.gitmodules` — Separately owned arbiter-academy source declaration; the gitlink selects its revision, while local population is checkout state.
 
-- `.gitmodules` — pins `academy-source` to `https://github.com/arbiterForge/arbiter-academy.git`; the checkout is present but empty (not yet initialized/populated) as of this merge
+## Project records
 
-## Documentation site (site/)
+- `.codearbiter/` — Five context documents, provenance, specs/plans, open decisions, protected release declarations, task boards, and audit records.
+- `.codearbiter/open-tasks.md` — Helper-only mutable board; done-tasks.md is append-only archived history.
+- `.codearbiter/decisions/` — Accepted ADR bodies and append-only lifecycle/decision history, including ADR-0043's assistive contract.
+- `.codearbiter/release-targets.md` — Four protected executable target declarations with pre-tag/build/generation ownership.
 
-- `site/astro.config.mjs`, `site/base.mjs` — Astro build configuration and the single source of truth for the site's base path
-- `site/package.json` — npm manifest; vitest content-structure suite + link-audit
-- `site/src/curated/` — hand-written doc prose, merged by the generator (not auto-synced to the surface it documents)
-- `site/src/generated/` — fragments generated from `core/surface` skills/commands
-- `site/scripts/release-applicability.ts` — new release-applicability tooling (hashes content with the approved `createHash("sha256")`)
+## Tests, CI, and publication
 
-## Project state store (.codearbiter/)
+- `plugins/ca/hooks/tests/` — Shared hook unit tests; tests here are maintained source, not generated hook copies.
+- `.github/scripts/` — Python contracts, lifecycle, packaging, provenance, platform tests, and hosted check helpers.
+- `.github/workflows/ci.yml` — Impact routing, native/platform matrices, package/cold-install checks, coverage, and merge readiness.
+- `.github/workflows/release.yml` — Qualified cohort publication and called workflow ownership; publication is separate from ordinary progress.
+- `.github/workflows/docs.yml` — Site validation and deployment.
+- `.github/RELEASE-PROVENANCE.md` — Original-publication evidence and immutable-tag obligations, including legacy evidence grades.
 
-- `.codearbiter/CONTEXT.md` — project identity/scope/stage; `arbiter: enabled` frontmatter gates session startup and every enforcement hook
-- `.codearbiter/decisions/`, `.codearbiter/decisions/adr-lifecycle.jsonl` — Architecture Decision Records and the append-only ADR lifecycle ledger (proposal → accepted → obligations bound/verified)
-- `.codearbiter/specs/`, `.codearbiter/plans/` — approved feature specs and execution plans (`/ca:feature`)
-- `.codearbiter/open-tasks.md` — task board; append-only via `taskwrite.py`, never a direct edit
-- `.codearbiter/open-questions.md` — deferred `[CONFIRM-NN]` items
-- `.codearbiter/gate-events.log`, `overrides.log`, `triage.log`, `sprint-log.md` — append-only audit trails
-- `.codearbiter/.provenance/` — per-doc source evidence and hashes backing drift detection
-- `.codearbiter/security-controls.md` — the project's approved/forbidden crypto primitives, secret-handling policy, and declared boundary exceptions
-
-## Test infrastructure (tests/, plugin hook tests)
-
-- `tests/test_p05_fixture.py` — protocol-level test suite exercising hook entry points, gate evaluation, and state mutations
-- `plugins/ca/hooks/tests/` — the primary unit-test suite for the shared hook libraries (not synced by `sync-core.py`; single copy); includes `test_crypto_context.py`, a detector-fixture file whose crypto-pattern strings are deliberately non-operational (mirrors the `.github/scripts/` `createHash("md5")` precedent in `security-controls.md`)
-
-## CI/CD (.github/)
-
-- `.github/workflows/ci.yml`, `release.yml`, `codeql.yml`, `docs.yml`, `pi-promotion.yml` — GitHub Actions workflows gating test/lint, release and publishing, security scanning, and docs
-- `.github/scripts/` — helper scripts invoked by workflows (release checks, contract/consistency checks, provenance/tag-immutability tooling, ADR lifecycle checks)
-
-## Architectural pattern
-
-**Multi-host governance framework, shared core + generated kernels** (ADR-0007, ADR-0011, ADR-0013, ADR-0031): `core/pysrc` (host-agnostic Python logic) and `core/surface` (host-agnostic markdown templates) are the single source of truth. `core/hosts.json` plus `tools/build-surface.py`/`tools/host_descriptors.py` deterministically render that source into each host's native surface (Claude slash commands, Codex/Pi generated `SKILL.md` dispatch entries) — not hand-maintained copies. `tools/sync-core.py` vendors the Python hook layer byte-identically. Each plugin then layers only a thin, platform-specific adapter (manifest format, generated `command-catalog.json`) on top.
-
-**Hook-gated skill orchestration:** every tool call or slash command routes through a `core/pysrc` hook (`session-start`, `prompt-submit`, `pre-edit`, `pre-write`, `pre-bash`, …), which gates via `_hooklib` against `CONTEXT.md` frontmatter and project state, then dispatches to a `core/surface/skills/*/SKILL.md` workflow that reads/writes `.codearbiter/` state and may dispatch subagents (`core/surface/agents/`).
-
-**Release immutability:** published tags across all four series never move or delete; a bad release is corrected only by a new version. Two independent layers — a repository ruleset (prevention) and `.github/scripts/check_tag_immutability.py` against the two ledgers (detection) — enforce this, per ADR-0032/ADR-0034.
-
-## Public interfaces
-
-- Slash commands — `core/surface/commands/*.md` (38), rendered per-host via `core/hosts.json` surface rules
-- Hook entry points — `core/pysrc/*.py`, registered per-host in each plugin's manifest
-- Plugin manifests — `plugins/ca/.claude-plugin/plugin.json`, `plugins/ca-codex/.codex-plugin/plugin.json`, `plugins/ca-pi/package.json`, `plugins/ca-sandbox/.claude-plugin/plugin.json`
-- Project-state contract — `.codearbiter/CONTEXT.md` frontmatter, `decisions/`, `open-questions.md`, `open-tasks.md`
-- Release-provenance contract — `.github/published-tags.json`, `.github/legacy-published-tags.json`, `.github/RELEASE-PROVENANCE.md`
+Go tests live beside their packages. Vitest projects live in the three tool
+packages and site; manifests own runnable commands. Local source checks,
+hosted candidate qualification, published packages, and installed-host behavior
+are separate claims.

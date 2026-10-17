@@ -1,6 +1,6 @@
 ---
 title: Checkpoints
-description: "Understand whole-repository review, its read-only verdict and separate report writer, and distinguish periodic reports from attended checkpoints and typed task acceptance."
+description: "Understand whole-repository review, its read-only verdict and separate report writer, and distinguish periodic reports from execution progress and plan task groups."
 journey:
   level: Power user
   time: "10–15 min"
@@ -18,10 +18,11 @@ dated report. It helps expose accumulated drift, uncovered behavior and dependen
 diff review might not revisit. It does not implement the findings or certify the repository as safe.
 
 The word checkpoint also appears inside feature execution. That reuse is easy to misunderstand.
-The periodic `/ca:checkpoint` command produces a repository review report. An **attended execution
-checkpoint** is where the coordinator reports a batch and waits for acknowledgement. A **typed-plan
-checkpoint scope** groups authored tasks for the required combined evidence and acceptance. A file
-from the first does not satisfy either of the other two.
+The periodic `/ca:checkpoint` command produces a repository review report. An **execution
+checkpoint** reports a meaningful group of completed and outstanding work; it pauses only when
+the user requested that pause or a real decision is missing. A **typed-plan checkpoint scope**
+groups authored tasks for accurate progress reporting. Its membership is preserved, but its number
+does not impose a dependency or grant approval. None of these records proves that tests passed.
 
 ## The fleet
 
@@ -57,6 +58,11 @@ The report is `.codearbiter/checkpoints/YYYY-MM-DD.md`. If that date already exi
 selects `YYYY-MM-DD-2.md`, then `-3`, and returns the exact selected path. An existing report is
 never overwritten. Its content retains every finding and incomplete-unit result from the complete
 verdict, with severity, location and the relevant dispositions.
+
+Before the sweep, the caller captures the reviewed commit, UTC review-start time and dirty-tree
+flag. The writer retains these as `source_commit`, `recorded_at` and `worktree_dirty`; missing
+observations remain unknown. Audit windows use valid report anchors, never the override counter
+or a timestamp guessed from the filename. See [Auditability](/concepts/auditability/).
 
 The caller also writes a **bare integer** to `.codearbiter/last-checkpoint`: the count of nonblank,
 noncomment override rows at that point. The statusline or startup briefing subtracts it from the
@@ -129,9 +135,10 @@ run either review again.
 
 ## Common category errors
 
-An attended “ready for feedback” checkpoint is not a whole-tree sweep. Typed `REVIEW` is not final
-scope acceptance. A quiet override counter does not attest a commit. A saved report is not proof
-of complete reviewer coverage, and an incomplete review is not a reason to invent clean results.
+A progress checkpoint is not a whole-tree sweep or an automatic request for permission to continue.
+Typed `REVIEW` and `DONE` record implementation progress, not passing tests or independent review.
+A quiet override counter does not attest a commit. A saved report is not proof of complete reviewer
+coverage, and an incomplete review is not a reason to invent clean results.
 
 Use [Test-first development in context](/concepts/test-first/) for the task-level proof path,
 [ADRs](/concepts/adrs/) for governing decisions, and [Investigate and fix](/guides/investigate-and-fix/)

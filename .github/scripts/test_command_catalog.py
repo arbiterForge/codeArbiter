@@ -35,11 +35,12 @@ class CommandCatalogGuardTest(unittest.TestCase):
                 rows = [line for line in (REPO_ROOT / path).read_text(encoding="utf-8").splitlines()
                         if line.startswith("| [subagent-driven-development](")]
                 self.assertEqual(len(rows), 1)
-                self.assertIn("quality failure blocks acceptance", rows[0])
-                self.assertIn("approved sprint recovery", rows[0])
-                self.assertIn("Security CRITICAL", rows[0])
-                self.assertIn("unresolved `[CONFIRM-NN]` remain stops", rows[0])
-                self.assertNotIn("Hard-stops on `tdd` BLOCK", rows[0])
+                self.assertIn("run relevant checks", rows[0])
+                self.assertIn("retry affected failures", rows[0])
+                self.assertIn("security controls", rows[0])
+                self.assertIn("unresolved material decisions still apply", rows[0])
+                self.assertIn("record DONE separately from verified evidence", rows[0])
+                self.assertNotIn("approved sprint recovery", rows[0])
 
     def test_live_generated_catalog_is_exact(self):
         self.assertEqual(catalog.check(REPO_ROOT), [])

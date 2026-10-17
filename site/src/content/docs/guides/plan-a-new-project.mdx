@@ -44,15 +44,16 @@ Describe the goal naturally, or use an explicit entry:
 | Pi | `/ca-init --greenfield` |
 
 `init` scaffolds the state store when needed and enters decomposition. The existing `decompose`
-command remains a compatibility entry for that same strategy. Do not run it again after the
-repository is successfully initialized. An initialized marker or existing-source mismatch stops
-this route; it is not permission to overwrite the project.
+command remains a compatibility entry for that same strategy. An initialized project returns to
+normal work; selected context changes use `context-check`. Meaningful existing source routes to
+the brownfield populator. Neither case permits overwriting existing project records.
 
 ## Work through six areas
 
 The interview covers vision and problem, users and flows, functional scope, technical shape,
-integrations and infrastructure, then risks and unknowns. It can be substantial: the owning
-skill describes roughly 60–110 questions, not a short installation dialog.
+integrations and infrastructure, then risks and unknowns. Existing answers and settled decisions
+carry forward. Questions focus on missing facts and consequential choices; inapplicable areas
+are recorded with their reason.
 
 Answer in observable terms. Instead of “make exports work well,” identify who exports, what is
 exported, the format, the empty case, and how a reviewer could tell whether it works.
@@ -60,9 +61,10 @@ codeArbiter challenges vague answers and explains architectural trade-offs. You 
 choices. A genuinely unresolved answer becomes an explicit `[CONFIRM-NN]`, not an invented fact.
 
 At each completed layer, the interview writes its record beneath
-`.codearbiter/.decompose-draft/` before starting the next layer. Architectural choices have
-immediate draft-ADR writes where the skill specifies them. **Do not assume every unfinished
-answer has already been saved.** Before leaving, ask which layer files were actually written.
+`.codearbiter/plans/decomposition/` before starting the next layer. `_session.md` records the phase,
+remaining questions and actual confirmations. User-decided architectural choices go through the
+decision-lifecycle owner; draft choices remain drafts until actually decided. **Do not assume
+every unfinished answer has already been saved.** Before leaving, inspect the retained records.
 
 ## Review the three deliverables
 
@@ -81,14 +83,16 @@ and whether the backlog leaves an investigation for any unresolved external inte
 
 A useful revision request is: “The first phase must export existing saved searches, but must not
 add account sharing. Update all three documents consistently and return them for review.”
-Approval must cover all three documents without unresolved objections. It does not authorize
-arbitrary later scope expansion or a merge.
+Your actual confirmation covers the three documents and is recorded in `_session.md`. Existing
+confirmation covers unchanged artifacts; corrections do not restart settled questions. A
+consequential unresolved choice holds its dependent output, while other explicitly retained gaps
+stay on the question board. Confirmation does not authorize later scope expansion or a merge.
 
 ## Understand the two planning scales
 
-The decomposition backlog is **project planning**. Its tasks can represent one-to-five-day pieces
-of work. A later feature's execution plan breaks a selected change into much smaller, verifiable
-tasks. They are not interchangeable even though both live under `plans/`.
+The decomposition backlog is **project planning**. A later feature's execution plan breaks a
+selected change into coherent, verifiable tasks with actual dependencies. Choose task sizes for
+useful progress and review. The two plans serve different scopes even though both live under `plans/`.
 
 The three named greenfield documents remain Markdown. They are not legacy feature artifacts
 waiting for automatic HTML conversion. New full-lane feature and sprint work has a separate
@@ -96,23 +100,33 @@ waiting for automatic HTML conversion. New full-lane feature and sprint work has
 
 ## Confirm initialization, then choose work
 
-After approval, the populator derives `CONTEXT.md`, stack, coding standards, security controls,
-questions, tasks, decisions and supporting project records from the saved inputs. Inspect the
-reported file tree and resolved versus deferred questions. Successful completion writes the
-`<!--INITIALIZED-->` body marker, preserves the activation frontmatter, and removes the temporary
-interview directory. A marker alone is not evidence that the documents are accurate.
+After confirmation, the populator derives context, stack, coding standards, security controls and
+a planned code map from the retained inputs. Planned commands and paths stay labelled as planned
+until actual source establishes them. The native writer's `--context-draft` and `--context-apply`
+operations populate five document/provenance pairs together, preserving activation frontmatter.
+Inspect each preview and its source bindings before applying it under the existing authorization.
 
-Start a fresh host session and run its doctor command as described in
-[Protect your first repository](/getting-started/quickstart/). Then select one backlog item and
-follow [Build a feature](/guides/feature-lane/). Do not ask the agent to implement the entire
-project merely because the interview is complete.
+Tasks are populated through their owning writer without duplicating existing entries. Questions,
+decisions and audit history remain intact. `--context-finalize` validates the thirteen required
+outputs: five document/provenance pairs, the task board, question board and audit log. Apply its
+preview through the native writer to record the `<!--INITIALIZED-->` marker and matching context
+provenance together. A failed or uncertain transaction needs its reported repair or recovery;
+do not append the marker manually.
+
+Read back the result, retain the interview, plans and decision history, and remove only temporary
+drafts that no provenance source references. Report unresolved choices and observed checks, then
+continue authorized work. Initialization records population; it does not establish accurate
+implementation, passing tests or installed-host enforcement. Use
+[Protect your first repository](/getting-started/quickstart/) for host qualification and
+[Build a feature](/guides/feature-lane/) for the next selected change.
 
 ## Resume, revise, or reconcile
 
-Re-entering decomposition after an interruption offers the existing draft's resume path.
-Resume preserves completed layers; abort leaves draft records intact. Restart can delete the
-working draft and draft ADRs, so review its proposed scope before explicitly choosing it.
-Do not delete records by hand to make the initialization check pass.
+Re-entering decomposition after interruption resumes the first unfinished step from the retained
+session and layer records. An explicit restart preserves earlier interview and decision history.
+If interrupted records are in a temporary location, preserve them in the durable interview
+directory before citing them as provenance sources. Reconcile conflicting versions without
+overwriting either. Do not delete records to make the initialization check pass.
 
 Later, when architecture, roadmap, backlog or prior decisions disagree, `reconcile` reads these
 **exact three filenames**. It presents variances for your choice and records the outcome. It does

@@ -44,8 +44,8 @@ Implemented or Verified lifecycle state.
 
 **Specifications follow.** Legacy Markdown specs opt in with the recognized approved-status and
 `**Governs:**` fields. Typed HTML specifications use the installed artifact client's validated
-index and verified authority fields. Matching a file in this advisory index does not itself
-create approval or execution authority.
+index. Applicable draft, ready and approved specs supply advisory pointers labelled with their
+state; rejected and withdrawn specs do not. Matching a file creates no approval or execution authority.
 
 **Fresh provenance claims come last.** A recorded source path contributes its claim pointer only
 when a non-null stored hash matches the current hash. Stale or unverifiable claims are suppressed.
@@ -94,7 +94,7 @@ nothing even though the first supplied useful context. It is not a continuous re
 legacy decision and claim during a session. A fresh session is the useful control when repeating
 a mapping observation after edits.
 
-Where HTML authority exists, the helper builds a validated snapshot before deduplication and
+Where HTML specifications exist, the helper builds a validated snapshot before deduplication and
 includes its artifact identity in the deduplication epoch. Changed revision, model or normative
 identity can make advice eligible again in the same session. The same snapshot drives both the
 pointer and its deduplication key, avoiding mismatched reads. This is advisory identity, not a
@@ -108,8 +108,9 @@ workaround for an unexplained result.
 
 The source distinguishes an unavailable installed capability from an invalid or unreadable HTML
 artifact. It can append a bounded diagnostic that names the condition and its repair direction.
-A diagnostic is not an approved-spec pointer. Source inspection may continue while the affected
-HTML planning or execution path must stop.
+A diagnostic is not a spec pointer. Source inspection and independent authorized work may
+continue. Resolve the reported condition before relying on the affected artifact or performing
+a mutation that requires the unavailable capability.
 
 Use [artifact review](/guides/review-artifacts/) to identify the installed capability and
 [Resume and recover](/guides/resume-and-recover/) for stale bindings or uncertain transactions.
@@ -119,7 +120,7 @@ because a read hook permits inspection. The mutation workflow's stricter checks 
 ## Practice: predict one injection
 
 Choose a file and enumerate its applicable mappings before reading it: the security path tokens,
-accepted ADR patterns, approved specification mapping, and any fresh provenance entries. Predict
+accepted ADR patterns, applicable specification mapping, and any fresh provenance entries. Predict
 an ordered candidate set, not one winner. Inspect which claims are actually recorded and whether
 their hashes can be checked.
 

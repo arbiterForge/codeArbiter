@@ -2,30 +2,36 @@
 entity: skills/executing-plans
 related: [commands/feature, subagent-driven-development, writing-plans]
 gates:
-  - gate: batch checkpoint
-    when: after every batch completes
-    effect: the next batch does not start until you acknowledge what landed, what's next, and what's still open
+  - gate: actual prerequisite
+    when: selecting the next batch
+    effect: preserve real dependencies and blockers while allowing independent authorized tasks to proceed
+  - gate: explicit pause
+    when: the user requested an attended review point or a consequential decision remains unresolved
+    effect: respect that stop for affected work; routine progress reports do not require acknowledgment
 ---
 
 ## What it does
 
-This is the checkpointed coordinator behind the feature command, taking over once an approved
-plan exists. It groups the plan's tasks into small batches, hands each batch to the implementation
-engine for the actual test-first work and review, and stops for your acknowledgment between
-batches. It never implements anything itself — only schedules and checkpoints.
+Coordinates an authorized feature plan. It selects meaningful batches, passes the named task
+scope to the implementation owner, and reports actual work and checks. Checkpoints organize
+progress. The coordinator respects a user-requested pause and otherwise continues within the
+existing authorization.
 
 ## Phases
 
-1. Group the plan's non-accepted tasks into small batches, respecting dependency order, and
-   present the breakdown as information rather than a question.
-2. Hand the current batch's task IDs to the implementation engine, which runs the test-first work,
-   review, and verification for each task.
-3. Stop and report what landed, what's next, and what's still open, and wait for your
-   acknowledgment before starting the next batch.
+1. Read the selected plan and actual dependencies. For HTML, query current identity and advisory
+   eligibility. Inspect in-progress workers on resume so work is neither duplicated nor assumed done.
+2. Select a coherent task scope, preserve blocked members, and continue independent work. Earlier
+   checkpoint numbering alone is not a dependency.
+3. Hand that scope to the implementation owner, which can use direct work or useful delegation
+   and checks appropriate to the change.
+4. Record implementation progress and actual checks, including failures and unrun verification.
+   `DONE` records implementation; it does not establish passing tests or independent review.
+5. Report the result and next work, continuing unless a real decision, user stop or applicable
+   host/security boundary prevents the affected action.
 
 ## Exits
 
-Once the final batch is acknowledged and every plan task is accepted, the branch moves on to the
-commit gate — this skill never commits on its own. A halt inside the implementation engine, such
-as a failed test-first gate or an unresolved open question, surfaces to you rather than being
-worked around.
+Return current plan state, observed verification and remaining work. Invoke the commit owner only
+when committing is authorized. Never invent results, clear a user's stop, or restart the whole
+specification merely because a session ended or an advisory receipt is missing.

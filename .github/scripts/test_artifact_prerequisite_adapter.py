@@ -649,6 +649,80 @@ with _prerequisitelib._pending_transition_lock(Path(sys.argv[2]), sys.argv[3]):
         with self.assertRaisesRegex(RuntimeError, "INVALID_PENDING_PREREQUISITE"):
             self.consume(armed["reply"])
 
+    def test_unanswered_prerequisite_retires_without_certification(self):
+        armed = self.arm()
+        original_calls = list(self.client.calls)
+        result = self.adapter.retire_unanswered_user_prerequisite(
+            self.root, "PLAN-EXAMPLE", "GATE-APPROVAL",
+            reason="A factual prerequisite no longer needs a user's reply code.",
+        )
+        self.assertEqual(result["disposition"], "unanswered_prompt_superseded")
+        self.assertFalse(result["authority_granted"])
+        self.assertFalse(result["mutation_attempted"])
+        self.assertFalse((self.root / armed["pending"]).exists())
+        self.assertEqual(self.client.calls, original_calls)
+        self.assertNotIn("receipt", result)
+        self.assertEqual(self.arm()["prerequisite_id"], "GATE-APPROVAL")
+
+    def test_prerequisite_retirement_refuses_ambiguous_or_confirmed_state(self):
+        armed = self.arm()
+        path = self.root / armed["pending"]
+        original = path.read_bytes()
+        for reason in ("", "  ", "x" * 2049, None):
+            with self.subTest(reason=str(reason)[:20]), self.assertRaisesRegex(
+                self.adapter.PrerequisiteError, "INVALID_RETIREMENT"
+            ):
+                self.adapter.retire_unanswered_user_prerequisite(
+                    self.root, "PLAN-EXAMPLE", "GATE-APPROVAL", reason=reason,
+                )
+        with self.assertRaisesRegex(self.adapter.PrerequisiteError, "PENDING_PREREQUISITE_MISMATCH"):
+            self.adapter.retire_unanswered_user_prerequisite(
+                self.root, "PLAN-EXAMPLE", "GATE-OTHER", reason="Wrong gate.",
+            )
+        self.assertEqual(path.read_bytes(), original)
+        self.client.failure = "capture-observation"
+        with self.assertRaisesRegex(RuntimeError, "capture-observation failed"):
+            self.consume(armed["reply"])
+        self.client.failure = None
+        pending = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(pending["state"], "CONFIRMED")
+        with self.assertRaisesRegex(self.adapter.PrerequisiteError, "PREREQUISITE_RECOVERY_REQUIRED"):
+            self.adapter.retire_unanswered_user_prerequisite(
+                self.root, "PLAN-EXAMPLE", "GATE-APPROVAL", reason="Do not delete a confirmed decision.",
+            )
+        self.assertEqual(json.loads(path.read_text(encoding="utf-8")), pending)
+
+    def test_prerequisite_retirement_preserves_captured_mutation_attempt(self):
+        armed = self.arm()
+        path = self.root / armed["pending"]
+        self.client.failure = "prerequisite"
+        with self.assertRaisesRegex(RuntimeError, "prerequisite failed"):
+            self.consume(armed["reply"])
+        pending = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(pending["state"], "CAPTURED")
+        self.assertIsInstance(pending["mutation_request"], dict)
+        with self.assertRaisesRegex(self.adapter.PrerequisiteError, "PREREQUISITE_RECOVERY_REQUIRED"):
+            self.adapter.retire_unanswered_user_prerequisite(
+                self.root, "PLAN-EXAMPLE", "GATE-APPROVAL",
+                reason="A published observation is not an unanswered question.",
+            )
+        self.assertEqual(json.loads(path.read_text(encoding="utf-8")), pending)
+
+    def test_prerequisite_retirement_cli_does_not_request_installed_authority(self):
+        armed = self.arm()
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient",
+                               side_effect=AssertionError("retirement should not load a native writer")):
+            with mock.patch("builtins.print") as printed:
+                self.assertEqual(self.adapter.main([
+                    "retire", "--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE",
+                    "--prerequisite-id", "GATE-APPROVAL",
+                    "--reason", "Only a historical unanswered question is being retired.",
+                ]), 0)
+        result = json.loads(printed.call_args.args[0])
+        self.assertFalse(result["authority_granted"])
+        self.assertFalse(result["mutation_attempted"])
+        self.assertFalse((self.root / armed["pending"]).exists())
+
     def test_cancel_requires_exact_plan_and_prerequisite(self):
         armed = self.arm()
         with self.assertRaisesRegex(RuntimeError, "PENDING_PREREQUISITE_MISMATCH"):
@@ -692,12 +766,19 @@ class PrerequisiteSurfaceTest(unittest.TestCase):
         text = (REPO / "core" / "surface" / "includes" / "artifacts.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("_prerequisitelib.py\" arm", text)
-        self.assertIn("--prerequisite-id <prerequisite-id>", text)
-        self.assertIn("satisfy-prerequisite", text)
-        self.assertIn("_prerequisitelib.py\" supersede", text)
-        self.assertIn("Do not infer eligibility from one satisfied prerequisite", text)
+        # Historical explicit attestation remains tested in this file, but
+        # ordinary task-scoped observations must not require that adapter.
+        self.assertIn("observable prerequisite", text)
+        self.assertIn("bounded `observation`", text)
+        self.assertIn("no certification code", text)
+        self.assertIn("caller-reported", text)
+        self.assertIn("unscoped prerequisite has unknown applicability", text.lower())
+        self.assertIn("artifacts-attestation.md", text)
         self.assertNotIn("--authority-kind", text)
+        cold = (REPO / "core" / "surface" / "includes"
+                / "artifacts-attestation.md").read_text(encoding="utf-8")
+        self.assertIn("Historical paired approval", cold)
+        self.assertIn("UserPromptSubmit", cold)
 
 
 class PrerequisiteProductionBoundaryTest(unittest.TestCase):
@@ -748,8 +829,11 @@ class PrerequisiteProductionBoundaryTest(unittest.TestCase):
 
     def test_real_engine_moves_from_unsatisfied_to_eligible_through_adapter(self):
         self.create_approved_plan()
+        advice = self.workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(advice["assessment"], "advisory")
+        self.assertEqual(advice["prerequisites"][0]["recorded_state"], "not_satisfied")
         with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_UNSATISFIED"):
-            self.workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+            self.workflow.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
 
         approval_receipt = None
         for path in (self.root / ".codearbiter" / ".artifacts" / "receipts").glob("*.json"):

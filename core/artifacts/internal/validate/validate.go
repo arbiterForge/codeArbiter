@@ -274,6 +274,14 @@ func planStructure(d *model.Document) []fault.Error {
 				add(&es, "INVALID_PATH", id, "paths", "task path is not a portable repository path")
 			}
 		}
+		for _, shared := range model.Strings(t["shared_inputs"]) {
+			if !Path(shared, false) || shared == ".git" || strings.HasPrefix(shared, ".git/") ||
+				IsRuntimeMarkerPath(shared) || shared == ".codearbiter/.artifacts" || strings.HasPrefix(shared, ".codearbiter/.artifacts/") ||
+				shared == ".codearbiter/specs" || strings.HasPrefix(shared, ".codearbiter/specs/") ||
+				shared == ".codearbiter/plans" || strings.HasPrefix(shared, ".codearbiter/plans/") {
+				add(&es, "INVALID_PATH", id, "shared_inputs", "shared input must be a real portable source path, not generated state")
+			}
+		}
 		for _, v := range model.A(t["verification"]) {
 			c := model.M(v)
 			if !Path(model.S(c["cwd"]), true) {
@@ -361,12 +369,35 @@ func planStructure(d *model.Document) []fault.Error {
 			add(&es, "ORPHAN_STATE", id, "execution.tasks", "state has no task definition")
 		}
 	}
+	for id, observations := range model.M(ex["task_check_observations"]) {
+		if _, exists := tasks[id]; !exists {
+			record, known := d.Symbols.ByID[id]
+			if !known || !record.Retired || record.Kind != "tasks" {
+				add(&es, "ORPHAN_STATE", id, "execution.task_check_observations", "unknown task command history")
+			}
+		}
+		for _, value := range model.A(observations) {
+			check := model.M(value)
+			if !nonblank(check["summary"]) || !nonblank(check["source"]) {
+				add(&es, "INVALID_OBSERVATION", id, "execution.task_check_observations", "command observation needs a source and summary")
+			}
+			if _, err := time.Parse(time.RFC3339, model.S(check["recorded_at"])); err != nil {
+				add(&es, "INVALID_DATE", id, "recorded_at", "invalid command timestamp")
+			}
+		}
+	}
 	prs := map[string]bool{}
 	ps := model.M(ex["prerequisites"])
 	pe := model.M(ex["prerequisite_evidence"])
 	for _, v := range model.A(n["prerequisites"]) {
-		id := model.S(model.M(v)["id"])
+		record := model.M(v)
+		id := model.S(record["id"])
 		prs[id] = true
+		for _, task := range model.Strings(record["task_refs"]) {
+			if _, exists := tasks[task]; !exists {
+				add(&es, "DANGLING_REFERENCE", id, "task_refs", "prerequisite names an absent task: "+task)
+			}
+		}
 		if _, ok := ps[id]; !ok {
 			add(&es, "MISSING_STATE", id, "execution.prerequisites", "prerequisite state missing")
 		}
@@ -382,6 +413,19 @@ func planStructure(d *model.Document) []fault.Error {
 	for id := range pe {
 		if !prs[id] {
 			add(&es, "ORPHAN_STATE", id, "execution.prerequisite_evidence", "unknown prerequisite evidence")
+		}
+	}
+	for id, value := range model.M(ex["prerequisite_observations"]) {
+		record, known := d.Symbols.ByID[id]
+		if !prs[id] && (!known || !record.Retired) {
+			add(&es, "ORPHAN_STATE", id, "execution.prerequisite_observations", "unknown prerequisite observation")
+		}
+		observation := model.M(value)
+		if !nonblank(observation["summary"]) || !nonblank(observation["source"]) {
+			add(&es, "INVALID_OBSERVATION", id, "execution.prerequisite_observations", "observation needs a result and source")
+		}
+		if _, err := time.Parse(time.RFC3339, model.S(observation["recorded_at"])); err != nil {
+			add(&es, "INVALID_DATE", id, "recorded_at", "invalid observation timestamp")
 		}
 	}
 	return es

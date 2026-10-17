@@ -156,7 +156,7 @@ class ContextVerificationBridge(unittest.TestCase):
             "format": "codearbiter.artifact-release/0.1.0",
             "version": "0.1.0",
             "protocol": "codearbiter.artifact-api/0.1.0",
-            "schema_version": "0.3.1",
+            "schema_version": "0.3.2",
             "binaries": {f"{system}/{machine}": {
                 "file": binary.name, "sha256": digest(binary), "native_tested": True,
             }},

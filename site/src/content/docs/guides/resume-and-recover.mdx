@@ -32,17 +32,19 @@ you, but opening an HTML file does not reconcile or approve anything.
 
 | Observed state | What it establishes | Next boundary |
 |---|---|---|
-| Draft spec or draft-preview plan | Content exists, not execution authority | Complete its review/readiness/approval path |
-| `PENDING` task | Work has not been accepted | The engine must still establish eligibility and dependencies |
+| Draft spec or draft-preview plan | Content exists and may be incomplete | Inspect missing requirements and current binding; continue independent authorized work |
+| `PENDING` task | Implementation has not started | Inspect actual dependencies and advisory eligibility before selecting useful work |
 | `IN_PROGRESS` after interruption | Work may have partly executed | Inspect changes and reconcile before redispatch |
-| `REVIEW` | Review-stage work exists | Fresh evidence and the owning scope's acceptance requirements still apply |
+| `REVIEW` | Implementation is ready for review | Inspect actual check results and relevant review needs; the label proves neither |
 | `BLOCKED` | A recorded condition prevents selection | Resolve the named condition; do not clear state merely to retry |
-| `ACCEPTED` | Acceptance was recorded | Check that the associated evidence and bindings are still current |
+| `DONE` | Implementation completion was recorded | Required checks may still be pending or failing; inspect their actual results |
+| `ACCEPTED` | Independent acceptance evidence was recorded | Check its scope, current source and bindings before making that proof claim |
 
-A sprint may continue independent safe work while a task is blocked. Existing bounded recovery
-can try a genuinely different strategy within approved scope, but it cannot invent user authority,
-repeat an exhausted strategy indefinitely, or promote a task by changing a status label.
-An ordinary feature's attended checkpoints remain distinct from sprint authorization.
+Feature and sprint work may continue independent authorized tasks while another task is blocked.
+Bounded recovery can try a genuinely different strategy, but never clears a user stop, invents
+authority or promotes a task by changing a label. Respect an explicitly requested pause; routine
+batch reports do not require acknowledgment. If the same approach fails without new information,
+diagnose differently or retain the bounded blocker instead of retrying indefinitely.
 
 ## Match the diagnosis to the next action
 
@@ -56,18 +58,25 @@ capability report to identify the exact package and platform. Reinstall a qualif
 when that diagnosis calls for it. Do not fetch an arbitrary binary, use a project-supplied engine,
 or set a PATH/environment override to bypass the installation-owned manifest.
 
-### Approval and concurrent changes
+### Binding, explicit attestation and concurrent changes
 
-`DRAFT_BINDING` and `AUTHORITY_UNVERIFIED` concern authority, not a broken installation.
-Return to the existing approval or evidence-capture boundary. Do not fabricate a receipt.
-The [host authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability) distinguishes
-an unavailable adapter from a missing current decision. Reinstalling the engine does not create
-a host adapter that is not implemented.
+Inspect the operation that returned the diagnostic. For ordinary authoring, check the selected
+specification identity and use the native plan-binding workflow when its binding needs updating.
+Draft status and advisory eligibility do not grant or deny the user's existing authorization.
+Structural failures, concurrent-write conflicts and actual missing requirements still need repair.
+
+For an explicit attestation operation, `DRAFT_BINDING` or `AUTHORITY_UNVERIFIED` can indicate missing
+current proof. That claim remains unproved until its applicable evidence boundary succeeds; do
+not fabricate a receipt. The
+[host authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability) distinguishes
+an unavailable adapter from missing evidence. That limitation does not impose an approval-receipt
+gate on ordinary authorized implementation.
 
 After an upgrade, receipt format `0.1.0` remains inspection-only in the current source contract.
-Further authority-bearing transitions require a fresh `0.2.0` attestation from the applicable
-policy-owned boundary. These are receipt formats, not plugin versions. Preserve the old evidence;
-do not relabel a receipt, replay a pasted decision as new authority, or infer approval from chat.
+An explicit attestation claim requires a current `0.2.0` receipt from its applicable policy-owned
+boundary. These are receipt formats, not plugin versions. Preserve old evidence; do not relabel a
+receipt or replay a pasted decision as a newly captured event. Actual user instructions still
+govern ordinary authorized work.
 
 `REVISION_CONFLICT` or `STALE_CURSOR` means a read no longer describes the current definition or
 a contributing record. Reread, reconsider the intended change, and obtain fresh contextual
@@ -83,7 +92,7 @@ make an uncertain outcome worse. `LOCK_BUSY` is not permission to delete lock fi
 For an interrupted host-owned reconciliation, let the adapter recover the exact stored operation
 and receipt. A lost mutation response can require replay of the same durable operation, not a new
 approval event. Cancellation must not clear an in-flight mutation. Verify the committed outcome
-and rerun eligibility before continuing; an observed prompt is not proof the mutation committed.
+and inspect advisory eligibility before continuing; an observed prompt is not proof the mutation committed.
 
 ### Unsupported formats
 
@@ -98,9 +107,10 @@ Ask for the original artifact IDs, format, current revision/binding, any reconci
 the next eligible task or remaining stop. Confirm required tests and reviews refer to the actual
 current change. A successful retry alone does not prove earlier records were preserved.
 
-If authority, capability or transaction outcome remains unknown, leave the work stopped and
-preserve the records. Restore lost governing files from known version-control or transaction
-history through the appropriate recovery path rather than reconstructing approval from chat.
+If a required capability, actual permission or transaction outcome remains unknown, stop the
+dependent action and preserve its records; continue unaffected authorized work where possible.
+Restore lost governing files from known version-control or transaction history through the
+appropriate recovery path rather than fabricating evidence.
 Do not manually edit HTML, receipts, protected task boards or append-only logs.
 
 The [format](/guides/review-artifacts/) and [troubleshooting](/guides/troubleshooting/) guides

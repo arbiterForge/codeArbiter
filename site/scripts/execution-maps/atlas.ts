@@ -15,6 +15,7 @@ import operations from './atlas-data/knowledge-operations.json';
 import brownfield from './atlas-data/brownfield-lifecycle.json';
 import debug from './atlas-data/debug-handoff.json';
 import tribunal from './atlas-data/tribunal-lifecycle.json';
+import assistiveUpdate from './atlas-data/assistive-update.json';
 
 // Original diagram/source links retain REVIEWED_AT. Freshness is separately
 // revalidated against this exact source revision, never whichever HEAD is newest.
@@ -86,6 +87,14 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
   'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
 });
 
+// PR983 is not merely source-compatible with the old permission diagram. Retain
+// that geometry as explicitly historical and attach the bounded implementation
+// delta. Exact tracked owner blobs survive a squash; no moving-main substitution
+// or fabricated host qualification makes the old arrows current.
+export const ASSISTIVE_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze(
+  Object.fromEntries(assistiveUpdate.changes.map(change=>[change.path,change.blob])),
+);
+
 function rootBoundGitEnv():NodeJS.ProcessEnv {
   const env={...process.env};
   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
@@ -121,18 +130,16 @@ export function retainsReviewedChangelog(current:string,reviewed:string):boolean
     current.startsWith(header) && current.endsWith(history) &&
     current.indexOf(boundary)===current.lastIndexOf(boundary);
 }
-export function checkReviewedSource(root:string,path:string,pin?:string):void {
+function currentSource(root:string,path:string,pin?:string):string {
   if(!validSourcePath(path))throw new Error(`Invalid atlas source path: ${path}`);
   // Reject symlinked parents as well as a symlink leaf.
   let absolute=root;
   for(const part of path.split('/')) {absolute=resolve(absolute,part);if(lstatSync(absolute).isSymbolicLink())throw new Error(`Atlas source is a symlink: ${path}`);}
   if(!lstatSync(absolute).isFile())throw new Error(`Atlas source is not a regular file: ${path}`);
   if(pin!==undefined && !/^[0-9a-f]{40}$/.test(pin))throw new Error(`Atlas source changed: ${path}. Use the exact reviewed blob identity.`);
-  const expected=pin??`${REVALIDATED_AT}:${path}`;
-  const current=readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
-  let reviewed:Buffer;
-  try {reviewed=execFileSync('git',['--no-replace-objects','cat-file','blob',expected],{cwd:root,env:rootBoundGitEnv(),stdio:['ignore','pipe','pipe']});}
-  catch{throw new Error(`Atlas needs reviewed Git object ${expected} for ${path}. Do not substitute main.`);}
+  return readFileSync(absolute,'utf8').replace(/\r\n/g,'\n');
+}
+function compareReviewedSource(path:string,pin:string|undefined,current:string,reviewed:Buffer):void {
   // Compare actual reviewed bytes; Git owns object identities, not application crypto.
   if(Buffer.from(current).equals(reviewed))return;
   // Keep explicit pins and every workflow owner byte-strict. Only the root
@@ -141,6 +148,36 @@ export function checkReviewedSource(root:string,path:string,pin?:string):void {
     if(retainsReviewedChangelog(current,reviewed.toString('utf8')))return;
   }
   throw new Error(`Atlas source changed: ${path}. Review affected routes, then intentionally update the review binding.`);
+}
+/** Validate a finite source inventory in one offline Git read. Each call takes a
+ * fresh filesystem snapshot; no process-wide cache can conceal later drift. */
+function checkedSources(root:string,requests:ReadonlyMap<string,string|undefined>):Map<string,string> {
+  const inputs=[...requests].map(([path,pin])=>({path,pin,expected:pin??`${REVALIDATED_AT}:${path}`,current:currentSource(root,path,pin)}));
+  if(!inputs.length)return new Map();
+  let batch:Buffer;
+  try {batch=execFileSync('git',['--no-replace-objects','--no-lazy-fetch','cat-file','--batch'],{
+    cwd:root,env:rootBoundGitEnv(),input:inputs.map(input=>`${input.expected}\n`).join(''),
+    stdio:['pipe','pipe','pipe'],maxBuffer:16*1024*1024,
+  });} catch {throw new Error('Atlas needs reviewed Git objects for its source inventory. Do not substitute main.');}
+  const checked=new Map<string,string>();
+  let offset=0;
+  for(const input of inputs) {
+    const end=batch.indexOf(10,offset);
+    const header=end<offset?null:/^([0-9a-f]{40}) blob (\d+)$/.exec(batch.subarray(offset,end).toString('utf8'));
+    if(!header || input.pin!==undefined && header[1]!==input.pin)
+      throw new Error(`Atlas needs reviewed Git object ${input.expected} for ${input.path}. Do not substitute main.`);
+    const size=Number(header[2]),start=end+1;
+    if(!Number.isSafeInteger(size)||size<0||start+size>=batch.length||batch[start+size]!==10)
+      throw new Error(`Malformed reviewed Git object for ${input.path}`);
+    compareReviewedSource(input.path,input.pin,input.current,batch.subarray(start,start+size));
+    checked.set(input.path,input.current);
+    offset=start+size+1;
+  }
+  if(offset!==batch.length)throw new Error('Unexpected trailing reviewed Git object bytes');
+  return checked;
+}
+export function checkReviewedSource(root:string,path:string,pin?:string):void {
+  checkedSources(root,new Map([[path,pin]]));
 }
 /** Exact recovered maps, not the former grid-card projection. */
 export function originalAtlas():Atlas {
@@ -151,14 +188,25 @@ export function originalAtlas():Atlas {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const checked=new Set<string>();
-  const read=(path:string,pin?:string):string=>{if(!checked.has(path)){checkReviewedSource(root,path,pin??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined));checked.add(path);}return readFileSync(resolve(root,path),'utf8');};
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const requests=new Map<string,string|undefined>([
+    ['core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha],['core/hosts.json',undefined],
+  ]);
+  for(const path of [...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path),
+    ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...atlas.commands.map(command=>`core/surface/commands/${command.name}.md`)
+  ])if(!requests.has(path))requests.set(path,pinFor(path));
+  const checked=checkedSources(root,requests);
+  const read=(path:string,pin?:string):string=>{
+    if(!checked.has(path))checked.set(path,checkedSources(root,new Map([[path,pinFor(path,pin)]])).get(path)!);
+    return checked.get(path)!;
+  };
   const registry=JSON.parse(read('core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha)) as {commands:Record<string,RouteMeta>};
   const hosts=(JSON.parse(read('core/hosts.json')) as {hosts:HostDescriptor[]}).hosts;
   if(JSON.stringify(Object.keys(registry.commands).sort())!==JSON.stringify(atlas.commands.map(c=>c.name).sort()))throw new Error('Atlas catalog coverage changed');
   // Product owners must still match. Site-design pointers are historical
   // integration evidence, not product claims; this PR intentionally changes them.
   for(const s of atlas.sources)if(!s.path.startsWith('site/'))read(s.path);
+  for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS))read(path,blob);
   for(const command of atlas.commands) {
     const meta=registry.commands[command.name];
     if(meta.visibility!==command.visibility || (meta.canonical??command.name)!==command.canonical)throw new Error(`Atlas catalog classification changed: ${command.name}`);
@@ -175,6 +223,10 @@ export function loadAtlas(root=repositoryRoot()):Atlas {
   atlas.lensCount=names.length;
   atlas.scope+=` Original source links and layout retained; source compatibility revalidated at ${REVALIDATED_AT}.`;
   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
+  atlas.sourceUpdate=structuredClone(assistiveUpdate);
+  atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Current assistive source bindings identify inspected implementation bytes, with ${assistiveUpdate.revision} as the committed source base. Live host qualification and release are separate evidence. `+atlas.scope;
+  atlas.caveats=atlas.caveats.map(note=>`Historical snapshot: ${note}`);
+  const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
   return atlas;
 }
 

@@ -14,7 +14,7 @@ import (
 
 const Format = "codearbiter.artifact"
 const FormatVersion = "0.1.0"
-const SchemaVersion = "0.3.1"
+const SchemaVersion = "0.3.2"
 
 type Document struct {
 	Data    map[string]any
@@ -54,8 +54,11 @@ func List(ss ...string) []any {
 	return out
 }
 func Check(v map[string]any) (*Document, error) {
-	if S(v["format"]) != Format || S(v["format_version"]) != FormatVersion || (S(v["schema_version"]) != SchemaVersion && S(v["schema_version"]) != "0.3.0") {
-		return nil, fault.New("UNSUPPORTED_VERSION", "expected codearbiter.artifact 0.1.0 / schema 0.3.0 or 0.3.1")
+	if S(v["format"]) != Format || S(v["format_version"]) != FormatVersion || (S(v["schema_version"]) != SchemaVersion && S(v["schema_version"]) != "0.3.0" && S(v["schema_version"]) != "0.3.1") {
+		return nil, fault.New("UNSUPPORTED_VERSION", "expected codearbiter.artifact 0.1.0 / schema 0.3.0, 0.3.1 or 0.3.2")
+	}
+	if S(v["schema_version"]) != SchemaVersion && HasAssistiveFields(v) {
+		return nil, fault.New("UNSUPPORTED_VERSION", "assistive prerequisite observations and DONE progress require schema 0.3.2")
 	}
 	es := schema.Validate(S(v["kind"]), v)
 	if len(es) > 0 {

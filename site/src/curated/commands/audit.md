@@ -24,11 +24,12 @@ events, so the packet is not wholly a reconstruction of past open state.
 ```
 
 Two tags/SHAs bound an explicit range; `--since <date>` selects a date to HEAD. The command
-also declares `--since-checkpoint` and a checkpoint fallback. The checkpoint writer, however,
-stores a bare override count in `last-checkpoint`, not a commit or date. Require a demonstrated
-resolved commit/time window rather than interpreting that counter as history; use explicit refs
-or a date while this source-contract discrepancy remains. With no usable boundary, the command
-must ask for one.
+uses `--since-checkpoint` to select the report with the latest valid `recorded_at`. Its
+`source_commit` must resolve to a commit and be an ancestor of HEAD; the report supplies the UTC
+time anchor and `worktree_dirty` review-scope limitation. Cite the selected report. Missing or
+invalid anchors require explicit refs or a date. `last-checkpoint` remains an override count,
+not a commit or date, and never supplies the window. Without arguments, use the most recent tag
+to HEAD, then a valid checkpoint fallback; ask for a window if neither is available.
 
 [Auditability](/concepts/auditability/) explains range selection, temporal limits, missing inputs
 and source-by-source packet validation.

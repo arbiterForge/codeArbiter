@@ -286,7 +286,7 @@ class TestArtifactCapabilityDiagnostics(unittest.TestCase):
         client.call.return_value = {
             "binary": "ca-artifact",
             "protocol": "codearbiter.artifact-api/0.1.0",
-            "schema_version": "0.3.1",
+            "schema_version": "0.3.2",
             "platform": "windows/amd64",
             "repository_operations_available": True,
         }
@@ -315,7 +315,7 @@ class TestArtifactCapabilityDiagnostics(unittest.TestCase):
         client.call.return_value = {
             "binary": "ca-artifact",
             "protocol": "codearbiter.artifact-api/0.1.0",
-            "schema_version": "0.3.1",
+            "schema_version": "0.3.2",
             "platform": "unsupported/test",
             "repository_operations_available": False,
         }
@@ -334,7 +334,7 @@ class TestArtifactCapabilityDiagnostics(unittest.TestCase):
         client.call.return_value = {
             "binary": "ca-artifact",
             "protocol": "codearbiter.artifact-api/0.1.0",
-            "schema_version": "0.3.1",
+            "schema_version": "0.3.2",
             "platform": "windows/amd64",
             "repository_operations_available": True,
         }
@@ -356,7 +356,7 @@ class TestArtifactCapabilityDiagnostics(unittest.TestCase):
         client.call.return_value = {
             "binary": "ca-artifact",
             "protocol": "codearbiter.artifact-api/0.1.0",
-            "schema_version": "0.3.1",
+            "schema_version": "0.3.2",
             "platform": "windows/amd64",
             "repository_operations_available": True,
         }

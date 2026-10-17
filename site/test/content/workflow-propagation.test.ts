@@ -1,4 +1,5 @@
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { workflows } from '../../scripts/execution-maps/workflows';
 const read = (path: string) => readFileSync(path, 'utf8');
@@ -33,15 +34,22 @@ describe('C04 cross-surface consistency', () => {
     expect(init).toContain('/diagrams/lane-opt-in.svg');
     expect(init).toContain('alternatives, not consecutive phases');
   });
-  it('documents the real initial-pair transaction separately from feature approval', () => {
+  it('teaches current assistive work and keeps pinned attestation evidence separately scoped', () => {
     const source = read('../core/surface/SPRINT.md');
-    expect(source).toContain('commits approval plus plan binding in one recoverable native transaction.');
+    expect(source).toContain('without a second artifact approval system');
+    expect(source).toContain('does **not** grant arbitrary future scope expansion');
+    const historical = execFileSync('git', ['show', '929229354e3a15ae3002c82116b66c837ab43729:core/surface/SPRINT.md'], {encoding: 'utf8'});
+    expect(historical).toContain('commits approval plus plan binding in one recoverable native transaction.');
     for (const path of ['guides/autonomous-sprints.mdx', 'guides/review-artifacts.md']) {
       const text = read(docs + path);
-      for (const term of ['arm-sprint', 'sprint-approve', 'resume-sprint', 'approve-only', 'delegate-methods']) expect(text).toContain(term);
+      expect(text).toContain('DONE');
+      expect(text).toMatch(/[Ee]xplicit attestation/);
+      expect(text).toContain('exact-head');
+      expect(text).not.toContain('Historical receipt-based workflow');
       expect(text).not.toContain('current typed adapter arms one artifact at a time');
     }
-    expect(read(docs + 'guides/review-artifacts.md')).toContain('An attended feature normally approves');
+    expect(read(docs + 'guides/review-artifacts.md').replace(/\s+/g, ' ')).toContain('without requesting separate artifact approval');
+    expect(read(docs + 'guides/autonomous-sprints.mdx')).toContain('Work runs directly or through useful delegation');
   });
   it('states release dry-run exclusions and the mandatory PR, hosted and receipt boundaries', () => {
     const source = read('../core/surface/skills/release/SKILL.md');
@@ -63,5 +71,34 @@ describe('C04 cross-surface consistency', () => {
     expect(guide).toContain('Remaining Proposed is a valid outcome');
     expect(guide).toContain('legacy-unsealed');
     expect(guide).not.toContain('number is gap-free');
+  });
+  it('keeps ordinary context inspection available without qualified scout ceremonies', () => {
+    for (const path of [
+      `${docs}guides/understand-an-existing-project.md`,
+      `${docs}concepts/workflow-routes.mdx`,
+      'src/curated/skills/context-creation.md',
+      'src/curated/commands/create-context.md',
+      'src/curated/agents/scout.md',
+    ]) {
+      const text = read(path).replace(/\s+/g, ' ');
+      expect(text, path).toContain('optional');
+      expect(text, path).toMatch(/direct|bounded inspection/);
+      expect(text, path).not.toMatch(/six (parallel|isolated) scout|route stops before dispatch|always uses six/);
+    }
+    const refresh = read('src/curated/commands/context-check.md');
+    expect(refresh).toContain('already selects');
+    expect(refresh).not.toContain('full brownfield re-scan from scratch is `/ca:create-context`');
+    const compatibility = read(`${docs}getting-started/compatibility.mdx`);
+    expect(compatibility).not.toContain('context creation blocks without isolated scouts');
+  });
+  it('describes current typed progress without restoring approval or context-ticket prerequisites', () => {
+    const format = read('../docs/artifacts/spec-and-plan-format.md').replace(/\s+/g, ' ');
+    expect(format).toContain('current write schema is `0.3.2`');
+    for (const term of ['`task-context`', '`task-check`', '`DONE`', 'actual user decisions']) expect(format).toContain(term);
+    expect(format).not.toContain('Execution obtains contextual reads and a final delivery ticket');
+    expect(format).not.toContain('passes the existing plan approval gate');
+    const recovery = read('../docs/artifacts/migration-and-recovery.md').replace(/\s+/g, ' ');
+    for (const term of ['context-preview', 'preview_ref', 'preview_sha256', 'forward recovery']) expect(recovery).toContain(term);
+    expect(recovery).not.toContain('until the normal workflow separately obtains and binds current approvals');
   });
 });

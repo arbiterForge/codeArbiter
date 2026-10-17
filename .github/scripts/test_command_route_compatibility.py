@@ -44,10 +44,13 @@ EXPECTED_LEGACY_BODY_SHA256 = {
 
 # The init body includes T-020's bounded passive inspection before the normal
 # scaffold procedure. T-027 adds its refresh pointer inside the additive mode.
+# PR #983 intentionally updates the status body to distinguish DONE progress,
+# verification and actual user stops. AssistiveCallerProjectionTest checks that
+# behavior across all three hosts; routing and additive modes remain unchanged.
 EXPECTED_DEFAULT_BODY_SHA256 = {
     "pr": "068521a57a408bfaa9ca84f8ae6b5ccd5292c81e3030b9a7522add07122a7ad7",
     "init": "14a38ed019243f3998b8f2f37b671b0c792f75f0052e0ef0e897903e2677e8d2",
-    "status": "0888f248ea6848d93201fa96ea167ae9575a55055b5518d58a74b323e6144f80",
+    "status": "5e10b6af44eeb4257329a1dbeeadf83b04e342cbc7e7fdb216b29147d71fd2a9",
 }
 
 NOTICE_RE = re.compile(
@@ -80,7 +83,18 @@ OWNER_OPERATIONAL_SHA256 = {'cleanup': 'bbeed4efed778bb4f6d85149d70772ede5177dc0
 # initialized lock and routing refresh through the existing context-check owner.
 OWNER_OPERATIONAL_SHA256.update({
     'create-context': '84ae53fb9d0ee29103bffa87d8a36d83b4433ba2ca52535b72d0c73ddee13e92',
-    'decompose': 'a39e4078ebfc81e6d83fe961a2570ebb04fd76b72fb6719a9baa7c8501b175d4',
+    'decompose': 'e5952b1ac6cf42a77abbd9048c75a3918d01d413dfa4ff790edb967a688e70a0',
+})
+
+# PR #983 extends the reviewed assistive context lifecycle to initialization and
+# refresh. Keep exact owner fingerprints as well as the historical route and
+# compatibility clocks; test_context_workflow.py checks the new behavior.
+EXPECTED_DEFAULT_BODY_SHA256.update({
+    'init': '3161379ff0803d7c412fdadc9887e2692caf84ae03efd5c23a75461a60b44fc3',
+})
+OWNER_OPERATIONAL_SHA256.update({
+    'create-context': '406291d45c2f8566d91db595d6c4f97ba8324adfadb6fac6778f19e170e015b1',
+    'context-check': '77a8eb3a8500f46ebd158bd97e356c0564f8a8f8baccbfdaad65969490a3b17a',
 })
 
 def command_source(slug: str) -> str:
@@ -198,7 +212,9 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 body = command_body(slug)
                 self.assertEqual(len(NOTICE_RE.findall(body)), 1)
                 if slug in OWNER_OPERATIONAL_SHA256:
-                    self.assertEqual(digest(body.split("## Pre-flight\n", 1)[1]),
+                    heading = ("## 1. Inspect and resume\n" if slug == "decompose"
+                               else "## Pre-flight\n")
+                    self.assertEqual(digest(body.split(heading, 1)[1]),
                                      OWNER_OPERATIONAL_SHA256[slug])
                     if slug in ('cleanup', 'context-check'):
                         self.assertIn("neither stages nor commits", " ".join(body.split()))
@@ -213,7 +229,7 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 if slug == "pr":
                     procedure = body.split("### Open-PR procedure\n", 1)[1]
                     procedure = procedure[procedure.index("1. **Confirm"):].split("\n## Phase 4", 1)[0].strip()
-                    self.assertEqual(digest(procedure), "7c7dc99c1202125e59851396a9c077dcf6b992dddcce28bae1b5b58df52b3b00")
+                    self.assertEqual(digest(procedure), "bad0d9f173db7ef0c7fe5ff9ddb2aed6fc5176a8fd82d59110fe27e75cd51af0")
                     self.assertNotIn("{{PLUGIN_ROOT}}/commands/pr.md", body)
                 else:
                     self.assertEqual(digest(MODES_RE.sub("", body)), expected)

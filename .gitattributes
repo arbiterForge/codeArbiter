@@ -20,10 +20,48 @@ core/artifacts/** text eol=lf
 /.codearbiter/plans/*.html -text
 /.codearbiter/.artifacts/** -text
 
+# Enrolled context pairs bind the writer's exact bytes. Preserve the selected
+# documents, records and cited state sources without normalizing historical
+# content or changing unrelated audit logs and task boards.
+/.codearbiter/CONTEXT.md -text
+/.codearbiter/tech-stack.md -text
+/.codearbiter/coding-standards.md -text
+/.codearbiter/security-controls.md -text
+/.codearbiter/code-map.md -text
+/.codearbiter/.provenance/CONTEXT.json -text
+/.codearbiter/.provenance/tech-stack.json -text
+/.codearbiter/.provenance/coding-standards.json -text
+/.codearbiter/.provenance/security-controls.json -text
+/.codearbiter/.provenance/code-map.json -text
+/.codearbiter/decisions/0004-database-free-stdlib-only-architecture.md -text
+/.codearbiter/decisions/0009-relicense-agplv3-dual-licensing.md -text
+/.codearbiter/decisions/0010-security-gate-pass-cooperative-attestation.md -text
+/.codearbiter/decisions/0019-broker-pi-child-inference-instead-of-projecting-a-credential.md -text
+/.codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md -text
+/.codearbiter/decisions/0043-assistive-state-engine.md -text
+/.codearbiter/open-questions.md -text
+/.codearbiter/release-targets.md -text
+/.codearbiter/specs/pi-support.md -text
+/.github/RELEASE-PROVENANCE.md -text
+
+# The attribute policy is itself a cited source; its checkout stays LF-stable.
+/.gitattributes text eol=lf
+
 # The reviewed structured-artifact reference pair is renderer-verified against
 # its exact generated HTML bytes. A Windows autocrlf checkout must not turn the
 # LF renderer output into CRLF and manufacture RENDER_DRIFT.
 docs/artifacts/design/original-review2/** text eol=lf
+
+# The captured website example compares exact native-rendered HTML bytes against
+# its provenance inventory. LF is part of the evidence, including on Windows
+# autocrlf checkouts; do not normalize at runtime or update hashes to mask it.
+/site/public/examples/saved-searches/specs/*.html text eol=lf
+/site/public/examples/saved-searches/plans/*.html text eol=lf
+
+# Generated docs route SVGs have exact, checked-in source-relative descriptions.
+# Keep output LF-stable on Windows so redraw/diagram audit compares real changes,
+# not CRLF checkout normalization; historical geometry remains source-bound.
+/site/public/diagrams/*.svg text eol=lf
 
 # Reviewed Pi host graphs are hash-bound byte-for-byte and must survive a
 # Windows checkout without newline conversion.

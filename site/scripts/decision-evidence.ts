@@ -2,8 +2,8 @@
 export const evidenceSourceRevision = '6860daa3c974ae32cd9584d3e60e0a51c185a613';
 export const evidenceSources = {
   smarts: { path: 'core/surface/includes/smarts/core.md', quote: 'Step 0 — recorded-intent check' },
-  sprint: { path: 'core/surface/SPRINT.md', quote: 'Decide on EVERY non-hard-gate point **regardless of SMARTS' },
-  methods: { path: 'core/surface/SPRINT.md', quote: 'It can\nchange only existing task `steps`' },
+  sprint: { path: 'core/surface/SPRINT.md', revision: '3a8b6e0d18de66ff7148424bd4864e2409587986', quote: 'Use SMARTS when a genuinely difficult trade-off warrants it' },
+  methods: { path: 'core/surface/SPRINT.md', revision: '3a8b6e0d18de66ff7148424bd4864e2409587986', quote: 'A changed method, verification runner, or task decomposition within the agreed outcome' },
   reconcile: { path: 'core/surface/skills/decision-variance/SKILL.md', quote: 'confirm it back in one sentence, then append the decision' },
   decisionLog: { path: 'core/surface/includes/smarts/decision-log-format.md', quote: 'SHA-256 of the artifact section that defined the artifact' },
   lifecycle: { path: 'core/surface/skills/decision-lifecycle/SKILL.md', quote: '`accepted` means **Accepted/Planned**' },
@@ -14,8 +14,11 @@ export const evidenceSources = {
   override: { path: 'core/surface/commands/override.md', quote: 'MUST write the log line before proceeding' },
 } as const;
 export type EvidenceSource = keyof typeof evidenceSources;
-export const evidenceSourceUrl = (key: EvidenceSource) =>
-  `https://github.com/arbiterForge/codeArbiter/blob/${evidenceSourceRevision}/${evidenceSources[key].path}`;
+export const evidenceSourceUrl = (key: EvidenceSource) => {
+  const source = evidenceSources[key];
+  const revision = 'revision' in source ? source.revision : evidenceSourceRevision;
+  return `https://github.com/arbiterForge/codeArbiter/blob/${revision}/${source.path}`;
+};
 
 export type CellVerdict = 'Strong' | 'Adequate' | 'Weak' | 'Indifferent';
 export interface LensCell { verdict: CellVerdict; reason: string }
@@ -97,7 +100,7 @@ export const auditCases: EvidenceCase[] = [
     example: 'A moderate in-scope choice is logged with its options, rationale, low confidence and recorded-intent citation.',
     supports: 'Which choice the sprint made under its existing authority and which uncertainty deserves follow-up.',
     missing: 'Low confidence is not automatically a hard stop. A log entry cannot widen approved scope or satisfy an unsupported prerequisite.',
-    inspect: 'Check the initial scope, intent, strength-to-confidence mapping and any applicable typed method grant. Review low-confidence entries verbatim.',
+    inspect: 'Check the authorized scope, recorded intent and maintained plan. For a difficult trade-off, inspect its options and strength-to-confidence mapping. Review low-confidence entries verbatim.',
     href: '/concepts/smarts/', source: 'sprint' },
   { id: 'exception', label: 'Sanctioned bypass', record: 'overrides.log',
     example: 'A specific gate exception has a timestamp, BY identity and reason written before the immediate action.',
@@ -127,13 +130,13 @@ export const decisionRoutes = [
       { role: 'Human decision', title: 'Choose explicitly', detail: 'Report-only returns before this step. In reconciliation, the user resolves remaining variances; an already-selected concrete choice is not requested again. A strong recommendation is not decision authority.' },
       { role: 'Skill return', title: 'Append and recommend', detail: 'In reconciliation, append the attributed choice immediately without rewriting history. Recommend downstream work; do not edit project artifacts or code to make the variance disappear.' },
     ], endpoint: 'A read-only report, or a recorded user choice in reconciliation, with downstream recommendations. Replacement ADR authoring and implementation remain separately directed.' },
-  { id: 'sprint', label: 'Autonomous execution', entry: '/ca:sprint', question: 'How can approved work proceed within its boundary?', source: 'sprint' as EvidenceSource,
+  { id: 'sprint', label: 'Autonomous execution', entry: '/ca:sprint', question: 'How can authorized work proceed within its boundary?', source: 'sprint' as EvidenceSource,
     steps: [
-      { role: 'Human approval', title: 'Establish the scope', detail: 'Review the initial specification and plan. Satisfy the actual installed approval requirements; typed method delegation is an additional scoped grant.' },
-      { role: 'Recorded-intent check', title: 'Conform before scoring', detail: 'Follow the highest-ranked applicable decision. Constrained choices carry its citation; silent records allow scoring. A real contradiction surfaces.' },
-      { role: 'Skill → task execution', title: 'Decide within scope', detail: 'Score non-hard-gate choices, including moderate and tied results. Retain tests and scope; a failure requires the original gate to pass after repair.' },
-      { role: 'Retained evidence', title: 'Log and hand off', detail: 'Append each auto-decision with intent and confidence. Genuine security, authority, irreversible-action and merge boundaries still stop.' },
-    ], endpoint: 'Approved work proceeds to the PR handoff, not an autonomous merge. The log is evidence of reasoning, not universal mutation authority.' },
+      { role: 'User intent', title: 'Establish the scope', detail: 'Maintain the specification and plan under existing authorization. Ask only about consequential missing choices and honor explicit review pauses.' },
+      { role: 'Recorded-intent check', title: 'Preserve settled choices', detail: 'Read relevant decisions and constraints. Follow applicable choices; surface a genuine conflict without repeating an answered question.' },
+      { role: 'Skill → task execution', title: 'Decide within scope', detail: 'Use SMARTS for difficult trade-offs when helpful. Maintain methods within the agreed outcome, reuse current evidence, and repair affected failures.' },
+      { role: 'Retained evidence', title: 'Log and hand off', detail: 'Record material decisions and meaningful uncertainty. Preserve actual security controls, user stops, host permissions and delivery boundaries.' },
+    ], endpoint: 'Authorized work proceeds to the PR handoff, not an autonomous merge. The log records reasoning; it does not grant additional authority.' },
 ] as const;
 
 /** Fail malformed teaching data; source-excerpt tests are drift alerts, not semantic proof. */

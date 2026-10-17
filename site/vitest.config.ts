@@ -32,7 +32,7 @@ export default defineConfig({
       provider: "v8",
       include: ["scripts/**/*.ts"],
       exclude: ["scripts/**/*.test.ts"],
-      reporter: ["text-summary", "html"],
+      reporter: ["text-summary", "html", "json-summary"],
     },
   },
 });

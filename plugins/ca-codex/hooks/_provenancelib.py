@@ -650,7 +650,7 @@ def assess_context_provenance(provenance_dir, expected_docs, snapshot,
     """
     result = {"coverage": "incomplete", "identity": "unknown",
               "semantic": "unverified", "verified_fresh": False,
-              "documents": {}, "first_input": {}}
+              "documents": {}, "first_input": {}, "snapshot_current": {}}
     if (not isinstance(provenance_dir, (str, os.PathLike)) or
             type(expected_docs) not in (list, tuple) or
             not expected_docs):
@@ -725,6 +725,8 @@ def assess_context_provenance(provenance_dir, expected_docs, snapshot,
         except Exception:
             return result
         probes = {doc: probe for doc in eligible}
+        result["snapshot_current"] = {
+            doc: probe["source_current"] and probe["targets_current"] for doc in eligible}
         if not probe["source_current"] or not probe["targets_current"]:
             if store_complete and len(eligible) == len(expected_docs):
                 result["coverage"] = "complete"
@@ -732,6 +734,9 @@ def assess_context_provenance(provenance_dir, expected_docs, snapshot,
             for doc in eligible:
                 result["documents"][doc] = "v2_stale"
             return result
+    result["snapshot_current"] = {
+        doc: probe.get("source_current") is True and probe.get("targets_current") is True
+        for doc, probe in probes.items()}
     try:
         files = snapshot["source"]["files"]
         membership = snapshot["source"]["membership"]
@@ -1109,6 +1114,107 @@ def rebaseline(provenance, current_hashes):
 # ---------------------------------------------------------------------------
 # Commit-gate auto-heal selector (AC-13)
 # ---------------------------------------------------------------------------
+
+
+def v2_heal_worklist(staged_paths, provenance, snapshot, assessment):
+    """Select changed v2 claims intersecting staged sources; never authorize writes.
+
+    Use the existing assessor's dependency probe and snapshot. Unknown evidence
+    suspends automatic maintenance for that document, not the commit. Selected
+    claims still need content review and the native paired writer with CAS;
+    replacing their digests through the legacy rebaseline path is unsupported.
+    """
+    result = {"claims": [], "unknown": [], "authorizes_write": False}
+    if (type(staged_paths) not in (list, tuple) or
+            any(not _v2_path(path) for path in staged_paths) or
+            type(provenance) is not dict or type(assessment) is not dict):
+        result["unknown"].append({"document_id": None, "reason": "invalid_inputs"})
+        return result
+    paths = list(dict.fromkeys(staged_paths))
+    if not paths:
+        return result
+    try:
+        from _contextsnapshotlib import _membership_match
+
+        files, members = snapshot["source"]["files"], snapshot["source"]["membership"]
+        targets = snapshot["targets"]
+        states, probes = assessment["documents"], assessment["snapshot_current"]
+        if (any(type(value) is not dict for value in (files, targets, states, probes)) or
+                type(members) is not list):
+            raise ValueError
+        membership = {}
+        for member in members:
+            key = (member["predicate"], tuple(member["scope_paths"]))
+            if key in membership:
+                raise ValueError
+            membership[key] = member
+    except (KeyError, TypeError, ValueError):
+        result["unknown"].append({"document_id": None, "reason": "invalid_snapshot_or_assessment"})
+        return result
+
+    def intersects(evidence, path):
+        if evidence["kind"] == "content":
+            return path == evidence["path"]
+        if not any(scope == "." or path == scope or path.startswith(scope + "/")
+                   for scope in evidence["scope_paths"]):
+            return False
+        predicate = evidence["predicate"]
+        parents = path.split("/")[:-1]
+        return (_membership_match(predicate, path, False) or
+                any(_membership_match(predicate, parent, True) for parent in parents))
+
+    for doc in sorted(set(provenance) | set(states)):
+        record = provenance.get(doc)
+        if (type(record) is dict and record.get("schema") == SCHEMA_VERSION and
+                valid_provenance_record(record)):
+            continue
+        if (not valid_provenance_record(record) or record.get("schema") != V2_SCHEMA_VERSION or
+                record.get("doc") != doc):
+            result["unknown"].append({"document_id": doc, "reason": "record_unknown"})
+            continue
+        candidates = []
+        for field in record["fields"]:
+            for claim in field["claims"]:
+                affected = [path for path in paths
+                            if any(intersects(item, path) for item in claim["evidence"])]
+                if affected:
+                    candidates.append((field, claim, affected))
+        if not candidates:
+            continue
+        if states.get(doc) not in ("v2_current", "v2_stale") or probes.get(doc) is not True:
+            result["unknown"].append({"document_id": doc, "reason": "snapshot_not_current"})
+            continue
+        document = record["document"]
+        target = targets.get(document["path"])
+        if (type(target) is not dict or target.get("status") != "file" or
+                any(target.get(key) != document[key] for key in ("digest_method", "digest"))):
+            result["unknown"].append({"document_id": doc, "reason": "document_preimage_changed_or_unknown"})
+            continue
+        selected, unknown = [], []
+        for field, claim, affected in candidates:
+            changed = []
+            for evidence in claim["evidence"]:
+                current = (files.get(evidence["path"]) if evidence["kind"] == "content" else
+                           membership.get((evidence["predicate"], tuple(evidence["scope_paths"]))))
+                if (type(current) is not dict or
+                        current.get("status", "file") != (
+                            "file" if evidence["kind"] == "content" else "complete") or
+                        current.get("digest_method") != evidence["digest_method"] or
+                        not _sha256(current.get("digest"))):
+                    unknown.append({"document_id": doc, "field_id": field["id"],
+                                    "claim_id": claim["id"], "paths": affected,
+                                    "reason": "evidence_unknown"})
+                    break
+                if current["digest"] != evidence["digest"]:
+                    changed.extend(path for path in affected if intersects(evidence, path))
+            if changed:
+                selected.append({"document_id": doc, "field_id": field["id"],
+                                 "claim_id": claim["id"],
+                                 "paths": [path for path in affected if path in changed]})
+        result["unknown"].extend(unknown)
+        if not unknown:
+            result["claims"].extend(selected)
+    return result
 
 
 def heal_worklist(staged_paths, provenance, current_hashes):

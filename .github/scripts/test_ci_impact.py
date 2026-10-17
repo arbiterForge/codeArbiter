@@ -1895,7 +1895,7 @@ class WorkflowContractTest(unittest.TestCase):
         site_check = jobs["site-check"]
         generate = run_step_index(site_check, "npm run gen")
         typecheck = run_step_index(site_check, "npm run typecheck")
-        tests = run_step_index(site_check, "npm test")
+        tests = run_step_index(site_check, "npm run coverage")
         self.assertGreaterEqual(generate, 0, "site-check never generates applicability")
         self.assertGreater(typecheck, generate, "site-check typechecks before generation")
         self.assertGreater(tests, generate, "site-check tests before generation")
@@ -2940,12 +2940,9 @@ class GateCommandTest(unittest.TestCase):
         "audit": re.compile(r"npm audit\b[^\n]*--audit-level=high"),
     }
 
-    # Deliberately keyed on the canonical phrasing the gates use. Tokens named
-    # only in list form ("run lint, the type-check ..., and coverage, all from
-    # tech-stack.md") are NOT discovered, and that limit is recorded rather than
-    # papered over: widening the pattern to prose-match those would produce
-    # false demanders, which is worse than a known gap.
-    DEMAND = re.compile(r"\b([a-z][a-z-]*) command from `tech-stack\.md`")
+    DEMAND = re.compile(
+        r"\b([a-z][a-z-]*)(?: command from `tech-stack\.md`|"
+        r", coverage, and lint\s+commands in `[^`]*tech-stack\.md`)")
 
     # `site/` is a tested TypeScript tree with no coverage command (issue #514).
     # Named here so the gap is a reviewed decision rather than a scoping accident,
@@ -3216,6 +3213,149 @@ class GateCommandTest(unittest.TestCase):
             leaked, [],
             "a linked worktree's own package.json trees leaked into _tested_trees(): "
             + ", ".join(leaked))
+
+
+class SiteCoverageEvidenceTest(unittest.TestCase):
+    def _job(self):
+        return workflow_jobs(DOCS_WORKFLOW.read_text(encoding="utf-8"))["site-check"]
+
+    def _script(self, step_id):
+        match = re.search(
+            rf"(?m)^        id: {step_id}\n        shell: python\n        run: \|\n"
+            r"(?P<body>(?:          [^\n]*\n)+)", self._job(),
+        )
+        self.assertIsNotNone(match, f"missing executable {step_id} step")
+        return "\n".join(line[10:] for line in match.group("body").splitlines())
+
+    def _execute(self, script, site, temp):
+        import contextlib
+        import io
+        previous = Path.cwd()
+        try:
+            os.chdir(site)
+            with mock.patch.dict(os.environ, {"RUNNER_TEMP": str(temp),
+                                             "GITHUB_SHA": "a" * 40,
+                                             "GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "1",
+                                             "RUNNER_OS": "Linux"}), \
+                    contextlib.redirect_stdout(io.StringIO()), \
+                    mock.patch("subprocess.check_output", side_effect=lambda args, **kw:
+                               "v22.19.0\n" if args[0] == "node" else "a" * 40 + "\n"):
+                exec(compile(script, "docs.yml", "exec"), {})
+        finally:
+            os.chdir(previous)
+
+    def _fixture(self, root):
+        site, temp = root / "site", root / "runner-temp"
+        site.mkdir()
+        temp.mkdir()
+        for relative in ("scripts/model.ts", "scripts/model.test.ts", "test/render.test.ts",
+                         "package.json", "package-lock.json", "vitest.config.ts"):
+            path = site / relative
+            path.parent.mkdir(exist_ok=True)
+            path.write_text(relative, encoding="utf-8")
+        return site, temp
+
+    def _report(self, site):
+        report = site / "coverage/coverage-summary.json"
+        report.parent.mkdir(exist_ok=True)
+        totals = {metric: {"total": 100, "covered": 75, "skipped": 0, "pct": 75}
+                  for metric in ("lines", "branches", "functions", "statements")}
+        report.write_text(json.dumps({"total": totals}), encoding="utf-8")
+        return totals
+
+    def test_existing_suite_runs_once_with_coverage_and_retains_its_report(self):
+        job = self._job()
+        self.assertEqual(re.findall(r"(?m)^        run: (npm (?:test|run coverage))$", job),
+                         ["npm run coverage"])
+        scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
+        self.assertEqual(scripts["coverage"].replace("vitest run --coverage", "vitest run"), scripts["test"])
+        self.assertEqual(scripts["precoverage"], scripts["pretest"])
+        config = (REPO_ROOT / "site/vitest.config.ts").read_text(encoding="utf-8")
+        self.assertRegex(config, r'reporter:\s*\[[^\]]*"json-summary"')
+        self.assertIn('include: ["scripts/**/*.ts"]', config)
+        self.assertIn('exclude: ["scripts/**/*.test.ts"]', config)
+        self.assertNotRegex(config, r"(?m)^\s*thresholds:")
+        self.assertLess(job.index("id: coverage-source"), job.index("run: npm run coverage"))
+        self.assertLess(job.index("run: npm run coverage"), job.index("id: coverage-summary"))
+        artifact = next((step for step in job.split("\n      - ")
+                         if "name: site-coverage-${{ github.sha }}" in step), "")
+        self.assertIn("uses: actions/upload-artifact@", artifact)
+        self.assertIn("if: ${{ !cancelled() }}", artifact)
+        self.assertIn("path: ${{ runner.temp }}/site-coverage", artifact)
+        self.assertIn("retention-days: 5", artifact)
+
+    def test_retained_totals_are_bound_to_actual_inputs_and_report_bytes(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as raw:
+            site, temp = self._fixture(Path(raw))
+            self._execute(self._script("coverage-source"), site, temp)
+            totals = self._report(site)
+            self._execute(self._script("coverage-summary"), site, temp)
+            evidence = temp / "site-coverage"
+            source = json.loads((evidence / "source.json").read_text(encoding="utf-8"))
+            self.assertEqual(source["checkout_sha"], "a" * 40)
+            self.assertEqual(source["runner_os"], "Linux")
+            self.assertEqual(source["inputs"]["scripts/model.ts"],
+                             hashlib.sha256(b"scripts/model.ts").hexdigest())
+            self.assertEqual(source["totals"], totals)
+            self.assertEqual(source["coverage_summary_sha256"],
+                             hashlib.sha256((evidence / "coverage-summary.json").read_bytes()).hexdigest())
+            self.assertEqual((evidence / "coverage-summary.json").read_bytes(),
+                             (site / "coverage/coverage-summary.json").read_bytes())
+
+    def test_missing_or_nonnumeric_required_metric_cannot_be_published_as_complete(self):
+        for invalid in ("missing-report", "missing-branches", "nonnumeric-branches"):
+            with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as raw:
+                site, temp = self._fixture(Path(raw))
+                self._execute(self._script("coverage-source"), site, temp)
+                totals = self._report(site)
+                report = site / "coverage/coverage-summary.json"
+                if invalid == "missing-report":
+                    report.unlink()
+                else:
+                    if invalid == "missing-branches":
+                        del totals["branches"]
+                    else:
+                        totals["branches"]["pct"] = "Unknown"
+                    report.write_text(json.dumps({"total": totals}), encoding="utf-8")
+                with self.assertRaises((SystemExit, FileNotFoundError)):
+                    self._execute(self._script("coverage-summary"), site, temp)
+                self.assertFalse((temp / "site-coverage/coverage-summary.json").exists())
+
+    def test_python_bytecode_cache_is_not_a_coverage_input(self):
+        import py_compile
+        with tempfile.TemporaryDirectory() as raw:
+            site, temp = self._fixture(Path(raw))
+            helper = site / "scripts/helper.py"
+            helper.write_text("value = 1\n", encoding="utf-8")
+            self._execute(self._script("coverage-source"), site, temp)
+            cache = Path(py_compile.compile(str(helper), doraise=True))
+            self.assertTrue(cache.is_file())
+            totals = self._report(site)
+            self._execute(self._script("coverage-summary"), site, temp)
+            source = json.loads((temp / "site-coverage/source.json").read_text(encoding="utf-8"))
+            self.assertIn("scripts/helper.py", source["inputs"])
+            self.assertNotIn(cache.relative_to(site).as_posix(), source["inputs"])
+            self.assertEqual(source["totals"], totals)
+
+    def test_changed_added_or_removed_measured_input_invalidates_source_binding(self):
+        for change in ("edit", "add", "remove", "add-cache-source"):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as raw:
+                site, temp = self._fixture(Path(raw))
+                self._execute(self._script("coverage-source"), site, temp)
+                self._report(site)
+                if change == "remove":
+                    (site / "scripts/model.ts").unlink()
+                elif change == "add-cache-source":
+                    cache = site / "scripts/__pycache__"
+                    cache.mkdir()
+                    (cache / "new.ts").write_text("changed", encoding="utf-8")
+                else:
+                    (site / "scripts" / ("new.ts" if change == "add" else "model.ts")).write_text(
+                        "changed", encoding="utf-8")
+                with self.assertRaisesRegex(SystemExit, "coverage inputs changed"):
+                    self._execute(self._script("coverage-summary"), site, temp)
+                self.assertFalse((temp / "site-coverage/coverage-summary.json").exists())
 
 
 class SiteBrowserDependencyContractTest(unittest.TestCase):
@@ -3736,6 +3876,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "site/src/content/docs/**",
             "site/src/curated/**",
             "tools/build-artifacts.py",
+            "tools/test-artifact-mixed-schema.py",
             "tools/build-host-packages.py",
             "tools/install-artifact-payload.py",
             "tools/generate-artifact-types.py",
@@ -3780,6 +3921,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "site/src/curated/commands/sprint.md",
             "tools/create-artifact-examples.py",
             ".github/scripts/test_artifact_conformance.py",
+            "tools/test-artifact-mixed-schema.py",
             ".github/requirements/artifact-conformance-py314.lock",
         ):
             result = module.evaluate(real_map, [path], hosts())
@@ -3973,6 +4115,16 @@ class ContextImpactClosureTest(unittest.TestCase):
     def shortDescription(self):
         return None
 
+    def _greenfield_step(self, engine):
+        lines = engine.splitlines(keepends=True)
+        starts = [index for index, line in enumerate(lines) if line.startswith("      - ")]
+        steps = ["".join(lines[start:end]) for start, end in
+                 zip(starts, starts[1:] + [len(lines)])]
+        selected = [step for step in steps if
+                    "        run: python .github/scripts/test_greenfield_context.py\n" in step]
+        self.assertEqual(len(selected), 1)
+        return selected[0]
+
     def _assert_context_closure(self, ci, impact):
         jobs = workflow_jobs(ci)
         hooks = jobs["hooks"]
@@ -4007,6 +4159,7 @@ class ContextImpactClosureTest(unittest.TestCase):
             (".github/scripts/_contextverificationlib.py", {"artifact-engine"}),
             (".github/scripts/test_context_native.py", {"artifact-engine"}),
             (".github/scripts/test_context_workflow.py", {"artifact-engine"}),
+            (".github/scripts/test_greenfield_context.py", {"artifact-engine"}),
             (".github/scripts/test_context_host.py", {"hooks"}),
             (".github/scripts/test_context_consumers.py", {"hooks"}),
         ):
@@ -4016,8 +4169,17 @@ class ContextImpactClosureTest(unittest.TestCase):
         for path in (".github/scripts/_contextverificationlib.py",
                      ".github/scripts/test_context_native.py",
                      ".github/scripts/test_context_verification.py",
+                      ".github/scripts/test_greenfield_context.py",
                      ".github/scripts/test_context_workflow.py"):
             self.assertIn(path, paths_filter(ci, "artifacts"))
+        greenfield = run_step_index(engine, "python .github/scripts/test_greenfield_context.py")
+        self.assertGreater(greenfield, run_step_index(engine,
+            'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"'))
+        step = self._greenfield_step(engine)
+        environments = re.findall(r"(?m)^        env:\n((?:          [^\n]*\n)*)", step)
+        self.assertEqual(len(environments), 1)
+        self.assertIn("          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate\n",
+                      environments[0])
         self.assertIn(".github/fixtures/context-onboarding/**", paths_filter(ci, "hooks"))
 
     def test_t043_context_impact_closure_positive_controls(self):
@@ -4025,6 +4187,19 @@ class ContextImpactClosureTest(unittest.TestCase):
             CI_WORKFLOW.read_text(encoding="utf-8"),
             module.load_map(REPO_ROOT / ".github/ci-impact-map.json"),
         )
+
+    def test_greenfield_candidate_binding_negative_controls(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        impact = module.load_map(REPO_ROOT / ".github/ci-impact-map.json")
+        step = self._greenfield_step(workflow_jobs(ci)["artifact-engine"])
+        binding = "          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate\n"
+        self.assertIn(binding, step)
+        for replacement in ("", binding.replace("/artifact-candidate", "/different-candidate")):
+            with self.subTest(binding=replacement or "removed"):
+                changed = ci.replace(step, step.replace(binding, replacement), 1)
+                self.assertIn(binding, workflow_jobs(changed)["artifact-engine"])
+                with self.assertRaises(AssertionError):
+                    self._assert_context_closure(changed, impact)
 
     def test_t043_context_impact_closure_negative_controls(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")

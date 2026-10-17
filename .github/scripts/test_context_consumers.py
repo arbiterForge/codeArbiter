@@ -370,9 +370,9 @@ class TestActorDeliveryReceipts(unittest.TestCase):
         second = selector.prepare_actor_delivery(
             self.packet, **self.args, attempts=[first['attempt']])
         attempts = [first['attempt'], second['attempt']]
-        blocked = selector.prepare_actor_delivery(self.packet, **self.args, attempts=attempts)
-        self.assertEqual(blocked['action'], 'blocked')
-        self.assertEqual(blocked['gap'], 'ACTOR_DELIVERY_UNOBSERVED')
+        advisory = selector.prepare_actor_delivery(self.packet, **self.args, attempts=attempts)
+        self.assertEqual(advisory['action'], 'advisory')
+        self.assertEqual(advisory['gap'], 'ACTOR_DELIVERY_UNOBSERVED')
         for source in ('host-load-event', 'child-input-capture'):
             with self.subTest(source=source):
                 receipt = dict(binding=first['binding'], actor=self.args['actor'],
@@ -383,6 +383,26 @@ class TestActorDeliveryReceipts(unittest.TestCase):
                 self.assertEqual(observed['attempts_used'], 2)
                 self.assertIsNone(observed['attempt'])
                 self.assertIsNone(observed['delivery_text'])
+
+    def test_unknown_epoch_finishes_delivery_without_claiming_observation(self):
+        args = {**self.args, 'host_epoch': None}
+        attempts = []
+        for number in (1, 2):
+            result = selector.prepare_actor_delivery(self.packet, **args, attempts=attempts)
+            self.assertEqual(result['action'], 'deliver')
+            self.assertEqual(result['attempt']['number'], number)
+            attempts.append(result['attempt'])
+        asserted_receipt = dict(binding=result['binding'], actor=args['actor'],
+                                observed=True, source='host-load-event')
+        for _ in range(3):
+            result = selector.prepare_actor_delivery(
+                self.packet, **args, attempts=attempts, receipt=asserted_receipt)
+            self.assertEqual(result['action'], 'advisory')
+            self.assertEqual(result['observation'], 'unknown')
+            self.assertEqual(result['gap'], 'ACTOR_DELIVERY_UNOBSERVED')
+            self.assertEqual(result['attempts_used'], 2)
+            self.assertIsNone(result['attempt'])
+            self.assertIsNone(result['delivery_text'])
 
     def test_receipt_requires_boolean_observation_and_known_source(self):
         first = selector.prepare_actor_delivery(self.packet, **self.args)
@@ -410,6 +430,19 @@ class TestActorDeliveryReceipts(unittest.TestCase):
         self.assertNotEqual(result['binding']['packet_sha256'], first['binding']['packet_sha256'])
         self.assertIn('Updated root instruction', result['delivery_text'])
         self.assertEqual(self.packet['instructions'][0]['text'], 'Root instruction')
+
+    def test_malformed_and_oversize_delivery_packets_are_rejected_without_truncation(self):
+        for mutation in ({'admission': 'approved'}, {'task_paths': []},
+                         {'instructions': 'root instruction'},
+                         {'task_paths': ['../outside']}):
+            with self.subTest(mutation=mutation):
+                with self.assertRaises(selector.SelectionError):
+                    selector.prepare_actor_delivery({**self.packet, **mutation}, **self.args)
+        oversized = {**self.packet, 'payload': 'x' * (96 * 1024)}
+        before = copy.deepcopy(oversized)
+        with self.assertRaisesRegex(selector.SelectionError, '^DELIVERY_PACKET_OVERSIZE$'):
+            selector.prepare_actor_delivery(oversized, **self.args)
+        self.assertEqual(oversized, before)
 
 
 class TestFeatureActorContext(unittest.TestCase):
@@ -538,13 +571,86 @@ class TestFeatureActorContext(unittest.TestCase):
             actor='spec-reviewer', brief='Inspect T-035',
             spec_id='SPEC-BROWNFIELD', plan_id='PLAN-BROWNFIELD',
             task_id='T-035', **inputs)
-        self.assertEqual(stale['action'], 'blocked')
+        self.assertEqual(stale['action'], 'requires_actor_check')
         for bad in ({'actor': 'unknown'}, {'task_id': ''}, {'brief': ''}):
             with self.subTest(bad=bad), self.assertRaises(actor_prompts.PromptRouteError):
                 actor_prompts.compose_feature_actor_input(
                     **{**{'actor': 'backend-author', 'brief': 'Implement T-035',
                           'spec_id': 'SPEC-BROWNFIELD', 'plan_id': 'PLAN-BROWNFIELD',
                           'task_id': 'T-035'}, **bad}, **inputs)
+
+
+class TestActorContextRequirements(unittest.TestCase):
+    @staticmethod
+    def compose(kind, inputs, **requirements):
+        common = dict(actor='backend-author', brief='Check package B', task_id='T-11')
+        if kind == 'feature':
+            return actor_prompts.compose_feature_actor_input(
+                **common, spec_id='SPEC-CONTEXT', plan_id='PLAN-CONTEXT',
+                **inputs, **requirements)
+        if kind == 'fix':
+            return selector.compose_fix_or_test_actor_input(
+                **common, route='fix', caller='fix', bug_origin=TestFixAndTestContext.origin(),
+                **inputs, **requirements)
+        return selector.compose_fix_or_test_actor_input(
+            **common, route='test_change', caller='refactor', **inputs, **requirements)
+
+    def test_provenance_warnings_are_advisory_for_authors(self):
+        for kind in ('feature', 'fix', 'fix_test'):
+            for status in ('v2_stale', 'unknown', 'legacy_unverified', 'missing'):
+                with self.subTest(kind=kind, status=status):
+                    inputs = TestFeatureActorContext.inputs()
+                    inputs['provenance'] = {
+                        'identity': 'stale', 'coverage': 'incomplete',
+                        'documents': {'security-controls': status}}
+                    before = copy.deepcopy(inputs)
+                    result = self.compose(kind, inputs)
+                    self.assertEqual(inputs, before)
+                    self.assertEqual(result['action'], 'requires_actor_check')
+                    self.assertEqual(result['packet']['provenance'], inputs['provenance'])
+                    self.assertTrue(result['packet']['unresolved'])
+
+    def test_named_critical_refs_are_required_and_delivered_to_authors(self):
+        for kind in ('feature', 'fix', 'fix_test'):
+            with self.subTest(kind=kind):
+                inputs = TestFeatureActorContext.inputs()
+                required = ['instruction:AGENTS.md', 'map:packages/a/src',
+                            'constraint:packages/b/AGENTS.md', 'command:packages/b:CMD-B']
+                ready = self.compose(kind, inputs, required_refs=required)
+                self.assertEqual(ready['action'], 'requires_actor_check')
+                self.assertEqual(ready['missing_refs'], [])
+                self.assertEqual(ready['blockers'], [])
+                self.assertIn('"required_refs":', ready['input'])
+                missing = required + ['instruction:missing/AGENTS.md']
+                blocked = self.compose(kind, inputs, required_refs=missing)
+                self.assertEqual(blocked['action'], 'blocked')
+                self.assertEqual(blocked['missing_refs'], ['instruction:missing/AGENTS.md'])
+                self.assertEqual(blocked['blockers'], ['MISSING_CRITICAL_CONTEXT'])
+
+    def test_applicable_constraint_and_instruction_conflicts_still_block(self):
+        for kind in ('feature', 'fix', 'fix_test'):
+            for failure in ('constraint', 'instruction'):
+                with self.subTest(kind=kind, failure=failure):
+                    inputs = TestFeatureActorContext.inputs()
+                    if failure == 'constraint':
+                        inputs['constraints'][1]['status'] = 'unknown'
+                        expected = 'UNRESOLVED_CONSTRAINT'
+                    else:
+                        inputs['effective_instructions'].append({
+                            **inputs['effective_instructions'][0], 'text': 'Conflicting rule'})
+                        expected = 'CONFLICTING_INSTRUCTION'
+                    result = self.compose(kind, inputs)
+                    self.assertEqual(result['action'], 'blocked')
+                    self.assertIn(expected, result['blockers'])
+
+    def test_malformed_required_refs_do_not_drop_requirements(self):
+        for kind in ('feature', 'fix', 'fix_test'):
+            error = actor_prompts.PromptRouteError if kind == 'feature' else selector.SelectionError
+            for refs in (None, 'instruction:AGENTS.md', [''], [42], ['\ud800'],
+                         ['instruction:AGENTS.md'] * 65):
+                with self.subTest(kind=kind, refs=repr(refs)):
+                    with self.assertRaises(error):
+                        self.compose(kind, TestFeatureActorContext.inputs(), required_refs=refs)
 
 
 class TestReviewContextPreservation(unittest.TestCase):
@@ -720,9 +826,12 @@ class TestFixAndTestContext(unittest.TestCase):
         self.assertIn('compose_fix_or_test_actor_input', route)
         self.assertIn('compose_fix_or_test_actor_input', tdd)
         self.assertIn('returned `input`', route)
-        self.assertIn('returned `input`', tdd)
+        normalized_tdd = ' '.join(tdd.split())
+        self.assertIn('For actual delegation, send bounded context to the named actor',
+                      normalized_tdd)
         self.assertIn('named regression', route)
-        self.assertIn('manufacture a failing test', tdd)
+        self.assertIn('do not alter correct production behavior merely to obtain a failure',
+                      normalized_tdd)
 
     def test_t036_fix_and_test_context_negative_controls(self):
         """Unknown origin or caller cannot turn context into implementation authority."""

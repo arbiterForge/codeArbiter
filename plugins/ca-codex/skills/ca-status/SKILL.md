@@ -30,10 +30,19 @@ reset.
 The orchestrator reads and presents:
 
 1. **Stage** — the `stage:` maturity value from `<project-root>/.codearbiter/CONTEXT.md` frontmatter.
-2. **Pipelines** — every slug in `<project-root>/.codearbiter/specs/` and `plans/`, with how
-   far each got: spec awaiting approval, spec approved / no plan, plan in progress (`ACCEPTED` count
-   vs. total from the plan's status column), or complete. An interrupted pipeline is resumable via
-   `$ca-feature` — say so on its line.
+2. **Pipelines** — every slug in `<project-root>/.codearbiter/specs/` and `plans/`, preserving
+   its existing representation. For HTML, use the installed engine's bounded structured reads
+   (`identity`, `index`, symbol-scoped `read`, or `task-context`) through
+   [includes/artifacts.md](../../includes/artifacts.md); do not read rendered markup or execute verification
+   to obtain status. For Markdown, read its actual status ledger without creating a counterpart.
+   Report a spec with no plan, implementation in progress, or implementation complete. Count
+   `DONE` and historical `ACCEPTED` toward implementation completion while retaining their
+   distinct labels. Show verification separately: pending, failed, unknown, or the recorded result
+   and its applicability when available. Completion alone does not establish a passing check,
+   current acceptance, review, or release. Report missing/unreadable state as unknown, not complete.
+   A draft spec or plan is not awaiting permission. Show a genuine unresolved product decision,
+   explicit user checkpoint, or `BLOCKED` stop with its actual reason; status never clears it.
+   An interrupted pipeline is resumable via `$ca-feature` — say so on its line.
 3. **Open tasks** — the in-flight count from `<project-root>/.codearbiter/open-tasks.md`
    (top-level `- ` bullets excluding done `- [x]`; the same `_taskboardlib` count the
    SessionStart hook uses).
@@ -51,8 +60,8 @@ The orchestrator reads and presents:
 Stage:            N
 Branch:           <current branch>
 Pipelines:
-  <slug>          plan 3/7 ACCEPTED — resume with $ca-feature "<slug>"
-  <slug>          spec approved, no plan
+  <slug>          implementation 3/7 complete (2 DONE, 1 historical ACCEPTED); verification unknown — resume with $ca-feature "<slug>"
+  <slug>          spec present, no plan
 Open tasks:       N
 Open questions:   N ([CONFIRM-NN] unresolved)
 Overrides since last checkpoint: N

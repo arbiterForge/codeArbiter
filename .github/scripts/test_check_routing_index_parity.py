@@ -121,8 +121,12 @@ class TestCodexAgentRouteClosure(unittest.TestCase):
         self.assertTrue(any("escape" in error for error in errors), errors)
 
     def test_unsupported_generic_codex_agent_route_fails_closed(self):
+        # The assistive execution workflow no longer carries a compulsory
+        # agent-dispatch route. Exercise the remaining real optional generic
+        # route; a removed ceremony must not be reintroduced to satisfy this
+        # negative-control fixture.
         errors = self._errors_after(
-            "plugins/ca-codex/routines/subagent-driven-development/SKILL.md",
+            "plugins/ca-codex/routines/dispatching-parallel-agents/SKILL.md",
             "../../agents/<name>.md",
             "../../agents/<role>.md",
         )

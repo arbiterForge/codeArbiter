@@ -243,9 +243,10 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(capabilities["repository_context"], {
             "source_present": True,
             "kind_registered": True,
-            "host_default_enabled": False,
-            "qualification": "package-required",
+            "host_default_enabled": True,
+            "qualification": "native-tested-package",
             "mutation_available": True,
+            "permission_model": "host-owned",
         })
         self.assertEqual(capabilities["public_registrations_added"], 0)
         self.assertEqual(PACKAGER.ARTIFACT_PLATFORMS, BUILDER.QUALIFIED_CI_PLATFORMS)
@@ -267,10 +268,10 @@ class PackageTests(unittest.TestCase):
                                  (INSTALLATION / binary_name).read_bytes())
                 installed = ArtifactClient(repository, payload).call("capabilities")
                 self.assertTrue(installed["repository_context"]["kind_registered"])
-                self.assertEqual(installed["repository_context"]["qualification"], "package-required")
+                self.assertEqual(installed["repository_context"]["qualification"], "native-tested-package")
 
     def test_t018_context_kind_package_admission_negative_controls(self):
-        """Installed context remains unavailable; generic artifact routes cannot write it."""
+        """Malformed context requests and generic artifact routes cannot overwrite guidance."""
         repository = self.base / "context-kind-negative"
         context_root = repository / ".codearbiter"
         context_root.mkdir(parents=True)
@@ -282,9 +283,8 @@ class PackageTests(unittest.TestCase):
         client = ArtifactClient(repository, INSTALLATION)
         with mock.patch.object(client, "workflow_preflight", return_value={
                 "resources_available": True, "host": "codex"}):
-            with self.assertRaisesRegex(_artifactlib.ArtifactError,
-                                        "CONTEXT_WORKFLOW_UNAVAILABLE"):
-                client.call("context-evidence-context", {})
+            with self.assertRaisesRegex(_artifactlib.ArtifactError, "INVALID_MODEL: required field absent"):
+                client.call("context-preview", {})
         for operation, request in (
                 ("create", {"operation_id": "context-create-0001",
                             "artifact_id": "CONTEXT-CONTEXT", "kind": "context",

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 import hashlib
+from itertools import islice
 import json
 import os
 from pathlib import Path
@@ -237,6 +238,107 @@ def _load_attempt(root: Path, pending: dict[str, Any]) -> dict[str, Any] | None:
     return value["request"]
 
 
+def _history_records(root: Path, relative: Path):
+    """Read a bounded immutable history directory without following links."""
+    try:
+        directory = _artifactauthoritylib._safe_directory(root, relative, create=False)
+    except FileNotFoundError:
+        return
+    except (OSError, _artifactauthoritylib.AuthorityError) as exc:
+        raise ReconciliationError(f"reconciliation {relative.name} storage is unavailable or unsafe") from exc
+    try:
+        entries = list(islice(directory.iterdir(), 513))
+        if len(entries) > 512:
+            raise ReconciliationError(f"too many historical {relative.name} to inspect reconciliation safely")
+        for entry in entries:
+            if not _approvallib.SHA256_RE.fullmatch(entry.stem) or entry.suffix != ".json":
+                raise ReconciliationError(f"{relative.name} storage contains an unrecognized entry; inspect before retiring")
+            info = entry.lstat()
+            if (not stat.S_ISREG(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400
+                    or info.st_size > 65536):
+                raise ReconciliationError(f"reconciliation {relative.name} is not bounded regular data")
+            fd = _artifactlib._open_pinned_regular(entry)
+            with os.fdopen(fd, "rb") as stream:
+                opened = os.fstat(stream.fileno())
+                if (not stat.S_ISREG(opened.st_mode) or opened.st_size > 65536
+                        or (info.st_dev, info.st_ino) != (opened.st_dev, opened.st_ino)):
+                    raise ReconciliationError(f"reconciliation {relative.name} changed while opening")
+                raw = stream.read(65537)
+            if len(raw) > 65536:
+                raise ReconciliationError(f"reconciliation {relative.name} exceeds its bound")
+            record = _artifactlib._decode(raw)
+            if not isinstance(record, dict) or _digest(_canonical(record)) != entry.stem:
+                raise ReconciliationError(f"stored {relative.name} changed; preserve the pending reconciliation")
+            yield relative / entry.name, record
+    except (OSError, ValueError, _artifactlib.ArtifactError) as exc:
+        raise ReconciliationError(f"reconciliation {relative.name} storage is unreadable or unsafe") from exc
+
+
+def _reply_observation_matches(observed: dict[str, Any], pending: dict[str, Any]) -> bool:
+    return (observed.get("format") == _artifactauthoritylib.OBSERVATION_FORMAT
+            and observed.get("kind") == "reconciliation"
+            and observed.get("producer_profile") == "host-user-prompt/0.1.0"
+            and observed.get("subject") == {
+                "artifact_id": pending["artifact_id"], "record_id": pending["target_id"],
+                "normative_sha256": pending["identity"].get("normative_sha256"),
+            }
+            and isinstance(observed.get("producer_result"), dict)
+            and observed["producer_result"].get("prompt_sha256") == pending["prompt_sha256"])
+
+
+def _published_reply_observed(root: Path, pending: dict[str, Any]) -> bool:
+    """A captured reply is not unanswered even if its attempt was not saved."""
+    return any(_reply_observation_matches(record, pending)
+               for _, record in _history_records(root, _artifactauthoritylib.OBSERVATION_DIR))
+
+
+def _recover_captured_request(root: Path, client: Any, pending: dict[str, Any]) -> dict[str, Any]:
+    """Recover only the original immutable user event; never manufacture one."""
+    try:
+        binding = _artifactpromptlib.binding(root, "reconciliation", pending["artifact_id"])
+    except _artifactpromptlib.PromptRouteError as exc:
+        raise ReconciliationError("captured reconciliation route is unavailable or unsafe") from exc
+    if binding != _digest(_canonical(pending)):
+        raise ReconciliationError("pending reconciliation changed after arming")
+    observations = {
+        path.as_posix(): record
+        for path, record in _history_records(root, _artifactauthoritylib.OBSERVATION_DIR)
+        if _reply_observation_matches(record, pending)
+    }
+    if not observations:
+        raise ReconciliationError("no in-flight reconciliation or observed reply to recover")
+    payload = {"input_sha256": pending["input_sha256"], "assessment": pending["assessment"]}
+    if pending["operation"] == "task-reconcile":
+        payload.update(task_sha256=_artifactauthoritylib._engine_digest(pending["record"]),
+                       target_state=pending["target_state"])
+    sources = []
+    for path, event in _history_records(root, SOURCE_DIR):
+        reference = event.get("observation_ref")
+        observed = observations.get(reference) if isinstance(reference, str) else None
+        if (observed is not None
+                and event.get("format") == _artifactauthoritylib.EVENT_FORMAT
+                and event.get("kind") == "reconciliation"
+                and event.get("authority_kind") == "user_workflow"
+                and event.get("verdict") == "reconciled"
+                and event.get("subject") == observed["subject"]
+                and event.get("observation_sha256") == Path(event["observation_ref"]).stem
+                and event.get("payload") == payload
+                and isinstance(event.get("source_text"), str)
+                and _digest(event["source_text"].encode("utf-8")) == pending["prompt_sha256"]):
+            sources.append({"source_ref": path.as_posix(), "source_sha256": path.stem})
+    if len(sources) != 1:
+        raise ReconciliationError("captured reconciliation source is missing or ambiguous; preserve pending state")
+    # The native reader validates the original source/observation/context and
+    # reuses its content-addressed receipt. No host event or source is created.
+    captured = client.call("capture-observation", sources[0])
+    receipt = captured.get("receipt") if isinstance(captured, dict) else None
+    if not isinstance(receipt, str) or not receipt.startswith(".codearbiter/.artifacts/receipts/"):
+        raise ReconciliationError("capture returned no valid reconciliation receipt")
+    request = _mutation_request(pending, receipt)
+    _write_attempt(root, pending, request)
+    return request
+
+
 def _current(client: Any, artifact_id: str, target_id: str) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     identity = client.call("identity", {"artifact_id": artifact_id})
     snapshot = client.call("snapshot", {"artifact_id": artifact_id})
@@ -386,6 +488,8 @@ def _cancel_reconciliation_unlocked(root: Path, artifact_id: str, prompt: str) -
         raise ReconciliationError("cancellation prompt does not match the armed request")
     if _load_attempt(root, pending) is not None:
         raise ReconciliationError("in-flight reconciliation must be retried or recovered, not cancelled")
+    if _published_reply_observed(root, pending):
+        raise ReconciliationError("observed user reconciliation must be retried or recovered, not cancelled")
     try:
         binding = _artifactpromptlib.binding(root, "reconciliation", artifact_id)
     except _artifactpromptlib.PromptRouteError as exc:
@@ -397,6 +501,65 @@ def _cancel_reconciliation_unlocked(root: Path, artifact_id: str, prompt: str) -
     return {"artifact_id": artifact_id, "cancelled": True}
 
 
+def supersede_unanswered_reconciliation(
+    root: str | Path, artifact_id: str, *, reason: str,
+) -> dict[str, Any]:
+    """Retire an unanswered legacy prompt without a user approval code.
+
+    This only discards an unanswered armed question. A published reply or a
+    durable execution attempt must remain available for retry/recovery: never
+    turn uncertain work into an uncommitted result by deleting its marker.
+    Real task BLOCKED state, original receipts and actual user decisions are
+    not changed by this call.
+    """
+    if (
+        not isinstance(reason, str) or not reason.strip()
+        or len(reason.encode("utf-8")) > 2048
+        or not isinstance(artifact_id, str) or ID_RE.fullmatch(artifact_id) is None
+    ):
+        raise ReconciliationError("a valid artifact and bounded nonblank supersession reason are required")
+    # Match existing reconciliation entrypoints: macOS /var may resolve through
+    # the system /private/var alias. Inspect the canonical path with the shared
+    # trusted-directory validator rather than rejecting that platform alias.
+    # This still rejects an unsafe final directory, unreadable path or reparse
+    # point, and all pending/attempt/route checks remain unchanged.
+    requested = Path(root).absolute()
+    try:
+        info = requested.lstat()
+    except OSError as exc:
+        raise ReconciliationError("reconciliation root is unavailable or unsafe") from exc
+    # Allow macOS's *parent* /var -> /private/var alias after canonicalization,
+    # but never accept a symlink or Windows reparse point as the selected repo
+    # itself. This is stricter than the older legacy arm/cancel entrypoints.
+    if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+        raise ReconciliationError("reconciliation root cannot be a linked or reparse directory")
+    root = _artifactlib._trusted_directory(requested.resolve(strict=True), "UNSAFE_ROOT")
+    with _reconciliation_lock(root, artifact_id):
+        pending = _load(root, artifact_id)
+        if _load_attempt(root, pending) is not None:
+            raise ReconciliationError("in-flight reconciliation must be retried or recovered, not superseded")
+        if _published_reply_observed(root, pending):
+            raise ReconciliationError("observed user reconciliation must be retried or recovered, not superseded")
+        try:
+            binding = _artifactpromptlib.binding(root, "reconciliation", artifact_id)
+        except _artifactpromptlib.PromptRouteError as exc:
+            raise ReconciliationError("reconciliation route is unavailable or unsafe; inspect before retiring") from exc
+        if binding != _digest(_canonical(pending)):
+            raise ReconciliationError("pending reconciliation and registered prompt binding differ")
+        # The validated marker represents an unanswered question; no captured
+        # reply or attempt exists. This does not certify a decision or change state.
+        # Receipt, observation and source history remain in their owning stores.
+        _pending_path(root, artifact_id).unlink()
+        _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
+        return {
+            "artifact_id": artifact_id, "target_id": pending["target_id"],
+            "original_operation": pending["operation"],
+            "superseded": True, "disposition": "unanswered_prompt_superseded",
+            "reason": reason.strip(), "mutation_attempted": False,
+            "authority_granted": False,
+        }
+
+
 def cancel_orphaned_reconciliation(root: str | Path, artifact_id: str) -> dict[str, Any]:
     """Recover a complete pending marker stranded before route registration."""
     root = Path(root).resolve(strict=True)
@@ -404,6 +567,8 @@ def cancel_orphaned_reconciliation(root: str | Path, artifact_id: str) -> dict[s
         pending = _load(root, artifact_id)
         if _load_attempt(root, pending) is not None:
             raise ReconciliationError("in-flight reconciliation must be retried or recovered, not cancelled")
+        if _published_reply_observed(root, pending):
+            raise ReconciliationError("observed user reconciliation must be retried or recovered, not cancelled")
         try:
             binding = _artifactpromptlib.binding(root, "reconciliation", artifact_id)
         except _artifactpromptlib.PromptRouteError as exc:
@@ -420,13 +585,13 @@ def cancel_orphaned_reconciliation(root: str | Path, artifact_id: str) -> dict[s
 
 
 def recover_reconciliation(root: str | Path, client: Any, artifact_id: str) -> dict[str, Any]:
-    """Replay a durable attempt; clear it only after a proven commit or non-commit."""
+    """Recover a captured reply/attempt; clear only a proven commit or non-commit."""
     root = Path(root).resolve(strict=True)
     with _reconciliation_lock(root, artifact_id):
         pending = _load(root, artifact_id)
         request = _load_attempt(root, pending)
         if request is None:
-            raise ReconciliationError("no in-flight reconciliation to recover")
+            request = _recover_captured_request(root, client, pending)
         try:
             result = client.call(pending["operation"], request)
             transaction = result.get("transaction") if isinstance(result, dict) else None

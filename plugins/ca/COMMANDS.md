@@ -38,8 +38,8 @@ loads only when that route is invoked. Never bulk-read the directory.
 
 | Command | Argument | Purpose |
 |---|---|---|
-| `/ca:feature` | `"description"` | Approve a spec and plan, then build test-first. This is the entry to new behavior. |
-| `/ca:sprint` | `["goal"] [--farm]` | Run one approved spec through plan-to-PR execution with SMARTS-scored decisions. `--farm` is an off-by-default Feature Forge preview that requires `FARM_API_KEY`. |
+| `/ca:feature` | `"description"` | Clarify the agreed outcome, maintain its spec and plan, and build test-first within the authorized scope. This is the entry to new behavior. |
+| `/ca:sprint` | `["goal"] [--farm]` | Maintain the agreed spec and plan, execute authorized work, and report actual checks and material decisions. `--farm` is an off-by-default Feature Forge preview that requires `FARM_API_KEY`. |
 | `/ca:fix` | `"bug description"` | Prove a confirmed defect with a failing regression test, then make the smallest fix. |
 | `/ca:refactor` | `"surface and motivation"` | Restructure behind behavioral parity proven by unchanged pre-existing tests. |
 | `/ca:chore` | `<docs\|deps\|revert> …` | Route non-behavioral work through type-scaled gates. |

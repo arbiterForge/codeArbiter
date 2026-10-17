@@ -72,6 +72,7 @@ on:
       # required native-host contract even when a change touches no plugin.
       - "docs/artifacts/**"
       - "tools/build-artifacts.py"
+      - "tools/test-artifact-mixed-schema.py"
       - "tools/artifact-coverage.py"
       - "tools/install-artifact-payload.py"
       - "tools/generate-artifact-types.py"
@@ -417,6 +418,7 @@ jobs:
               - 'site/src/content/docs/**'
               - 'site/src/curated/**'
               - 'tools/build-artifacts.py'
+              - 'tools/test-artifact-mixed-schema.py'
               - 'tools/artifact-coverage.py'
               - 'tools/build-host-packages.py'
               - 'tools/install-artifact-payload.py'
@@ -447,6 +449,7 @@ jobs:
               - '.github/scripts/test_context_verification.py'
               - '.github/scripts/test_context_native.py'
               - '.github/scripts/test_context_workflow.py'
+              - '.github/scripts/test_greenfield_context.py'
               - '.github/requirements/artifact-conformance.in'
               - '.github/requirements/artifact-conformance-py314.lock'
               # Auto-release consumes this exact-head package cohort. A
@@ -584,6 +587,32 @@ jobs:
         run: python .github/scripts/test_context_workflow.py
       - name: Build native qualified candidate
         run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
+      - name: Verify protected greenfield population with the candidate
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_greenfield_context.py
+      - name: Check out the fixed pre-assistive compatibility source
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 045c0812888f20f4c843677cfb37b802e2084770
+          path: .artifact-legacy
+          sparse-checkout: core/artifacts
+          persist-credentials: false
+      - name: Build the schema 0.3.1 compatibility client
+        if: matrix.os == 'ubuntu-24.04'
+        working-directory: .artifact-legacy/core/artifacts
+        env:
+          GOTOOLCHAIN: local
+          GOPROXY: "off"
+          GOSUMDB: "off"
+        run: go build -trimpath -buildvcs=false -o "${{ runner.temp }}/artifact-legacy" ./cmd/ca-artifact
+      - name: Verify two-client upgrade, complete restore and forward recovery
+        if: matrix.os == 'ubuntu-24.04'
+        run: >-
+          python tools/test-artifact-mixed-schema.py
+          --old "${{ runner.temp }}/artifact-legacy"
+          --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
       - name: Generate review examples with the native candidate
         run: >-
           python tools/create-artifact-examples.py

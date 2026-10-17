@@ -1,147 +1,110 @@
-# Tech stack — codeArbiter (the framework repo itself)
+# Tech stack — codeArbiter
 
-The canonical commands the commit gate and reviewers run in THIS repo. Mirrors
-`.github/workflows/ci.yml` — if the two ever disagree, CI is authoritative and
-this file is the stale one; fix it here.
+This is the command and toolchain guide. Versions below describe source inputs;
+installed hosts, passing CI, coverage results, and published packages require
+their own evidence. Owning manifests, workflows, ADRs, and the release registry
+remain authoritative when a pin changes.
 
-## Stack
+## Components and runtime
 
-- **Canonical shared source** (`core/pysrc/`, `core/surface/`) — these directories
-  are the canonical shared source for stdlib-only Python enforcement logic and
-  markdown templates. Generators materialize this internal kernel into host packages;
-  `core/` is not published as a separate runtime package.
-- **Claude Code adapter** (`plugins/ca/`) — native hooks, commands, skills, agents,
-  and the Node 20 farm dispatcher under `plugins/ca/tools/`. Hooks are Python 3,
-  stdlib only; the dispatcher is TypeScript tested with Vitest and ships built
-  `farm.js`.
-- **Codex adapter** (`plugins/ca-codex/`) — Codex manifest and hook shims plus
-  generated skills and packaged resource charters. Published releases from 0.7.5
-  contain the complete charter set for host-provided thread dispatch. The hosted
-  static package gate verifies release bytes, resource closure, and dispatch routes.
-  These charters are not native Codex plugin-agent registrations.
-- **Pi adapter** (`plugins/ca-pi/`) — generated Python/policy payload plus its thin
-  TypeScript host extension and supervised child-process boundary.
-- **Infrastructure sibling** (`plugins/ca-sandbox/`) — isolated exploration tools;
-  it is not part of the governance kernel.
-- **Structured-artifact engine** (`core/artifacts/`) — dependency-free Go 1.27.1
-  binary, configured for native testing on required Ubuntu, Windows and macOS CI
-  cells. Current local evidence covers Windows and WSL Linux; hosted exact-head
-  Linux/macOS results remain pending. Its
-  reference-conformance harness uses Python 3.14 only with the complete hashed,
-  wheel-only graph in `.github/requirements/artifact-conformance-py314.lock`;
-  those packages are CI review tooling and are not shipped runtime dependencies.
-  User-facing behavior and recovery boundaries are recorded in
-  `docs/artifacts/spec-and-plan-format.md` and
-  `docs/artifacts/migration-and-recovery.md`. A clean-commit native-Windows pilot
-  bound to the exact release manifest and binary covered draft rejection,
-  synthetic approval binding, process-recreation reconciliation and redispatch,
-  review receipts, atomic scope acceptance and exact-byte legacy rollback. That
-  remains fixture proof, not a production-host authority trace. New full-lane
-  feature and sprint work defaults to typed HTML from a qualified installed
-  payload; existing Markdown authority remains exact-format. HTML farm use
-  remains disabled pending its separate authority/release/model qualifications.
-- **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure. Release publication additionally derives `@arbiterforge/ca-codex` from the exact qualified cohort, verifies exact npm integrity and provenance, and cold-installs that exact version through a real Codex marketplace before advancing the protected public channel.
+| Component | Source and runtime |
+|---|---|
+| Shared hooks and bridges | `core/pysrc/`, Python 3 standard library only; generated into the three governance plugins by `tools/sync-core.py`. |
+| Shared instructions | `core/surface/`, Markdown projected using `core/hosts.json` by `tools/build-surface.py`. |
+| Native artifact engine | `core/artifacts/`, dependency-free Go module pinned to Go 1.27.1; installation-pinned native payload, bounded JSON bridge, file-backed HTML/Markdown artifacts. |
+| Claude farm | `plugins/ca/tools/`, strict TypeScript, Node >=20.6, esbuild, Vitest; committed built `farm.js`. |
+| Pi adapter | `plugins/ca-pi/tools/`, strict TypeScript, Node >=22.19, esbuild, Vitest; trusted runtime plus isolated child and parent inference broker. |
+| Docker sandbox | `plugins/ca-sandbox/tools/`, strict TypeScript and Node >=20.6; Docker container path, installed nixpacks where available, generated-Dockerfile fallback. |
+| Documentation | `site/`, Astro 7/Starlight with TypeScript, Vitest and Playwright; static output consumes curated prose, generated resources, and the separately owned Academy source. |
 
-## Runtime and Git support boundary
+The canonical shared source forms an internal kernel boundary, not a separately published
+Python/npm runtime. The root npm manifest is generated from the Pi package;
+edit `plugins/ca-pi/package.json` and regenerate it. The Pi package is public;
+the build/test tool packages and site are private.
 
-- Hook and linked-worktree support is same-runtime: Windows with Git for Windows
-  and its bundled hook shell, native Linux, or native macOS. The checkout and its
-  linked worktrees must be created and used by that runtime's Git.
-- CI exercises the current runner Python 3 and Git on Windows, Ubuntu, and macOS.
-  Direct Windows hook evidence also covers CPython 3.10, 3.12, and 3.14, plus
-  primary and linked worktrees with Git for Windows 2.55.0. This is measured host
-  evidence, not a claim that every Python minor or Git build has been tested.
-- ADR lifecycle proof requires Git 2.45.0+ with `--no-lazy-fetch` on all three
-  governance hosts and in this repository's lifecycle checker. Every proof read
-  retains that flag; failed reads probe the same executable's flag capability
-  without reading a repository. Unsupported capability produces an actionable
-  upgrade prerequisite, never an unprotected retry or implicit object fetch.
-- The selected Git binary owns `core.hooksPath` parsing through
-  `rev-parse --git-path hooks`; codeArbiter does not reinterpret Git path grammar.
-  It must also provide `git hook run` for doctor's harmless managed `pre-push`
-  live-fire probe.
-- Same-runtime linked worktrees include Git's native absolute and relative
-  worktree-admin pointers under the default `<main>/.git/worktrees` layout.
-  The selected Git binary must confirm both the absolute admin directory and
-  common directory, and both linked and reported-main checkouts must own real
-  `CONTEXT.md` files that independently satisfy the canonical activation parser,
-  before codeArbiter resolves the shared primary marker root.
-  `git init --separate-git-dir` worktrees are
-  outside this marker-root contract; storage without that governed identity
-  falls back locally.
-- A live Git for Windows 2.55.0 probe resolved a default-layout primary and
-  linked worktree through a localhost UNC share after one-shot `safe.directory`
-  trust, while the untrusted form failed closed. This does not promote every
-  remote SMB server or ownership policy to a supported cell.
-- WSL is not a separately verified named cell for general use — a WSL-hosted
-  Git operating a repository or linked worktree is not part of the CI matrix,
-  and nothing here claims WSL Git itself is qualified. Narrower and measured
-  (ADR-0038, closing #684/#686/#683): the git-level hook registry
-  (`.git/codearbiter-hooksd/`) and its generated pre-commit/pre-push shim now
-  translate between the three known spellings of an absolute path on a
-  Windows drive letter — Windows-native, Git-Bash/MSYS, and WSL drvfs — so a
-  registry or trusted-identity entry written by one of Windows Git, Git Bash,
-  or a WSL-hosted process resolves regardless of which of those three then
-  reads it, both at the Python diagnostic layer and in the real generated
-  shim. This is a bounded, finite grammar translation, not a general
-  host-layout search, and it does not weaken ADR-0014's fail-closed contract:
-  a spelling that resolves under none of the three known forms still blocks.
-  Test evidence: `plugins/ca/hooks/tests/test_git_hooks.py`
-  (`TestCrossHostPathFormResolution`, `TestInstallTwoPhaseWriteAtomicity`,
-  `TestInstallDoesNotChurnAcrossEquivalentHostSpellings`) and
-  `plugins/ca/hooks/tests/test_doctor.py` (`TestCheckGitHookBackstop`'s
-  WSL-spelling and host-scoping cases), on Windows with Git for Windows'
-  bundled Git-Bash shell — not a live WSL runtime. Git Bash remains the
-  Windows hook shell and is not equivalent to WSL; this translation is what
-  lets the two interoperate over one shared registry, not a claim that they
-  are the same shell.
+Native schema writes use 0.3.2 and reads support the declared 0.3.0/0.3.1/0.3.2
+formats. Format identity and API protocol identity are separate from schema
+version. ADR-0043 makes scheduling/progress assistive: ordinary authorized work
+does not need approval codes, completion receipts, or delivery tickets. Reported
+checks are distinct from assessed evidence. Stable IDs, bounded reads, real
+stops, relevant freshness, revision checks, safe writes and recovery remain.
+Current contracts live in `core/artifacts/internal/model/`, `schemas/`,
+`internal/operations/`, and `docs/artifacts/`; no database or ORM is introduced.
 
-## Pi adapter
+## Host and platform boundaries
 
-`plugins/ca-pi/tools/` is strict TypeScript on Node 22.19 or newer, tested with
-Vitest and built with esbuild. The dependency-free Git package ships a parent
-extension, an enforcement-only child extension, and a Windows supervisor.
-Python 3 remains required for the shared core.
+Claude, Codex and Pi projections differ according to `core/hosts.json`, with
+adapter payloads at `plugins/ca/`, `plugins/ca-codex/` and `plugins/ca-pi/`.
+Codex resource charters support host dispatch; they are not native plugin-agent
+registrations. The external Pi runtime is a test/install input, never a
+checked-in or runtime dependency of this package. The supported promotion version is exact Pi 1.1.0.
+The accepted Pi support record and promotion targets own that version;
+`core/hosts.json` binds its skill-expansion fingerprint. Upgrading it requires
+the owning promotion checks. The `latest` compatibility probe is nonblocking;
+it does not expand the supported version set.
 
-The external Pi runtime is a test and install input, never a checked-in or
-runtime dependency. The supported promotion version is exact Pi 1.1.0.
+Published releases from 0.7.5 record complete Codex resource-charter packaging
+in the adapter changelog. Current static package checks verify resource closure
+and dispatch routes; historical packaging does not prove a current live session.
 
-## Test
+Windows uses native Windows Git/Python; Linux/macOS use native tools. Git owns
+config parsing and hook execution. The default worktree geometry is supported;
+separate-Git-dir, UNC, and WSL combinations are not universally qualified by a
+single successful probe. ADR-0038's bounded WSL path translation does not expand
+the general platform matrix. ADR lifecycle proof reads require Git 2.45.0+ with
+`--no-lazy-fetch`. Preserve normal trust and safe.directory behavior.
 
-The contributor loop follows the shared
-[`verification-boundary`](../plugins/ca/includes/verification-boundary.md): run
-the commands below that cover the changed paths and obligations before commit.
-GitHub Actions runs the exhaustive impact-selected, cross-platform matrix for
-the pull request, and the exact-head merge-readiness aggregate must pass before
-merge. A local failure still blocks; this section is a command catalog, not a
-requirement to replay the entire hosted matrix on a contributor's machine.
+CI owns six native platform cells: Linux, Windows and macOS on amd64/arm64.
+Source pins include Python 3.14, Node 22.19 and Go 1.27.1 for native packaging;
+other jobs select their own versions in `.github/workflows/ci.yml`. A local
+Windows result is not a substitute for those cells or an actual installed-host
+exercise. Docker integration and browser suites have their own prerequisites;
+report missing prerequisites and skips accurately.
 
-```sh
-# Codex packaged-resource and static candidate schemas
-python .github/scripts/test_codex_skill_resources.py
+## Test and build commands
 
-# Canonical command registry, host projection, compatibility, and discovery guards
+Run checks appropriate to changed behavior and dependencies. CI remains the
+exhaustive exact-head validation owner; this list does not require every suite
+for every local prose edit. Accepted verification boundaries in
+`core/surface/includes/verification-boundary.md` remain in force.
+
+From the repository root:
+
+```text
+python tools/sync-core.py --check
+python tools/build-surface.py --check
+python tools/build-host-packages.py --check
+python tools/generate-artifact-types.py --check
+python .github/scripts/check-plugin-refs.py
+python .github/scripts/check_routing_index_parity.py
 python .github/scripts/test_build_surface.py
 python .github/scripts/test_host_descriptors.py
-python .github/scripts/check_command_route_release_state.py declarations
-python .github/scripts/test_command_route_release_state.py
-python .github/scripts/test_command_route_compatibility.py
-python .github/scripts/test_badge_consistency.py
 python .github/scripts/test_command_catalog.py
-
-# Workflow trust separation and exact CI impact routing
+python .github/scripts/test_command_route_compatibility.py
+python .github/scripts/test_artifact_surface.py
+python .github/scripts/test_persona_composition.py
+python .github/scripts/test_mode_surface.py
 python .github/scripts/test_ci_impact.py
-
-# Published-tag original receipts, closed legacy epoch, and reconciliation boundary
 python .github/scripts/test_tag_immutability.py
 python .github/scripts/test_tag_publication_receipt.py
 python .github/scripts/test_reconcile_tag_receipt.py
+python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
+```
 
-# Cross-host coverage identity/provenance (requires the Pi tools test dependencies)
-python .github/scripts/test_coverage_union.py
+The three tag suites above cover original-publication receipts, the closed
+legacy epoch and append-only reconciliation. They are offline tests, not a live
+tag-inventory check or authority to publish. For the affected subsystem, retain
+the additional named local checks below; this is an impact-selected catalog,
+not a requirement to run all of them for unrelated changes:
 
-# Structured-artifact discovery, producer/workflow behavior, and consumer closure
-python .github/scripts/test_artifact_surface.py
+```text
+# Command declarations, packaged resources and discovery
+python .github/scripts/test_codex_skill_resources.py
+python .github/scripts/check_command_route_release_state.py declarations
+python .github/scripts/test_command_route_release_state.py
+python .github/scripts/test_badge_consistency.py
+
+# Artifact representation, workflow, compatibility adapters and package closure
 python .github/scripts/test_artifact_consumers.py
 python .github/scripts/test_artifact_approval_adapter.py
 python .github/scripts/test_artifact_authoring.py
@@ -149,472 +112,257 @@ python .github/scripts/test_artifact_workflow.py
 python .github/scripts/test_artifact_farm.py
 python .github/scripts/test_artifact_native.py
 python .github/scripts/test_artifact_package.py
-# Run with Python 3.14 in a fresh venv installed from the adjacent hashed lock,
-# matching the wheel-only/no-deps install controls in .github/workflows/ci.yml.
 python .github/scripts/test_artifact_conformance.py
 
-# ADR-0033 accepted/planned lifecycle, immutable bindings, and verified-only export
+# ADR lifecycle, destructive-command registry and security boundaries
 python .github/scripts/test_adr_lifecycle.py
 python .github/scripts/check_adr_lifecycle.py
-
-# ADR-0026/0030 authoritative four-item destructive registry and resident-copy parity
 python .github/scripts/check_destructive_registry.py
-
-# Hook guard decisions — every blocked spelling blocks, every legit one allows
 python .github/scripts/test_hook_guards.py
-
-# Interpreter plumbing — REAL / STUB / PY2 / NONE matrix, host-specific registration
 python .github/scripts/test_hooks_cold_install.py
-
-# /ca:preview helpers — diff-collection + redacting secret-scan (_previewlib)
 python .github/scripts/test_preview_lib.py
-
-# UX-conversion-trio copy — Receipt close, stakes lines, register split (structural)
-python .github/scripts/test_ux_conversion.py
-
-# Cold-miss nudge — nudge_decision, advisory, idle extraction, hook_run integration (O1–O11)
-python .github/scripts/test_prune_nudge.py
-
-# H-14 migration commit-time backstop — detection, producer marker, pre-bash gate (#77)
 python .github/scripts/test_migration_backstop.py
 
-# /ca:metrics trends helper — window tiling, 3 metrics, empty-source safety, read-only
+# Tasks, release, provenance, context injection and mode behavior
 python .github/scripts/test_metrics_lib.py
-
-# task-board lifecycle helper — in-flight count (excludes done), dotted-ID grammar,
-# field parsing, stale-in-progress nudge, oversize degradation (_taskboardlib)
 python .github/scripts/test_taskboardlib.py
-
-# task-board writer + follow-up harvest — next_seq, add_entry, set_state, dedup,
-# the 3 extractors, and promote routing/modes (_taskboardlib)
 python .github/scripts/test_taskwriter.py
-
-# release-skill hardening helpers — last-tag selection (ca-only, pre-release
-# excluded), notes-heading/tag match, release-date consistency, half-finished-
-# publish classifier, the CLI, and the SKILL.md structural wiring (_releaselib)
 python .github/scripts/test_release_lib.py
-
-# A-1.11 release resolution trace — proves the portable-mechanism split
-# (core/pysrc/_releaselib.py + declared release-targets.md) reproduces the
-# pinned pre-change lane's resolved variables for ca and ca-pi, and states
-# the one intended divergence (AC-1.12, pre-release-marker scope). Needs
-# FULL git history and all tags (fetch-depth: 0, fetch-tags: true) — its own
-# preflight fails loudly, not silently, if either is missing.
 python .github/scripts/test_release_trace.py
-
-# commit-gate board-sync chokepoint — Phase 6 board-edit exemption + prose
-# wiring (AC-04..07, ADR-0008); structural SKILL.md/command-doc assertions
 python .github/scripts/test_board_sync.py
-
-# provenance store — write_provenance/read_provenance round-trip, on-disk JSON
-# shape with schema/doc/created/interview_derived/entries[] (_provenancelib)
 python .github/scripts/test_provenancelib.py
-
-# commit-gate provenance auto-heal wiring — Phase 5.5 heal_worklist, re-scout
-# scoped to staged paths only, re-baseline rides work commit, claim-changed to
-# Phase 6 diff-review; Phase 6/7 provenance exemption + staging wiring (AC-14)
 python .github/scripts/test_provenance_wiring.py
-
-# file-scoped-context-injection lib — four-tier map/budget/dedup/index
-# (_readinjectlib): allow_output shape, context assembly, cache round-trip
 python .github/scripts/test_readinjectlib.py
-
-# pre-read hook entry point — governed-file injection, dedup, fail-open, dormancy
-# (pre-read.py): AC-03/09/10/12, miss, and dormant-repo paths
 python .github/scripts/test_pre_read.py
-
-# mode plane core (_modelib) — token matching, marker_root resolution, the
-# asymmetric fail direction, ledger backing, and CONTEXT.md's mode vocabulary
 python .github/scripts/test_modelib.py
-
-# composed persona — safety-core anchors, their ordering, precedence over every
-# mode body, and §N citation resolution in all three modes
-python .github/scripts/test_persona_composition.py
-
-# prompt-seam interceptor (prompt-submit.py) — deterministic flip with no model
-# turn, per-host envelopes, dedup, and the compaction-generation bump
 python .github/scripts/test_prompt_submit.py
-
-# startup emitters (session-start.py) — persona removed, eight composable
-# emitters, per-mode selection, golden fixture with explicit-flag regeneration
 python .github/scripts/test_startup_emitters.py
-
-# mode readers — statusline badges/red-shift, arbiter state, _STALE_FLOWS both
-# arms, and the override counter's exclusion of mode rows
 python .github/scripts/test_mode_readers.py
-
-# mode compaction seam — the mode survives a compaction; an unvouched or corrupt
-# anchor clears to arbiter rather than retaining a gates-off posture
 python .github/scripts/test_mode_compaction.py
-
-# mode surface + docs coverage — no surface or published doc still references a
-# deleted command; the curated site prose has no other gate comparing it
-python .github/scripts/test_mode_surface.py
-
-# plugins/ca/hooks/tests/ — the hook enforcement + helper logic unittest suite
-# (statusline, _ledgerlib, guards, etc.); run in CI via unittest discover
-python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
+python .github/scripts/test_prune_nudge.py
+python .github/scripts/test_ux_conversion.py
+python .github/scripts/test_coverage_union.py
 ```
 
-For the first commit of the two-commit ADR acceptance protocol, create the
-worktree-local, content-bound transition packet with
-`.github/scripts/prepare_adr_acceptance.py`. It binds the exact HEAD and staged
-index, accepted ADR bytes, decision-log append, sealed obligation set, expiry,
-and independent reviewer identity. The two lifecycle commands above recognize
-only that exact pending transition locally; explicit-revision, export,
-clean-tree, and GitHub-event validation remain strict. After the source commit,
-stage its acceptance binding immediately, run both mandatory lifecycle commands,
-and commit that sole ledger append through the commit gate. Only after the
-binding commit succeeds, clear the packet with
-`python .github/scripts/prepare_adr_acceptance.py --clear`.
-Legacy `baseline` bindings remain closed to the original migration snapshot
-`10d9b012d91681498bdf911dd82ffa28e112407f`; later commits cannot acquire
-legacy status instead of using this acceptance protocol.
+Artifact conformance runs with Python 3.14 in a fresh environment installed
+from its adjacent hashed lock, using the workflow's wheel-only/no-deps controls.
+The release trace requires full Git history and all tags; an absent prerequisite
+is an explicit failure, not permission to claim the trace passed. Cross-host
+coverage-union tests require the Pi tools dependencies below.
 
-Only when `plugins/ca/tools/**` changed:
+The ADR acceptance protocol is independent of ordinary task progress. Its first
+commit uses `.github/scripts/prepare_adr_acceptance.py` to create a worktree-local
+transition packet bound to the exact HEAD/index, accepted ADR bytes, decision-log
+append, sealed obligations, expiry and independent reviewer identity. Only that
+exact pending transition is admitted locally; explicit-revision, export,
+clean-tree and GitHub-event validation remain strict. After the source commit,
+stage its acceptance binding, run both lifecycle commands above and commit that
+sole ledger append through the commit owner. Clear the packet with
+`python .github/scripts/prepare_adr_acceptance.py --clear` only after that commit
+succeeds. Legacy `baseline` bindings remain closed to the original migration
+snapshot `10d9b012d91681498bdf911dd82ffa28e112407f`; later commits cannot acquire
+legacy status instead of the acceptance protocol.
 
-```sh
-cd plugins/ca/tools
-npm ci
-npm run typecheck
-npm test
-npm run build          # then: git diff --quiet -- farm.js  (stale build blocks)
+Run Python syntax compilation for changed canonical modules. Shared hook tests
+are maintained in `plugins/ca/hooks/tests/`; `.github/scripts/` owns additional
+contract/integration suites. Artifact/context adapters, provenance, task-board,
+release, host-platform and security changes require their corresponding named
+suites. Read current workflows and tests instead of copying dated suite counts.
+
+From `core/artifacts/`:
+
+```text
+go test -buildvcs=false ./...
+go vet -buildvcs=false ./...
 ```
 
-Only when `plugins/ca-sandbox/tools/**` changed (the ca-sandbox sibling plugin, ADR-0007):
+From the root, build into a fresh output directory:
 
-```sh
-cd plugins/ca-sandbox/tools
-npm ci
-npm run typecheck
-npm test                # docker-gated suites run serially (fileParallelism off); needs a Docker engine
-npm run build           # then: git diff --quiet -- sandbox.js  (stale build blocks)
+```text
+python tools/build-artifacts.py --output <output-directory>
+python .github/scripts/test_artifact_cli.py --coverage-output <coverage-profile>
+python tools/test-artifact-mixed-schema.py --old <old-binary> --candidate <candidate-binary>
 ```
 
-ca-sandbox's docker-gated tests build real ephemeral containers (and on Windows drive nixpacks via the
-WSL bridge), so they need Docker available and are slower; they self-skip when `docker info` fails.
+Artifact integration suites may use `ARTIFACT_TEST_INSTALLATION` to select an
+already-built candidate. This avoids redundant builds; it does not manufacture
+installed-host or release evidence. The mixed-schema drill uses disposable
+fixtures and preserves complete-store rollback/export, including later work
+and retained stops.
 
-When `plugins/ca-pi/**`, `core/**`, or the Pi package generators changed:
+| Working directory | Install and checks |
+|---|---|
+| `plugins/ca/tools/` | `npm ci`, `npm run typecheck`, `npm test`, `npm run build`; `npm run coverage` for coverage. |
+| `plugins/ca-sandbox/tools/` | Same commands; Docker-dependent tests require Docker and must report any skips. |
+| `plugins/ca-pi/tools/` | `npm ci --ignore-scripts`, `npm run typecheck`, `npm test`, `npm run build`; `npm run coverage` for coverage. |
+| `site/` | `npm ci`, `npm run typecheck`, `npm test`, `npm run build`, `npm run link-audit`; `npm run coverage` for coverage. |
 
+When Pi source, shared core or Pi package generators change, install the tools
+dependencies before invoking the platform aggregate or its fixture subprocesses.
 The Pi tools install is an aggregate prerequisite: `npm --prefix plugins/ca-pi/tools ci --ignore-scripts`.
+Missing Vitest is a missing prerequisite, not a passing or silently skipped
+platform result. From the repository root:
 
-```sh
+```text
 npm --prefix plugins/ca-pi/tools ci --ignore-scripts
 npm --prefix plugins/ca-pi/tools run typecheck
 npm --prefix plugins/ca-pi/tools test
 npm --prefix plugins/ca-pi/tools run build
-python tools/sync-core.py --check
-python tools/build-surface.py --check
-python tools/build-host-packages.py --check
 python .github/scripts/test_pi_package.py
 python .github/scripts/test_pi_parity.py
 python .github/scripts/test_public_pi_docs.py
+python .github/scripts/test_pi_platform_contract.py --fixtures-only
 ```
 
-The platform aggregate is `python .github/scripts/test_pi_platform_contract.py
---fixtures-only`. A supported-version run adds `--pi-version 1.1.0` after
-installing that exact external Pi version from its reviewed host lock with
-scripts disabled. CI owns the Windows/macOS/Linux matrix.
+A supported-version aggregate adds `--pi-version 1.1.0` after installing that
+exact external Pi version from its reviewed host lock with scripts disabled.
+CI owns the supported Windows/macOS/Linux matrix. Fixture-only success does not
+establish a live runtime or another platform; report unavailable cells as such.
 
-## Lint / typecheck
+Site scripts own generation through pre-hooks. `npm test` also runs Academy
+non-root-base and rendered-release checks. Rebuilt tracked bundles and generated
+resources must match their owners; do not hand-edit output to pass parity.
 
-- Python hooks: no linter is configured. The floor is a syntax check —
-  `python -m py_compile plugins/ca/hooks/<file>.py` for any touched hook.
-- TypeScript: `npm run typecheck` in `plugins/ca/tools` (only when tools changed).
+Site browser publication validation belongs to `.github/workflows/docs.yml`,
+not the routine contributor or commit-gate loop. Local unit/build/link checks
+do not require browser installation or a browser run. The hosted gate uses
+Chrome already supplied by the GitHub runner image, records the observed version,
+and acquires no browser, ffmpeg or OS dependencies. The npm lockfile does not
+authenticate those browser bytes, and no fixed hosted Chrome version is claimed.
+A failed browser gate blocks Pages artifact publication; PR validation stays
+read-only and the separately authorized deploy job owns publication permissions.
+
+The native artifact browser job in ci.yml is a separate qualification boundary:
+it renders the native candidate's examples and runs their offline review checks
+under the named hosted environment. This does not turn browser setup into a
+universal local requirement. A specifically required, authorized local host or
+device canary follows verification-boundary.md and retains its own environment
+and scope; it cannot substitute for the owning hosted publication gate.
 
 ## Coverage
 
-Coverage profiles are declared per source tree under the shared
-`core/surface/includes/maturity-coverage.md` policy:
+These source-tree bindings retain the maintainer-approved language-specific
+profiles of 2026-09-26. The shared policy is
+`core/surface/includes/maturity-coverage.md`; every required metric must clear
+the stage threshold, currently 70% at stage 2. Changing a profile, narrowing
+production scope or excluding source to obtain a pass requires an explicit
+user decision; ordinary maintenance does not re-request the existing approval.
 
-| source tree | profile |
-|---|---|
-| `plugins/ca/tools` | `lines-branches` |
-| `plugins/ca-pi/tools` | `lines-branches` |
-| `plugins/ca-sandbox/tools` | `lines-branches` |
-| `site/` | `lines-branches` |
-| `core/artifacts/` | `go-native` |
+| source tree | profile | Production scope and exclusions | Supported measurement hosts |
+|---|---|---|---|
+| `plugins/ca/tools` | `lines-branches` | Top-level `*.ts`; excludes `*.test.ts` and `*.config.ts`. | Ubuntu + Windows union. |
+| `plugins/ca-pi/tools` | `lines-branches` | `src/**/*.ts`; tests outside src are not production scope. | Ubuntu + Windows union. |
+| `plugins/ca-sandbox/tools` | `lines-branches` | Top-level `*.ts`; excludes `*.test.ts`, `*.config.ts`, `__fixtures__/**`. | Ubuntu with Docker. |
+| `site/` | `lines-branches` | `scripts/**/*.ts`; excludes `scripts/**/*.test.ts`. Astro src components are covered by build/link/browser checks, not this numeric report. | Ubuntu. |
+| `core/artifacts/` | `go-native` | All production packages with `-coverpkg=./...`, including packages reached through other packages' tests; unit plus instrumented executable integration profiles. | Linux, Windows and macOS, each amd64 + arm64. |
 
-The maintainer approved language-specific metrics on 2026-09-26; the maturity
-thresholds are unchanged. All profiles retain the shared critical-path outcome
-tests and focused mutation checks. Python's documented no-tooling surface below
-remains separately governed by the existing exemption.
+TypeScript's tool is Vitest V8, with text-summary and HTML reporters; each tree's
+vitest.config.ts owns the exact include/exclude declaration. Both lines and
+branches must pass. Run the affected tree's command:
 
-One command per TypeScript tree, only when that tree changed:
-
-```sh
+```text
 npm --prefix plugins/ca/tools run coverage
 npm --prefix plugins/ca-pi/tools run coverage
 npm --prefix plugins/ca-sandbox/tools run coverage
 npm --prefix site run coverage
 ```
 
-Each prints a text summary and writes an html report to that tree's `coverage/`
-(gitignored — run output, never project state). Scope, provider and reporters
-live in each tree's `vitest.config.ts`.
+Reports live in ignored coverage output directories, not project state. A local
+sandbox run without Docker can self-skip integration suites; required CI uses
+`CA_SANDBOX_REQUIRE_DOCKER=1` so missing Docker cannot erase the required evidence.
+TypeScript's numeric floor is applied by the owning workflow instructions, not
+duplicated in Vitest configuration or claimed as an enforced CI numeric gate.
 
-**The COMMAND is identical on every platform. The REPORT is not** (issue #521).
-The script takes no arguments, so nothing about the invocation varies — but code
-behind a platform fork cannot execute off its own platform, and a single-host
-report scores the other platform's arm as uncovered no matter how well tested it
-is. Measured here: `plugins/ca/tools` reads 66.18% branches on Windows and
-65.35% on Linux, and `exec.ts` alone reads 87.50% against 76.38% — an 11-point
-gap that is entirely `awaitTaskkill` plus the win32 `treeKill` arm on one side
-and the POSIX arm on the other.
+For the two platform-forked trees, coverage_union.py binds source, configuration,
+lockfile and checkout before testing, checks them afterward, then verifies host
+reports and normalizes copies into a fresh merge directory. Vitest merges the
+verified reports. Preserve one identity per source and distinct tree namespaces;
+never average percentages, merge incompatible reports, discard host-specific
+source or invent missing host coverage. Original evidence remains unchanged.
 
-**A quoted figure is the union across a tree's supported hosts**, per tree:
+Native Go measures statements, not lines or branches. The CLI test builds an
+instrumented executable; collection binds production/test/embedded inputs,
+toolchain, platform and profile bytes. Use fresh output paths outside the module:
 
-| tree | forks on platform | union in CI |
-| --- | --- | --- |
-| `plugins/ca/tools` | yes — `exec.ts` on `process.platform` | **ubuntu + windows**, merged |
-| `plugins/ca-pi/tools` | yes — Windows supervisor / process-tree paths | **ubuntu + windows**, merged |
-| `plugins/ca-sandbox/tools` | no | single-host (ubuntu); docker caveat below |
-| `site/` | no | single-host (ubuntu) |
-
-CI produces the union for both forked trees — `[CHECK] | [REPO] | Coverage union`
-for `plugins/ca/tools` and `[CHECK] | [PI  ] | Coverage union` for
-`plugins/ca-pi/tools` — one advisory matrix cell per host writing a vitest
-**blob** report, merged with `vitest --merge-reports`. Before testing,
-`coverage_union.py prepare` binds each host's source, configuration, lockfile,
-and checkout identity; `prepare --check` rechecks those inputs afterward.
-`coverage_union.py verify` validates the host receipts and compatible coverage
-maps, then writes normalized copies into a fresh merge directory. Original
-reports remain unchanged. Missing-host output is explicitly partial; invalid
-evidence cannot be reported as a union.
-
-Vitest alone does not normalize Windows and Linux absolute source paths. The
-earlier same-host disjoint-suite demonstration did not prove cross-host union:
-PR #740 exposed 41 sources counted as 82 files. The behavioral regression now
-requires complementary host coverage to retain one identity per source, while
-preserving legitimately distinct files. Historical figures below are not
-accepted cross-host evidence until remeasured through the verified path.
-
-Each tree's blobs are namespaced `coverage-blob-<tree>-os-<host>`, so one
-tree's merge cannot collect another's. The naive names collided — a `ca-*` glob
-also matches `ca-pi-*` — which would have merged two trees into one figure under
-`ca`'s name, silently and with a plausible number.
-
-Locally, one host's report is a legitimate figure — **name the host** and say the
-other's contribution is missing. The rule and its conditions live in
-`plugins/ca/includes/maturity-coverage.md`; this table is the per-tree half it
-refers to.
-
-**The TypeScript threshold is not encoded in the tooling.** `tdd` Phase 5 and `refactor`
-Phase 2/6 apply it, reading `stage:` from `.codearbiter/CONTEXT.md` against
-`plugins/ca/includes/maturity-coverage.md`. **Lines and branches must both
-clear it**; a report satisfying one and not the other does not pass. Putting the
-number in three `vitest.config.ts` files would fork that single source of truth
-and the copies would drift the first time the stage moves.
-
-Historical baseline at stage 2 (≥ 70%), recorded 2026-07-29 from CI. The two
-platform-forked figures require remeasurement after the cross-host identity
-repair; the other rows are single-host measurements. Each row names its
-measurement scope:
-
-| tree | lines | branches | verdict | host |
-| --- | --- | --- | --- | --- |
-| `plugins/ca/tools` | 76.82% | 73.15% | unverified historical identity merge | ubuntu + windows, before identity repair |
-| `plugins/ca-pi/tools` | 82.51% | 77.10% | unverified historical identity merge | ubuntu + windows, before identity repair |
-| `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears | windows |
-| `site` | 91.29% | 84.85% | clears | ubuntu-equivalent (no platform fork) |
-
-**Historical motivation for union measurement.** #511 drove `plugins/ca/tools`
-against 66.18% branches on Windows and 65.35% on Linux — both below the floor.
-The previously reported merged 73.15% is not current proof that the union clears
-the floor: cross-host file identity must first be verified. Platform-forked
-`exec.ts` code still cannot execute off its own host, which is why a single-host
-figure is not a substitute for the required union.
-
-Two caveats when reading a local report:
-
-- **ca-sandbox self-skips its docker-gated suites** on a host without Docker, so
-  a local number reads lower than required CI's. Compare against a run with
-  `CA_SANDBOX_REQUIRE_DOCKER=1` before concluding that tree regressed.
-- **No CI job enforces the TypeScript coverage floor.** It is an orchestrator gate the skills run, not
-  a required check — deliberately, since wiring a red `ca/tools` into required CI
-  would block every merge on an unrelated backfill.
-
-**`site/` is inside the coverage gate** (#514 / DECISION-0032). It was the one
-tested tree with no command, so `tdd` Phase 5 reached it and took the no-tooling
-exemption on a tree that has 438 real tests — the #507 failure mode, by a
-different door. It now runs vitest 4 like the plugin trees, with
-`@vitest/coverage-v8` pinned to the same exact version (the two are peer-pinned;
-a caret on one and not the other is how they drift apart).
-
-Its coverage `include` is scoped to `scripts/` — the generator, link-audit and
-rehype helpers that the suites actually exercise. Deliberately NOT `src/`: those
-are Astro components rendered at build time and covered by the build plus the
-link audit, so counting them would report a large permanently-dark surface no
-test in this tree was ever meant to reach.
-
-`COVERAGE_EXEMPT` in `.github/scripts/test_ci_impact.py` is now **empty**, and a
-companion test still fails on a stale entry. (It is a CI allowlist for the
-doc-contract test — never the agent-facing exemption, and it cannot be taken in
-place of one.)
-
-One thing that does NOT transfer: `site/` is the only tree here with production
-dependencies (astro, starlight, markdown-remark) and is deliberately off the
-dev-inclusive CVE gate, whose sweep lives in `docs.yml`. Adding a coverage
-provider does not change that posture — the provider is a dev dependency, and
-the audit scope is unchanged.
-
-**Native Go statements** (`core/artifacts/`, profile `go-native`) are collected with the
-pinned Go toolchain and Python standard library. For a local Windows/amd64 run,
-choose new output paths outside the module:
-
-```sh
+```text
 python .github/scripts/test_artifact_cli.py --coverage-output <new-cli-profile>
 python tools/artifact-coverage.py collect --module-root core/artifacts --output <new-native-directory> --expect-platform windows/amd64 --extra-profile <new-cli-profile>
 python tools/artifact-coverage.py summarize --module-root core/artifacts --input <new-native-directory> --expect-platform windows/amd64 --require-integration
 ```
 
-The actual CLI tests build a disposable instrumented executable. The unit run
-uses `-coverpkg=./...` to measure production packages exercised by other packages'
-tests. Collection binds source, tests, embedded inputs, Go version, native
-platform and profile bytes. The union counts each source block once, preserving
-platform-specific files; it never averages host percentages.
-
-The required `artifact-coverage` CI job collects all six GitHub-hosted native
-platforms (Linux, Windows and macOS, each amd64 and arm64), requires executable
-coverage on each, and enforces the current stage-2 **70% statement floor**. Missing,
-duplicate, stale or mismatched inputs fail. With no `--expect-platform` flags,
-`summarize` requires that complete six-platform set. An explicitly selected
-local host is only a local figure. These reports label **statements** and leave
-line and branch coverage unmeasured, as the declared profile requires. A passing
-percentage does not replace the shared critical-path evidence requirements.
-Reconcile the CI floor with the shared maturity table whenever the project stage
-changes; a fixed stage-2 floor cannot qualify a later stage.
+That example is explicitly a Windows/amd64 local figure. Required native CI
+collects all six cells, requires executable integration for every cell, and
+enforces the current 70% statement floor. Missing, duplicate, stale, partial or
+mismatched required reports block the complete verdict. Without selected
+`--expect-platform` options, summarize requires the complete six-platform set.
+Label lines/branches unmeasured, never inferred, zero or passed. Reconcile the
+fixed CI floor with the maturity table if stage changes.
 
 There is **no coverage tooling for the Python hooks or build tools**
 (`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).
-These Python surfaces use direct unittest and behavioral contract checks; the
-TypeScript coverage configurations above do not instrument them. No numeric
-floor exists for those surfaces, so `tdd`
-Phase 5 and `refactor` Phase 2 and Phase 6 all take the **no-tooling exemption**
-— whose conditions live in `plugins/ca/includes/maturity-coverage.md` and are
-NOT restated here. In short: it requires a citation, not an assertion, and the
-sentence above is the passage to quote.
+Those surfaces use direct unittest and behavioral checks, not TypeScript
+instrumentation. The shared maturity policy owns the no-tooling exemption and
+its citation requirements; this sentence identifies the exact exempt surface.
+Go native statements are not the no-tooling exemption.
 
-This paragraph previously read "use the per-symbol direct-test proof alone and
-say so in the phase record" — a local copy of the old, laxer rule, naming only
-`refactor` Phase 2. That is exactly the drift the exemption's single-source rule
-exists to stop: project state was instructing an agent to assert on the one
-surface class in this repo where the exemption actually fires, while the include
-required it to cite. Deferring, rather than restating, is the fix.
+Every profile also retains **critical-path** outcome tests and focused mutation
+checks. For changed critical boundaries, cover approval/rejection, malformed or
+stale inputs, filesystem containment and recovery where applicable. Assert the
+actual boundary outcome; removing or inverting a safeguard must make its focused
+test fail. Missing critical-path evidence blocks even if the numeric floor passes.
+Scope this work to affected obligations and callers, without unrelated expansion.
 
-## Static checks (CI parity)
+Name measured hosts in every reported figure. A scoped local result can be
+PARTIAL under verification-boundary.md; complete exact-head hosted evidence is
+required before merge. Keep measurements in dated reports. Accepted historical
+packets, frozen fixtures, installed-host proof and release receipts retain their
+original identity and scope and cannot be relabelled as current qualification.
 
-```sh
-# Cross-reference graph: every skill/command/agent reference resolves
-python .github/scripts/check-plugin-refs.py
+## Supply chain, publication and retained decisions
 
-# Every tracked JSON manifest parses (plugin.json, .claude-plugin/marketplace.json, hooks.json)
-node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" <file>.json
+`security-controls.md` owns crypto, credentials, network boundaries, approved
+licenses, immutable tags and accepted exceptions. The high-severity audit gate
+includes development dependencies in the three tools projects; the site gate
+uses production dependencies and its exact, expiring approved-advisory file.
+Use `.github/scripts/npm_audit_gate.py` as the hosted owner rather than treating
+a raw audit result as the full exception-aware policy.
+
+Run the dev-inclusive check from each of the three tools directories listed
+above; no production-only flag is used for these build/test dependency graphs:
+
+```text
+npm audit --audit-level=high
 ```
 
-## CVE gate (supply chain)
+From site, use the hosted exception-aware production scope:
 
-**One threshold, `high`, everywhere.** A HIGH-or-worse advisory fails the build
-in every audit gate this repo runs. Two scopes share it, and which one applies
-depends on whether the graph's *output* is the product:
+```text
+npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high
+```
 
-| graph | workflow / job | production deps today | scope audited |
-| --- | --- | --- | --- |
-| `plugins/ca/tools` | `ci.yml` — `tools` | none | production **and dev** |
-| `plugins/ca-sandbox/tools` | `ci.yml` — `ca-sandbox-tools` | none | production **and dev** |
-| `plugins/ca-pi/tools` | `ci.yml` — `ca-pi-checks` | none | production **and dev** |
-| `site` (docs site) | `docs.yml` — `site-check`, which `deploy` needs | astro, starlight, markdown-remark | production |
+The pinned, redacted gitleaks CI scan is read-only and network-free for candidate
+content, covering the selected tree/PR range. Only exact literal allowlist
+entries are accepted. The local staged scan and commit-time crypto/secret
+markers are separate controls, not substitutes for each other.
 
-- `npm audit --omit=dev --audit-level=high` — the production gate, run on all
-  four graphs. On `site` it is the live gate: that is the only graph declaring
-  production dependencies. On the three tools graphs it audits an empty graph
-  and is purely a *durability* setting, deciding what happens the day one of
-  them takes on a runtime dependency.
-- `npm audit --audit-level=high` — the dev-inclusive gate (issue #434), run on
-  the three `plugins/*/tools` graphs. Every package in those trees is a dev
-  dependency, and they are the ones that build `farm.js`, `sandbox.js`, and the
-  ca-pi extension bundles — committed, shipped artifacts. A build-time
-  compromise there lands in a reviewed artifact, so "dev dependency"
-  understates the blast radius when the dev dependency's output is the product.
+For the local convenience sweep, this command checks the staged diff without
+printing possible credentials. Exit 0 means no pattern hit, 1 requires inspection,
+and 2 means the Git read failed. It is deliberately broader than the authoritative
+shared SECRET_RE classifier and does not mint a security-pass marker:
 
-`site`'s dev tree is deliberately not on the dev-inclusive gate: its build
-output is a static site republished from source on every deploy, not a committed
-binary artifact carried into consumers' repositories.
+```text
+python -c 'import re,subprocess,sys; r=subprocess.run(["git","diff","--cached","--no-ext-diff","--no-textconv","--unified=0","--"],capture_output=True); code=2 if r.returncode else int(bool(re.search(rb"api[_-]?key|token|secret|password|private[_-]?key|passphrase|credential|BEGIN.*PRIVATE|AKIA|ghp_|sk-ant",r.stdout,re.I))); print({0:"No staged credential-pattern match",1:"Potential staged credential pattern; inspect locally without logging secrets",2:"Staged diff could not be read"}[code]); sys.exit(code)'
+```
 
-This enforces the supply-chain posture described in `security-controls.md`.
+`.codearbiter/release-targets.md` declares four release series. Only `ca` is
+eligible for the repository-wide Latest badge. Governance package publication
+belongs to the hosted qualified cohort, not a local fallback build. Pi root
+manifest generation, npm provenance, registry ownership and credential handling
+follow release workflows. Published tags are immutable; corrections get new
+versions. Preserve the closed legacy publication ledger and its evidence grades.
 
-**What the threshold actually buys, honestly.** Three of the four graphs above
-declare no production dependencies at all, so `--omit=dev` audits an empty graph
-in those jobs and the threshold there is inert at any value — it is a
-*durability* setting that decides what happens the day one of them takes on a
-runtime dependency. The one live graph is `site`, and until issue #403 nothing
-audited it: #400's three HIGH advisories all lived in `site/package-lock.json`,
-which is why the site gate is the part of this change with immediate effect. The
-threshold was lowered from `critical` to `high` across all four so a single rule
-covers the repo — not because the farm or sandbox audits would have caught #400.
-They would not have seen it.
-
-**What issue #434 found, and how the dev gate was proven.** Measured in
-`plugins/ca/tools`, `npm audit --json` reported `{prod: 1, dev: 104}` — the
-single prod entry being the root package itself — and one **HIGH** advisory,
-GHSA-r28c-9q8g-f849 (`postcss` ≤ 8.5.17, arbitrary `.map` file disclosure via
-source-map auto-loading). The `--omit=dev` gate reported **zero vulnerabilities
-against the vulnerable lockfile and against the fixed one alike**, at any
-threshold. The advisory surfaced only because dependabot happened to file the
-bump on a sibling graph — luck, not a control.
-
-The dev-inclusive gate was proven against that exact known-vulnerable state
-rather than only against a clean one: run on the pre-fix `plugins/ca/tools`
-lockfile (postcss 8.5.15) it exits 1 and names the advisory, where the
-production gate exits 0. All four graphs pass both applicable gates today.
-
-## Secrets scan
-
-The gate is three-layered — one hosted backstop plus two cooperative local
-layers:
-
-1. `ci.yml`'s `secret-scan` job (issue #404): gitleaks' full default ruleset,
-   run as a required check for the `ci-passed` merge gate. The scanner is pinned
-   by image digest and runs in a network-isolated, read-only container over a
-   read-only mount. This is the only layer a bot, a fork, a web edit, or a plain
-   `git push` cannot skip — the two below run only inside a contributor's local
-   session. It scans in **two modes**, because each is blind to what the other
-   catches: `gitleaks dir` over the merge-result tree (what would land on main),
-   and, on a pull request, `gitleaks git --log-opts <merge-base>..HEAD` over the
-   PR's own commits. Without the second, a credential added in one commit and
-   deleted in the next passes green and still reaches main's history under a
-   merge or rebase merge, both of which this repo allows. Findings print with
-   `--redact --verbose`, so a red job names the file, line, rule, and commit
-   while the secret itself stays `REDACTED`.
-
-   Its allowlist (`.gitleaks.toml`) waives individual fake fixture literals by
-   value, never a file path — a `paths` waiver drops the whole file from the
-   scan — and every waiver is anchored `\A<literal>\z`. The anchoring is the
-   load-bearing part: gitleaks substring-matches allowlist regexes, so an
-   unanchored literal waives every secret that merely contains it, and no choice
-   of `regexTarget` fixes that. `.github/scripts/test_ci_impact.py` enforces both
-   rules, and the `secret-scan` job re-runs that contract itself, so a path-filter
-   edit can never leave the allowlist unguarded.
-2. Manual sweep of the staged diff for credential patterns
-   (`api[_-]?key|token|secret|password|private[_-]?key|passphrase|credential|BEGIN.*PRIVATE|AKIA|ghp_|sk-ant`),
-   case-insensitive. This is the convenience layer; the authoritative classifier
-   is `_hooklib.SECRET_RE`, pinned against the farm redactor by the shared
-   `hooks/secret-detection-corpus.json`, which also matches a secret keyword as
-   the trailing segment of a compound name (e.g. `FARM_API_KEY = "..."`).
-3. The plugin's own enforcement hooks: H-09b (crypto/TLS) and H-10b (secrets)
-   block any commit whose diff touches a crypto or secret line until a diff-bound
-   security-gate pass marker covers those exact lines (`hooks/security-pass.py`).
-
-## Release invariants
-
-- Any change under `plugins/ca/**` on an already-tagged version must bump
-  `plugins/ca/.claude-plugin/plugin.json` `version` — `claude plugin update`
-  no-ops on an unchanged version string (CI job `version-bump` enforces).
-- Version rides in three places; keep them in sync: `plugin.json`, the README
-  version badge, and a dated `CHANGELOG.md` section.
-- `ca-pi` releases independently as `ca-pi-v<version>`. The nested
-  `plugins/ca-pi/package.json` is the version source; regenerate the root
-  `package.json`, update `plugins/ca-pi/CHANGELOG.md`, and keep both manifests
-  synchronized. Distribution is the pinned Git tag (reproducible channel) plus
-  the CI-published `npm:@arbiterforge/ca-pi` package on every `ca-pi-v*` tag
-  (ADR-0029; published by `.github/workflows/release.yml`, ADR-0040).
+Feature Forge `--farm` remains preview, explicit opt-in and off by default under
+the user decision recorded 2026-09-16 in open-questions.md and the owning farm
+include. That decision reset qualification and did not enable typed-HTML farm
+projection. Preserve that separate integration/qualification boundary until its
+actual completion and promotion evidence is recorded.

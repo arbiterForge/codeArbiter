@@ -10,8 +10,8 @@ reviewed migration remains required.
 
 Select one matching legacy specification and implementation plan. Preserve both
 files' exact bytes and hashes. A plan-shaped Markdown file with the same basename
-is not sufficient proof that the pair is related or that its specification was
-approved.
+is not sufficient proof that the pair is related or that any recorded decision
+was actually authorized.
 
 Build candidate typed models plus a complete, nonoverlapping line-disposition
 map for each source file. Every source line must map to a new record/field or be
@@ -38,10 +38,25 @@ task evidence.
    one live legacy member beside one live HTML member as successful execution
    state.
 
-The new pair is `DRAFT`, and `authority_verified` remains false until the normal
-workflow separately obtains and binds current approvals. Old approvals and task
-statuses are not transferred. Legacy reading remains available for repositories
-that have not been explicitly converted.
+The new pair is `DRAFT`, and `authority_verified` remains false. Already-authorized
+work can continue through ordinary task progress without obtaining artifact
+approvals. Old approval labels and task statuses are preserved as historical
+provenance, not transferred into current verified evidence. Legacy reading
+remains available for repositories that have not been explicitly converted.
+
+## Schema upgrades and mixed history
+
+The current writer uses schema `0.3.2` and reads historical `0.3.0`/`0.3.1`
+documents without relabeling them. Before a selected upgrade, preserve the whole
+`.codearbiter/` store, including journals, provenance, observations and historical
+receipts, along with the relevant worktree changes. A copy of only the visible
+spec and plan is not a complete recovery point.
+
+Use a matching installation-pinned runtime and inspect exact artifact identities.
+An old client must refuse newer state it cannot interpret. If newer edits exist,
+keep them and use forward recovery; restoring an old snapshot over them would
+discard work. Historical approvals remain historical, and neither a package
+upgrade nor a successful replay creates new authority or verification.
 
 ## Recovery model
 
@@ -63,15 +78,24 @@ transaction is reconciled.
 
 ## Repository-context source upgrade and recovery
 
-The repository-context writer is a separate, bounded kind in the artifact
-engine. Its canonical outputs remain human-readable Markdown. A selected
-document may acquire a version 2 per-document provenance record only after
-the writer has checked its current document and provenance bytes, selected
-owned fields, and received the workflow's review evidence. Other documents
-remain in their existing format and retain their exact bytes. A supported
-field update preserves the initialization marker and all unowned Markdown;
-task, question, audit and other independently owned files are outside this
-writer's transaction.
+The repository-context writer keeps canonical human-readable Markdown and a
+source-bound version 2 provenance record for each selected content document.
+Ordinary authorized refresh uses `context-preview` and `context-apply` with the
+returned `preview_ref` and `preview_sha256`; no approval receipt, scout profile
+or actor ticket is required. Initial finalization uses `context-finalize-preview`
+and the same apply path. An initialized refresh never repeats finalization.
+
+Use `create` for a genuinely absent document, explicit `adopt` for supported
+missing/v1 provenance, and `update` for a managed v2 pair. Bind current document
+and provenance byte identities, the selected content and current source evidence.
+The preview is inert; inspect its proposed change before applying. The writer
+rechecks those identities under its lock, retains a historical provenance
+preimage on adoption and writes the selected document/provenance pair together.
+A selected whole-document replacement must preserve the user-owned content that
+was not authorized for replacement. Unsupported shapes or stale identities
+refuse without raw-edit fallback. Task, question, audit, release and ADR history
+remain with their own writers. Hash equality does not certify semantic truth;
+ordinary provenance remains unreviewed unless actual review evidence exists.
 
 An interrupted context write leaves a journal for explicit `recover`. Retry
 with the same operation ID and input after a lost response. Completing or
@@ -88,9 +112,11 @@ a current version 2 identity does not establish semantic verification on its
 own. A version 1 writer refuses to replace a version 2 or unsupported record;
 an older host cannot claim verified-context reliance by silently skipping a
 newer record. Canonical Markdown stays available for reading and authorized
-task-time evidence use. A host without a qualified installed context writer
-must stop context mutation; source-level engine capability alone does not
-qualify an installed package.
+task-time evidence use. An unavailable or invalid installation-pinned writer stops that mutation. It
+does not prohibit safe source inspection, and a successful preview never grants
+host permissions or certifies the installed host. Older receipt-based context
+operations remain compatibility paths for their recorded history, not the
+ordinary refresh prerequisite.
 
 Native guidance publication and removal are conditional P1 work. No native
 guidance rollback is claimed until that path is selected, implemented and
@@ -103,7 +129,8 @@ restore both captured Markdown files and remove both HTML authorities through a
 guarded, journal-bound inverse transaction. It refuses rollback if either
 candidate changed since cutover, preventing unrelated work from being clobbered.
 
-After new-format work exists, simple rollback is intentionally unavailable.
+After new-format work exists, forward recovery takes precedence over restoring
+an old backup. Simple rollback is intentionally unavailable.
 Produce a loss report and perform a reviewed reverse export or reconciliation;
 retain the HTML artifacts, transaction records and repository history as
 evidence. Never treat deleting HTML or installing an older binary as recovery.

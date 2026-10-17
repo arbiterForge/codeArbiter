@@ -511,6 +511,29 @@ class CLITest(unittest.TestCase):
         rc, _ = self._run(["nonsense"])
         self.assertEqual(rc, 2)
 
+    def test_empty_invocation_discovers_every_dispatched_subcommand(self):
+        import ast
+        import contextlib
+        import inspect
+        import io
+        tree = ast.parse(inspect.getsource(_releaselib.main))
+        commands = {
+            node.comparators[0].value
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Compare)
+            and isinstance(node.left, ast.Name) and node.left.id == "cmd"
+            and len(node.ops) == 1 and isinstance(node.ops[0], ast.Eq)
+            and isinstance(node.comparators[0], ast.Constant)
+            and isinstance(node.comparators[0].value, str)
+        }
+        self.assertGreater(len(commands), 5)
+        error = io.StringIO()
+        with contextlib.redirect_stderr(error):
+            rc, output = self._run([])
+        self.assertEqual((rc, output), (2, ""))
+        listed = set(re.findall(r"[a-z]+(?:-[a-z]+)*", error.getvalue()))
+        self.assertEqual(commands - listed, set(), error.getvalue())
+
     def test_auto_eligible_true_when_manifest_advances(self):
         rc, out = self._run(["auto-eligible", "2.12.1", "v"],
                             "v2.12.0\nv2.11.0\n")
@@ -9150,6 +9173,8 @@ class ThisRepoRowsTest(unittest.TestCase):
     # -- an EXACT list per target, so a deleted or reordered artifact line
     # cannot survive: "each artifacts path exists" alone does not catch a
     # deletion, since every surviving path in a shortened list still exists.
+    # PR #983 reconciles Pi with all four shipped outputs in tools/build.mjs,
+    # including its private approval helper and Windows process supervisor.
     _EXPECTED_ARTIFACTS = {
         "ca": ["plugins/ca/tools/farm.js"],
         "ca-codex": [],
@@ -9160,6 +9185,8 @@ class ThisRepoRowsTest(unittest.TestCase):
         "ca-pi": [
             "plugins/ca-pi/extensions/codearbiter.js",
             "plugins/ca-pi/extensions/codearbiter-child.js",
+            "plugins/ca-pi/helpers/windows-supervisor.js",
+            "plugins/ca-pi/helpers/approval-dialog.js",
         ],
     }
 

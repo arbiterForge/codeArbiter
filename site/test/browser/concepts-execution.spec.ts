@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { featureMap } from '../../scripts/execution-maps/model';
 import { conceptGroups } from '../../scripts/concept-directory';
 
-const routes = ['/concepts/', '/concepts/gated-lanes/', '/concepts/test-first/'];
+const routes = ['/concepts/', '/concepts/gated-lanes/'];
 const map = (page: Page) => page.locator('ca-execution-map');
 const chapterButtons = (page: Page) => map(page).locator('[data-map-select]');
 
@@ -59,13 +59,15 @@ test('all chapters retain their sequence, roles, outputs and source links', asyn
   await expect(map(page).locator('[data-map-step]:visible')).toHaveCount(16);
 });
 
-test('test-first starts inside task work and still exposes entry and PR chapters', async ({ page }) => {
+test('test-first teaches current verification without an obsolete execution map', async ({ page }) => {
   await page.goto('/concepts/test-first/');
-  await expect(map(page).locator('[data-map-chapter="task"]')).toBeVisible();
-  await map(page).getByText('Inspect all six TDD phases', { exact: true }).click();
-  await expect(map(page).locator('[data-map-step="tdd"] details ol > li')).toHaveCount(6);
-  await map(page).locator('[data-map-select="deliver"]').click();
-  await expect(map(page).locator('[data-map-step="pr-contract"]')).toContainText('not re-invoked');
+  await expect(map(page)).toHaveCount(0);
+  const article = page.locator('.sl-markdown-content');
+  await expect(article).toContainText('direct implementation or useful delegation');
+  await expect(article).toContainText('passing characterization');
+  await expect(article).toContainText('explicitly requested pause');
+  await expect(article.getByRole('link', { name: 'Build a feature', exact: true })).toHaveAttribute('href', '/guides/feature-lane/');
+  await expect(article.getByRole('link', { name: 'Review and ship', exact: true })).toHaveAttribute('href', '/guides/review-and-ship/');
 });
 
 for (const width of [320, 390, 768, 1024, 1440]) {

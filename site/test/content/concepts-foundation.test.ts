@@ -18,7 +18,7 @@ describe('Concepts foundation', () => {
   it('makes the three project documents and four format paths explicit', () => {
     const artifacts = read('concepts/artifacts.md');
     for (const name of ['01-architecture-breakdown.md', '02-phased-build-plan.md', '03-task-backlog.md']) expect(artifacts).toContain(name);
-    for (const phrase of ['typed HTML', 'Existing Markdown pairs', 'Small-lane work', 'Greenfield Markdown', 'not a substitute for a host authority adapter']) expect(artifacts).toContain(phrase);
+    for (const phrase of ['typed HTML', 'Existing Markdown pairs', 'Small-lane work', 'Greenfield Markdown', 'Strict', 'explicitly requested evidence path', 'DONE']) expect(artifacts).toContain(phrase);
     expect(artifacts).toContain('not approve or execute');
     expect(artifacts).toContain('/guides/review-artifacts/');
   });

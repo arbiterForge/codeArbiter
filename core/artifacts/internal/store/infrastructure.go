@@ -89,7 +89,7 @@ func (f *FS) PutContextToken(sha string, b []byte) error {
 // allowlist is closed: farm receipts and engine-owned evidence contexts only;
 // canonical planning authority remains in the HTML pair.
 func (f *FS) PutDerived(kind, sha string, b []byte) error {
-	if (kind != "farm-bindings" && kind != "farm-seals" && kind != "farm-markers" && kind != "evidence-contexts") || !digest(sha) || canonical.BytesHash(b) != sha || len(b) > canonical.MaxBytes {
+	if (kind != "farm-bindings" && kind != "farm-seals" && kind != "farm-markers" && kind != "evidence-contexts" && kind != "context-previews") || !digest(sha) || canonical.BytesHash(b) != sha || len(b) > canonical.MaxBytes {
 		return fault.New("INVALID_OUTPUT", "invalid content-addressed derived receipt")
 	}
 	return f.createOrCompare(meta+"/"+kind+"/"+sha+".json", b, 0600)

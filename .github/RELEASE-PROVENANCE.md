@@ -3,20 +3,27 @@
 Published tags never move or disappear. A bad release is corrected by a new
 version, not by changing a recorded identity or retargeting a tag.
 
-Required CI and release preflight both use
-`check_tag_immutability.py --require-recorded`. Missing records, credentials,
-or complete readable inventory block merge and release. This deliberately makes
-transport failures and rate limits availability blockers; retry after evidence
-is available, never bypass the check or replace historical identities.
+Under the accepted ADR-0040 decision, required CI and release preflight both use
+`check_tag_immutability.py` without `--require-recorded`. A recorded tag that
+moved or disappeared still blocks; a newly published tag without a ledger
+record warns. Invalid ledgers, missing credentials and unreadable or incomplete
+inventory remain failures. Retry unavailable evidence rather than bypassing
+the check or replacing historical identities. The live tag rulesets supply
+prevention; the ledger supplies after-the-fact detection. Missing provenance
+may remain only a warning under this accepted residual risk.
 An automatic run with no eligible release needs no new publication preflight;
-its upstream required CI is still strict.
+its upstream required CI retains the same recorded-drift and inventory checks.
+An explicitly requested strict audit can select `--require-recorded`, but that
+optional checker mode is not the current CI or release workflow contract.
 
 This gate does not ingest receipts or make publication and PR merge transactional.
-After publication, reconcile the authenticated original receipt through a reviewed
-PR before another merge or release. A receipt-only PR can pass because required
+After publication, retain and reconcile the authenticated original receipt through
+a reviewed PR. Missing a new receipt alone does not block another merge or release
+under ADR-0040. A receipt-only PR can pass because required
 CI reads its candidate ledger. A tag can nevertheless be published after a PR's
 green check without changing its checked commit, so an already-green PR can race
-publication. The independent strict release preflight remains authoritative.
+publication. Release preflight rechecks the live inventory under the same accepted
+warning policy; it does not close that missing-receipt window.
 Do not call a green check, retained artifact, or candidate file a completed ledger
 handoff: only the reviewed ledger addition merged to main completes ingestion.
 
@@ -38,9 +45,11 @@ originally published.
 
 The legacy epoch cannot grow through release or reconciliation tooling. Adding
 or replacing a legacy identity, source, or evidence grade requires a new accepted, user-attributed ADR
-and architectural review. Every governed tag
-outside that closed set requires an original-publication receipt before a later
-release. Moving, retargeting, or deleting any recorded tag remains prohibited,
+and architectural review. Every governed tag outside that closed set needs
+original-publication evidence to enter the receipt ledger; it cannot be admitted
+as another legacy baseline. ADR-0040 changes missing-record enforcement, not
+the evidence required to record an original identity. Moving, retargeting, or
+deleting any recorded tag remains prohibited,
 with no break-glass path; corrections use a new version.
 
 ## Capture and retain
@@ -55,8 +64,9 @@ actual artifact, not just the workflow definition.
 Artifacts are named
 `tag-publication-<job>-<run-id>-<run-attempt>` with a requested retention of
 90 days, subject to repository and organization policy. Check the artifact's
-actual expiration and reconcile it through a reviewed PR before it expires and
-before another release.
+actual expiration and reconcile it through a reviewed PR before it expires.
+An expired or missing artifact stays an unresolved provenance gap; the warning
+policy does not authorize fabricating its original observation.
 Neither the receipt nor the reconciliation helper writes to `main`.
 
 The schema calls this a `hosted-tag-observation`. It proves what a trusted run
