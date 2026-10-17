@@ -1,127 +1,153 @@
 # Native CI critical path
 
-The owning implementation is `.github/workflows/ci.yml`. This is a CI execution
-layout, not a change to product permissions, host support, coverage floors or
-released-product qualification policy.
+The owning files are `.github/workflows/ci.yml` and its same-commit reusable
+workflow `.github/workflows/ci-native-platform.yml`. This layout changes CI
+execution, not product permissions, native support, coverage floors or release
+qualification policy.
 
 ## Execution graph
 
 | Job | Starts after | Owns |
 |---|---|---|
-| `artifact-candidate` | Impact selection | One normal module-tested, CGO-disabled candidate build and vet per native platform. |
+| `artifact-platform` | Impact selection | Six independent calls to the native-platform workflow. Each call has its own build-to-consumer graph. |
+| `artifact-candidate` (called) | Its platform call | One normal CGO-disabled native test/vet/build and same-run candidate binding. |
+| `artifact-bridges` (called) | **Its own platform's** candidate | Greenfield, mixed-schema recovery, examples, approval, prerequisites, reconciliation and reply handling. |
+| `artifact-conformance` (called) | **Its own platform's** candidate | Complete cross-kind/reference conformance and debug handoff, with the locked reference interpreter. Runs alongside adapter and authority checks. |
+| `artifact-authority` (called) | **Its own platform's** candidate | Four duration-balanced, fixture-preserving authority shards. |
+| `artifact-platform-passed` (called) | All four local stages | Rejects missing, failed, skipped, pending or cancelled local stages. |
 | `artifact-native-default` | Impact selection | Default Go tests and vet; Linux race, generated-type, surface, consumer and ship-set checks. |
-| `artifact-native-coverage` | Impact selection | The actual instrumented CLI exercise and full instrumented Go statement run, preserving both profiles. |
-| `artifact-context` | Impact selection | Native storage checks, finite context cases, installed-input refusals and the context workflow. |
-| `artifact-bridges` | Candidate builds | Greenfield, mixed-schema recovery, examples, approval, prerequisites, reconciliation, reply handling, complete conformance and debug handoff. |
-| `artifact-authority` | Candidate builds | Four duration-balanced authority shards on each native platform. |
-| `artifact-coverage` | Instrumented native checks | Complete six-platform statement union and the unchanged 70 percent statement floor. |
-| `artifact-engine` | Every preceding stage | Strict success join, exact candidate and context-observation verification, then the existing native qualification receipt. |
+| `artifact-native-coverage` | Impact selection | Actual instrumented CLI exercise and full instrumented Go statement run, preserving both profiles. |
+| `artifact-context` | Impact selection | Native storage, finite context cases, installed-input refusals and context workflow. |
+| `artifact-coverage` | All six instrumented cells | Complete statement union and the unchanged coverage floor. |
+| `artifact-engine` | All platform calls, default/context checks and coverage | Strict global success join, exact candidate/context-observation verification, then the existing qualification receipt. |
 | Browser and package assembly | Native qualification | Existing browser evidence and exact package assembly. |
-| Cold packages | Package assembly | The unchanged host/platform installation matrix. |
+| Cold packages | Package assembly | Unchanged eighteen-cell host/platform installation matrix. |
 
-All six native platforms remain. Matrix failures do not cancel sibling cells.
-The merge gate registers every new stage both in `needs` and in the required
-result list. The qualification join rejects missing, skipped, pending, failed or
-cancelled stages when native verification was selected. Impact-unselected runs
-retain their existing legitimate skips.
+The reusable workflow eliminates the **global candidate matrix barrier**. A
+Linux or macOS consumer can start when its own binary is ready, without waiting
+for a slow or queued Windows build. Four authority shards remain on each of the
+six platforms. Matrix failures do not cancel sibling cells. No polling jobs
+occupy runners while waiting for artifacts.
+
+The global qualification and protected merge gates remain fail-closed. The
+merge gate registers `artifact-platform` and the other required stage groups in
+both `needs` and its required-results list. Each platform call has its own
+strict join, so a skipped local stage cannot become a successful global result.
+Impact-unselected runs retain their legitimate skips. The six final native
+qualification check names remain unchanged for existing package verifiers.
 
 The default Go configuration, the builder's CGO-disabled configuration and the
-instrumented configuration are deliberately separate checks. Each executes in
-its owning platform job; coverage is not relabelled as an uninstrumented test.
-The removed work is the twelve extra normal builders formerly run in the two
-per-platform authority shards. Those tests now consume the single tested
-candidate. `tools/build-artifacts.py` and `tools/artifact-coverage.py` retain their
-normal verification commands; this layout does not add a skip-tests fast path.
+instrumented configuration are deliberately separate checks. Coverage is not
+relabelled as an uninstrumented run. The removed work is the twelve extra normal
+builders formerly executed by the two-per-platform authority jobs before this
+PR. `tools/build-artifacts.py` and `tools/artifact-coverage.py` retain their normal
+verification commands; there is no skip-tests fast path.
 
 ## Candidate and qualification boundary
 
 The normal builder completes tests and vet before writing `native_tested: true`.
-The candidate job then writes `artifact-candidate-ci.json`, binding the actual
-binary and manifest to the checkout, module bytes, native Go executable, source
-commit, workflow run and producer attempt. Every consumer downloads the named
-artifact from its own run, validates those inputs before execution, and never
-rebuilds or promotes the manifest. Adapter and authority jobs also recheck the
-candidate after their tests.
+Its job then writes `artifact-candidate-ci.json`, binding the actual binary and
+manifest to the checkout, module bytes, pinned native Go executable, source
+commit, workflow run and producer attempt. Consumers download named artifacts
+from the same run, validate those inputs before executing and recheck candidate
+bytes afterward. They never rebuild or promote the manifest.
 
-The final `artifact-engine` job is still the only job that may use the existing
-`--qualify-existing` path. Its `artifact_ci.py gate` step must accept all required
-stage results before any qualification is written. It verifies the same candidate
-and consumes the exact-platform context observation, which retains the existing
-finite-case, module and Go-executable checks. Release assembly still consumes
-`artifact-native-*` receipts, not the intermediate candidate artifacts.
+The caller invokes the reusable workflow by its local repository path, so both
+files come from the same commit. The called workflow has read-only content
+permissions, no external workflow reference and no inherited extra secrets.
+GitHub's `github` context remains associated with the caller. The binding keeps
+`.github/workflows/ci.yml` as the run owner and `artifact-candidate` as the
+producer identity.
 
-The CI binding is an unkeyed substitution check, not a signature or an
-independent execution attestation. GitHub's same-run artifact transport and the
-required execution graph supply the job boundary. A retry of failed consumers
-may reuse a successful earlier producer attempt of the **same source and run**;
-a later attempt, different run, changed source/tool or changed bytes is refused.
+Only the existing global `artifact-engine` job may invoke `--qualify-existing`.
+It verifies the same candidate and the exact-platform context observation,
+retaining finite-case, module and Go-executable checks. Release assembly still
+consumes `artifact-native-*` receipts, never intermediate candidate artifacts.
 
-## Duration-balanced authority shards
+The CI binding is an unkeyed substitution check, not a signature or independent
+execution attestation. GitHub's same-run artifact transport and required job
+graph supply the boundary. A retry of failed consumers may reuse a successful
+earlier producer attempt of the **same source and run**; another run, a future
+attempt, changed source/tool or changed candidate bytes is refused.
 
-`run_artifact_authority_shard.py` discovers the complete authority suite, including
-imported regression classes. Test classes remain indivisible so their class-level
-fixtures execute once. Longest measured fixture groups are assigned first to the
-currently lightest shard, with deterministic tie-breaking. Unknown classes use a
-positive default estimate, and added tests in existing classes scale that class's
-weight. Missing timing data never removes a test.
+## Exhaustive duration-balanced authority shards
 
-The runner proves nonempty, complete, disjoint membership before executing any
-shard. It checks actual execution counts, fails unsuccessful results, and rejects
-a wholly skipped/expected-failure shard. Legitimate individual platform skips
-remain reported as skips. It emits selected IDs, a common partition digest,
-outcomes and actual per-case times in a same-run diagnostic artifact.
+`run_artifact_authority_shard.py` discovers the complete authority module,
+including imported regressions. Whole unittest classes remain together so their
+class fixtures execute once. Longest measured groups go first to the lightest
+shard, with deterministic tie-breaking. Unknown classes receive a positive
+default estimate; added cases scale a known class's weight. Missing or stale
+timing hints never remove a test.
 
-Initial hints come from completed Windows ARM64 authority jobs `117418643650`
-and `117418643661` in run `39039950454`, source commit
-`0312358ff7f84ade3855fdf670ba0b2117fb8e9b`. The old alphabetical halves selected
-135 cases each, but their test steps took 979.883 and 235.621 seconds. The retained
-270-case dataset produces four approximately 302 to 308 second scheduling
-weights. These are log-derived hints, not measured times for the new workflow,
-a cross-platform forecast or percentile estimates. New tests are always discovered.
+The runner checks nonempty, complete and disjoint membership before execution,
+then checks actual execution counts and outcomes. A wholly skipped or
+expected-failure shard is not proof. Legitimate individual platform skips remain
+reported. Each shard emits selected IDs, a common partition digest, outcomes and
+actual per-case timings.
 
-## Evidence and acceptance
+Initial hints are bound to Windows ARM64 jobs `117418643650` and `117418643661`
+in run `39039950454`, source `0312358ff7f84ade3855fdf670ba0b2117fb8e9b`.
+The old alphabetical halves contained 135 cases each but took 979.883 and 235.621
+seconds. The 270-case dataset assigns four roughly 302–308-second scheduling
+weights. These are log-derived hints, not a cross-platform runtime promise.
 
-The baseline run `39039950454` succeeded in 49 minutes 21 seconds. Windows x64's
-limiting native job took 38 minutes 34 seconds; its initial module tests,
-statement collection and normal candidate builder took 664, 444 and 439 seconds
-respectively. The earlier Windows ARM64 job was slightly longer, but finished
-first. The eight-second impact selector also waited 386 seconds to start. Keep
-execution time, dependency waits and runner queueing distinct, without removing
-any of them from the end-to-end headline.
+## Observed baseline and correction
 
-The engineering target is a full green run under 20 minutes, followed by repeated
-comparable runs to establish the ordinary elapsed range. It is not a new hard CI
-timeout or a claimed measured improvement. Acceptance requires every selected
-native configuration, all authority shards, coverage, browser and cold-package
-checks, and the protected merge gate. Native platform behavior and final runtime
-must be checked on the hosted candidate, not inferred from local contract tests.
+Successful baseline run `39039950454` took **49m21s**. Windows x64's limiting job
+took 38m34s; initial module tests, statement collection and the candidate builder
+ran serially for 664, 444 and 439 seconds. The impact selector also waited 386
+seconds before its eight seconds of execution. Queueing stays in the headline.
 
-For each run, fetch all job pages, not just the first 100:
+The first parallel attempt, `39052933204` at
+`c399d3ecf2a318027fc6d137f3682c08bf07aa70`, failed after **27m20s**. All 24
+authority shards and the candidate, context and instrumented groups passed.
+One Linux ship-set wiring assertion still inspected the old job location. The
+strict join correctly rejected it; browser/package work did not complete, so
+this failed run is **not** speedup evidence.
+
+That attempt also exposed avoidable waits: Intel macOS built its candidate by
+6m01s but its consumers waited until roughly 10m28s for the global candidate
+matrix. A late authority shard started at 20m40s. The Intel adapter/conformance
+job took 12m44s, including 7m17s of conformance after its earlier adapter checks.
+The per-platform call graph and separate conformance job remove those dependency
+barriers. They do not promise to remove GitHub runner-capacity limits.
+
+The missed ship-set wiring assertion is corrected to inspect its actual owner,
+`artifact-native-default`, and now also runs in the early platform-neutral
+contract suite. Both `impact` and `artifacts` filters include every new pipeline
+subject, including the reusable workflow and the contract suite itself. Filter
+closure has a regression test rather than relying on a workflow edit happening
+to trigger broad checks.
+
+## Acceptance and rollback
+
+The engineering target remains a **full green run under 20 minutes**, followed
+by repeated comparable successful runs to establish the ordinary elapsed range.
+It is not a new hard timeout or a demonstrated performance claim. Acceptance
+requires all selected native configurations, authority shards, complete coverage,
+browser/cold-package checks and the protected merge gate.
+
+Fetch every job page when measuring larger runs:
 
 ```sh
 gh api --paginate --slurp \
   'repos/arbiterForge/codeArbiter/actions/runs/RUN_ID/jobs?per_page=100'
 ```
 
-Record the exact source and merge revision, run and attempt, full run envelope,
-queue delay, stage times and final gate. Compare successful runs against the
-49m21s baseline; failed or cancelled runs are not speedup evidence. The Pi
-hosted-check reader also paginates all check-run pages and refuses incomplete,
-changing or duplicated results, so larger CI fan-out cannot hide a required
-check beyond page one.
+Record exact source/merge revisions, run and attempt, the full run envelope,
+queue delays, stage durations and the final gate. Failed or cancelled envelopes
+are not comparable green benchmarks. The Pi hosted-check reader likewise
+paginates all check pages and refuses incomplete or duplicate results.
 
-## Verification and rollback
+`test_ci_native_pipeline.py` covers both strict joins, substitution/retry cases,
+actual discovery and fixture-preserving partitioning, platform completeness,
+single-builder ownership, caller/callee dependencies, filter closure, ship-set
+wiring and check pagination. Existing context, coverage, package and release
+contracts remain. Refresh enrolled source evidence through the native context
+writer; never silence stale-source refusals or change human documents just to
+update a digest.
 
-`test_ci_native_pipeline.py` exercises the strict join, candidate substitution
-and retry controls, real suite discovery, deterministic fixture-preserving
-partitioning, complete platform matrices, single-builder ownership and check
-pagination. Existing impact, context, coverage, package and release contracts
-remain in place, with their assertions mapped to the actual new owners. Native
-provenance for the changed workflow must be refreshed through the context writer;
-do not silence a stale-source rejection or rewrite the human documents merely
-to update its digest.
-
-No repository setting or protected required-check name changes. No new package dependency,
-paid runner, service, database or product state format. Rollback is a normal
-revert of the coherent CI change and its matching provenance records. Intermediate
-CI artifacts are not publication artifacts and do not migrate consumer state.
+No account setting, protected required-check name, product state format or
+packaged dependency changes. Rollback is a normal revert of this coherent CI
+change and its matching provenance records. Intermediate artifacts are not
+publication artifacts and do not migrate consumer state.

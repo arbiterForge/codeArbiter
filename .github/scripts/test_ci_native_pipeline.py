@@ -14,7 +14,7 @@ from unittest import mock
 
 import artifact_ci as binding
 import run_artifact_authority_shard as shard
-from test_ci_impact import workflow_jobs
+from test_ci_impact import workflow_jobs, native_workflow_jobs, paths_filter, CI_NATIVE_WORKFLOW
 
 REPO = Path(__file__).resolve().parents[2]
 STAGES = set(binding.REQUIRED_STAGES) - {"changes", "artifact-coverage"}
@@ -223,9 +223,10 @@ class ShardPartitionTest(unittest.TestCase):
 class WorkflowClosureTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.jobs = workflow_jobs((REPO/'.github/workflows/ci.yml').read_text(encoding='utf-8'))
+        cls.ci = (REPO/'.github/workflows/ci.yml').read_text(encoding='utf-8')
+        cls.jobs = native_workflow_jobs(cls.ci)
 
-    def test_every_parallel_stage_is_required_by_both_join_and_merge_gate(self):
+    def test_every_parallel_stage_is_required_by_both_joins_and_merge_gate(self):
         final = self.jobs['artifact-engine']
         self.assertIn('[CHECK] | [CORE] | Structured artifact  <${{ matrix.expected_platform }}>', final)
         self.assertIn('NATIVE_RESULTS: ${{ toJSON(needs) }}', final)
@@ -234,38 +235,57 @@ class WorkflowClosureTest(unittest.TestCase):
         self.assertEqual(set(needed[1].split(', ')), binding.REQUIRED_STAGES)
         self.assertIn('!cancelled()', final)
         gate = self.jobs['ci-passed']
-        for name in STAGES | {'artifact-engine', 'artifact-coverage'}:
+        for name in binding.REQUIRED_STAGES - {'changes'} | {'artifact-engine'}:
             self.assertRegex(gate, r'(?m)^      - '+re.escape(name)+r'$')
             self.assertIn("${{ needs['"+name+"'].result }}", gate)
         self.assertLess(final.index('artifact_ci.py gate'), final.index('--qualify-existing'))
+        local = self.jobs['artifact-platform-passed']
+        needed = re.search(r'^    needs: \[(.+)\]$', local, re.M)
+        self.assertEqual(set(needed[1].split(', ')), binding.PLATFORM_STAGES)
+        self.assertIn('!cancelled()', local)
+        self.assertIn('artifact_ci.py platform-gate', local)
+        self.assertNotIn('continue-on-error', local)
 
-    def test_independent_work_starts_without_waiting_for_the_candidate_or_other_tests(self):
-        for name in ('artifact-candidate', 'artifact-native-default', 'artifact-native-coverage', 'artifact-context'):
+    def test_each_platform_consumes_its_candidate_without_global_build_barrier(self):
+        caller = self.jobs['artifact-platform']
+        self.assertIn('uses: ./.github/workflows/ci-native-platform.yml', caller)
+        self.assertRegex(caller, r'(?m)^    needs: changes$')
+        self.assertIn("needs.changes.outputs.artifacts == 'true'", caller)
+        for name in ('os', 'expected_platform', 'artifact_binary'):
+            self.assertIn(name+': ${{ matrix.'+name+' }}', caller)
+        for name in ('artifact-native-default', 'artifact-native-coverage', 'artifact-context'):
             self.assertRegex(self.jobs[name], r'(?m)^    needs: changes$')
-        for name in ('artifact-bridges', 'artifact-authority'):
-            self.assertIn('needs: [changes, artifact-candidate]', self.jobs[name])
+        self.assertNotRegex(self.jobs['artifact-candidate'], r'(?m)^    needs:')
+        for name in ('artifact-bridges', 'artifact-conformance', 'artifact-authority'):
+            self.assertRegex(self.jobs[name], r'(?m)^    needs: artifact-candidate$')
+            self.assertIn("needs.artifact-candidate.result == 'success'", self.jobs[name])
+            self.assertIn('runs-on: ${{ inputs.os }}', self.jobs[name])
         self.assertIn('needs: [changes, artifact-native-coverage]', self.jobs['artifact-coverage'])
 
-    def test_builder_executes_only_once_per_platform_and_final_join_never_rebuilds(self):
+    def test_builder_executes_once_per_platform_and_all_consumers_verify_same_bytes(self):
         command = 'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"'
-        owners = [name for name, text in self.jobs.items() if command in text]
-        self.assertEqual(owners, ['artifact-candidate'])
+        self.assertEqual([name for name, text in self.jobs.items() if command in text], ['artifact-candidate'])
         self.assertNotIn('--skip-tests', self.jobs['artifact-candidate'])
-        for name in ('artifact-bridges', 'artifact-authority', 'artifact-engine'):
+        for name in ('artifact-bridges', 'artifact-conformance', 'artifact-authority', 'artifact-engine'):
             body = self.jobs[name]
-            self.assertIn('name: artifact-candidate-${{ matrix.os }}', body)
+            scope = 'matrix' if name == 'artifact-engine' else 'inputs'
+            self.assertIn('name: artifact-candidate-${{ '+scope+'.os }}', body)
             self.assertIn('python .github/scripts/artifact_ci.py verify', body)
             self.assertNotIn('--output "${{ runner.temp }}/artifact-candidate"', body)
         self.assertIn('--qualify-existing', self.jobs['artifact-engine'])
-        self.assertNotIn('--qualify-existing', self.jobs['artifact-candidate'])
+        for name in binding.PLATFORM_STAGES:
+            self.assertNotIn('--qualify-existing', self.jobs[name])
 
-    def test_all_platforms_and_required_configurations_remain(self):
-        for name in STAGES | {'artifact-engine'}:
+    def test_all_platforms_configurations_and_four_authority_shards_remain(self):
+        for name in ('artifact-platform', 'artifact-native-default', 'artifact-native-coverage', 'artifact-context', 'artifact-engine'):
             body = self.jobs[name]
             self.assertIn('fail-fast: false', body)
             self.assertNotIn('continue-on-error:', body)
             found = re.findall(r'^            expected_platform: (.+)$', body, re.M)
-            self.assertEqual(sorted(found), sorted(PLATFORMS * (4 if name == 'artifact-authority' else 1)))
+            self.assertEqual(sorted(found), PLATFORMS)
+        for name in binding.PLATFORM_STAGES | {'artifact-native-default','artifact-native-coverage','artifact-context','artifact-engine'}:
+            body = self.jobs[name]
+            self.assertNotIn('continue-on-error:', body)
             for pin in ('python-version: "3.14"', 'go-version: "1.27.1"', 'check-latest: false', 'cache: false'):
                 self.assertIn(pin, body)
         self.assertIn('go test -buildvcs=false ./...', self.jobs['artifact-native-default'])
@@ -273,8 +293,11 @@ class WorkflowClosureTest(unittest.TestCase):
         self.assertIn('go test -buildvcs=false -race ./...', self.jobs['artifact-native-default'])
         self.assertIn('test_artifact_cli.py --coverage-output', self.jobs['artifact-native-coverage'])
         self.assertIn('artifact-coverage.py collect', self.jobs['artifact-native-coverage'])
-        self.assertIn('AUTHORITY_SHARD_COUNT: "4"', self.jobs['artifact-authority'])
-        self.assertEqual(re.findall(r'^            shard: (\d+)$', self.jobs['artifact-authority'], re.M), ['0','1','2','3'] * 6)
+        authority = self.jobs['artifact-authority']
+        self.assertIn('fail-fast: false', authority)
+        self.assertIn('AUTHORITY_SHARD_COUNT: "4"', authority)
+        self.assertIn('shard: [0, 1, 2, 3]', authority)
+        self.assertEqual(authority.count('run_artifact_authority_shard.py'), 1)
 
     def test_context_observation_and_candidate_both_precede_qualification(self):
         self.assertIn('CONTEXT_NATIVE_OBSERVATION_OUTPUT:', self.jobs['artifact-context'])
@@ -285,10 +308,57 @@ class WorkflowClosureTest(unittest.TestCase):
         self.assertLess(final.index('name: artifact-context-'), final.index('--qualify-existing'))
         self.assertIn('--context-native-observation "${{ runner.temp }}/context-native-observation.json"', final)
         self.assertIn('name: artifact-native-${{ matrix.os }}', final)
-        self.assertIn('needs.artifact-engine.result == \'success\'', self.jobs['artifact-package-assembly'])
+        self.assertIn("needs.artifact-engine.result == 'success'", self.jobs['artifact-package-assembly'])
 
-    def test_new_contract_suite_is_really_executed_in_early_ci(self):
+    def test_conformance_uses_locked_interpreter_and_runs_in_parallel_with_adapters(self):
+        body = self.jobs['artifact-conformance']
+        self.assertIn('needs: artifact-candidate', body)
+        self.assertNotIn('needs: artifact-bridges', body)
+        for control in ('--require-hashes', '--no-deps', '--only-binary=:all:',
+                        'ARTIFACT_CONFORMANCE_PYTHON', 'test_artifact_conformance.py', 'test_debug_handoff.py'):
+            self.assertIn(control, body)
+        for suite in ('test_artifact_conformance.py', 'test_debug_handoff.py'):
+            self.assertNotIn(suite, self.jobs['artifact-bridges'])
+        command = "subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_artifact_conformance.py']"
+        self.assertEqual(sum(text.count(command) for text in self.jobs.values()), 1)
+
+    def test_every_pipeline_subject_reaches_native_jobs_and_early_contract_suite(self):
         self.assertIn('run: python .github/scripts/test_ci_native_pipeline.py', self.jobs['ci-impact'])
+        subjects = ('.github/scripts/artifact_ci.py', '.github/scripts/run_artifact_authority_shard.py',
+                    '.github/scripts/test_ci_native_pipeline.py', '.github/fixtures/artifact-authority-timings.json',
+                    '.github/workflows/ci-native-platform.yml', '.github/scripts/test_ship_set_inputs.py')
+        for subject in subjects:
+            for target in ('impact', 'artifacts'):
+                with self.subTest(subject=subject, target=target):
+                    self.assertIn(subject, paths_filter(self.ci, target))
+
+    def test_ship_set_wiring_contract_is_exercised_in_early_ci_too(self):
+        # The hosted failure was missed because only Linux ran this contract.
+        # This one method is platform-neutral; the actual Go suite remains Linux-owned.
+        from test_ship_set_inputs import ShipSetInputs
+        case = ShipSetInputs('test_suite_wired_into_ci')
+        result = unittest.TestResult()
+        case.run(result)
+        self.assertEqual(result.testsRun, 1)
+        self.assertTrue(result.wasSuccessful(), result.failures + result.errors)
+
+    def test_per_platform_join_rejects_all_skipped_missing_and_non_success_inputs(self):
+        needs = {name:{'result':'success'} for name in binding.PLATFORM_STAGES}
+        binding.require_stages(json.dumps(needs), platform=True)
+        for name in binding.PLATFORM_STAGES:
+            for state in ('failure','skipped','cancelled','pending',None):
+                mutated = copy.deepcopy(needs)
+                mutated[name]['result'] = state
+                with self.subTest(name=name,state=state), self.assertRaises(ValueError):
+                    binding.require_stages(json.dumps(mutated), platform=True)
+            missing = dict(needs)
+            del missing[name]
+            with self.assertRaises(ValueError):
+                binding.require_stages(json.dumps(missing), platform=True)
+        with self.assertRaises(ValueError):
+            binding.require_stages(json.dumps(successful_needs()), platform=True)
+        with self.assertRaises(ValueError):
+            binding.require_stages(json.dumps(needs))
 
 
 class HostedCheckPaginationTest(unittest.TestCase):

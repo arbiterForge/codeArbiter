@@ -76,6 +76,10 @@
   ],
   "edges": [
     {
+      "glob": ".github/workflows/ci-native-platform.yml",
+      "checks": ["artifact-engine"]
+    },
+    {
       "glob": ".github/fixtures/artifact-authority-timings.json",
       "checks": [
         "artifact-engine"

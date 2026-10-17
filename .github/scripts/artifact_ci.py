@@ -30,9 +30,11 @@ PLATFORMS = frozenset({
     "darwin/amd64", "darwin/arm64",
 })
 REQUIRED_STAGES = frozenset({
-    "changes", "artifact-candidate", "artifact-native-default",
-    "artifact-native-coverage", "artifact-context", "artifact-bridges",
-    "artifact-authority", "artifact-coverage",
+    "changes", "artifact-platform", "artifact-native-default",
+    "artifact-native-coverage", "artifact-context", "artifact-coverage",
+})
+PLATFORM_STAGES = frozenset({
+    "artifact-candidate", "artifact-bridges", "artifact-conformance", "artifact-authority",
 })
 
 
@@ -170,34 +172,35 @@ def verify(candidate: Path, metadata: Path, platform: str) -> dict[str, str]:
     return expected
 
 
-def require_stages(raw: str) -> None:
-    """Fail the final join on missing, skipped, cancelled, failed or pending stages."""
+def require_stages(raw: str, *, platform: bool = False) -> None:
+    """Fail either join on missing, skipped, cancelled, failed or pending stages."""
     if len(raw) > 65536:
         raise ValueError("native stage results exceed their bound")
     needs = json.loads(raw, object_pairs_hook=unique_object)
-    if not isinstance(needs, dict) or set(needs) != REQUIRED_STAGES:
+    expected = PLATFORM_STAGES if platform else REQUIRED_STAGES
+    if not isinstance(needs, dict) or set(needs) != expected:
         raise ValueError("native qualification needs every declared stage exactly once")
     failures = [key for key, value in needs.items()
                 if not isinstance(value, dict) or value.get("result") != "success"]
     if failures:
         raise ValueError("native qualification lacks successful stages: " + ", ".join(sorted(failures)))
-    if needs["changes"].get("outputs", {}).get("artifacts") != "true":
+    if not platform and needs["changes"].get("outputs", {}).get("artifacts") != "true":
         raise ValueError("native qualification was not selected by the impact planner")
 
 
 def main() -> None:
     """Execute a binding operation or the strict final-stage join."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("stamp", "verify", "gate"))
+    parser.add_argument("operation", choices=("stamp", "verify", "gate", "platform-gate"))
     parser.add_argument("--candidate", type=Path)
     parser.add_argument("--metadata", type=Path)
     parser.add_argument("--platform", choices=sorted(PLATFORMS))
     args = parser.parse_args()
     try:
-        if args.operation == "gate":
+        if args.operation in ("gate", "platform-gate"):
             if any((args.candidate, args.metadata, args.platform)):
                 parser.error("gate takes its required results only from NATIVE_RESULTS")
-            require_stages(os.environ.get("NATIVE_RESULTS", ""))
+            require_stages(os.environ.get("NATIVE_RESULTS", ""), platform=args.operation == "platform-gate")
             print("All native verification stages passed; final qualification may proceed.")
         else:
             if args.candidate is None or args.metadata is None or args.platform is None:
