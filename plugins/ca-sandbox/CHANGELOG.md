@@ -4,7 +4,7 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ---
 
-## [Unreleased]
+## [0.1.7] - 2026-10-16 - Marketplace metadata correction
 
 ### Fixed
 - Correct the marketplace description to explain the existing nixpacks and generated-Dockerfile build paths. Prepare the 0.1.7 metadata patch so marketplace installs receive the corrected description.
