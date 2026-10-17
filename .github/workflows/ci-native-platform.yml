@@ -42,7 +42,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Build native qualified candidate
@@ -91,7 +90,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Download this run's module-tested native candidate
@@ -182,7 +180,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Create locked reference-validation environment
@@ -246,7 +243,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Download this run's module-tested native candidate

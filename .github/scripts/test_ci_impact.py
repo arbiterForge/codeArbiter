@@ -3712,7 +3712,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
                 "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0",
                 'python-version: "3.14"', 'go-version: "1.27.1"', "node-version: 22.19.0",
                 "fetch-depth: 0", "check-latest: false", "cache: false",
-                "go-download-base-url: https://go.dev/dl", "GOTOOLCHAIN: local",
+                "GOTOOLCHAIN: local",
                 "subprocess.check_output(['go', 'env', 'GOVERSION']",
             ):
                 self.assertIn(control, job)

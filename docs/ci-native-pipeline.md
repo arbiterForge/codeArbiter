@@ -167,6 +167,36 @@ review found that changing only the new reusable definition did not match the
 main-push trigger; that path is now explicit and regression-tested, in addition
 to its existing `impact` and `artifacts` filter registrations.
 
+## Toolchain acquisition and measured local conformance
+
+Run `39067340600` exposed an additional setup penalty: Windows ARM64 candidate
+job `117497658867` spent about 402 seconds in Go setup, including two aborted
+requests, before its normal module tests started. The explicit
+`go-download-base-url: https://go.dev/dl` is a custom-source override, even
+though it names the normal upstream domain. The pinned setup-go implementation
+uses a separate custom cache namespace and skips its standard GitHub-hosted
+Go distribution path in this mode.
+
+Native CI now omits that override. The same SHA-pinned setup action first uses
+its normal exact-version tool cache, then its official Actions Go distribution,
+with its existing upstream fallback. The inspected manifest publishes Go 1.27.1
+for all six selected native platforms, including Windows ARM64. This restores
+the supported default acquisition route; it does not introduce an arbitrary
+mirror, a floating Go version or test-result caching. Go remains exactly 1.27.1,
+`check-latest: false`, `GOTOOLCHAIN: local`, and module/build caching remains
+`cache: false`. Native tool and candidate identity verification is unchanged.
+Whether this avoids a future network stall is a hosted measurement question,
+not a guarantee inferred from one successful download.
+
+A three-pair alternating-order local comparison independently tested the
+conformance scheduling change on Windows/amd64 with the same native binary and
+hash-locked reference interpreter. All six runs passed. Serial observations were
+203.079, 190.622 and 190.577 seconds; parallel observations were 130.171, 121.360
+and 121.327 seconds. The medians were 190.622 and 121.360 seconds respectively,
+a 36.3 percent reduction for this harness. These small-sample warm-cache results
+are neither hosted full-CI timing nor percentile claims. The raw observations
+are retained with the PR verification record.
+
 ## Acceptance and rollback
 
 The engineering target remains a **full green run under 20 minutes**, followed

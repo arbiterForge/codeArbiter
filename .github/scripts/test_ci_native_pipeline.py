@@ -334,6 +334,23 @@ class WorkflowClosureTest(unittest.TestCase):
                 with self.subTest(subject=subject, target=target):
                     self.assertIn(subject, paths_filter(self.ci, target))
 
+    def test_pinned_go_keeps_standard_cache_and_mirror_resolution(self):
+        # An explicit go.dev URL is interpreted as a custom distribution and
+        # bypasses both the ordinary tool cache and the Actions Go mirror.
+        # Retain the exact compiler/version checks without forcing that path.
+        native = (REPO/'.github/workflows/ci-native-platform.yml').read_text(encoding='utf-8')
+        for source, expected_count in ((self.ci, 5), (native, 4)):
+            blocks = re.findall(
+                r"(?ms)^      - uses: actions/setup-go@[^\n]+\n"
+                r"(?P<body>.*?)(?=^      - |\Z)", source)
+            self.assertEqual(len(blocks), expected_count)
+            for body in blocks:
+                for control in ('go-version: "1.27.1"', 'check-latest: false', 'cache: false'):
+                    self.assertIn(control, body)
+                self.assertNotIn('go-download-base-url:', body)
+            self.assertIn("actual == 'go1.27.1'", source)
+            self.assertIn('GOTOOLCHAIN: local', source)
+
     def test_reusable_definition_alone_triggers_main_push_ci(self):
         triggers = self.ci.split("\njobs:\n", 1)[0]
         self.assertIn('      - ".github/workflows/ci-native-platform.yml"', triggers)

@@ -577,7 +577,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Test artifact engine
@@ -654,7 +653,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Exercise the actual CLI with native statement instrumentation
@@ -725,7 +723,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Verify named native storage and recovery contract
@@ -801,7 +798,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Require every native verification stage to have succeeded
@@ -936,7 +932,6 @@ jobs:
           go-version: "1.27.1"
           check-latest: false
           cache: false
-          go-download-base-url: https://go.dev/dl
       - name: Verify statement collector rejection and merge behavior
         run: python .github/scripts/test_artifact_coverage.py
       - name: Download this run's native statement profiles
