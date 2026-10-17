@@ -76,6 +76,30 @@
   ],
   "edges": [
     {
+      "glob": ".github/fixtures/artifact-authority-timings.json",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/scripts/test_ci_native_pipeline.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/scripts/run_artifact_authority_shard.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/scripts/artifact_ci.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
       "glob": "core/artifacts/**",
       "checks": ["artifact-engine", "artifact-browser", "artifact-package-cold"]
     },
