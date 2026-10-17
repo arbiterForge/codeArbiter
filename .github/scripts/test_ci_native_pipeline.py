@@ -327,6 +327,7 @@ class WorkflowClosureTest(unittest.TestCase):
         self.assertIn('run: python .github/scripts/test_ci_native_pipeline.py', self.jobs['ci-impact'])
         subjects = ('.github/scripts/artifact_ci.py', '.github/scripts/run_artifact_authority_shard.py',
                     '.github/scripts/run_artifact_authority_group.py', '.github/scripts/test_artifact_conformance.py',
+                    '.github/scripts/_artifactworkerlib.py',
                     '.github/scripts/test_ci_native_pipeline.py', '.github/fixtures/artifact-authority-timings.json',
                     '.github/workflows/ci-native-platform.yml', '.github/scripts/test_ship_set_inputs.py')
         for subject in subjects:
@@ -531,6 +532,35 @@ class AuthorityGroupTest(unittest.TestCase):
         self.assertEqual(len(set(seen)),2)
         self.assertTrue(all(not path.exists() for path in seen))
 
+    def test_authority_retries_only_cleanup_not_the_successful_child(self):
+        from types import SimpleNamespace
+        original = tempfile.TemporaryDirectory.cleanup
+        seen = set()
+        attempts = []
+        owners = []
+        def cleanup(owner):
+            if Path(owner.name).name.startswith('ca-authority-'):
+                owners.append(owner)
+                attempts.append(owner.name)
+                if owner.name not in seen:
+                    seen.add(owner.name)
+                    error = PermissionError('synthetic transient sharing violation')
+                    error.winerror = 32
+                    raise error
+            return original(owner)
+        with tempfile.TemporaryDirectory() as root:
+            try:
+                with mock.patch.object(tempfile.TemporaryDirectory,'cleanup',new=cleanup), \
+                     mock.patch.object(self.group.subprocess,'run',return_value=SimpleNamespace(returncode=0)) as child:
+                    result = self.group.run_child(0,Path(root),dict(os.environ))
+                self.assertEqual(result,{'shard':0,'exit':0})
+                child.assert_called_once()
+                self.assertEqual(len(attempts),2)
+                self.assertTrue(all(not Path(owner.name).exists() for owner in owners))
+            finally:
+                for owner in owners:
+                    original(owner)
+
     def test_diagnostics_are_attempt_scoped_and_do_not_upload_worker_homes(self):
         jobs=workflow_jobs((REPO/'.github/workflows/ci-native-platform.yml').read_text(encoding='utf-8'))
         body=jobs['artifact-authority']
@@ -592,6 +622,35 @@ class ParallelConformanceTest(unittest.TestCase):
         result=self.exercise()
         self.assertTrue(result.wasSuccessful(),result.errors+result.failures)
 
+    def test_conformance_retries_transient_worker_cleanup_without_rerunning_suites(self):
+        import threading
+        original = tempfile.TemporaryDirectory.cleanup
+        seen = set()
+        owners = {}
+        attempts = {}
+        lock = threading.Lock()
+        def cleanup(owner):
+            if Path(owner.name).name.startswith('ca-conformance-worker-'):
+                with lock:
+                    owners[owner.name] = owner
+                    attempts[owner.name] = attempts.get(owner.name,0)+1
+                    first = owner.name not in seen
+                    seen.add(owner.name)
+                if first:
+                    error = PermissionError('synthetic transient sharing violation')
+                    error.winerror = 32
+                    raise error
+            return original(owner)
+        try:
+            with mock.patch.object(tempfile.TemporaryDirectory,'cleanup',new=cleanup):
+                result = self.exercise()
+            self.assertTrue(result.wasSuccessful(),result.errors+result.failures)
+            self.assertEqual(len(owners),5)
+            self.assertEqual(set(attempts.values()),{2})
+        finally:
+            for owner in owners.values():
+                original(owner)
+
     def test_parallel_child_failure_remains_a_failure_after_siblings_finish(self):
         result=self.exercise(failing='test_artifact_package.py')
         self.assertFalse(result.wasSuccessful())
@@ -599,6 +658,97 @@ class ParallelConformanceTest(unittest.TestCase):
     def test_candidate_change_during_parallel_execution_is_rejected(self):
         result=self.exercise(mutate=True)
         self.assertFalse(result.wasSuccessful())
+
+
+class WorkerCleanupTest(unittest.TestCase):
+    @staticmethod
+    def sharing_error():
+        error = PermissionError('synthetic worker sharing violation')
+        error.winerror = 32
+        return error
+
+    def test_success_does_not_sleep_or_retry(self):
+        import _artifactworkerlib as worker
+        owner = mock.Mock()
+        with mock.patch.object(worker.time,'sleep') as wait:
+            worker.cleanup_worker(owner)
+        owner.cleanup.assert_called_once_with()
+        wait.assert_not_called()
+
+    def test_transient_sharing_retries_only_owner_cleanup(self):
+        import _artifactworkerlib as worker
+        owner = mock.Mock()
+        owner.cleanup.side_effect = [self.sharing_error(),None]
+        with mock.patch.object(worker.time,'monotonic',return_value=0), \
+             mock.patch.object(worker.time,'sleep') as wait:
+            worker.cleanup_worker(owner)
+        self.assertEqual(owner.cleanup.call_count,2)
+        wait.assert_called_once_with(0.05)
+
+    def test_persistent_sharing_is_fatal_after_bounded_attempts(self):
+        import _artifactworkerlib as worker
+        owner = mock.Mock()
+        error = self.sharing_error()
+        owner.cleanup.side_effect = error
+        with mock.patch.object(worker.time,'monotonic',return_value=0), \
+             mock.patch.object(worker.time,'sleep') as wait:
+            with self.assertRaises(PermissionError) as caught:
+                worker.cleanup_worker(owner)
+        self.assertIs(caught.exception,error)
+        self.assertEqual(owner.cleanup.call_count,41)
+        self.assertEqual(wait.call_count,40)
+
+    def test_wall_deadline_cannot_be_extended_by_more_attempts(self):
+        import _artifactworkerlib as worker
+        owner = mock.Mock()
+        owner.cleanup.side_effect = self.sharing_error()
+        with mock.patch.object(worker.time,'monotonic',side_effect=[0,3]), \
+             mock.patch.object(worker.time,'sleep') as wait:
+            with self.assertRaises(PermissionError):
+                worker.cleanup_worker(owner)
+        owner.cleanup.assert_called_once_with()
+        wait.assert_not_called()
+
+    def test_unrelated_cleanup_errors_are_immediately_fatal(self):
+        import _artifactworkerlib as worker
+        access = PermissionError('access denied, not a sharing violation')
+        access.winerror = 5
+        for error in (access,PermissionError('POSIX permissions'),OSError('device error')):
+            owner = mock.Mock();owner.cleanup.side_effect = error
+            with mock.patch.object(worker.time,'sleep') as wait:
+                with self.assertRaises(type(error)) as caught:
+                    worker.cleanup_worker(owner)
+            self.assertIs(caught.exception,error)
+            owner.cleanup.assert_called_once_with()
+            wait.assert_not_called()
+
+    def test_test_failure_survives_a_successful_cleanup_retry(self):
+        import _artifactworkerlib as worker
+        owner = mock.Mock(name='owned-directory')
+        owner.name = 'synthetic-only'
+        owner.cleanup.side_effect = [self.sharing_error(),None]
+        failure = AssertionError('actual child failed')
+        with mock.patch.object(worker.tempfile,'TemporaryDirectory',return_value=owner), \
+             mock.patch.object(worker.time,'sleep'):
+            with self.assertRaises(AssertionError) as caught:
+                with worker.worker_directory(prefix='ci-fixture-'):
+                    raise failure
+        self.assertIs(caught.exception,failure)
+        self.assertEqual(owner.cleanup.call_count,2)
+
+    def test_persistent_cleanup_error_never_allows_a_successful_worker(self):
+        import _artifactworkerlib as worker
+        owner = mock.Mock(name='owned-directory');owner.name='synthetic-only'
+        error = PermissionError('access denied')
+        owner.cleanup.side_effect = error
+        body = mock.Mock()
+        with mock.patch.object(worker.tempfile,'TemporaryDirectory',return_value=owner):
+            with self.assertRaises(PermissionError) as caught:
+                with worker.worker_directory(prefix='ci-fixture-'):
+                    body()
+        self.assertIs(caught.exception,error)
+        body.assert_called_once_with()
+        owner.cleanup.assert_called_once_with()
 
 
 if __name__ == '__main__':

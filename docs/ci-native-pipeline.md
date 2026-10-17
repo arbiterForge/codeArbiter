@@ -197,6 +197,20 @@ a 36.3 percent reduction for this harness. These small-sample warm-cache results
 are neither hosted full-CI timing nor percentile claims. The raw observations
 are retained with the PR verification record.
 
+## Worker cleanup failure boundary
+
+Both worker owners use the same bounded cleanup helper. A transient Windows
+sharing violation (`PermissionError.winerror == 32`) is retried for at most two
+seconds and 41 attempts, matching the existing native farm fixture's policy.
+Only cleanup is retried, never the child test or its assertions. Persistent
+sharing violations and every other cleanup error remain fatal. The owned root
+is not ignored or deleted through an arbitrary path. A failed child remains a
+failure even when a cleanup retry succeeds.
+
+Regression tests inject sharing failures after actual worker entry, prove each
+child executes once, and verify retry success, deadline exhaustion, persistent
+failure and non-sharing errors for both authority and conformance boundaries.
+
 ## Acceptance and rollback
 
 The engineering target remains a **full green run under 20 minutes**, followed

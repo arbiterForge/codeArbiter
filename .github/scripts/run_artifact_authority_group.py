@@ -14,10 +14,10 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-import tempfile
 from typing import Any
 
 from artifact_ci import read_regular, unique_object
+from _artifactworkerlib import worker_directory
 import run_artifact_authority_shard as shard
 
 GROUPS = ((0, 2), (1, 3))
@@ -65,7 +65,7 @@ def run_child(index: int, root: Path, environment: dict[str, str]) -> dict[str, 
     # Do not place native fixture roots below the report tree. The portable
     # filesystem checks repeatedly inspect path ancestry; needless depth makes
     # every operation slower. A fresh, flat host-temp root is still worker-owned.
-    with tempfile.TemporaryDirectory(prefix=f"ca-authority-{index}-") as temporary:
+    with worker_directory(prefix=f"ca-authority-{index}-") as temporary:
         owned = Path(temporary)
         for name in ("home", "config", "data", "cache"):
             (owned / name).mkdir()

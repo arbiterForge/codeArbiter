@@ -14,6 +14,8 @@ import sys
 import tempfile
 import unittest
 
+from _artifactworkerlib import worker_directory
+
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "core/pysrc"))
 sys.path.insert(0, str(REPO / ".github/scripts"))
@@ -460,7 +462,7 @@ class ArtifactConformanceTest(unittest.TestCase):
         self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
         def execute(script: str) -> subprocess.CompletedProcess[str]:
             self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
-            with tempfile.TemporaryDirectory(prefix="ca-conformance-worker-") as temporary:
+            with worker_directory(prefix="ca-conformance-worker-") as temporary:
                 owned = Path(temporary)
                 for directory in ("home", "config", "data", "cache"):
                     (owned / directory).mkdir()
