@@ -183,7 +183,7 @@ runs:
         RELEASE_DATE=$(python3 - <<'PY'
         import re
         heading=open("notes.md",encoding="utf-8").readline().rstrip("\n")
-        match=re.search(r"(?: - | — )(\d{4}-\d{2}-\d{2})$",heading)
+        match=re.search(r"(?: - | — )(\d{4}-\d{2}-\d{2})(?:[ \t]*(?: - | — ).*)?$",heading)
         if not match: raise SystemExit("changelog section has no release date")
         print(match.group(1))
         PY
