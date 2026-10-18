@@ -365,12 +365,13 @@ class TestSmartsRationaleConvention(unittest.TestCase):
         self.assertRegex(body, r"A single-option choice holds exactly one `SEC-SMARTS` block: its one-line statement "
                                r"and reason, with no other part",
                          "a single option records one line, not not-applicable filler")
-        self.assertNotRegex(body, r"(?i)approved", "3.0 retired spec approval; the convention does not depend on it")
+        self.assertNotRegex(body, r"(?i)\bapproved\b", "3.0 retired spec approval; the convention does not depend on it")
 
     def test_markdown_rationale_section_documented(self):
         body = flat(section(read(CORE), "Design rationale record"))
         self.assertRegex(body, r"legacy Markdown spec[^.]*one stable `## SMARTS design rationale` section")
-        self.assertRegex(body, r"`## SMARTS design rationale` section[^.]*same parts")
+        self.assertRegex(body, r"`## SMARTS design rationale` section[^.]*same parts in the same order when a "
+                               r"comparison ran, or the single-option statement and its reason alone")
         self.assertRegex(flat(read(ARTIFACTS)), r"Markdown spec[^.]*`## SMARTS design rationale`")
 
 

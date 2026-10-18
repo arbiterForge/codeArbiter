@@ -149,7 +149,8 @@ operations with this convention, with no spec-schema change:
 
 Read the rationale back with the existing read operations; never hand-edit or parse rendered HTML.
 A legacy Markdown spec keeps the rationale in one stable `## SMARTS design rationale` section that
-carries the same parts in the same order.
+carries the same parts in the same order when a comparison ran, or the single-option statement and
+its reason alone.
 
 ## Worked example
 
