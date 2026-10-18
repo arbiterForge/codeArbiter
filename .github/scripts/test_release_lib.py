@@ -4374,7 +4374,15 @@ class CoreCLITest(unittest.TestCase):
         import contextlib
         from types import SimpleNamespace
         out, err = io.StringIO(), io.StringIO()
-        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+        # `show-row`/`payload-pathspec` resolve the project root as
+        # CLAUDE_PROJECT_DIR, else the cwd; pin the cwd fallback to this repo so
+        # the suite passes from `.github/scripts` as well as from the root.
+        # Other subcommands keep the caller's cwd, so cwd-independence tests
+        # still observe a counterfeit working directory.
+        needs_root = bool(argv) and argv[0] in ("show-row", "payload-pathspec")
+        root = contextlib.chdir(REPO_ROOT) if needs_root and not os.environ.get(
+            "CLAUDE_PROJECT_DIR") else contextlib.nullcontext()
+        with root, contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
             rc = core_releaselib.main(list(argv))
         return SimpleNamespace(returncode=rc, stdout=out.getvalue(),
                                stderr=err.getvalue())

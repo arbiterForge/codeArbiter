@@ -34,6 +34,11 @@ authorized work. Do not invent criteria, decisions or test results to pass
 validation. A changed outcome goes to the actual decision owner; in-scope
 methods and task decomposition can be updated with a reason.
 
+A spec's SMARTS design rationale is stored in its existing `approach` record, bound
+`decisions` records and one `SEC-SMARTS` section, as defined once in
+`<plugin-root>/includes/smarts/core.md` (Design rationale record); a legacy Markdown spec
+uses its one `## SMARTS design rationale` section instead.
+
 Query an operation-specific `schema` only when its request shape is unknown;
 reuse known shapes for subsequent calls instead of querying on every read.
 Do not preload the entire schema. The packaged bridge invokes the verified native

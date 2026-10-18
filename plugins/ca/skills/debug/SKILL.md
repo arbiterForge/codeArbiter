@@ -353,6 +353,7 @@ reported as an executed pass.
 - MUST consider mundane environmental, configuration, and dependency mechanisms
   where plausible, without inventing one to meet a count.
 - MUST NOT promote INCONCLUSIVE evidence to CONFIRMED or REFUTED without a cited source.
+- MUST NOT apply SMARTS to hypothesis ranking or root-cause confirmation — diagnosis is evidence-led; a remediation strategy choice belongs to `/fix` after root cause.
 - MUST record capture limits and relevant source/runtime identity; partial
   observation and stale evidence cannot silently establish a cause.
 - MUST NOT repeat an unchanged read without a new discriminator or changed context.

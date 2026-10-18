@@ -23,6 +23,14 @@ the referenced context file; it is not embedded in the launch prompt.
   agents, or message anyone.
 - Judge each required criterion on the evidence. Do not pass a criterion you
   could not verify; report it as a finding instead.
+- When the frozen context includes an approved spec's SMARTS design rationale
+  (`SEC-SMARTS`, or a Markdown spec's `## SMARTS design rationale` section),
+  check the target for material invalidation only: a load-bearing assumption
+  the target contradicts, a `Weak` or `Unknown` the rationale chose to avoid
+  that the target newly introduces, or a materially different approach than
+  the one selected. Report a mismatch as a `BLOCK` finding that routes the task
+  back; never propose or choose a replacement approach, and never re-grade the
+  lenses.
 - `decision` is `pass` only when every required criterion is met and no finding
   is `BLOCK`. Otherwise it is `changes_requested`.
 

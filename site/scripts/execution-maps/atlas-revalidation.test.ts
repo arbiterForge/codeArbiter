@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -318,6 +318,22 @@ describe('atlas source compatibility revalidation', () => {
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
   });
 
+  it('binds the SMARTS debug rule as a pure addition to the brownfield review', () => {
+    expect(SMARTS_INTEGRATION_SOURCE_BLOBS).toEqual({
+      'core/surface/skills/debug/SKILL.md': 'cc99c8c62cdb5888a3372cddcab45f1db123d412',
+    });
+    const path = 'core/surface/skills/debug/SKILL.md';
+    const before = git('--no-replace-objects', 'cat-file', 'blob', BROWNFIELD_SOURCE_BLOBS[path]).split('\n');
+    const after = git('--no-replace-objects', 'cat-file', 'blob', SMARTS_INTEGRATION_SOURCE_BLOBS[path]).split('\n');
+    // Every reviewed line survives in order; only the SMARTS rule is inserted.
+    let cursor = 0;
+    for (const line of after) if (cursor < before.length && line === before[cursor]) cursor += 1;
+    expect(cursor).toBe(before.length);
+    expect(after.filter(line => !before.includes(line))).toEqual([
+      expect.stringMatching(/^- MUST NOT apply SMARTS to hypothesis ranking or root-cause confirmation/),
+    ]);
+  });
+
   it('binds only the reviewed packet preparation and init prerequisites', () => {
     expect(REVALIDATED_AT).toBe(nativeV2Review);
     const historical = historicalPacketInputs();
@@ -334,7 +350,8 @@ describe('atlas source compatibility revalidation', () => {
       expect(BROWNFIELD_SOURCE_BLOBS[path]).toBe(blob);
       expect(git('--no-replace-objects', 'cat-file', 'blob', blob))
         .toBe(historical.get(path));
-      expect(git('hash-object', '--', path).trim()).toBe(ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
+      expect(git('hash-object', '--', path).trim()).toBe(SMARTS_INTEGRATION_SOURCE_BLOBS[path]
+        ?? ASSISTIVE_SOURCE_BLOBS[path] ?? CONTEXT_MAINTENANCE_SOURCE_BLOBS[path] ?? blob);
     }
     expect(retainsReviewedChangelog(historical.get('CHANGELOG.md')!,
       git('show', `${nativeV2Review}:CHANGELOG.md`))).toBe(true);
@@ -480,7 +497,7 @@ describe('atlas source compatibility revalidation', () => {
     const owners = Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
-      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS});
+      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

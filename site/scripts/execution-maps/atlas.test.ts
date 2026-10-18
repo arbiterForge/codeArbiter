@@ -5,14 +5,16 @@ import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS} from './atlas';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,SMARTS_INTEGRATION_SOURCE_BLOBS} from './atlas';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 import provenance from './atlas-data/provenance.json';
 const root=new URL('../../../',import.meta.url);
 
-describe('atlas source and original-composition regression contract',()=>{
+// Each case loads and verifies the whole atlas (dozens of Git reads); under a
+// full parallel suite that exceeds the 5 s default on slower hosts.
+describe('atlas source and original-composition regression contract',{timeout:30_000},()=>{
   it('covers the exact catalog, original detail and real host exposure',()=>{
     const a=loadAtlas(),catalog=JSON.parse(readFileSync(new URL('core/surface/command-routes.json',root),'utf8'));
     expect(a.commands.map(c=>c.name).sort()).toEqual(Object.keys(catalog.commands).sort());expect(validateAtlas(a)).toEqual([]);
@@ -111,7 +113,7 @@ describe('atlas source and original-composition regression contract',()=>{
       for(const [path,blob] of Object.entries({...BROWNFIELD_SOURCE_BLOBS,...LEGACY_CODE_MAP_SOURCE_BLOBS}))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries(CONTEXT_MAINTENANCE_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries(RUNTIME_COMPATIBILITY_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
-      for(const [path,blob] of Object.entries(ASSISTIVE_SOURCE_BLOBS)) {
+      for(const [path,blob] of Object.entries({...ASSISTIVE_SOURCE_BLOBS,...SMARTS_INTEGRATION_SOURCE_BLOBS})) {
         mkdirSync(dirname(join(dir,path)),{recursive:true});
         writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       }

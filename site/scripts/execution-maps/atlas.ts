@@ -87,6 +87,13 @@ export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=
   'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
 });
 
+// PR893 adds one SMARTS hard rule to debug, the only SMARTS owner outside the
+// assistive record below: diagnosis stays evidence-led and a remediation strategy
+// choice belongs to /fix after root cause. No route, gate or geometry changes.
+export const SMARTS_INTEGRATION_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+  'core/surface/skills/debug/SKILL.md':'cc99c8c62cdb5888a3372cddcab45f1db123d412',
+});
+
 // PR983 is not merely source-compatible with the old permission diagram. Retain
 // that geometry as explicitly historical and attach the bounded implementation
 // delta. Exact tracked owner blobs survive a squash; no moving-main substitution
@@ -188,7 +195,7 @@ export function originalAtlas():Atlas {
 export function loadAtlas(root=repositoryRoot()):Atlas {
   const atlas=originalAtlas();
   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
-  const pinFor=(path:string,pin?:string):string|undefined=>pin??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+  const pinFor=(path:string,pin?:string):string|undefined=>pin??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
   const requests=new Map<string,string|undefined>([
     ['core/surface/command-routes.json',catalog.catalog_snapshot.blob_sha],['core/hosts.json',undefined],
   ]);

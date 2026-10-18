@@ -5,8 +5,8 @@
   "changes": [
     {
       "path": "core/surface/includes/artifacts.md",
-      "blob": "c8598042988989e182eb01f524b5012df2936f3b",
-      "summary": "Routine artifact instructions now focus on the installed writer, typed plan, bounded task reads, factual prerequisites, actual checks and safe retry. The default leaf is about 7.3 KB and includes an executable stdin bootstrap with optional operation-schema discovery; explicit attestation remains available on demand without burdening ordinary task context.",
+      "blob": "bf9c2763348344f983bd492c0bc48cd531aee965",
+      "summary": "Routine artifact instructions now focus on the installed writer, typed plan, bounded task reads, factual prerequisites, actual checks and safe retry. The default leaf is about 7.3 KB and includes an executable stdin bootstrap with optional operation-schema discovery; explicit attestation remains available on demand without burdening ordinary task context. A spec's SMARTS design rationale lives in its approach, decisions and one SEC-SMARTS section.",
       "nodes": [
         "o-runtime",
         "o-feature-spec",
@@ -31,8 +31,8 @@
     },
     {
       "path": "core/surface/skills/writing-plans/SKILL.md",
-      "blob": "5daa1cff676a3180f35cbc7d11e235ee4a352f51",
-      "summary": "Plans preserve agreed criteria, useful tasks, dependency ancestry, bounded shared inputs and observable checks. Stable source identities and typed maintenance keep changes within the selected outcome.",
+      "blob": "324fbd0dcfb710d916b363a8ee02f70fd80fc999",
+      "summary": "Plans preserve agreed criteria, useful tasks, dependency ancestry, bounded shared inputs and observable checks. Stable source identities and typed maintenance keep changes within the selected outcome. A design-drift guard routes an undecided material solution choice back to brainstorming instead of scoring it during planning.",
       "nodes": [
         "o-feature-spec",
         "f-plan"
@@ -96,8 +96,8 @@
     },
     {
       "path": "core/surface/SPRINT.md",
-      "blob": "681776867f5a08f450e60bfa76f495d3b197a8fb",
-      "summary": "The sprint caller performs an index-first recorded-intent read, preserves actual owner decisions and ADR conflicts, then proceeds with authorized work without a second artifact approval system.",
+      "blob": "20a20c4a12212cabf9849e521e0b0d885827fb2a",
+      "summary": "The sprint caller performs an index-first recorded-intent read, preserves actual owner decisions and ADR conflicts, then proceeds with authorized work without a second artifact approval system. A SMARTS Unknown names its missing observation and cannot bypass a hard gate or manufacture authority.",
       "nodes": [
         "o-sprint-spec",
         "f-approval",
@@ -118,8 +118,8 @@
     },
     {
       "path": "core/surface/commands/feature.md",
-      "blob": "7c31901cc37a9c404b7a9c0f3cf2ff00b07716e7",
-      "summary": "The feature entry now resumes a maintained spec/plan and task progress without another artifact certification prompt; independent commit and test controls remain.",
+      "blob": "b482df4d1d4e5c693bd13e4de81e2118a0a2bf81",
+      "summary": "The feature entry now resumes a maintained spec/plan and task progress without another artifact certification prompt; independent commit and test controls remain. The small lane runs an inline SMARTS scan only for a material solution choice.",
       "nodes": [
         "o-feature-spec",
         "f-entry",
@@ -130,8 +130,8 @@
     },
     {
       "path": "core/surface/skills/brainstorming/SKILL.md",
-      "blob": "95571e2d062d175a4beb9aa1395d297f3c1d36cf",
-      "summary": "Source refinement respects recorded deferrals and accepted ADR conflicts without turning each ordinary method adjustment into a separate authorization interview.",
+      "blob": "4d7a77916f810ac9a00d687adef8c7a9ad5d407b",
+      "summary": "Source refinement respects recorded deferrals and accepted ADR conflicts without turning each ordinary method adjustment into a separate authorization interview. SMARTS compares approaches only when two or more are materially plausible; a single approach gets one line and no table.",
       "nodes": [
         "o-feature-spec",
         "o-sprint-spec",
@@ -151,8 +151,8 @@
     },
     {
       "path": "core/surface/skills/subagent-driven-development/SKILL.md",
-      "blob": "4fd4a0baab56f464d0c34be44e8456b36149dc76",
-      "summary": "Implementation works directly or delegates a coherent unit when useful. Bounded task context, applicable dependency advice and observed checks support progress while preserving actual user stops and host permissions.",
+      "blob": "90266739383fd8dad68aac773f0089c094492992",
+      "summary": "Implementation works directly or delegates a coherent unit when useful. Bounded task context, applicable dependency advice and observed checks support progress while preserving actual user stops and host permissions. Verification checks the change against a recorded SMARTS rationale for material invalidation only.",
       "nodes": [
         "f-selection",
         "f-verify",
@@ -259,8 +259,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "0a4233799d11055c17135bafefd677994c5f43d3",
-      "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected.",
+      "blob": "a894001c1044d9024471061632712949d791f7f5",
+      "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected. The historical smarts-apply request accepts the 0.2.0 SMARTS decision record.",
       "nodes": [
         "f-verify",
         "f-recovery",
@@ -618,8 +618,8 @@
     },
     {
       "path": "core/surface/commands/fix.md",
-      "blob": "17e0852bec6c6f83f1779b31b94cd313731281e8",
-      "summary": "Confirmed fixes preserve causal evidence and a named regression. Delegated input retains critical requirements; advisory delivery exhaustion ends retries while actual missing inputs and conflicts retain their dependent-work boundary.",
+      "blob": "6e32ed96c6843277b6dc485e6c254b3d67f2be04",
+      "summary": "Confirmed fixes preserve causal evidence and a named regression. Delegated input retains critical requirements; advisory delivery exhaustion ends retries while actual missing inputs and conflicts retain their dependent-work boundary. Distinct remediation strategies are compared with SMARTS only after the root cause is confirmed.",
       "nodes": [
         "o-fix",
         "o-tdd-direct",
@@ -641,8 +641,8 @@
     },
     {
       "path": "core/surface/skills/refactor/SKILL.md",
-      "blob": "fffd20cbdcfc4b99065f11e9f53c21d317ea10a3",
-      "summary": "Characterization tests can pass against existing correct behavior. Preserve behavioral assertions against the post-backfill baseline; mechanical import or symbol-reference updates retain the same oracle. Coverage and parity checks remain required. A precise surface table proceeds under existing user authorization; only material expansion or a changed outcome needs another decision.",
+      "blob": "a406ff24347d0d2a16c600855aa4015305fb43b8",
+      "summary": "Characterization tests can pass against existing correct behavior. Preserve behavioral assertions against the post-backfill baseline; mechanical import or symbol-reference updates retain the same oracle. Coverage and parity checks remain required. A precise surface table proceeds under existing user authorization; only material expansion or a changed outcome needs another decision. Distinct restructuring strategies are compared with SMARTS only after surface and parity are settled.",
       "nodes": [
         "o-fix",
         "o-tdd-direct",

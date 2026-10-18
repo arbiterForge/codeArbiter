@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-10-17
+
+### Added
+
+- SMARTS is now the six-lens design-quality rubric for material engineering solution choices, not only architectural variance. Workflows pick a depth (scan, comparison or delegated decision); SMARTS itself grants no approval and is not a command.
+- A fifth verdict, `Unknown`, records missing evidence with its missing observation and whether it is decision-critical. A decision-critical `Unknown` blocks a strong recommendation and the selection of the option that carries it, and never stands in for user approval, a prerequisite or security authority. The engine validates the `smarts-plan-method/0.2.0` record while historical `0.1.0` receipts keep their four-verdict contract.
+- SMARTS runs only where a material choice exists: brainstorming compares approaches when two or more are materially plausible (a single approach gets one line and no table), the `/feature` small lane scans only a material choice, `/fix` compares remediation strategies only after root cause, and refactor compares only distinct strategies. Writing-plans routes undecided design choices back to brainstorming, and verification checks the change against a recorded rationale for material invalidation only.
+- Specs carry a concise SMARTS design rationale (`SEC-SMARTS`), and the per-lens historical detail loads lazily from `includes/smarts/lenses.md`.
+
 ## [0.19.0] - 2026-10-14
 
 ### Changed

@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
-import { adrCases, auditCases, decisionRoutes, evidenceSources, evidenceSourceRevision,
-  smartsExample, validateDecisionEvidence } from '../../scripts/decision-evidence';
+import { adrCases, auditCases, cellVerdicts, cellVerdictText, decisionRoutes, evidenceSources, evidenceSourceRevision,
+  smartsExample, validateDecisionEvidence, type LensCell } from '../../scripts/decision-evidence';
 import { checkpointMap } from '../../scripts/execution-maps/checkpoint';
 import { validateExecutionMap } from '../../scripts/execution-maps/model';
 import { renderChapterSvg } from '../../scripts/execution-maps/render';
@@ -30,7 +30,7 @@ describe('C02 source and evidence distinctions', () => {
     expect(smartsExample.lenses.map(lens => lens.name)).toEqual(['Scalable','Maintainable','Available','Reliable','Testable','Securable']);
     expect(smartsExample.lenses.every(lens => lens.cells.length === smartsExample.options.length)).toBe(true);
     for (const lens of smartsExample.lenses) for (const cell of lens.cells) {
-      expect(['Strong','Adequate','Weak','Indifferent']).toContain(cell.verdict);
+      expect(cellVerdicts).toContain(cell.verdict);
       expect(cell.reason.split(/\s+/).length).toBeLessThanOrEqual(20);
     }
     expect(smartsExample.scenario).toContain('Illustrative');
@@ -155,4 +155,43 @@ describe('D14 owner and operator guidance', () => {
     expect(skill).toContain('does not duplicate a choice');
     expect(skill).toContain('does not restrict delegated sprint methods');
   });
+});
+
+// Top-level so its exact name is the plan's required test name (no describe prefix).
+it('renders an Unknown SMARTS cell', () => {
+  expect(cellVerdicts).toEqual(['Strong', 'Adequate', 'Weak', 'Indifferent', 'Unknown']);
+  const critical: LensCell = { verdict: 'Unknown', reason: 'No export latency measurement exists yet.',
+    missingObservation: 'p95 export latency at 50 searches', decisionCritical: true };
+  expect(cellVerdictText(critical)).toBe('Unknown — missing: p95 export latency at 50 searches (decision-critical).');
+  expect(cellVerdictText({ ...critical, decisionCritical: false })).toContain('(not decision-critical)');
+  expect(cellVerdictText({ verdict: 'Strong', reason: 'Measured.' })).toBe('Strong.');
+  expect(read('src/components/SmartsComparison.astro')).toContain('{cellVerdictText(cell)}');
+});
+
+// Top-level for the same reason: the plan names this exact test.
+it('explains SMARTS depths, Unknown and authority', () => {
+  const smarts = page('smarts').replace(/\s+/g, ' ');
+  const sectionOf = (heading: string) => {
+    const start = smarts.indexOf(heading);
+    expect(start, `${heading} section`).toBeGreaterThanOrEqual(0);
+    const next = smarts.slice(start + heading.length).search(/ ##+ /);
+    return next < 0 ? smarts.slice(start) : smarts.slice(start, start + heading.length + next);
+  };
+  const depths = sectionOf('## Three depths');
+  const order = ['**Scan**', '**Comparison**', '**Delegated decision**'].map(depth => depths.indexOf(depth));
+  expect(order.every(index => index >= 0)).toBe(true);
+  expect(order).toEqual([...order].sort((a, b) => a - b));
+  for (const phrase of ['changes the presentation only', 'only when two or more are materially',
+    'and no table', 'dispatches no grader or scout', 'does not authorize anything by itself',
+    'SMARTS: no material solution choice',
+    'only after the root cause is confirmed']) expect(depths).toContain(phrase);
+  const unknown = sectionOf('### Unknown is not Indifferent');
+  for (const phrase of ['**Indifferent** is a finding', '**Unknown** is an admission', 'names its missing observation',
+    'decision-critical', 'never quietly becomes Indifferent', 'blocks a strong recommendation',
+    'cannot bypass a hard gate or manufacture authority']) expect(unknown).toContain(phrase);
+  expect(sectionOf('## Context before verdicts')).toContain('creates no new project or configuration file');
+  expect(sectionOf('## Verdicts and Strength')).toContain('**Weak**, **Indifferent** or **Unknown**');
+  for (const phrase of ['SMARTS grants no approval.', 'non-SMARTS considerations',
+    'Interactive reconciliation needs an explicit user choice.']) expect(smarts).toContain(phrase);
+  expect(smarts).not.toMatch(/Indifferent when[^.]*uncertain/);
 });

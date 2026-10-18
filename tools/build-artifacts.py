@@ -186,7 +186,8 @@ def main():
     if not args.skip_tests and (goos, goarch) != (native_os, native_arch):
         raise SystemExit("Native qualification requires the actual host target; unset cross-build GOOS/GOARCH or use --skip-tests.")
     if not args.skip_tests:
-        subprocess.run(["go", "test", "./...", "-count=1"], cwd=module, env=env, check=True)
+        # An explicit bound replaces Go's implicit 10-minute per-package default.
+        subprocess.run(["go", "test", "./...", "-count=1", "-timeout=30m"], cwd=module, env=env, check=True)
         subprocess.run(["go", "vet", "./..."], cwd=module, env=env, check=True)
     name = f"ca-artifact-{goos}-{goarch}" + (".exe" if goos == "windows" else "")
     subprocess.run(["go", "build", "-trimpath", "-buildvcs=false", "-ldflags=-s -w", "-o", str(output/name), "./cmd/ca-artifact"], cwd=module, env=env, check=True)

@@ -48,6 +48,14 @@ If implementation reveals a better in-scope method, update task steps, runner, o
 
 Compare the implementation to the source criteria: what is required, what changed, what is missing, and what behavior a passing test actually covers. Run the planned applicable test or a narrower verified equivalent through the existing **host-governed execution tool**. Record the command, working directory, outcome, and limitations. A command-level pass is not invented named-test proof. A new failure or a skipped/unknown result cannot be masked by an earlier pass.
 
+**Design-rationale drift.** When the spec records a SMARTS design rationale (`SEC-SMARTS`, or a
+Markdown spec's `## SMARTS design rationale` section), check the change against it for material
+invalidation only: a load-bearing assumption the change contradicts, a `Weak` or `Unknown` the
+rationale chose to avoid that the change newly introduces, or a materially different approach than
+the one selected. Do not re-run SMARTS or grade the implementation. A mismatch returns the task to
+step 2 with the contradicted rationale cited, or routes the design question back to `brainstorming`;
+never pick a replacement approach inside review.
+
 A failing check is a reason to repair, investigate, or mark verification pending, **not permission to claim it passed** and not a ban on unrelated implementation. Rerun affected checks after a correction. If the same approach fails repeatedly without new information, diagnose differently or record a bounded blocked task and continue unrelated work.
 
 Review the combined relevant diff when risk or change size warrants it. Use a specialist reviewer only for an actual security/dependency/migration concern or an explicit policy requirement. Avoid duplicate security reviews and blanket per-task spec/quality fleets. Retain useful findings; revisit affected conclusions only when relevant code, requirements, supporting evidence, or the previously reviewed subject changes. A new receipt ID by itself is not an impact.

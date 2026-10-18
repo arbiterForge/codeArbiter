@@ -42,6 +42,14 @@ for useful implementation and review, not a compulsory two-to-five-minute limit.
 A small related change does not need its own author/reviewer lifecycle. Split
 work when it has separate outcomes, dependencies, or independently useful progress.
 
+**Design-drift guard.** Decomposition splits decided work; it never designs. If splitting surfaces a
+material solution choice the spec does not decide — two or more materially plausible approaches the
+spec leaves open, or a step that would contradict the spec's recorded SMARTS rationale — STOP and
+never pick, score or SMARTS-evaluate it here. Route the undecided choice back to the owning design
+workflow, `brainstorming` (`{{PLUGIN_ROOT}}/skills/brainstorming/SKILL.md`), and resume planning only
+once the spec records the decision. A choice the spec already decides, or a trivial local
+implementation detail with no material solution choice, is not drift.
+
 Use real repository commands or an explicitly described observable check. A test
 file or case that this task will create may not exist yet. An unsupported named
 result parser is not a reason to reject the plan or invent test outcomes; a

@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
@@ -232,6 +233,86 @@ func TestSMARTSTieDoesNotDemandAnotherHumanDecision(t *testing.T) {
 	d["selected"] = int64(1)
 	d["strength"] = "tied"
 	h.run("smarts-apply", req)
+}
+func unknownCell(critical bool) object {
+	return object{"verdict": "Unknown", "reason": "Restart behavior is not yet measured.", "missing_observation": "Lookup latency during a cold restart.", "decision_critical": critical}
+}
+func TestSMARTSRefusesDecisionCriticalUnknownSelection(t *testing.T) {
+	cases := []struct {
+		name     string
+		mutate   func(d object)
+		accepted bool
+	}{
+		{"selected option carries a decision-critical Unknown", func(d object) {
+			model.M(model.M(model.A(d["options"])[0])["lenses"])["Available"] = unknownCell(true)
+		}, false},
+		{"strong while another option carries a decision-critical Unknown", func(d object) {
+			other, _ := canonical.Clone(model.M(model.A(d["options"])[0]))
+			other["label"] = "Unmeasured cache"
+			other["steps"] = model.List("Cache precedence results across calls.")
+			model.M(other["lenses"])["Available"] = unknownCell(true)
+			d["options"] = append(model.A(d["options"]), other)
+			d["strength"] = "strong"
+		}, false},
+		{"a non-critical Unknown with its missing observation is recorded", func(d object) {
+			model.M(model.M(model.A(d["options"])[0])["lenses"])["Available"] = unknownCell(false)
+		}, true},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			h := newHarness(t)
+			h.createPair()
+			_, r := pairFixture(h, true)
+			out := h.run("sprint-approve", r)
+			before := h.doc("PLAN-EXAMPLE")
+			req := smartsReq(h, model.S(out["grant_receipt"]))
+			c.mutate(model.M(req["decision"]))
+			_, err := h.request("smarts-apply", req)
+			if c.accepted {
+				if err != nil {
+					t.Fatalf("0.2.0 decision refused: %v", err)
+				}
+				return
+			}
+			if fault.Code(err) != "INVALID_SMARTS" {
+				t.Fatalf("expected INVALID_SMARTS, got %v", err)
+			}
+			if h.doc(before.ID()).Hash() != before.Hash() {
+				t.Fatal("refused decision changed the plan")
+			}
+		})
+	}
+}
+func readStoreJSON(t *testing.T, h *harness, ref string) object {
+	t.Helper()
+	raw, err := os.ReadFile(filepath.Join(h.root, filepath.FromSlash(ref)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var v object
+	if err = json.Unmarshal(raw, &v); err != nil {
+		t.Fatal(err)
+	}
+	return v
+}
+func TestSMARTSRecordsProfile020(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	_, r := pairFixture(h, true)
+	out := h.run("sprint-approve", r)
+	got := h.run("smarts-apply", smartsReq(h, model.S(out["grant_receipt"])))
+	if got["acceptance_granted"] != false {
+		t.Fatal("method-only SMARTS authority granted acceptance")
+	}
+	receipt := readStoreJSON(t, h, model.S(got["receipt"]))
+	source := readStoreJSON(t, h, model.S(receipt["authority_source_ref"]))
+	observed := readStoreJSON(t, h, model.S(source["observation_ref"]))
+	if model.S(observed["producer_profile"]) != "smarts-plan-method/0.2.0" {
+		t.Fatalf("smarts-apply recorded profile %q", observed["producer_profile"])
+	}
+	if model.S(source["authority_kind"]) != "smarts_workflow" {
+		t.Fatal("wrong authority kind")
+	}
 }
 func TestSMARTSChangedSpecRevokesGrant(t *testing.T) {
 	h := newHarness(t)
