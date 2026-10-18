@@ -16,8 +16,8 @@ DIRECT = 'python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"'
 ISOLATION = 'python .github/scripts/test_suite_hermeticity.py'
 GUARD = 'python .github/scripts/test_hook_ci_partition.py'
 # sha256(compact JSON of the ordered pre-partition command list). This binds
-# the guard to all 69 reviewed command steps without duplicating the workflow here.
-COMMANDS_SHA256 = '77e594b21b93daba181c86f38e3707f5046e24867d3aa3bda3eddf786bd022b8'
+# the guard to all 70 reviewed command steps without duplicating the workflow here.
+COMMANDS_SHA256 = 'd120613d9f6fe980baf33b17034bb1d0fef68dafa5f923506f2bb383d56c1e13'
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
         exclude:
@@ -75,7 +75,7 @@ def validate(
     expected_counts: dict[str, int] | None = None,
 ) -> dict[str,int]:
     if expected_counts is None:
-        expected_counts={'contracts':67,'functional':1,'isolation':1,'guard':1,'setup':2}
+        expected_counts={'contracts':68,'functional':1,'isolation':1,'guard':1,'setup':2}
     block=job_block(text,'hooks')
     pre=block.split('    steps:\n',1)[0]
     require(pre.count(MATRIX)==1,'Expected exactly the reviewed five-cell matrix')
