@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:codearbiter:artifact:plan:0.3.1",
-  "title": "codeArbiter plan reference schema 0.3.1",
+  "$id": "urn:codearbiter:artifact:plan:0.3.2",
+  "title": "codeArbiter plan reference schema 0.3.2",
   "type": "object",
   "properties": {
     "format": {
@@ -16,7 +16,8 @@
     "schema_version": {
       "enum": [
         "0.3.0",
-        "0.3.1"
+        "0.3.1",
+        "0.3.2"
       ]
     },
     "artifact_id": {
@@ -33,13 +34,13 @@
       "maximum": 9007199254740991
     },
     "governance": {
-      "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/governance"
+      "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/governance"
     },
     "presentation": {
-      "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/presentation"
+      "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/presentation"
     },
     "integrity": {
-      "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/integrity"
+      "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/integrity"
     },
     "normative": {
       "type": "object",
@@ -47,7 +48,7 @@
         "retired_symbols": {
           "type": "array",
           "items": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/retired"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/retired"
           },
           "minItems": 0
         },
@@ -60,50 +61,50 @@
           "minLength": 1
         },
         "baseline": {
-          "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/baseline"
+          "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/baseline"
         },
         "sections": {
           "type": "array",
           "items": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/section"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/section"
           },
           "minItems": 0
         },
         "sources": {
           "type": "array",
           "items": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/source"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/source"
           },
           "minItems": 0
         },
         "spec_ref": {
-          "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/spec_ref"
+          "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/spec_ref"
         },
         "tasks": {
           "type": "array",
           "items": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/task"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/task"
           },
           "minItems": 0
         },
         "checkpoints": {
           "type": "array",
           "items": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/checkpoint"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/checkpoint"
           },
           "minItems": 0
         },
         "prerequisites": {
           "type": "array",
           "items": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/prerequisite"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/prerequisite"
           },
           "minItems": 0
         },
         "criterion_dispositions": {
           "type": "array",
           "items": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/criterion_disposition"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/criterion_disposition"
           },
           "minItems": 0
         },
@@ -160,7 +161,7 @@
             "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
           },
           "additionalProperties": {
-            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/task_state"
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/task_state"
           }
         },
         "prerequisites": {
@@ -213,6 +214,31 @@
               "plan_sha256"
             ],
             "additionalProperties": false
+          }
+        },
+        "prerequisite_observations": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "additionalProperties": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/prerequisite_observation"
+          }
+        },
+        "task_check_observations": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 16,
+            "items": {
+              "$ref": "urn:codearbiter:artifact:common:0.3.2#/$defs/task_check_observation"
+            }
           }
         }
       },

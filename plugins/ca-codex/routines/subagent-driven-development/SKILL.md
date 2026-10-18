@@ -1,245 +1,97 @@
 ---
 name: subagent-driven-development
-description: The implementation engine. Routed to by /sprint (full plan, autonomous) and by executing-plans (scoped batch, checkpoint-gated). One fresh subagent per task — test-first via tdd — followed by spec-compliance review, quality review, and fresh-run verification. No single context accumulates drift, and nothing is accepted on a subagent's word.
+description: Assistive implementation engine for /sprint and scoped executing-plans work. Follow actual dependencies, implement or delegate coherently, run relevant checks, preserve honest evidence, and advance without artifact approval codes or compulsory reviewer cascades.
 disable-model-invocation: true
 ---
 
 # subagent-driven-development
 
-## Structured-artifact format boundary
+Execute an existing plan. The plan helps the agent remember the intended result; it is not a second permission system. Run meaningful work, correct defects, update progress, and tell the truth about unfinished checks. The active host, user instructions, and independently applicable security/commit controls still govern real actions.
 
-New full-lane workflows default to HTML through the installed engine. Existing
-HTML pairs use the same path. Load
-[includes/artifacts.md](../../includes/artifacts.md) before HTML artifact I/O;
-its typed identity, binding, receipt, contextual-read, and scope-state rules
-replace rendered-document parsing and direct status-cell edits. Existing
-authoritative Markdown pairs stay on their exact legacy path without conversion.
-A missing, invalid, or unqualified HTML capability must fail closed rather than
-fall back to new Markdown authority. HTML `--farm` dispatch remains disabled.
-Keep every other workflow gate, including human checkpoints, unchanged.
+## Format and capability boundary
 
+Load [includes/artifacts.md](../../includes/artifacts.md) for artifact I/O and preserve the selected spec/plan representation. For an explicitly selected Markdown `plan.json` farm workflow, follow [routines/subagent-driven-development/references/farm-dispatch.md](references/farm-dispatch.md) and its provider, budget and circuit-breaker requirements.
 
-One task, one fresh subagent, two reviews, proof on a fresh run. Routed to by `/sprint` (full plan,
-autonomous) and by `executing-plans` (one batch at a time, with human checkpoints between batches).
-The loop processes tasks in dependency order and never trusts a self-report.
+**Scope:** with an explicit `scope` from `executing-plans`, work only on the named tasks; without it, `/sprint` works across the plan. A checkpoint is an organizing group, not independent permission to do the next task.
 
-## Pre-flight
+## 1. Orient and select actual work
 
-Read these, or STOP and surface the gap — never guess scope, command, or obligation:
+Read the selected spec/plan, relevant `.codearbiter/CONTEXT.md`, and the needed build/check commands from `.codearbiter/tech-stack.md`, when present. Read `security-controls.md` for work affecting its rules. Missing optional orientation is a diagnostic, not a blanket STOP; never guess an essential requirement or execute an unknown command.
 
-- `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
-- The discovered authoritative spec/plan pair. Existing Markdown pairs retain
-  their current ledger. For HTML, load [includes/artifacts.md](../../includes/artifacts.md),
-  retain the exact artifact identities and engine-written receipts, and read
-  the approved spec binding, obligations, paths, verification definitions,
-  dependencies, and state only through `identity`, `index`, `outline`,
-  symbol-scoped `read`, and `eligible`. The engine `eligible` response is authoritative;
-  the workflow must not infer authority from rendered text, checkboxes, status
-  words, digests, or caller-supplied labels, and must not read or write a shadow
-  Markdown ledger.
-- `<project-root>/.codearbiter/tech-stack.md` — build, test, and verification invocations; file layout; the scope-to-author mapping.
-- `<project-root>/.codearbiter/security-controls.md` — only when a task touches a security boundary (auth, crypto, secrets, a trust boundary).
+For HTML, use `identity`, `index`, `outline`, exact or batched symbol-scoped `read`, and `eligible`. The engine `eligible` response is **advisory scheduling**, not permission or evidence of a passing test. Read actual task dependencies and `waiting_prerequisites`; do not treat a checkpoint number or an unscoped legacy prerequisite as a universal dependency.
 
-**Optional `scope` parameter:** when invoked by `executing-plans`, a list of task IDs is passed. The
-loop processes only those tasks (in their internal dependency order). When `scope` is absent (the
-`/sprint` path), the loop processes the full plan from first unblocked task to last.
+**Read only what matters:** use `task-context` with the current plan
+`model_sha256` and task ID. It returns referenced criteria, dependency states
+and scoped facts without claiming a snapshot or approval. If
+`binding_current: false`, inspect changed requirements. If
+`context_complete: false`, fetch necessary exact symbols. On `STALE_CURSOR`
+reread identity; on `RECORD_TOO_LARGE` fetch complete individual records.
+Without this operation, fall back to existing exact/`read-batch` reads.
 
-## Phase 1 — Task selection · gate: BLOCK
+For a `fact` prerequisite, check it with ordinary authorized tools and record the actual `prerequisite` observation (satisfied/unsatisfied/unknown, source, outcome and reported origin). For a `decision`, apply the user's already-stated choice where it is actually supported; otherwise ask the consequential question in ordinary language. An agent report is not an authenticated user decision. An unresolved prerequisite affects only the tasks that depend on it; continue independent work.
 
-Pull the next unblocked task from the plan in dependency order. When a `scope` was passed, restrict
-selection to tasks in that list. For Markdown, select only a task whose status is `PENDING` and whose
-dependencies are `ACCEPTED`; `BLOCKED` tasks are not selectable until the owning plan workflow
-records a supported transition. For HTML, accept only tasks returned by `eligible` for the exact
-selected plan identity. A task is one verifiable unit of work with a path set, a spec obligation,
-and a verification command.
+Record `task-start` when beginning a pending HTML task using the current revision/model hash and a durable operation ID. `task-start` does not need approval receipts, a complete context ticket, a source snapshot, or a reviewer. It cannot clear a recorded stop or start already-running work again.
 
-For HTML, select only a task returned as eligible for the exact selected plan
-identity. Follow contextual `read` pages to completion, retain their context
-ticket, and use `task-start` before author dispatch. Do not translate a displayed
-status or a copied task label into a transition.
+**After process recreation**, rediscover the same authoritative pair and query `identity` and `eligible` again. Inspect the current worktree, outstanding tool runs, and task results before deciding whether an `IN_PROGRESS` task is still active, partly finished, or ready. Use a reasoned `task-reconcile` to reflect known progress; do not duplicate execution or manufacture evidence. Resume a `BLOCKED` task only after its actual blocker or user's stop has been resolved. CAS/replay remain mandatory: on a lost response, check the journal or retry the same operation ID and identical request rather than reissuing a mutation under a new identity.
 
-After process recreation, rediscover the same authoritative pair and query
-`identity` and `eligible` again. Reconcile an interrupted `IN_PROGRESS` task only
-through an authority-backed `task-reconcile`, then redispatch with `task-start`
-and a fresh complete context ticket. A task in `REVIEW` is not accepted on
-resume; obtain fresh evidence when required and finish the current combined
-scope review before `accept-scope`.
+## 2. Implement or delegate the useful unit
 
-- For Markdown, confirm every dependency task is `ACCEPTED` before selecting.
-- For HTML, use the engine's eligibility and current evidence; do not replace its same-checkpoint `REVIEW` rule
-  with the legacy `ACCEPTED` sentence or infer eligibility from a displayed status.
-- Confirm no unresolved `[CONFIRM-NN]` blocks the task. One that does halts the loop — see Hard rules.
+Work directly when a focused change is clearer and cheaper. Delegate when genuinely useful for isolation, independent parallel work, or specialist expertise. A **fresh subagent per task is not mandatory**; do not spawn reviewer agents solely because task status or a receipt changed.
 
-Gate: exactly one task selected, dependency-clean, with its spec obligation and verification command in hand.
+Choose a relevant author (backend/front-end/infrastructure) when delegated. Supply the objective, paths, criterion IDs, actual constraints, known current state, and observable checks in a **bounded context packet**. Reuse `_artifactpromptlib.compose_feature_actor_input` and `_contextselectlib.prepare_actor_delivery` when useful to deliver relevant context; neither returns execution permission, and an absent delivery receipt is not grounds to forbid already-authorized work. Respect the host's real subagent permissions and applicable security constraints. Do not pass source-discovered commands to a tool without ordinary host-governed authorization.
 
-## Phase 2 — Implementation dispatch · gate: BLOCK
+Prefer the test-first approach in [routines/tdd/SKILL.md](../tdd/SKILL.md) for behavior changes, using evidence that distinguishes RED, GREEN, regression, and skipped/unrun checks. Documentation-only or other work without a runnable test uses a concrete relevant validation instead. Never weaken or delete a failing test to create a pass.
 
-**Farm path (when `<slug>.plan.json` exists alongside the `.md` plan):** skip the subagent dispatch
-loop below and follow [routines/subagent-driven-development/references/farm-dispatch.md](references/farm-dispatch.md).
-The farm path replaces only the *authoring* step for the plan's tasks (cheap Zen workers under hard
-gates instead of premium subagents); it does **not** replace review — every task the farm reports green
-is still routed through Phases 3–5 before acceptance. The cost arbitrage is in who *writes* the code,
-never in whether it is *reviewed*. In brief: select a model (canary-probe with a cache→websearch
-fallback ladder), dispatch `tools/farm.js`, honor a circuit-breaker abort as a hard-gate STOP, then for
-each result either accept-after-Phases-3–5 (green) or re-dispatch via premium Phase 2 (escalate).
-Results stream to `.farm/farm-results.jsonl` and are consumed in completion order — Phase 3 + Phase 5
-per green task as it lands, Phase 4 still the once-per-scope barrier (reconcile against `farm-report.json`
-on abort). The reference has the full step-by-step.
+If implementation reveals a better in-scope method, update task steps, runner, or decomposition through typed `apply` with a short reason. Do not reset other tasks or reapprove the entire plan. A changed outcome or consequential unresolved choice goes to its real owner.
 
----
+## 3. Verify truthfully and assess only relevant risks
 
-**Normal path (no `plan.json`):** dispatch ONE fresh subagent for the selected task — `backend-author`, `frontend-author`, or
-`infra-author` by the scope mapping in `tech-stack.md`
-([agents/<name>.md](../../agents/<name>.md)). A fresh context per task is the whole point: no carried-over
-assumptions, no accumulated drift.
+Compare the implementation to the source criteria: what is required, what changed, what is missing, and what behavior a passing test actually covers. Run the planned applicable test or a narrower verified equivalent through the existing **host-governed execution tool**. Record the command, working directory, outcome, and limitations. A command-level pass is not invented named-test proof. A new failure or a skipped/unknown result cannot be masked by an earlier pass.
 
-The subagent works test-first by routing through the `tdd` skill ([routines/tdd/SKILL.md](../tdd/SKILL.md)) — no implementation code before
-`tdd` Phase 1. Brief it with the task's path set, its spec obligation, and its verification command.
-Nothing else from prior tasks leaks in.
+**Design-rationale drift.** When the spec records a SMARTS design rationale (`SEC-SMARTS`, or a
+Markdown spec's `## SMARTS design rationale` section), check the change against it for material
+invalidation only: a load-bearing assumption the change contradicts, a `Weak` or `Unknown` the
+rationale chose to avoid that the change newly introduces, or a materially different approach than
+the one selected. Do not re-run SMARTS or grade the implementation. A mismatch returns the task to
+step 2 with the contradicted rationale cited, or routes the design question back to `brainstorming`;
+never pick a replacement approach inside review.
 
-Before dispatch, obtain current bounded inputs for the selected task paths:
-existing code-map text if available, assessed provenance, scoped command
-records and collector observations, applicable constraint references, and
-host-effective native instructions in precedence order. Call the private
-`_artifactpromptlib.compose_feature_actor_input` with the chosen author name,
-brief, exact approved spec and plan IDs, task ID, task paths, and those inputs.
-Send its returned `input` as the fresh child's actual input. The returned
-packet never grants task start, source-snapshot admission, or permission to
-mutate or execute a discovered command. Resolve an applicable critical
-unresolved constraint before that material action. An unavailable optional
-map permits bounded read-only orientation, not an invented complete map.
-For each author or reviewer dispatch, call `_contextselectlib.prepare_actor_delivery`
-on that actor's freshly selected packet with the actual actor/task, absolute
-worktree, current source identity, and host epoch when observable. Send its
-bounded `delivery_text` to that child on `deliver` and retain the counted
-attempt. Treat `observed` only as caller-reported load/input evidence; do not
-use a shared session or persona/read marker as a receipt. On `blocked`, stop
-the material action and report the delivery gap. Re-select after resume,
-compaction, scope expansion, or worktree switch; missing epochs get at most
-two counted deliveries for the same binding.
+A failing check is a reason to repair, investigate, or mark verification pending, **not permission to claim it passed** and not a ban on unrelated implementation. Rerun affected checks after a correction. If the same approach fails repeatedly without new information, diagnose differently or record a bounded blocked task and continue unrelated work.
 
-Gate: all six `tdd` phases must be green before acceptance. Never redispatch merely to evade a failing gate.
-Under an approved `/sprint`, an ordinary implementation/test failure routes to **Recovery within the approved sprint** in [SPRINT.md](../../SPRINT.md); rerun the original gate after an evidence-led correction.
-An attended invocation returns the blocked prerequisite to its caller. A real authority or security block
-halts the affected work and is surfaced under the hard rules, in either mode.
+Review the combined relevant diff when risk or change size warrants it. Use a specialist reviewer only for an actual security/dependency/migration concern or an explicit policy requirement. Avoid duplicate security reviews and blanket per-task spec/quality fleets. Retain useful findings; revisit affected conclusions only when relevant code, requirements, supporting evidence, or the previously reviewed subject changes. A new receipt ID by itself is not an impact.
 
-## Phase 3 — Spec-compliance review · gate: BLOCK
+For an explicitly required attested claim, load only the applicable part of [includes/artifacts-attestation.md](../../includes/artifacts-attestation.md). Never fabricate or auto-approve receipts. Actual user stops, host permissions and policy-required reviews still apply.
 
-Did the change satisfy the task's obligation? Measure the result against the spec line the task
-traces to — not against whether tests merely pass.
+For a real verification command that the host already ran, record its
+ordinary result via native `task-check` with `command_index` only when
+the exact declared command ran, or without it for a useful ad-hoc check.
+Pass along the observed exit code, summary and bounded source/output; never
+invent a named-test result because a collector could not parse it. The
+result stays `caller_reported`, never an independent test/reviewer certificate.
+The engine can compare the bounded task paths, explicitly declared
+`shared_inputs` and known build manifests to the earlier report. Treat
+`scoped_changed` as a reason to refresh **affected** checks; treat
+`scoped_unchanged` as partial applicability only (`scope_complete: false`).
+An unmodeled import, oversized directory, symlink, missing source or
+custom build input remains `unassessed`. Include actual shared interfaces
+in the plan when relevant; do not run a repository-wide snapshot on every
+task read or claim complete dependency closure from these hashes. A failed/skipped/unknown
+report does not become successful because the task was marked `DONE`.
+The latest reported failure remains visible even after an older pass; fix
+only relevant work and record another actual result as appropriate. Avoid
+turning this bookkeeping into an extra testing or approval phase.
 
-For an independent spec reviewer, freshly compose the same task-scoped input
-with actor `spec-reviewer` and the exact artifact/task IDs, then send the
-returned `input` to that reviewer before its substantive verdict. Do not
-substitute the author's packet or the coordinator's summary for reviewer
-delivery; the reviewer independently checks source identity and constraints.
+## 4. Persist honest progress and return
 
-- Every acceptance claim in the task's obligation is met by the change.
-- Scope is clean: nothing implemented beyond the task; nothing required by it omitted.
-- Out-of-scope work the subagent noticed is recorded with an inline `[NEEDS-TRIAGE]` marker — never
-  acted on inside this task.
-- **Design-rationale drift.** When the approved spec records a SMARTS design rationale (`SEC-SMARTS`,
-  or a Markdown spec's `## SMARTS design rationale` section), check the change against it for
-  material invalidation only: a load-bearing assumption the change contradicts, a `Weak` or `Unknown`
-  the rationale chose to avoid that the change newly introduces, or a materially different approach
-  than the one selected. Do not re-run SMARTS or grade the implementation. A mismatch returns the
-  task to Phase 2 with the contradicted rationale cited, or routes the design question back to
-  `brainstorming`; never pick a replacement approach inside review.
+For HTML use `task-review` without receipts to record implementation ready for review; this is **not** a claim that an independent review or tests passed. For a completed implementation batch use `accept-scope` with its authored scope ID and a real reason, **without a receipt**, to record `DONE` (implementation complete; checks not assessed). It must not clear a pending/blocked member. Keep failures, outstanding checks, and uncertainty in the report or appropriate typed records. Do not upgrade `DONE` to `ACCEPTED` without genuine independent evidence.
 
-For HTML, capture the actual spec-review event against the exact task and
-artifact identities. After the governed verification runner has produced its
-separate receipt, use `task-review` with those two engine-written receipts. A
-digest or the reviewer/subagent's label is not evidence by itself.
+For Markdown, keep its one task ledger and original format; do not treat past status text as new verification.
 
-Gate: the obligation is fully satisfied and scope is clean. A shortfall returns the task to Phase 2
-with a corrective brief.
+- **Scoped invocation:** return completed tasks, checks actually run, unresolved issues, and next work to `executing-plans`. Do not call `commit-gate` yourself.
+- **Full-plan invocation:** provide the same honest summary to `/sprint`; it owns the authorized commit and PR handoff. A completed implementation batch with failing or unrun required checks is not release-ready.
 
-## Phase 4 — Quality review (once per scope) · gate: BLOCK
+## Hard boundaries
 
-Runs ONCE per scope — after every task in the current scope has cleared Phase 3 and Phase 5 — over
-the **combined diff** of the scope, not per 2–5-minute task. Per-task review at that granularity
-costs more context than the work and catches nothing the batch diff doesn't; the batch boundary is
-where review pays. (A scope of one task reviews that task's diff — same rule, degenerate case.)
+Do not invent a test result, user choice, reviewer finding, credential, approval, or installed-host qualification. Do not clear a user stop, skip actual host permissions, run an irreversible or unapproved out-of-scope operation, or bypass independently applicable security controls. Do not silently modify a requirement to claim completion. Mark unrelated discoveries `[NEEDS-TRIAGE]`, not automatic scope expansion.
 
-Dispatch the reviewers applicable to what the combined diff touches, then `finding-triage`
-([agents/finding-triage.md](../../agents/finding-triage.md)) to classify every finding by severity. Select
-reviewers by the diff, not blanket — dispatching an irrelevant reviewer wastes a context:
-
-For each dispatched reviewer, compose and send a fresh actor input with the
-union of paths in the combined scope, the current bounded context inputs,
-exact approved spec/plan IDs, and the scope task binding. Preserve independent
-review judgment and all existing review gates. A packet read only by the
-coordinator is not reviewer delivery; unresolved critical constraints block a
-substantive verdict while bounded source inspection remains possible.
-
-- `security-reviewer` ([agents/security-reviewer.md](../../agents/security-reviewer.md)) — any security-relevant path (authn/authz, deploy, CI, trust boundary).
-- `auth-crypto-reviewer` ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) — auth, crypto, key, or secret changes.
-- `dependency-reviewer` ([agents/dependency-reviewer.md](../../agents/dependency-reviewer.md)) — `package.json` / lockfile / base-image changes.
-- `migration-reviewer` ([agents/migration-reviewer.md](../../agents/migration-reviewer.md)) — DB migration add/modify.
-
-(Do NOT dispatch `grader` or `scout` — they are INTERNAL to `decision-variance` and must never be
-dispatched here.) If the change touches none of the above domains, the quality bar is `tdd`'s own gates
-plus `coverage-auditor` (already run in `tdd` Phase 4) — record that and proceed.
-
-- A security CRITICAL finding halts the loop — see Hard rules.
-- A HIGH finding returns the offending task(s) — attributed by file — to Phase 2; the scope's
-  quality review re-runs over the corrected combined diff.
-- MEDIUM and LOW findings are recorded; the active caller owns their disposition. Under an approved
-  `/sprint`, use its existing delegated decision rules rather than adding a per-finding user checkpoint.
-  In attended execution the user retains that decision; mandatory project policy still applies.
-
-Gate: no CRITICAL, no HIGH across the scope's combined diff. Nothing in the scope is `ACCEPTED`
-until this passes.
-
-## Phase 5 — Verification · gate: BLOCK
-
-Verification-before-completion: apply the shared fresh-run discipline in
-[includes/fresh-verification.md](../../includes/fresh-verification.md), with **the task's verification command from the
-plan** as the target. Run it yourself in a clean invocation; do not accept a logged result from Phase 2.
-A non-zero exit, or output that does not demonstrate the obligation, returns the task to Phase 2.
-
-Gate: the verification command exits clean and its output demonstrates the obligation. Only then.
-
-## Phase 6 — Accept and advance · gate: BLOCK
-
-Mark a task accepted only when its spec-compliance review and fresh verification
-passed AND the scope's Phase 4 quality review passed. For Markdown, record the
-existing status-cell transition in the plan. For HTML, capture the actual
-combined quality-review event and call `accept-scope` once for the whole scope;
-the resulting engine state and acceptance receipts are the resume ledger. Never
-edit an HTML status cell or create a Markdown counterpart. In either format, an
-acceptance that lives only in conversation context is lost to interruption.
-
-- Tasks remain in the current scope → return to Phase 1.
-- **Scoped invocation** (`scope` was passed by `executing-plans`): all scoped tasks `ACCEPTED` → signal
-  batch complete and return to `executing-plans`. Do NOT hand to `commit-gate`; the caller owns that decision.
-- **Full-plan invocation** (no `scope`, i.e. `/sprint`): plan complete → hand the branch to
-  `commit-gate`, then to the caller's finishing step. The loop does not commit on its own authority.
-
-When either path claims the entire HTML plan is currently accepted, invoke the
-installed bridge's `_preflight_current_acceptance` with the exact
-`_resolve_workflow_pair` result, repository-bound client, and engine-returned
-spec/plan IDs. Do not pass or derive authority from a caller label, digest,
-status, or receipt. A refusal means the plan is not complete; return to the
-appropriate execution/reconciliation phase instead of handing off.
-
-Gate: every task in the current scope `ACCEPTED`, the suite green, ready for the caller's next step.
-
-## Hard rules
-
-- MUST dispatch a fresh subagent per task — never reuse one context across tasks.
-- MUST NOT write implementation code before the task's `tdd` Phase 1 completes.
-- MUST accept a task only when both reviews pass AND verification passes on a fresh run.
-- MUST NOT accept a task on a subagent's self-report — run the verification command and read its exit code.
-- MUST halt and surface a real authority or security block, including security CRITICAL findings and
-  unresolved `[CONFIRM-NN]` decisions. Ordinary TDD/verification failures and finish-time stale proof
-  under an approved sprint take Recovery within the approved sprint in [SPRINT.md](../../SPRINT.md).
-  A failed gate never auto-passes, and recovery never grants missing commit authority.
-- MUST NOT commit — hand the accepted branch to `commit-gate`.
-- MUST mark out-of-scope findings with an inline `[NEEDS-TRIAGE]` marker and never act on them inside the task.
-- MUST NOT invoke `farm.js` before writing `meta.model` into `plan.json` (or setting `FARM_MODEL`) — the dispatcher fails loudly otherwise.
-- MUST NOT skip model selection (Step 1) when `FARM_MODEL` is not set — exhaust the canary→cache→websearch fallback ladder before BLOCKing; never blind-invoke with an unknown model id.
-- MUST route every green farm task through Phases 3–5 before acceptance — the farm replaces authoring, never review. A cheap model gets the same scrutiny as a premium subagent, not less.
-- MUST treat a single task's drift/gaming/tampered-test escalation as model incapacity (re-dispatch via premium Phase 2); raise `[CONFIRM-NN]` and HALT only when multiple tasks drift onto the same out-of-scope path (a real spec gap).
-- MUST treat a `farm.js` circuit-breaker abort (`aborted: true`) as a hard-gate STOP — surface to the user; do not silently re-dispatch the whole slice to premium.
-- MUST NOT dispatch `grader` or `scout` in Phase 4 — they are INTERNAL to `decision-variance`.
+A reported `DONE` is useful progress, not fresh verification. `eligible` is useful scheduling, not authority. Treat actual failures as failures; do not compensate by adding approval ceremonies or dispatching unrelated reviewers. Do not commit from this skill; use the real `commit-gate` owner when committing is authorized.

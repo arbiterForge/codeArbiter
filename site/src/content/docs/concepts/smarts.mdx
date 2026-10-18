@@ -13,14 +13,48 @@ journey:
 import SmartsComparison from '../../../components/SmartsComparison.astro';
 import DecisionRoutes from '../../../components/DecisionRoutes.astro';
 
-SMARTS is codeArbiter's method for comparing engineering options. It makes the reasons for a
-recommendation inspectable: the alternatives, six engineering lenses, the evidence behind each
-judgment, and the factors the rubric does not cover. It is useful when a change admits more than
-one plausible approach. It is not a numerical score that automatically selects the winner.
+SMARTS is codeArbiter's six-lens design-quality rubric for material engineering solution choices.
+It makes the reasons for a recommendation inspectable: the alternatives, six engineering lenses,
+the evidence behind each judgment, and the factors the rubric does not cover. It is useful when a
+change admits more than one plausible approach. It is not a numerical score that automatically
+selects the winner, and it is not a command: it runs inside the workflows that already shape, plan,
+fix and reconcile work.
 
-The surrounding lane determines who can make the decision. Interactive reconciliation needs an
-explicit user choice. An approved sprint decides non-hard-gate questions inside its existing scope,
-including close calls. Both use SMARTS, but they do not have the same authority.
+SMARTS grants no approval. The surrounding lane determines who can make the decision. Interactive
+reconciliation needs an explicit user choice. A requested sprint makes reversible method decisions
+inside its existing scope, including close calls. Use SMARTS when a difficult trade-off warrants
+comparison; routine steps need no scoring exercise. Neither caller gains authority beyond the
+user's actual request, and a strong recommendation never stands in for a decision the lane requires.
+
+## Three depths
+
+Every evaluation uses the same lenses and verdicts; the workflow chooses how much of it to show.
+
+- **Scan** — a lightweight six-lens fitness pass when a choice is material but does not need the
+  full table. It names the material strengths, weaknesses, unknowns and decisive lenses.
+- **Comparison** — the full option-by-option table. It appears when two or more materially
+  plausible approaches exist, when you explicitly ask for a full SMARTS read, or when
+  reconciliation or arbitration needs it. Asking for the full read changes the presentation only;
+  it adds no command and no decision authority.
+- **Delegated decision** — a requested sprint choosing a reversible in-scope method on your
+  behalf and logging the reason in its sprint log.
+
+Feature shaping compares approaches during brainstorming only when two or more are materially
+plausible, before one is recommended. A single credible approach gets one line that says why no
+alternative was credible, and no table; nobody invents a straw alternative to fill one. The
+comparison dispatches no grader or scout and does no bulk read of plans or decisions. A
+recommendation informs the lane's existing decision owner and does not authorize anything by
+itself. The small lane scans only when a change has a material solution choice; otherwise it
+states `SMARTS: no material solution choice` and adds no table. Debugging uses no SMARTS at all: a
+fix compares remediation strategies only after the root cause is confirmed.
+
+## Context before verdicts
+
+A verdict means something only at a stated context. Before judging a material choice, codeArbiter
+establishes just the context that makes the lenses meaningful: the decision itself, its scope and
+horizon, and scale, failure, trust-boundary or non-SMARTS constraints only when they could change a
+verdict. The context comes from existing project records, the active spec and your steering. It is
+scope-sized, fail-soft and creates no new project or configuration file.
 
 ## Begin with recorded intent
 
@@ -67,16 +101,33 @@ so a reader can disagree with a premise rather than merely disputing an adjectiv
 
 ## Verdicts and Strength
 
-Each cell begins with **Strong**, **Adequate**, **Weak**, or **Indifferent**. The canonical format
-caps the cell at 25 words and its justification at 20. The justification names an option property,
-project constraint or failure mode; “best practice” is not evidence. The rubric rejects hedging
-adverbs and uses Indifferent when the lens does not distinguish the options or the judgment is
-genuinely uncertain. An omitted observation still needs to be surfaced, not hidden inside a label.
+Each cell begins with **Strong**, **Adequate**, **Weak**, **Indifferent** or **Unknown**. The
+canonical format caps the cell at 25 words and its justification at 20. The justification names an
+option property, project constraint or failure mode; “best practice” is not evidence. The rubric
+rejects hedging adverbs: genuine uncertainty is an Unknown, not a softened adjective.
 
-Recommendation strength is a separate field: **strong** when multiple dominant lenses align and
-non-SMARTS factors confirm, **moderate** for a qualified or single-lens advantage, and **tied** when
-no preferred option emerges. There is no weak recommendation level. Counting Strong cells or
-converting labels into invented numbers would lose the project's actual priorities.
+### Unknown is not Indifferent
+
+The two verdicts answer different questions. **Indifferent** is a finding: the evidence shows the
+lens does not distinguish the options at the stated context, so every option takes it. In a
+single-option scan it means the lens is not material to this choice. **Unknown** is an admission:
+the evidence needed to judge the lens is missing, contradictory or not yet established.
+
+Every Unknown names its missing observation and states whether it is decision-critical, meaning that
+observation could change which option is selected. An Unknown is never neutral and never quietly
+becomes Indifferent, Adequate or a pass. A decision-critical Unknown blocks a strong recommendation,
+blocks selecting the option that carries it, and is surfaced before any irreversible or
+authority-bearing choice. A non-critical Unknown can stand only when the output names the missing
+observation and why it does not control the decision. An Unknown cannot bypass a hard gate or
+manufacture authority.
+
+Recommendation strength is a separate field: **strong** when dominant lenses align cleanly,
+non-SMARTS factors confirm and no option carries a decision-critical Unknown; **moderate** for a
+qualified or single-lens advantage; and **tied** when no preferred option emerges. There is no weak
+recommendation level. Counting Strong cells or converting labels into invented numbers would lose
+the project's actual priorities. When lenses conflict, an explicit current or approved-spec priority
+comes first, then a recorded project priority, then precedent labelled as precedent; with none of
+those, a tie stays tied.
 
 Cost, time-to-market, team-skill fit, vendor lock-in and political acceptability are
 non-SMARTS considerations. They must remain visible alongside the table when relevant. A technically attractive
@@ -92,29 +143,24 @@ observed lens pattern. Thin history cannot support an invented precedent, and pr
 outranks an explicit higher-authority decision. A strong recommendation remains a recommendation
 until the user makes or explicitly accepts the choice.
 
-During an approved sprint, moderate and tied non-hard-gate choices do not create new routine human
+During a sprint, moderate and tied in-scope choices do not create new routine human
 checkpoints. The sprint breaks a tie using its stated priorities and the existing conflict hierarchy.
 It logs **low** confidence for moderate/tied choices and **high** for strong choices. An answered
 recorded-intent choice is logged with high confidence and its citation. Confidence is not a
 probability estimate or a verification result. Security boundaries, irreversible actions, overrides,
 missing user authority, conflicting accepted decisions and merge remain actual stop boundaries.
 
-## Typed method changes need their own authority
+## Maintain methods within the agreed outcome
 
-For an existing typed plan, the current source defines a separate, explicit `delegate-methods`
-grant and a private `smarts-apply` producer. After the pair's required approvals, that bounded
-producer can revise an existing task's method **steps** under the original scope. It cannot expand
-paths, tests, criteria, dependencies, prerequisites, rollback or checkpoint membership.
+Update implementation steps, verification runners and task decomposition through the existing
+typed plan writer when they remain within the authorized outcome. Record the reason, preserve
+stable references and user stops, and inspect concurrent work before changing an active task.
+Ordinary method maintenance needs no separate artifact approval or method grant.
 
-The producer checks current plan identity, refuses active affected writers and invalidates affected
-proof before another attempt. It keeps blocked states and their reasons. The next attempt still
-needs current eligibility, verification and review. A matrix pasted into chat or a line appended to
-the sprint log is not that authority, and the method grant does not confer prerequisite, security,
-backend or publication authority. Read the [artifact-review host boundary](/guides/review-artifacts/#check-your-hosts-authority-capability)
-and use the actual installed capability rather than inferring support from a shared name.
-
-This distinction matters during recovery: changing an approach inside an approved task is different
-from weakening its test or silently widening the task to make a failure disappear.
+Reuse checks and review conclusions while their relevant source, requirements and inputs still
+match. Recheck affected evidence after a material change, and keep new failures visible. A changed
+receipt or session alone does not restart review. A different product outcome, spending outside
+the agreed limit or an irreversible action still belongs to the actual decision owner.
 
 ## Audit a Verdict
 

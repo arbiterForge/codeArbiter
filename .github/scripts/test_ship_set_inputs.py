@@ -126,11 +126,14 @@ def _without_prompt_submit_timeout(config: dict) -> dict:
 
 
 PROTOCOL_DOC = "docs/artifacts/PROTOCOL.md"
+# Detailed ship-set attestation is intentionally a cold reference. The
+# always-loaded artifact include remains small and assistive; it points to
+# the exact same strict policy only for actual explicit proof consumers.
 ARTIFACT_INCLUDES = (
-    "core/surface/includes/artifacts.md",
-    "plugins/ca/includes/artifacts.md",
-    "plugins/ca-codex/includes/artifacts.md",
-    "plugins/ca-pi/includes/artifacts.md",
+    "core/surface/includes/artifacts-attestation.md",
+    "plugins/ca/includes/artifacts-attestation.md",
+    "plugins/ca-codex/includes/artifacts-attestation.md",
+    "plugins/ca-pi/includes/artifacts-attestation.md",
 )
 # Each phrase is matched against the document with all whitespace runs collapsed,
 # so hard line wrapping cannot hide or fake a statement.
@@ -201,7 +204,7 @@ class ShipSetInputs(unittest.TestCase):
     def test_protocol_describes_ship_set(self):
         self._assert_describes_ship_set(PROTOCOL_DOC)
 
-    def test_artifacts_include_describes_ship_set(self):
+    def test_opt_in_artifact_attestation_describes_ship_set(self):
         for rel in ARTIFACT_INCLUDES:
             self._assert_describes_ship_set(rel)
 

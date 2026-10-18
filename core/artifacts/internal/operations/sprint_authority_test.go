@@ -411,7 +411,7 @@ func TestSMARTSInvalidatesAcceptedScopesAndRetainsHistoricalEvidence(t *testing.
 	h.review("T-003")
 	h.accept("CP-02")
 	before := h.doc("PLAN-EXAMPLE")
-	if h.run("eligible", object{"artifact_id": before.ID()})["all_accepted_and_current"] != true {
+	if h.run("verification-status", object{"artifact_id": before.ID()})["all_accepted_and_current"] != true {
 		t.Fatal("fixture did not become accepted")
 	}
 	h.run("smarts-apply", smartsReq(h, grant))
@@ -427,7 +427,7 @@ func TestSMARTSInvalidatesAcceptedScopesAndRetainsHistoricalEvidence(t *testing.
 	if len(model.M(model.M(after.Data["execution"])["scopes"])) != 0 {
 		t.Fatal("stale scope proof retained")
 	}
-	if h.run("eligible", object{"artifact_id": after.ID()})["all_accepted_and_current"] == true {
+	if h.run("verification-status", object{"artifact_id": after.ID()})["all_accepted_and_current"] == true {
 		t.Fatal("method decision accepted work")
 	}
 	h.start("T-001")
@@ -480,7 +480,7 @@ func TestSMARTSDoesNotClearBlockedMembersOrTheirReason(t *testing.T) {
 	if model.S(state(after, "T-002")["state"]) != "BLOCKED" || !equalValue(state(before, "T-002"), state(after, "T-002")) {
 		t.Fatal("method choice cleared a blocked obligation")
 	}
-	if h.run("eligible", object{"artifact_id": after.ID()})["all_accepted_and_current"] == true {
+	if h.run("verification-status", object{"artifact_id": after.ID()})["all_accepted_and_current"] == true {
 		t.Fatal("blocked work accepted")
 	}
 }

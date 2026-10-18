@@ -281,7 +281,24 @@
         "plugins/ca-codex/includes/artifacts.md",
         "plugins/ca-pi/includes/artifacts.md"
       ],
-      "reason": "The complete artifact contract is loaded only after an existing workflow selects an HTML route; it is absent from startup context."
+      "reason": "The compact ordinary artifact contract is loaded only for relevant HTML work and remains absent from startup context. Strict historical proof is optional and owned separately."
+    },
+    {
+      "id": "artifact-attestation-on-demand",
+      "area": "context-capability",
+      "owner": "historical artifact evidence and recovery reference",
+      "live": true,
+      "default_path": false,
+      "treatment": "implemented-on-demand-guidance",
+      "closure": "closed-optional-attestation-reference",
+      "task_refs": ["T-012", "T-017", "T-019", "T-020"],
+      "canonical_paths": ["core/surface/includes/artifacts-attestation.md"],
+      "generated_paths": [
+        "plugins/ca/includes/artifacts-attestation.md",
+        "plugins/ca-codex/includes/artifacts-attestation.md",
+        "plugins/ca-pi/includes/artifacts-attestation.md"
+      ],
+      "reason": "The strict historical reviewer, receipt and pending-request protocol is preserved for actual proof or upgrade cases without being loaded into ordinary task context."
     },
     {
       "id": "artifact-binary-bridge",

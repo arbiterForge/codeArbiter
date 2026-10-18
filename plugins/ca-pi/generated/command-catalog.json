@@ -143,7 +143,7 @@
     },
     "context-check": {
       "name": "context-check",
-      "description": "Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs.",
+      "description": "Inspect context drift and refresh selected source-backed documents under existing authorization.",
       "skillPath": "skills/ca-context-check/SKILL.md",
       "visibility": "alias",
       "workflow": "operate",
@@ -152,7 +152,7 @@
     },
     "create-context": {
       "name": "create-context",
-      "description": "Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates.",
+      "description": "Build source-backed project context through bounded inspection, optional agents, and safe selected writes.",
       "skillPath": "skills/ca-create-context/SKILL.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -170,7 +170,7 @@
     },
     "decompose": {
       "name": "decompose",
-      "description": "Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates.",
+      "description": "Develop greenfield context from a durable interview and initialize it through the native context writer.",
       "skillPath": "skills/ca-decompose/SKILL.md",
       "visibility": "alias",
       "workflow": "initialize",
@@ -188,7 +188,7 @@
     },
     "feature": {
       "name": "feature",
-      "description": "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.",
+      "description": "Build an authorized feature from a maintained specification, testable criteria and useful plan, without duplicating user approval.",
       "skillPath": "skills/ca-feature/SKILL.md",
       "visibility": "core",
       "workflow": "change",
@@ -311,7 +311,7 @@
     },
     "sprint": {
       "name": "sprint",
-      "description": "Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops.",
+      "description": "Run an autonomous sprint from maintained specs and plans, with truthful verification and no duplicate artifact approval ceremonies.",
       "skillPath": "skills/ca-sprint/SKILL.md",
       "visibility": "core",
       "workflow": "change",

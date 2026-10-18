@@ -64,12 +64,12 @@ Prefer a pair of refs that you have resolved to the intended commits. In the nat
 Resolve each chosen starting/ending ref with `git rev-parse --verify` before interpreting the packet.
 An uncommitted source state is not silently included in a claim about a committed range.
 
-**Checkpoint-window limitation:** the owning checkpoint writer stores `last-checkpoint` as an
-integer override-count baseline, not a date or commit. The audit command names that path as a
-window source without defining how the counter resolves to history. Until the actual selected
-boundary can be shown as a commit and time range, use explicit refs or a date. Do not treat the
-integer as a SHA or manufacture a timestamp. This is a source-contract discrepancy, not a missing
-user setup step.
+For `--since-checkpoint`, select the report with the latest valid `recorded_at`. Its
+`source_commit` must resolve to a commit and be an ancestor of HEAD. Cite that report and include
+its `worktree_dirty` value as a review-scope limitation. These values describe the observed start
+of the review; missing observations remain unknown. Missing or invalid anchors require explicit
+refs or a date. `last-checkpoint` is an integer override-count baseline and cannot supply a commit
+or time window. Neither the filename nor a guessed timestamp can replace the report's anchors.
 
 The packet is written to `.codearbiter/audits/YYYY-MM-DD.md`. Further runs that day choose `-2`,
 `-3`, and so on, preserving earlier packets. The returned path is the first thing to inspect, not

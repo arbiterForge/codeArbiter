@@ -163,9 +163,9 @@ class TestSmartsStepZero(SurfaceCase):
 
 
 class TestSprintIntentRead(SurfaceCase):
-    def test_read_runs_before_spec_approval_and_is_fail_soft(self):
+    def test_recorded_intent_precedes_spec_shaping_without_approval(self):
         self.assert_on(SPRINT_COPIES,
-                       r"(?i)recorded-intent read — BEFORE spec approval, fail-soft",
+                       r"(?i)recorded-intent read — BEFORE first material spec shaping, fail-soft",
                        "the intent read precedes Phase 1 approval")
         self.assert_on(SPRINT_COPIES,
                        r"(?is)absent\s+`plans/` or `decisions/`.{0,120}never a STOP",
@@ -176,7 +176,7 @@ class TestSprintIntentRead(SurfaceCase):
                        r"(?i)contradict an accepted ADR or a recorded deferral",
                        "the contradiction hard gate must be in the NEVER list")
         self.assert_on(SPRINT_COPIES,
-                       r"(?i)re-evaluation trigger has occurred is reopened",
+                       r"(?is)re-evaluation trigger has occurred.{0,75}reopened",
                        "valve: an occurred trigger reopens, it is not a contradiction")
         self.assert_on(SPRINT_COPIES,
                        r"(?i)one stop per record per sprint",
@@ -236,10 +236,10 @@ class TestBrainstormingTouches(SurfaceCase):
 
     def test_phase2_ADR_conformance_with_supersession_pairing(self):
         self.assert_on(BRAINSTORMING_COPIES,
-                       r"(?i)surfaced WITH the ADR citation, never silently dropped",
+                       r"(?i)surfaced WITH the ADR\s+citation, never silently dropped",
                        "a contradicting candidate surfaces with its citation")
         self.assert_on(BRAINSTORMING_COPIES,
-                       r"(?i)paired with a supersession fork via `/adr`",
+                       r"(?i)paired with\s+a supersession fork via `/adr`",
                        "recommending a contradiction requires the supersession fork")
         self.assert_on(BRAINSTORMING_COPIES,
                        r"(?i)only sane approach, that IS the fork",

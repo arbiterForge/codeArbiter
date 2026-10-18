@@ -33,11 +33,15 @@ describe('investigation and repair guidance', () => {
     expect(curated).toMatch(/makes no default board\s+write/);
   });
   it('teaches unchanged behavioral assertions and does not invent a fixed repro from an import error', () => {
-    expect(read('../core/surface/skills/tdd/SKILL.md')).toContain("assertions MUST be unchanged between red and green");
+    const source = read('../core/surface/skills/tdd/SKILL.md').replace(/\s+/g, ' ');
+    expect(source).toContain('run the same named test for fresh GREEN');
+    expect(source).toContain('assertions unchanged between RED and GREEN');
+    expect(source).toContain('requires renewed target RED against the broken source');
     expect(guide).toContain('minimum correction then makes the same assertion pass');
     expect(guide).toContain('missing module');
     expect(guide).toContain('/guides/review-artifacts/#check-your-hosts-authority-capability');
     expect(guide).toContain('does not create those receipts');
+    expect(guide.replace(/\s+/g, ' ')).toContain('Ordinary authorized repair uses the current source and applicable checks');
   });
   it('accurately bounds the existing fixture evidence without manufacturing a debugging transcript', () => {
     const recorded = JSON.parse(read('public/examples/saved-searches/test-runs.json'));

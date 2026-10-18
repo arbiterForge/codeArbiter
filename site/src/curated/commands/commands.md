@@ -28,7 +28,7 @@ Takes no arguments — it always renders the full catalog.
 
 Implementation
   /ca:feature   "description"         Spec-driven feature: brainstorm -> plan -> build -> commit -> finish
-  /ca:sprint    ["goal"] [--farm]     Autonomous sprint; every auto-decision SMARTS-scored and logged
+  /ca:sprint    ["goal"] [--farm]     Execute a maintained plan; record material decisions and checks
   /ca:fix       "bug description"    Fix a defect via tdd, regression-test-first
   ...
 

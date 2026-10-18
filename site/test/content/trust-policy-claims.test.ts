@@ -29,7 +29,7 @@ describe("public trust-policy claims", () => {
     }
   });
 
-  it("keeps the Codex farm cell within its owning backend exception", () => {
+  it("reports Codex farm unavailability without an unauthorized backend switch", () => {
     const compatibility = readRepo("site/src/content/docs/getting-started/compatibility.mdx");
     const parity = readRepo("docs/parity.md");
     const notes = normalizeWhitespace(readRepo("core/surface/includes/codex-host-notes.md"));
@@ -38,12 +38,17 @@ describe("public trust-policy claims", () => {
 
     expect(row).toBeDefined();
     expect(parityRow).toBeDefined();
-    const codexCell = row!.split("|")[3];
-    expect(notes).toContain("premium-subagent path");
-    expect(parityRow!.split("|")[3]).toContain("until backend packaging lands");
-    expect(codexCell).toContain("premium-subagent path");
-    expect(codexCell).toContain("backend is not packaged");
-    expect(codexCell).not.toContain("shared `farm.js` backend");
+    expect(notes).toContain("report the unavailable backend");
+    expect(notes).toContain("Do not silently switch to another provider or model");
+    expect(notes).toContain("use another backend only when the caller's authorization covers that choice");
+    for (const codexCell of [row!.split("|")[3], parityRow!.split("|")[3]]) {
+      expect(codexCell).toContain("backend is not packaged");
+      expect(codexCell).toContain("Reports the unavailable backend");
+      expect(codexCell).toContain("no silent provider/model switch");
+      expect(codexCell).toContain("another backend only within existing authorization");
+      expect(codexCell).not.toMatch(/premium-subagent path|falls back|degraded/i);
+      expect(codexCell).not.toContain("shared `farm.js` backend");
+    }
   });
 
   it("discloses the optional tribunal KPI submission boundary", () => {

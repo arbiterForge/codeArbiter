@@ -53,6 +53,15 @@ func previewForMutation(r Mutation) (Preview, error) {
 	if err != nil {
 		return Preview{}, fault.New("INVALID_CONTEXT_MUTATION", err.Error())
 	}
+	if r.Mode == "adopt" && r.ExpectedProvenance != nil {
+		// Legacy records are retained as history, never promoted to current
+		// ownership or review. Only freshly supplied selected-field evidence is
+		// installed. A v2 record must use update and its existing ownership.
+		prior, err := canonical.Object(r.ExpectedProvenance)
+		if err != nil || model.I(prior["schema"]) != 1 || prior["doc"] != p.DocumentID {
+			return Preview{}, fault.New("OWNERSHIP_REQUIRED", "adoption requires absent or matching legacy v1 provenance")
+		}
+	}
 	if r.Mode != "adopt" && bytes.Equal(p.Bytes, r.ExpectedDocument) {
 		// A selected field may need fresh reviewed evidence even when its rendered
 		// Markdown remains byte-identical. The update still needs a real change
@@ -67,9 +76,14 @@ func previewForMutation(r Mutation) (Preview, error) {
 			return Preview{}, fault.New("INVALID_CONTEXT_MUTATION", "unchanged document requires valid existing and proposed v2 provenance")
 		}
 		changedSelected := false
+		wholeDocument := len(p.ProposedEntries) == 1 && p.ProposedEntries[0].Kind == "document"
 		for _, selection := range r.Selections {
 			oldID, oldField := provenanceFieldForEntry(oldFields, selection.EntryID)
 			newID, newField := provenanceFieldForEntry(proposedFields, selection.EntryID)
+			if wholeDocument && len(proposedFields) == 1 && newField["owner_ref"] == "document" {
+				changedSelected = !reflect.DeepEqual(oldFields, proposedFields)
+				continue
+			}
 			if oldID == "" || oldID != newID || oldField["owner_ref"] != selection.Anchor || newField["owner_ref"] != selection.Anchor {
 				return Preview{}, fault.New("OWNERSHIP_REQUIRED", "selected field lacks exact provenance ownership")
 			}
@@ -277,9 +291,23 @@ func provenanceFieldForEntry(fields map[string]map[string]any, entryID string) (
 	return "", nil
 }
 
-// Apply is closed until the owning workflow supplies an independently
-// verified authority object bound to the exact proposed transaction.
+// Apply retains the historical attested-write contract. Ordinary writes use
+// ApplyOrdinary and retain the same structural, evidence and transaction checks.
 func Apply(f *store.FS, r Mutation, authority VerifiedAuthority) (store.Outcome, error) {
+	_, binding, err := PreviewBinding(r)
+	if err != nil {
+		return store.Outcome{}, err
+	}
+	if authority == nil || authority.mutationBinding() != binding {
+		return store.Outcome{}, fault.New("AUTHORITY_REQUIRED", "exact context preview lacks owning-workflow authorization")
+	}
+	return ApplyOrdinary(f, r)
+}
+
+// ApplyOrdinary records an explicitly selected change. Authorization belongs
+// to the caller's real user/host boundary; no approval or review is fabricated.
+// The caller must hold the repository store's exclusive writer lock.
+func ApplyOrdinary(f *store.FS, r Mutation) (store.Outcome, error) {
 	if f == nil {
 		return store.Outcome{}, fault.New("INVALID_CONTEXT_MUTATION", "repository store is required")
 	}
@@ -287,16 +315,13 @@ func Apply(f *store.FS, r Mutation, authority VerifiedAuthority) (store.Outcome,
 	if err != nil {
 		return store.Outcome{}, err
 	}
-	if r.Mode == "update" && r.ExpectedProvenance == nil || r.Mode != "update" && r.ExpectedProvenance != nil {
-		return store.Outcome{}, fault.New("OWNERSHIP_REQUIRED", "update requires existing v2 ownership; creation and adoption require absent provenance")
+	if r.Mode == "update" && r.ExpectedProvenance == nil || r.Mode == "create" && r.ExpectedProvenance != nil {
+		return store.Outcome{}, fault.New("OWNERSHIP_REQUIRED", "update requires existing v2 ownership; creation requires absent provenance")
 	}
 	provenancePath := ".codearbiter/.provenance/" + p.DocumentID + ".json"
 	binding, err := mutationBinding(r, p)
 	if err != nil {
 		return store.Outcome{}, err
-	}
-	if authority == nil || authority.mutationBinding() != binding {
-		return store.Outcome{}, fault.New("AUTHORITY_REQUIRED", "exact context preview lacks owning-workflow authorization")
 	}
 	// A journaled retry identifies its original request before comparing a now
 	// changed target. Different input under the same ID is always rejected.
@@ -334,6 +359,9 @@ func Apply(f *store.FS, r Mutation, authority VerifiedAuthority) (store.Outcome,
 	if r.Mode == "create" {
 		for _, entry := range p.ProposedEntries {
 			anchor := "entry:" + entry.ID
+			if entry.Kind == "document" {
+				anchor = "document"
+			}
 			if p.DocumentID == "CONTEXT" && entry.Kind == "identity" && entry.Identity.Field == "project_name" {
 				anchor = "project_name"
 			}
@@ -365,10 +393,19 @@ func Apply(f *store.FS, r Mutation, authority VerifiedAuthority) (store.Outcome,
 		if err != nil {
 			return store.Outcome{}, err
 		}
-		if len(oldFields) != len(proposedFields) {
+		wholeDocument := len(p.ProposedEntries) == 1 && p.ProposedEntries[0].Kind == "document"
+		if wholeDocument && len(proposedFields) != 1 {
+			return store.Outcome{}, fault.New("OWNERSHIP_REQUIRED", "whole-document selection requires one nonoverlapping ownership field")
+		}
+		if !wholeDocument && len(oldFields) != len(proposedFields) {
 			return store.Outcome{}, fault.New("OWNERSHIP_REQUIRED", "update cannot add or remove ownership fields")
 		}
 		for id, oldField := range oldFields {
+			// Explicit whole-document selection replaces all prior field
+			// ownership. The exact old record remains transaction history.
+			if wholeDocument {
+				continue
+			}
 			newField := proposedFields[id]
 			if newField == nil || oldField["owner_ref"] != newField["owner_ref"] {
 				return store.Outcome{}, fault.New("OWNERSHIP_REQUIRED", "update cannot transfer field ownership")

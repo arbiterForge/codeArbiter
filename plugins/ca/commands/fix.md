@@ -9,22 +9,28 @@ The only permitted entry to bug-fix work. No fix code is written before a regres
 
 **Orientation:** if `.codearbiter/code-map.md` is present, read it before diagnosing — a coarse concern→path→role map that helps locate the defect. Absent is fine; it is read-on-demand.
 
-For a confirmed bug, the owning coordinator gathers the current scoped map,
+For a confirmed bug, the author reads the current scoped map,
 provenance, command declarations and collector observations, applicable
-constraints, and host-effective instructions. Before the fix author mutates or
-executes a discovered command, call `_contextselectlib.compose_fix_or_test_actor_input`
+constraints, and host-effective instructions. Resolve missing task-critical
+inputs and applicable conflicts before dependent work; provenance warnings are
+advisory. Direct implementation continues from these inputs.
+
+When delegating, the coordinator calls `_contextselectlib.compose_fix_or_test_actor_input`
 with `route='fix'`, `caller='fix'`, the actual task paths, and the observed,
 expected, reproduction, cited evidence, and named regression test from the
-bug-origin handoff. Send its returned `input` to the actual author. A directly
+bug-origin handoff. Supply `required_refs` for task-critical inputs identified
+during orientation. Send its returned `input` to the actual author. A directly
 confirmed bug may supply the same evidence without re-entering `debug`. Keep
 command cwd and verification state; a historical pass does not prove a current
 run. The packet is orientation with `requires_actor_check`, never permission to
 change code. Resolve applicable critical context before material action.
 Call `_contextselectlib.prepare_actor_delivery` for that returned packet and
 the actual author/task/worktree/current epochs. Send its bounded
-`delivery_text` to the author on `deliver`, retain the attempt, and stop the
-material action on `blocked`. Re-select after resume, compaction or scope
-change; a shared session marker is not an author receipt.
+`delivery_text` to the author on `deliver` and retain the attempt. On `advisory`,
+record the unknown delivery observation and continue authorized work without
+further delivery retries. Missing required refs and applicable constraint or
+instruction conflicts still stop dependent work; provenance warnings do not.
+Re-select after resume, compaction or scope change.
 
 ## Flow
 
@@ -43,8 +49,8 @@ change), run a SMARTS comparison per `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core
 code. A single obvious fix gets no SMARTS table. SMARTS never ranks hypotheses or confirms the cause;
 diagnosis stays evidence-led in `debug`.
 
-Only then does `tdd` proceed: minimal fix to green, then the remaining `tdd` gates. The implementation
-agent (`backend-author`, `frontend-author`, or `infra-author`) is selected by where the bug lives. If
+Only then does `tdd` proceed: minimal fix to green, then the remaining `tdd` gates. When delegating,
+select `backend-author`, `frontend-author`, or `infra-author` by where the bug lives. If
 the defect cannot be pinned by a failing test, STOP and surface the question.
 
 ## Debug handoff and direct-fix prerequisite

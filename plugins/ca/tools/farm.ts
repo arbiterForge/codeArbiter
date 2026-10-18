@@ -199,7 +199,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // deliberately irrelevant.
 // --------------------------------------------------------------------------
 const ARTIFACT_PROTOCOL = "codearbiter.artifact-api/0.1.0";
-const ARTIFACT_SCHEMA_VERSION = "0.3.1";
+const ARTIFACT_SCHEMA_VERSION = "0.3.2";
 const ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0";
 const ARTIFACT_MAX_RESPONSE = 65_536;
 

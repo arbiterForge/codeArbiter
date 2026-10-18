@@ -304,7 +304,7 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
         if context_entry is None:
             if set(cold) != COLD_FIELDS:
                 raise ValueError("cold context results lack package qualification")
-        elif cold["host"] in {"claude", "codex"}:
+        elif cold["host"] in {"claude", "codex", "pi"}:
             if (set(cold) != COLD_FIELDS | CONTEXT_COLD_FIELDS
                     or cold["context_workflow_scope"] != "candidate-preflight"
                     or cold["context_installed_tests"] != CONTEXT_COLD_TESTS

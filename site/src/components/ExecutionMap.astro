@@ -27,7 +27,7 @@ const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
     </div>
     <p role="status" aria-live="polite" data-map-status></p>
   </div>
-  <p class="ca-execution-map__legend"><strong>Rows identify roles.</strong> Gold commands enter or define a procedure; blue skills coordinate work; green agents perform bounded roles. Arrows cross rows in execution order. A dashed arrow reuses a procedure rather than calling its entry again. Dashed nodes are path-selected reviewers, not mandatory roles for every change.</p>
+  <p class="ca-execution-map__legend"><strong>Rows identify roles.</strong> Gold commands enter or define a procedure; blue skills coordinate work; green agents perform bounded roles. Arrows cross rows in execution order. A dashed arrow reuses a procedure rather than calling its entry again. Dashed nodes are conditional roles selected for the work.</p>
   {map.chapters.map((chapter, chapterIndex) => <section class="ca-execution-map__chapter" data-map-chapter={chapter.id} id={`${id}-${chapter.id}`} tabindex="-1" aria-labelledby={`${id}-${chapter.id}-title`}>
     <header>
       <p class="ca-eyebrow">Chapter {chapterIndex + 1} / {map.chapters.length}</p>

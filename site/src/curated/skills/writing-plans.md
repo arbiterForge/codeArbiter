@@ -3,41 +3,44 @@ entity: skills/writing-plans
 related: [commands/feature, commands/sprint, brainstorming, executing-plans]
 gates:
   - gate: criterion coverage
-    when: before execution is authorized
-    effect: every required criterion must be covered and every task must advance agreed criteria; readiness and approval are separate from draft existence
+    when: assessing plan readiness
+    effect: every required criterion has planned work and every task serves the agreed outcome; missing requirements and structural failures remain visible
 ---
 
 ## What it does
 
-Writing-plans connects a specification to executable work: tasks, exact paths, dependencies,
-checkpoints and concrete verification. The existing feature or sprint coordinator owns the
-handoff. This skill does not implement code.
+Turns a selected specification into a maintained plan under the existing authorization.
+Tasks name useful outcomes, relevant paths, criterion IDs, actual dependencies and concrete
+verification. The feature or sprint caller owns execution; this skill authors and maintains
+the plan without implementing code.
 
-## Draft, readiness and approval
+## Draft and readiness
 
-For new full-lane typed work, the specification owns stable acceptance-criterion IDs. The plan
-references those existing IDs rather than minting a second criterion list. Its `draft_preview`
-binding allows a draft to be inspected; it is not authority to execute.
+For typed work, reuse the specification's stable criterion IDs and preserve the selected identity.
+A draft may be incomplete. Readiness diagnostics identify missing structure and coverage; they do
+not create another permission request for independent authorized work. A conflicting write or
+structural failure prevents claiming the plan was saved.
 
-A structurally valid draft may still be incomplete. Readiness checks required content and
-coverage; the owning workflow then establishes the required approval and exact-content binding.
-Coverage is bidirectional and can be many-to-many, not a one-to-one mathematical bijection.
+Check coverage in both directions, then ask whether the plan still misses part of the user's
+intent. Choose useful task sizes and meaningful batches. Separate observable fact prerequisites
+from consequential decisions that need their actual owner. Record shared source inputs only where
+tasks genuinely depend on them; do not claim an exhaustive dependency graph.
 
-Existing Markdown pairs remain on their exact legacy route. Do not retroactively impose the
-HTML lifecycle on an in-progress Markdown plan or migrate just one file.
+Existing Markdown pairs retain their representation and one task ledger.
 
 ## What to review
 
-Check that every task names its affected paths, criterion references, dependencies and
-verification. A verification definition should identify the command's working directory,
-required test and expected observation. Reject a task that adds unrelated scope or relies on an
-invented command or result. Ask for unresolved prerequisites to remain explicit.
+Check each task's outcome, paths, dependencies, criteria and proving check. Use real repository
+commands with a working directory and expected observation, or an explicitly described observable
+check. An unavailable named-test parser limits the result claim; it does not justify invented
+evidence or a command executed merely to author a plan.
 
 ## Exits
 
-The coordinator advances only after the relevant readiness, approval and binding gates. It
-selects the attended or autonomous execution path and retains the existing test and review
-boundaries. An incomplete draft is not made executable merely by writing it to disk.
+Save through the selected writer, read back the result and return the plan location, useful next
+work, open decisions and pending checks. In-scope method changes can update the plan with a reason.
+A changed outcome goes to its decision owner; explicit human pauses remain effective.
 
-[Review specifications and plans](/guides/review-artifacts/) shows the human review procedure;
-[Resume and recover](/guides/resume-and-recover/) covers stale bindings and interrupted work.
+A plan or `DONE` label is not verification or release evidence. Resume at unfinished work without
+restarting settled interviews. [Review specifications and plans](/guides/review-artifacts/) and
+[Resume and recover](/guides/resume-and-recover/) explain inspection and continuation.

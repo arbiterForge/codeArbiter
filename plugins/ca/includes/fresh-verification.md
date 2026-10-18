@@ -1,14 +1,16 @@
-# Fresh-run verification
+# Current verification evidence
 
-The shared proof-by-fresh-evidence discipline. Used by `subagent-driven-development` Phase 5 (per
-accepted task, against the task's verification command) and `commit-gate` Phase 5 (the whole change,
-against the spec's acceptance criterion). Each caller supplies its own target; this is the common rule.
+Verify the caller's actual task or acceptance criterion before claiming completion.
+Read the command, cwd, relevant source and input identities, output and exit code.
+A result is reusable across execution, commit and PR preparation when those inputs
+still match and the observed behavior proves the required claim.
 
-A green suite proves the tests pass — not that the change does what was asked. Before accepting or
-committing:
-
-- **Run the proving command FRESH**, in a clean invocation, in this phase. Do not accept a logged
-  result from an earlier phase, and never trust a subagent's self-report.
-- **Read the actual output AND the exit code.** A non-zero exit, or output that does not demonstrate
-  the obligation/acceptance criterion, fails the gate and returns the work for correction.
-- A self-reported "it works" is never evidence — proof is.
+- Reuse inspected current results, including an earlier phase's result. A phase
+  transition, bookkeeping edit or new receipt ID alone requires no rerun.
+- Run the missing or affected check when evidence is absent, its inputs changed,
+  its scope is insufficient, or its outcome is unresolved. A passing general suite
+  cannot replace a missing criterion-specific check.
+- Inspect delegated command output and its source binding before relying on it.
+  A self-report without accessible evidence is insufficient.
+- Keep a relevant failure or contradictory later result visible until resolved.
+  Correct the affected work and rerun its check; preserve unrelated valid results.

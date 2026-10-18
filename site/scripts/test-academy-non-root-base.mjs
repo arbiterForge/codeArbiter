@@ -86,15 +86,17 @@ try {
     }
   }
 
-  // These three guides use MDX HTML for retained diagrams and the authority link.
+  // Inspect the actual MDX reading maps, retained diagrams and authority link.
   // Inspect built bytes so unit fixtures cannot mask a missing MDX transform.
   for (const [slug, diagram] of [["opt-in-a-repo", "lane-opt-in"], ["feature-lane", "lane-feature"], ["autonomous-sprints", "lane-sprint"]]) {
     const html = readFileSync(join(outputRoot, "guides", slug, "index.html"), "utf8");
     const map = html.match(/<section[^>]*data-reader-journey=[\s\S]*?<\/section>/)?.[0];
     const links = [...(map ?? "").matchAll(/href="([^"]+)"/g)].map(match => match[1]);
-    if (links.length !== 4 || links.some(href => !href.startsWith("/docs/")) ||
-        !(html.includes(`src="/docs/diagrams/${diagram}.svg"`) ||
-          (slug !== "feature-lane" && html.includes(`href="/docs/diagrams/${diagram}.svg"`) && html.includes('data-workflow=')))) {
+    const diagramValid = slug === "feature-lane"
+      ? !html.includes('src="/docs/diagrams/lane-feature.svg"') && html.includes('direct implementation')
+      : html.includes(`src="/docs/diagrams/${diagram}.svg"`) ||
+        (html.includes(`href="/docs/diagrams/${diagram}.svg"`) && html.includes('data-workflow='));
+    if (links.length !== 4 || links.some(href => !href.startsWith("/docs/")) || !diagramValid) {
       throw new Error(`Reader map ${slug} lost a base-prefixed link or implementation diagram`);
     }
     readFileSync(join(outputRoot, "diagrams", `${diagram}.svg`));
@@ -102,7 +104,7 @@ try {
       throw new Error("The feature guide's raw MDX authority link escaped /docs/");
     }
   }
-  process.stdout.write("Reader maps: all twelve links and three retained diagrams remain beneath /docs/.\n");
+  process.stdout.write("Reader maps: all twelve links and applicable diagrams remain beneath /docs/.\n");
 
   const expectedGuideIds = readdirSync(join(siteRoot, "src", "content", "docs", "guides"))
     .filter(name => /\.mdx?$/.test(name) && !/^index\./.test(name))
@@ -163,7 +165,7 @@ try {
   }
   process.stdout.write(`Guide discovery: ${expectedGuideIds.length} guides, four delivery-map links and mobile table content remain beneath /docs/.\n`);
 
-  for (const route of ["concepts", "concepts/gated-lanes", "concepts/test-first"]) {
+  for (const route of ["concepts", "concepts/gated-lanes"]) {
     const html = readFileSync(join(outputRoot, route, "index.html"), "utf8");
     const model = html.match(/<ca-execution-map\b[\s\S]*?<\/ca-execution-map>/)?.[0] ?? "";
     const steps = [...model.matchAll(/data-map-step="([^"]+)"/g)];
@@ -173,7 +175,13 @@ try {
       throw new Error(`Concept execution map ${route} lost its complete reading path or base-prefixed links`);
     }
   }
-  process.stdout.write("Concepts: all three execution maps preserve 16 steps and /docs/ destinations.\n");
+  const testFirst = readFileSync(join(outputRoot, "concepts/test-first/index.html"), "utf8");
+  if (testFirst.includes('<ca-execution-map') || !testFirst.includes('passing characterization') ||
+      !testFirst.includes('href="/docs/guides/feature-lane/"') ||
+      !testFirst.includes('href="/docs/guides/review-and-ship/"')) {
+    throw new Error("Test-first guidance lost its current verification contract or base-prefixed continuations");
+  }
+  process.stdout.write("Concepts: retained maps and current test-first guidance preserve /docs/ destinations.\n");
 
   // C04: check the real model output, not just an imported component tag.
   const c04 = [

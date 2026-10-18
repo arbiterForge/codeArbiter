@@ -27,6 +27,12 @@ must fail at the production layer for the right reason before correction. An imp
 error, unrelated failure, or merely proposed test does not clear that gate. Then the minimal fix
 and the remaining TDD, review, and delivery gates apply.
 
+Reuse an adequate existing regression instead of duplicating it. Direct repair reads the relevant
+requirements and source. If work is delegated, send bounded context with task-critical inputs;
+an advisory delivery result needs no retry. Missing optional provenance permits focused source
+inspection, while a genuinely missing or conflicting required instruction still needs resolution
+before the affected action.
+
 ## Usage
 
 ```

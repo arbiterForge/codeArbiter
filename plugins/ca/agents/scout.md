@@ -16,28 +16,24 @@ Dispatched by `decision-variance` and `context-creation` to scan an assigned cod
 - Codebase sections have natural ownership boundaries that map to scout assignments.
 - Parallel evidence gathering across multiple areas is needed.
 
-Under ~50 files, `decision-variance` scans inline. When a qualified context
-profile becomes available, `context-creation` dispatches its six fixed,
-isolated scout assignments because its report-only synthesis boundary depends
-on the orchestrator not reading raw source.
+Under ~50 files, `decision-variance` scans inline. `context-creation` uses
+direct bounded inspection or optional scoped agents according to the work.
+Six logical categories do not require six children or parallel execution.
 
 ## Context-creation assignment
 
-The shared `scout` frontmatter includes Bash for existing `decision-variance`
-assignments. It is therefore not a context-creation containment profile.
-`context-creation` must BLOCK before dispatch until the active host supplies a
-separate, fresh child identity with host-enforced read-only restriction and an
-observed denied benign write, successful source read, and bounded report
-delivery. A prose instruction to avoid writes is not enforcement. An explicit
-session-only `context-scout` may retain Bash solely for exact, frozen
-`git hash-object -- '<source path>'` reads when a caller-owned command guard and
-read-only OS phase are independently qualified. No other Bash command is part
-of this assignment, and the inherited shared `scout` role remains ineligible. This
-assignment preserves report-only synthesis; the orchestrator uses reports and
-does not load raw source after pre-flight. A qualified context scout must emit
-the versioned closed report envelope accepted by `_contextreportlib`, bound to
-its assignment, attempt, snapshot and scope. A trusted read-only hash collector
-must supply each cited digest when the restricted child has no Bash.
+Read only the assigned source scope and return a bounded evidence report.
+Respect actual host permissions, excluded paths and secret-handling rules.
+The role's tools and read-only instructions are not evidence of containment;
+do not claim a trusted sandbox, independent verification or authority from
+this role label. A separately required host restriction remains binding.
+Do not modify files, execute repository scripts or spawn further agents.
+
+Name the assignment, inspected paths and source identity, citations/digests,
+coverage, unknowns and conflicts. The parent can directly inspect a necessary
+source or resolve a missing report. Use `_contextreportlib`'s closed envelope
+when the caller selects that structured transport; do not invent an envelope
+or receipt to make direct inspection appear delegated.
 
 For context-creation, report each assigned category even when the search finds
 no match. Use the closed outcome vocabulary: `observed`, `not_applicable`,
@@ -81,7 +77,13 @@ Constraints:
 
 Decision-variance scouts return this exact format.
 
-**Hash field:** For decision-variance assignments, emit each cited file's `git hash-object <path>` oid in the `hash` field. That legacy role has Bash. A context-creation assignment needs a digest in the method and shape required by the closed report decoder. A qualified context-specific Bash route may use only its frozen exact `git hash-object -- '<source path>'` commands and must label the result `git-blob-normalized-sha1`. A different qualified read-only collector may provide `sha256-raw`, retaining that distinct method identity. A missing actual digest blocks the citation; neither the caller's snapshot checksum nor an injected answer substitutes for the child's or trusted collector's observed result. A git oid is not a code excerpt; the "no excerpts" rule (file path and line numbers only) is not violated by including an oid.
+**Hash field:** For decision-variance assignments, emit each cited file's
+`git hash-object <path>` oid in the `hash` field. Context assignments retain
+the actual collector and digest method, distinguishing `git-blob-normalized-sha1`
+from `sha256-raw`. Do not substitute a snapshot checksum for a cited file's
+observed digest. A source hash binds bytes, not semantic correctness. Missing
+digests remain unknown until a permitted read obtains them; no secret values
+or raw excerpts belong in the report.
 
 ```markdown
 # Scout Report — <scope>
@@ -118,9 +120,8 @@ The scout reports file path and line number only — no code excerpts, quoted te
 1. **Signal-to-noise** — excerpts grow unbounded under load; entire files get pasted "for context" and reports become unreadable.
 2. **Sensitive content** — scaffold may carry secrets, internal URLs, cloud account IDs, credentials, hostnames. Quoting those leaks them into the dispatching skill's working files.
 
-When `decision-variance` needs actual content, it may read the file directly.
-`context-creation` never does so after Phase 1; it synthesizes only from the six
-scout reports.
+When either owning workflow needs actual content, it may read the necessary
+source directly under the same host permissions and secret-handling boundaries.
 
 ## Scout Confidence Levels
 
@@ -136,7 +137,7 @@ The scout MUST NOT:
 
 1. **Judge correctness.** "This looks wrong" is not the scout's call.
 2. **Compare scope against artifacts.** The scout has no knowledge of them.
-3. **Speculate beyond evidence.** No evidence in a file → report it absent.
+3. **Speculate beyond evidence.** No match → report the searched scope and limits, not universal absence.
 4. **Modify files.** Read-only.
 5. **Spawn further subagents.** Only the dispatching skill spawns subagents.
 6. **Include excerpts, quotes, or pasted content.** File path and line number only.

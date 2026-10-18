@@ -363,8 +363,18 @@ func TestCompletionReviewQualityPreservesExactTaskEvidence(t *testing.T) {
 	alternateEvent := h.derived(model.S(firstReceipt["authority_source_ref"]))
 	alternateEvent["source_text"] = "A distinct synthetic verification run with equal results."
 	alternate := model.S(h.run("capture-observation", object{"source_ref": h.forge("authority-sources", alternateEvent), "source_sha256": mustHashFixture(t, alternateEvent)})["receipt"])
-	if _, err := h.request("evidence-context", object{"artifact_id": "PLAN-EXAMPLE", "activity": "quality_review", "record_id": "CP-01", "completion_selection": object{"verification_receipts": model.List(alternate, receipts[1]), "supporting_files": model.List(material)}}); fault.Code(err) != "COMPLETION_REQUIRED" {
-		t.Fatalf("quality arm substituted a successful but unselected run: %v", err)
+	beforeRerun := h.doc("PLAN-EXAMPLE").Hash()
+	rerun := completionContext(t, h, "CP-01", "quality_review", []string{alternate, receipts[1]}, []string{material})
+	if h.doc("PLAN-EXAMPLE").Hash() != beforeRerun {
+		t.Fatal("selecting a rerun rewrote task state or manufactured a task review")
+	}
+	rerunContext := h.derived(model.S(rerun["context_ref"]))
+	if model.M(model.A(model.M(rerunContext["completion"])["verifications"])[0])["receipt_ref"] != alternate {
+		t.Fatal("scope review did not retain the actual selected new run")
+	}
+	rerunSource, _ := nativeV1ReviewSourceForContext(t, h, "CP-01", "quality_review", rerun)
+	if _, err := h.request("capture-observation", rerunSource); err != nil {
+		t.Fatalf("current task review could not support a separately reviewed rerun: %v", err)
 	}
 	ordinarySource, _ := nativeV1ReviewSource(t, h, "CP-01", "quality_review")
 	ordinary := h.run("capture-observation", ordinarySource)["receipt"]

@@ -110,7 +110,7 @@ runtime; it is not publisher authenticity. Confirm the pinned source with
 |---|---|---|---|
 | Distribution | Claude marketplace | Codex plugin marketplace | Feature Forge `preview` via pinned Git package `ca-pi-v*` plus CI-published `npm:@arbiterforge/ca-pi` (ADR-0029) |
 | Versioning | `ca` SemVer | independent `ca-codex` SemVer | independent nested/root synchronized SemVer |
-| `--farm` | Feature Forge `preview`, shared `farm.js` | degraded to the premium path until backend packaging lands | Feature Forge `preview`, parent tool calls the same contained `farm.js` |
+| `--farm` | Feature Forge `preview`, shared `farm.js` | Reports the unavailable backend because the farm backend is not packaged; no silent provider/model switch; another backend only within existing authorization | Feature Forge `preview`, parent tool calls the same contained `farm.js` |
 | Farm credentials | farm process only | no backend process | farm process only; ordinary children strip `FARM_API_KEY` |
 | Embedded worker | not applicable | not shipped | future spike on hardened child runner; not a dependency |
 

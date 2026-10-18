@@ -140,7 +140,7 @@ test('historical rationale and hardening remain explicitly separate from current
   }
 });
 
-test('the exact role lookup stays complete and readable without JavaScript or lost release limits', async ({ browser }) => {
+test('the exact role lookup stays complete and readable without JavaScript and retains host boundaries', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 1000 } });
   try {
     const page = await context.newPage();
@@ -154,9 +154,10 @@ test('the exact role lookup stays complete and readable without JavaScript or lo
       .map(name => name.slice(0, -3)).sort();
     const roleLinks = disclosure.locator('a[href^="/reference/agents/"]');
     expect((await roleLinks.allTextContents()).sort()).toEqual(charters);
-    await expect(disclosure).toContainText('complete packaged resource charter set for that release');
-    await expect(disclosure).toContainText('bounded 0.9.4 receipt');
-    await expect(disclosure).toContainText('isolation is not mandatory');
+    await expect(disclosure).toContainText('The owning skill still determines which roles participate');
+    const article = page.locator('.sl-markdown-content');
+    await expect(article).toContainText('not evidence of enforced read-only isolation on every path');
+    await expect(article).toContainText('An allowed inline fallback is a particular contract exception');
     await expect(disclosure).toContainText('writer remains distinct from the read-only funnel');
     const original = await disclosure.textContent();
     await readable(page);

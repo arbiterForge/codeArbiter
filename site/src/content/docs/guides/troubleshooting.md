@@ -100,14 +100,15 @@ Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` p
 
 ## Typed specifications and plans
 
-Doctor now inspects the installation-pinned artifact capability and, when HTML authority exists,
+Doctor inspects the installation-pinned artifact capability and, when HTML artifacts exist,
 a bounded artifact catalog. Preserve its exact code and package identity before remediation.
 
 | Diagnostic | Meaning | Next action |
 |---|---|---|
 | `CAPABILITY_MISSING`, `INVALID_INSTALLATION`, `PACKAGE_INTEGRITY` | Missing or mismatched installed payload | Repair the qualified installed package; do not select a repository binary |
 | `UNVERIFIED_PLATFORM`, `UNSUPPORTED_PLATFORM` | The selected platform/storage cell is not qualified | Check supported environments; do not override the platform identity |
-| `DRAFT_BINDING`, `AUTHORITY_UNVERIFIED` | Content is not currently authorized | Return to the owning approval/evidence path, not reinstall |
+| `DRAFT_BINDING` | The requested operation needs a different specification binding | Inspect the selected identity and use native binding maintenance; draft status does not block ordinary authorized work |
+| `AUTHORITY_UNVERIFIED` | An explicit attestation operation lacks required evidence | Keep that proof claim unverified and inspect its evidence boundary; continue independent authorized work |
 | `REVISION_CONFLICT`, `STALE_CURSOR` | The prior read is stale | Reread and reconsider; never force the old write |
 | `LOCK_BUSY` | Another bounded writer owns the lock | Preserve the conflict; do not delete lock files |
 | `RECOVERY_REQUIRED`, `COMMIT_OUTCOME_UNKNOWN` | Transaction outcome needs reconciliation | Keep the operation ID and inspect recovery before another write |

@@ -959,7 +959,6 @@ class PublicCodexDocsTest(unittest.TestCase):
 
         public_role_docs = (
             "site/src/content/docs/overview.md",
-            ROLE_CONCEPT,
             "site/src/content/docs/glossary.md",
             "site/src/content/docs/getting-started/claude-code-and-codex.md",
             "site/src/curated/commands/checkpoint.md",
@@ -989,7 +988,6 @@ class PublicCodexDocsTest(unittest.TestCase):
 
         for path in (
             "site/src/content/docs/overview.md",
-            ROLE_CONCEPT,
             "site/src/content/docs/glossary.md",
         ):
             with self.subTest(release_scoped_charters_path=path):
@@ -1003,6 +1001,31 @@ class PublicCodexDocsTest(unittest.TestCase):
         for charter in charter_files:
             with self.subTest(roster_charter=charter):
                 self.assertIn(charter.removesuffix(".md"), roster)
+
+    def assert_current_role_contract(self, text):
+        normalized = " ".join(text.split())
+        self.assertIn("Codex's packaged resource charters", normalized)
+        self.assertIn("not evidence of enforced read-only isolation on every path", normalized)
+        self.assertIn("An allowed inline fallback is a particular contract exception", normalized)
+        self.assertIn("/getting-started/compatibility/#host-differences", text)
+        for charter in (ROOT / "plugins/ca-codex/agents").glob("*.md"):
+            if charter.name != "INDEX.md":
+                self.assertIn(f"/reference/agents/{charter.stem}/", text)
+
+    def test_current_role_guide_covers_packaged_charters_and_host_boundaries(self):
+        self.assert_current_role_contract((ROOT / ROLE_CONCEPT).read_text(encoding="utf-8"))
+
+    def test_current_role_contract_rejects_missing_scope_or_charter(self):
+        text = " ".join((ROOT / ROLE_CONCEPT).read_text(encoding="utf-8").split())
+        for required in (
+            "not evidence of enforced read-only isolation on every path",
+            "An allowed inline fallback is a particular contract exception",
+            "/getting-started/compatibility/#host-differences",
+            "/reference/agents/security-reviewer/",
+        ):
+            with self.subTest(missing=required):
+                with self.assertRaises(AssertionError):
+                    self.assert_current_role_contract(text.replace(required, ""))
 
     def test_codex_dispatch_receipt_rejects_identity_corruption(self):
         """Reject mutations to any published-package or charter identity field."""

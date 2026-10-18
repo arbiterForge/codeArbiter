@@ -8,8 +8,9 @@ related: [skills/decision-variance, skills/context-creation, skills/commit-gate]
 Internal evidence-gatherer: scans an assigned code scope and reports file-path-and-line-number
 evidence of architectural decisions, with no excerpts and no variance judgment — that stays with the
 dispatching skill. `Decision-variance` uses it when a single inline scan would consume significant
-context. `Context-creation` always uses six isolated scout assignments because its later synthesis
-must consume reports rather than raw source. It is also used by
+context. `Context-creation` uses direct bounded inspection or optional scoped agents; its six
+logical categories do not require six child processes. A role label does not establish a trusted
+sandbox, independent verification or permission to change project policy. It is also used by
 `subagent-driven-development`/`commit-gate` for scoped evidence gathering elsewhere. Never
 dispatched directly by the orchestrator.
 

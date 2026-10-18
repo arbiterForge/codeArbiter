@@ -1,20 +1,19 @@
 ---
 title: Test-First Evidence
-description: "Understand where TDD runs inside a feature, what its six gates establish, and why a passing test, coverage report and accepted task are different evidence."
+description: "Choose meaningful verification for a fix, feature or refactor, and distinguish implementation progress, passing checks, coverage and review."
 journey:
   level: Practitioner
   time: "Trace an obligation"
   outcome: "Explain how an agreed behavioral claim becomes a meaningful failing test, a minimal correction and fresh reviewable evidence."
   prerequisites:
     - Understand the gated-lane model and artifact roles
-  proof: "You can identify the intended failure, preserve the assertion between red and green, and name what still precedes scope acceptance and a PR."
+  proof: "You can select a verification approach, identify what its observations prove, and name the checks and permissions still needed for delivery."
 ---
 
-import ExecutionMap from '../../../components/ExecutionMap.astro';
-
 **Test-first development (TDD)** establishes a behavioral claim before implementation, then shows
-that the implementation satisfies that same claim. In codeArbiter it is a gated procedure, not a
-promise to add tests near the end of a feature.
+that the implementation satisfies that same claim. codeArbiter's verification workflow selects
+the approach appropriate to the change: regression-first repair for confirmed defects, preferably
+test-first feature checks, or passing characterization baselines before refactoring.
 
 The important observation is the contrast. The test should distinguish the incorrect behavior from
 the required behavior. A test that only repeats an implementation detail, asserts on its own mock,
@@ -22,20 +21,15 @@ or fails because its module cannot load has not yet established that contrast.
 
 ## Where TDD sits in the full path
 
-On the full feature lane, the specification and plan exist first. `executing-plans` delegates a
-scope to `subagent-driven-development`, which selects a fresh author for a task. **That author
-follows TDD inside the task.** Afterward the task engine performs specification review and fresh
-verification, then the combined scope receives its quality review and acceptance treatment.
-
-The first visible chapter below shows the task loop. Use the other chapters to follow its caller
-back to the definition and forward through commit and PR preparation. Roles are rows, not phases.
-
-<ExecutionMap id="test-first-feature" initial="task" />
+On the full feature lane, the specification and plan exist first. `executing-plans` passes a
+scope to `subagent-driven-development`, which chooses direct implementation or useful delegation.
+Verification runs **inside the task** using its selected approach. The implementation is checked
+against actual criteria, with independent or specialist review where risk or policy requires it.
 
 The small feature lane enters TDD after its confirmed inline criteria. A confirmed fix has a
 regression-first entry. Refactoring has a behavior-preservation contract and must not be treated
 as permission to change old assertions. Those paths are not all identical to this full-feature
-illustration. See [gated lanes](/concepts/gated-lanes/) for the distinction.
+workflow. [Build a feature](/guides/feature-lane/) follows the current caller and delivery sequence.
 
 ## Phase 1: identify the obligation
 
@@ -43,18 +37,21 @@ An **obligation** is a verifiable claim with an ID, a source and a state. A spec
 is one source; contract invariants and applicable security controls can add others. “Test the
 export” is too vague. “Preserve the input order in the output rows” is a claim a test can challenge.
 
-The procedure records the obligations before implementation. Spec-derived obligations already
-covered by approval should not trigger a redundant full reapproval. Beyond-spec obligations need
-the owning lane’s decision treatment. Genuinely missing facts remain explicit rather than being
-filled with an invented command or expected result.
+Record the obligations and verification approach before changing code. Preserve agreed criteria
+and ask only about consequential unresolved requirements. Genuinely missing facts remain explicit;
+do not fill them with an invented command or expected result. Changes to the intended outcome go
+to their actual decision owner.
 
 A plan references the specification’s stable criterion IDs. It does not create another independent
 criterion list. The [artifact model](/concepts/artifacts/) explains why that ownership matters.
 
 ## Phase 2: observe the intended failure
 
-Each new test maps to an obligation and fails for the right reason. Existing tests should remain
-green at this point; an unrelated regression is a separate problem to surface.
+For a confirmed fix, reuse or add a named regression and observe it fail for the defect before
+repair. Test-first feature work similarly observes the intended missing behavior. Existing
+implementation can instead use current criterion-focused checks and meaningful negative controls.
+For refactors, passing characterization tests establish the baseline before restructuring.
+Unrelated baseline failures remain separately identified; never damage correct code to obtain RED.
 
 For example, the saved-search fixture requires non-empty input to produce CSV text. Its baseline
 returns `None`. The [recorded red output](/examples/saved-searches/test-runs.json) reports two failing
@@ -67,9 +64,10 @@ result as the behavioral red phase.
 
 ## Phase 3: satisfy the same assertion
 
-Implement the minimum change that satisfies the behavioral obligation. Preserve the assertions
-between red and green; fixture or setup corrections must not weaken the expected behavior.
-The project’s affected existing tests must still pass.
+Implement the scoped change and run its proving checks and affected existing tests. For a
+regression-first fix, preserve assertions between RED and GREEN. A material fixture or setup
+change requires renewed target RED against the broken source. Refactors preserve the baseline's
+behavioral assertions, including any characterization tests added before restructuring.
 
 In the [same fixture](/guides/first-feature/), the completed serializer passes all three tests with
 the same test-file digest. The result is useful, bounded local evidence. It does not prove a
@@ -82,8 +80,9 @@ of the original one.
 ## Phase 4: account for every obligation
 
 Review the map from claims to passing evidence. A test file can exist and still miss the seam that
-matters. A `MISSING` obligation returns to red, then implementation, rather than disappearing from
-the list.
+matters. A `MISSING` obligation stays outstanding until an appropriate check demonstrates it.
+Repair the affected work and rerun its checks; do not force every verification approach through
+a fictional failing-test sequence.
 
 For security-relevant or contract-critical logic, the TDD contract dispatches `coverage-auditor`
 to challenge whether tests exercise the claimed behavior. This is a conditional role, not a
@@ -109,22 +108,23 @@ quality observation. They do not replace the obligation proof or grant approval 
 
 ## What still happens after local green
 
-The task engine compares the implementation with the specification, runs the task verification
-afresh, and applies the required scope quality review. Source phase numbers should not be mistaken
-for a naive numeric execution list: the combined quality review explicitly waits until the tasks’
-specification review and fresh verification have completed.
+Compare the implementation with the specification and the actual output of applicable checks.
+Review the combined relevant change at the scope its risks warrant. Reuse observed results only
+while their checked source and inputs remain applicable; refresh affected evidence after changes.
 
-Typed work then needs the actual current authority records and whole-scope acceptance. The
-attended coordinator receives the scope result and waits for its human checkpoint. Commit and PR
-have their own evidence and permission requirements. A successful author report skips none of them.
+Typed `DONE` records implementation progress, not passing tests or independent review. Return
+checks, limits and remaining work to the caller, which continues authorized work unless an
+explicitly requested pause, real decision or applicable host boundary intervenes. Ordinary
+progress needs no artifact acceptance receipt. Commit and PR preparation still require their
+own permissions and current checks; merge requires exact-head hosted CI and explicit authority.
 
 Use [Investigate and fix](/guides/investigate-and-fix/) to work from a symptom into a regression,
 and [Review and ship](/guides/review-and-ship/) for the final handoff. The exact six-phase contract
-remains in [tdd](/reference/skills/tdd/); the map above is an explanation, not its replacement.
+remains in [tdd](/reference/skills/tdd/).
 
 ## Check your understanding
 
-Pick one current criterion. Name the observation that should fail without the required behavior,
-show why the actual failure is that observation rather than test setup, and compare the assertion
-before and after the correction. Then name the review, acceptance and delivery evidence that still
-has to follow. That complete answer is stronger than “the suite is green.”
+Pick one current criterion and select its proving approach. For a fix, show the target failure
+and unchanged assertion passing after correction. For a refactor, compare the passing baseline
+and resulting behavior. Name the scope, limits, review and delivery evidence still needed.
+That answer is more useful than an unqualified “the suite is green.”

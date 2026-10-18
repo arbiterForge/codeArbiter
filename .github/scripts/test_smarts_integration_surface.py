@@ -38,6 +38,7 @@ that removes the rule it pins.
 
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from pathlib import Path
@@ -171,7 +172,8 @@ class TestSmartsCore(unittest.TestCase):
         self.assertRegex(steps[0][1], r"lightweight six-lens fitness pass")
         self.assertRegex(steps[1][1], r"two or more materially plausible approaches")
         self.assertRegex(steps[1][1], r"explicitly asks for a full SMARTS read")
-        self.assertRegex(steps[2][1], r"approved `/sprint`")
+        self.assertRegex(steps[2][1], r"requested `/sprint`[^.]*`\.codearbiter/sprint-log\.md`")
+        self.assertNotRegex(steps[2][1], r"smarts-apply", "the retired typed grant is not a depth")
         self.assertRegex(flat(body), r"differ in presentation, persistence and decision authority, "
                                      r"not in what the acronym means")
         self.assertLess(self.text.index("## Evaluation depths"), self.text.index("## Step 0"))
@@ -252,17 +254,17 @@ BRAINSTORMING = "core/surface/skills/brainstorming/SKILL.md"
 
 
 def phase_two(text: str) -> str:
-    match = re.search(r"(?ms)^## Phase 2 — Shape the approach[^\n]*\n(.*?)(?=^## )", text)
+    match = re.search(r"(?ms)^## Phase 2 - Select a viable approach[^\n]*\n(.*?)(?=^## )", text)
     if match is None:
         raise AssertionError(f"{BRAINSTORMING}: no Phase 2 section")
     return match.group(1)
 
 
 def smarts_step(text: str) -> str:
-    """The Phase 2 bullet that runs the SMARTS pass."""
-    match = re.search(r"(?m)^\d\. \*\*Run the SMARTS pass\.\*\*.*$", phase_two(text))
+    """The Phase 2 paragraph that runs SMARTS on a material choice."""
+    match = re.search(r"(?m)^\*\*SMARTS on a material choice\.\*\*.*$", phase_two(text))
     if match is None:
-        raise AssertionError(f"{BRAINSTORMING}: Phase 2 has no SMARTS pass bullet")
+        raise AssertionError(f"{BRAINSTORMING}: Phase 2 has no SMARTS paragraph")
     return match.group(0)
 
 
@@ -271,27 +273,28 @@ class TestSmartsBrainstorming(unittest.TestCase):
         self.text = read(BRAINSTORMING)
         self.phase = phase_two(self.text)
 
-    def test_brainstorming_orders_smarts_before_selection(self):
-        steps = re.findall(r"(?m)^(\d)\. \*\*([^*]+)\*\*", self.phase)
-        self.assertEqual([name for _, name in steps],
-                         ["Bound the context.", "Run the SMARTS pass.", "Surface non-SMARTS constraints.",
-                          "Select under existing authority.", "Record the rationale."],
-                         "Phase 2 orders context, SMARTS, constraints, selection, rationale")
-        self.assertEqual([n for n, _ in steps], ["1", "2", "3", "4", "5"])
+    def test_brainstorming_runs_smarts_only_on_material_choice(self):
         prose = flat(self.phase)
-        self.assertRegex(prose, r"Run the SMARTS pass\.\*\*[^.]*`\{\{PLUGIN_ROOT\}\}/includes/smarts/core\.md`",
-                         "the SMARTS step cites the canonical core")
-        self.assertRegex(prose, r"comparison when two or more materially plausible approaches exist")
-        self.assertRegex(prose, r"Record the rationale\.\*\*[^.]*running notes[^.]*`SEC-SMARTS`",
+        step = flat(smarts_step(self.text))
+        self.assertRegex(step, r"^\*\*SMARTS on a material choice\.\*\* Only when two or more materially plausible "
+                               r"approaches exist, run a SMARTS comparison per "
+                               r"`\{\{PLUGIN_ROOT\}\}/includes/smarts/core\.md` inline before recommending one",
+                         "SMARTS is conditional on a material choice and precedes the recommendation")
+        self.assertRegex(step, r"surface a decision-critical `Unknown` before selecting")
+        self.assertRegex(step, r"never become a seventh lens", "non-SMARTS constraints stay outside the rubric")
+        self.assertRegex(step, r"tie without explicit priority evidence goes to the user")
+        self.assertRegex(prose, r"\*\*Record the rationale\.\*\* When the comparison ran[^.]*`SEC-SMARTS`",
                          "the rationale seeds the spec's SMARTS section")
-        self.assertLess(prose.index("Run the SMARTS pass."), prose.index("Select under existing authority."))
+        self.assertLess(prose.index("**SMARTS on a material choice.**"), prose.index("**Record the rationale.**"))
+        self.assertNotRegex(prose, r"(?i)\b(always|every (approach|choice|change)) (runs?|gets?) (a )?SMARTS",
+                            "SMARTS is never unconditional")
 
-    def test_brainstorming_allows_single_option_scan(self):
+    def test_brainstorming_single_option_adds_no_table(self):
         prose = flat(self.phase)
-        self.assertRegex(prose, r"one-option fitness scan[^.]*states why no alternative was credible",
-                         "a single credible approach still gets a stated-reason scan")
-        self.assertRegex(prose, r"\*\*Never manufacture alternatives\.\*\*",
-                         "manufactured alternatives stay forbidden")
+        self.assertRegex(prose, r"\*\*Never manufacture alternatives\.\*\* When only one sane approach exists, say so "
+                                r"in one line and say why; that path runs no SMARTS comparison and adds no SMARTS table",
+                         "a single credible approach gets one stated line, no table")
+        self.assertRegex(prose, r"single-approach choice records only its one-line statement")
 
     def test_full_read_changes_presentation_only(self):
         prose = flat(self.phase)
@@ -370,6 +373,14 @@ def phase(text: str, number: int, rel: str) -> str:
     return match.group(1)
 
 
+def section_body(text: str, heading: str, rel: str) -> str:
+    """Body of the exact level-2 `heading`, up to the next level-2 heading."""
+    match = re.search(rf"(?ms)^{re.escape(heading)}\n(.*?)(?=^## |\Z)", text)
+    if match is None:
+        raise AssertionError(f"{rel}: no {heading!r} section")
+    return match.group(1)
+
+
 def drift_guard(text: str) -> str:
     match = re.search(r"(?m)^\*\*Design-drift guard\.\*\*.*(?:\n(?!\n).*)*", text)
     if match is None:
@@ -385,9 +396,7 @@ class TestSmartsWritingPlans(unittest.TestCase):
         guard = drift_guard(self.text)
         self.assertRegex(flat(guard), r"never pick, score or SMARTS-evaluate it here",
                          "the guard forbids scoring inside planning")
-        rule = re.search(r"(?m)^- MUST NOT score[^\n]*", self.text)
-        self.assertIsNotNone(rule, "a hard rule forbids SMARTS scoring in planning")
-        rest = self.text.replace(guard, "").replace(rule.group(0), "")
+        rest = self.text.replace(guard, "")
         for pattern in (r"SMARTS", r"`(Strong|Adequate|Weak|Indifferent|Unknown)`",
                         r"(?i)\blens(es)?\b", r"(?i)\b(score|grade|rate)s? (each|the|every) "
                                               r"(task|approach|option)"):
@@ -395,13 +404,13 @@ class TestSmartsWritingPlans(unittest.TestCase):
                 self.assertNotRegex(rest, pattern, "writing-plans runs no SMARTS scoring step")
 
     def test_writing_plans_drift_guard_routes_back(self):
-        decomposition = phase(self.text, 2, WRITING_PLANS)
+        decomposition = section_body(self.text, "## Build useful tasks", WRITING_PLANS)
         guard = drift_guard(self.text)
         self.assertIn(guard, decomposition, "the guard sits in task decomposition")
-        self.assertLess(decomposition.index(guard), decomposition.index("Gate:"),
-                        "the guard runs before the decomposition gate closes")
+        self.assertLess(decomposition.index(guard), decomposition.index("Order tasks by their actual dependencies"),
+                        "the guard runs before tasks are ordered")
         prose = flat(guard)
-        self.assertRegex(prose, r"material solution choice the approved spec does not decide")
+        self.assertRegex(prose, r"material solution choice the spec does not decide")
         self.assertRegex(prose, r"STOP[^.]*never pick")
         self.assertRegex(prose, r"[Rr]oute the undecided choice back to the owning design workflow[^.]*"
                                 r"`brainstorming`")
@@ -494,12 +503,10 @@ REFACTOR_GATES = (
     "Gate: surface coverage at or above the maturity threshold on every required metric in the declared "
     "coverage profile, the shared critical-path evidence present, AND every public method backed by a direct "
     "test. Otherwise backfill via `tdd` Phase 1 before retrying.",
-    "Gate: scoped parity tests green with zero pre-existing tests modified. BLOCK if any pre-existing test was "
-    "modified to pass, or if any applicable test fails; the branch still MUST NOT merge until exhaustive "
-    "exact-head hosted CI passes.",
+    "Gate: baseline parity and new seam checks pass with preserved behavioral assertions. The exhaustive "
+    "pre-existing suite remains an exact-head hosted-CI merge requirement.",
     "Gate: clean lint and type-check, zero errors, and no coverage regression on the named surface.",
     "Every public method in the surface table MUST have at least one direct test",
-    "Each MUST pass with NO modification to its source",
 )
 
 
@@ -539,18 +546,19 @@ INVALIDATION = (r"a load-bearing assumption the change contradicts",
 
 class TestSmartsImplementationDrift(unittest.TestCase):
     def test_spec_compliance_checks_material_invalidation_only(self):
-        body = phase(read(SDD), 3, SDD)
-        match = re.search(r"(?m)^- \*\*Design-rationale drift\.\*\*.*(?:\n  .*)*", body)
-        self.assertIsNotNone(match, "Phase 3 checks the recorded SMARTS rationale")
+        body = section_body(read(SDD), "## 3. Verify truthfully and assess only relevant risks", SDD)
+        match = re.search(r"(?m)^\*\*Design-rationale drift\.\*\*.*(?:\n(?!\n).*)*", body)
+        self.assertIsNotNone(match, "verification checks the recorded SMARTS rationale")
         step = flat(match.group(0))
-        self.assertLess(body.index(match.group(0)), body.index("Gate:"), "the check runs before the gate")
+        self.assertLess(body.index(match.group(0)), body.index("A failing check is a reason to repair"),
+                        "the check runs with the criteria comparison, before failure handling")
         self.assertRegex(step, r"`SEC-SMARTS`[^.]*`## SMARTS design rationale`")
         self.assertRegex(step, r"material invalidation only")
         for clause in INVALIDATION:
             with self.subTest(clause=clause):
                 self.assertRegex(step, clause)
         self.assertRegex(step, r"[Dd]o not re-run SMARTS or grade the implementation")
-        self.assertRegex(step, r"returns the task to Phase 2[^.]*or routes the design question back to "
+        self.assertRegex(step, r"returns the task to step 2[^.]*or routes the design question back to "
                                r"`brainstorming`", "a mismatch routes back")
         self.assertRegex(step, r"never pick a replacement approach inside review")
 
@@ -599,29 +607,30 @@ class TestSmartsArbitrationVocabulary(unittest.TestCase):
 SPRINT = "core/surface/SPRINT.md"
 
 
-def typed_authority(text: str) -> str:
-    match = re.search(r"(?ms)^### Typed SMARTS method authority\n(.*?)(?=^### )", text)
+def sprint_deciding(text: str) -> str:
+    match = re.search(r"(?m)^\*\*Deciding on behalf of the sprint:\*\*.*(?:\n(?!\n).*)*", text)
     if match is None:
-        raise AssertionError(f"{SPRINT}: no typed SMARTS method authority section")
-    return match.group(1)
+        raise AssertionError(f"{SPRINT}: no deciding-on-behalf paragraph")
+    return match.group(0)
 
 
 class TestSmartsSprint(unittest.TestCase):
     def setUp(self) -> None:
-        self.section = flat(typed_authority(read(SPRINT)))
+        self.section = flat(sprint_deciding(read(SPRINT)))
+
+    def test_sprint_smarts_is_conditional(self):
+        self.assertRegex(self.section, r"Use SMARTS when a genuinely difficult trade-off warrants it, not as a "
+                                       r"six-lens tax on every step")
 
     def test_sprint_teaches_unknown_fields(self):
-        self.assertRegex(self.section, r"Each six-lens cell carries one of the five verdicts")
-        self.assertRegex(self.section, r"An `Unknown` cell must carry `missing_observation`[^.]*and "
-                                       r"`decision_critical`")
-        self.assertRegex(self.section, r"those two fields appear on no other verdict")
-        self.assertRegex(self.section, r"refuses a selected option that carries a decision-critical `Unknown`[^.]*"
-                                       r"`strong` strength while any option carries one")
+        self.assertRegex(self.section, r"`\{\{PLUGIN_ROOT\}\}/includes/smarts/core\.md`, an `Unknown` cell names its "
+                                       r"missing observation and whether it is decision-critical")
 
     def test_sprint_unknown_cannot_bypass_hard_gate(self):
-        self.assertRegex(self.section, r"An `Unknown` cannot bypass a hard gate or manufacture authority")
+        self.assertRegex(self.section, r"an `Unknown` cannot bypass a hard gate or manufacture authority")
         self.assertRegex(self.section, r"never stands in for user approval, a prerequisite or security authority")
-        self.assertRegex(self.section, r"named Hard gates below stay true stops")
+        self.assertNotRegex(read(SPRINT), r"(?m)^### Typed SMARTS method authority",
+                            "the retired typed method-authority section stays retired")
 
 
 # Canonical surface -> its generated projection on each host. Claude Code keeps
@@ -662,7 +671,7 @@ HOST_PINS = {
            "**Unknown** — the evidence needed to judge the lens is missing, contradictory or not yet established.",
            "and strictly worse than a compared `Strong`."),
     LENS_REFERENCE: ("**Settles an Unknown:**",),
-    BRAINSTORMING: ("2. **Run the SMARTS pass.**",),
+    BRAINSTORMING: ("**SMARTS on a material choice.**",),
     WRITING_PLANS: ("**Design-drift guard.**",),
     FEATURE: ("**Small-lane SMARTS.**", "SMARTS: no material solution choice"),
     FIX: ("**Remediation strategy (conditional).**",),
@@ -672,7 +681,7 @@ HOST_PINS = {
     AUTHORITY_REVIEWER: ("never propose or choose a replacement approach, and never re-grade the lenses",),
     ANALYSIS: ("never `Indifferent` for missing evidence",),
     GRADER: ("never `Indifferent` for missing evidence",),
-    SPRINT: ("An `Unknown` cannot bypass a hard gate or manufacture authority",),
+    SPRINT: ("an `Unknown` cannot bypass a hard gate or manufacture authority",),
 }
 
 
@@ -686,6 +695,15 @@ class TestSmartsHostParity(unittest.TestCase):
                     text = flat(read(rel))
                     for pin in pins:
                         self.assertIn(flat(pin), text, f"{rel}: lost {pin[:60]!r}")
+        # AC-03 for every projection, not only the canonical core: a host copy that
+        # drops, renames, reorders or adds a lens or verdict fails here.
+        for rel in (CORE, *HOST_COPIES[CORE]):
+            with self.subTest(copy=rel, rule="six lenses and five verdicts"):
+                text = read(rel)
+                self.assertEqual(tuple(name for name, _ in bullets(section(text, "The six lenses"))),
+                                 LENSES, f"{rel}: exactly the six acronym lenses, in order")
+                self.assertEqual(tuple(name for name, _ in bullets(section(text, "Verdicts"))),
+                                 VERDICTS, f"{rel}: exactly the five verdicts, in order")
 
     def test_generated_writing_plans_runs_no_rescore(self):
         # T-17 pins the canonical writing-plans; the projections must not
@@ -696,6 +714,75 @@ class TestSmartsHostParity(unittest.TestCase):
                             r"(?i)re-?scor"):
                 with self.subTest(copy=rel, pattern=pattern):
                     self.assertNotRegex(text, pattern, f"{rel} runs no recorded-intent rescore")
+
+
+# SMARTS is a method inside existing workflows, never a command, skill or agent
+# of its own. Every public-name source on every host: the command catalogs, the
+# Pi role table, and the skill, routine, command and agent trees.
+SURFACE_ROOTS = ("core/surface", "plugins/ca", "plugins/ca-codex", "plugins/ca-pi")
+CATALOGS = ("core/surface/command-routes.json", "plugins/ca/generated/command-catalog.json",
+            "plugins/ca-codex/generated/command-catalog.json", "plugins/ca-pi/generated/command-catalog.json")
+ROLES = "plugins/ca-pi/generated/roles.json"
+
+
+def public_names() -> list[tuple[str, str]]:
+    names: list[tuple[str, str]] = []
+    for rel in CATALOGS:
+        for key, entry in json.loads(read(rel))["commands"].items():
+            # Route entries carry only the fields they need (no "name" in the
+            # core table, no "canonical" on some), so collect what is present.
+            names.append((rel, key))
+            names += [(rel, entry[field]) for field in ("name", "canonical") if field in entry]
+            names += [(rel, route) for route in entry.get("legacyRoutes", [])]
+    names += [(ROLES, role["name"]) for role in json.loads(read(ROLES))]
+    for root in SURFACE_ROOTS:
+        for tree in ("skills", "routines"):
+            base = REPO / root / tree
+            if base.is_dir():
+                names += [(f"{root}/{tree}", d.name) for d in base.iterdir() if d.is_dir()]
+        for tree in ("commands", "agents"):
+            base = REPO / root / tree
+            if base.is_dir():
+                for f in base.glob("*.md"):
+                    names.append((f"{root}/{tree}", f.stem))
+                    declared = re.search(r"(?m)^name:\s*(\S+)", f.read_text(encoding="utf-8"))
+                    if declared:
+                        names.append((f"{root}/{tree}/{f.name}", declared.group(1)))
+    return names
+
+
+class TestSmartsNoPublicSurface(unittest.TestCase):
+    def test_no_public_smarts_surface(self):
+        names = public_names()
+        hosts = {"/".join(source.split("/")[:2]) for source, _ in names}
+        self.assertGreater(len(names), 200, "the scan reached the generated catalogs and trees")
+        self.assertEqual(hosts, set(SURFACE_ROOTS), "every host contributes names")
+        offenders = sorted({f"{source}: {name}" for source, name in names if "smarts" in name.lower()})
+        self.assertEqual(offenders, [], "no generated command, skill or agent name contains smarts")
+
+
+# AC-19's nine named trigger cases -> the test that pins each one. Deleting or
+# renaming any case's test fails the inventory.
+TRIGGER_CASES = {
+    "multi-option feature": (TestSmartsBrainstorming, "test_brainstorming_runs_smarts_only_on_material_choice"),
+    "single-option feature": (TestSmartsBrainstorming, "test_brainstorming_single_option_adds_no_table"),
+    "missing evidence": (TestSmartsCore, "test_core_vocabulary_has_unknown_with_fields"),
+    "trivial local choice": (TestSmartsSmallLane, "test_small_lane_no_choice_adds_no_table"),
+    "materially different fix strategies": (TestSmartsDebugFix, "test_fix_applies_smarts_after_root_cause_only"),
+    "materially different refactor strategies": (TestSmartsRefactor,
+                                                 "test_refactor_smarts_only_for_distinct_strategies"),
+    "planning-time design drift": (TestSmartsWritingPlans, "test_writing_plans_drift_guard_routes_back"),
+    "explicit full-read request": (TestSmartsBrainstorming, "test_full_read_changes_presentation_only"),
+    "sprint delegated decision": (TestSmartsSprint, "test_sprint_teaches_unknown_fields"),
+}
+
+
+class TestSmartsTriggerInventory(unittest.TestCase):
+    def test_trigger_case_inventory(self):
+        self.assertEqual(len(TRIGGER_CASES), 9, "exactly the nine AC-19 cases")
+        for case, (cls, method) in TRIGGER_CASES.items():
+            with self.subTest(case=case):
+                self.assertTrue(callable(getattr(cls, method, None)), f"{case}: {cls.__name__}.{method} is missing")
 
 
 if __name__ == "__main__":

@@ -350,6 +350,9 @@ func Changes(d *model.Document, changes []any) (*model.Document, []string, error
 		n["retired_symbols"] = append(model.A(n["retired_symbols"]), object{"id": id, "retired_in_revision": d.Revision() + 1, "reason": reason, "replacement_ref": replacements[id]})
 	}
 	syncExecution(copy.Data)
+	if model.HasAssistiveFields(copy.Data) {
+		copy.Data["schema_version"] = model.SchemaVersion
+	}
 	copy.Data["revision"] = d.Revision() + 1
 	sealed, e := render.Prepare(copy.Data)
 	if e != nil {

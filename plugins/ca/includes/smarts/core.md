@@ -12,9 +12,9 @@ writing a log line.
 
 ## Evaluation depths
 
-1. **Scan** — a lightweight six-lens fitness pass for ordinary solution shaping: name the material strengths, weaknesses, unknowns and decisive lenses; no full table is required in user-visible output.
+1. **Scan** — a lightweight six-lens fitness pass when a choice is material but does not need the full table: name the material strengths, weaknesses, unknowns and decisive lenses; no full table is required in user-visible output.
 2. **Comparison** — the full option-by-option table, when two or more materially plausible approaches exist, when the user explicitly asks for a full SMARTS read, or when reconciliation or arbitration requires it.
-3. **Delegated decision** — the authority-bearing path an approved `/sprint` uses for in-scope method decisions, recorded through the typed `smarts-apply` boundary where it applies.
+3. **Delegated decision** — a requested `/sprint` choosing a reversible in-scope method on the user's behalf and logging its reason in `.codearbiter/sprint-log.md`; no separate method grant is required.
 
 All three depths use the semantics in this file; they differ in presentation, persistence and
 decision authority, not in what the acronym means.

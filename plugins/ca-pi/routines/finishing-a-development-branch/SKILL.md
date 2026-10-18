@@ -45,14 +45,14 @@ branch-finish request, assemble state and ask for the terminal choice, not a com
 An already-recorded explicit choice remains effective for its unchanged scope;
 revalidate evidence, not the wording of the user's request.
 
-All PR creation and terminal actions below require the current-head commit gate.
+PR creation and terminal actions below require applicable current-head verification.
 Watch and cleanup return from their own paths before reaching that requirement.
 
 ## Pre-flight
 
 Read these, or STOP and surface the gap — never guess the branch name or the default branch:
 
-- `<project-root>/.codearbiter/CONTEXT.md` — the default-branch name and project context.
+- `<project-root>/.codearbiter/CONTEXT.md` — project context. Resolve the working branch and default target from Git or repository metadata.
 - The discovered authoritative spec/plan pair for the pipeline, when `/feature`
   or `/sprint` produced one. Use the exact selected `.md` or `.html` plan as the
   yardstick for "is the work complete." Re-run the private bridge resolver
@@ -61,23 +61,21 @@ Read these, or STOP and surface the gap — never guess the branch name or the d
   for HTML and obtain HTML plan state only through the installed engine
   `identity`, `index`, and symbol-scoped `read` operations. The finishing step
   must not create, convert, or consult a counterpart.
-- `<project-root>/.codearbiter/last-checkpoint` — the most recent gate results; confirms `commit-gate` cleared on this branch.
+- The observed commit/check results for this branch: checked source identity, commands and cwd, outcomes, and applicable review findings.
 - `<plugin-root>/includes/verification-boundary.md` — the exact-head hosted-CI evidence required before merge.
 
-For an HTML pair, query the engine `identity` and `eligible` again after process
-recreation. Require `all_accepted_and_current: true` for the exact spec and plan
-identities, with their acceptance receipts still bound in engine state and the
-commit-gate proof. Finalization must not parse rendered HTML and must not consult
-a shadow Markdown ledger; displayed labels, status words, checkboxes, or digests
-cannot establish completion.
+For an HTML pair, query `identity` and `eligible` after process
+recreation and read the actual work and check results. `eligible` is advisory
+scheduling; `DONE` means implementation progress, not a verified release.
+Report unfinished work, missing or failing tests, and any outstanding
+decisions, rather than requiring an artifact acceptance receipt simply to
+prepare or open an authorized PR. Do not scrape HTML or invent receipts.
+`_preflight_current_acceptance` remains an **explicit historical proof query**,
+not the mandatory permission gate for opening a PR or preparing a branch.
+Real Git/host authorization, current applicable check results, independent security
+controls and exact-head hosted CI before merge still apply.
 
-Enforce that requirement by invoking the installed bridge's
-`_preflight_current_acceptance` with the exact `_resolve_workflow_pair` result,
-repository-bound client, and engine-returned spec/plan IDs. Carry its returned
-identity/receipt proof into state assembly. Any refusal blocks terminal options;
-do not recreate the proof from the PR description, checkpoint prose, or labels.
-
-`commit-gate` MUST have cleared on the current HEAD. If it has not, this skill does not run — return to it.
+Establish applicable verification for the current HEAD. Reuse observed results whose checked source and inputs still match. For a committed branch, derive paths and obligations from the explicit base-to-HEAD diff and run missing or affected checks under `verification-boundary.md`, followed by the review matrix below. Bind secrets scanning and specialized security/migration checks to that same base-to-HEAD subject. An empty staged set does not establish branch coverage. Report these read-only readiness results without creating commit markers. This verification does not invoke commit-only phases or create a commit. Authorized uncommitted work uses `commit-gate` before delivery.
 
 ## Phase 1 — State assembly · gate: BLOCK
 
@@ -85,7 +83,7 @@ Assemble the facts the decision needs. Nothing is presented until all are in han
 
 - **Branch** — the current branch name and its base. Confirm it is NOT the default branch; if HEAD is the default branch, STOP — there is nothing to finish and merge-to-default is forbidden.
 - **Diff summary** — files changed, insertions/deletions, and the commit list since the base. Read it, do not paraphrase from memory.
-- **Gate results** — `commit-gate` outcome and the `last-checkpoint` record. Surface any open `[NEEDS-TRIAGE]` markers left in the diff as out-of-scope findings.
+- **Check results** — observed commands, source identity, outcomes and relevant review conclusions for the current HEAD. Mark missing or inapplicable evidence as pending. Surface any open `[NEEDS-TRIAGE]` findings.
 - **Plan delta** — when a plan exists, state which plan items the branch satisfied and which remain open. Open items are surfaced, not hidden.
 - **ADR source ancestry** — when `.codearbiter/decisions/adr-lifecycle.jsonl` exists, select
   the merge method from the exact fetched target commit and PR head commit. Run the installed verifier:
@@ -199,18 +197,27 @@ contributor-source, native-qualification and no-bypass requirements above apply.
 ### Open-PR procedure
 
 Run this procedure only for the selected open-PR or merge-via-PR action, after the
-current-head commit and acceptance preflight. It is shared by direct PR requests
+current-head verification and authorized commit handling. It is shared by direct PR requests
 and caller handoffs; it is not a second host-command invocation.
 
-1. **Confirm the commit gate cleared** this session (`commit-gate` green, or `/ca-commit` completed).
-2. **Path matrix** — inspect the diff and dispatch the reviewer agents the change demands:
+1. **Confirm current-head readiness** from the applicable observed checks and review assembled in Phase 1. If a commit is needed, use `commit-gate` under the existing authorization.
+2. **Review coverage** — inspect the base-to-HEAD diff and identify the required review subjects:
    - auth / crypto / middleware paths → `auth-crypto-reviewer` + `security-reviewer`
+   - CI / deployment / infrastructure paths → `security-reviewer`
    - migration files → `migration-reviewer`
    - dependency manifests → `dependency-reviewer`
-   - all paths → `coverage-auditor`
-3. **Run reviewers** in parallel where there are no dependencies.
+   - executable source or verification-contract changes → `coverage-auditor`
+   - prose-only changes → applicable documentation/reference checks
+   Reuse inspected review conclusions when their source, requirements, findings and
+   verification inputs still cover this subject. A commit, PR handoff or new receipt
+   identity alone does not require redispatch. A newly failing check or relevant edit
+   requires reassessing the affected conclusions. Honor an explicit request for a
+   fresh independent review.
+3. **Run missing or affected reviews** in parallel where there are no dependencies.
+   If existing reviews cover every required subject, proceed with those results.
 4. **BLOCK check** — any CRITICAL or HIGH finding STOPs the flow; present it and do not draft the PR.
-   Correct within existing scope and authority, then re-run the commit and review gates.
+   Correct within existing scope and authority, then rerun affected checks and reviews.
+   Reuse unaffected evidence and invoke commit handling only for changes needing a commit.
    Do not require the user to repeat command spellings; no unresolved blocker is waived.
 5. **Stage the PR** once all BLOCK findings clear: concise title; summary of what changed and why; a
    bulleted test plan; a conflict-hierarchy tradeoff citation for any non-obvious tradeoff; a link to
@@ -231,39 +238,22 @@ and caller handoffs; it is not a second host-command invocation.
    `/ca-watch <new-PR>`. When `enabled` is false, do nothing here — the user can still run `/ca-watch`
    ad-hoc. Never enable the flag on the user's behalf.
 
-## Phase 4 — Receipt · gate: BLOCK
+## Phase 4 — Delivery report
 
-The loop has been a chain of gates the user watched clear. End it on its most rewarding beat, not in
-silence. Emit a tight **Receipt** — a win summary that reflects the prevention back, drawn ONLY from
-the state Phase 1 already assembled plus `<project-root>/.codearbiter/last-checkpoint`. This is
-**not a fresh audit-trail crawl** — no new log scan, no `git` archaeology. If a field has no data in
-hand, omit the line rather than go digging.
-
-Report only what the assembled state supports:
-
-- **Obligations covered** — the count of `tdd` obligations that reached `COVERED` on this branch.
-- **Gates that fired and what each caught** — the gates that BLOCKed and then cleared, named with the
-  specific thing caught (an untested seam, a scope-creep file set aside), not a bare gate name.
-- **SMARTS decisions the user made** — the architectural forks the user resolved, one line each.
-- **Secrets / regressions prevented** — credential findings and behavioral-proof mismatches the gates
-  stopped before they shipped.
-- **Suite time** — the wall-clock of the verifying run, from the gate results in hand.
-
-Close with **exactly one** warm, synthesizing sentence (per the orchestrator register) that reflects
-the run back — synthesized for this branch, not the register's canned example. One sentence, earned,
-never on a no-op close.
-
-Gate: the Receipt is emitted from in-hand state (no fresh crawl), and the close carries at most one
-warm sentence.
+Use the Phase 1 state and the observed action result. Report the commit/PR identity,
+implemented scope, applicable checks and review outcomes, and remaining work.
+Include suite time when observed. Keep implementation, verification, merge and
+publication distinct. Do not perform a fresh audit-trail crawl to embellish the
+report or infer verification from a checkpoint counter.
 
 ## Hard rules
 
-- MUST NOT merge directly to the default branch or force-push — every change lands through a PR.
-- MUST NOT auto-merge under `/sprint`; auto-select "open PR" and surface the merge decision to the user.
-- MUST NOT discard a branch without explicit user confirmation that names the branch.
-- MUST NOT delete un-pushed commits silently — STOP and report the loss before any discard.
-- MUST NOT run before `commit-gate` has cleared on the current HEAD.
-- MUST NOT merge without the repository merge-readiness aggregate passing for the PR's current exact head; missing, stale, cancelled, mismatched, pending, or red hosted evidence blocks.
-- MUST NOT guess the branch or default-branch name — read `CONTEXT.md` or STOP.
-- MUST draw the Receipt only from Phase 1 state + `last-checkpoint` — never a fresh audit-trail crawl — and never build a rolling cross-branch "saves" tally.
-- MUST keep the close to at most one warm sentence; never on a no-op close.
+- Preserve the selected branch and exact reviewed head; every merge goes through a PR.
+- Merge requires explicit authorization. Never force-push.
+- MUST NOT auto-merge under `/sprint`; its terminal action is an open PR.
+- MUST NOT discard a branch without explicit user confirmation naming it.
+- MUST NOT delete un-pushed commits silently.
+- Required current-head checks and review must pass before claiming readiness. Missing evidence stays pending.
+- Merge requires the repository's passing merge-readiness aggregate for the PR's current exact head.
+- Read branch and target identities from Git; do not guess them.
+- Report only observed actions and applicable evidence.

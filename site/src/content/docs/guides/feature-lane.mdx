@@ -1,14 +1,14 @@
 ---
 title: Build a Feature End to End
-description: "Take an idea through spec, plan, test-first implementation, and pull request using the /ca:feature lane."
+description: "Carry authorized feature work through a maintained spec and plan, meaningful verification, review and pull-request preparation."
 journey:
   level: Practitioner
   time: 15 min
-  outcome: "Run feature work from one-line intent through approved spec, obligation-mapped TDD, review, commit, and PR."
+  outcome: "Run feature work from intent through a maintained spec, scoped verification, review and authorized delivery."
   prerequisites:
     - An opted-in repository
     - A behavior-changing product idea
-  proof: "You can locate each persisted artifact and name the gate that must clear before the next phase begins."
+  proof: "You can locate each artifact, explain actual progress and check results, and identify consequential decisions or delivery permissions still needed."
 ---
 
 import ReaderJourney from '../../../components/ReaderJourney.astro';
@@ -25,13 +25,13 @@ export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
   <p class="ca-callout__label">Host syntax</p>
   Claude Code uses <code>/ca:feature "…"</code>; Codex uses <code>$ca-feature "…"</code>;
   Pi uses <code>/ca-feature "…"</code>. Shared artifact formats do not imply identical host authority.
-  Check the <a href={`${baseUrl}/guides/review-artifacts/#check-your-hosts-authority-capability`}>typed-artifact host boundary</a>
-  before attempting the full HTML path.
+  The HTML writer needs the installed engine's capabilities. An explicit attestation claim separately
+  uses the <a href={`${baseUrl}/guides/review-artifacts/#check-your-hosts-authority-capability`}>typed-artifact host boundary</a>.
 </div>
 
-The lane runs in order and gates at each transition. Nothing moves until the previous gate clears.
-Start with the artifacts and decisions below. The expandable implementation view names the
-commands, skills and agents behind the lane.
+The request authorizes the agreed feature work. The lane maintains useful artifacts, follows real
+dependencies and checks the resulting behavior. Ask about consequential missing choices and
+respect explicit user pauses; routine artifact updates do not create another permission layer.
 
 <ReaderJourney
   id={"feature-reading-map"}
@@ -42,23 +42,23 @@ commands, skills and agents behind the lane.
     "actor": "You set the outcome",
     "title": "Review the specification",
     "artifact": "A specification with observable acceptance criteria, exclusions and verification oracles.",
-    "review": "Correct missing behavior, then approve the exact specification through the host prompt. Opening HTML is not approval.",
+    "review": "Correct missing behavior and resolve consequential choices. Preserve decisions already made and any requested review pause.",
     "href": "/guides/review-artifacts/",
     "linkLabel": "Use the artifact review checklist"
   },
   {
     "actor": "You review the approach",
-    "title": "Approve the linked plan",
+    "title": "Inspect the linked plan",
     "artifact": "Tasks with exact paths, dependencies and checks linked to the specification criteria.",
-    "review": "Confirm coverage and the approved-spec binding. Approve the current plan before execution.",
+    "review": "Check criterion coverage, real dependencies and current specification binding. In-scope maintenance uses the existing authorization.",
     "href": "/reference/skills/writing-plans/",
     "linkLabel": "Inspect the planning contract"
   },
   {
-    "actor": "codeArbiter works; you review batches",
+    "actor": "codeArbiter works and reports progress",
     "title": "Test, implement, review",
-    "artifact": "Observed failing then passing tests, reviewer findings and current task evidence.",
-    "review": "Resolve blocking findings and review each batch before continuing. A typed task in REVIEW is not yet accepted.",
+    "artifact": "Implementation progress, actual check results, relevant reviewer findings and pending work.",
+    "review": "Resolve applicable blocking findings. REVIEW and DONE describe implementation progress, not independent verification.",
     "href": "/guides/first-feature/",
     "linkLabel": "Follow the worked feature"
   },
@@ -66,29 +66,12 @@ commands, skills and agents behind the lane.
     "actor": "You retain delivery authority",
     "title": "Inspect the commit and PR",
     "artifact": "A selectively staged commit and a pull request with fresh verification for the current source.",
-    "review": "Check accepted scope, criterion coverage and unresolved findings. A PR is not a merge or a deployment.",
+    "review": "Check implemented scope, criterion coverage and unresolved findings. A PR is not a merge or a deployment.",
     "href": "/reference/commands/pr/",
     "linkLabel": "Review the PR boundary"
   }
 ]}
 />
-
-The [execution map](/concepts/gated-lanes/#follow-the-full-feature-path) traces the actual
-command, skill and agent handoffs, with an equivalent narrow-screen reading view.
-
-<details class="ca-implementation-view">
-  <summary>Implementation routing: commands, skills and agents</summary>
-<figure class="ca-diagram">
-  <img
-    src={`${baseUrl}/diagrams/lane-feature.svg`}
-    alt="The /ca:feature lane in three rows: Commands (/ca:feature, /ca:commit, /ca:pr), Skills (brainstorming, writing-plans, tdd, commit-gate), and Agents (author agents, reviewer agents), with a connector weaving through them in execution order."
-    loading="lazy"
-    width="920"
-    height="250"
-  />
-  <figcaption>The <code>/ca:feature</code> lane by piece type: commands (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
-</figure>
-</details>
 
 ## See one complete example
 
@@ -106,8 +89,8 @@ The command classifies the request before it writes anything.
 
 | Path | When it applies | First durable evidence |
 |---|---|---|
-| **Full lane** | Any scope touch, new public surface, new dependency, more than two implementation files, or uncertainty | An approved spec under `.codearbiter/specs/` |
-| **Small lane** | At most two implementation files, no sensitive or architectural scope touch, and one to three testable criteria | Your confirmed mini-spec plus one append-only `triage.log` line |
+| **Full lane** | Any scope touch, new public surface, new dependency, more than two implementation files, or uncertainty | A maintained spec under `.codearbiter/specs/` |
+| **Small lane** | At most two implementation files, no sensitive or architectural scope touch, and one to three testable criteria | Inline criteria reflecting the request plus one append-only `triage.log` line |
 | **Resume** | A matching spec or plan already exists | The existing pipeline re-enters at its furthest completed checkpoint |
 
 The small lane trims ceremony, not gates: it still starts with test obligations, clears review and
@@ -115,58 +98,70 @@ commit-gate, and finishes through a PR. If the classifier is uncertain, the full
 
 An interrupted run is not silently restarted. Name the same slug or ask for resumable work.
 The owning lane inspects the furthest valid checkpoint, not merely the latest filename. An
-approved spec without a plan returns to planning; an unapproved spec returns to review. Typed
-`IN_PROGRESS` work needs reconciliation and `REVIEW` needs fresh evidence before progress is
-claimed. [Resume and recover](/guides/resume-and-recover/) explains these boundaries.
+usable spec without a plan returns to planning; an incomplete spec resumes its missing requirements.
+Inspect `IN_PROGRESS` work and outstanding workers before redispatch. `REVIEW` and `DONE` record
+implementation progress; actual checks determine verification. [Resume and recover](/guides/resume-and-recover/)
+explains the continuation boundaries.
 
 ## Refine the Idea Into a Spec
 
-The [brainstorming skill](/reference/skills/brainstorming/) runs first. It takes your one-line prompt and drives it toward a concrete, approved spec through four gated phases: frame, refine, write, approve.
+The [brainstorming skill](/reference/skills/brainstorming/) frames the outcome, selects a viable
+approach, makes acceptance observable, writes the specification and reviews it. It uses existing
+answers and asks only about consequential unresolved choices. Ordinary method choices stay within
+the agent's scope. An explicitly requested pause remains effective.
 
-The skill asks focused clarifying questions, one area at a time. You answer and steer. When the scope is clear, the spec is written to disk and you approve it. No source file is touched until you do.
-
-The tdd cycle derives obligations from the approved criteria. One criterion may require several named tests; the spec remains the binding definition of done for every task that follows.
+Verification obligations come from agreed criteria and applicable contracts or security controls.
+One criterion may require several checks. The spec remains the working agreement for the feature.
 
 ## Break the Spec Into a Plan
 
-With an approved spec, the [writing-plans skill](/reference/skills/writing-plans/) decomposes it into tasks, each 2 to 5 minutes of work. Every task carries the exact file path it touches and a concrete verification step that maps to a tdd obligation.
+The [writing-plans skill](/reference/skills/writing-plans/) creates coherent tasks with useful
+outcomes, relevant paths, actual dependencies and concrete verification. Task size follows useful
+progress and review, without a compulsory duration or a separate agent lifecycle for each small edit.
 
 For new full-lane work, the spec and plan are written as
 `.codearbiter/specs/<slug>.html` and `.codearbiter/plans/<slug>.html` through the
 installed typed-artifact engine. Existing Markdown pairs stay on their exact
-legacy path. Execution does not start until every task has a file path, a
-verification step, and the full task set covers every acceptance criterion.
+legacy path. Readiness diagnostics identify missing task structure or criterion coverage.
+Resolve requirements needed for the affected task while continuing independent authorized work.
 
-## Inspect the files before allowing execution
+## Inspect the working agreement
 
 Open the actual specification and plan. In the specification, inspect caller, trigger, observable
 behavior, exclusions and each verification oracle. In the plan, follow those stable criterion IDs
 to tasks, dependencies, paths and named checks. Ask for a scoped revision where the connection is
-missing. Opening HTML does not approve it, and hand-editing its embedded model is not a supported
-revision path. Use [Review specifications and plans](/guides/review-artifacts/) for the checklist.
+missing. Use the native typed writer for revisions, preserving human edits and stable references.
+Opening HTML does not create an approval event. Use
+[Review specifications and plans](/guides/review-artifacts/) for the inspection checklist.
 
-A typed plan can exist as a draft preview before it is ready or approved. Required coverage is
-many-to-many; the specification owns criterion identities. The native engine preserves revisions
-and authority bindings through the existing lane.
+A typed plan can exist as an incomplete draft preview. Required coverage is many-to-many; the
+specification owns criterion identities. The native engine preserves source identity and
+concurrent-write checks. A structural failure prevents claiming a successful save; a draft label
+alone does not prevent already-authorized work.
 
 ## Implement Test-First, Batch by Batch
 
-The [executing-plans skill](/reference/skills/executing-plans/) coordinates implementation. It groups the plan's tasks into batches and dispatches each batch. Each task runs with a fresh author agent and a full reviewer fleet, beginning with the [tdd skill](/reference/skills/tdd/).
+The [executing-plans skill](/reference/skills/executing-plans/) selects meaningful batches and hands
+their scope to the implementation owner. Choose direct implementation or useful delegation.
+Review the combined change at the scope its risk and applicable policy warrant.
 
 The tdd skill runs six phases for each task, in order:
 
-- **Obligation scan.** Extracts this task's obligations from the spec. No implementation code exists yet.
-- **Red.** Writes a failing test for each obligation and confirms the failure before any feature code is written.
-- **Green.** Writes the minimum code to pass the tests. Nothing beyond what the tests require.
-- **Obligation verify.** Confirms every obligation from the scan has a corresponding passing test.
-- **Coverage.** Confirms no obligation is left uncovered.
-- **Lint.** Runs the project's lint and type-check commands clean.
+- **Obligations and approach.** Map claims to meaningful checks before changing code.
+- **Baseline.** Prefer test-first feature checks. Existing implementation may use current criterion-focused checks and meaningful negative controls. Confirmed fixes require genuine regression RED; refactors use passing characterization baselines.
+- **Implementation.** Make the scoped change and run proving checks and affected existing tests.
+- **Obligation verification.** Match claims to observed results, leaving failures and untested requirements outstanding.
+- **Coverage.** Meet the declared profile's required metrics and critical-path requirements, with unavailable measurements explicit.
+- **Lint and handoff.** Run applicable quality tools and return actual results and pending checks.
 
-After a batch completes, execution stops for a human checkpoint. You review what was built and signal to continue. The next batch does not start until you do.
+After a batch, the coordinator reports changes, checks and next work, then continues within the
+authorization. An explicitly requested pause, actual consequential choice or applicable host
+restriction stops affected work. Checkpoint numbering is not itself a dependency.
 
-This is what separates `/ca:feature` from `/ca:sprint`. Sprint runs the full plan autonomously, with every auto-decision SMARTS-scored and logged; feature stops between every batch and waits for you. Use feature when you want to stay in the loop at each increment. Use [sprint](/reference/commands/sprint/) when the plan is well-understood and autonomous execution is appropriate.
+Feature coordinates coherent batches; [sprint](/reference/commands/sprint/) owns full-plan
+autonomous execution and ends at an open PR. Both preserve real user decisions and current checks.
 
-## Commit Each Batch
+## Commit selected work
 
 When a batch is ready, run:
 
@@ -180,36 +175,39 @@ The gate does not auto-decide hard gates. A secret in the diff, a crypto change,
 
 ## Open the Pull Request
 
-Once all batches are committed, run:
+When the branch is ready to propose for integration, run:
 
 ```text
 /ca:pr
 ```
 
-The [pr command](/reference/commands/pr/) runs the review fleet and clears every BLOCK-level finding before the PR is staged. A PR is never written directly to the default branch. Unresolved BLOCK findings are resolved first, not deferred.
+The [pr command](/reference/commands/pr/) verifies the current branch's base-to-HEAD diff and
+applies its reviewer matrix. Existing applicable results can be reused; missing or affected checks
+run before readiness is claimed. Unresolved BLOCK findings must be corrected. Opening a PR does
+not authorize a merge, and exact-head hosted CI remains required before an authorized merge.
 
 ## Know that the lane is complete
 
 Before calling the feature done, verify all of these:
 
-- the spec's acceptance criteria are unchanged or explicitly re-approved;
-- every plan task is `ACCEPTED`;
-- each acceptance criterion maps to a passing test obligation;
-- the focused checks and the repository's full verification are green on the current head;
-- commit-gate created the commit from an explicitly reviewed stage;
-- the PR exists and its BLOCK-level review findings are clear.
+- criteria still represent the agreed outcome and any material changes have their owner's decision;
+- implementation progress is accurate; `DONE` does not imply verification;
+- each required claim has adequate current evidence, with missing or failed checks explicit;
+- applicable local checks and review cover the actual source;
+- any requested commit or PR was created through its owner under the existing authorization;
+- merge, publication and live-host qualification are reported only when actually established.
 
-The presence of code or a green focused test is not completion. The persisted spec, plan status,
-fresh verification, commit, and PR are the proof chain.
+Report implementation, verification, review and delivery separately. A plan label or one focused
+test cannot stand in for all four, and an unfinished unrelated task does not erase useful progress.
 
 ## Common stops
 
 | Stop | What it means | Resume path |
 |---|---|---|
-| A blocking `[CONFIRM-NN]` | The user owns an unresolved fact | Answer it, update the spec or plan, and resume the same slug |
+| A consequential unresolved decision | The actual owner must choose | Ask once, preserve settled answers and continue independent tasks |
 | A task has no exact path or verification | The plan is underspecified | Return that task to writing-plans |
-| The test does not fail in Red | The obligation is not demonstrated | Repair the test or the premise before implementation |
-| A reviewer reports BLOCK | The batch is not accepted | Resolve the finding and rerun fresh verification |
+| A confirmed fix lacks target RED | The regression baseline is missing | Observe the actual defect before repair; setup failure is insufficient |
+| A reviewer reports BLOCK | A required correction remains | Resolve the finding and rerun affected verification |
 | The session ends | Durable state remains on disk | Reinvoke feature; do not start over |
 
 ## Related

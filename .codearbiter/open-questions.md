@@ -1,7 +1,9 @@
 # Open questions
 
-Unresolved `[CONFIRM-NN]` items. Each blocks stage promotion until resolved.
-The SessionStart hook and statusline count `CONFIRM-NN` occurrences here.
+Active `[CONFIRM-NN]` items block stage promotion until resolved. The deferred
+decisions below are deliberately non-blocking; resolved decisions retain their
+original attribution. The SessionStart hook and statusline count numbered
+confirmation items here, not every deferred design question.
 
 _Resolved 2026-09-16 (BY SUaDtL@users.noreply.github.com): the Feature Forge `--farm` promotion bar
 is accepted as documented in `core/surface/includes/farm.md`. Qualification starts at zero on this
@@ -24,6 +26,12 @@ strategy (a), a lightweight staleness *warn* paired with the #186 gate-events si
 - **Mechanical enforcement of "no commit on a red suite" / "no commit without commit-gate" (review finding #6).** The 2026-06-15 review confirmed these ORCHESTRATOR §3 rules are skill-discipline only — no hook runs or inspects test status, and `pre-bash.py` lets a raw `git commit` (no secrets, feature branch) through. The `review-remediation` sprint deferred this to its own decision per the user (2026-06-16): a test-running commit hook is slow and invasive, so whether to build one (vs. accept the rules as prose-enforced) is a separate design call. Its siblings ride along: the "compel a log write" half of audit logging (hooks protect logs once written but never force a write) and the secret-to-logger/prompt sink breadth (`SECRET_RE` only matches assignment literals). Pick a direction when enforcement strategy is next revisited. _Update 2026-06-22 (checkpoint remediation): the `SECRET_RE`-breadth half is resolved — `CRYPTO_RE` now sees the Node/TS TLS-disable forms and `SECRET_RE` matches colon/object-literal forms and high-entropy key prefixes (`AKIA`/`ghp_`/`sk-ant-`), with the `farm.ts` outbound redactor aligned and `test_hooklib.py` guarding it. The test-running commit hook remains open; the "compel a log write" sibling was resolved 2026-07-02 (staleness-warn strategy — see the Resolved note above and `security-controls.md` §Audit trail)._
 
 ### `task-board-lifecycle` feature deferrals (spec: `specs/task-board-lifecycle.md`, 2026-06-21)
+
+**D-1 resolution, recorded 2026-07-31:** the [D-1/D-2 closure](sprint-log.md)
+records the task command and enforced helper writer. `taskwrite.py` owns
+add/start/done and stamps transition dates. This supersedes the temporary
+hand-editing direction in the retained original question below; D-1 is closed.
+The command catalog, routing table and reference map contain the shipped owner.
 
 - **D-1 — Task-board transition writer surface.** How `[ ]`→`[~]`→`[x]` transitions get written: a new `/ca:task` command (add/start/done), an extension to `/ca:standup` or `/ca:status`, or manual editing. MVP ships with the schema + fixed counters + stale nudge; transitions are hand-edited until this is decided. Gates the decompose-seeding criterion (AC-11). If a command lands, update `reference-map.md`, `routing-table.md`, and the command catalog in lockstep. **Priority when implemented:** the highest-value transition to automate is `[ ]`→`[~]` *with the `(started …)` date* — a task started-but-never-flipped is the one drop-off hole the MVP can't catch (the stale nudge only sees dated `[~]`), so the start-transition writer should stamp the date automatically.
 - **D-2: resolved 2026-07-31, archival sweep owner and cutoff.** The recorded [D-1/D-2 closure and B2 policy choices](sprint-log.md) assign the sweep to `/ca:standup`, with dated done items eligible only when strictly more than 14 calendar days old (`ARCHIVE_CUTOFF_DAYS`). Each item requires its own explicit approval and one `taskwrite.py archive <id>` helper call; the helper appends to `done-tasks.md` before removing the item from `open-tasks.md`. This does not add a public `/ca:task archive` mode. Undated done items are excluded from automatic proposals and require an explicit request plus `--allow-undated`. Declining leaves the item in place.

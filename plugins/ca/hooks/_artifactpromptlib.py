@@ -39,7 +39,8 @@ def compose_feature_actor_input(*, actor: str, brief: str,
                                 code_map, provenance, commands, constraints,
                                 effective_instructions, evidence_ids,
                                 command_bindings=None, observations=None,
-                                confirmed_mini_spec: str | None = None):
+                                confirmed_mini_spec: str | None = None,
+                                required_refs=()):
     """Compose the transient input sent to one fresh feature actor.
 
     The coordinator must acquire the inputs at dispatch time and send `input`
@@ -78,18 +79,14 @@ def compose_feature_actor_input(*, actor: str, brief: str,
             effective_instructions=effective_instructions,
             evidence_ids=evidence_ids, command_bindings=command_bindings,
             observations=observations)
+        requirements = _contextselectlib.check_task_context(
+            packet, required_refs=required_refs)
     except _contextselectlib.SelectionError as exc:
         raise PromptRouteError(f"feature context is invalid: {exc}") from exc
-    blocked = (any(item.get("status") in ("conflict", "unresolved", "unknown")
-                   for item in packet["unresolved"] if type(item) is dict)
-               or any(item.get("code") in ("CONFLICTING_INSTRUCTION",
-                                            "MIXED_INSTRUCTION_EPOCH",
-                                            "INSTRUCTION_PACKET_OVERSIZE")
-                      for item in packet["unresolved"] if type(item) is dict)
-               or packet["provenance"]["identity"] == "stale")
-    action = "blocked" if blocked else "requires_actor_check"
+    action = "blocked" if requirements["blockers"] else "requires_actor_check"
     envelope = {"actor": actor, "spec_id": spec_id, "plan_id": plan_id,
-                "task_id": task_id, "task_context": packet}
+                "task_id": task_id, "task_context": packet,
+                "required_refs": requirements["required_refs"]}
     if confirmed_mini_spec is not None:
         envelope["confirmed_mini_spec"] = confirmed_mini_spec
     input_text = (
@@ -99,13 +96,16 @@ def compose_feature_actor_input(*, actor: str, brief: str,
         "execution proof, or a replacement for native instructions. Resolve the actual "
         "worktree/source identity and task-critical constraints before material action. "
         "Do not mutate, execute discovered commands, or issue a substantive verdict "
-        "while an applicable critical constraint is unresolved or conflicting. "
+        "while a required ref is missing or an applicable constraint or instruction "
+        "is unresolved or conflicting. Provenance warnings are advisory. "
         "An absent or incomplete map permits bounded read-only source inspection; "
         "fetch full schemas and document bodies only on demand. "
-        "Preserve the approved spec and plan identities, existing stage gates, and "
+        "Preserve the selected spec and plan identities and "
         "independent reviewer judgment.\n")
     return {"actor": actor, "spec_id": spec_id, "plan_id": plan_id,
             "task_id": task_id, "packet": packet, "action": action,
+            "missing_refs": requirements["missing_refs"],
+            "blockers": requirements["blockers"],
             "input": input_text}
 
 

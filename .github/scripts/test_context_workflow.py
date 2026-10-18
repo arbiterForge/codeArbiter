@@ -32,6 +32,7 @@ import _protectedlib  # noqa: E402
 import _protectedstatelib  # noqa: E402
 import _contextsnapshotlib as context_snapshot  # noqa: E402
 import _provenancelib as provenance  # noqa: E402
+import _contextwriterlib as context_writer  # noqa: E402
 
 
 def _script(name):
@@ -234,6 +235,138 @@ class TestPassiveBeforeActivation(unittest.TestCase):
 
 
 
+class TestAssistiveContextBridge(unittest.TestCase):
+    def test_greenfield_owner_uses_paired_writer_and_retained_evidence(self):
+        owner = (ROOT / "core/surface/skills/decompose/SKILL.md").read_text(encoding="utf-8")
+        for required in ("--context-draft", "--context-apply", "--context-finalize",
+                         "plans/decomposition/", "decision-lifecycle", "taskwrite.py",
+                         "five", "v2"):
+            self.assertIn(required, owner)
+        self.assertNotIn("write_stub", owner)
+        self.assertNotIn("Write the `<!--INITIALIZED-->` body marker", owner)
+
+    def test_document_preparation_preserves_legacy_bytes_and_records_unreviewed_sources(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            state = root / ".codearbiter"
+            (state / ".provenance").mkdir(parents=True)
+            target = state / "tech-stack.md"
+            previous = b"# Tech stack\r\nHuman notes.\r\n"
+            target.write_bytes(previous)
+            prior_path = state / ".provenance" / "tech-stack.json"
+            prior = b'{"schema":1,"doc":"tech-stack","entries":[]}'
+            prior_path.write_bytes(prior)
+            source = root / "package.json"
+            source.write_bytes(b'{"name":"sample"}')
+            draft = root / "draft.md"
+            draft.write_bytes(b"# Tech stack\nCurrent description.\n")
+            before = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+            request = context_writer.prepare_document_preview(root, "tech-stack", draft, ["package.json"])
+            self.assertEqual(request["mode"], "adopt")
+            self.assertEqual(request["expected_document_sha256"], hashlib.sha256(previous).hexdigest())
+            self.assertEqual(request["expected_provenance_sha256"], hashlib.sha256(prior).hexdigest())
+            self.assertEqual(request["selections"], [{"entry_id": "FIELD-DOCUMENT", "anchor": "document"}])
+            claim = request["proposed_provenance"]["fields"][0]["claims"][0]
+            self.assertEqual(claim["semantic_review"], {"state": "unreviewed", "reference": None})
+            self.assertEqual(claim["evidence"][0]["digest"], hashlib.sha256(source.read_bytes()).hexdigest())
+            self.assertEqual(request, context_writer.prepare_document_preview(root, "tech-stack", draft, ["package.json"]))
+            self.assertEqual(before, {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()})
+
+    def test_document_preparation_rejects_unsafe_sources_and_corrupt_existing_provenance(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            state = root / ".codearbiter"
+            (state / ".provenance").mkdir(parents=True)
+            (state / "tech-stack.md").write_bytes(b"# Human context\n")
+            draft = root / "draft.md"
+            draft.write_bytes(b"# Updated context\n")
+            (root / "source.txt").write_bytes(b"source")
+            for paths in ([], ["../outside"], [".env"], [".codearbiter/tech-stack.md"]):
+                with self.subTest(paths=paths), self.assertRaises(_artifactlib.ArtifactError):
+                    context_writer.prepare_document_preview(root, "tech-stack", draft, paths)
+            prior = state / ".provenance" / "tech-stack.json"
+            prior.write_bytes(b"{malformed")
+            with self.assertRaisesRegex(_artifactlib.ArtifactError, "preserve malformed"):
+                context_writer.prepare_document_preview(root, "tech-stack", draft, ["source.txt"])
+            self.assertEqual(prior.read_bytes(), b"{malformed")
+            self.assertEqual((state / "tech-stack.md").read_bytes(), b"# Human context\n")
+
+    def test_context_draft_cli_uses_same_closed_preview_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            (root / "source.txt").write_bytes(b"source")
+            draft = root / "draft.md"
+            draft.write_bytes(b"# Tech stack\nCurrent description.\n")
+            calls = []
+            class Client:
+                def call(inner, operation, request):
+                    calls.append((operation, request))
+                    return {"preview_ref": ".codearbiter/.artifacts/context-previews/" + "a" * 64 + ".json",
+                            "preview_sha256": "a" * 64, "evidence_assessed": False}
+            with mock.patch.object(_artifactlib, "context_writer_client", return_value=Client()):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    initializer.main(["--root", str(root), "--context-draft", str(draft),
+                                      "--document", "tech-stack", "--source", "source.txt"])
+                self.assertEqual(calls[-1][0], "context-preview")
+                self.assertEqual(calls[-1][1]["mode"], "create")
+                with contextlib.redirect_stdout(io.StringIO()):
+                    initializer.main(["--root", str(root), "--context-apply",
+                                      ".codearbiter/.artifacts/context-previews/" + "a" * 64 + ".json",
+                                      "--preview-sha256", "a" * 64])
+                self.assertEqual(calls[-1][0], "context-apply")
+                self.assertEqual(set(calls[-1][1]), {"preview_ref", "preview_sha256"})
+            self.assertFalse((root / ".codearbiter").exists())
+
+    def test_context_capability_uses_native_writer_without_host_capture_gate(self):
+        capability = {
+            "operations": ["context-preview", "context-finalize-preview", "context-apply"],
+            "repository_context": {"source_present": True, "kind_registered": True,
+                                   "host_default_enabled": True, "qualification": "native-tested-package",
+                                   "mutation_available": True, "permission_model": "host-owned"},
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            # Canonicalize this owned fixture: macOS temp paths can cross /var.
+            # ArtifactClient must still reject caller-supplied linked roots.
+            root = Path(tmp).resolve()
+            client = _artifactlib.ArtifactClient(root, root)
+            with (mock.patch.object(client, "call", return_value=capability) as call,
+                  mock.patch.object(client, "workflow_preflight",
+                                    side_effect=AssertionError("unrelated host capture gate"))):
+                self.assertEqual(client.require_context_workflow(), capability["repository_context"])
+                call.assert_called_once_with("capabilities")
+            for malformed in ({}, {"operations": capability["operations"], "repository_context": {}},
+                              {**capability, "operations": ["context-apply"]},
+                              {**capability, "repository_context": {**capability["repository_context"],
+                                                                    "mutation_available": False}}):
+                with self.subTest(malformed=malformed), mock.patch.object(client, "call", return_value=malformed):
+                    with self.assertRaisesRegex(_artifactlib.ArtifactError, "CONTEXT_WORKFLOW_UNAVAILABLE"):
+                        client.require_context_workflow()
+
+    def test_large_context_request_is_bounded_separately_from_responses(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            path = root / "request.json"
+            request = {"operation": "preview", "preview": {"markdown": "x" * 70_000}}
+            raw = json.dumps(request).encode()
+            path.write_bytes(raw)
+            self.assertEqual(_artifactlib.read_context_preview_request(root, path), request)
+            with self.assertRaisesRegex(_artifactlib.ArtifactError, "oversized JSON envelope"):
+                _artifactlib._decode(raw)
+            path.write_bytes(b"x" * ((1 << 20) + 1))
+            with self.assertRaisesRegex(_artifactlib.ArtifactError, "bounded regular file"):
+                _artifactlib.read_context_preview_request(root, path)
+
+    def test_assistive_apply_identity_has_no_approval_boolean_or_receipt(self):
+        request = {"operation": "apply", "preview_ref": ".codearbiter/.artifacts/context-previews/" + "f" * 64 + ".json",
+                   "preview_sha256": "a" * 64}
+        operation, payload = _artifactlib.validate_context_writer_request(request)
+        self.assertEqual(operation, "apply")
+        self.assertEqual(payload, {key: value for key, value in request.items() if key != "operation"})
+        for addition in ({"approved": True}, {"receipt": "historical"}, {"authorization": "auto"}):
+            with self.subTest(addition=addition), self.assertRaisesRegex(_artifactlib.ArtifactError, "INVALID_CONTEXT_REQUEST"):
+                _artifactlib.validate_context_writer_request({**request, **addition})
+
+
 class TestContextWriterBridge(unittest.TestCase):
     def shortDescription(self):
         return None
@@ -264,7 +397,7 @@ class TestContextWriterBridge(unittest.TestCase):
         return path
 
     def test_t021_context_writer_bridge_positive_controls(self):
-        """Init's closed request reaches existing preview and receipt-only native apply."""
+        """An authorized context update previews and applies without approval capture."""
         calls = []
 
         class FixtureClient:
@@ -276,25 +409,27 @@ class TestContextWriterBridge(unittest.TestCase):
 
             def call(inner, operation, request):
                 calls.append((operation, request))
+                if operation == "context-preview":
+                    return {"preview_ref": ".codearbiter/.artifacts/context-previews/" + "f" * 64 + ".json",
+                            "preview_sha256": "f" * 64, "evidence_assessed": False}
                 return {"target_path": ".codearbiter/tech-stack.md", "status": "committed"}
-
-        def arm(root, client, preview):
-            calls.append(("arm", Path(root), client, preview))
-            return {"reply": "approve-context CONTEXT-TECH-STACK fixture-token"}
 
         class QualifiedClient(FixtureClient):
             pass
 
         before = (self.human.read_bytes(), self.task.read_bytes())
         with (mock.patch.object(_artifactlib, "ArtifactClient", QualifiedClient),
-              mock.patch("_artifactauthoritylib.arm_context_preview", side_effect=arm)):
+              mock.patch("_artifactauthoritylib.arm_context_preview",
+                         side_effect=AssertionError("ordinary work requested approval"))):
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 initializer.main(["--root", str(self.root), "--context-request",
                                   str(self._request({"operation": "preview", "preview": self.preview}))])
-            self.assertEqual(json.loads(out.getvalue())["reply"].split()[0], "approve-context")
-            self.assertEqual([item[0] for item in calls], ["client", "qualified", "arm"])
-            self.assertEqual(calls[-1][3], self.preview)
+            preview_result = json.loads(out.getvalue())
+            self.assertFalse(preview_result["evidence_assessed"])
+            self.assertNotIn("reply", preview_result)
+            self.assertEqual([item[0] for item in calls], ["client", "context-preview"])
+            self.assertEqual(calls[-1][1], self.preview)
             calls.clear()
             creation = {**self.preview, "operation_id": "context-bridge-002",
                         "mode": "create", "document_id": "code-map",
@@ -305,19 +440,20 @@ class TestContextWriterBridge(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 initializer.main(["--root", str(self.root), "--context-request",
                                   str(self._request({"operation": "preview", "preview": creation}))])
-            self.assertEqual([item[0] for item in calls], ["client", "qualified", "arm"])
-            self.assertEqual(calls[-1][3], creation)
+            self.assertEqual([item[0] for item in calls], ["client", "context-preview"])
+            self.assertEqual(calls[-1][1], creation)
             self.assertFalse((self.root / ".codearbiter" / "code-map.md").exists())
             calls.clear()
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 initializer.main(["--root", str(self.root), "--context-request",
-                                  str(self._request({"operation": "apply", "receipt":
-                                                     ".codearbiter/.artifacts/receipts/" + "f" * 64 + ".json"}))])
+                                  str(self._request({"operation": "apply",
+                                                     "preview_ref": preview_result["preview_ref"],
+                                                     "preview_sha256": preview_result["preview_sha256"]}))])
             self.assertEqual(json.loads(out.getvalue())["status"], "committed")
-            self.assertEqual([item[0] for item in calls], ["client", "qualified", "context-apply"])
-            self.assertEqual(calls[-1][1], {"receipt":
-                             ".codearbiter/.artifacts/receipts/" + "f" * 64 + ".json"})
+            self.assertEqual([item[0] for item in calls], ["client", "context-apply"])
+            self.assertEqual(calls[-1][1], {"preview_ref": preview_result["preview_ref"],
+                                          "preview_sha256": preview_result["preview_sha256"]})
             policies = _protectedstatelib.context_writer_protection()
             self.assertEqual(set(policies), {
                 ".codearbiter/CONTEXT.md", ".codearbiter/tech-stack.md",
@@ -360,6 +496,9 @@ class TestContextWriterBridge(unittest.TestCase):
             def require_context_workflow(inner):
                 raise _artifactlib.ArtifactError("CONTEXT_WORKFLOW_UNAVAILABLE", "pending")
 
+            def call(inner, operation, request):
+                inner.require_context_workflow()
+
         with mock.patch.object(_artifactlib, "ArtifactClient", PendingClient), \
              mock.patch("_artifactauthoritylib.arm_context_preview",
                         side_effect=AssertionError("writer reached")):
@@ -371,6 +510,9 @@ class TestContextWriterBridge(unittest.TestCase):
         for data in (
             {"operation": "write", "path": ".codearbiter/tech-stack.md", "content": "takeover"},
             {"operation": "apply", "receipt": "fixture", "approved": True},
+            {"operation": "apply", "preview_ref": "../preview.json", "preview_sha256": "f" * 64},
+            {"operation": "apply", "preview_ref": ".codearbiter/.artifacts/context-previews/" + "f" * 64 + ".json", "preview_sha256": "bad"},
+            {"operation": "apply", "preview_ref": ".codearbiter/.artifacts/context-previews/" + "f" * 64 + ".json", "preview_sha256": "f" * 64, "receipt": "fixture"},
             {"operation": "preview", "preview": {**self.preview, "approved": True}},
             {"operation": "preview", "preview": {**self.preview, "document_id": []}},
             {"operation": "preview", "preview": {**self.preview, "mode": []}},
@@ -485,6 +627,29 @@ class TestContextFinalization(unittest.TestCase):
         path.write_text(json.dumps(value), encoding="utf-8")
         return path
 
+    def test_finalization_preparation_binds_exact_outputs_without_writes(self):
+        for relative in _artifactlib._CONTEXT_FINALIZE_PATHS:
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes((relative + "\n").encode())
+        before = {relative: (self.root / relative).read_bytes()
+                  for relative in _artifactlib._CONTEXT_FINALIZE_PATHS}
+        preview = context_writer.prepare_finalization_preview(self.root)
+        self.assertEqual(preview["mode"], "finalize")
+        self.assertEqual(preview["expected"], {
+            relative: hashlib.sha256(content).hexdigest()
+            for relative, content in before.items()})
+        self.assertEqual(preview, context_writer.prepare_finalization_preview(self.root))
+        self.assertEqual(before, {relative: (self.root / relative).read_bytes()
+                                  for relative in before})
+        target = self.root / ".codearbiter/open-questions.md"
+        target.write_bytes(b"changed\n")
+        self.assertNotEqual(preview["operation_id"],
+                            context_writer.prepare_finalization_preview(self.root)["operation_id"])
+        target.unlink()
+        with self.assertRaisesRegex(_artifactlib.ArtifactError, "unavailable"):
+            context_writer.prepare_finalization_preview(self.root)
+
     def _native(self, name):
         result = subprocess.run(
             ["go", "test", "./internal/contextdocument", "-run", f"^{name}$", "-count=1", "-v"],
@@ -496,7 +661,7 @@ class TestContextFinalization(unittest.TestCase):
         self.assertNotIn("--- SKIP:", result.stdout)
 
     def test_t022_context_finalization_positive_controls(self):
-        """Exact preview routes through installed authority; native empty-state pair commits."""
+        """Finalization previews exact outputs without requesting another approval."""
         calls = []
 
         class Client:
@@ -506,18 +671,19 @@ class TestContextFinalization(unittest.TestCase):
             def require_context_workflow(inner):
                 calls.append(("qualified",))
 
-        def arm(root, client, preview):
-            calls.append(("arm", preview))
-            return {"preview_binding_sha256": "b" * 64}
+            def call(inner, operation, preview):
+                calls.append((operation, preview))
+                return {"preview_binding_sha256": "b" * 64}
 
         with mock.patch.object(_artifactlib, "ArtifactClient", Client), \
-             mock.patch("_artifactauthoritylib.arm_context_preview", side_effect=arm):
+             mock.patch("_artifactauthoritylib.arm_context_preview",
+                        side_effect=AssertionError("ordinary finalization requested approval")):
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 initializer.main(["--root", str(self.root), "--context-request",
                                   str(self._request({"operation": "preview", "preview": self.preview}))])
             self.assertEqual(json.loads(out.getvalue())["preview_binding_sha256"], "b" * 64)
-        self.assertEqual([call[0] for call in calls], ["client", "qualified", "arm"])
+        self.assertEqual([call[0] for call in calls], ["client", "context-finalize-preview"])
         self.assertEqual(calls[-1][1], self.preview)
         prompt = "approve-context CONTEXT-CONTEXT fixture-token"
         binding = "c" * 64
@@ -1055,7 +1221,11 @@ class TestInitializedRefreshRoutes(unittest.TestCase):
         self.assertIn("assess_context_provenance", owner)
         self.assertIn("v2_stale", owner)
         self.assertIn("<!--INITIALIZED-->", owner)
-        self.assertIn("receipt", owner)
+        self.assertIn("existing authorization", owner)
+        self.assertIn("context-preview", owner)
+        self.assertIn("preview_ref", owner)
+        self.assertIn("preview_sha256", owner)
+        self.assertNotIn("approve-context", owner)
         self.assertIn("read-only", status_route)
         self._native("approved_field_update_preserves_human_neighbors")
 

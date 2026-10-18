@@ -64,14 +64,23 @@ describe("human-operable product window", () => {
   });
 
   it("bounds typed authority by host rather than equating entry syntax with capability", () => {
-    const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    const normal = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    expect(normal).toContain("includes/artifacts-attestation.md");
+    expect(normal).not.toContain("Verification and review authority below is supported on Codex and Claude Code");
+    const source = read("../core/surface/includes/artifacts-attestation.md").replace(/\s+/g, " ");
     expect(source).toContain("Verification and review authority below is supported on Codex and Claude Code");
-    expect(source).toContain("Pi has no prerequisite-capture adapter and must remain blocked");
+    // Explicit historical verification/review authority remains host-limited,
+    // but Pi native drafting and ordinary progress are not blocked by its
+    // missing legacy prompt adapter.
+    expect(normal).toContain("This includes the native Pi writer");
+    expect(normal).toContain("no certification code");
     const guide = read("src/content/docs/guides/review-artifacts.md");
     expect(guide).toContain("## Check your host's authority capability");
-    expect(guide).toContain("| Claude Code | Host-observed prompt approval | Production adapters");
-    expect(guide).toContain("| Codex | Host-observed prompt approval | Production adapters");
-    expect(guide).toContain("| Pi | Not supported | Not supported");
+    expect(guide).toContain("| Artifact integrity |");
+    expect(guide).toContain("| Work authorization |");
+    expect(guide).toContain("| Explicit attestation |");
+    expect(guide).toContain("Native writer support includes Pi");
+    expect(guide.replace(/\s+/g, " ")).toContain("not a prerequisite for ordinary drafting or implementation");
     for (const path of ["guides/first-feature.mdx", "guides/feature-lane.mdx", "guides/autonomous-sprints.mdx", "concepts/artifacts.md"]) {
       expect(read(`src/content/docs/${path}`)).toContain("/guides/review-artifacts/#check-your-hosts-authority-capability");
     }
@@ -79,23 +88,28 @@ describe("human-operable product window", () => {
     expect(read("src/components/HostViews.astro")).toContain("verification and review authority are not supported");
   });
 
-  it("separates initial sprint pair approval from single-artifact and scope acceptance", () => {
+  it("separates current assisted execution from explicit attestation", () => {
     const adapter = read("../core/pysrc/_approvallib.py");
     expect(adapter).toContain("PENDING_APPROVAL");
     expect(adapter).toContain('reply = f"approve {artifact_id} {token}"');
     const guide = read("src/content/docs/guides/autonomous-sprints.mdx");
-    expect(read("../core/surface/SPRINT.md")).toContain("commits approval plus plan binding in one recoverable native transaction.");
-    expect(guide).toContain("arm-sprint");
-    expect(guide).toContain("sprint-approve");
-    expect(guide).toContain("Later single-artifact changes");
-    expect(guide).not.toContain("This is not two approvals.");
+    const sprint = read("../core/surface/SPRINT.md");
+    expect(sprint).toContain("without a second artifact approval system");
+    expect(sprint).toContain("Do not arm");
+    expect(sprint).toContain("a local `DONE` batch is not a shipped release".replace("a local", "A local"));
+    expect(guide).toContain("Explicit attestation has separate host support requirements");
+    expect(guide).not.toContain("Historical receipt-based workflow");
+    expect(guide).toContain("Ordinary plan maintenance and task progress need no additional artifact approval");
+    expect(guide).toContain("REVIEW and DONE describe implementation progress");
     expect(guide).not.toContain("record the accepted task state on disk");
-    expect(guide).toContain("checkpoint scope together");
-    expect(guide).toContain("SMARTS prerequisite authority is not supported");
+    expect(guide).toContain("Merge and publication need their own authorization");
   });
 
   it("keeps old authority receipts inspection-only rather than relabelling them after upgrade", () => {
-    const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    const normal = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    expect(normal).toContain("includes/artifacts-attestation.md");
+    expect(normal).not.toContain("Verification and review authority below is supported on Codex and Claude Code");
+    const source = read("../core/surface/includes/artifacts-attestation.md").replace(/\s+/g, " ");
     expect(source).toContain("Receipt format 0.1.0 remains readable for inspection after upgrade but is not authority-bearing");
     const guide = read("src/content/docs/guides/resume-and-recover.mdx");
     expect(guide).toContain("0.1.0");
@@ -107,8 +121,10 @@ describe("human-operable product window", () => {
 
   it("keeps curated review guidance aligned with the producer contract", () => {
     const decompose = read("src/curated/commands/decompose.md");
-    expect(decompose).toContain("all three planning documents are written, reviewed, and explicitly approved");
-    expect(read("../core/surface/skills/decompose/SKILL.md")).toContain("the user explicitly approves all three");
+    expect(decompose.replace(/\s+/g, " ")).toContain("Review all three planning documents");
+    const source = read("../core/surface/skills/decompose/SKILL.md").replace(/\s+/g, " ");
+    expect(source).toContain("record the user's actual confirmation in `_session.md`");
+    expect(source).toContain("existing confirmation covers unchanged artifacts");
     expect(read("src/curated/skills/brainstorming.md")).not.toContain("single test");
     expect(read("src/curated/skills/brainstorming.md")).toContain("one or more named tests");
     expect(read("../core/surface/skills/brainstorming/SKILL.md")).toContain("one or more focused tests");

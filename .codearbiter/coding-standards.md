@@ -1,96 +1,115 @@
-# Coding standards — codeArbiter (the framework repo itself)
+# Coding standards — codeArbiter
 
-Style, structure, naming, and banned patterns for code in THIS repo. The canonical
-test/lint/build commands live in `tech-stack.md`; this file is conventions only.
-Prose artifacts (skills, commands, agents, `arbiter.md`) are governed by the
-canonical surface authoring conventions in `core/surface/README.md`, not by this file.
+Conventions for source in this repository. Build/test commands belong to
+`tech-stack.md`; accepted security controls belong to `security-controls.md`.
+Shared instruction authoring belongs to `core/surface/README.md`.
 
-## Where code lives
+## Source ownership
 
-- **Python hooks** — `plugins/ca/hooks/*.py`. Stdlib only.
-- **TypeScript farm dispatcher** — `plugins/ca/tools/*.ts`, shipped as built `farm.js`.
-- **ca-sandbox sibling** — `plugins/ca-sandbox/tools/*.ts` (ADR-0007), same TS rules.
+- Shared Python is authored in `core/pysrc/`, then copied by
+  `tools/sync-core.py` into governance-host hooks. Do not edit those copies.
+- Shared instructions are authored in `core/surface/`, then rendered by
+  `tools/build-surface.py` using `core/hosts.json`.
+- The native Go engine is `core/artifacts/`. Public and embedded schemas and
+  generated model types must agree through their existing generator/checks.
+- Farm TypeScript lives in `plugins/ca/tools/`; the infrastructure sibling
+  lives in `plugins/ca-sandbox/tools/`.
+- Pi host TypeScript lives in `plugins/ca-pi/tools/src/`; the adapter consumes
+  the shared kernel rather than reimplementing it.
+- Site generators/tests live in `site/scripts/` and `site/test/`; curated
+  prose and generated content have distinct owners.
 
-## Pi adapter location
+## Python hooks and bridge
 
-Pi host code lives under `plugins/ca-pi/tools/src/*.ts` and builds into
-`plugins/ca-pi/extensions/` and `plugins/ca-pi/helpers/`. Generated policy
-remains under `core/`; host-specific code is an adapter, never a second kernel.
+Use Python's standard library only in shipped hooks. No third-party runtime
+imports; a package used by a separately locked reference-conformance test is
+not a hook dependency.
 
-## Python (hooks)
+Keep entry hooks thin and shared logic in leading-underscore libraries.
+Use `snake_case` functions/variables, `UPPER_SNAKE` constants, and
+`CapWords` classes. Imports must not perform filesystem, Git or process work.
+Separate pure decisions from bounded filesystem/process access so tests can
+exercise malformed, absent, stale and unsafe input independently.
 
-- `#!/usr/bin/env python3` shebang on every hook.
-- The file opens with a `# codeArbiter — <one-line purpose>.` comment, then a short
-  block stating what it guards/computes and its design invariants (see any
-  `_*lib.py` for the shape).
-- **Stdlib only — no third-party imports, ever.** Hooks must run on a stock
-  Windows/macOS/Linux Python with nothing installed; the cold-install matrix proves
-  it. Adding a dependency is a banned pattern, not a judgment call.
-- Shared logic goes in a leading-underscore library module `_<name>lib.py`
-  (`_hooklib`, `_taskboardlib`, `_metricslib`, …), imported by the thin entry-point
-  hooks. Keep entry points thin; keep testable logic in the lib.
-- Naming: `snake_case` for functions and variables, `UPPER_SNAKE` for module
-  constants, `CapWords` for the rare `namedtuple`/class.
-- Library design invariants (mirror the existing `_*lib.py`):
-  - Zero side effects at import time — no git calls, no file I/O on import.
-  - Pure functions, testable with synthetic input; isolate filesystem access to one
-    named reader (e.g. `read_board()`).
-  - **Never raise on malformed user input** — degrade to a surfaced warning. A hook
-    that can crash the SessionStart path is a defect, not an edge case.
-- Document the public API in the file header as `name(args) -> type` lines.
-- Enforcement hooks carry a stable `H-NN` ID (letter suffix for a split gate, e.g.
-  `H-09b`); cite the ID in code comments and in the matching test.
-- Floor check for any touched hook: `python -m py_compile <file>` — no linter is
-  configured (see `tech-stack.md`).
+Preserve the existing hook header convention: Python shebang, concise
+codeArbiter purpose, design invariants and public API notes. Existing legacy
+header differences are not a reason for unrelated sweeping edits.
 
-## TypeScript (farm dispatcher)
+Malformed input must not crash SessionStart. Entry points follow their owning
+documented fail-open/fail-closed policy and surface bounded diagnostics.
+Libraries may return or raise their documented typed failures; callers must
+not turn a refused or uncertain write into success. Missing and unreadable state
+are different conditions.
 
-- `strict: true` is non-negotiable (`tools/tsconfig.json`); `npm run typecheck` must
-  pass clean.
-- The file opens with a `/** … */` JSDoc block: `<file> — codeArbiter's <purpose>.`
-- Naming: `camelCase` for values/functions, `CapWords` for types/interfaces. ES
-  module imports with explicit `.ts` extensions (bundler resolution).
-- The plugin ships the **built** `farm.js`, never `farm.ts`. After any `.ts` change
-  run `npm run build`; a stale bundle (`git diff --quiet -- farm.js` fails) is a
-  release blocker.
-- Security-sensitive paths (URL / base-URL validation, secret handling) keep their
-  existing guards and tests — see `security-controls.md`.
+Keep enforcement IDs stable and covered by the corresponding tests. Use explicit
+argument arrays for subprocess boundaries and retain path/size/schema bounds.
+The syntax floor is `python -m py_compile` on changed canonical Python files;
+behavioral tests cover the affected outcomes.
 
-## TypeScript (Pi adapter)
+## Native Go engine
 
-- `strict: true` is mandatory in `plugins/ca-pi/tools/tsconfig.json`; use Node
-  22.19+ and the pinned lockfile. Runtime package metadata stays private and
-  dependency-free.
-- Import local modules with explicit `.ts` extensions. Keep host API types in
-  the local declaration boundary; the external Pi runtime is a test/install
-  input, not a checked-in or runtime dependency.
-- All host crossings are bounded, schema-checked, and redacted. Project trust
-  must be affirmative before repository-aware activation. Tool enforcement wraps
-  the final built-in mutator arguments and unknown tools fail closed.
-- Child work uses the hardened runner, minimal provider-specific environments,
-  exact generated roles, and whole-process-tree cleanup. Do not add a second
-  runner for compaction, farm, or dispatch.
-- Run `npm --prefix plugins/ca-pi/tools run build` after source changes. Both
-  extension bundles and `helpers/windows-supervisor.js` are reviewed build
-  outputs; stale output is a release blocker.
-- `plugins/ca-pi/package.json` is the independent version source. Generate the
-  root manifest with `python tools/build-host-packages.py`; that manifest is
-  both the Git-install unit and the npm publish unit (`@arbiterforge/ca-pi`,
-  ADR-0029) — publishing runs only in CI on `ca-pi-v*` tags, never locally.
+Use the module's pinned Go toolchain and existing package boundaries. Keep Go
+source formatted with `gofmt`. The module remains dependency-free; do not add a
+datastore, service or general permission/rules layer to implement ordinary state
+updates.
 
-## File headers and copyright
+Preserve closed schemas and typed operation boundaries. Treat format, schema,
+renderer, protocol, artifact revision and product release as separate identities.
+Generate derived types with the existing tool; do not independently patch
+generated definitions.
 
-- License is **AGPL-3.0-only**; the copyright holder of record is **SUaDtL**
-  (`LICENSE`, ADR-0009 — relicensed from MIT at v2.6.0).
-- **No per-file license or SPDX headers.** The single root `LICENSE` governs; new
-  files carry no copyright header. The `# codeArbiter — …` / `/** … */` purpose
-  comment is documentation, not a license header.
+Retain bounded input/output, explicit omitted context, stable references,
+safe rendering, compare-and-swap, locks, journals and exact replay/recovery.
+A reported result is not an attestation. Progress, verification, review and
+publication remain distinct under ADR-0043. Unknown applicability remains
+unknown; neither stale history nor a later failing check may be hidden.
 
-## Line endings and encoding
+Tests should discriminate changed behavior, including negative results and
+recovery paths. Historical HTML, transaction before-images, and fixture digests
+must retain their original meaning and bytes. Fix the producer/view contract
+before changing a pinned expected value.
 
-- UTF-8, no BOM. Canonical EOL is **LF** for all tracked text.
-- `.gitattributes` enforces LF for `*.sh`, `*.py`, and `hooks/*` (CRLF breaks bash
-  shebangs and is noisy in Python). The same LF convention applies to `.md`, `.ts`,
-  `.json`, and `.yml`, but is not yet enforced by `.gitattributes` there. An edit
-  MUST NOT flip LF to CRLF; normalize to LF before staging. A diff that introduces
-  CRLF on a tracked text file is rejected at review.
+## TypeScript tools and host adapter
+
+`strict: true` remains mandatory. Use `camelCase` values/functions,
+`CapWords` types/interfaces and the tree's established explicit local import
+extensions. Keep concise codeArbiter purpose headers. Runtime and development
+dependency scopes are not interchangeable; use pinned lockfiles.
+
+The farm and sandbox ship their built JavaScript. Rebuild affected bundles from
+source and keep source/output synchronized. The Pi build owns both parent/child
+extensions, `helpers/windows-supervisor.js` and `helpers/approval-dialog.js`;
+do not hand-edit those outputs.
+
+Pi uses Node 22.19+ and Python 3. The external Pi runtime is a reviewed
+test/install input, not a shipped runtime dependency. Keep host API declarations
+at the existing adapter boundary. Require affirmative project trust before
+repository-aware activation. Preserve final tool-argument enforcement,
+bounded/redacted host crossings, isolated child environments, the existing
+inference broker and whole-process-tree cleanup. Do not add a second runner.
+
+`plugins/ca-pi/package.json` owns its independent version. Generate the root
+Git/npm manifest through `tools/build-host-packages.py`. Publication follows
+the protected hosted release path, never an ad-hoc local npm publish.
+
+## Shared instructions
+
+Use the existing command-backed owner rather than adding duplicate public
+procedures. Descriptions should identify intent and the side-effect boundary.
+Host-specific tool names and unsupported capabilities belong in the host
+descriptor/conditional notes. Generate all host copies and check resource
+closure. Instructions must not recreate artifact permission codes or compulsory
+per-task reviewer chains removed by ADR-0043.
+
+## License and exact bytes
+
+The repository license is AGPL-3.0-only and the recorded copyright holder is
+SUaDtL (ADR-0009). No new per-file copyright or SPDX headers; the root LICENSE
+governs.
+
+New tracked text uses UTF-8 without BOM and LF. Follow the actual scoped
+`.gitattributes` rules, including the native module, generated surfaces,
+workflows and plugin/site source. Do not normalize retained HTML, immutable
+artifact evidence, migration before-images or frozen fixtures: their `-text`
+or explicit byte contract takes precedence. Never create a whole-file newline
+rewrite as an incidental edit.

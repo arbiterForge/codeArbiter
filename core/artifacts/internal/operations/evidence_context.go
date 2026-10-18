@@ -147,6 +147,21 @@ func (e *Engine) buildEvidenceContext(plan *model.Document, activity, recordID s
 			commands = append(commands, object{"definition_sha256": definitionHash, "definition": definition})
 		}
 		context["task_sha256"], context["task"], context["commands"] = taskHash, taskValue, commands
+		if activity == "verification" {
+			hashes := []any{}
+			seen := map[string]bool{}
+			for _, report := range model.A(model.M(model.M(plan.Data["execution"])["task_check_observations"])[recordID]) {
+				hash, err := canonical.Hash(report)
+				if err != nil {
+					return nil, err
+				}
+				if !seen[hash] {
+					hashes = append(hashes, hash)
+					seen[hash] = true
+				}
+			}
+			context["task_check_report_sha256"] = hashes
+		}
 	} else {
 		scope, ok := plan.Symbols.ByID[recordID]
 		if !ok || scope.Kind != "checkpoints" || scope.Retired {

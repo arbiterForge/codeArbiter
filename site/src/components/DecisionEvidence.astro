@@ -1,5 +1,5 @@
 ---
-import { adrCases, auditCases, evidenceSourceRevision, evidenceSourceUrl, validateDecisionEvidence } from '../../scripts/decision-evidence';
+import { adrCases, auditCases, evidenceSourceUrl, validateDecisionEvidence } from '../../scripts/decision-evidence';
 interface Props { id: string; kind: 'adr' | 'audit' }
 const { id, kind } = Astro.props;
 if (!/^[a-z][a-z0-9-]*$/.test(id) || !['adr', 'audit'].includes(kind)) throw new Error('Invalid evidence exhibit');
@@ -36,7 +36,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <p class="ca-decision-evidence__inspect"><strong>Inspect next:</strong> {item.inspect}</p>
     <p class="ca-decision-evidence__links"><a href={`${base}${item.href}`}>Read the owning procedure</a><a href={evidenceSourceUrl(item.source)}>Inspect the source contract</a></p>
   </section>)}
-  <footer>Source reviewed at <code>{evidenceSourceRevision}</code>. These views explain source contracts, not certified installed-release behavior.</footer>
+  <footer>Each source link identifies its reviewed revision. These views explain source contracts, not certified installed-release behavior.</footer>
 </ca-decision-evidence>
 <script>
   /** Reading-only selection. Reconnect cleanly across Astro navigation; no saved state. */

@@ -3264,6 +3264,10 @@ class HtmlArtifactDiagnosticTest(unittest.TestCase):
         self.assertIn("CAPABILITY_MISSING", pointers[0]["text"])
         self.assertIn("repair or reinstall", pointers[0]["text"].lower())
         self.assertNotIn("implement to its acceptance criteria", pointers[0]["text"])
+        self.assertIn("only operations that require this capability", pointers[0]["text"])
+        self.assertIn("Independent authorized work may continue", pointers[0]["text"])
+        self.assertIn("Do not bypass the error with raw artifact writes", pointers[0]["text"])
+        self.assertNotIn("HTML planning/execution must stop", pointers[0]["text"])
 
     def test_invalid_html_is_distinguished_from_missing_capability(self):
         temporary = self._root_with_html_spec()
@@ -3295,6 +3299,10 @@ class HtmlArtifactDiagnosticTest(unittest.TestCase):
         self.assertIn("invalid", pointers[0]["text"].lower())
         self.assertIn("INVALID_ARTIFACT", pointers[0]["text"])
         self.assertIn("repair-preview", pointers[0]["text"])
+        self.assertIn("only operations that depend on the affected artifact", pointers[0]["text"])
+        self.assertIn("Independent authorized work may continue", pointers[0]["text"])
+        self.assertIn("Do not bypass the error with raw artifact writes", pointers[0]["text"])
+        self.assertNotIn("HTML planning/execution must stop", pointers[0]["text"])
 
     def test_no_html_keeps_legacy_reader_and_never_loads_artifact_capability(self):
         with tempfile.TemporaryDirectory() as root:
@@ -3327,11 +3335,53 @@ class HtmlArtifactDiagnosticTest(unittest.TestCase):
             "artifact_id": pointer["spec"],
             "path": pointer["path"],
             "governs": pointer["globs"],
-            "authority": {"authority_verified": True},
+            "authority": {"authority_verified": True, "state": "approved"},
             "revision": 1,
             "model_sha256": (model_marker * 64 if model_marker else pointer["model_sha256"]),
             "normative_sha256": "c" * 64,
         }
+
+    def test_unapproved_html_spec_injection(self):
+        temporary = self._root_with_html_spec()
+        self.addCleanup(temporary.cleanup)
+        entry = self._engine_entry("SPEC-ASSISTIVE")
+        entry["authority"] = {"authority_verified": False, "state": "draft"}
+        client = mock.Mock()
+        client.index.side_effect = lambda _: iter([entry])
+        import _artifactlib
+        with mock.patch.object(_artifactlib, "ArtifactClient", return_value=client), \
+             mock.patch.object(_artifactlib, "helper_installation", return_value="installed"):
+            first = ril.compute_injection(temporary.name, "assistive", "src/app.py")
+            self.assertIn("SPEC-ASSISTIVE", first)
+            self.assertIn("draft", first)
+            self.assertIn("advisory", first)
+            self.assertNotIn("governs this file", first)
+            self.assertEqual(_artifactlib.checked_spec_index(temporary.name, "installed")[0]
+                             ["governance_state"], "draft")
+            self.assertEqual(ril.compute_injection(temporary.name, "assistive", "src/app.py"), "")
+            self.assertEqual(ril.spec_pointers("other/app.py", ril.build_index(temporary.name)["spec"]), [])
+            entry["authority"]["state"] = "ready"
+            self.assertIn("ready", ril.compute_injection(temporary.name, "assistive", "src/app.py"))
+            entry["authority"]["state"] = "superseded"
+            self.assertEqual(ril.spec_pointers("src/app.py", ril.build_index(temporary.name)["spec"]), [])
+
+    def test_unknown_or_stopped_html_spec_is_not_active_orientation(self):
+        temporary = self._root_with_html_spec()
+        self.addCleanup(temporary.cleanup)
+        entry = self._engine_entry("SPEC-STOPPED")
+        client = mock.Mock()
+        client.index.side_effect = lambda _: iter([entry])
+        import _artifactlib
+        with mock.patch.object(_artifactlib, "ArtifactClient", return_value=client), \
+             mock.patch.object(_artifactlib, "helper_installation", return_value="installed"):
+            for state in ("blocked", "denied", "superseded", "unknown", None):
+                entry["authority"] = {"authority_verified": True, "state": state}
+                self.assertEqual(ril.spec_pointers("src/app.py", ril.build_index(temporary.name)["spec"]), [])
+                self.assertEqual(_artifactlib.checked_spec_index(temporary.name, "installed"), [])
+            entry["authority"]["state"] = "draft"
+            entry["governs"] = []
+            self.assertEqual(ril.spec_pointers("src/app.py", ril.build_index(temporary.name)["spec"]), [])
+            self.assertEqual(_artifactlib.checked_spec_index(temporary.name, "installed"), [])
 
     def test_epoch_and_injected_entries_come_from_one_validated_snapshot(self):
         temporary = self._root_with_html_spec()

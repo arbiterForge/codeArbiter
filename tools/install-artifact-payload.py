@@ -15,7 +15,7 @@ import stat
 import sys
 from typing import NamedTuple
 
-SCHEMA_VERSION = "0.3.1"
+SCHEMA_VERSION = "0.3.2"
 PROTOCOL = "codearbiter.artifact-api/0.1.0"
 PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
 NATIVE_TESTS = [

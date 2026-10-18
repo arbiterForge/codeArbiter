@@ -28,6 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 sys.path.insert(0, HOOKS)
+sys.path.insert(0, os.path.join(REPO, "core", "pysrc"))
 
 import _provenancelib as pl  # noqa: E402 — needs sys.path mutation above
 
@@ -3472,6 +3473,100 @@ class ProvenanceV2ContractTest(unittest.TestCase):
                         pl.write_provenance(path, legacy)
                     self.assertEqual(Path(path).read_bytes(), prior_bytes)
                     self.assertEqual(Path(neighbour).read_bytes(), neighbour_before)
+
+
+class V2HealWorklistTest(unittest.TestCase):
+    def setUp(self):
+        self.record = ProvenanceV2ContractTest._v2()
+        self.record["fields"][0]["claims"][0]["evidence"] = [
+            self.record["fields"][0]["claims"][0]["evidence"][0]]
+        self.provenance = {"tech-stack": self.record}
+        self.snapshot = {
+            "source": {"files": {"package.json": {
+                "digest_method": "sha256-raw", "digest": "d" * 64}}, "membership": []},
+            "targets": {".codearbiter/tech-stack.md": {
+                "status": "file", "digest_method": "sha256-raw", "digest": "a" * 64}},
+        }
+        self.assessment = {"documents": {"tech-stack": "v2_stale"},
+                           "snapshot_current": {"tech-stack": True}}
+
+    def select(self, paths=("package.json",)):
+        return pl.v2_heal_worklist(list(paths), self.provenance,
+                                  self.snapshot, self.assessment)
+
+    def test_v2_heal_worklist_changed_source(self):
+        result = self.select()
+        self.assertEqual(result["unknown"], [])
+        self.assertEqual(result["claims"], [{
+            "document_id": "tech-stack", "field_id": "FIELD-RUNTIME",
+            "claim_id": "CLAIM-RUNTIME", "paths": ["package.json"]}])
+        self.assertFalse(result["authorizes_write"])
+
+    def test_unchanged_or_unstaged_claim_does_not_refresh(self):
+        self.assertEqual(self.select(["src/unrelated.py"])["claims"], [])
+        self.snapshot["source"]["files"]["package.json"]["digest"] = "b" * 64
+        self.assessment["documents"]["tech-stack"] = "v2_current"
+        self.assertEqual(self.select()["claims"], [])
+
+    def test_unknown_source_target_or_snapshot_never_selects_refresh(self):
+        import copy
+        cases = []
+        for label in ("missing", "deleted", "stale_snapshot", "changed_target", "partial_digest"):
+            snapshot, assessment = copy.deepcopy(self.snapshot), copy.deepcopy(self.assessment)
+            if label == "missing":
+                snapshot["source"]["files"] = {}
+            elif label == "deleted":
+                snapshot["source"]["files"]["package.json"] = {"status": "absent"}
+            elif label == "stale_snapshot":
+                assessment["snapshot_current"]["tech-stack"] = False
+            elif label == "changed_target":
+                snapshot["targets"][".codearbiter/tech-stack.md"]["digest"] = "e" * 64
+            else:
+                snapshot["source"]["files"]["package.json"]["digest"] = "partial"
+            cases.append((label, snapshot, assessment))
+        for label, snapshot, assessment in cases:
+            with self.subTest(label=label):
+                result = pl.v2_heal_worklist(["package.json"], self.provenance, snapshot, assessment)
+                self.assertEqual(result["claims"], [])
+                self.assertTrue(result["unknown"])
+
+    def test_membership_change_is_scoped_and_retains_unknown_neighbors(self):
+        self.record["fields"][0]["claims"][0]["evidence"] = [{
+            "kind": "membership", "predicate": "manifests", "scope_paths": ["app"],
+            "digest_method": "sha256-membership-v1", "digest": "c" * 64}]
+        self.snapshot["source"]["membership"] = [{
+            "predicate": "manifests", "scope_paths": ["app"], "status": "complete",
+            "digest_method": "sha256-membership-v1", "digest": "d" * 64}]
+        self.assertEqual(self.select(["other/package.json"])["claims"], [])
+        self.assertEqual(self.select(["app/README.md"])["claims"], [])
+        self.assertEqual(self.select(["app/package.json"])["claims"][0]["paths"],
+                         ["app/package.json"])
+        self.provenance["code-map"] = None
+        self.assessment["documents"]["code-map"] = "corrupt"
+        result = self.select(["app/package.json"])
+        self.assertTrue(result["unknown"])
+        self.assertEqual(len(result["claims"]), 1)
+
+    def test_unknown_claim_suspends_its_document_without_mutation(self):
+        import copy
+        claim = copy.deepcopy(self.record["fields"][0]["claims"][0])
+        claim["id"] = "CLAIM-UNKNOWN"
+        claim["evidence"][0]["path"] = "app/package.json"
+        self.record["fields"][0]["claims"].append(claim)
+        original = copy.deepcopy(self.provenance)
+        result = self.select(["package.json", "app/package.json"])
+        self.assertEqual(result["claims"], [])
+        self.assertEqual(result["unknown"][0]["claim_id"], "CLAIM-UNKNOWN")
+        self.assertEqual(self.provenance, original)
+
+    def test_assessor_distinguishes_changed_evidence_from_stale_snapshot(self):
+        with tempfile.TemporaryDirectory() as store:
+            Path(store, "tech-stack.json").write_text(json.dumps(self.record), encoding="utf-8")
+            for current in (True, False):
+                result = pl.assess_context_provenance(
+                    store, ["tech-stack"], self.snapshot,
+                    snapshot_probe=lambda _: {"source_current": current, "targets_current": True})
+                self.assertEqual(result.get("snapshot_current", {}).get("tech-stack"), current)
 
 
 if __name__ == "__main__":

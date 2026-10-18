@@ -20,10 +20,10 @@ import threading
 from typing import Any
 
 PROTOCOL = "codearbiter.artifact-api/0.1.0"
-SCHEMA_VERSION = "0.3.1"
+SCHEMA_VERSION = "0.3.2"
 MAX_REQUEST = 8 << 20
 MAX_RESPONSE = 65536
-READ_OPERATIONS = frozenset({"capabilities", "schema", "read", "outline", "identity", "validate", "index", "snapshot", "diff", "repair-preview", "eligible", "farm-verify", "migration-preview"})
+READ_OPERATIONS = frozenset({"capabilities", "schema", "read", "outline", "identity", "validate", "index", "snapshot", "diff", "repair-preview", "eligible", "task-context", "verification-status", "farm-verify", "migration-preview"})
 
 
 class ArtifactError(RuntimeError):
@@ -41,8 +41,8 @@ def _object(pairs):
     return value
 
 
-def _decode(raw: bytes) -> Any:
-    if len(raw) > MAX_RESPONSE:
+def _decode(raw: bytes, *, max_bytes: int = MAX_RESPONSE) -> Any:
+    if len(raw) > max_bytes:
         raise ArtifactError("INVALID_RESPONSE", "oversized JSON envelope")
     # Bound nesting independently of the interpreter's recursion-limit setting.
     depth = 0
@@ -97,7 +97,7 @@ def read_context_preview_request(root: str | Path, request_file: str | Path) -> 
             raw = os.read(fd, (1 << 20) + 1)
         finally:
             os.close(fd)
-        value = _decode(raw)
+        value = _decode(raw, max_bytes=1 << 20)
     except (OSError, ValueError) as exc:
         raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview request is unavailable or outside the repository") from exc
     if not isinstance(value, dict):
@@ -140,7 +140,7 @@ def context_writer_qualified() -> bool:
 
 
 def validate_context_writer_request(request: dict[str, Any]) -> tuple[str, dict]:
-    """Parse only the finite preview or receipt request for the native workflow."""
+    """Parse an inert preview or its exact apply reference; never infer approval."""
     if not isinstance(request, dict):
         raise ArtifactError("INVALID_CONTEXT_REQUEST", "context request must be an object")
     operation = request.get("operation")
@@ -161,22 +161,33 @@ def validate_context_writer_request(request: dict[str, Any]) -> tuple[str, dict]
                          for value in preview["expected"].values()))
         if not (regular or final):
             raise ArtifactError("INVALID_CONTEXT_REQUEST", "preview must name one bounded context target")
+    elif operation == "apply" and set(request) == {"operation", "preview_ref", "preview_sha256"}:
+        preview_ref = request["preview_ref"]
+        preview_sha256 = request["preview_sha256"]
+        if (not isinstance(preview_ref, str) or re.fullmatch(
+                r"\.codearbiter/\.artifacts/context-previews/[0-9a-f]{64}\.json", preview_ref) is None
+                or not isinstance(preview_sha256, str)
+                or re.fullmatch(r"[0-9a-f]{64}", preview_sha256) is None):
+            raise ArtifactError("INVALID_CONTEXT_REQUEST", "apply requires an exact retained preview reference and digest")
+        return "apply", {"preview_ref": preview_ref, "preview_sha256": preview_sha256}
     elif operation == "apply" and set(request) == {"operation", "receipt"}:
         receipt = request["receipt"]
         if (not isinstance(receipt, str) or re.fullmatch(
                 r"\.codearbiter/\.artifacts/receipts/[0-9a-f]{64}\.json", receipt) is None):
             raise ArtifactError("INVALID_CONTEXT_REQUEST", "apply requires one receipt reference")
     else:
-        raise ArtifactError("INVALID_CONTEXT_REQUEST", "select a closed preview or receipt apply request")
+        raise ArtifactError("INVALID_CONTEXT_REQUEST", "select a closed preview or exact apply request")
 
     return ("preview", preview) if operation == "preview" else ("apply", {"receipt": receipt})
 
 
 def context_writer_client(root: str | Path) -> "ArtifactClient":
-    """Construct the installed native writer only after strict request validation."""
-    client = ArtifactClient(root, helper_installation(__file__))
-    client.require_context_workflow()
-    return client
+    """Construct the installed writer; each context call checks its capability.
+
+    Avoid a duplicate native probe here. Request validation precedes construction
+    and ArtifactClient.call admits the actual mutation through the pinned binary.
+    """
+    return ArtifactClient(root, helper_installation(__file__))
 
 
 def _open_pinned_regular(path: Path) -> int:
@@ -463,20 +474,6 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
     return result
 
 
-def _require_host_workflow(client: "ArtifactClient") -> None:
-    readiness = client.workflow_preflight()
-    if readiness["resources_available"] is not True:
-        raise ArtifactError(
-            "HOST_WORKFLOW_UNAVAILABLE",
-            ("installed HTML workflow prerequisites are unavailable: "
-             + ", ".join(readiness["missing"]))[:400]
-            + "; repair this package or use a supported host; no fallback artifacts",
-        )
-
-
-# The native engine ships only through the release distribution channels, never
-# through a main-branch checkout, so the repair is always "install from the
-# channel". Named concretely so the user is not left to guess (ADR-0040).
 PAYLOAD_REPAIR_HINT = (
     "Claude Code: /plugin marketplace update codearbiter, then /plugin update ca@codearbiter; "
     "Codex (registered without --ref): codex plugin remove ca-codex@codearbiter, "
@@ -549,12 +546,6 @@ def _select_authoring_route(
         _require_authoring_capability(client)
         if _resolve_workflow_pair(root, slug) != selected:
             raise ArtifactError("STALE_ROUTE", "artifact namespace changed during the capability probe")
-        _require_host_workflow(client)
-        if _resolve_workflow_pair(root, slug) != selected:
-            raise ArtifactError(
-                "STALE_ROUTE",
-                "artifact namespace changed during the installed host preflight",
-            )
     return {"workflow": workflow, "lane": lane, "mode": "artifact", **selected}
 
 
@@ -566,15 +557,14 @@ def _preflight_plan_authoring(
     spec_normative_sha256: str,
     draft_for_pair: bool = False,
 ) -> Path:
-    """Verify the exact spec. Only initial sprint-pair preparation admits a ready draft.
+    """Resolve the exact source and safe target without an artifact approval.
 
-    Draft preparation never approves the spec or plan and never permits execution.
-    The ordinary feature/sequential path still requires an approved spec.
+    Drafts may be incomplete. This checks structural identity, not ready-state
+    completeness, user consent, command support, or future reviewer availability.
+    draft_for_pair remains a typed compatibility keyword, not an execution mode.
     """
     if type(draft_for_pair) is not bool:
         raise ArtifactError("INVALID_ROUTE", "draft_for_pair must be an explicit boolean")
-    if draft_for_pair and (not isinstance(selected, dict) or selected.get("workflow") != "sprint" or selected.get("lane") != "full"):
-        raise ArtifactError("INVALID_ROUTE", "draft preview is limited to full-lane initial sprint pairs")
     if not isinstance(selected, dict):
         raise ArtifactError("INVALID_ROUTE", "plan authoring requires a selected route")
     slug = selected.get("slug")
@@ -616,7 +606,7 @@ def _preflight_plan_authoring(
     ):
         raise ArtifactError("AUTHORITY_MISMATCH", "spec normative digest is invalid")
 
-    _require_host_workflow(client)
+    _require_authoring_capability(client)
     identity = client.call("identity", {"artifact_id": spec_artifact_id})
     expected_path = f".codearbiter/specs/{slug}.html"
     if (
@@ -629,24 +619,19 @@ def _preflight_plan_authoring(
             "AUTHORITY_MISMATCH",
             "caller spec identity does not match the selected current HTML spec",
         )
-    approved = client.call(
-        "validate",
-        {"artifact_id": spec_artifact_id, "gate": "ready" if draft_for_pair else "approved"},
+    checked = client.call(
+        "validate", {"artifact_id": spec_artifact_id, "gate": "structural"},
         permit_invalid=True,
     )
-    authority = approved.get("authority")
     if (
-        approved.get("valid") is not True
-        or approved.get("artifact_id") != spec_artifact_id
-        or approved.get("normative_sha256") != spec_normative_sha256
-        or not isinstance(authority, dict)
-        or approved.get("model_sha256") != identity.get("model_sha256")
-        or authority.get("state") != ("draft" if draft_for_pair else "approved")
-        or authority.get("authority_verified") is not (not draft_for_pair)
+        checked.get("valid") is not True
+        or checked.get("artifact_id") != spec_artifact_id
+        or checked.get("normative_sha256") != spec_normative_sha256
+        or checked.get("model_sha256") != identity.get("model_sha256")
     ):
         raise ArtifactError(
-            "AUTHORITY_UNVERIFIED",
-            "plan authoring requires the exact current ready and approved spec",
+            "SOURCE_INVALID",
+            "plan authoring requires the selected structurally valid, unchanged spec",
         )
     if _resolve_workflow_pair(root, slug) != current:
         raise ArtifactError(
@@ -754,7 +739,7 @@ def _preflight_current_acceptance(
             )
         identities[kind] = identity
 
-    eligible = client.call("eligible", {"artifact_id": plan_artifact_id})
+    eligible = client.call("verification-status", {"artifact_id": plan_artifact_id})
     if (
         eligible.get("artifact_id") != plan_artifact_id
         or eligible.get("model_sha256") != identities["plan"].get("model_sha256")
@@ -821,7 +806,7 @@ def _preflight_current_acceptance(
 
     final_spec = client.call("identity", {"artifact_id": spec_artifact_id})
     final_plan = client.call("identity", {"artifact_id": plan_artifact_id})
-    final_eligible = client.call("eligible", {"artifact_id": plan_artifact_id})
+    final_eligible = client.call("verification-status", {"artifact_id": plan_artifact_id})
     if (
         final_spec.get("model_sha256") != identities["spec"].get("model_sha256")
         or final_plan.get("model_sha256") != identities["plan"].get("model_sha256")
@@ -967,51 +952,6 @@ def _bounded_child(argv: list[str], request: bytes, fd: int | None, timeout: flo
     return process.returncode, bytes(buffers[0]), bytes(buffers[1])
 
 
-_CONTEXT_NATIVE_CASES = [
-    "TestContextBoundedRender", "TestContextDocumentContract",
-    "TestContextMarkdownPreservation", "TestContextMutationAdmission",
-    "TestContextRecoveryAndPaths", "TestContextRepresentationBoundary",
-]
-
-
-def _context_release_qualified(installation: Path) -> bool:
-    """Require exact context evidence added by the native receipt assembler."""
-    system = {"Linux": "linux", "Darwin": "darwin", "Windows": "windows"}.get(platform.system())
-    arch = {"x86_64": "amd64", "amd64": "amd64", "aarch64": "arm64", "arm64": "arm64"}.get(platform.machine().lower())
-    if system is None or arch is None:
-        return False
-    try:
-        fd = _open_pinned_regular(installation / "release.json")
-        try:
-            if os.fstat(fd).st_size > 65_536:
-                return False
-            manifest = _decode(os.read(fd, 65_537))
-        finally:
-            os.close(fd)
-        entry = manifest["binaries"][f"{system}/{arch}"]
-        record = manifest["context_qualification"][f"{system}/{arch}"]
-        return (
-            isinstance(record, dict)
-            and set(record) == {"source_commit", "workflow", "run_id", "binary_sha256",
-                                "observation_sha256", "module_sha256", "native_cases"}
-            and isinstance(record["source_commit"], str)
-            and re.fullmatch(r"[0-9a-f]{40}", record["source_commit"]) is not None
-            and record["workflow"] == ".github/workflows/ci.yml"
-            and isinstance(record["run_id"], str)
-            and re.fullmatch(r"[1-9][0-9]*", record["run_id"]) is not None
-            and record["binary_sha256"] == entry["sha256"]
-            and all(isinstance(record[field], str)
-                    and re.fullmatch(r"[0-9a-f]{64}", record[field]) is not None
-                    for field in ("observation_sha256", "module_sha256"))
-            and record["native_cases"] == _CONTEXT_NATIVE_CASES
-        )
-    except (ArtifactError, OSError, KeyError, TypeError, ValueError):
-        return False
-
-
-# A whole-tree input snapshot on a large repository can take ~30s on Windows,
-# so the old 30s bound timed out every publish, arm and verify. The bound is a
-# wait limit, never a gate: raising it relaxes no check.
 DEFAULT_ENGINE_TIMEOUT_SECONDS = 120
 ENGINE_TIMEOUT_ENV = "CODEARBITER_ENGINE_TIMEOUT"
 _MAX_ENGINE_TIMEOUT_SECONDS = 3600
@@ -1047,22 +987,26 @@ class ArtifactClient:
         return _installed_workflow_preflight(self.installation)
 
     def require_context_workflow(self) -> dict[str, object]:
-        """Admit only the packaged native context candidate on a supported host."""
-        installed = self.workflow_preflight()
+        """Check the installed writer's API, without a second host approval gate.
+
+        The capabilities call verifies the installation-pinned, native-tested
+        binary through the normal bridge. Package/host observations remain
+        evidence, not permission to update already-authorized context.
+        """
         capability = self.call("capabilities")
         context = capability.get("repository_context")
-        if (installed.get("resources_available") is not True
-                or installed.get("host") not in {"codex", "claude"}
-                or not isinstance(context, dict)
-                or set(context) != {"source_present", "kind_registered", "host_default_enabled", "qualification", "mutation_available"}
-                or context["source_present"] is not True
-                or context["kind_registered"] is not True
-                or context["host_default_enabled"] is not False
-                or context["qualification"] != "package-required"
-                or context["mutation_available"] is not True
-                or not _context_release_qualified(self.installation)):
-            raise ArtifactError("CONTEXT_WORKFLOW_UNAVAILABLE", "installed repository-context workflow is not qualified")
-        return {**context, "host_default_enabled": True, "qualification": "packaged-candidate"}
+        required = {"context-preview", "context-finalize-preview", "context-apply"}
+        operations = capability.get("operations")
+        if (not isinstance(context, dict)
+                or context.get("source_present") is not True
+                or context.get("kind_registered") is not True
+                or context.get("host_default_enabled") is not True
+                or context.get("permission_model") != "host-owned"
+                or context.get("mutation_available") is not True
+                or not isinstance(operations, list)
+                or any(name not in operations for name in required)):
+            raise ArtifactError("CONTEXT_WORKFLOW_UNAVAILABLE", "installed binary lacks the assistive repository-context writer")
+        return dict(context)
 
     def _open_binary(self) -> int:
         system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}.get(platform.system())
@@ -1132,7 +1076,7 @@ class ArtifactClient:
     def call(self, operation: str, request: dict[str, Any] | None = None, *, permit_invalid: bool = False) -> dict:
         if not re.fullmatch(r"[a-z][a-z-]{0,39}", operation):
             raise ArtifactError("UNKNOWN_OPERATION", "invalid internal operation name")
-        if operation in {"context-evidence-context", "context-finalize-evidence-context", "context-apply"}:
+        if operation in {"context-preview", "context-finalize-preview", "context-apply"}:
             self.require_context_workflow()
         request = dict(request or {})
         if "protocol" in request and request["protocol"] != PROTOCOL:
@@ -1258,12 +1202,14 @@ def has_html(root: str | Path) -> bool:
 
 
 def checked_spec_index(root, installation) -> list[dict]:
-    """Fresh per-call authority validation, deliberately not an mtime cache."""
+    """Fresh validated advisory pointers, including receipt-free draft specs."""
     if not has_html(root):
         return []
     client = ArtifactClient(root, installation)
-    return [{"spec": x["artifact_id"], "path": x["path"], "globs": x.get("governs") or [], "artifact_html": True}
-            for x in client.index("spec") if x["authority"]["authority_verified"] and x.get("governs")]
+    return [{"spec": x["artifact_id"], "path": x["path"], "globs": x["governs"],
+             "artifact_html": True, "governance_state": x["authority"]["state"]}
+            for x in client.index("spec")
+            if x["authority"].get("state") in ("draft", "ready", "approved") and x.get("governs")]
 
 
 def resolve_spec_file(filename, installation) -> tuple[ArtifactClient, dict]:

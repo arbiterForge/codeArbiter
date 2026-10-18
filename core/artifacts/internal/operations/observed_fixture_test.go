@@ -31,6 +31,17 @@ func captureObservedPromptFixture(t *testing.T, root, id, record, kind, authorit
 		t.Fatalf("evidence-context: %v", err)
 	}
 	contextResult := model.M(contextValue)
+	source := observedSourceForContextFixture(t, root, subject, kind, authorityKind, verdict, sourceText, payload, contextResult)
+	result, err := Run(root, "capture-observation", source)
+	if err != nil {
+		t.Fatalf("capture-observation: %v", err)
+	}
+	return model.S(model.M(result)["receipt"])
+}
+
+func observedSourceForContextFixture(t *testing.T, root string, subject object, kind, authorityKind, verdict, sourceText string, payload, contextResult object) object {
+	t.Helper()
+	promptHash := canonical.BytesHash([]byte(sourceText))
 	contextBytes, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(model.S(contextResult["context_ref"]))))
 	if err != nil {
 		t.Fatal(err)
@@ -106,15 +117,11 @@ func captureObservedPromptFixture(t *testing.T, root, id, record, kind, authorit
 	}
 	eventHash := canonical.BytesHash(eventBytes)
 	writeFixture(t, root, filepath.Join(".codearbiter", ".artifacts", "authority-sources", eventHash+".json"), eventBytes)
-	result, err := Run(root, "capture-observation", object{
+	return object{
 		"protocol":      Protocol,
 		"source_ref":    ".codearbiter/.artifacts/authority-sources/" + eventHash + ".json",
 		"source_sha256": eventHash,
-	})
-	if err != nil {
-		t.Fatalf("capture-observation: %v", err)
 	}
-	return model.S(model.M(result)["receipt"])
 }
 
 func mustHashFixture(t *testing.T, value any) string {

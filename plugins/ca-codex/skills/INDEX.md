@@ -36,11 +36,11 @@ skill is invoked — never bulk-read this directory.
 |---|---|
 | `$ca-add-dep` | Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs. |
 | `$ca-chore` | Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose. |
-| `$ca-feature` | Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation. |
+| `$ca-feature` | Build an authorized feature from a maintained specification, testable criteria and useful plan, without duplicating user approval. |
 | `$ca-fix` | Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates. |
 | `$ca-refactor` | Restructure code without changing observable behavior: rename, extract, inline, move, deduplicate, or replace an internal implementation with an equivalent one. Prove parity through unchanged pre-existing tests. Not for new behavior, bug fixes, explanation-only questions, or committing finished work. |
 | `$ca-spike` | Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or $ca-feature. |
-| `$ca-sprint` | Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops. |
+| `$ca-sprint` | Run an autonomous sprint from maintained specs and plans, with truthful verification and no duplicate artifact approval ceremonies. |
 
 ### Review
 
@@ -114,8 +114,8 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `$ca-create-context` | Build project context from an existing codebase through isolated scouts, resolve gaps, and preserve initialization gates. | `$ca-init --brownfield` |
-| `$ca-decompose` | Develop greenfield project context through a layered interview, preserve decisions, and initialize only after the required gates. | `$ca-init --greenfield` |
+| `$ca-create-context` | Build source-backed project context through bounded inspection, optional agents, and safe selected writes. | `$ca-init --brownfield` |
+| `$ca-decompose` | Develop greenfield context from a durable interview and initialize it through the native context writer. | `$ca-init --greenfield` |
 
 ### Ship
 
@@ -128,7 +128,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose | Replacement |
 |---|---|---|
-| `$ca-context-check` | Audit stale provenance-tracked docs on request. Report first; re-scout or re-baseline only for selected docs. | `$ca-status drift` |
+| `$ca-context-check` | Inspect context drift and refresh selected source-backed documents under existing authorization. | `$ca-status drift` |
 
 ## Internal
 

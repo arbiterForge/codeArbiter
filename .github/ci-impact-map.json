@@ -188,6 +188,10 @@
       "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {
+      "glob": "tools/test-artifact-mixed-schema.py",
+      "checks": ["artifact-engine"]
+    },
+    {
       "glob": ".github/fixtures/context-onboarding/**",
       "checks": ["hooks"]
     },
@@ -225,6 +229,10 @@
     },
     {
       "glob": ".github/scripts/test_context_workflow.py",
+      "checks": ["artifact-engine", "artifact-package-cold"]
+    },
+    {
+      "glob": ".github/scripts/test_greenfield_context.py",
       "checks": ["artifact-engine", "artifact-package-cold"]
     },
     {

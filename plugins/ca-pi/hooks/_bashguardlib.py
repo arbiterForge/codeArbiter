@@ -500,9 +500,9 @@ GATE_MARKER_INTERP_RE = re.compile(
 # `_INTERP_INLINE_CODE`): H-22's inline-code requirement exists ONLY because a
 # sanctioned caller invokes an interpreter against the protected file's own
 # name (`python3 "…/taskwrite.py" add -- "fix open-tasks.md schema"`, HIGH-1),
-# and H-05/H-11/H-18 have no equivalent sanctioned interpreter caller to
-# spare — narrowing them the same way would reopen exactly the gap this
-# closes for no offsetting benefit. `[\s\S]*` (not `[^\n]*`), for the same
+# H-05 now has one bounded exception at its call site: the installed task
+# writer can mention audit filenames as task-title data. Arbitrary script
+# argv stays conservative here, as do H-11/H-18. `[\s\S]*` (not `[^\n]*`), for the same
 # reason GATE_MARKER_INTERP_RE carries it: the interpreter token and the
 # target name may sit on different physical lines of the SAME multi-line
 # `-c`/`-e` payload.
@@ -1349,6 +1349,67 @@ def _check_h03_wildcard_add(add, cwd):
                       f"per file (commit-gate skill).")
 
 
+def _is_direct_taskwrite(cmd):
+    """Recognize literal argv to this package's task writer, not shell code.
+
+    This only distinguishes H-05's interpreter match from task-title data.
+    Other H-05 legs and all other guards still inspect the original command.
+    Unknown syntax, wrappers, substitutions and options retain the old refusal.
+    """
+    if re.search(r"[\r\n;&|<>`$%!^*?{}\[\]()]", cmd):
+        return False
+    # A deliberately small literal-token grammar accepts quoted Windows paths
+    # and adjacent single-quoted fragments (PowerShell's doubled apostrophe).
+    # Gaps must be whitespace; an unmatched quote cannot disappear in parsing.
+    tokens, end = [], 0
+    for match in re.finditer(r'''(?:[^\s'"\x00]|'[^']*'|"[^"]*")+''', cmd):
+        if cmd[end:match.start()].strip():
+            return False
+        token = match.group()
+        if len(token) >= 2 and token[0] == token[-1] and token[0] in "\"'":
+            token = token[1:-1]
+        tokens.append(token)
+        end = match.end()
+    if cmd[end:].strip() or len(tokens) < 4:
+        return False
+    executable = tokens.pop(0).replace("\\", "/").rsplit("/", 1)[-1]
+    if not re.fullmatch(r"(?:python(?:[23](?:\.\d+)*)?|py)(?:\.exe)?", executable, re.I):
+        return False
+    if tokens[0] == "-B":
+        tokens.pop(0)
+    helper = tokens.pop(0)
+    known = os.path.join(os.path.dirname(os.path.abspath(__file__)), "taskwrite.py")
+    if not os.path.isabs(helper) or os.path.normcase(os.path.normpath(helper)) != os.path.normcase(known):
+        return False
+    value_options = {
+        "add": {"--from", "--id", "--boundaries", "--desc", "--section"},
+        "start": {"--as", "--date"}, "done": {"--date"}, "archive": set(),
+    }
+    verb = tokens.pop(0) if tokens else ""
+    if verb not in value_options:
+        return False
+    positional, seen, index = 0, set(), 0
+    while index < len(tokens):
+        token = tokens[index]
+        index += 1
+        if token == "--":
+            return positional == 0 and len(tokens) - index == 1 and bool(tokens[index])
+        if token.startswith("-"):
+            if token in seen:
+                return False
+            seen.add(token)
+            if verb == "archive" and token == "--allow-undated":
+                continue
+            if token not in value_options[verb] or index == len(tokens):
+                return False
+            if not tokens[index] or tokens[index].startswith("-"):
+                return False
+            index += 1
+        else:
+            positional += 1
+    return positional == 1
+
+
 def _check_h05_audit_log(cmd):
     """H-05: the audit trail is append-only — block truncation/removal of the
     audit logs via shell verbs (Write/Edit are guarded separately). The
@@ -1368,7 +1429,8 @@ def _check_h05_audit_log(cmd):
                      ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)
     if enrolled_name and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
-            or LOG_GIT_RESTORE_RE.search(cmd) or LOG_INTERP_RE.search(cmd)):
+            or LOG_GIT_RESTORE_RE.search(cmd)
+            or LOG_INTERP_RE.search(cmd) and not _is_direct_taskwrite(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
                       "gate-events.log, decisions/decision-log.md) are append-only "
                       "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit "

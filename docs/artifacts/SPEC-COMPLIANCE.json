@@ -151,7 +151,7 @@
       "local_test_references": [
         {
           "name": "TestAllOperationSchemasClosed",
-          "path": "core/artifacts/internal/operations/engine_test.go"
+          "path": "core/artifacts/internal/operations/protocol_test.go"
         },
         {
           "name": "TestStoredCommandIsInert",
