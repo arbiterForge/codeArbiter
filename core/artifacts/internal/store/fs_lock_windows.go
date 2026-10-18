@@ -55,6 +55,7 @@ func (f *FS) nativeLock(exclusive bool, timeout time.Duration) (func(), error) {
 
 // ObservationLock never initializes metadata or requests write access. Mutex
 // sharing remains independent of access rights: index still locks exclusively.
+// Missing local metadata is reported separately from an unavailable lock.
 func (f *FS) ObservationLock(exclusive bool, timeout time.Duration) (func(), error) {
 	return f.windowsLock(exclusive, timeout, true)
 }
@@ -193,6 +194,8 @@ func (f *FS) windowsLock(exclusive bool, timeout time.Duration, observation bool
 	for _, rel := range []string{".codearbiter", meta} {
 		if named, err := f.root.Lstat(native(rel)); err == nil && !ordinaryLockObject(named, true) {
 			return nil, fault.New("UNSAFE_PATH", "repository lock requires ordinary objects")
+		} else if observation && os.IsNotExist(err) {
+			return nil, fault.New("NO_LOCAL_STORE", "local artifact store is absent or incomplete; read-only observation requires existing metadata and store.lock")
 		}
 		if !observation {
 			if e = f.check(rel, true); e != nil {
@@ -233,6 +236,8 @@ func (f *FS) windowsLock(exclusive bool, timeout time.Duration, observation bool
 		if !ordinaryLockObject(named, false) {
 			return nil, fault.New("UNSAFE_PATH", "repository lock requires ordinary objects")
 		}
+	} else if observation && os.IsNotExist(err) {
+		return nil, fault.New("NO_LOCAL_STORE", "local artifact store is absent or incomplete; read-only observation requires existing metadata and store.lock")
 	} else if observation || !os.IsNotExist(err) {
 		return nil, fault.New("LOCK_FAILED", "existing repository lock is unavailable")
 	}

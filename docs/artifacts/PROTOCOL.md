@@ -24,6 +24,19 @@ Supply one UTF-8 JSON object carrying the exact `protocol` value. Standard outpu
 
 Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a partial response. Unknown fields and operations fail; there is no `force` field and no permissive passthrough. Query `schema` for the current closed request shape rather than guessing flags.
 
+On Windows, `index` and shared read-only observations (including `identity` and
+`eligible`) return `NO_LOCAL_STORE` when `.codearbiter/`, `.codearbiter/.artifacts/`,
+or `store.lock` is missing. This identifies absent or incomplete local metadata,
+including in a fresh clone or worktree; it does not report lock contention or an
+empty artifact catalog. These reads create nothing and do not proceed without a
+lock. Normal authorized mutations initialize lock metadata through the existing
+writer path. Existing-store access failures remain `LOCK_FAILED`, contention
+remains `LOCK_TIMEOUT`, and unsafe objects remain `UNSAFE_PATH`.
+
+Lock initialization does not restore receipts referenced by committed plans.
+Missing local evidence remains missing; copying tracked artifacts into a fresh
+worktree does not establish their referenced verification or approval history.
+
 ## Operation families
 
 | Family | Operations |

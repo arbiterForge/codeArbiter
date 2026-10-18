@@ -16,6 +16,52 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
+func TestFreshStoreObservationsReportNoLocalStore(t *testing.T) {
+	for _, state := range []string{"missing-context", "missing-artifacts", "missing-lock"} {
+		t.Run(state, func(t *testing.T) {
+			root := t.TempDir()
+			if state != "missing-context" {
+				dir := filepath.Join(root, ".codearbiter")
+				if state == "missing-lock" {
+					dir = filepath.Join(dir, ".artifacts")
+				}
+				if err := os.MkdirAll(dir, 0700); err != nil {
+					t.Fatal(err)
+				}
+			}
+			before := testutil.Tree(t, root)
+			for _, request := range []observationRequest{
+				{"index", object{"protocol": Protocol, "kind": "spec"}},
+				{"identity", object{"protocol": Protocol, "artifact_id": "SPEC-EXAMPLE"}},
+				{"eligible", object{"protocol": Protocol, "artifact_id": "PLAN-EXAMPLE"}},
+			} {
+				t.Run(request.op, func(t *testing.T) {
+					out, err := Run(root, request.op, request.input)
+					if fault.Code(err) != "NO_LOCAL_STORE" || out != nil {
+						t.Fatalf("TARGET: fresh-store %s must report NO_LOCAL_STORE without a result: result=%v err=%v", request.op, out, err)
+					}
+					testutil.AssertTree(t, root, before)
+				})
+			}
+			// A refused read must leave normal authorized writer initialization
+			// available afterward.
+			fs, err := store.Open(root)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer fs.Close()
+			release, err := fs.Lock(true, time.Second)
+			if err != nil {
+				t.Fatalf("writer initialization after refused observations: %v", err)
+			}
+			release()
+			if _, err := Run(root, "index", object{"protocol": Protocol, "kind": "spec"}); err != nil {
+				t.Fatalf("initialized index: %v", err)
+			}
+		})
+	}
+}
+
 func TestReadOnlyInitializedStoreObservations(t *testing.T) {
 	var requests []observationRequest
 	var expected [][]byte
