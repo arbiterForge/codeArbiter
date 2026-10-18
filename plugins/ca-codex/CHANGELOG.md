@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.19.2] - 2026-10-18
+
+### Fixed
+
+- On Windows, reads in a fresh clone or worktree reported `LOCK_FAILED`, which looked like lock contention. They now report `NO_LOCAL_STORE`, naming the missing local store metadata, and still create nothing (#994).
+- A plan could claim verification coverage for a task path under `.git/`, although the evidence snapshot never hashes `.git`. Such paths now report `UNCOVERED_INPUT` (#908).
+- On Windows, a directory junction inside the repository was not refused by the store's link checks, because current Go reports junctions as irregular files rather than symlinks. Junctions are now refused like symlinks (#909).
+
 ## [0.19.1] - 2026-10-18
 
 ### Fixed
