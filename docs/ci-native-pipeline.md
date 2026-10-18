@@ -45,7 +45,8 @@ verification commands; there is no skip-tests fast path.
 
 The default, instrumented and context configurations remain independent work,
 but no longer request three separately provisioned runners per native platform.
-`artifact-native-checks` uses three child interpreters on one runner. This removes
+`artifact-native-checks` uses three child interpreters on one runner, with at
+most three active configurations, or two on Windows ARM64. This removes
 **twelve runner startups** from a full six-platform run, including four macOS
 requests, without putting tests into the candidate builder's dependency chain.
 
@@ -82,6 +83,22 @@ named context cases and all thirty context-workflow tests. The five Linux-only
 commands were correctly unselected on that platform, not claimed as executed.
 This is functional local evidence, not a hosted speedup or a successful
 under-twenty-minute full CI run.
+
+The first grouped hosted run, `39085371841` at `b91ec07b`, then exposed a
+Windows ARM64 contention boundary. The default operations package reached its
+unchanged Go **ten-minute suite-wide limit**; the currently starting test had
+run for zero seconds, so the log does not establish a stuck test. Coverage and
+context configurations both passed, while the parent retained the default
+failure and prevented coverage/qualification promotion. This failed run is not
+speedup evidence.
+
+Windows ARM64 now starts at most **two** native configuration workers, with the
+third still submitted and required after a slot becomes available. Other
+platforms retain the three-worker schedule. This is a narrow scheduling repair,
+not proof that every future ARM64 run will be fast: the next hosted run must
+exercise it. Go's ten-minute package limit, the existing job budgets, every
+command and every assertion remain unchanged. No failed test is retried, and no
+partial successful configuration can stand in for the complete group.
 
 ## Candidate and qualification boundary
 

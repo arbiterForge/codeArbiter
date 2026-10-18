@@ -17,6 +17,21 @@ class PlanTest(unittest.TestCase):
     def setUp(self):
         self.plan, self.digest = runner.load_plan()
 
+    def test_measured_arm64_limit_keeps_all_three_groups_and_existing_deadlines(self):
+        self.assertEqual(runner.GROUPS, ('default', 'coverage', 'context'))
+        for platform in runner.RUNNERS.values():
+            self.assertEqual(runner.worker_limit(platform), 2 if platform == 'windows/arm64' else 3)
+            self.assertEqual(runner.worker_limit(platform, serial=True), 1)
+        with self.assertRaises(ValueError):
+            runner.worker_limit('unqualified/platform')
+        source = Path(runner.__file__).read_text(encoding='utf-8')
+        self.assertIn('max_workers=worker_limit(args.platform, args.serial)', source)
+        import ast
+        constants = [node.value for node in ast.walk(ast.parse(source))
+                     if isinstance(node, ast.Constant) and isinstance(node.value, str)]
+        self.assertFalse(any(value.startswith('-timeout') for value in constants))
+        self.assertNotIn('-timeout', json.dumps(self.plan))
+
     def test_all_original_groups_commands_and_conditions_are_retained(self):
         self.assertEqual(set(self.plan), set(runner.GROUPS))
         self.assertEqual(sum(map(len, self.plan.values())), 14)

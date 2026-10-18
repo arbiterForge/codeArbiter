@@ -158,6 +158,18 @@ def run_child(group: str, root: Path, runner_os: str, platform: str) -> int:
     return run.returncode
 
 
+def worker_limit(platform: str, serial: bool = False) -> int:
+    """Keep the ARM64 runner below the observed suite-timeout contention point."""
+    if platform not in RUNNERS.values():
+        raise ValueError('unsupported native worker platform')
+    if serial:
+        return 1
+    # Run 39085371841 exhausted Go's unchanged 10m operations-package limit
+    # with three simultaneous configurations on Windows ARM64. Keep all work,
+    # reduce oversubscription and preserve the same test/job time limits.
+    return 2 if platform == 'windows/arm64' else 3
+
+
 def main() -> None:
     """Run all three bounded parallel workers, or one internal child configuration."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -177,7 +189,7 @@ def main() -> None:
     args.output.mkdir(parents=True, exist_ok=False)
     failures = []
     started = time.monotonic()
-    with ThreadPoolExecutor(max_workers=1 if args.serial else 3) as pool:
+    with ThreadPoolExecutor(max_workers=worker_limit(args.platform, args.serial)) as pool:
         futures = {pool.submit(run_child, group, args.output, args.runner_os, args.platform): group
                    for group in GROUPS}
         for future in as_completed(futures):
