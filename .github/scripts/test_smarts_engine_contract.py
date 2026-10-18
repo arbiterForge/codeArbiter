@@ -114,7 +114,7 @@ def _run_go_tests(package: str, names: list[str]) -> tuple[dict[str, bool], str,
         stdout = result.stdout if isinstance(result.stdout, str) else result.stdout.decode("utf-8", "replace")
         stderr = result.stderr if isinstance(result.stderr, str) else result.stderr.decode("utf-8", "replace")
     else:
-        command = ["go", "test", "-json", "-buildvcs=false", "-count=1", package, "-run", pattern]
+        command = ["go", "test", "-json", "-buildvcs=false", "-count=1", "-timeout=30m", package, "-run", pattern]
         result = subprocess.run(
             command, cwd=REPO / "core/artifacts",
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
@@ -139,7 +139,9 @@ def _module_failures() -> list[str]:
     module = REPO / "core/artifacts"
     failures: list[str] = []
     result = subprocess.run(
-        ["go", "test", "-json", "-buildvcs=false", "-count=1", "./..."], cwd=module,
+        # Bound matches tools/build-artifacts.py: under host load the operations
+        # package alone can pass Go's 10-minute per-package default (observed 600s).
+        ["go", "test", "-json", "-buildvcs=false", "-count=1", "-timeout=30m", "./..."], cwd=module,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
     )
     runs = [("./...", result.returncode, result.stdout, result.stderr, False)]

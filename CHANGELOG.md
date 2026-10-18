@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-10-18
+
+### Fixed
+
+- A spec whose design had only one sane approach recorded its SMARTS rationale with not-applicable filler for every rationale part, because the rationale convention listed all parts unconditionally. The convention now applies the multi-part rationale only when a comparison ran; a single-option choice records exactly one block, its one-line statement and reason. Found by a live `/feature` run.
+- The SMARTS rationale convention and the spec-compliance reviewer no longer describe the rationale as belonging to an "approved" spec, since 3.0.0 retired spec approval.
+
 ## [3.1.0] - 2026-10-17
 
 ### Added
