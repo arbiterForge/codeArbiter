@@ -146,3 +146,47 @@ func TestIndexObservationUsesExclusiveEngineLock(t *testing.T) {
 	}
 	testutil.AssertTree(t, root, before)
 }
+
+// A fresh clone or worktree has the tracked artifacts but never the untracked
+// store metadata. Reads must initialize it as a writer would, not refuse (#994).
+func TestObservationsInitializeAFreshCheckoutStore(t *testing.T) {
+	root := testutil.Root(t)
+	n := model.M(testutil.Spec()["normative"])
+	if _, err := Run(root, "create", object{"protocol": Protocol, "operation_id": "fresh-checkout-spec", "artifact_id": "SPEC-EXAMPLE", "kind": "spec", "slug": "example", "title": n["title"], "summary": n["summary"], "normative": n}); err != nil {
+		t.Fatal(err)
+	}
+	requests := []observationRequest{
+		{"identity", object{"protocol": Protocol, "artifact_id": "SPEC-EXAMPLE"}},
+		{"index", object{"protocol": Protocol, "kind": "spec"}},
+	}
+	var expected [][]byte
+	for _, request := range requests {
+		out, err := Run(root, request.op, request.input)
+		if err != nil {
+			t.Fatalf("initialized baseline %s: %v", request.op, err)
+		}
+		b, err := canonical.Marshal(out)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected = append(expected, b)
+	}
+	for i, request := range requests {
+		t.Run(request.op, func(t *testing.T) {
+			if err := os.RemoveAll(filepath.Join(root, ".codearbiter", ".artifacts")); err != nil {
+				t.Fatal(err)
+			}
+			out, err := Run(root, request.op, request.input)
+			if err != nil {
+				t.Fatalf("TARGET: %s refused on a checkout without store metadata: %v", request.op, err)
+			}
+			b, err := canonical.Marshal(out)
+			if err != nil || !bytes.Equal(b, expected[i]) {
+				t.Fatalf("result changed for %s: %v", request.op, err)
+			}
+			if _, err := os.Lstat(filepath.Join(root, ".codearbiter", ".artifacts", "store.lock")); err != nil {
+				t.Fatalf("the read did not initialize the store lock: %v", err)
+			}
+		})
+	}
+}

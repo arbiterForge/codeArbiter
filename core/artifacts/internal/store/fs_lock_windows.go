@@ -59,6 +59,15 @@ func (f *FS) ObservationLock(exclusive bool, timeout time.Duration) (func(), err
 	return f.windowsLock(exclusive, timeout, true)
 }
 
+// ObservationStateMissing reports that the untracked lock file is absent, as on
+// every fresh clone or worktree. The engine then takes the writer Lock, which
+// initializes the store as reads did before observation locks existed (#994).
+// Any present or unsafe state reports false, so ObservationLock still refuses it.
+func (f *FS) ObservationStateMissing() bool {
+	_, err := f.root.Lstat(native(meta + "/store.lock"))
+	return os.IsNotExist(err)
+}
+
 // pinLockObject reopens an already-contained handle without FILE_SHARE_DELETE.
 // os.Root opens share deletion on Windows; those original handles alone cannot
 // prevent an active mutex or an ancestor from being replaced under another name.

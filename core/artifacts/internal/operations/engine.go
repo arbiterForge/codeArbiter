@@ -29,6 +29,7 @@ var openStore = store.Open
 // interface keeps other native backends on their unchanged locking path.
 type existingStoreObservationLocker interface {
 	ObservationLock(bool, time.Duration) (func(), error)
+	ObservationStateMissing() bool
 }
 
 type Engine struct {
@@ -96,7 +97,11 @@ func Run(root, op string, input object) (any, error) {
 		if !ok {
 			return nil, fault.New("LOCK_FAILED", "existing repository lock is unavailable")
 		}
-		unlock, e = locker.ObservationLock(!sharedObservation(op, r), 2*time.Second)
+		if locker.ObservationStateMissing() {
+			unlock, e = f.Lock(!sharedObservation(op, r), 2*time.Second)
+		} else {
+			unlock, e = locker.ObservationLock(!sharedObservation(op, r), 2*time.Second)
+		}
 	} else {
 		unlock, e = f.Lock(!sharedObservation(op, r), 2*time.Second)
 	}
