@@ -3714,7 +3714,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "go-download-base-url: https://go.dev/dl",
             "GOTOOLCHAIN: local",
             "subprocess.check_output(['go', 'env', 'GOVERSION']",
-            'go test -buildvcs=false -timeout=30m ./...',
+            'go test -buildvcs=false -timeout=20m ./...',
             'go vet -buildvcs=false ./...',
             'go test -buildvcs=false -race ./...',
             'python .github/scripts/test_artifact_native.py',
@@ -3737,7 +3737,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn(control, job)
         qualification_position = job.index('--qualify-existing "${{ runner.temp }}/artifact-candidate"')
         for proving_step in (
-            "go test -buildvcs=false -timeout=30m ./...",
+            "go test -buildvcs=false -timeout=20m ./...",
             "go vet -buildvcs=false ./...",
             "python .github/scripts/test_artifact_native.py",
             "'.github/scripts/test_artifact_conformance.py'",
@@ -4149,7 +4149,7 @@ class ContextImpactClosureTest(unittest.TestCase):
                        "test_context_workflow.py"):
             command = f"python .github/scripts/{script}"
             index = run_step_index(engine, command)
-            self.assertGreater(index, run_step_index(engine, "go test -buildvcs=false -timeout=30m ./..."), command)
+            self.assertGreater(index, run_step_index(engine, "go test -buildvcs=false -timeout=20m ./..."), command)
             self.assertLess(index, engine.splitlines().index(
                 '          --qualify-existing "${{ runner.temp }}/artifact-candidate"'), command)
         self.assertIn('go-version: "1.27.1"', engine)
