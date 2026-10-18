@@ -138,13 +138,14 @@ analysis; they supplement, never replace it, and never become a seventh lens.
 
 ## Design rationale record
 
-An approved full-lane spec keeps a concise SMARTS design rationale; it is design evidence, not a
+A full-lane spec keeps a concise SMARTS design rationale; it is design evidence, not a
 source of execution authority. For a typed HTML spec, write it through the existing mutation
 operations with this convention, with no spec-schema change:
 
 - the chosen approach and its trade-off live in the existing `approach` record (`choice`, `tradeoff`);
 - a `decisions` record carries each material decision the SMARTS pass settled, and `approach.binding_decision_refs` cites it;
-- one `sections` record with the fixed id `SEC-SMARTS` (title "SMARTS design rationale") holds one block each for: alternatives considered or the single-option statement; decisive lenses; material Weak and Unknown observations, each Unknown with its missing observation and whether it is decision-critical; load-bearing assumptions; non-SMARTS considerations; and priority evidence when one influenced the recommendation.
+- When a comparison ran, one `sections` record with the fixed id `SEC-SMARTS` (title "SMARTS design rationale") holds one block each for: alternatives considered or the single-option statement; decisive lenses; material Weak and Unknown observations, each Unknown with its missing observation and whether it is decision-critical; load-bearing assumptions; non-SMARTS considerations; and priority evidence when one influenced the recommendation.
+- A single-option choice holds exactly one `SEC-SMARTS` block: its one-line statement and reason, with no other part. Do not pad it with not-applicable lens, assumption or constraint entries.
 
 Read the rationale back with the existing read operations; never hand-edit or parse rendered HTML.
 A legacy Markdown spec keeps the rationale in one stable `## SMARTS design rationale` section that

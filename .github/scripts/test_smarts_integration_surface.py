@@ -358,6 +358,15 @@ class TestSmartsRationaleConvention(unittest.TestCase):
                 self.assertLess(sum(part in text for part in RATIONALE_PARTS), 3,
                                 f"{rel} must point at the convention, not restate it")
 
+    def test_single_option_rationale_is_one_block(self):
+        body = flat(section(read(CORE), "Design rationale record"))
+        self.assertRegex(body, r"When a comparison ran, one `sections` record with the fixed id `SEC-SMARTS`",
+                         "the multi-part rationale applies only when a comparison ran")
+        self.assertRegex(body, r"A single-option choice holds exactly one `SEC-SMARTS` block: its one-line statement "
+                               r"and reason, with no other part",
+                         "a single option records one line, not not-applicable filler")
+        self.assertNotRegex(body, r"(?i)approved", "3.0 retired spec approval; the convention does not depend on it")
+
     def test_markdown_rationale_section_documented(self):
         body = flat(section(read(CORE), "Design rationale record"))
         self.assertRegex(body, r"legacy Markdown spec[^.]*one stable `## SMARTS design rationale` section")
@@ -567,7 +576,7 @@ class TestSmartsImplementationDrift(unittest.TestCase):
 
     def test_authority_reviewer_reads_smarts_rationale(self):
         text = read(AUTHORITY_REVIEWER)
-        match = re.search(r"(?m)^- When the frozen context includes an approved spec's SMARTS design "
+        match = re.search(r"(?m)^- When the frozen context includes the spec's SMARTS design "
                           r"rationale.*(?:\n  .*)*", text)
         self.assertIsNotNone(match, "the reviewer checks recorded rationale")
         rule = flat(match.group(0))
