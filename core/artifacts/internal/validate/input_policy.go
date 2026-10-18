@@ -48,7 +48,8 @@ func InputPolicyErrors(norm map[string]any) []fault.Error {
 // InputIncludes checks declared path coverage, not complete build-dependency
 // closure. The latter still requires project-specific review of roots/excludes.
 func InputIncludes(norm map[string]any, target string) bool {
-	if IsRuntimeMarkerPath(target) {
+	// The snapshot never hashes .git, so no policy can cover a path there (#908).
+	if IsRuntimeMarkerPath(target) || target == ".git" || strings.HasPrefix(target, ".git/") {
 		return false
 	}
 	policy := model.M(norm["verification_inputs"])

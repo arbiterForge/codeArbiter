@@ -78,6 +78,11 @@ func native(rel string) string { return filepath.FromSlash(rel) }
 
 // check rejects existing symlink/reparse components. Missing tail components
 // are permitted only for create paths; os.Root independently prevents escape.
+// linkModes marks a path component as a link. A Windows junction reports
+// ModeIrregular rather than ModeSymlink on current Go, and one that stays inside
+// the root passes os.Root containment, so both bits are refused here (#909).
+const linkModes = os.ModeSymlink | os.ModeIrregular
+
 func (f *FS) check(rel string, allowMissing bool) error {
 	if !validate.Path(rel, true) {
 		return fault.New("UNSAFE_PATH", "invalid repository path")
@@ -104,7 +109,7 @@ func (f *FS) check(rel string, allowMissing bool) error {
 			}
 			return e
 		}
-		if info.Mode()&os.ModeSymlink != 0 {
+		if info.Mode()&linkModes != 0 {
 			return fault.New("UNSAFE_PATH", "symlink or reparse point encountered in repository path")
 		}
 		if i < len(parts)-1 && !info.IsDir() {
@@ -389,7 +394,7 @@ func (f *FS) List(rel string) ([]os.DirEntry, error) {
 		return nil, e
 	}
 	for _, entry := range out {
-		if entry.Type()&os.ModeSymlink != 0 {
+		if entry.Type()&linkModes != 0 {
 			return nil, fault.New("UNSAFE_PATH", "symlink or reparse point encountered in scanned directory")
 		}
 	}
