@@ -176,8 +176,8 @@ class FailureLog {
 function listingFingerprint(code: number, message: string): string {
   const shape = message
     .replace(/"[^"]*"/g, '"<url>"')
-    .replace(/https?:\/\/\S+/g, "<url>")
-    .replace(/\d+/g, "<n>");
+    .replace(/\bhttps?:\/\/\S+/g, "<url>")
+    .replace(/\b\d+\b/g, "<n>");
   return `listing\u0000${code}\u0000${shape}`;
 }
 

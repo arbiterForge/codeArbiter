@@ -387,6 +387,22 @@ describe("#433 — teardown diagnostics say what actually happened", () => {
     expect(report.failureCount).toBe(1);
   });
 
+  it("AC-1: unquoted URLs and counts do not split one daemon fault", async () => {
+    // The fingerprint also strips UNQUOTED URLs and bare numbers. Its word
+    // boundaries once held literal backspace bytes, so neither rule matched.
+    const run: DockerRun = async (args) => {
+      if (args[0] === "ps") {
+        return { code: 1, stdout: "", stderr: "dial http://127.0.0.1:1/v1.54/containers/json failed after 3 attempts" };
+      }
+      if (args[0] === "volume" && args[1] === "ls") {
+        return { code: 1, stdout: "", stderr: "dial http://127.0.0.1:1/v1.54/volumes failed after 5 attempts" };
+      }
+      return { code: 0, stdout: "", stderr: "" };
+    };
+    const report = await prune({ dockerRun: run });
+    expect(report.failureCount).toBe(1);
+  });
+
   it("AC-1: two listings failing DIFFERENTLY stay two failures", async () => {
     // The fingerprint must not become a blanket "all listing failures are one".
     const run: DockerRun = async (args) => {

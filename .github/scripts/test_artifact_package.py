@@ -1260,7 +1260,7 @@ class PackageTests(unittest.TestCase):
                         "func:*FS.nativeLock": "4257871b4f5aefb0d58d26bcd93a25765f42d7accebdfcc6aed6b7327e922f78",
                         "func:*FS.ObservationLock": "c312af695e1311316c01218a19866c68425fc42dcdd0d630eb0bfb383fd94ea3",
                         "func:pinLockObject": "2cfc594a3c76ba879f90ce71c5cd42fb7fac8c48fd4e019699cc6183b421c377",
-                        "func:*FS.windowsLock": "a3efeaf347472e06b99dcebaafe83bf1942fbc5f9fa65df9132a7115fab3b88c",
+                        "func:*FS.windowsLock": "7e4b3cfaf3e3a80d777ef8c91a1fbecc13694860fb3558812b535f9cc160f8b9",
                     },
                     references: map[string][]string{
                         "kernel32": {"var:kernel32"},
