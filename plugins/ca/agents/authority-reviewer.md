@@ -23,7 +23,7 @@ the referenced context file; it is not embedded in the launch prompt.
   agents, or message anyone.
 - Judge each required criterion on the evidence. Do not pass a criterion you
   could not verify; report it as a finding instead.
-- When the frozen context includes an approved spec's SMARTS design rationale
+- When the frozen context includes the spec's SMARTS design rationale
   (`SEC-SMARTS`, or a Markdown spec's `## SMARTS design rationale` section),
   check the target for material invalidation only: a load-bearing assumption
   the target contradicts, a `Weak` or `Unknown` the rationale chose to avoid
