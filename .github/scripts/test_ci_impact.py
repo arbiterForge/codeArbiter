@@ -2732,10 +2732,16 @@ class NoOrphanedSuiteTest(unittest.TestCase):
 
     def test_every_suite_is_reachable(self):
         workflows, scripts = self._corpus()
+        planned = set()
+        if "python .github/scripts/run_native_check_group.py" in workflows:
+            from run_native_check_group import load_plan
+            plan, _ = load_plan()
+            planned = {Path(step["argv"][1]).name for steps in plan.values() for step in steps
+                       if step["argv"][0] == "python" and step["argv"][1].startswith(".github/scripts/")}
         orphans = []
         for path in sorted((REPO_ROOT / ".github" / "scripts").glob("test_*.py")):
             name = path.name
-            if name in self.EXEMPT:
+            if name in self.EXEMPT or name in planned:
                 continue
             # An INVOCATION, not a mention. Matching bare presence was the
             # first cut and it was vacuous: the comment documenting these
@@ -3609,25 +3615,27 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
     def test_native_statement_coverage_is_complete_and_merge_required(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
-        engine = jobs["artifact-native-coverage"]
-        for command in (
-            "python .github/scripts/test_artifact_cli.py --coverage-output",
-            "python tools/artifact-coverage.py collect",
-            "--expect-platform \"${{ matrix.expected_platform }}\"",
-            "--extra-profile",
-            "name: artifact-statements-${{ matrix.os }}",
-        ):
-            self.assertIn(command, engine)
+        from run_native_check_group import load_plan
+        plan, _ = load_plan()
+        engine = jobs["artifact-native-checks"]
+        self.assertIn("run_native_check_group.py", engine)
+        self.assertIn("name: artifact-statements-${{ matrix.os }}", engine)
+        cli, collect = plan["coverage"]
+        self.assertEqual(cli["argv"], ["python", ".github/scripts/test_artifact_cli.py",
+                                     "--coverage-output", "{OUTPUT}/artifact-cli-statements.out"])
+        self.assertEqual(collect["argv"], ["python", "tools/artifact-coverage.py", "collect",
+                         "--module-root", "core/artifacts", "--output", "{OUTPUT}/artifact-statements",
+                         "--expect-platform", "{PLATFORM}", "--extra-profile", "{OUTPUT}/artifact-cli-statements.out"])
         self.assertIn("artifact-coverage", jobs)
         coverage = jobs["artifact-coverage"]
         for control in (
-            "needs: [changes, artifact-native-coverage]", "!cancelled()",
+            "needs: [changes, artifact-native-checks]", "!cancelled()",
             "needs.changes.outputs.artifacts == 'true'",
             "runs-on: ubuntu-24.04", "pattern: artifact-statements-*",
             "merge-multiple: false", "artifact-coverage.py", "summarize",
             "--minimum-statements", '"70"', "--require-integration",
             "python .github/scripts/test_artifact_coverage.py",
-            "needs.artifact-native-coverage.result", '!= success',
+            "needs.artifact-native-checks.result", '!= success',
         ):
             self.assertIn(control, coverage)
         self.assertNotIn("self-hosted", coverage)
@@ -3667,31 +3675,23 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn(required, job)
 
     def test_artifact_consumer_closure_selects_exactly_one_declared_native_cell(self):
+        from run_native_check_group import load_plan
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
-        job = jobs["artifact-native-default"]
+        job = jobs["artifact-native-checks"]
+        self.assertIn("run_native_check_group.py", job)
         declared_cells = re.findall(r"(?m)^          - os: ([^\s]+)$", job)
-        step = re.search(
-            r"(?ms)^      - name: Verify artifact consumer inventory closure\n"
-            r"(?P<body>.*?)(?=^      - name:)",
-            job,
-        )
-        self.assertIsNotNone(step, "artifact consumer inventory step is missing")
-        predicate = re.search(
-            r"(?m)^        if: matrix\.os == '([^']+)'$", step.group("body")
-        )
-        self.assertIsNotNone(predicate, "consumer closure needs one exact matrix-cell predicate")
-        selected = predicate.group(1)
-        self.assertIn(selected, declared_cells, "consumer closure targets no declared matrix cell")
-        self.assertEqual(
-            declared_cells.count(selected), 1,
-            "consumer closure predicate must select exactly one declared matrix cell",
-        )
+        plan, _ = load_plan()
+        selected = [step for step in plan["default"] if
+                    step["argv"] == ["python", ".github/scripts/test_artifact_consumers.py"]]
+        self.assertEqual(len(selected), 1, "consumer closure must be present exactly once")
+        runner = selected[0]["only_os"]
+        self.assertEqual(runner, "ubuntu-24.04")
+        self.assertEqual(declared_cells.count(runner), 1)
 
     def test_artifact_engine_is_reachable_pinned_and_merge_required(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = native_workflow_jobs(ci)
-        stage_ids = ("artifact-candidate", "artifact-native-default", "artifact-native-coverage",
-                     "artifact-context", "artifact-bridges", "artifact-conformance", "artifact-authority", "artifact-engine")
+        stage_ids = ("artifact-candidate", "artifact-native-checks", "artifact-bridges", "artifact-conformance", "artifact-authority", "artifact-engine")
         for job_id in stage_ids:
             job = jobs[job_id]
             matrix_owner = jobs["artifact-platform"] if job_id in (
@@ -3717,17 +3717,24 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             ):
                 self.assertIn(control, job)
         owners = {
-            'go test -buildvcs=false ./...': 'artifact-native-default',
-            'go vet -buildvcs=false ./...': 'artifact-native-default',
-            'go test -buildvcs=false -race ./...': 'artifact-native-default',
-            'python .github/scripts/test_artifact_native.py': 'artifact-context',
             'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"': 'artifact-candidate',
             'python .github/scripts/test_artifact_approval_adapter.py': 'artifact-bridges',
             'python .github/scripts/test_artifact_prerequisite_adapter.py': 'artifact-bridges',
-            'python .github/scripts/test_artifact_consumers.py': 'artifact-native-default',
             "'.github/scripts/test_artifact_conformance.py'": 'artifact-conformance',
-            'python .github/scripts/test_artifact_surface.py': 'artifact-native-default',
         }
+        from run_native_check_group import load_plan
+        plan, _ = load_plan()
+        self.assertIn("run_native_check_group.py", jobs["artifact-native-checks"])
+        for argv, group in (
+            (["go", "test", "-count=1", "-buildvcs=false", "./..."], "default"),
+            (["go", "vet", "-buildvcs=false", "./..."], "default"),
+            (["go", "test", "-count=1", "-buildvcs=false", "-race", "./..."], "default"),
+            (["python", ".github/scripts/test_artifact_native.py"], "context"),
+            (["python", ".github/scripts/test_artifact_consumers.py"], "default"),
+            (["python", ".github/scripts/test_artifact_surface.py"], "default"),
+        ):
+            self.assertEqual([owner for owner, steps in plan.items() for step in steps
+                              if step["argv"] == argv], [group])
         for command, owner in owners.items():
             self.assertIn(command, jobs[owner])
             self.assertEqual([job_id for job_id in stage_ids if command in jobs[job_id]], [owner])
@@ -3736,7 +3743,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
                         ".github/requirements/artifact-conformance-py314.lock"):
             self.assertIn(control, jobs["artifact-conformance"])
         final = jobs["artifact-engine"]
-        for owner in ("artifact-platform", "artifact-native-default", "artifact-native-coverage", "artifact-context", "artifact-coverage"):
+        for owner in ("artifact-platform", "artifact-native-checks", "artifact-coverage"):
             self.assertIn(owner, final.split("    needs:", 1)[1].splitlines()[0])
         platform_join = jobs["artifact-platform-passed"]
         for owner in ("artifact-candidate", "artifact-bridges", "artifact-conformance", "artifact-authority"):
@@ -4136,10 +4143,13 @@ class ContextImpactClosureTest(unittest.TestCase):
         self.assertEqual(len(selected), 1)
         return selected[0]
 
-    def _assert_context_closure(self, ci, impact, platform_ci=None):
+    def _assert_context_closure(self, ci, impact, platform_ci=None, native_plan=None):
         jobs = native_workflow_jobs(ci, platform_ci)
         hooks = jobs["hooks"]
-        engine = jobs["artifact-context"]
+        engine = jobs["artifact-native-checks"]
+        from run_native_check_group import load_plan
+        plan = load_plan()[0] if native_plan is None else native_plan
+        self.assertIn("run_native_check_group.py", engine)
         final = jobs["artifact-engine"]
         bridges = jobs["artifact-bridges"]
         cold = jobs["artifact-package-cold"]
@@ -4154,11 +4164,11 @@ class ContextImpactClosureTest(unittest.TestCase):
         for script in ("test_context_verification.py", "test_context_native.py",
                        "test_context_workflow.py"):
             command = f"python .github/scripts/{script}"
-            index = run_step_index(engine, command)
-            self.assertGreaterEqual(index, 0, command)
-        for owner in ("artifact-context", "artifact-native-default", "artifact-platform"):
+            matches = [step for step in plan["context"] if step["argv"] == command.split()]
+            self.assertEqual(len(matches), 1, command)
+        for owner in ("artifact-native-checks", "artifact-platform"):
             self.assertIn(owner, final.split("    needs:", 1)[1].splitlines()[0])
-        for owner in ("artifact-context", "artifact-native-default", "artifact-candidate", "artifact-bridges"):
+        for owner in ("artifact-native-checks", "artifact-candidate", "artifact-bridges"):
             self.assertIn('go-version: "1.27.1"', jobs[owner])
         for owner in ("artifact-candidate", "artifact-bridges"):
             self.assertIn(owner, jobs["artifact-platform-passed"].split("    needs:", 1)[1].splitlines()[0])
@@ -4228,7 +4238,7 @@ class ContextImpactClosureTest(unittest.TestCase):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         impact = module.load_map(REPO_ROOT / ".github/ci-impact-map.json")
         for before, after in (
-            ("run: python .github/scripts/test_context_native.py", "run: python absent.py"),
+            ("python .github/scripts/run_native_check_group.py", "python absent.py"),
             ('go-version: "1.27.1"', 'go-version: "1.22"'),
             ("needs: [changes, artifact-package-assembly]", "needs: changes"),
             ('--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
@@ -4239,6 +4249,11 @@ class ContextImpactClosureTest(unittest.TestCase):
                 self.assertIn(before, ci)
                 with self.assertRaises(AssertionError):
                     self._assert_context_closure(ci.replace(before, after, 1), impact)
+        from run_native_check_group import load_plan
+        plan, _ = load_plan()
+        plan["context"][2]["argv"] = ["python", "absent.py"]
+        with self.assertRaises(AssertionError):
+            self._assert_context_closure(ci, impact, native_plan=plan)
         missing_host_edge = module.ImpactMap(
             checks=impact.checks,
             edges=tuple(edge for edge in impact.edges
@@ -4252,8 +4267,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         jobs = native_workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         budget = "${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}"
-        for name in ("artifact-candidate", "artifact-native-default", "artifact-native-coverage",
-                     "artifact-context", "artifact-bridges", "artifact-conformance", "artifact-authority", "artifact-engine"):
+        for name in ("artifact-candidate", "artifact-native-checks", "artifact-bridges", "artifact-conformance", "artifact-authority", "artifact-engine"):
             body = jobs[name]
             expected = "10" if name == "artifact-engine" else "45" if name == "artifact-authority" else budget
             nested = name in ("artifact-candidate", "artifact-bridges", "artifact-conformance", "artifact-authority")
@@ -4266,7 +4280,6 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
                              "windows/arm64", "darwin/amd64", "darwin/arm64"):
                 self.assertIn("expected_platform: " + platform, jobs["artifact-platform"] if nested else body)
         for script, owner in (
-            ("test_artifact_native.py", "artifact-context"),
             ("test_artifact_approval_adapter.py", "artifact-bridges"),
             ("test_artifact_prerequisite_adapter.py", "artifact-bridges"),
             ("test_artifact_reconciliation_adapter.py", "artifact-bridges"),
@@ -4274,6 +4287,11 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
             ("run_artifact_authority_group.py", "artifact-authority"),
         ):
             self.assertIn(script, jobs[owner])
+        from run_native_check_group import load_plan
+        plan, _ = load_plan()
+        self.assertIn("run_native_check_group.py", jobs["artifact-native-checks"])
+        self.assertEqual(sum(step["argv"] == ["python", ".github/scripts/test_artifact_native.py"]
+                             for step in plan["context"]), 1)
         self.assertIn("artifact_ci.py gate", jobs["artifact-engine"])
 
 

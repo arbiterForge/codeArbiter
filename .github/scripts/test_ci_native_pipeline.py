@@ -253,14 +253,14 @@ class WorkflowClosureTest(unittest.TestCase):
         self.assertIn("needs.changes.outputs.artifacts == 'true'", caller)
         for name in ('os', 'expected_platform', 'artifact_binary'):
             self.assertIn(name+': ${{ matrix.'+name+' }}', caller)
-        for name in ('artifact-native-default', 'artifact-native-coverage', 'artifact-context'):
+        for name in ('artifact-native-checks',):
             self.assertRegex(self.jobs[name], r'(?m)^    needs: changes$')
         self.assertNotRegex(self.jobs['artifact-candidate'], r'(?m)^    needs:')
         for name in ('artifact-bridges', 'artifact-conformance', 'artifact-authority'):
             self.assertRegex(self.jobs[name], r'(?m)^    needs: artifact-candidate$')
             self.assertIn("needs.artifact-candidate.result == 'success'", self.jobs[name])
             self.assertIn('runs-on: ${{ inputs.os }}', self.jobs[name])
-        self.assertIn('needs: [changes, artifact-native-coverage]', self.jobs['artifact-coverage'])
+        self.assertIn('needs: [changes, artifact-native-checks]', self.jobs['artifact-coverage'])
 
     def test_builder_executes_once_per_platform_and_all_consumers_verify_same_bytes(self):
         command = 'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"'
@@ -277,22 +277,25 @@ class WorkflowClosureTest(unittest.TestCase):
             self.assertNotIn('--qualify-existing', self.jobs[name])
 
     def test_all_platforms_configurations_and_four_authority_shards_remain(self):
-        for name in ('artifact-platform', 'artifact-native-default', 'artifact-native-coverage', 'artifact-context', 'artifact-engine'):
+        for name in ('artifact-platform', 'artifact-native-checks', 'artifact-engine'):
             body = self.jobs[name]
             self.assertIn('fail-fast: false', body)
             self.assertNotIn('continue-on-error:', body)
             found = re.findall(r'^            expected_platform: (.+)$', body, re.M)
             self.assertEqual(sorted(found), PLATFORMS)
-        for name in binding.PLATFORM_STAGES | {'artifact-native-default','artifact-native-coverage','artifact-context','artifact-engine'}:
+        for name in binding.PLATFORM_STAGES | {'artifact-native-checks','artifact-engine'}:
             body = self.jobs[name]
             self.assertNotIn('continue-on-error:', body)
             for pin in ('python-version: "3.14"', 'go-version: "1.27.1"', 'check-latest: false', 'cache: false'):
                 self.assertIn(pin, body)
-        self.assertIn('go test -buildvcs=false ./...', self.jobs['artifact-native-default'])
-        self.assertIn('go vet -buildvcs=false ./...', self.jobs['artifact-native-default'])
-        self.assertIn('go test -buildvcs=false -race ./...', self.jobs['artifact-native-default'])
-        self.assertIn('test_artifact_cli.py --coverage-output', self.jobs['artifact-native-coverage'])
-        self.assertIn('artifact-coverage.py collect', self.jobs['artifact-native-coverage'])
+        from run_native_check_group import load_plan
+        plan, _ = load_plan()
+        self.assertEqual(plan['default'][0]['argv'], ['go','test','-count=1','-buildvcs=false','./...'])
+        self.assertEqual(plan['default'][1]['argv'], ['go','vet','-buildvcs=false','./...'])
+        self.assertEqual(plan['default'][2]['argv'], ['go','test','-count=1','-buildvcs=false','-race','./...'])
+        self.assertEqual(plan['coverage'][0]['argv'][:3], ['python','.github/scripts/test_artifact_cli.py','--coverage-output'])
+        self.assertEqual(plan['coverage'][1]['argv'][:3], ['python','tools/artifact-coverage.py','collect'])
+        self.assertIn('run_native_check_group.py', self.jobs['artifact-native-checks'])
         authority = self.jobs['artifact-authority']
         self.assertIn('fail-fast: false', authority)
         self.assertIn('AUTHORITY_SHARD_COUNT: "4"', authority)
@@ -301,8 +304,11 @@ class WorkflowClosureTest(unittest.TestCase):
         self.assertEqual(authority.count('run_artifact_authority_group.py'), 1)
 
     def test_context_observation_and_candidate_both_precede_qualification(self):
-        self.assertIn('CONTEXT_NATIVE_OBSERVATION_OUTPUT:', self.jobs['artifact-context'])
-        self.assertIn('name: artifact-context-${{ matrix.os }}', self.jobs['artifact-context'])
+        from run_native_check_group import load_plan
+        plan, _ = load_plan()
+        self.assertEqual(plan['context'][2]['env']['CONTEXT_NATIVE_OBSERVATION_OUTPUT'],
+                         '{OUTPUT}/context-native-observation.json')
+        self.assertIn('name: artifact-context-${{ matrix.os }}', self.jobs['artifact-native-checks'])
         final = self.jobs['artifact-engine']
         self.assertIn('name: artifact-context-${{ matrix.os }}', final)
         self.assertLess(final.index('artifact_ci.py verify'), final.index('--qualify-existing'))
@@ -328,6 +334,8 @@ class WorkflowClosureTest(unittest.TestCase):
         subjects = ('.github/scripts/artifact_ci.py', '.github/scripts/run_artifact_authority_shard.py',
                     '.github/scripts/run_artifact_authority_group.py', '.github/scripts/test_artifact_conformance.py',
                     '.github/scripts/_artifactworkerlib.py',
+            '.github/ci-native-checks.json', '.github/scripts/run_native_check_group.py',
+            '.github/scripts/test_native_check_group.py',
                     '.github/scripts/test_ci_native_pipeline.py', '.github/fixtures/artifact-authority-timings.json',
                     '.github/workflows/ci-native-platform.yml', '.github/scripts/test_ship_set_inputs.py')
         for subject in subjects:
@@ -340,7 +348,7 @@ class WorkflowClosureTest(unittest.TestCase):
         # bypasses both the ordinary tool cache and the Actions Go mirror.
         # Retain the exact compiler/version checks without forcing that path.
         native = (REPO/'.github/workflows/ci-native-platform.yml').read_text(encoding='utf-8')
-        for source, expected_count in ((self.ci, 5), (native, 4)):
+        for source, expected_count in ((self.ci, 3), (native, 4)):
             blocks = re.findall(
                 r"(?ms)^      - uses: actions/setup-go@[^\n]+\n"
                 r"(?P<body>.*?)(?=^      - |\Z)", source)

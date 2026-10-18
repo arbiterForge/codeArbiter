@@ -76,6 +76,24 @@
   ],
   "edges": [
     {
+      "glob": ".github/ci-native-checks.json",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/scripts/run_native_check_group.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/scripts/test_native_check_group.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
       "glob": ".github/scripts/_artifactworkerlib.py",
       "checks": [
         "artifact-engine"

@@ -1,0 +1,168 @@
+{
+  "format": "codearbiter.native-check-plan/1",
+  "groups": {
+    "default": [
+      {
+        "name": "Test artifact engine",
+        "argv": [
+          "go",
+          "test",
+          "-count=1",
+          "-buildvcs=false",
+          "./..."
+        ],
+        "cwd": "core/artifacts",
+        "env": {}
+      },
+      {
+        "name": "Vet artifact engine",
+        "argv": [
+          "go",
+          "vet",
+          "-buildvcs=false",
+          "./..."
+        ],
+        "cwd": "core/artifacts",
+        "env": {}
+      },
+      {
+        "name": "Race-test Linux persistence paths",
+        "argv": [
+          "go",
+          "test",
+          "-count=1",
+          "-buildvcs=false",
+          "-race",
+          "./..."
+        ],
+        "cwd": "core/artifacts",
+        "env": {},
+        "only_os": "ubuntu-24.04"
+      },
+      {
+        "name": "Verify generated artifact types",
+        "argv": [
+          "python",
+          "tools/generate-artifact-types.py",
+          "--check"
+        ],
+        "cwd": ".",
+        "env": {},
+        "only_os": "ubuntu-24.04"
+      },
+      {
+        "name": "Verify artifact public-surface baseline",
+        "argv": [
+          "python",
+          ".github/scripts/test_artifact_surface.py"
+        ],
+        "cwd": ".",
+        "env": {},
+        "only_os": "ubuntu-24.04"
+      },
+      {
+        "name": "Verify artifact consumer inventory closure",
+        "argv": [
+          "python",
+          ".github/scripts/test_artifact_consumers.py"
+        ],
+        "cwd": ".",
+        "env": {},
+        "only_os": "ubuntu-24.04"
+      },
+      {
+        "name": "Verify ship-set evidence-input behavior",
+        "argv": [
+          "python",
+          ".github/scripts/test_ship_set_inputs.py"
+        ],
+        "cwd": ".",
+        "env": {},
+        "only_os": "ubuntu-24.04"
+      }
+    ],
+    "coverage": [
+      {
+        "name": "Exercise the actual CLI with native statement instrumentation",
+        "argv": [
+          "python",
+          ".github/scripts/test_artifact_cli.py",
+          "--coverage-output",
+          "{OUTPUT}/artifact-cli-statements.out"
+        ],
+        "cwd": ".",
+        "env": {}
+      },
+      {
+        "name": "Collect native unit and executable statement coverage",
+        "argv": [
+          "python",
+          "tools/artifact-coverage.py",
+          "collect",
+          "--module-root",
+          "core/artifacts",
+          "--output",
+          "{OUTPUT}/artifact-statements",
+          "--expect-platform",
+          "{PLATFORM}",
+          "--extra-profile",
+          "{OUTPUT}/artifact-cli-statements.out"
+        ],
+        "cwd": ".",
+        "env": {}
+      }
+    ],
+    "context": [
+      {
+        "name": "Verify named native storage and recovery contract",
+        "argv": [
+          "python",
+          ".github/scripts/test_artifact_native.py"
+        ],
+        "cwd": ".",
+        "env": {}
+      },
+      {
+        "name": "Verify the finite context Go test bridge",
+        "argv": [
+          "python",
+          ".github/scripts/test_context_verification.py"
+        ],
+        "cwd": ".",
+        "env": {}
+      },
+      {
+        "name": "Verify named context document Go cases",
+        "argv": [
+          "python",
+          ".github/scripts/test_context_native.py"
+        ],
+        "cwd": ".",
+        "env": {
+          "CONTEXT_NATIVE_OBSERVATION_OUTPUT": "{OUTPUT}/context-native-observation.json"
+        }
+      },
+      {
+        "name": "Reject missing and nonisolated installed context candidates",
+        "argv": [
+          "python",
+          ".github/scripts/test_context_installed.py",
+          "InstalledContextQualification.test_t044_rejects_missing_candidate_identity",
+          "InstalledContextQualification.test_t044_rejects_nonisolated_environment",
+          "-v"
+        ],
+        "cwd": ".",
+        "env": {}
+      },
+      {
+        "name": "Verify context workflow with the pinned Go toolchain",
+        "argv": [
+          "python",
+          ".github/scripts/test_context_workflow.py"
+        ],
+        "cwd": ".",
+        "env": {}
+      }
+    ]
+  }
+}

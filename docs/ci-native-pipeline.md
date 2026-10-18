@@ -15,11 +15,9 @@ qualification policy.
 | `artifact-conformance` (called) | **Its own platform's** candidate | Complete cross-kind/reference conformance and debug handoff, with the locked reference interpreter. Runs alongside adapter and authority checks; its five independent native suites overlap with a three-process bound. |
 | `artifact-authority` (called) | **Its own platform's** candidate | Four duration-balanced, fixture-preserving shards, executed as two jobs with two isolated child processes each. |
 | `artifact-platform-passed` (called) | All four local stages | Rejects missing, failed, skipped, pending or cancelled local stages. |
-| `artifact-native-default` | Impact selection | Default Go tests and vet; Linux race, generated-type, surface, consumer and ship-set checks. |
-| `artifact-native-coverage` | Impact selection | Actual instrumented CLI exercise and full instrumented Go statement run, preserving both profiles. |
-| `artifact-context` | Impact selection | Native storage, finite context cases, installed-input refusals and context workflow. |
-| `artifact-coverage` | All six instrumented cells | Complete statement union and the unchanged coverage floor. |
-| `artifact-engine` | All platform calls, default/context checks and coverage | Strict global success join, exact candidate/context-observation verification, then the existing qualification receipt. |
+| `artifact-native-checks` | Impact selection | Three isolated concurrent workers: default tests/vet and Linux-specific checks; instrumented CLI/module coverage; native storage/context workflows. |
+| `artifact-coverage` | All six complete configuration groups | Complete statement union and the unchanged coverage floor. |
+| `artifact-engine` | All platform calls, configuration groups and coverage | Strict global success join, exact candidate/context-observation verification, then the existing qualification receipt. |
 | Browser and package assembly | Native qualification | Existing browser evidence and exact package assembly. |
 | Cold packages | Package assembly | Unchanged eighteen-cell host/platform installation matrix. |
 
@@ -42,6 +40,48 @@ relabelled as an uninstrumented run. The removed work is the twelve extra normal
 builders formerly executed by the two-per-platform authority jobs before this
 PR. `tools/build-artifacts.py` and `tools/artifact-coverage.py` retain their normal
 verification commands; there is no skip-tests fast path.
+
+## Grouped native configurations and runner contention
+
+The default, instrumented and context configurations remain independent work,
+but no longer request three separately provisioned runners per native platform.
+`artifact-native-checks` uses three child interpreters on one runner. This removes
+**twelve runner startups** from a full six-platform run, including four macOS
+requests, without putting tests into the candidate builder's dependency chain.
+
+The versioned command plan `.github/ci-native-checks.json` owns all fourteen
+original commands, working directories, context observation output and the five
+existing Linux-only selections. The runner rejects missing or reordered commands
+and unexpected platform exclusions. Default and race Go tests now explicitly use
+`-count=1`: compiler work may be shared safely inside the runner, but successful
+test results are never reused as fresh verification. The normal candidate
+builder and coverage collector remain unchanged.
+
+Every worker has a private home and temporary directory, configuration-specific
+output paths and logs, and a complete named result. The parent requires all
+three real child exits, matching plan/platform identities, exact command
+membership, the expected selections and successful results. Missing, stale,
+substituted or failed results refuse. Cleanup uses the existing bounded
+Windows-sharing-error owner; no test is retried. Diagnostics exclude worker
+homes, retain per-command timings, and include the workflow attempt in their
+artifact names. Coverage and context outputs retain their existing artifact
+names and qualification consumers.
+
+This change addresses a measured scheduling bottleneck: successful run
+`39071349661`, head `97bf20ff32c164f1134cffb5d7d467dce8e99dc6`, passed all
+125 jobs but took **28m44s**. Its Intel macOS candidate did not start until
+**11m27s** after run creation; its own execution was **5m17s**. That delayed its
+consumers and the final qualification join. The result is not evidence of a
+product regression or a configured account limit. Fewer runner requests reduce
+avoidable competition; no account setting or paid runner is changed.
+
+The complete new group passed locally on Windows/amd64 in **544.074 seconds**.
+All selected default, coverage and context commands executed, including the full
+module tests, actual instrumented CLI, complete native statement collection,
+named context cases and all thirty context-workflow tests. The five Linux-only
+commands were correctly unselected on that platform, not claimed as executed.
+This is functional local evidence, not a hosted speedup or a successful
+under-twenty-minute full CI run.
 
 ## Candidate and qualification boundary
 
@@ -137,7 +177,7 @@ The per-platform call graph and separate conformance job remove those dependency
 barriers. They do not promise to remove GitHub runner-capacity limits.
 
 The missed ship-set wiring assertion is corrected to inspect its actual owner,
-`artifact-native-default`, and now also runs in the early platform-neutral
+`artifact-native-checks` and its command plan, and also runs in the early platform-neutral
 contract suite. Both `impact` and `artifacts` filters include every new pipeline
 subject, including the reusable workflow and the contract suite itself. Filter
 closure has a regression test rather than relying on a workflow edit happening
