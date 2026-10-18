@@ -19,7 +19,7 @@ import (
 func TestFreshStoreObservationsReportNoLocalStore(t *testing.T) {
 	for _, state := range []string{"missing-context", "missing-artifacts", "missing-lock"} {
 		t.Run(state, func(t *testing.T) {
-			root := t.TempDir()
+			root := testutil.Root(t)
 			if state != "missing-context" {
 				dir := filepath.Join(root, ".codearbiter")
 				if state == "missing-lock" {
