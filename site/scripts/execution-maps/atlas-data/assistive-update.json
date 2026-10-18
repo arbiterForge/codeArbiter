@@ -130,7 +130,7 @@
     },
     {
       "path": "core/surface/skills/brainstorming/SKILL.md",
-      "blob": "ce29dea5ddd9ba69500c6b1790b05a66e7aa67c1",
+      "blob": "4d7a77916f810ac9a00d687adef8c7a9ad5d407b",
       "summary": "Source refinement respects recorded deferrals and accepted ADR conflicts without turning each ordinary method adjustment into a separate authorization interview. SMARTS compares approaches only when two or more are materially plausible; a single approach gets one line and no table.",
       "nodes": [
         "o-feature-spec",

@@ -281,6 +281,9 @@ class TestSmartsBrainstorming(unittest.TestCase):
                                r"`\{\{PLUGIN_ROOT\}\}/includes/smarts/core\.md` inline before recommending one",
                          "SMARTS is conditional on a material choice and precedes the recommendation")
         self.assertRegex(step, r"surface a decision-critical `Unknown` before selecting")
+        self.assertRegex(step, r"If every candidate carries one, pause the selection until the missing "
+                               r"observation is resolved or the user rules",
+                         "an all-critical comparison pauses instead of forcing a recommendation")
         self.assertRegex(step, r"never become a seventh lens", "non-SMARTS constraints stay outside the rubric")
         self.assertRegex(step, r"tie without explicit priority evidence goes to the user")
         self.assertRegex(prose, r"\*\*Record the rationale\.\*\* When the comparison ran[^.]*`SEC-SMARTS`",

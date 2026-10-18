@@ -323,6 +323,9 @@ jobs:
               - 'plugins/ca/SPRINT.md'
               - 'plugins/ca-codex/SPRINT.md'
               - 'plugins/ca-pi/SPRINT.md'
+              - 'plugins/ca/generated/**'
+              - 'plugins/ca-codex/generated/**'
+              - 'plugins/ca-pi/generated/**'
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
