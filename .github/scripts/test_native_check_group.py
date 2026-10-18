@@ -17,10 +17,10 @@ class PlanTest(unittest.TestCase):
     def setUp(self):
         self.plan, self.digest = runner.load_plan()
 
-    def test_measured_arm64_limit_keeps_all_three_groups_and_existing_deadlines(self):
+    def test_measured_windows_limit_keeps_all_three_groups_and_existing_deadlines(self):
         self.assertEqual(runner.GROUPS, ('default', 'coverage', 'context'))
         for platform in runner.RUNNERS.values():
-            self.assertEqual(runner.worker_limit(platform), 2 if platform == 'windows/arm64' else 3)
+            self.assertEqual(runner.worker_limit(platform), 2 if platform.startswith('windows/') else 3)
             self.assertEqual(runner.worker_limit(platform, serial=True), 1)
         with self.assertRaises(ValueError):
             runner.worker_limit('unqualified/platform')
@@ -177,6 +177,7 @@ class WorkflowTest(unittest.TestCase):
         self.assertIn('name: artifact-statements-${{ matrix.os }}',grouped)
         self.assertIn('name: artifact-context-${{ matrix.os }}',grouped)
         self.assertIn('attempt-${{ github.run_attempt }}',grouped)
+        self.assertIn('${{ runner.temp }}/native-checks/coverage/artifact-statements/unit.log', grouped)
         self.assertIn('run: python .github/scripts/test_native_check_group.py',jobs['ci-impact'])
 
 

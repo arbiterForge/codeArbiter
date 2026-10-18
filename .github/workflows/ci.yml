@@ -621,6 +621,7 @@ jobs:
             ${{ runner.temp }}/native-checks/*.log
             ${{ runner.temp }}/native-checks/*/*.json
             ${{ runner.temp }}/native-checks/*/*.log
+            ${{ runner.temp }}/native-checks/coverage/artifact-statements/unit.log
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false

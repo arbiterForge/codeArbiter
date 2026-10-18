@@ -46,7 +46,7 @@ verification commands; there is no skip-tests fast path.
 The default, instrumented and context configurations remain independent work,
 but no longer request three separately provisioned runners per native platform.
 `artifact-native-checks` uses three child interpreters on one runner, with at
-most three active configurations, or two on Windows ARM64. This removes
+most three active configurations, or two on either Windows architecture. This removes
 **twelve runner startups** from a full six-platform run, including four macOS
 requests, without putting tests into the candidate builder's dependency chain.
 
@@ -92,13 +92,25 @@ context configurations both passed, while the parent retained the default
 failure and prevented coverage/qualification promotion. This failed run is not
 speedup evidence.
 
-Windows ARM64 now starts at most **two** native configuration workers, with the
-third still submitted and required after a slot becomes available. Other
-platforms retain the three-worker schedule. This is a narrow scheduling repair,
-not proof that every future ARM64 run will be fast: the next hosted run must
-exercise it. Go's ten-minute package limit, the existing job budgets, every
-command and every assertion remain unchanged. No failed test is retried, and no
-partial successful configuration can stand in for the complete group.
+The two-worker ARM64 correction then passed all three configurations in run
+`39086933353` at `da4aadae`: the default command took 558.702 seconds, coverage
+completed, and context completed. That run exposed the same ten-minute default
+package timer on Windows x64 under three workers; its coverage worker also
+failed. The failed run is retained and is not speedup evidence.
+
+Both Windows architectures now start at most **two** native configuration
+workers, with the third still submitted and required after a slot is available.
+Linux and macOS retain three. Go's ten-minute package limit, the job budgets,
+every command and every assertion remain unchanged. No failed test is retried,
+and no partial successful configuration stands in for the complete group.
+
+Coverage collection writes its native Go failure output inside
+`coverage/artifact-statements/unit.log`. The attempt-qualified diagnostic upload
+now explicitly retains that one nested log as well as the existing named reports
+and per-command logs. It does not expand to private homes, temporary worker
+contents or arbitrary directories. Coverage profiles and native observations are
+still promoted only after the entire group succeeds.
+
 
 ## Candidate and qualification boundary
 

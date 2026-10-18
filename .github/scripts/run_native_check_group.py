@@ -159,15 +159,16 @@ def run_child(group: str, root: Path, runner_os: str, platform: str) -> int:
 
 
 def worker_limit(platform: str, serial: bool = False) -> int:
-    """Keep the ARM64 runner below the observed suite-timeout contention point."""
+    """Keep Windows runners below the observed suite-timeout contention point."""
     if platform not in RUNNERS.values():
         raise ValueError('unsupported native worker platform')
     if serial:
         return 1
     # Run 39085371841 exhausted Go's unchanged 10m operations-package limit
-    # with three simultaneous configurations on Windows ARM64. Keep all work,
-    # reduce oversubscription and preserve the same test/job time limits.
-    return 2 if platform == 'windows/arm64' else 3
+    # with three simultaneous configurations on Windows ARM64. Run 39086933353
+    # then exposed the same limit on Windows x64 while bounded ARM64 passed.
+    # Keep all work and preserve the same test/job time limits on both hosts.
+    return 2 if platform.startswith('windows/') else 3
 
 
 def main() -> None:
