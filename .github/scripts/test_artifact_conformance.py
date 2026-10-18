@@ -108,6 +108,7 @@ EXPECTED_SUITES = {
         "test_real_plan_bind_accepts_draft_but_rejects_wrong_spec_binding",
         "test_selection_rechecks_namespace_after_capability_probe",
         "test_small_lane_stays_inline_without_resolving_or_writing_artifacts",
+        "test_smarts_rationale_round_trips_through_existing_records",
         "test_tdd_reads_typed_obligations_without_parsing_rendered_html",
     },
     "test_artifact_workflow.py": {
