@@ -11,7 +11,10 @@ wrote through the engine's own model block:
               one-line statement and no SMARTS table.
 
 This calls a real model and costs tokens, so it is a manual check, not a CI step.
-Exit 0 only when both cases match. Pass --keep to retain the throwaway repos.
+Exit 0 only when every selected case matches. Options: --keep retains the throwaway
+repos; --plugin-dir DIR tests an unreleased plugin directory (for example this
+checkout's plugins/ca) with the installed ca plugin disabled for the session;
+--case NAME runs one case.
 """
 from __future__ import annotations
 
@@ -79,7 +82,13 @@ SUFFIX = (
 )
 
 
+def option(name: str) -> str | None:
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else None
+
+
 def plugin_root() -> Path:
+    if option("--plugin-dir"):
+        return Path(option("--plugin-dir")).resolve()
     data = json.loads((Path.home() / ".claude/plugins/installed_plugins.json").read_text(encoding="utf-8"))
     entries = data.get("plugins", data).get("ca@codearbiter") or []
     if not entries:
@@ -146,8 +155,12 @@ def main() -> int:
     keep = "--keep" in sys.argv
     plugin = plugin_root()
     print(f"plugin: {plugin}")
+    selected = {name: CASES[name] for name in ([option("--case")] if option("--case") else CASES)}
+    host = []
+    if option("--plugin-dir"):
+        host = ["--plugin-dir", str(plugin), "--settings", json.dumps({"enabledPlugins": {"ca@codearbiter": False}})]
     results = {}
-    for case, request in CASES.items():
+    for case, request in selected.items():
         root = Path(tempfile.mkdtemp(prefix=f"smarts-live-{case}-"))
         try:
             scaffold(root, plugin)
@@ -156,7 +169,7 @@ def main() -> int:
             session = run(["claude", "-p", f"/ca:feature {request}{SUFFIX}",
                            "--permission-mode", "acceptEdits",
                            "--allowedTools", "Bash Read Write Edit Glob Grep Skill",
-                           "--output-format", "text"], root, env=env, timeout=3600)
+                           "--output-format", "text", *host], root, env=env, timeout=3600)
             ok, detail = judge(case, root)
             results[case] = ok
             print(f"\n=== {case}: {'PASS' if ok else 'FAIL'} (session exit {session.returncode}) ===")
@@ -168,7 +181,7 @@ def main() -> int:
                 print(f"kept: {root}")
             else:
                 shutil.rmtree(root, ignore_errors=True)
-    return 0 if all(results.values()) and len(results) == len(CASES) else 1
+    return 0 if all(results.values()) and len(results) == len(selected) else 1
 
 
 if __name__ == "__main__":
