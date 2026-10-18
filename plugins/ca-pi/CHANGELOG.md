@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.20.2] - 2026-10-18
+
+### Fixed
+
+- On Windows, every structured-artifact read failed with `LOCK_FAILED` in a fresh clone or worktree, because the untracked store metadata did not exist yet and the read lock would not create it. A read on a checkout with no store metadata now initializes it the way a write does, then returns the same result as on an initialized store.
+
 ## [0.20.1] - 2026-10-18
 
 ### Fixed

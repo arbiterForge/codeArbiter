@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.19.2] - 2026-10-18
+
+### Fixed
+
+- On Windows, every structured-artifact read failed with `LOCK_FAILED` in a fresh clone or worktree, because the untracked store metadata did not exist yet and the read lock would not create it. A read on a checkout with no store metadata now initializes it the way a write does, then returns the same result as on an initialized store.
+
 ## [0.19.1] - 2026-10-18
 
 ### Fixed
