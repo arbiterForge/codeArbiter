@@ -56,6 +56,10 @@ EXPECTED_SUITES = {
         "test_explicit_timeout_wins_over_environment",
         "test_malformed_override_refuses",
         "test_timeout_reaches_the_bounded_child",
+        "test_no_local_store_initializes_then_retries_once",
+        "test_refused_initialization_keeps_no_local_store",
+        "test_fresh_checkout_identity_through_client",
+        "test_protocol_documents_init_store",
     },
     "test_artifact_authoring.py": {
         "test_installed_intent_cli_accepts_native_empty_diagnostics",

@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Explicit store initialization for fresh checkouts · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">SPEC-WINDOWS-STORE-INIT</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-intent">Intent</a><a href="#group-scope">Scope</a><a href="#group-non_goals">Non goals</a><a href="#group-approach">Approach</a><a href="#group-constraints">Constraints</a><a href="#group-decisions">Decisions</a><a href="#group-criteria">Criteria</a><a href="#group-open_decisions">Open decisions</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../plans/windows-store-init.html">Open companion implementation plan</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / spec</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Explicit store initialization for fresh checkouts</h1><p class="deck">A host can create a fresh checkout&#39;s local artifact store on purpose, so resume works on Windows while reads stay non-mutating.</p><div class="meta"><span>SPEC-WINDOWS-STORE-INIT</span><span>Revision 2 · schema 0.3.2</span><span>34 addressable records</span></div></header><section class="group" id="group-intent"><a class="back" href="#main-content">Top</a><h2>Intent</h2>
+<!-- CA:BEGIN:INTENT-01 -->
+<article class="record" id="INTENT-01" data-ca-symbol="INTENT-01" data-ca-kind="intent"><div class="record-head"><a class="id" href="#INTENT-01">INTENT-01</a><h3>Intent</h3></div><div class="field"><span class="label">Caller</span>Host bridge ArtifactClient on Claude Code, Codex and Pi</div><div class="field"><span class="label">Outcome</span>The first read in a fresh writable checkout succeeds after one explicit, bounded store initialization; read-only checkouts still get NO_LOCAL_STORE.</div><div class="field"><span class="label">Problem</span>On Windows, every read in a fresh clone or worktree returns NO_LOCAL_STORE until something writes, so /feature and /sprint resume cannot read their own spec and plan.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div></article>
+<!-- CA:END:INTENT-01 -->
+</section><section class="group" id="group-scope"><a class="back" href="#main-content">Top</a><h2>Scope</h2>
+<!-- CA:BEGIN:SCOPE-01 -->
+<article class="record" id="SCOPE-01" data-ca-symbol="SCOPE-01" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-01">SCOPE-01</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>An engine init-store operation, portable across all native platforms.</div></article>
+<!-- CA:END:SCOPE-01 -->
+
+<!-- CA:BEGIN:SCOPE-02 -->
+<article class="record" id="SCOPE-02" data-ca-symbol="SCOPE-02" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-02">SCOPE-02</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>A single bounded init-then-retry in the bridge ArtifactClient on NO_LOCAL_STORE, with an opt-out.</div></article>
+<!-- CA:END:SCOPE-02 -->
+
+<!-- CA:BEGIN:SCOPE-03 -->
+<article class="record" id="SCOPE-03" data-ca-symbol="SCOPE-03" data-ca-kind="scope"><div class="record-head"><a class="id" href="#SCOPE-03">SCOPE-03</a><h3>Scope</h3></div><div class="field"><span class="label">Statement</span>Protocol documentation for both.</div></article>
+<!-- CA:END:SCOPE-03 -->
+</section><section class="group" id="group-non_goals"><a class="back" href="#main-content">Top</a><h2>Non goals</h2>
+<!-- CA:BEGIN:NON-GOAL-01 -->
+<article class="record" id="NON-GOAL-01" data-ca-symbol="NON-GOAL-01" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-01">NON-GOAL-01</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Making any read operation create or modify files.</div></article>
+<!-- CA:END:NON-GOAL-01 -->
+
+<!-- CA:BEGIN:NON-GOAL-02 -->
+<article class="record" id="NON-GOAL-02" data-ca-symbol="NON-GOAL-02" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-02">NON-GOAL-02</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Restoring receipts or evidence that a committed plan references; initialization creates lock metadata only.</div></article>
+<!-- CA:END:NON-GOAL-02 -->
+
+<!-- CA:BEGIN:NON-GOAL-03 -->
+<article class="record" id="NON-GOAL-03" data-ca-symbol="NON-GOAL-03" data-ca-kind="non_goals"><div class="record-head"><a class="id" href="#NON-GOAL-03">NON-GOAL-03</a><h3>Non goals</h3></div><div class="field"><span class="label">Statement</span>Gitignoring .codearbiter/.artifacts/; every write already leaves it untracked, and that is a separate change.</div></article>
+<!-- CA:END:NON-GOAL-03 -->
+</section><section class="group" id="group-approach"><a class="back" href="#main-content">Top</a><h2>Approach</h2>
+<!-- CA:BEGIN:APPROACH-01 -->
+<article class="record" id="APPROACH-01" data-ca-symbol="APPROACH-01" data-ca-kind="approach"><div class="record-head"><a class="id" href="#APPROACH-01">APPROACH-01</a><h3>Approach</h3></div><div class="field"><span class="label">Binding decision refs</span><ul class="items"><li><a href="#DEC-01">DEC-01</a></li><li><a href="#DEC-02">DEC-02</a></li></ul></div><div class="field"><span class="label">Choice</span>Add an engine init-store operation that creates only the store lock metadata through the existing writer lock; the bridge calls it once on NO_LOCAL_STORE and retries the read once.</div><div class="field"><span class="label">Tradeoff</span>One new public protocol operation and one bridge retry path, in exchange for keeping every read operation free of writes.</div></article>
+<!-- CA:END:APPROACH-01 -->
+</section><section class="group" id="group-constraints"><a class="back" href="#main-content">Top</a><h2>Constraints</h2>
+<!-- CA:BEGIN:CON-01 -->
+<article class="record" id="CON-01" data-ca-symbol="CON-01" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-01">CON-01</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-03</li></ul></div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Read operations stay non-mutating, as PROTOCOL.md records since #996 and #972 requires for protected read-only checkouts.</div></article>
+<!-- CA:END:CON-01 -->
+
+<!-- CA:BEGIN:CON-02 -->
+<article class="record" id="CON-02" data-ca-symbol="CON-02" data-ca-kind="constraints"><div class="record-head"><a class="id" href="#CON-02">CON-02</a><h3>Constraints</h3></div><div class="field"><span class="label">Applies to</span><ul class="items"><li>AC-01</li><li>AC-02</li></ul></div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>init-store reuses the existing writer-lock initialization; it adds no new filesystem path or permission model.</div></article>
+<!-- CA:END:CON-02 -->
+</section><section class="group" id="group-decisions"><a class="back" href="#main-content">Top</a><h2>Decisions</h2>
+<!-- CA:BEGIN:DEC-01 -->
+<article class="record" id="DEC-01" data-ca-symbol="DEC-01" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-01">DEC-01</a><h3>Where a fresh checkout&#39;s store is initialized</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Option C: explicit init-store operation plus a one-time bridge retry.</div><div class="field"><span class="label">Rationale</span>SMARTS read 2026-10-18: keeps reads pure and writes only where the host may write, while fixing resume. Selected by the user.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-01 -->
+
+<!-- CA:BEGIN:DEC-02 -->
+<article class="record" id="DEC-02" data-ca-symbol="DEC-02" data-ca-kind="decisions"><div class="record-head"><a class="id" href="#DEC-02">DEC-02</a><h3>Failure when initialization is refused</h3></div><div class="field"><span class="label">Authority</span>proposed</div><div class="field"><span class="label">Choice</span>Raise the original NO_LOCAL_STORE, naming the refused initialization, with no further retry.</div><div class="field"><span class="label">Rationale</span>A read-only checkout must keep the precise diagnostic #996 introduced; masking it with a lock error would repeat #994&#39;s confusion.</div><div class="field"><span class="label">Source ref</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:DEC-02 -->
+</section><section class="group" id="group-criteria"><a class="back" href="#main-content">Top</a><h2>Criteria</h2>
+<!-- CA:BEGIN:AC-01 -->
+<article class="record" id="AC-01" data-ca-symbol="AC-01" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-01">AC-01</a><h3>Initialize a missing store</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every checkout.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>On Windows and macOS, store.lock exists afterwards and the result reports the store as created.</li><li>On Linux, the result reports the store as present.</li><li>No other path in the checkout changes.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The checkout has no local store metadata.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-01 -->
+<article class="record" id="SCN-AC-01" data-ca-symbol="SCN-AC-01" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-01">SCN-AC-01</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A fresh checkout with a committed spec and no .codearbiter/.artifacts/</div><div class="field"><span class="label">Then</span>store.lock exists, result store=created, and every other file is byte-identical</div><div class="field"><span class="label">When</span>Run init-store</div></article>
+<!-- CA:END:SCN-AC-01 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>On a checkout with no .codearbiter/.artifacts/ metadata, init-store creates the metadata directory and store.lock and reports that it created them. Linux locks the repository directory itself, needs no lock metadata, and reports the store as present.</div><div class="field"><span class="label">Trigger</span>Run init-store.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-01 -->
+<article class="record" id="VER-AC-01" data-ca-symbol="VER-AC-01" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-01">VER-AC-01</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>An init-store that only takes the shared observation lock leaves store.lock absent and fails.</div><div class="field"><span class="label">Oracle</span>Assert store.lock exists, result is created, and the tree outside the metadata directory is unchanged.</div><div class="field"><span class="label">Planned target</span>TestInitStoreCreatesOnlyLockMetadata</div></article>
+<!-- CA:END:VER-AC-01 -->
+</div></article>
+<!-- CA:END:AC-01 -->
+
+<!-- CA:BEGIN:AC-02 -->
+<article class="record" id="AC-02" data-ca-symbol="AC-02" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-02">AC-02</a><h3>Leave an initialized store unchanged</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every checkout.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>The whole tree, including store metadata, is unchanged.</li><li>The result reports the store as present.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The local store metadata already exists.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-02 -->
+<article class="record" id="SCN-AC-02" data-ca-symbol="SCN-AC-02" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-02">SCN-AC-02</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>An initialized store</div><div class="field"><span class="label">Then</span>The tree is unchanged and result store=present</div><div class="field"><span class="label">When</span>Run init-store</div></article>
+<!-- CA:END:SCN-AC-02 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>On a checkout whose store already exists, init-store changes nothing and reports the store as present.</div><div class="field"><span class="label">Trigger</span>Run init-store again.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-02 -->
+<article class="record" id="VER-AC-02" data-ca-symbol="VER-AC-02" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-02">VER-AC-02</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>An init-store that rewrites or truncates store.lock changes the tree and fails.</div><div class="field"><span class="label">Oracle</span>Snapshot the tree before and after; assert equality and the present result.</div><div class="field"><span class="label">Planned target</span>TestInitStoreIsIdempotent</div></article>
+<!-- CA:END:VER-AC-02 -->
+</div></article>
+<!-- CA:END:AC-02 -->
+
+<!-- CA:BEGIN:AC-03 -->
+<article class="record" id="AC-03" data-ca-symbol="AC-03" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-03">AC-03</a><h3>Reads stay non-mutating</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every checkout.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>NO_LOCAL_STORE is returned.</li><li>The tree is unchanged.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-01">SCOPE-01</a></li></ul></div><div class="field"><span class="label">Kind</span>invariant</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Windows engine.</li><li>No local store metadata.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-03 -->
+<article class="record" id="SCN-AC-03" data-ca-symbol="SCN-AC-03" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-03">SCN-AC-03</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A fresh Windows checkout</div><div class="field"><span class="label">Then</span>NO_LOCAL_STORE and no new file</div><div class="field"><span class="label">When</span>Run identity directly</div></article>
+<!-- CA:END:SCN-AC-03 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>Read and index operations on a checkout without store metadata still return NO_LOCAL_STORE on Windows and create nothing.</div><div class="field"><span class="label">Trigger</span>Run identity, index or eligible directly against the engine.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-03 -->
+<article class="record" id="VER-AC-03" data-ca-symbol="VER-AC-03" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-03">VER-AC-03</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Making observations take the writer lock creates store.lock and fails this test.</div><div class="field"><span class="label">Oracle</span>The existing #996 test keeps passing unchanged.</div><div class="field"><span class="label">Planned target</span>TestFreshStoreObservationsReportNoLocalStore</div></article>
+<!-- CA:END:VER-AC-03 -->
+</div></article>
+<!-- CA:END:AC-03 -->
+
+<!-- CA:BEGIN:AC-04 -->
+<article class="record" id="AC-04" data-ca-symbol="AC-04" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-04">AC-04</a><h3>Bridge initializes once and retries once</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every checkout.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Exactly one init-store call and one retry occur.</li><li>The retried result is returned unchanged.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The engine reports NO_LOCAL_STORE for the first call.</li><li>Store initialization is allowed.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-04 -->
+<article class="record" id="SCN-AC-04" data-ca-symbol="SCN-AC-04" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-04">SCN-AC-04</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A client whose engine answers NO_LOCAL_STORE, then created, then a valid identity</div><div class="field"><span class="label">Then</span>The identity result is returned after one init-store and one retry</div><div class="field"><span class="label">When</span>Call identity</div></article>
+<!-- CA:END:SCN-AC-04 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>When an ArtifactClient call fails with NO_LOCAL_STORE, the client runs init-store once and then retries the original call once, returning its result.</div><div class="field"><span class="label">Trigger</span>Call identity through ArtifactClient.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-04 -->
+<article class="record" id="VER-AC-04" data-ca-symbol="VER-AC-04" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-04">VER-AC-04</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A client without the retry raises NO_LOCAL_STORE and fails.</div><div class="field"><span class="label">Oracle</span>Record the sequence of engine operations and assert it is identity, init-store, identity.</div><div class="field"><span class="label">Planned target</span>test_no_local_store_initializes_then_retries_once</div></article>
+<!-- CA:END:VER-AC-04 -->
+</div></article>
+<!-- CA:END:AC-04 -->
+
+<!-- CA:BEGIN:AC-05 -->
+<article class="record" id="AC-05" data-ca-symbol="AC-05" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-05">AC-05</a><h3>Refused or disabled initialization keeps the diagnostic</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every checkout.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>NO_LOCAL_STORE is raised.</li><li>At most one init-store call and no retry occur.</li><li>With initialize_store=False no init-store call occurs.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>The engine reports NO_LOCAL_STORE.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-05 -->
+<article class="record" id="SCN-AC-05" data-ca-symbol="SCN-AC-05" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-05">SCN-AC-05</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A client whose init-store answer is LOCK_FAILED</div><div class="field"><span class="label">Then</span>ArtifactError NO_LOCAL_STORE naming the refused initialization, with no retry</div><div class="field"><span class="label">When</span>Call identity</div></article>
+<!-- CA:END:SCN-AC-05 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>If init-store fails, or the client was built with initialize_store=False, the call raises NO_LOCAL_STORE and makes no further attempt.</div><div class="field"><span class="label">Trigger</span>Call a read through ArtifactClient when init-store fails or is disabled.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-05 -->
+<article class="record" id="VER-AC-05" data-ca-symbol="VER-AC-05" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-05">VER-AC-05</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>A client that retries in a loop or surfaces LOCK_FAILED fails.</div><div class="field"><span class="label">Oracle</span>Assert the raised code and the recorded operation sequence.</div><div class="field"><span class="label">Planned target</span>test_refused_initialization_keeps_no_local_store</div></article>
+<!-- CA:END:VER-AC-05 -->
+</div></article>
+<!-- CA:END:AC-05 -->
+
+<!-- CA:BEGIN:AC-06 -->
+<article class="record" id="AC-06" data-ca-symbol="AC-06" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-06">AC-06</a><h3>Real fresh-checkout resume works end to end</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every checkout.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>identity returns the spec&#39;s identity.</li><li>store.lock exists afterwards.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-02">SCOPE-02</a></li></ul></div><div class="field"><span class="label">Kind</span>behavior</div><div class="field"><span class="label">Preconditions</span><ul class="items"><li>Windows host.</li><li>A built engine binary.</li></ul></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-06 -->
+<article class="record" id="SCN-AC-06" data-ca-symbol="SCN-AC-06" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-06">SCN-AC-06</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>A checkout with a committed spec and no store</div><div class="field"><span class="label">Then</span>The identity result is returned and store.lock exists</div><div class="field"><span class="label">When</span>Call identity through the client</div></article>
+<!-- CA:END:SCN-AC-06 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>On Windows, with the built engine, an ArtifactClient identity call in a fresh checkout that holds a committed spec but no store succeeds.</div><div class="field"><span class="label">Trigger</span>Delete .codearbiter/.artifacts/ and call identity through ArtifactClient.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-06 -->
+<article class="record" id="VER-AC-06" data-ca-symbol="VER-AC-06" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-06">VER-AC-06</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>The bridge without the retry raises NO_LOCAL_STORE and fails.</div><div class="field"><span class="label">Oracle</span>Run against the real binary and assert the returned artifact_id and store.lock.</div><div class="field"><span class="label">Planned target</span>test_fresh_checkout_identity_through_client</div></article>
+<!-- CA:END:VER-AC-06 -->
+</div></article>
+<!-- CA:END:AC-06 -->
+
+<!-- CA:BEGIN:AC-07 -->
+<article class="record" id="AC-07" data-ca-symbol="AC-07" data-ca-kind="criteria"><div class="record-head"><a class="id" href="#AC-07">AC-07</a><h3>Protocol documents the operation and the retry</h3><span class="badge">must</span></div><div class="field"><span class="label">Applicability</span><div class="fields"><div class="field"><span class="label">Mode</span>unconditional</div><div class="field"><span class="label">Rationale</span>Applies to every checkout.</div></div></div><div class="field"><span class="label">Constraint refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Guarantees</span><ul class="items"><li>Both behaviours are described next to the NO_LOCAL_STORE text.</li></ul></div><div class="field"><span class="label">Intent refs</span><ul class="items"><li><a href="#SCOPE-03">SCOPE-03</a></li></ul></div><div class="field"><span class="label">Kind</span>interface</div><div class="field"><span class="label">Preconditions</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scenarios</span>
+<!-- CA:BEGIN:SCN-AC-07 -->
+<article class="record" id="SCN-AC-07" data-ca-symbol="SCN-AC-07" data-ca-kind="scenarios"><div class="record-head"><a class="id" href="#SCN-AC-07">SCN-AC-07</a><h3>Scenarios</h3></div><div class="field"><span class="label">Given</span>PROTOCOL.md</div><div class="field"><span class="label">Then</span>The operation and retry are documented</div><div class="field"><span class="label">When</span>Search for init-store</div></article>
+<!-- CA:END:SCN-AC-07 -->
+</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Statement</span>docs/artifacts/PROTOCOL.md describes init-store, its created/present result, and the bridge&#39;s single init-then-retry on NO_LOCAL_STORE.</div><div class="field"><span class="label">Trigger</span>Read PROTOCOL.md.</div><div class="field"><span class="label">Verification</span>
+<!-- CA:BEGIN:VER-AC-07 -->
+<article class="record" id="VER-AC-07" data-ca-symbol="VER-AC-07" data-ca-kind="verification"><div class="record-head"><a class="id" href="#VER-AC-07">VER-AC-07</a><h3>Verification</h3></div><div class="field"><span class="label">Evidence state</span>planned</div><div class="field"><span class="label">Method</span>automated</div><div class="field"><span class="label">Negative control</span>Removing the paragraph fails the test.</div><div class="field"><span class="label">Oracle</span>Assert the document names init-store and the one-time retry.</div><div class="field"><span class="label">Planned target</span>test_protocol_documents_init_store</div></article>
+<!-- CA:END:VER-AC-07 -->
+</div></article>
+<!-- CA:END:AC-07 -->
+</section><section class="group" id="group-open_decisions"><a class="back" href="#main-content">Top</a><h2>Open decisions</h2><span class="missing">None recorded</span></section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2>
+<!-- CA:BEGIN:SEC-SMARTS -->
+<article class="record" id="SEC-SMARTS" data-ca-symbol="SEC-SMARTS" data-ca-kind="sections"><div class="record-head"><a class="id" href="#SEC-SMARTS">SEC-SMARTS</a><h3>SMARTS design rationale</h3></div><div class="field"><span class="label">Blocks</span><div class="block"><p>Alternatives: A, the engine read creates the store (closed PR #998); B, keep reporting NO_LOCAL_STORE only; C, an explicit init-store operation with a one-time bridge retry.</p></div><div class="block"><p>Decisive lenses: Securable and Reliable favour B and C because no read ever writes; Available rules out B because resume fails until a write. C keeps both.</p></div><div class="block"><p>Material Weak observations: A is Weak on Securable (gives read-only reviewers a write path) and Maintainable (reverses #996&#39;s protocol text). B is Weak on Available.</p></div><div class="block"><p>Load-bearing assumption: the host process that constructs ArtifactClient is permitted to write untracked files in the checkout whenever it is not a protected read-only context; where it is not, init-store fails and NO_LOCAL_STORE stands.</p></div><div class="block"><p>Non-SMARTS considerations: C adds a public protocol operation, so it ships in a new plugin version.</p></div><div class="block"><p>Priority evidence: #972 chose Securable over Available for read paths; C honours that ordering without giving up Available.</p></div></div></article>
+<!-- CA:END:SEC-SMARTS -->
+</section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2><span class="missing">None recorded</span></section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Observed date</span>2026-10-18</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-governs"><a class="back" href="#main-content">Top</a><h2>Governs</h2><ul class="items"><li>core/artifacts/internal/operations/*.go</li><li>core/artifacts/internal/store/*.go</li><li>core/pysrc/_artifactlib.py</li><li>docs/artifacts/PROTOCOL.md</li></ul></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 68d8632e3e931e54f13264d0372583e45a3d60bd20339b02f7bb262c8f75ccf5<br>Model SHA-256: 1bd16f42876113b882049dc8e9e253ea15ecfa5aa3f0deb1293d2c11fb8d938e</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "SPEC-WINDOWS-STORE-INIT",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "1bd16f42876113b882049dc8e9e253ea15ecfa5aa3f0deb1293d2c11fb8d938e",
+    "normative_sha256": "68d8632e3e931e54f13264d0372583e45a3d60bd20339b02f7bb262c8f75ccf5",
+    "symbol_count": 34
+  },
+  "kind": "spec",
+  "normative": {
+    "approach": {
+      "binding_decision_refs": [
+        "DEC-01",
+        "DEC-02"
+      ],
+      "choice": "Add an engine init-store operation that creates only the store lock metadata through the existing writer lock; the bridge calls it once on NO_LOCAL_STORE and retries the read once.",
+      "id": "APPROACH-01",
+      "tradeoff": "One new public protocol operation and one bridge retry path, in exchange for keeping every read operation free of writes."
+    },
+    "baseline": {
+      "commit": null,
+      "observed_date": "2026-10-18",
+      "repository": null
+    },
+    "constraints": [
+      {
+        "applies_to": [
+          "AC-03"
+        ],
+        "id": "CON-01",
+        "source_refs": [],
+        "statement": "Read operations stay non-mutating, as PROTOCOL.md records since #996 and #972 requires for protected read-only checkouts."
+      },
+      {
+        "applies_to": [
+          "AC-01",
+          "AC-02"
+        ],
+        "id": "CON-02",
+        "source_refs": [],
+        "statement": "init-store reuses the existing writer-lock initialization; it adds no new filesystem path or permission model."
+      }
+    ],
+    "criteria": [
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every checkout."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "On Windows and macOS, store.lock exists afterwards and the result reports the store as created.",
+          "On Linux, the result reports the store as present.",
+          "No other path in the checkout changes."
+        ],
+        "id": "AC-01",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "The checkout has no local store metadata."
+        ],
+        "scenarios": [
+          {
+            "given": "A fresh checkout with a committed spec and no .codearbiter/.artifacts/",
+            "id": "SCN-AC-01",
+            "then": "store.lock exists, result store=created, and every other file is byte-identical",
+            "when": "Run init-store"
+          }
+        ],
+        "source_refs": [],
+        "statement": "On a checkout with no .codearbiter/.artifacts/ metadata, init-store creates the metadata directory and store.lock and reports that it created them. Linux locks the repository directory itself, needs no lock metadata, and reports the store as present.",
+        "title": "Initialize a missing store",
+        "trigger": "Run init-store.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-01",
+          "method": "automated",
+          "negative_control": "An init-store that only takes the shared observation lock leaves store.lock absent and fails.",
+          "oracle": "Assert store.lock exists, result is created, and the tree outside the metadata directory is unchanged.",
+          "planned_target": "TestInitStoreCreatesOnlyLockMetadata"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every checkout."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "The whole tree, including store metadata, is unchanged.",
+          "The result reports the store as present."
+        ],
+        "id": "AC-02",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "The local store metadata already exists."
+        ],
+        "scenarios": [
+          {
+            "given": "An initialized store",
+            "id": "SCN-AC-02",
+            "then": "The tree is unchanged and result store=present",
+            "when": "Run init-store"
+          }
+        ],
+        "source_refs": [],
+        "statement": "On a checkout whose store already exists, init-store changes nothing and reports the store as present.",
+        "title": "Leave an initialized store unchanged",
+        "trigger": "Run init-store again.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-02",
+          "method": "automated",
+          "negative_control": "An init-store that rewrites or truncates store.lock changes the tree and fails.",
+          "oracle": "Snapshot the tree before and after; assert equality and the present result.",
+          "planned_target": "TestInitStoreIsIdempotent"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every checkout."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "NO_LOCAL_STORE is returned.",
+          "The tree is unchanged."
+        ],
+        "id": "AC-03",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "kind": "invariant",
+        "obligation": "must",
+        "preconditions": [
+          "Windows engine.",
+          "No local store metadata."
+        ],
+        "scenarios": [
+          {
+            "given": "A fresh Windows checkout",
+            "id": "SCN-AC-03",
+            "then": "NO_LOCAL_STORE and no new file",
+            "when": "Run identity directly"
+          }
+        ],
+        "source_refs": [],
+        "statement": "Read and index operations on a checkout without store metadata still return NO_LOCAL_STORE on Windows and create nothing.",
+        "title": "Reads stay non-mutating",
+        "trigger": "Run identity, index or eligible directly against the engine.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-03",
+          "method": "automated",
+          "negative_control": "Making observations take the writer lock creates store.lock and fails this test.",
+          "oracle": "The existing #996 test keeps passing unchanged.",
+          "planned_target": "TestFreshStoreObservationsReportNoLocalStore"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every checkout."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "Exactly one init-store call and one retry occur.",
+          "The retried result is returned unchanged."
+        ],
+        "id": "AC-04",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "The engine reports NO_LOCAL_STORE for the first call.",
+          "Store initialization is allowed."
+        ],
+        "scenarios": [
+          {
+            "given": "A client whose engine answers NO_LOCAL_STORE, then created, then a valid identity",
+            "id": "SCN-AC-04",
+            "then": "The identity result is returned after one init-store and one retry",
+            "when": "Call identity"
+          }
+        ],
+        "source_refs": [],
+        "statement": "When an ArtifactClient call fails with NO_LOCAL_STORE, the client runs init-store once and then retries the original call once, returning its result.",
+        "title": "Bridge initializes once and retries once",
+        "trigger": "Call identity through ArtifactClient.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-04",
+          "method": "automated",
+          "negative_control": "A client without the retry raises NO_LOCAL_STORE and fails.",
+          "oracle": "Record the sequence of engine operations and assert it is identity, init-store, identity.",
+          "planned_target": "test_no_local_store_initializes_then_retries_once"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every checkout."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "NO_LOCAL_STORE is raised.",
+          "At most one init-store call and no retry occur.",
+          "With initialize_store=False no init-store call occurs."
+        ],
+        "id": "AC-05",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "The engine reports NO_LOCAL_STORE."
+        ],
+        "scenarios": [
+          {
+            "given": "A client whose init-store answer is LOCK_FAILED",
+            "id": "SCN-AC-05",
+            "then": "ArtifactError NO_LOCAL_STORE naming the refused initialization, with no retry",
+            "when": "Call identity"
+          }
+        ],
+        "source_refs": [],
+        "statement": "If init-store fails, or the client was built with initialize_store=False, the call raises NO_LOCAL_STORE and makes no further attempt.",
+        "title": "Refused or disabled initialization keeps the diagnostic",
+        "trigger": "Call a read through ArtifactClient when init-store fails or is disabled.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-05",
+          "method": "automated",
+          "negative_control": "A client that retries in a loop or surfaces LOCK_FAILED fails.",
+          "oracle": "Assert the raised code and the recorded operation sequence.",
+          "planned_target": "test_refused_initialization_keeps_no_local_store"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every checkout."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "identity returns the spec's identity.",
+          "store.lock exists afterwards."
+        ],
+        "id": "AC-06",
+        "intent_refs": [
+          "SCOPE-02"
+        ],
+        "kind": "behavior",
+        "obligation": "must",
+        "preconditions": [
+          "Windows host.",
+          "A built engine binary."
+        ],
+        "scenarios": [
+          {
+            "given": "A checkout with a committed spec and no store",
+            "id": "SCN-AC-06",
+            "then": "The identity result is returned and store.lock exists",
+            "when": "Call identity through the client"
+          }
+        ],
+        "source_refs": [],
+        "statement": "On Windows, with the built engine, an ArtifactClient identity call in a fresh checkout that holds a committed spec but no store succeeds.",
+        "title": "Real fresh-checkout resume works end to end",
+        "trigger": "Delete .codearbiter/.artifacts/ and call identity through ArtifactClient.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-06",
+          "method": "automated",
+          "negative_control": "The bridge without the retry raises NO_LOCAL_STORE and fails.",
+          "oracle": "Run against the real binary and assert the returned artifact_id and store.lock.",
+          "planned_target": "test_fresh_checkout_identity_through_client"
+        }
+      },
+      {
+        "applicability": {
+          "mode": "unconditional",
+          "rationale": "Applies to every checkout."
+        },
+        "constraint_refs": [],
+        "guarantees": [
+          "Both behaviours are described next to the NO_LOCAL_STORE text."
+        ],
+        "id": "AC-07",
+        "intent_refs": [
+          "SCOPE-03"
+        ],
+        "kind": "interface",
+        "obligation": "must",
+        "preconditions": [],
+        "scenarios": [
+          {
+            "given": "PROTOCOL.md",
+            "id": "SCN-AC-07",
+            "then": "The operation and retry are documented",
+            "when": "Search for init-store"
+          }
+        ],
+        "source_refs": [],
+        "statement": "docs/artifacts/PROTOCOL.md describes init-store, its created/present result, and the bridge's single init-then-retry on NO_LOCAL_STORE.",
+        "title": "Protocol documents the operation and the retry",
+        "trigger": "Read PROTOCOL.md.",
+        "verification": {
+          "evidence_state": "planned",
+          "id": "VER-AC-07",
+          "method": "automated",
+          "negative_control": "Removing the paragraph fails the test.",
+          "oracle": "Assert the document names init-store and the one-time retry.",
+          "planned_target": "test_protocol_documents_init_store"
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "authority": "proposed",
+        "choice": "Option C: explicit init-store operation plus a one-time bridge retry.",
+        "id": "DEC-01",
+        "rationale": "SMARTS read 2026-10-18: keeps reads pure and writes only where the host may write, while fixing resume. Selected by the user.",
+        "source_ref": null,
+        "topic": "Where a fresh checkout's store is initialized"
+      },
+      {
+        "authority": "proposed",
+        "choice": "Raise the original NO_LOCAL_STORE, naming the refused initialization, with no further retry.",
+        "id": "DEC-02",
+        "rationale": "A read-only checkout must keep the precise diagnostic #996 introduced; masking it with a lock error would repeat #994's confusion.",
+        "source_ref": null,
+        "topic": "Failure when initialization is refused"
+      }
+    ],
+    "governs": [
+      "core/artifacts/internal/operations/*.go",
+      "core/artifacts/internal/store/*.go",
+      "core/pysrc/_artifactlib.py",
+      "docs/artifacts/PROTOCOL.md"
+    ],
+    "intent": {
+      "caller": "Host bridge ArtifactClient on Claude Code, Codex and Pi",
+      "id": "INTENT-01",
+      "outcome": "The first read in a fresh writable checkout succeeds after one explicit, bounded store initialization; read-only checkouts still get NO_LOCAL_STORE.",
+      "problem": "On Windows, every read in a fresh clone or worktree returns NO_LOCAL_STORE until something writes, so /feature and /sprint resume cannot read their own spec and plan.",
+      "source_refs": []
+    },
+    "non_goals": [
+      {
+        "id": "NON-GOAL-01",
+        "statement": "Making any read operation create or modify files."
+      },
+      {
+        "id": "NON-GOAL-02",
+        "statement": "Restoring receipts or evidence that a committed plan references; initialization creates lock metadata only."
+      },
+      {
+        "id": "NON-GOAL-03",
+        "statement": "Gitignoring .codearbiter/.artifacts/; every write already leaves it untracked, and that is a separate change."
+      }
+    ],
+    "open_decisions": [],
+    "retired_symbols": [],
+    "scope": [
+      {
+        "id": "SCOPE-01",
+        "statement": "An engine init-store operation, portable across all native platforms."
+      },
+      {
+        "id": "SCOPE-02",
+        "statement": "A single bounded init-then-retry in the bridge ArtifactClient on NO_LOCAL_STORE, with an opt-out."
+      },
+      {
+        "id": "SCOPE-03",
+        "statement": "Protocol documentation for both."
+      }
+    ],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "Alternatives: A, the engine read creates the store (closed PR #998); B, keep reporting NO_LOCAL_STORE only; C, an explicit init-store operation with a one-time bridge retry.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Decisive lenses: Securable and Reliable favour B and C because no read ever writes; Available rules out B because resume fails until a write. C keeps both.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Material Weak observations: A is Weak on Securable (gives read-only reviewers a write path) and Maintainable (reverses #996's protocol text). B is Weak on Available.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Load-bearing assumption: the host process that constructs ArtifactClient is permitted to write untracked files in the checkout whenever it is not a protected read-only context; where it is not, init-store fails and NO_LOCAL_STORE stands.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Non-SMARTS considerations: C adds a public protocol operation, so it ships in a new plugin version.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Priority evidence: #972 chose Securable over Available for read paths; C honours that ordering without giving up Available.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-SMARTS",
+        "title": "SMARTS design rationale"
+      }
+    ],
+    "sources": [],
+    "summary": "A host can create a fresh checkout's local artifact store on purpose, so resume works on Windows while reads stay non-mutating.",
+    "title": "Explicit store initialization for fresh checkouts"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../plans/windows-store-init.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 2,
+  "schema_version": "0.3.2",
+  "slug": "windows-store-init"
+}
+</script>
+</body></html>

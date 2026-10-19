@@ -40,8 +40,8 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "e74c83c6692bd208bb2368d6391034e34cb828f3",
-      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow.",
+      "blob": "40f74ab9c463031c9622ddedde474a4ae907c3a9",
+      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow. On NO_LOCAL_STORE the client runs init-store once and retries the request once; a refused initialization keeps NO_LOCAL_STORE.",
       "nodes": [
         "f-entry",
         "f-plan",
@@ -259,8 +259,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "a894001c1044d9024471061632712949d791f7f5",
-      "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected. The historical smarts-apply request accepts the 0.2.0 SMARTS decision record.",
+      "blob": "08927e5c40af9e2c5b9e97f137e1c186ad89fea6",
+      "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected. The historical smarts-apply request accepts the 0.2.0 SMARTS decision record. init-store takes a protocol-only request.",
       "nodes": [
         "f-verify",
         "f-recovery",
