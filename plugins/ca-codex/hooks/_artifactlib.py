@@ -35,19 +35,17 @@ class ArtifactError(RuntimeError):
 def _windows_native_architecture() -> str | None:
     """Observe the host CPU without WMI or inherited PROCESSOR_* variables."""
     import ctypes
-    from ctypes import wintypes
 
     try:
-        kernel = ctypes.WinDLL("kernel32.dll", use_last_error=True)
-        process = kernel.GetCurrentProcess
+        process = ctypes.WinDLL("kernel32", use_last_error=True).GetCurrentProcess
         process.argtypes = []
-        process.restype = wintypes.HANDLE
-        query = kernel.IsWow64Process2
-        query.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.USHORT),
-                          ctypes.POINTER(wintypes.USHORT)]
-        query.restype = wintypes.BOOL
-        emulated = wintypes.USHORT()
-        native = wintypes.USHORT()
+        process.restype = ctypes.c_void_p
+        query = ctypes.WinDLL("kernel32", use_last_error=True).IsWow64Process2
+        query.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ushort),
+                          ctypes.POINTER(ctypes.c_ushort)]
+        query.restype = ctypes.c_uint32
+        emulated = ctypes.c_ushort()
+        native = ctypes.c_ushort()
         if not query(process(), ctypes.byref(emulated), ctypes.byref(native)):
             return None
     except (AttributeError, OSError):

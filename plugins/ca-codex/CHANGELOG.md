@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.20.4] - 2026-10-19
+
+### Fixed
+
+- ArtifactClient now queries the native Windows host architecture when Python returns empty architecture metadata, allowing supported hosts to read artifacts while retaining package integrity and native qualification checks (#986).
+
 ## [0.20.2] - 2026-10-18
 
 ### Fixed

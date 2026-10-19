@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.2.4] - 2026-10-19
+
+### Fixed
+
+- ArtifactClient now queries the native Windows host architecture when Python returns empty architecture metadata, allowing supported hosts to read artifacts while retaining package integrity and native qualification checks (#986).
+
 ## [3.2.2] - 2026-10-18
 
 ### Fixed

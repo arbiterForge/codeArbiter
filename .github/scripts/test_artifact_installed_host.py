@@ -28,6 +28,7 @@ _BRIDGE_IMPORTS = frozenset({
 })
 _CTYPES_ATTRIBUTES = frozenset({
     "WinDLL", "c_uint32", "c_void_p", "c_wchar_p", "get_last_error",
+    "POINTER", "byref", "c_ushort",
 })
 _PROCESS_ESCAPE_CALLS = frozenset({
     "execl", "execle", "execlp", "execlpe", "execv", "execve", "execvp",
@@ -43,6 +44,8 @@ _NETWORK_AUDIT_EVENTS = frozenset({
 })
 _KERNEL32_PROCEDURES = frozenset({
     "CloseHandle", "CreateFileW", "GetFileAttributesW",
+    # Read-only host architecture observation when Python metadata is absent.
+    "GetCurrentProcess", "IsWow64Process2",
 })
 
 
