@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.20.4] - 2026-10-19
+
+### Fixed
+
+- On Windows the artifact bridge read its binary's architecture through `platform.machine()`, which asks WMI and then the `PROCESSOR_*` environment variables. A read-only sandbox can block WMI and strip that environment, so reads failed with `UNSUPPORTED_PLATFORM: unsupported architecture`. The bridge now asks the kernel (`IsWow64Process2`) for the native machine, consults no environment, and still fails closed when the OS gives no answer (#986).
+
 ## [0.20.3] - 2026-10-19
 
 ### Fixed
