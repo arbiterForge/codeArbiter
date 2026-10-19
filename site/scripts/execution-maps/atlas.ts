@@ -83,7 +83,7 @@ export const CONTEXT_MAINTENANCE_SOURCE_BLOBS:Readonly<Record<string,string>>=Ob
 // These tracked owner blobs survive a squash; earlier bindings stay historical.
 export const RUNTIME_COMPATIBILITY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
   'core/surface/includes/artifacts.md':'c10c13162e63699c3748809f3ef2448bc8b07fb9',
-  'core/pysrc/_artifactauthoritylib.py':'8dbbfdbae637e79dea52181b01e328a21efe3a06',
+  'core/pysrc/_artifactauthoritylib.py':'7624ad9dce3330505bdca5f5e19c3bf7e2534d10',
   'docs/hooks.md':'d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
 });
 

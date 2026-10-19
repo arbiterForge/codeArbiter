@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.20.2] - 2026-10-18
+
+### Fixed
+
+- On Windows, verification through an npm workspace intermittently failed with `UNSUPPORTED_EXECUTABLE: nested npm launch qualification failed`. The qualification probe ran npm with a minimal environment, so a fresh npm profile also made a registry update check, which could exceed the probe's 15-second limit or print a notice. The probe now disables npm's update notifier and stays offline.
+
 ## [0.20.1] - 2026-10-18
 
 ### Fixed
