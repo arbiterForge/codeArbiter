@@ -990,18 +990,17 @@ def _windows_native_architecture() -> str | None:
     gave no answer, and the caller fails closed."""
     try:
         import ctypes
-        from ctypes import wintypes
-        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-        query = kernel32.IsWow64Process2
+        query = ctypes.WinDLL("kernel32", use_last_error=True).IsWow64Process2
     except (ImportError, OSError, AttributeError):
         return None
-    query.argtypes = (wintypes.HANDLE, ctypes.POINTER(wintypes.USHORT), ctypes.POINTER(wintypes.USHORT))
-    query.restype = wintypes.BOOL
-    kernel32.GetCurrentProcess.restype = wintypes.HANDLE
-    process, native = wintypes.USHORT(), wintypes.USHORT()
-    if not query(kernel32.GetCurrentProcess(), ctypes.byref(process), ctypes.byref(native)):
+    # BOOL IsWow64Process2(HANDLE, USHORT *process, USHORT *native); the
+    # current-process pseudo-handle is -1. One-element arrays pass as pointers.
+    query.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
+    query.restype = ctypes.c_uint32
+    process, native = (ctypes.c_uint16 * 1)(), (ctypes.c_uint16 * 1)()
+    if not query(ctypes.c_void_p(-1), process, native):
         return None
-    return _WINDOWS_NATIVE_MACHINES.get(native.value)
+    return _WINDOWS_NATIVE_MACHINES.get(native[0])
 
 
 def _host_platform() -> tuple[str, str]:
