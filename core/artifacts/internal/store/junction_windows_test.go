@@ -9,13 +9,14 @@ import (
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
 // A junction reports ModeIrregular, not ModeSymlink, on current Go. One that
 // stays inside the root passes os.Root containment, so the explicit link checks
 // must refuse it on their own (#909).
 func TestJunctionComponentsAreRefusedExplicitly(t *testing.T) {
-	root := t.TempDir()
+	root := testutil.Root(t)
 	real := filepath.Join(root, "real")
 	if err := os.MkdirAll(real, 0700); err != nil {
 		t.Fatal(err)
