@@ -665,8 +665,13 @@ export default function registerCaptureProvider(pi: any) {
     )
     reader: threading.Thread | None = None
     stderr_reader: threading.Thread | None = None
-    stderr_tail = ""
+    # Stderr is diagnostic only: drain raw bytes so malformed UTF-8 cannot stop
+    # the reader and let a full pipe stall the child. Protocol stdout stays strict.
+    stderr_bytes = b""
     stderr_error: Exception | None = None
+
+    def stderr_tail() -> str:
+        return stderr_bytes.decode("utf-8", errors="replace")[-2000:]
     try:
         if process.stdin is None or process.stdout is None or process.stderr is None:
             raise AssertionError("Pi RPC did not expose standard streams")
@@ -685,11 +690,11 @@ export default function registerCaptureProvider(pi: any) {
         reader.start()
 
         def read_stderr() -> None:
-            nonlocal stderr_tail, stderr_error
+            nonlocal stderr_bytes, stderr_error
             assert process.stderr is not None
             try:
-                while chunk := process.stderr.read(4096):
-                    stderr_tail = (stderr_tail + chunk)[-2000:]
+                while chunk := process.stderr.buffer.read1(4096):
+                    stderr_bytes = (stderr_bytes + chunk)[-8000:]
             except Exception as error:
                 stderr_error = error
 
@@ -767,7 +772,7 @@ export default function registerCaptureProvider(pi: any) {
         except subprocess.TimeoutExpired as error:
             raise AssertionError(
                 f"Pi RPC did not exit within 30 seconds of stdin EOF; received {len(records)} records; "
-                f"stderr tail={stderr_tail!r}; "
+                f"stderr tail={stderr_tail()!r}; "
                 f"shutdown trace={rpc_shutdown_diagnostics(shutdown_trace)}"
             ) from error
         reader.join(timeout=5)
@@ -784,15 +789,15 @@ export default function registerCaptureProvider(pi: any) {
             if line is not None:
                 records.append(decode(line))
         if returncode != 0:
-            raise AssertionError(f"Pi RPC exited {returncode}: {stderr_tail}")
+            raise AssertionError(f"Pi RPC exited {returncode}: {stderr_tail()}")
         if not any(record.get("id") == "commands" for record in records):
-            raise AssertionError(f"Pi RPC did not answer get_commands: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not answer get_commands: {records!r}; stderr={stderr_tail()}")
         if invoke_read_context and not any(record.get("id") == "state" for record in records):
-            raise AssertionError(f"Pi RPC did not answer get_state: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not answer get_state: {records!r}; stderr={stderr_tail()}")
         if (invoke_alias or invoke_doctor or invoke_read_context) and not any(record.get("id") == "capture" for record in records):
-            raise AssertionError(f"Pi RPC did not capture the alias turn: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not capture the alias turn: {records!r}; stderr={stderr_tail()}")
         if invoke_enforcement_fault and not any(record.get("type") == "agent_settled" for record in records):
-            raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail()}")
         return records
     finally:
         cleanup_errors: list[str] = []
@@ -2276,6 +2281,35 @@ class PiPackageTests(unittest.TestCase):
         self.assertFalse(installed_python.is_relative_to(enabled), installed_python)
         self.assertIn("trusted-executables.identity", hook)
         self.assertIn('export CODEARBITER_GIT_EXECUTABLE="$G"', hook)
+
+    def test_rpc_stderr_survives_malformed_utf8_and_pipe_saturation(self):
+        # Malformed UTF-8 followed by more stderr than a pipe holds must not stop
+        # the drain: a stalled child would surface as a shutdown timeout instead
+        # of its real exit status and stderr tail.
+        root_code = (
+            "import json, sys; "
+            "sys.stderr.buffer.write(b'\\xff\\xfe' + b'x' * (1 << 18)); sys.stderr.buffer.flush(); "
+            "print(json.dumps({'id': 'commands', 'type': 'response'}), flush=True); "
+            "sys.stdin.read(); "
+            "sys.stderr.buffer.write(b'tail-marker \\xff'); sys.stderr.buffer.flush(); "
+            "raise SystemExit(3)"
+        )
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-stderr-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            cwd.mkdir()
+            started = time.monotonic()
+            with self.assertRaises(AssertionError) as raised:
+                run_rpc_commands(
+                    cwd,
+                    root / "agent",
+                    root / "home",
+                    _rpc_command=[sys.executable, "-c", root_code],
+                )
+            message = str(raised.exception)
+            self.assertTrue(message.startswith("Pi RPC exited 3: "), message[:300])
+            self.assertTrue(message.endswith("tail-marker \ufffd"), message[-300:])
+            self.assertLess(time.monotonic() - started, 20)
 
     def test_rpc_decode_failure_terminates_process_tree_and_reader(self):
         observed: list[tuple[subprocess.Popen[str], threading.Thread]] = []
