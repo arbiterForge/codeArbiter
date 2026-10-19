@@ -63,6 +63,20 @@ class ControlBytes(unittest.TestCase):
         self.assertEqual(check.tracked_files(root), ["a.py"])
         self.assertEqual(check.main([str(root)]), 0)
 
+    def test_non_utf8_pathname_is_listed_not_fatal(self):
+        root = _repo({"a.py": b"ok\n"})
+        blob = subprocess.run(["git", "-C", str(root), "hash-object", "-w", "--stdin"],
+                              input=b"ok\n", stdout=subprocess.PIPE,
+                              check=True).stdout.decode().strip()
+        # An index entry whose name is not valid UTF-8 (Latin-1 "caf\xe9").
+        subprocess.run(["git", "-C", str(root), "update-index", "--add", "--index-info"],
+                       input=b"100644 " + blob.encode() + b"\tcaf\xe9.txt\n", check=True)
+        names = check.tracked_files(root)
+        self.assertIn("a.py", names)
+        self.assertEqual(len(names), 2)
+        self.assertIn("caf\udce9.txt", names)
+        self.assertEqual(check.main([str(root)]), 0)
+
     def test_untracked_file_is_not_scanned(self):
         root = _repo({"a.py": b"ok\n"})
         (root / "stray.py").write_bytes(b"\x08")

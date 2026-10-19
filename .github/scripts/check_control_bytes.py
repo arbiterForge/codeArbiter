@@ -30,10 +30,12 @@ def tracked_files(root: Path) -> list[str]:
     out = subprocess.run(["git", "-C", str(root), "ls-files", "-z", "--stage"],
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     paths = set()
-    for record in out.stdout.decode("utf-8").split("\0"):
-        meta, _, rel = record.partition("\t")
-        if rel and meta.split()[0] in ("100644", "100755"):
-            paths.add(rel)
+    # Git emits pathnames verbatim with -z, and they need not be UTF-8.
+    # surrogateescape round-trips any bytes back to the POSIX filesystem name.
+    for record in out.stdout.split(b"\0"):
+        meta, _, rel = record.partition(b"\t")
+        if rel and meta.split()[0] in (b"100644", b"100755"):
+            paths.add(rel.decode("utf-8", "surrogateescape"))
     return sorted(paths)
 
 
@@ -41,8 +43,8 @@ def findings(root: Path, rel: str) -> list[str]:
     path = root / rel
     try:
         data = path.read_bytes()
-    except FileNotFoundError:
-        return []  # deleted in the work tree
+    except (FileNotFoundError, UnicodeEncodeError):
+        return []  # deleted in the work tree, or a name this OS cannot hold
     if b"\0" in data[:BINARY_PROBE]:
         return []
     found = []
