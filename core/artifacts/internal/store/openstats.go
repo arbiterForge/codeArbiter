@@ -6,8 +6,10 @@ package store
 //
 //   - DirOpens: directory handles anchored for descent (OpenDir, OpenSub and the
 //     one-shot directory opens of ListUnfollowed).
-//   - EnumOpens: extra handles opened only to enumerate a directory. The Linux
-//     backend enumerates the anchoring descriptor itself and never counts here.
+//   - EnumOpens: directory enumerations. The portable backends open an extra
+//     handle for each; the Linux backend rewinds and enumerates the anchoring
+//     descriptor itself. Both count one per enumeration, so the bound is the
+//     same on every platform.
 //   - FileOpens: input-file opens (Read, Stat, ReadEntry).
 //   - AncestorChecks: per-path-component resolutions from the repository root
 //     (an Lstat or openat of one ancestor component by name).

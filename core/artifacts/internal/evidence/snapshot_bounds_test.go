@@ -18,11 +18,12 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
-// listingHandlesPerDirectory is the extra listing handles a backend opens for
-// each directory it enumerates (store.OpenStats.EnumOpens). The Linux backend
-// enumerates the descriptor that anchors the directory and opens none; the
-// portable backends open one.
-var listingHandlesPerDirectory = func() int {
+// reservedListingDirOpens is the directory open that listing an existing
+// reserved output root adds. The Linux backend opens the root descriptor even
+// for an absent path, so a tree without one already pays that open there.
+// Enumerations, by contrast, count one per listed directory on every backend
+// (store.OpenStats.EnumOpens).
+var reservedListingDirOpens = func() int {
 	if runtime.GOOS == "linux" {
 		return 0
 	}
@@ -283,8 +284,8 @@ func TestPortableSnapshotNormativeArtifactsOpenOnce(t *testing.T) {
 			if d := got.DirOpens - base.DirOpens; d != added {
 				t.Errorf("%s/%s: %d directory opens for %d added directories (one anchor open each)", name, label, d, added)
 			}
-			if d := got.EnumOpens - base.EnumOpens; d != added*listingHandlesPerDirectory {
-				t.Errorf("%s/%s: %d listing opens for %d added directories (%d listing handle each on this backend)", name, label, d, added, listingHandlesPerDirectory)
+			if d := got.EnumOpens - base.EnumOpens; d != added {
+				t.Errorf("%s/%s: %d enumerations for %d added directories (one each)", name, label, d, added)
 			}
 		}
 		if b.AncestorChecks != a.AncestorChecks {
@@ -436,9 +437,9 @@ func farmBindingFixture(t *testing.T, n int, withBindings bool) string {
 }
 
 // TestPortableSnapshotFarmBindingsAnchorProjectionsOnce guards AC-08 for farm
-// bindings: each projection is read relative to the plans directory, which is
-// anchored and listed once per scan (and shared with the walk of a "." root), so
-// neither ancestor checks nor directory opens grow with the binding count.
+// bindings: each projection is read by the walk itself, relative to the plans
+// directory it already anchored and listed, so neither ancestor checks nor
+// directory opens grow with the binding count.
 func TestPortableSnapshotFarmBindingsAnchorProjectionsOnce(t *testing.T) {
 	const few, many = 1, 7
 	a, b := boundsScan(t, farmBindingFixture(t, few, true)), boundsScan(t, farmBindingFixture(t, many, true))
@@ -450,13 +451,12 @@ func TestPortableSnapshotFarmBindingsAnchorProjectionsOnce(t *testing.T) {
 	if b.DirOpens != a.DirOpens || b.EnumOpens != a.EnumOpens {
 		t.Errorf("directory work grew with the farm binding count: %+v -> %+v", a, b)
 	}
-	// Reading bindings adds exactly two directory opens over the same tree without
-	// them: the reserved output root's listing and the farm-bindings directory's
-	// anchor. The plans directory is not anchored again for the projections.
-	// On the Linux backend the reserved root is listed through its own anchoring
-	// descriptor, so only the farm-bindings anchor is added.
-	if d := b.DirOpens - plain.DirOpens; d != 1+listingHandlesPerDirectory {
-		t.Errorf("farm bindings added %d directory opens over the same tree without them, want %d", d, 1+listingHandlesPerDirectory)
+	// Reading bindings adds the farm-bindings directory's anchor and, where the
+	// backend does not already pay it for an absent root, the reserved output
+	// root's listing open. The plans directory is not anchored again for the
+	// projections.
+	if d := b.DirOpens - plain.DirOpens; d != 1+reservedListingDirOpens {
+		t.Errorf("farm bindings added %d directory opens over the same tree without them, want %d", d, 1+reservedListingDirOpens)
 	}
 	// Two file opens per binding: the binding itself and its projection.
 	if grew := b.FileOpens - a.FileOpens; grew != 2*(many-few) {
@@ -488,8 +488,8 @@ func TestPortableSnapshotScopedRootsShareAnchoredPrefixes(t *testing.T) {
 		if d := step[1].DirOpens - step[0].DirOpens; d != 1 {
 			t.Errorf("%s sibling root added %d directory opens, want 1 (its own directory)", label, d)
 		}
-		if d := step[1].EnumOpens - step[0].EnumOpens; d != listingHandlesPerDirectory {
-			t.Errorf("%s sibling root added %d listing opens, want %d (its own directory)", label, d, listingHandlesPerDirectory)
+		if d := step[1].EnumOpens - step[0].EnumOpens; d != 1 {
+			t.Errorf("%s sibling root added %d enumerations, want 1 (its own directory)", label, d)
 		}
 		if step[1].AncestorChecks != step[0].AncestorChecks {
 			t.Errorf("%s sibling root changed ancestor checks: %d -> %d", label, step[0].AncestorChecks, step[1].AncestorChecks)
@@ -499,7 +499,7 @@ func TestPortableSnapshotScopedRootsShareAnchoredPrefixes(t *testing.T) {
 	if d := deep.DirOpens - one.DirOpens; d != 3 {
 		t.Errorf("root under a new branch added %d directory opens, want 3 (e, f, g)", d)
 	}
-	if d := deep.EnumOpens - one.EnumOpens; d != 3*listingHandlesPerDirectory {
-		t.Errorf("root under a new branch added %d listing opens, want %d (e, f, g)", d, 3*listingHandlesPerDirectory)
+	if d := deep.EnumOpens - one.EnumOpens; d != 3 {
+		t.Errorf("root under a new branch added %d enumerations, want 3 (e, f, g)", d)
 	}
 }

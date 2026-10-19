@@ -256,16 +256,7 @@ func completionGitText(root string, probe completionGitProbe) (string, error) {
 	// Fixed read-only probes disable lazy fetch, transport, fsmonitor and
 	// optional writes. Preserve Git safe.directory policy and remove root selectors.
 	cmd := exec.CommandContext(ctx, executable, args...)
-	blocked := map[string]bool{}
-	for _, name := range strings.Fields("GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_OBJECT_DIRECTORY GIT_DIR GIT_WORK_TREE GIT_IMPLICIT_WORK_TREE GIT_GRAFT_FILE GIT_INDEX_FILE GIT_NO_REPLACE_OBJECTS GIT_REPLACE_REF_BASE GIT_PREFIX GIT_SHALLOW_FILE GIT_COMMON_DIR GIT_CEILING_DIRECTORIES GIT_DISCOVERY_ACROSS_FILESYSTEM") {
-		blocked[name] = true
-	}
-	for _, entry := range os.Environ() {
-		name, _, _ := strings.Cut(entry, "=")
-		if !blocked[strings.ToUpper(name)] {
-			cmd.Env = append(cmd.Env, entry)
-		}
-	}
+	cmd.Env = completionGitEnv(os.Environ())
 	var out, stderr completionOutput
 	cmd.Stdout, cmd.Stderr = &out, &stderr
 	if err := cmd.Run(); err != nil {
@@ -279,6 +270,40 @@ func completionGitText(root string, probe completionGitProbe) (string, error) {
 		return value, nil
 	}
 	return strings.TrimSpace(value), nil
+}
+
+// completionGitEnv removes repository selectors and environment-injected Git
+// configuration from a probe's environment. Injected configuration (-c through
+// GIT_CONFIG_PARAMETERS, or GIT_CONFIG_COUNT with its KEY_n/VALUE_n pairs) could
+// otherwise re-enable what the fixed argv disables. The one exception is the
+// bridge's resolved ignore setting: a count of one whose pair is
+// core.excludesFile with an absolute value. Membership must honor it, so it is
+// rebuilt from those three values alone and nothing else injected rides along. GIT_CONFIG_GLOBAL, _SYSTEM and
+// _NOSYSTEM select configuration files, so they carry safe.directory policy and
+// pass through.
+func completionGitEnv(environ []string) []string {
+	blocked := map[string]bool{}
+	for _, name := range strings.Fields("GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_OBJECT_DIRECTORY GIT_DIR GIT_WORK_TREE GIT_IMPLICIT_WORK_TREE GIT_GRAFT_FILE GIT_INDEX_FILE GIT_NO_REPLACE_OBJECTS GIT_REPLACE_REF_BASE GIT_PREFIX GIT_SHALLOW_FILE GIT_COMMON_DIR GIT_CEILING_DIRECTORIES GIT_DISCOVERY_ACROSS_FILESYSTEM GIT_CONFIG GIT_CONFIG_PARAMETERS") {
+		blocked[name] = true
+	}
+	injected := map[string]string{}
+	var env []string
+	for _, entry := range environ {
+		name, value, _ := strings.Cut(entry, "=")
+		upper := strings.ToUpper(name)
+		if upper == "GIT_CONFIG_COUNT" || strings.HasPrefix(upper, "GIT_CONFIG_KEY_") || strings.HasPrefix(upper, "GIT_CONFIG_VALUE_") {
+			injected[upper] = value
+			continue
+		}
+		if !blocked[upper] {
+			env = append(env, entry)
+		}
+	}
+	ignore := injected["GIT_CONFIG_VALUE_0"]
+	if injected["GIT_CONFIG_COUNT"] == "1" && strings.EqualFold(injected["GIT_CONFIG_KEY_0"], "core.excludesFile") && filepath.IsAbs(ignore) {
+		env = append(env, "GIT_CONFIG_COUNT=1", "GIT_CONFIG_KEY_0=core.excludesFile", "GIT_CONFIG_VALUE_0="+ignore)
+	}
+	return env
 }
 
 func completionDirectory(path, identity string) error {
