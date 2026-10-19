@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.20.3] - 2026-10-19
+
+### Fixed
+
+- Evidence snapshots open each bound farm projection once, from the walk's own read, and no longer list directories ahead of the walk when farm bindings exist. A stale binding no longer opens its projection twice (#962).
+- A snapshot re-checks a cached directory anchor against its parent's current entry each time it reuses it, and caps the anchor cache at 512 handles so a very wide root policy fails with `MAX_INPUTS` instead of exhausting file descriptors (#962).
+- On macOS the store opens files and directories non-blocking, so a FIFO planted in place of a listed file is refused instead of hanging the scan (#962).
+- Git membership probes drop environment-injected Git configuration (`GIT_CONFIG_PARAMETERS`, `GIT_CONFIG` and `GIT_CONFIG_KEY_n`/`VALUE_n` pairs) except the bridge's resolved `core.excludesFile` (#962).
+- A root below the top level of an enclosing Git work tree, such as a monorepo package, now uses that work tree's membership scoped to the root instead of reading every file from disk. Ignored files there no longer count as inputs, so existing receipts for such roots go stale once. A root the enclosing work tree ignores fails closed (#962).
+
 ## [0.20.2] - 2026-10-18
 
 ### Fixed

@@ -271,6 +271,7 @@ func (d *Dir) Close() error { return d.fd.Close() }
 // The anchoring descriptor is rewound first, so a repeated call lists the same
 // entries again instead of continuing from the previous end of directory.
 func (d *Dir) Entries() ([]os.DirEntry, error) {
+	d.f.Stats.enumOpen()
 	if _, e := d.fd.Seek(0, io.SeekStart); e != nil {
 		return nil, e
 	}
@@ -311,6 +312,31 @@ func (d *Dir) ReadEntry(entry os.DirEntry, limit int64) ([]byte, os.FileInfo, er
 		d.f.readHook(d.rel+"/"+entry.Name(), true)
 	}
 	return d.f.readAt(d.fd, entry.Name(), limit)
+}
+
+// Current re-checks, without following, that name in d still resolves to the
+// very directory sub anchors. A scan that reuses a cached anchor calls it at each
+// reuse, so the descriptor never outlives a swap of the name it was opened under.
+func (d *Dir) Current(name string, sub *Dir) error {
+	if e := entryName(name); e != nil {
+		return e
+	}
+	d.f.Stats.entryCheck()
+	var named syscall.Stat_t
+	fd, e := syscall.Openat(int(d.fd.Fd()), name, oPath|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
+	if e == nil {
+		e = syscall.Fstat(fd, &named)
+		syscall.Close(fd)
+	}
+	held, e2 := sub.fd.Stat()
+	if e != nil || e2 != nil || named.Mode&syscall.S_IFMT != syscall.S_IFDIR {
+		return fault.New("CONCURRENT_CHANGE", "directory changed after it was anchored")
+	}
+	st, ok := held.Sys().(*syscall.Stat_t)
+	if !ok || st.Dev != named.Dev || st.Ino != named.Ino {
+		return fault.New("CONCURRENT_CHANGE", "directory changed after it was anchored")
+	}
+	return nil
 }
 
 // Has reports whether name exists in the directory under any spelling the
