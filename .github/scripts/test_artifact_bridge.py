@@ -344,12 +344,14 @@ class HostArchitectureTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=physical_test_directory(self.tmp.name)/"repo";self.root.mkdir()
 
-    @unittest.skipUnless(platform.system()=="Windows","Windows host architecture probe")
     def test_windows_read_works_without_wmi_or_processor_environment(self):
-        # A read-only sandbox can block WMI and strip PROCESSOR_*; platform.machine()
-        # then answers "". The bridge must still select the native binary.
+        # A read-only Windows sandbox can block WMI and strip PROCESSOR_*, and
+        # platform.machine() then answers "". The bridge must still select the
+        # native binary. Elsewhere platform.machine() reads uname, which no
+        # environment reaches, so the same stripped read must work unchanged.
         stripped={k:v for k,v in os.environ.items() if not k.upper().startswith("PROCESSOR_")}
-        with mock.patch.dict(os.environ,stripped,clear=True), mock.patch("platform.machine",return_value=""):
+        blind=mock.patch("platform.machine",return_value="") if platform.system()=="Windows" else mock.patch.dict(os.environ,{})
+        with mock.patch.dict(os.environ,stripped,clear=True), blind:
             caps=ArtifactClient(self.root,INSTALLATION).call("capabilities")
         self.assertEqual(caps["public_registrations_added"],0)
 
