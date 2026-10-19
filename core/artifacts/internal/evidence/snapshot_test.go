@@ -149,9 +149,7 @@ func TestSnapshotGitlinkPointerOnly(t *testing.T) {
 	if _, ok := entries["sub/lib.txt"]; ok {
 		t.Fatal("submodule contents were descended into")
 	}
-	if _, ok := entries["sub"]; !ok {
-		t.Fatal("submodule pointer missing from manifest")
-	}
+	assertGitlink(t, entries, "sub", completionGit(t, sub, "rev-parse", "HEAD"))
 	// Edits inside the submodule worktree must not change identity.
 	completionWrite(t, sub, "lib.txt", []byte("edited\n"))
 	completionWrite(t, sub, "extra.txt", []byte("extra\n"))
@@ -165,6 +163,37 @@ func TestSnapshotGitlinkPointerOnly(t *testing.T) {
 	snapshotCommit(t, sub, "lib two")
 	if got, _ := snapshotID(t, root); got == base {
 		t.Fatal("moving the submodule HEAD did not change identity")
+	}
+}
+
+// A tracked submodule that is not checked out has no .git of its own, so its
+// identity is the index pointer.
+func TestSnapshotGitlinkNotCheckedOutUsesIndexPointer(t *testing.T) {
+	root := snapshotGitFixture(t)
+	upstream := testutil.Root(t)
+	completionGit(t, upstream, "init", "-q")
+	completionWrite(t, upstream, "lib.txt", []byte("lib\n"))
+	completionGit(t, upstream, "add", ".")
+	snapshotCommit(t, upstream, "lib one")
+	completionGit(t, root, "-c", "protocol.file.allow=always", "submodule", "add", "-q", upstream, "sub")
+	snapshotCommit(t, root, "fixture")
+	pointer := strings.Fields(completionGit(t, root, "ls-files", "-s", "--", "sub"))[1]
+	completionGit(t, root, "submodule", "deinit", "-q", "-f", "--", "sub")
+	if _, err := os.Lstat(filepath.Join(root, "sub", ".git")); !os.IsNotExist(err) {
+		t.Fatalf("fixture: deinit left sub/.git (%v)", err)
+	}
+	_, entries := snapshotID(t, root)
+	assertGitlink(t, entries, "sub", pointer)
+}
+
+func assertGitlink(t *testing.T, entries map[string]any, path, commit string) {
+	t.Helper()
+	entry, ok := entries[path].(map[string]any)
+	if !ok {
+		t.Fatalf("%s: gitlink entry missing from manifest: %#v", path, entries[path])
+	}
+	if entry["kind"] != "gitlink" || entry["commit"] != commit || len(entry) != 2 {
+		t.Fatalf("%s: entry %#v, want kind gitlink and commit %s", path, entry, commit)
 	}
 }
 

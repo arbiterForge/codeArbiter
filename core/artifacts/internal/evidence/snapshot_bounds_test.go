@@ -192,8 +192,9 @@ func TestPortableSnapshotOpensBounded(t *testing.T) {
 		if d := got.EnumOpens - base.EnumOpens; d > extraDirs {
 			t.Errorf("%s: %d enumeration opens for %d added directories (one listing open each)", name, d, extraDirs)
 		}
-		if d := got.FileOpens - base.FileOpens; d > files {
-			t.Errorf("%s: %d file opens for %d input files (at most once each)", name, d, files)
+		// Exactly once each: fewer opens would mean the scan skipped an input.
+		if d := got.FileOpens - base.FileOpens; d != files {
+			t.Errorf("%s: %d file opens for %d input files (exactly once each)", name, d, files)
 		}
 		if d := got.AncestorChecks - base.AncestorChecks; d != 0 {
 			t.Errorf("%s: %d per-file ancestor checks; the count must not depend on file depth", name, d)
