@@ -420,6 +420,9 @@ jobs:
               - 'plugins/ca/includes/artifacts.md'
               - 'plugins/ca-codex/includes/artifacts.md'
               - 'plugins/ca-pi/includes/artifacts.md'
+              - 'plugins/ca/includes/artifacts-attestation.md'
+              - 'plugins/ca-codex/includes/artifacts-attestation.md'
+              - 'plugins/ca-pi/includes/artifacts-attestation.md'
               - 'docs/artifacts/**'
               # A historical proof correction still produces an exact-head
               # package cohort for normal automatic-release eligibility.

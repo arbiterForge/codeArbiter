@@ -107,13 +107,6 @@ def _prompt_submit_entries(config: dict) -> list[dict]:
             if "prompt-submit.py" in hook["command"]]
 
 
-def _head_json(rel: str) -> dict:
-    result = subprocess.run(
-        ["git", "show", f"HEAD:{rel}"], cwd=REPO, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE, check=True)
-    return json.loads(result.stdout.decode("utf-8"))
-
-
 def _load_json(rel: str) -> dict:
     return json.loads((REPO / rel).read_text(encoding="utf-8"))
 
@@ -153,6 +146,8 @@ SHIP_SET_STATEMENTS = (
     "unmerged",
 )
 OLD_GITIGNORE_SENTENCE = re.compile(r"does not define (this|the) policy", re.IGNORECASE)
+# The positive claim that replaced it; a rewording must keep the meaning.
+INCLUDE_GITIGNORE_STATEMENT = "In a git work tree `.gitignore` already keeps untracked ignored files out of it"
 
 
 def _normalized(rel: str) -> str:
@@ -168,6 +163,12 @@ REQUIRED_ARTIFACT_FILTER_PATHS = (
     "plugins/ca/hooks/hooks.json",
     "plugins/ca-codex/hooks/hooks.json",
     ".github/scripts/test_ship_set_inputs.py",
+    # The ship-set documents the suite pins (AC-11).
+    "docs/artifacts/**",
+    "core/surface/**",
+    "plugins/ca/includes/artifacts-attestation.md",
+    "plugins/ca-codex/includes/artifacts-attestation.md",
+    "plugins/ca-pi/includes/artifacts-attestation.md",
 )
 
 
@@ -207,6 +208,8 @@ class ShipSetInputs(unittest.TestCase):
     def test_opt_in_artifact_attestation_describes_ship_set(self):
         for rel in ARTIFACT_INCLUDES:
             self._assert_describes_ship_set(rel)
+            self.assertIn(INCLUDE_GITIGNORE_STATEMENT, _normalized(rel),
+                          f"{rel} no longer says .gitignore keeps ignored files out")
 
     def _assert_prompt_submit_timeout(self, rel):
         entries = _prompt_submit_entries(_load_json(rel))
@@ -241,6 +244,7 @@ class ShipSetInputs(unittest.TestCase):
 
     def test_gitlink_pointer_only(self):
         run_go_test("TestSnapshotGitlinkPointerOnly", "./internal/evidence/")
+        run_go_test("TestSnapshotGitlinkNotCheckedOutUsesIndexPointer", "./internal/evidence/")
 
     def test_executable_from_index_mode(self):
         run_go_test("TestSnapshotExecutableFromIndexMode", "./internal/evidence/")
