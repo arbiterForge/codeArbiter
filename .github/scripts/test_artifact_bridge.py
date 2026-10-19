@@ -89,6 +89,72 @@ class EngineTimeoutTests(unittest.TestCase):
                 client.call("identity", {"artifact_id": "SPEC-X"})
         self.assertEqual(seen, [300], "the configured bound must be the one the engine child is waited on")
 
+
+class PlatformSelectionTests(unittest.TestCase):
+    def kernel(self, native, emulated=0, success=True):
+        kernel = mock.Mock()
+        kernel.GetCurrentProcess.return_value = -1
+
+        def query(handle, process_machine, native_machine):
+            self.assertEqual(handle, -1)
+            process_machine._obj.value = emulated
+            native_machine._obj.value = native
+            return success
+
+        kernel.IsWow64Process2.side_effect = query
+        return kernel
+
+    def test_windows_empty_machine_selects_native_not_emulated_architecture(self):
+        for native, emulated, expected in ((0x8664, 0x014C, "amd64"), (0xAA64, 0x8664, "arm64")):
+            with self.subTest(native=native), \
+                    mock.patch("_artifactlib.platform.system", return_value="Windows"), \
+                    mock.patch("_artifactlib.platform.machine", return_value=""), \
+                    mock.patch("ctypes.WinDLL", return_value=self.kernel(native, emulated), create=True):
+                self.assertEqual(ArtifactClient._binary_name(), f"ca-artifact-windows-{expected}.exe")
+
+    def test_windows_native_query_failure_or_unsupported_cpu_refuses(self):
+        for native, success in ((0x8664, False), (0, True), (0x014C, True), (0xFFFF, True)):
+            with self.subTest(native=native, success=success), \
+                    mock.patch("_artifactlib.platform.system", return_value="Windows"), \
+                    mock.patch("_artifactlib.platform.machine", return_value=""), \
+                    mock.patch.dict(os.environ, {"PROCESSOR_ARCHITECTURE": "AMD64"}), \
+                    mock.patch("ctypes.WinDLL", return_value=self.kernel(native, success=success), create=True):
+                with self.assertRaises(ArtifactError) as raised:
+                    ArtifactClient._binary_name()
+                self.assertEqual(raised.exception.code, "UNSUPPORTED_PLATFORM")
+
+    def test_windows_native_api_unavailable_refuses(self):
+        for failure in (OSError("loader unavailable"), AttributeError("API unavailable")):
+            with self.subTest(failure=type(failure).__name__), \
+                    mock.patch("_artifactlib.platform.system", return_value="Windows"), \
+                    mock.patch("_artifactlib.platform.machine", return_value=""), \
+                    mock.patch("ctypes.WinDLL", side_effect=failure, create=True):
+                with self.assertRaises(ArtifactError) as raised:
+                    ArtifactClient._binary_name()
+                self.assertEqual(raised.exception.code, "UNSUPPORTED_PLATFORM")
+
+    def test_existing_platform_aliases_do_not_probe_windows(self):
+        for system, prefix, suffix in (("Linux", "linux", ""), ("Darwin", "darwin", ""), ("Windows", "windows", ".exe")):
+            for machine, arch in (("x86_64", "amd64"), ("AMD64", "amd64"), ("aarch64", "arm64"), ("ARM64", "arm64")):
+                with self.subTest(system=system, machine=machine), \
+                        mock.patch("_artifactlib.platform.system", return_value=system), \
+                        mock.patch("_artifactlib.platform.machine", return_value=machine), \
+                        mock.patch("ctypes.WinDLL", create=True) as loader:
+                    self.assertEqual(ArtifactClient._binary_name(), f"ca-artifact-{prefix}-{arch}{suffix}")
+                    loader.assert_not_called()
+
+    def test_unknown_platform_or_nonempty_architecture_never_falls_back(self):
+        for system, machine in (("Linux", ""), ("Darwin", ""), ("Other", "AMD64"), ("Windows", "mips")):
+            with self.subTest(system=system, machine=machine), \
+                    mock.patch("_artifactlib.platform.system", return_value=system), \
+                    mock.patch("_artifactlib.platform.machine", return_value=machine), \
+                    mock.patch("ctypes.WinDLL", create=True) as loader:
+                with self.assertRaises(ArtifactError) as raised:
+                    ArtifactClient._binary_name()
+                self.assertEqual(raised.exception.code, "UNSUPPORTED_PLATFORM")
+                loader.assert_not_called()
+
+
 class BridgeTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
@@ -122,6 +188,42 @@ class BridgeTests(unittest.TestCase):
         result=self.client.call("validate",{"artifact_id":"SPEC-BRIDGE","gate":"ready"},permit_invalid=True)
         self.assertFalse(result["valid"])
         self.assertEqual(checked_spec_index(self.root,INSTALLATION),[])
+
+    @unittest.skipUnless(platform.system() == "Windows", "requires the real Windows architecture API")
+    def test_windows_empty_machine_uses_native_architecture(self):
+        self.create()
+        request = {"artifact_id": "SPEC-BRIDGE"}
+        expected = self.client.call("identity", request)
+        before = self.repository_bytes()
+        # Reproduce the missing Python metadata from #986. The Windows API,
+        # pinned executable, package checks and native read remain real.
+        with mock.patch("_artifactlib.platform.machine", return_value=""):
+            actual = self.client.call("identity", request)
+        self.assertEqual(actual, expected)
+        self.assertEqual(self.repository_bytes(), before)
+
+    @unittest.skipUnless(platform.system() == "Windows", "requires the real Windows architecture API")
+    def test_windows_empty_machine_preserves_payload_integrity_checks(self):
+        name = self.client._binary_name()
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        cell = next(key for key, entry in manifest["binaries"].items() if entry["file"] == name)
+
+        def corrupt(destination, release):
+            binary = destination / name
+            binary.write_bytes(binary.read_bytes() + b"changed")
+
+        def unqualified(destination, release):
+            release["binaries"][cell]["native_tested"] = False
+
+        def absent(destination, release):
+            release["binaries"].pop(cell)
+
+        for damage, code in ((corrupt, "PACKAGE_INTEGRITY"), (unqualified, "UNVERIFIED_PLATFORM"), (absent, "CAPABILITY_MISSING")):
+            destination = self.damaged_installation(damage.__name__, damage)
+            with self.subTest(damage=damage.__name__), mock.patch("_artifactlib.platform.machine", return_value=""):
+                with self.assertRaises(ArtifactError) as raised:
+                    ArtifactClient(self.root, destination).call("capabilities")
+                self.assertEqual(raised.exception.code, code)
 
     def test_tampered_view_is_not_readable(self):
         self.create();p=self.root/".codearbiter/specs/bridge.html"
