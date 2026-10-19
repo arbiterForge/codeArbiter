@@ -1332,16 +1332,23 @@ class PackageTests(unittest.TestCase):
                             "completionGitText": "5d233f0d699008c3973452171ece24915948aa37db804b0f434fe8e401c6eabe",
                             "completionGitEnv": "bb214ce0faba321f4459695985ea58219bd530cf6e8c3a0714295c55dd35ac4c",
                         }
+                        found := map[string]int{}
                         for _, declaration := range parsed.Decls {
                             fn, ok := declaration.(*ast.FuncDecl)
                             if !ok { continue }
                             expected, pinned := reviewedProbe[fn.Name.Name]
                             if !pinned { continue }
+                            found[fn.Name.Name]++
                             var normalized bytes.Buffer
                             if err := format.Node(&normalized, positions, fn); err != nil { return err }
                             digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
                             if digest != expected { findings = append(findings, path+" has unreviewed Git probe "+fn.Name.Name+" "+digest)
                             } else if fn.Name.Name == "completionGitText" { reviewedGit = fn }
+                        }
+                        // Each pinned name must be exactly one reviewed function; a
+                        // function-valued variable of the same name is never pinned.
+                        for name := range reviewedProbe {
+                            if found[name] != 1 { reviewedGit = nil; findings = append(findings, path+" lacks the reviewed Git probe function "+name) }
                         }
                     }
                     reviewedResolvers := map[*ast.CallExpr]bool{}

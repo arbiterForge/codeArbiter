@@ -310,18 +310,26 @@ func TestSnapshotNestedRootFailsClosed(t *testing.T) {
 	completionWrite(t, top, ".gitignore", []byte("ignored/\n"))
 	completionWrite(t, top, "ignored/pkg/a.txt", []byte("a\n"))
 	completionWrite(t, top, "pkg/a.txt", []byte("a\n"))
-	for name, root := range map[string]string{"ignored root": filepath.Join(top, "ignored", "pkg"), "no Git executable": filepath.Join(top, "pkg")} {
-		if name == "no Git executable" {
-			t.Setenv("CODEARBITER_GIT_EXECUTABLE", "")
-		}
+	snapshotErr := func(t *testing.T, root string) error {
+		t.Helper()
 		f, err := store.Open(root)
 		if err != nil {
 			t.Fatal(err)
 		}
+		defer f.Close()
 		_, err = Snapshot(f, nil)
-		f.Close()
-		if fault.Code(err) != "INPUT_MEMBERSHIP_UNAVAILABLE" {
-			t.Errorf("%s: got %v, want INPUT_MEMBERSHIP_UNAVAILABLE", name, err)
-		}
+		return err
 	}
+	t.Run("ignored root", func(t *testing.T) {
+		// The Git probe is available here, so only the ignore check can refuse.
+		if err := snapshotErr(t, filepath.Join(top, "ignored", "pkg")); fault.Code(err) != "INPUT_MEMBERSHIP_UNAVAILABLE" || !strings.Contains(err.Error(), "ignored") {
+			t.Errorf("got %v, want INPUT_MEMBERSHIP_UNAVAILABLE naming the ignored root", err)
+		}
+	})
+	t.Run("no Git executable", func(t *testing.T) {
+		t.Setenv("CODEARBITER_GIT_EXECUTABLE", "")
+		if err := snapshotErr(t, filepath.Join(top, "pkg")); fault.Code(err) != "INPUT_MEMBERSHIP_UNAVAILABLE" {
+			t.Errorf("got %v, want INPUT_MEMBERSHIP_UNAVAILABLE", err)
+		}
+	})
 }
