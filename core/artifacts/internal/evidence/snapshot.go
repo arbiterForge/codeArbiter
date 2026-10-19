@@ -735,7 +735,7 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 		}
 	}
 	for _, p := range roots {
-		if !validate.Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") || validate.IsRuntimeMarkerPath(p) {
+		if !validate.Path(p, true) || validate.IsGitPath(p) || validate.IsRuntimeMarkerPath(p) {
 			return nil, fault.New("INVALID_INPUT_POLICY", "unsafe input root")
 		}
 	}

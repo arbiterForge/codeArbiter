@@ -22,6 +22,17 @@ func IsRuntimeMarkerPath(p string) bool {
 	return p == RuntimeMarkers || strings.HasPrefix(p, RuntimeMarkers+"/")
 }
 
+// IsGitPath reports whether p is the repository's .git directory or beneath
+// it. The snapshot never hashes .git, and on case-insensitive filesystems
+// (Windows, default macOS) ".GIT/config" names the same directory, so the
+// match ignores case on every platform: refusing a genuine Linux ".GIT"
+// directory fails closed, while missing an alias would claim coverage the
+// snapshot does not have.
+func IsGitPath(p string) bool {
+	const git = ".git"
+	return len(p) >= len(git) && strings.EqualFold(p[:len(git)], git) && (len(p) == len(git) || p[len(git)] == '/')
+}
+
 // InputWithin uses literal repository-relative paths, never basename or glob matching.
 func InputWithin(root, target string) bool {
 	return root == "." || target == root || strings.HasPrefix(target, root+"/")
@@ -49,7 +60,7 @@ func InputPolicyErrors(norm map[string]any) []fault.Error {
 // closure. The latter still requires project-specific review of roots/excludes.
 func InputIncludes(norm map[string]any, target string) bool {
 	// The snapshot never hashes .git, so no policy can cover a path there (#908).
-	if IsRuntimeMarkerPath(target) || target == ".git" || strings.HasPrefix(target, ".git/") {
+	if IsRuntimeMarkerPath(target) || IsGitPath(target) {
 		return false
 	}
 	policy := model.M(norm["verification_inputs"])

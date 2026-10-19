@@ -107,7 +107,7 @@ func TestReadyRefusesRuntimeMarkerInputs(t *testing.T) {
 // declared verification inputs, whatever the roots say (#908).
 func TestReadyRefusesGitDirectoryTaskPaths(t *testing.T) {
 	s := testutil.Seal(t, testutil.Spec())
-	for _, target := range []string{".git", ".git/hooks/pre-commit"} {
+	for _, target := range []string{".git", ".git/hooks/pre-commit", ".GIT/config", ".Git"} {
 		for _, policy := range []map[string]any{nil, {"roots": model.List("."), "exclude_directories": model.List()}} {
 			p := testutil.Plan(s)
 			n := model.M(p["normative"])
