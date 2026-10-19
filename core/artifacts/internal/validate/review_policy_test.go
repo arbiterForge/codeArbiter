@@ -102,3 +102,36 @@ func TestReadyRefusesRuntimeMarkerInputs(t *testing.T) {
 		t.Error("a look-alike sibling of the runtime marker directory lost coverage")
 	}
 }
+
+// The snapshot never hashes .git, so a task path there is never covered by
+// declared verification inputs, whatever the roots say (#908).
+func TestReadyRefusesGitDirectoryTaskPaths(t *testing.T) {
+	s := testutil.Seal(t, testutil.Spec())
+	for _, target := range []string{".git", ".git/hooks/pre-commit", ".GIT/config", ".Git"} {
+		for _, policy := range []map[string]any{nil, {"roots": model.List("."), "exclude_directories": model.List()}} {
+			p := testutil.Plan(s)
+			n := model.M(p["normative"])
+			if policy == nil {
+				delete(n, "verification_inputs")
+			} else {
+				n["verification_inputs"] = policy
+			}
+			task := model.M(model.A(n["tasks"])[0])
+			task["paths"] = append(model.A(task["paths"]), map[string]any{"action": "modify", "path": target})
+			found := false
+			for _, e := range validate.Ready(testutil.Seal(t, p), s) {
+				if e.Code == "UNCOVERED_INPUT" && strings.HasSuffix(e.Message, ": "+target) {
+					found = true
+				}
+			}
+			if !found {
+				t.Errorf("task path %q under .git was certified as covered (policy %v)", target, policy)
+			}
+		}
+	}
+	for _, sibling := range []string{".github/workflows/ci.yml", ".gitignore", ".git-x/note.md"} {
+		if !validate.InputIncludes(map[string]any{}, sibling) {
+			t.Errorf("look-alike sibling %q of .git lost coverage", sibling)
+		}
+	}
+}

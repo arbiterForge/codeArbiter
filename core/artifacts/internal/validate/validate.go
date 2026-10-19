@@ -202,7 +202,7 @@ func Structural(d *model.Document) []fault.Error {
 	if d.Kind() == "plan" {
 		if policy := model.M(n["verification_inputs"]); policy != nil {
 			for _, p := range model.Strings(policy["roots"]) {
-				if !Path(p, true) || p == ".git" || strings.HasPrefix(p, ".git/") || IsRuntimeMarkerPath(p) {
+				if !Path(p, true) || IsGitPath(p) || IsRuntimeMarkerPath(p) {
 					add(&es, "INVALID_INPUT_POLICY", "", "verification_inputs.roots", "unsafe input root")
 				}
 			}
@@ -275,7 +275,7 @@ func planStructure(d *model.Document) []fault.Error {
 			}
 		}
 		for _, shared := range model.Strings(t["shared_inputs"]) {
-			if !Path(shared, false) || shared == ".git" || strings.HasPrefix(shared, ".git/") ||
+			if !Path(shared, false) || IsGitPath(shared) ||
 				IsRuntimeMarkerPath(shared) || shared == ".codearbiter/.artifacts" || strings.HasPrefix(shared, ".codearbiter/.artifacts/") ||
 				shared == ".codearbiter/specs" || strings.HasPrefix(shared, ".codearbiter/specs/") ||
 				shared == ".codearbiter/plans" || strings.HasPrefix(shared, ".codearbiter/plans/") {
