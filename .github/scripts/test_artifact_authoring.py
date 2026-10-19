@@ -18,6 +18,7 @@ import subprocess
 import shutil
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -47,6 +48,84 @@ def physical_test_directory(path: str | Path) -> Path:
     spellings, so fixtures resolve only the temporary directories they own.
     """
     return Path(os.path.realpath(Path(path).absolute())).resolve(strict=True)
+
+
+SHARING_VIOLATION = 32  # ERROR_SHARING_VIOLATION
+CLEANUP_RETRY_SECONDS = 10.0
+
+
+def remove_with_sharing_retry(remove, *, deadline: float = CLEANUP_RETRY_SECONDS,
+                              clock=time.monotonic, sleep=time.sleep) -> None:
+    """Run a fixture removal, retrying only a Windows sharing violation.
+
+    Windows can keep a just-exited native executable's image open for a short
+    time (#980), so deleting the fixture payload fails with error 32. Retry
+    that one error until the deadline, then raise it; every other error
+    propagates at once.
+    """
+    end = clock() + deadline
+    while True:
+        try:
+            remove()
+            return
+        except OSError as exc:
+            if getattr(exc, "winerror", None) != SHARING_VIOLATION or clock() >= end:
+                raise
+            sleep(0.25)
+
+
+class FixtureDirectory(tempfile.TemporaryDirectory):
+    """A test-owned temporary directory whose cleanup survives error 32."""
+
+    def cleanup(self) -> None:
+        remove_with_sharing_retry(super().cleanup)
+
+
+class SharingRetryTest(unittest.TestCase):
+    @staticmethod
+    def violation(code: int) -> OSError:
+        exc = PermissionError(13, "in use")
+        exc.winerror = code
+        return exc
+
+    def scripted(self, failures):
+        calls = []
+
+        def remove():
+            calls.append(len(calls))
+            if failures:
+                raise failures.pop(0)
+        return remove, calls
+
+    def test_sharing_violation_is_retried_until_removal_succeeds(self) -> None:
+        remove, calls = self.scripted([self.violation(32), self.violation(32)])
+        remove_with_sharing_retry(remove, clock=lambda: 0.0, sleep=lambda _: None)
+        self.assertEqual(len(calls), 3)
+
+    def test_exhausted_deadline_raises_the_sharing_violation(self) -> None:
+        now = [0.0]
+
+        def sleep(seconds: float) -> None:
+            now[0] += seconds
+        remove, calls = self.scripted([self.violation(32)] * 1000)
+        with self.assertRaises(OSError) as raised:
+            remove_with_sharing_retry(remove, deadline=1.0, clock=lambda: now[0], sleep=sleep)
+        self.assertEqual(raised.exception.winerror, 32)
+        self.assertEqual(len(calls), 5)
+
+    def test_other_errors_propagate_without_retry(self) -> None:
+        for error in (self.violation(5), FileNotFoundError(2, "gone"), RuntimeError("boom")):
+            remove, calls = self.scripted([error])
+            with self.assertRaises(type(error)):
+                remove_with_sharing_retry(remove, clock=lambda: 0.0, sleep=lambda _: None)
+            self.assertEqual(len(calls), 1, error)
+
+    def test_fixture_directory_still_removes_its_tree(self) -> None:
+        owner = FixtureDirectory(prefix="ca-artifact-sharing-retry-")
+        (Path(owner.name) / "payload").mkdir()
+        (Path(owner.name) / "payload" / "ca-artifact.exe").write_bytes(b"x")
+        owner.cleanup()
+        self.assertFalse(Path(owner.name).exists())
 
 
 class PhysicalTestDirectoryTest(unittest.TestCase):
@@ -884,7 +963,7 @@ def build_installation(
     owner: unittest.TestCase | None = None,
 ) -> tuple[tempfile.TemporaryDirectory | None, Path]:
     """Give producer tests actual installed host resources, not an admission bypass."""
-    temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-authoring-install-")
+    temporary = FixtureDirectory(prefix="ca-artifact-authoring-install-")
     if owner is not None:
         owner.addCleanup(temporary.cleanup)
     base = physical_test_directory(temporary.name)
