@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.21.2] - 2026-10-18
+
+### Fixed
+
+- On Windows, verification through an npm workspace intermittently failed with `UNSUPPORTED_EXECUTABLE: nested npm launch qualification failed`. The qualification probe ran npm with a minimal environment, so a fresh npm profile also made a registry update check, which could exceed the probe's 15-second limit or print a notice. The probe now disables npm's update notifier and stays offline.
+
 ## [0.21.1] - 2026-10-18
 
 ### Fixed
