@@ -251,3 +251,77 @@ func TestSnapshotHonorsOnlyTheBridgeIgnorePair(t *testing.T) {
 		t.Fatal("GIT_CONFIG_PARAMETERS reached the membership probe")
 	}
 }
+
+// A root below the top level of an enclosing work tree takes that work tree's
+// membership scoped to the root, so the enclosing .gitignore applies (#962).
+func TestSnapshotNestedRootUsesScopedGitMembership(t *testing.T) {
+	top := snapshotGitFixture(t)
+	completionWrite(t, top, ".gitignore", []byte("pkg/build/\nignored/\n"))
+	completionWrite(t, top, "outside.txt", []byte("outside\n"))
+	completionWrite(t, top, "pkg/tracked.txt", []byte("tracked\n"))
+	completionGit(t, top, "add", ".")
+	snapshotCommit(t, top, "nested")
+	completionWrite(t, top, "pkg/src/untracked.txt", []byte("untracked\n"))
+	completionWrite(t, top, "pkg/build/out.bin", []byte("one\n"))
+	root := filepath.Join(top, "pkg")
+	f, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	snap := func() (string, map[string]any) {
+		t.Helper()
+		s, err := Snapshot(f, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		manifest := s["manifest"].(map[string]any)
+		if manifest["membership"] != "git_ship_set" {
+			t.Fatalf("nested root membership %v, want git_ship_set", manifest["membership"])
+		}
+		return s["sha256"].(string), manifest["entries"].(map[string]any)
+	}
+	before, entries := snap()
+	for _, want := range []string{"tracked.txt", "src/untracked.txt"} {
+		if _, ok := entries[want]; !ok {
+			t.Errorf("ship-set member %s is missing: %v", want, entries)
+		}
+	}
+	for p := range entries {
+		if strings.HasPrefix(p, "build") || strings.Contains(p, "outside") {
+			t.Errorf("entry %s is ignored or outside the root", p)
+		}
+	}
+	completionWrite(t, top, "pkg/build/out.bin", []byte("two\n"))
+	completionWrite(t, top, "outside.txt", []byte("changed\n"))
+	if after, _ := snap(); after != before {
+		t.Fatal("an ignored or out-of-root change staled the nested root's identity")
+	}
+	completionWrite(t, top, "pkg/tracked.txt", []byte("edited\n"))
+	if after, _ := snap(); after == before {
+		t.Fatal("a tracked edit inside the nested root did not change its identity")
+	}
+}
+
+// A nested root the enclosing work tree ignores, or whose Git probe cannot run,
+// fails closed instead of falling back to the filesystem.
+func TestSnapshotNestedRootFailsClosed(t *testing.T) {
+	top := snapshotGitFixture(t)
+	completionWrite(t, top, ".gitignore", []byte("ignored/\n"))
+	completionWrite(t, top, "ignored/pkg/a.txt", []byte("a\n"))
+	completionWrite(t, top, "pkg/a.txt", []byte("a\n"))
+	for name, root := range map[string]string{"ignored root": filepath.Join(top, "ignored", "pkg"), "no Git executable": filepath.Join(top, "pkg")} {
+		if name == "no Git executable" {
+			t.Setenv("CODEARBITER_GIT_EXECUTABLE", "")
+		}
+		f, err := store.Open(root)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = Snapshot(f, nil)
+		f.Close()
+		if fault.Code(err) != "INPUT_MEMBERSHIP_UNAVAILABLE" {
+			t.Errorf("%s: got %v, want INPUT_MEMBERSHIP_UNAVAILABLE", name, err)
+		}
+	}
+}

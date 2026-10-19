@@ -366,19 +366,25 @@ type shipSet struct {
 var lstatDotGit = os.Lstat
 
 // shipSetMembers returns the git-defined ship set for a git work tree: index
-// entries present on disk plus untracked, non-ignored files. It returns nil
-// for roots that are not git work trees, which keep the filesystem walk. All
-// argv is fixed by completionGitText probes.
+// entries present on disk plus untracked, non-ignored files. A root below the
+// top level of an enclosing work tree (a monorepo package, say) uses that work
+// tree's membership scoped to the root: Git run from a subdirectory lists only
+// the paths beneath it, relative to it. It returns nil only for roots with no
+// work tree at all, which keep the filesystem walk. All argv is fixed by
+// completionGitText probes.
 func shipSetMembers(f *store.FS) (*shipSet, error) {
+	nested := false
 	if _, statErr := lstatDotGit(filepath.Join(f.Root, ".git")); statErr != nil {
-		if os.IsNotExist(statErr) {
-			return nil, nil
+		if !os.IsNotExist(statErr) {
+			// A .git that cannot be inspected is not proof there is no repository.
+			return nil, fault.New("WORKSPACE_DRIFT", "root .git cannot be inspected")
 		}
-		// A .git that cannot be inspected is not proof there is no repository.
-		return nil, fault.New("WORKSPACE_DRIFT", "root .git cannot be inspected")
+		enclosed, err := enclosingWorkTree(f.Root)
+		if err != nil || !enclosed {
+			return nil, err
+		}
+		nested = true
 	}
-	// A present but fake or empty .git makes git search upward and answer for an
-	// enclosing repository; the resolved top-level must be this root itself.
 	realRoot, err := filepath.EvalSymlinks(f.Root)
 	if err != nil {
 		return nil, fault.New("WORKSPACE_DRIFT", "input root cannot be resolved")
@@ -387,7 +393,22 @@ func shipSetMembers(f *store.FS) (*shipSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !completionSamePath(top, realRoot) {
+	if nested {
+		if !completionStrictlyWithin(top, realRoot) {
+			return nil, fault.New("WORKSPACE_DRIFT", "Git top-level does not contain the input root")
+		}
+		// An ignored root has no ship set at all, which would leave every
+		// file uncounted; that is not a membership the evidence can rest on.
+		ignored, err := completionGitText(f.Root, completionGitRootIgnored)
+		if err != nil {
+			return nil, err
+		}
+		if ignored != "" {
+			return nil, fault.New("WORKSPACE_DRIFT", "the input root is ignored by its enclosing Git work tree; stop ignoring it there or run git init in the root")
+		}
+	} else if !completionSamePath(top, realRoot) {
+		// A present but fake or empty .git makes git search upward and answer
+		// for an enclosing repository; the resolved top-level must be this root.
 		return nil, fault.New("WORKSPACE_DRIFT", "Git top-level is not the input root")
 	}
 	index, err := completionGitText(f.Root, completionGitIndex)
@@ -478,6 +499,35 @@ func shipSetMembers(f *store.FS) (*shipSet, error) {
 		add(p)
 	}
 	return set, nil
+}
+
+// enclosingWorkTree reports whether any ancestor of root holds a .git entry, so
+// root lies inside a work tree it does not itself top. An ancestor that cannot be
+// inspected fails closed rather than reading as no repository.
+func enclosingWorkTree(root string) (bool, error) {
+	real, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return false, fault.New("WORKSPACE_DRIFT", "input root cannot be resolved")
+	}
+	for dir := filepath.Dir(real); ; dir = filepath.Dir(dir) {
+		if _, err := lstatDotGit(filepath.Join(dir, ".git")); err == nil {
+			return true, nil
+		} else if !os.IsNotExist(err) {
+			return false, fault.New("WORKSPACE_DRIFT", "an enclosing .git cannot be inspected")
+		}
+		if filepath.Dir(dir) == dir {
+			return false, nil
+		}
+	}
+}
+
+// completionStrictlyWithin reports whether inner lies strictly below outer.
+func completionStrictlyWithin(outer, inner string) bool {
+	if runtime.GOOS == "windows" {
+		outer, inner = strings.ToLower(outer), strings.ToLower(inner)
+	}
+	rel, err := filepath.Rel(filepath.Clean(outer), filepath.Clean(inner))
+	return err == nil && rel != "." && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel)
 }
 
 // gitlinkCommit returns the commit identifying a submodule or embedded repo at

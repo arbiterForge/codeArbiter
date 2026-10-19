@@ -216,6 +216,7 @@ const (
 	completionGitUntracked
 	completionGitHead
 	completionGitSubmoduleStatus
+	completionGitRootIgnored
 )
 
 // completionGitText is the sole reviewed native process boundary. Probe values
@@ -248,6 +249,8 @@ func completionGitText(root string, probe completionGitProbe) (string, error) {
 		args = append(args, "rev-parse", "HEAD")
 	case completionGitSubmoduleStatus:
 		args = append(args, "status", "--porcelain", "--untracked-files=all")
+	case completionGitRootIgnored:
+		args = append(args, "check-ignore", "-q", "--", ".")
 	default:
 		return "", fault.New("WORKSPACE_DRIFT", "unknown fixed Git probe")
 	}
@@ -260,7 +263,14 @@ func completionGitText(root string, probe completionGitProbe) (string, error) {
 	var out, stderr completionOutput
 	cmd.Stdout, cmd.Stderr = &out, &stderr
 	if err := cmd.Run(); err != nil {
+		// check-ignore exits 1 when the path is not ignored; that is an answer.
+		if probe == completionGitRootIgnored && cmd.ProcessState != nil && cmd.ProcessState.ExitCode() == 1 {
+			return "", nil
+		}
 		return "", fault.New("WORKSPACE_DRIFT", "Git workspace identity or inventory is unavailable")
+	}
+	if probe == completionGitRootIgnored {
+		return "ignored", nil
 	}
 	if !utf8.Valid(out.Bytes()) {
 		return "", fault.New("WORKSPACE_DRIFT", "Git workspace paths are not UTF-8")
