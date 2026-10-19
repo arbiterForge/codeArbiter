@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.2.5] - 2026-10-19
+
+### Fixed
+
+- The H-05 (audit logs), H-11 (ADRs) and H-18 (`CONTEXT.md`) shell guards blocked any interpreter command that merely named a protected path, so a read-only `python -c` read, an issue body citing the path, or an `ArtifactClient` request whose record text named an audit log was refused as a write. Their interpreter legs now block only when the command shows write intent after the interpreter (a write, delete, copy, move or in-place edit call, a non-read `open` mode, PowerShell content cmdlets, or dynamic execution such as `exec`, `eval` or `subprocess`), or when the interpreter is handed a script or module argument. H-18 also lets a `sed` without `-i` or a `w` command read `CONTEXT.md` (#997, #911).
+
 ## [3.2.4] - 2026-10-19
 
 ### Fixed

@@ -516,6 +516,138 @@ CONTEXT_INTERP_RE = re.compile(
     _INTERP_EXECUTABLE + r"[\s\S]*" + CONTEXT_MD, re.I,
 )
 
+# #997/#911: the three legs above match an interpreter token followed ANYWHERE
+# by a protected name, so a read-only `python -c "print(open(...).read())"` or
+# an issue body that merely cites the path blocked like a write. They are now a
+# pre-filter: `_interp_protected_write` blocks only when the command shows
+# write intent after the interpreter, or hands the interpreter a script or
+# module argument (script argv stays conservative: its writes are invisible
+# here). Write intent is lexical and deliberately broad; dynamic execution
+# (`exec`, `eval`, `system`, `subprocess`) counts, because it hides the write.
+# The guard stays defense in depth behind the Write/Edit tool guards; a path
+# assembled at runtime (`'.codearbiter/' + 'CONTEXT.md'`) was never seen.
+_PS_WRITE_ALIASES = (r"sc|ac|ni|ri|mi|cpi|rni|ren|clc|del|erase|rd|rmdir|rm|mv|cp"
+                     r"|move|copy|tee")
+INTERP_WRITE_INTENT_RE = re.compile(
+    # Calls whose name carries a write/destroy verb: write_text, writeFileSync,
+    # WriteAllText, fwrite, appendFile, os.remove, unlink, shutil.move/copy,
+    # rmtree, Path.touch/chmod, os.truncate, rename/replace, File.Delete.
+    r"[\w$]*(?:write|append|unlink|remove|rename|replace|truncate|rmtree|rmdir"
+    r"|delete|move|copy|symlink|touch|chmod|chown|mkfifo|put_contents|fputs)"
+    r"[\w$]*\s*\("
+    r"|(?:\b|\.)(?:rm|cp|link)(?:Sync)?\s*\("
+    r"|\w*Writer\b|\w*WriteStream\b|\bFileStream\b|\bFileUtils\b"
+    r"|::\s*(?:Create\w*|Open(?:Write)?)\s*\("
+    # open() with a second positional argument that is not a literal read
+    # mode (a write mode, a flag, or a variable), or a non-read mode= keyword.
+    r"|\b\w*open(?:Sync)?\s*\(\s*[^,()]+(?:\([^()]*\))?[^,()]*,"
+    r"(?!\s*['\"](?:[rbtU]*|<)['\"]\s*[,)]|\s*[A-Za-z_]+\s*=)"
+    r"|\bmode\s*=\s*(?!['\"][rbtU]*['\"])"
+    r"|\b(?:Set-Content|Add-Content|Out-File|Clear-Content|Remove-Item|Move-Item"
+    r"|Copy-Item|Rename-Item|New-Item|Tee-Object|Invoke-Expression|Start-Process"
+    r"|Invoke-Command)\b"
+    r"|(?:^|[;&|({\n\"'`])\s*(?:" + _PS_WRITE_ALIASES + r")\s"
+    r"|\b(?:exec\w*|eval|system|popen|spawn\w*|check_call|check_output|getattr"
+    r"|setattr|__import__|compile)\s*\("
+    r"|\bsubprocess\b|\bmethodcaller\b|\bDeno\.(?:run|Command)\b|\.Invoke\w*\s*\("
+    # Reflection hides the called name: dunders (`os.__dict__['remove']`),
+    # vars()/globals(), and a computed member call (`fs['write' + x](...)`).
+    r"|__\w+__|\b(?:vars|globals|locals)\s*\(|\]\s*\("
+    # A write-mode literal passed or assigned anywhere: `o = open; o(p, 'w')`.
+    r"|(?<=[,(=\s])['\"][rbtU]*[wax+][rbtUwax+]*['\"](?=\s*[,);\]])"
+    r"|\b(?:perl|ruby)\b[^\n|;&]*(?<![\w-])-[a-zA-Z]*i",
+    re.I,
+)
+_INTERP_ARG_RE = re.compile(r"\s+([^\s|;&]+)")
+# Words that precede a command without ending a shell word list.
+_COMMAND_PREFIXES = frozenset({"env", "sudo", "call", "exec", "nohup", "time",
+                               "command", "xargs", "then", "do", "else", "&"})
+
+
+def _interp_operand(cmd, end):
+    """Classify what an interpreter token ending at `end` is handed:
+    'inline' (an inline-code switch or a heredoc), 'stdin' (`-`, code that
+    may arrive from a pipe), 'script' (a positional argument or `<` input
+    shaped like a path), 'word' (any other positional argument, such as a
+    `-m` module or a dotless script name) or 'bare' (nothing before the
+    command ends)."""
+    rest = cmd[end:]
+    suffix = re.match(r"[\w.-]*[\"'`]?", rest)
+    pos = suffix.end()
+    while True:
+        m = _INTERP_ARG_RE.match(rest, pos)
+        if not m:
+            return "bare"
+        token = m.group(1).rstrip("\"'`")
+        inline = re.match(_INTERP_INLINE_CODE, token, re.I)
+        if inline and inline.end() == len(token):
+            return "inline"
+        if token.startswith("<<"):
+            return "inline"
+        if token == "-":
+            return "stdin"
+        if not token.startswith("-"):
+            return "script" if re.search(r"[./\\]", token) else "word"
+        pos = m.end()
+
+
+def _at_command_position(cmd, start):
+    """True when the interpreter token at `start` sits where a command starts,
+    rather than inside prose such as "each node in the graph"."""
+    before = re.sub(r"[^\s;&|()`\"'{}]*$", "", cmd[:start]).rstrip()
+    if not before or before[-1] in ";&|({\n`\"'" or before.endswith("$("):
+        return True
+    word = before.split()[-1]
+    return word.lower() in _COMMAND_PREFIXES or "=" in word
+
+
+def _interp_protected_write(cmd, interp_re, name_re):
+    """True when an interpreter invocation can write the protected `name_re`
+    target: `interp_re` (token then name) matched, and after some interpreter
+    token that precedes the name either write intent appears, or the code it
+    runs is not visible on the command line (a script, module or file, piped
+    stdin, or a dotless argument in command position)."""
+    if not interp_re.search(cmd):
+        return False
+    names = [m.start() for m in name_re.finditer(cmd)]
+    for m in re.finditer(_INTERP_EXECUTABLE, cmd, re.I):
+        if not any(n >= m.end() for n in names):
+            continue
+        if INTERP_WRITE_INTENT_RE.search(cmd, m.start()):
+            return True
+        operand = _interp_operand(cmd, m.end())
+        if operand == "script":
+            return True
+        if operand == "stdin" and "<<" not in cmd[m.end():]:
+            return True
+        if operand in ("word", "bare") and _at_command_position(cmd, m.start()):
+            return True
+    return False
+
+
+LOG_NAME_RE = re.compile(LOG_NAMES, re.I)
+DECISIONS_NAME_RE = re.compile(DECISIONS, re.I)
+CONTEXT_NAME_RE = re.compile(CONTEXT_MD, re.I)
+
+# #997: `sed` writes a file only in place (`-i`, `--in-place`) or through a
+# `w`/`W` script command; `sed -n 1,20p .codearbiter/CONTEXT.md` is a read.
+_SED_WRITES_RE = re.compile(
+    r"(?<![\w-])-[a-zA-Z]*i|--in-place|(?:^|[\s'\";{}/\d$,])[wW]\s+\S")
+
+
+def _context_shell_write(cmd):
+    """CONTEXT_WRITE_RE, except a `sed` invocation that cannot write."""
+    text = cmd
+    while True:
+        m = CONTEXT_WRITE_RE.search(text)
+        if not m:
+            return False
+        if m.group(1).lower() != "sed" or _SED_WRITES_RE.search(m.group(0)[3:]):
+            return True
+        # Blank this read-only `sed` and rescan, so another verb later in the
+        # same segment is still seen.
+        text = text[:m.start(1)] + "   " + text[m.end(1):]
+
 # H-22's shell flank: the protected-state registry (B1/#564) — Write/Edit are
 # guarded via classify_protected's "state" class (pre-write.py/pre-edit.py,
 # T-05a/T-06/T-07); this closes the shell flank the SAME way the four
@@ -1430,7 +1562,8 @@ def _check_h05_audit_log(cmd):
     if enrolled_name and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
             or LOG_GIT_RESTORE_RE.search(cmd)
-            or LOG_INTERP_RE.search(cmd) and not _is_direct_taskwrite(cmd)):
+            or _interp_protected_write(cmd, LOG_INTERP_RE, LOG_NAME_RE)
+            and not _is_direct_taskwrite(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
                       "gate-events.log, decisions/decision-log.md) are append-only "
                       "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit "
@@ -1457,7 +1590,7 @@ def _check_h11_decisions(cmd):
     cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
     cmd = ADR_LIFECYCLE_LOG_SHELL_RE.sub(" ", cmd)
     if (DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd)
-            or DECISIONS_INTERP_RE.search(cmd)):
+            or _interp_protected_write(cmd, DECISIONS_INTERP_RE, DECISIONS_NAME_RE)):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
                       "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
                       "edits, and deletions there are prohibited.")
@@ -1469,9 +1602,13 @@ def _check_h18_context_md(cmd):
     Write tool, so nothing legitimate is blocked. Reads pass.
 
     #574: CONTEXT_INTERP_RE closes the interpreter-one-liner flank the same
-    way LOG_INTERP_RE/DECISIONS_INTERP_RE do for H-05/H-11."""
-    if (CONTEXT_REDIRECT_RE.search(cmd) or CONTEXT_WRITE_RE.search(cmd)
-            or CONTEXT_INTERP_RE.search(cmd)):
+    way LOG_INTERP_RE/DECISIONS_INTERP_RE do for H-05/H-11.
+
+    #997: reads pass on both flanks. `sed` without in-place or a `w` command
+    is a read, and an interpreter needs write intent or a script argument
+    (`_interp_protected_write`)."""
+    if (CONTEXT_REDIRECT_RE.search(cmd) or _context_shell_write(cmd)
+            or _interp_protected_write(cmd, CONTEXT_INTERP_RE, CONTEXT_NAME_RE)):
         block("H-18", ".codearbiter/CONTEXT.md is the activation switch every enforcement "
                       "hook reads (#159) — shell rewrites, edits, or deletions that could flip "
                       "`arbiter: enabled` off or corrupt its frontmatter are prohibited. Edit it "
