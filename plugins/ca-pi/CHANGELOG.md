@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-10-18
+
+### Added
+
+- A new `init-store` engine operation creates a checkout's local artifact store metadata on purpose, and only that. On Windows, a fresh clone or worktree reports `NO_LOCAL_STORE` on every read until the store exists; the host bridge now runs `init-store` once and retries the read once, so `/feature` and `/sprint` resume work in a new checkout. Reads themselves still never write, and a read-only checkout still gets `NO_LOCAL_STORE`.
+
 ## [0.20.1] - 2026-10-18
 
 ### Fixed

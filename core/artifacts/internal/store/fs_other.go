@@ -31,6 +31,7 @@ func (f *FS) Close() error                             { return nil }
 func (f *FS) Lock(bool, time.Duration) (func(), error) { return nil, unsupported() }
 func (f *FS) Read(string, int64) ([]byte, error)       { return nil, unsupported() }
 func (f *FS) Exists(string) (bool, error)              { return false, unsupported() }
+func (f *FS) LockMetadataPresent() (bool, error)       { return false, unsupported() }
 func (f *FS) List(string) ([]os.DirEntry, error)       { return nil, unsupported() }
 func (f *FS) Mkdir(string) error                       { return unsupported() }
 func (f *FS) create(string, []byte, uint32) error      { return unsupported() }

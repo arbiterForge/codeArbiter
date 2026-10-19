@@ -533,6 +533,10 @@ func (f *FS) lockFile() (*os.File, error) {
 	return f.root.OpenFile(native(meta+"/store.lock"), os.O_RDWR|os.O_CREATE, 0600)
 }
 
+// LockMetadataPresent reports whether the store lock file exists; the first
+// writer lock creates it.
+func (f *FS) LockMetadataPresent() (bool, error) { return f.Exists(meta + "/store.lock") }
+
 // implemented by the native lock file for each supported platform.
 func (f *FS) Lock(exclusive bool, timeout time.Duration) (func(), error) {
 	return f.nativeLock(exclusive, timeout)
