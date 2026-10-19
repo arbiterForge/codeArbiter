@@ -27,7 +27,7 @@ _BRIDGE_IMPORTS = frozenset({
     "platform", "re", "stat", "subprocess", "tempfile", "threading", "typing",
 })
 _CTYPES_ATTRIBUTES = frozenset({
-    "WinDLL", "c_uint32", "c_void_p", "c_wchar_p", "get_last_error",
+    "WinDLL", "c_uint16", "c_uint32", "c_void_p", "c_wchar_p", "get_last_error",
 })
 _PROCESS_ESCAPE_CALLS = frozenset({
     "execl", "execle", "execlp", "execlpe", "execv", "execve", "execvp",
@@ -43,6 +43,8 @@ _NETWORK_AUDIT_EVENTS = frozenset({
 })
 _KERNEL32_PROCEDURES = frozenset({
     "CloseHandle", "CreateFileW", "GetFileAttributesW",
+    # Read-only native-machine query for binary selection (#986).
+    "IsWow64Process2",
 })
 
 

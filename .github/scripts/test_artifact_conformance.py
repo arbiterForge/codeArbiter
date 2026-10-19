@@ -58,6 +58,8 @@ EXPECTED_SUITES = {
         "test_timeout_reaches_the_bounded_child",
         "test_no_local_store_initializes_then_retries_once",
         "test_refused_initialization_keeps_no_local_store",
+        "test_windows_read_works_without_wmi_or_processor_environment",
+        "test_unanswered_windows_architecture_fails_closed",
         "test_fresh_checkout_identity_through_client",
         "test_protocol_documents_init_store",
     },
