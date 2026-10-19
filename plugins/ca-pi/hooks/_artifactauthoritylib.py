@@ -2007,6 +2007,10 @@ def _validate_nested_npm_launch(executable: Path, cwd: Path) -> list[dict[str, s
     except (OSError, AuthorityError) as exc:
         raise AuthorityError("UNSUPPORTED_EXECUTABLE", "nested npm prefix helper is unavailable") from exc
     environment, _environment_digest = _minimal_environment()
+    # The probes only read local configuration. Without this, a fresh npm
+    # profile also runs the registry update check, which can outlast the
+    # probe's bound on a slow network and print a notice to stderr.
+    environment = {**environment, "npm_config_update_notifier": "false"}
 
     def probe(arguments: list[str]) -> list[str]:
         try:

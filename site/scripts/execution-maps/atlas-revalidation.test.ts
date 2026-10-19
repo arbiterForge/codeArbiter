@@ -409,7 +409,7 @@ describe('atlas source compatibility revalidation', () => {
   it('binds only the three reviewed runtime compatibility owners and preserves cited document ranges', () => {
     expect(RUNTIME_COMPATIBILITY_SOURCE_BLOBS).toEqual({
       'core/surface/includes/artifacts.md': 'c10c13162e63699c3748809f3ef2448bc8b07fb9',
-      'core/pysrc/_artifactauthoritylib.py': '8dbbfdbae637e79dea52181b01e328a21efe3a06',
+      'core/pysrc/_artifactauthoritylib.py': '7624ad9dce3330505bdca5f5e19c3bf7e2534d10',
       'docs/hooks.md': 'd4726a5fdbc6175498ab03ac47fe8ee66c2bf36a',
     });
     expect(changedProductInputs(runtimeCompatibilityBaseline, '045c0812888f20f4c843677cfb37b802e2084770')).toEqual([
