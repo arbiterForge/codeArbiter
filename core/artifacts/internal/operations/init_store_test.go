@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -76,11 +77,18 @@ func TestInitStoreCreatesOnlyLockMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatalf("TARGET: init-store refused on a fresh checkout: %v", err)
 	}
-	if got := model.S(model.M(out)["store"]); got != "created" {
-		t.Fatalf("fresh store reported %q, want created", got)
-	}
-	if _, err := os.Lstat(lock); err != nil {
-		t.Fatalf("init-store left store.lock absent: %v", err)
+	if runtime.GOOS == "linux" {
+		// Linux locks the repository directory itself; nothing to create.
+		if got := model.S(model.M(out)["store"]); got != "present" {
+			t.Fatalf("linux store reported %q, want present", got)
+		}
+	} else {
+		if got := model.S(model.M(out)["store"]); got != "created" {
+			t.Fatalf("fresh store reported %q, want created", got)
+		}
+		if _, err := os.Lstat(lock); err != nil {
+			t.Fatalf("init-store left store.lock absent: %v", err)
+		}
 	}
 	if after := fileDigests(t, root); !reflect.DeepEqual(after, before) {
 		t.Fatalf("init-store changed files outside the store metadata: before %v after %v", before, after)
@@ -94,6 +102,9 @@ func TestInitStoreIsIdempotent(t *testing.T) {
 	}
 	lock := filepath.Join(root, ".codearbiter", ".artifacts", "store.lock")
 	lockBefore, err := os.ReadFile(lock)
+	if runtime.GOOS == "linux" && os.IsNotExist(err) {
+		lockBefore, err = nil, nil
+	}
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -106,6 +117,9 @@ func TestInitStoreIsIdempotent(t *testing.T) {
 		t.Fatalf("initialized store reported %q, want present", got)
 	}
 	lockAfter, err := os.ReadFile(lock)
+	if runtime.GOOS == "linux" && os.IsNotExist(err) && lockBefore == nil {
+		lockAfter, err = nil, nil
+	}
 	if err != nil || string(lockAfter) != string(lockBefore) {
 		t.Fatalf("init-store rewrote store.lock: %v", err)
 	}

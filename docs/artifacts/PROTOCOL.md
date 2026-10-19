@@ -38,7 +38,9 @@ lock, which creates `.codearbiter/.artifacts/` and `store.lock` when they are
 absent, and writes nothing else: no artifact, journal or receipt. Its request
 carries only `protocol`. The result is `{"store": "created"}` when it created the
 metadata and `{"store": "present"}` when the store already existed, in which case
-nothing changes. It is not a journaled mutation and is safe to repeat.
+nothing changes. Linux locks the repository directory itself, needs no lock
+metadata, and always reports `{"store": "present"}`. It is not a journaled
+mutation and is safe to repeat.
 
 The packaged bridge (`ArtifactClient`) uses it for fresh checkouts. When a call
 fails with NO_LOCAL_STORE, the client runs `init-store` once and then retries the

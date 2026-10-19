@@ -50,11 +50,12 @@ func sharedObservation(op string, r object) bool {
 	}
 }
 
-// initStore creates a checkout's local store metadata through the ordinary
-// writer lock, the same path a first mutation takes, and writes nothing else.
+// initStore creates the lock metadata this platform's reads require through
+// the ordinary writer lock, the same path a first mutation takes, and writes
+// nothing else. Linux locks the repository directory and reports present.
 // Reads never initialize the store; a host calls this explicitly instead.
 func initStore(f *store.FS) (any, error) {
-	present, e := f.Exists(".codearbiter/.artifacts/store.lock")
+	present, e := f.LockMetadataPresent()
 	if e != nil {
 		return nil, e
 	}

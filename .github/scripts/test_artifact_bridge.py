@@ -393,7 +393,8 @@ class StoreInitTests(unittest.TestCase):
             self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
             self.assertFalse(store.exists())
         self.assertEqual(client.call("identity",{"artifact_id":"SPEC-BRIDGE"})["artifact_id"],"SPEC-BRIDGE")
-        self.assertTrue((store/"store.lock").is_file())
+        if platform.system()!="Linux":  # Linux locks the repository directory itself.
+            self.assertTrue((store/"store.lock").is_file())
 
     def test_protocol_documents_init_store(self):
         text=(REPO/"docs/artifacts/PROTOCOL.md").read_text(encoding="utf-8")
