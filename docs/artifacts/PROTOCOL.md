@@ -33,6 +33,20 @@ lock. Normal authorized mutations initialize lock metadata through the existing
 writer path. Existing-store access failures remain `LOCK_FAILED`, contention
 remains `LOCK_TIMEOUT`, and unsafe objects remain `UNSAFE_PATH`.
 
+`init-store` initializes that metadata on purpose. It takes the ordinary writer
+lock, which creates `.codearbiter/.artifacts/` and `store.lock` when they are
+absent, and writes nothing else: no artifact, journal or receipt. Its request
+carries only `protocol`. The result is `{"store": "created"}` when it created the
+metadata and `{"store": "present"}` when the store already existed, in which case
+nothing changes. It is not a journaled mutation and is safe to repeat.
+
+The packaged bridge (`ArtifactClient`) uses it for fresh checkouts. When a call
+fails with NO_LOCAL_STORE, the client runs `init-store` once and then retries the
+original request once. If initialization is refused, as in a read-only checkout,
+the call raises `NO_LOCAL_STORE` naming the refused initialization; a retry that
+still finds no store is not retried again. A client constructed with
+`initialize_store=False` never initializes and surfaces `NO_LOCAL_STORE` directly.
+
 Lock initialization does not restore receipts referenced by committed plans.
 Missing local evidence remains missing; copying tracked artifacts into a fresh
 worktree does not establish their referenced verification or approval history.
@@ -43,7 +57,7 @@ worktree does not establish their referenced verification or approval history.
 |---|---|
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity`, `task-context` |
 | Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
-| Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
+| Integrity/recovery | `repair-preview`, `repair-apply`, `recover`, `init-store` |
 | Explicit attestation | `capture`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
 | Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-check`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |

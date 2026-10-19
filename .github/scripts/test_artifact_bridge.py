@@ -337,4 +337,68 @@ class BridgeTests(unittest.TestCase):
         if os.name != "nt":
             self.assertTrue(executable.stat().st_mode & stat.S_IXUSR)
 
+class StoreInitTests(unittest.TestCase):
+    """A fresh checkout has no local store; the bridge initializes it once, explicitly."""
+
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.root=physical_test_directory(self.tmp.name)/"repo";self.root.mkdir()
+
+    def scripted(self, answers, **options):
+        client=ArtifactClient(self.root,INSTALLATION,**options)
+        calls=[]
+        def exchange(operation, request, permit_invalid=False):
+            calls.append(operation)
+            answer=answers.pop(0)
+            if isinstance(answer,ArtifactError):
+                raise answer
+            return answer
+        client._exchange=exchange
+        return client,calls
+
+    def test_no_local_store_initializes_then_retries_once(self):
+        identity={"artifact_id":"SPEC-BRIDGE","revision":1}
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent"),{"store":"created"},identity])
+        self.assertEqual(client.call("identity",{"artifact_id":"SPEC-BRIDGE"}),identity)
+        self.assertEqual(calls,["identity","init-store","identity"])
+
+    def test_refused_initialization_keeps_no_local_store(self):
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent"),ArtifactError("LOCK_FAILED","read-only")])
+        with self.assertRaises(ArtifactError) as raised:
+            client.call("identity",{"artifact_id":"SPEC-BRIDGE"})
+        self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+        self.assertIn("LOCK_FAILED",str(raised.exception))
+        self.assertEqual(calls,["identity","init-store"])
+        # A retried read that still finds no store is not retried again.
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent"),{"store":"created"},ArtifactError("NO_LOCAL_STORE","absent")])
+        with self.assertRaises(ArtifactError) as raised:
+            client.call("identity",{"artifact_id":"SPEC-BRIDGE"})
+        self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+        self.assertEqual(calls,["identity","init-store","identity"])
+        # Disabled initialization never writes.
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent")],initialize_store=False)
+        with self.assertRaises(ArtifactError) as raised:
+            client.call("identity",{"artifact_id":"SPEC-BRIDGE"})
+        self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+        self.assertEqual(calls,["identity"])
+
+    def test_fresh_checkout_identity_through_client(self):
+        client=ArtifactClient(self.root,INSTALLATION)
+        client.call("create",{"operation_id":"store-init-spec-create","artifact_id":"SPEC-BRIDGE","kind":"spec","slug":"bridge","title":"Bridge fixture","summary":"Incomplete draft."})
+        store=self.root/".codearbiter"/".artifacts"
+        shutil.rmtree(store)
+        if platform.system()=="Windows":
+            with self.assertRaises(ArtifactError) as raised:
+                ArtifactClient(self.root,INSTALLATION,initialize_store=False).call("identity",{"artifact_id":"SPEC-BRIDGE"})
+            self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+            self.assertFalse(store.exists())
+        self.assertEqual(client.call("identity",{"artifact_id":"SPEC-BRIDGE"})["artifact_id"],"SPEC-BRIDGE")
+        self.assertTrue((store/"store.lock").is_file())
+
+    def test_protocol_documents_init_store(self):
+        text=(REPO/"docs/artifacts/PROTOCOL.md").read_text(encoding="utf-8")
+        self.assertRegex(text,r'`init-store`[\s\S]{0,600}"store": "created"[\s\S]{0,300}"store": "present"')
+        self.assertRegex(text,r"NO_LOCAL_STORE[\s\S]{0,900}`init-store`\s+once[\s\S]{0,300}retr(y|ies)\s+the\s+(original\s+)?(read|request|call)\s+once")
+
+
 if __name__=="__main__":unittest.main(verbosity=2)
