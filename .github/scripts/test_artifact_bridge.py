@@ -337,6 +337,29 @@ class BridgeTests(unittest.TestCase):
         if os.name != "nt":
             self.assertTrue(executable.stat().st_mode & stat.S_IXUSR)
 
+class HostArchitectureTests(unittest.TestCase):
+    """#986: the binary's architecture comes from the OS, never ambient state."""
+
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.root=physical_test_directory(self.tmp.name)/"repo";self.root.mkdir()
+
+    @unittest.skipUnless(platform.system()=="Windows","Windows host architecture probe")
+    def test_windows_read_works_without_wmi_or_processor_environment(self):
+        # A read-only sandbox can block WMI and strip PROCESSOR_*; platform.machine()
+        # then answers "". The bridge must still select the native binary.
+        stripped={k:v for k,v in os.environ.items() if not k.upper().startswith("PROCESSOR_")}
+        with mock.patch.dict(os.environ,stripped,clear=True), mock.patch("platform.machine",return_value=""):
+            caps=ArtifactClient(self.root,INSTALLATION).call("capabilities")
+        self.assertEqual(caps["public_registrations_added"],0)
+
+    def test_unanswered_windows_architecture_fails_closed(self):
+        with mock.patch("platform.system",return_value="Windows"),                 mock.patch("_artifactlib._windows_native_architecture",return_value=None),                 mock.patch("platform.machine",return_value="AMD64"):
+            with self.assertRaises(ArtifactError) as got:
+                ArtifactClient(self.root,INSTALLATION).call("capabilities")
+        self.assertEqual(got.exception.code,"UNSUPPORTED_PLATFORM")
+
+
 class StoreInitTests(unittest.TestCase):
     """A fresh checkout has no local store; the bridge initializes it once, explicitly."""
 

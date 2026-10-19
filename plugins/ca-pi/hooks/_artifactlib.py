@@ -976,6 +976,46 @@ def _engine_timeout() -> float:
     return value
 
 
+# IMAGE_FILE_MACHINE values IsWow64Process2 reports for the native machine.
+_WINDOWS_NATIVE_MACHINES = {0x8664: "amd64", 0xAA64: "arm64"}
+
+
+def _windows_native_architecture() -> str | None:
+    """Ask Windows itself for the native machine, through IsWow64Process2.
+
+    platform.machine() asks WMI first and then falls back to PROCESSOR_*
+    environment variables. A read-only sandbox can block WMI and strip that
+    environment, which left the architecture empty (#986). The kernel call
+    needs neither, and the environment is never consulted. None means the OS
+    gave no answer, and the caller fails closed."""
+    try:
+        import ctypes
+        from ctypes import wintypes
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        query = kernel32.IsWow64Process2
+    except (ImportError, OSError, AttributeError):
+        return None
+    query.argtypes = (wintypes.HANDLE, ctypes.POINTER(wintypes.USHORT), ctypes.POINTER(wintypes.USHORT))
+    query.restype = wintypes.BOOL
+    kernel32.GetCurrentProcess.restype = wintypes.HANDLE
+    process, native = wintypes.USHORT(), wintypes.USHORT()
+    if not query(kernel32.GetCurrentProcess(), ctypes.byref(process), ctypes.byref(native)):
+        return None
+    return _WINDOWS_NATIVE_MACHINES.get(native.value)
+
+
+def _host_platform() -> tuple[str, str]:
+    """The installed binary's platform cell, or UNSUPPORTED_PLATFORM."""
+    system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}.get(platform.system())
+    if system == "windows":
+        arch = _windows_native_architecture()
+    else:
+        arch = {"x86_64":"amd64", "amd64":"amd64", "aarch64":"arm64", "arm64":"arm64"}.get(platform.machine().lower())
+    if system is None or arch is None:
+        raise ArtifactError("UNSUPPORTED_PLATFORM", "unsupported architecture")
+    return system, arch
+
+
 class ArtifactClient:
     def __init__(self, root: str | Path, installation: str | Path, *, timeout: float | None = None,
                  initialize_store: bool = True):
@@ -1013,10 +1053,7 @@ class ArtifactClient:
         return dict(context)
 
     def _open_binary(self) -> int:
-        system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}.get(platform.system())
-        arch = {"x86_64":"amd64", "amd64":"amd64", "aarch64":"arm64", "arm64":"arm64"}.get(platform.machine().lower())
-        if system is None or arch is None:
-            raise ArtifactError("UNSUPPORTED_PLATFORM", "unsupported architecture")
+        system, arch = _host_platform()
         manifest_path = self.installation / "release.json"
         try:
             mf = _open_pinned_regular(manifest_path)
@@ -1162,8 +1199,7 @@ class ArtifactClient:
 
     @staticmethod
     def _binary_name() -> str:
-        system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}[platform.system()]
-        arch = {"x86_64":"amd64", "amd64":"amd64", "aarch64":"arm64", "arm64":"arm64"}[platform.machine().lower()]
+        system, arch = _host_platform()
         return f"ca-artifact-{system}-{arch}" + (".exe" if system == "windows" else "")
 
     @staticmethod

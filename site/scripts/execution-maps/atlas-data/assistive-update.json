@@ -40,8 +40,8 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "40f74ab9c463031c9622ddedde474a4ae907c3a9",
-      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow. On NO_LOCAL_STORE the client runs init-store once and retries the request once; a refused initialization keeps NO_LOCAL_STORE.",
+      "blob": "463bbb5fbfa27af13f0c5b6c7086183884330c89",
+      "summary": "The pinned native bridge enables task-context as a bounded informational read and does not require future reviewer/approval producers simply to author a structurally valid draft. Context requests route to ordinary context-preview, context-finalize-preview and exact-reference context-apply; historical receipt input stays a separate compatibility path. Installed host qualification is separate. Native Pi writer admission does not establish a complete live Pi workflow. On NO_LOCAL_STORE the client runs init-store once and retries the request once; a refused initialization keeps NO_LOCAL_STORE. On Windows the binary's architecture comes from the kernel (IsWow64Process2), never WMI or PROCESSOR_* environment.",
       "nodes": [
         "f-entry",
         "f-plan",
