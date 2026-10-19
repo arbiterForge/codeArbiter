@@ -554,8 +554,7 @@ INTERP_WRITE_INTENT_RE = re.compile(
     # vars()/globals(), and a computed member call (`fs['write' + x](...)`).
     r"|__\w+__|\b(?:vars|globals|locals)\s*\(|\]\s*\("
     # A write-mode literal passed or assigned anywhere: `o = open; o(p, 'w')`.
-    r"|(?<=[,(=\s])['\"][rbtU]*[wax+][rbtUwax+]*['\"](?=\s*[,);\]])"
-    r"|\b(?:perl|ruby)\b[^\n|;&]*(?<![\w-])-[a-zA-Z]*i",
+    r"|(?<=[,(=\s])['\"][rbtU]*[wax+][rbtUwax+]*['\"](?=\s*[,);\]])",
     re.I,
 )
 _INTERP_ARG_RE = re.compile(r"\s+([^\s|;&]+)")
@@ -613,6 +612,11 @@ def _interp_protected_write(cmd, interp_re, name_re):
     for m in re.finditer(_INTERP_EXECUTABLE, cmd, re.I):
         if not any(n >= m.end() for n in names):
             continue
+        # Perl and Ruby calls need no parentheses (`open F, ">", p`,
+        # `File.write p, ""`), which the lexical intent scan cannot see, so
+        # they keep the conservative pre-#997 behavior.
+        if m.group(1).lower() in ("perl", "ruby"):
+            return True
         if INTERP_WRITE_INTENT_RE.search(cmd, m.start()):
             return True
         operand = _interp_operand(cmd, m.end())
@@ -642,7 +646,12 @@ def _context_shell_write(cmd):
         m = CONTEXT_WRITE_RE.search(text)
         if not m:
             return False
-        if m.group(1).lower() != "sed" or _SED_WRITES_RE.search(m.group(0)[3:]):
+        if m.group(1).lower() != "sed":
+            return True
+        # GNU sed accepts options after operands (`sed s/a/b/ FILE -i`), so
+        # scan the whole command segment, not only the text before the path.
+        segment = re.match(r"[^|;&]*", text[m.end(1):]).group(0)
+        if _SED_WRITES_RE.search(segment):
             return True
         # Blank this read-only `sed` and rescan, so another verb later in the
         # same segment is still seen.

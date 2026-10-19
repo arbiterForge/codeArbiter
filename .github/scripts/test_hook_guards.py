@@ -425,6 +425,10 @@ def main():
                 f'node -e "require(\'fs\').rmSync(\'{target}\')"',
                 f'pwsh -c "sc {target} x"',
                 f"perl -pi -e 's/a/b/' {target}",
+                # Perl and Ruby calls need no parentheses (review, #1008).
+                f"perl -e 'open F, \">\", \"{target}\"'",
+                f"ruby -e 'File.write \"{target}\", \"\"'",
+                f"ruby -e 'File.open \"{target}\", \"w\"'",
                 f'ruby -e "File.write(\'{target}\', \'x\')"',
                 f'php -r "file_put_contents(\'{target}\', \'x\');"',
                 f'python -m tool {target}',
@@ -456,7 +460,9 @@ def main():
         for cmd in (f"sed -n 1,20p {context}", f"sed 's/a/b/' {context}"):
             expect_allow(fx, cmd, f"H-18 allow (read-only sed, #997): {cmd}")
         for cmd in (f"sed -i 's/a/b/' {context}", f"sed -n -i p {context}",
-                    f"sed --in-place 's/a/b/' {context}", f"sed -n '1w {context}' other"):
+                    f"sed --in-place 's/a/b/' {context}", f"sed -n '1w {context}' other",
+                    # GNU sed accepts options after operands (review, #1008).
+                    f"sed 's/a/b/' {context} -i", f"sed 's/a/b/' {context} --in-place"):
             expect_block(fx, cmd, "H-18", f"H-18 block (writing sed, #997): {cmd}")
 
         # ---- #574: H-11 had NO interpreter leg — the identical gap as H-05,
