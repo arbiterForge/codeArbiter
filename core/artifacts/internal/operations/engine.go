@@ -50,6 +50,26 @@ func sharedObservation(op string, r object) bool {
 	}
 }
 
+// initStore creates the lock metadata this platform's reads require through
+// the ordinary writer lock, the same path a first mutation takes, and writes
+// nothing else. Linux locks the repository directory and reports present.
+// Reads never initialize the store; a host calls this explicitly instead.
+func initStore(f *store.FS) (any, error) {
+	present, e := f.LockMetadataPresent()
+	if e != nil {
+		return nil, e
+	}
+	unlock, e := f.Lock(true, 2*time.Second)
+	if e != nil {
+		return nil, e
+	}
+	unlock()
+	if present {
+		return object{"store": "present"}, nil
+	}
+	return object{"store": "created"}, nil
+}
+
 func Identity(d *model.Document, p string) object {
 	return object{"artifact_id": d.ID(), "kind": d.Kind(), "path": p, "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "symbol_count": int64(len(d.Symbols.ByID))}
 }
@@ -90,6 +110,9 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	defer f.Close()
+	if op == "init-store" {
+		return initStore(f)
+	}
 	var unlock func()
 	if runtime.GOOS == "windows" && (op == "index" || sharedObservation(op, r)) {
 		locker, ok := any(f).(existingStoreObservationLocker)

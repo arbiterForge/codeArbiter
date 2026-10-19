@@ -54,6 +54,10 @@ func Open(root string) (*FS, error) {
 	return &FS{root: os.NewFile(uintptr(fd), a), Root: a, memo: newMemo()}, nil
 }
 func (f *FS) Close() error { return f.root.Close() }
+
+// LockMetadataPresent reports whether the files this platform's lock needs
+// exist. Linux locks the repository directory itself, so it needs none.
+func (f *FS) LockMetadataPresent() (bool, error) { return true, nil }
 func (f *FS) Lock(exclusive bool, timeout time.Duration) (func(), error) {
 	op := syscall.LOCK_SH
 	if exclusive {

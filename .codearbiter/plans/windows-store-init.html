@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Explicit store initialization for fresh checkouts · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">PLAN-WINDOWS-STORE-INIT</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-spec_ref">Specification binding</a><a href="#group-prerequisites">Prerequisites</a><a href="#group-tasks">Tasks</a><a href="#group-checkpoints">Checkpoints</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><a class="companion" href="../specs/windows-store-init.html">Open companion specification</a><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / plan</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Explicit store initialization for fresh checkouts</h1><p class="deck">Engine init-store operation, bridge init-then-retry, end-to-end proof, protocol docs and versions.</p><div class="meta"><span>PLAN-WINDOWS-STORE-INIT</span><span>Revision 16 · schema 0.3.2</span><span>7 addressable records</span></div></header><section class="group" id="group-spec_ref"><a class="back" href="#main-content">Top</a><h2>Specification binding</h2><div class="fields"><div class="field"><span class="label">Artifact id</span>SPEC-WINDOWS-STORE-INIT</div><div class="field"><span class="label">Binding mode</span>draft_preview</div><div class="field"><span class="label">Normative sha256</span>68d8632e3e931e54f13264d0372583e45a3d60bd20339b02f7bb262c8f75ccf5</div></div></section><section class="group" id="group-prerequisites"><a class="back" href="#main-content">Top</a><h2>Prerequisites</h2><span class="missing">None recorded</span></section><section class="group" id="group-tasks"><a class="back" href="#main-content">Top</a><h2>Tasks</h2>
+<!-- CA:BEGIN:T-01 -->
+<article class="record" id="T-01" data-ca-symbol="T-01" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-01">T-01</a><h3>Engine init-store operation</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/windows-store-init.html#AC-01">SPEC-WINDOWS-STORE-INIT#AC-01</a></li><li><a href="../specs/windows-store-init.html#AC-02">SPEC-WINDOWS-STORE-INIT#AC-02</a></li><li><a href="../specs/windows-store-init.html#AC-03">SPEC-WINDOWS-STORE-INIT#AC-03</a></li></ul></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The three named tests pass.</li><li>Reads still return NO_LOCAL_STORE on a fresh Windows store.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/artifacts/internal/operations/protocol.go</code></td></tr><tr><td>modify</td><td><code>core/artifacts/internal/operations/engine.go</code></td></tr><tr><td>create</td><td><code>core/artifacts/internal/operations/init_store_test.go</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Remove the operation registration, the engine branch and the new test file.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write TestInitStoreCreatesOnlyLockMetadata and TestInitStoreIsIdempotent; watch both fail on the unknown operation.</li><li>Register init-store with a protocol-only request schema; it is not a journaled mutation.</li><li>In Run, handle init-store before the observation branch: record whether store.lock existed, take the exclusive writer lock through f.Lock, release it, and return store=created or store=present.</li><li>Keep TestFreshStoreObservationsReportNoLocalStore unchanged and passing.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;-buildvcs=false&#34;,&#34;-count=1&#34;,&#34;-run&#34;,&#34;^(TestInitStoreCreatesOnlyLockMetadata|TestInitStoreIsIdempotent|TestFreshStoreObservationsReportNoLocalStore)$&#34;,&#34;./internal/operations/&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Each named engine test runs and passes.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>TestInitStoreCreatesOnlyLockMetadata</li><li>TestInitStoreIsIdempotent</li><li>TestFreshStoreObservationsReportNoLocalStore</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>init-store engine op and bridge retry implemented; named engine and bridge tests pass locally. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;-buildvcs=false&#34;,&#34;-count=1&#34;,&#34;-run&#34;,&#34;^(TestInitStoreCreatesOnlyLockMetadata|TestInitStoreIsIdempotent|TestFreshStoreObservationsReportNoLocalStore)$&#34;,&#34;./internal/operations/&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-18T23:40:54Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>5806f18ee6c7a782b6e0a77f88ab3abc003845ff97051f35a03daac6d8b0f426</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local Windows amd64 run 2026-10-18</div><div class="field"><span class="label">Summary</span>All three named engine tests pass; dropping the writer-lock call fails TestInitStoreCreatesOnlyLockMetadata (mutant killed).</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;go&#34;,&#34;test&#34;,&#34;-buildvcs=false&#34;,&#34;-count=1&#34;,&#34;-run&#34;,&#34;^(TestInitStoreCreatesOnlyLockMetadata|TestInitStoreIsIdempotent|TestFreshStoreObservationsReportNoLocalStore)$&#34;,&#34;./internal/operations/&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>core/artifacts</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-19T00:38:48Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>2b9189fca39b8561dbe53d1172de8253ea73d16852a4b3617ca2003050885265</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local Windows amd64 run 2026-10-18 after the Linux fix</div><div class="field"><span class="label">Summary</span>Pass on Windows after init-store moved to the store&#39;s per-platform LockMetadataPresent; Linux and darwin cross-vet clean. Hosted Linux previously failed both tests because Linux flocks the repository directory and creates no store.lock; Linux now expects present.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-01 -->
+
+<!-- CA:BEGIN:T-02 -->
+<article class="record" id="T-02" data-ca-symbol="T-02" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-02">T-02</a><h3>Bridge init-then-retry on NO_LOCAL_STORE</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-01</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/windows-store-init.html#AC-04">SPEC-WINDOWS-STORE-INIT#AC-04</a></li><li><a href="../specs/windows-store-init.html#AC-05">SPEC-WINDOWS-STORE-INIT#AC-05</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both named tests pass.</li><li>python tools/sync-core.py --check passes.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-01</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>core/pysrc/_artifactlib.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca/hooks/_artifactlib.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/hooks/_artifactlib.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/hooks/_artifactlib.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_bridge.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_conformance.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert _artifactlib.py and its generated copies and remove the two tests.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Write the two bridge tests with a recording stand-in for the native child; watch them fail.</li><li>Add initialize_store (default True) to ArtifactClient; split the single native exchange out of call().</li><li>On NO_LOCAL_STORE from an operation other than init-store: when enabled, call init-store once; on success retry the original request once; on any init failure raise NO_LOCAL_STORE naming the refused initialization.</li><li>Regenerate the plugin copies with tools/sync-core.py and list the new tests in the conformance suite&#39;s expected names.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_bridge.py&#34;,&#34;-v&#34;,&#34;-k&#34;,&#34;test_no_local_store_initializes_then_retries_once&#34;,&#34;-k&#34;,&#34;test_refused_initialization_keeps_no_local_store&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Each named bridge test runs and passes against a freshly built payload.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_no_local_store_initializes_then_retries_once</li><li>test_refused_initialization_keeps_no_local_store</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>init-store engine op and bridge retry implemented; named engine and bridge tests pass locally. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_bridge.py&#34;,&#34;-v&#34;,&#34;-k&#34;,&#34;test_no_local_store_initializes_then_retries_once&#34;,&#34;-k&#34;,&#34;test_refused_initialization_keeps_no_local_store&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-19T00:07:10Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>b4aba8184373a539ec74357998df5d9af742470ea12542f64df21ed8267821ea</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>ARTIFACT_TEST_INSTALLATION=&lt;fresh build of this worktree&gt; local Windows amd64 run 2026-10-18</div><div class="field"><span class="label">Summary</span>Both pass; before the bridge change the same run failed one and errored the other. Full bridge suite 21/21 OK; sync-core --check OK.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-02 -->
+
+<!-- CA:BEGIN:T-03 -->
+<article class="record" id="T-03" data-ca-symbol="T-03" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-03">T-03</a><h3>Real fresh-checkout read through the client</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/windows-store-init.html#AC-06">SPEC-WINDOWS-STORE-INIT#AC-06</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li><li><a href="#T-02">T-02</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The named test passes with a freshly built payload.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>.github/scripts/test_artifact_bridge.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_conformance.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Remove the test.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add test_fresh_checkout_identity_through_client: create a spec with the real built engine, delete .codearbiter/.artifacts, call identity through ArtifactClient, and assert the artifact_id and that store.lock exists.</li><li>Confirm it fails with initialize_store=False on Windows as the negative control.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_bridge.py&#34;,&#34;-v&#34;,&#34;-k&#34;,&#34;test_fresh_checkout_identity_through_client&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Each named bridge test runs and passes against a freshly built payload.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_fresh_checkout_identity_through_client</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>End-to-end client read, protocol docs and 3.2.0 version surfaces done; named checks pass locally. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_bridge.py&#34;,&#34;-v&#34;,&#34;-k&#34;,&#34;test_fresh_checkout_identity_through_client&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-19T00:07:12Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>a6ea9b1ae7d21d27a9172c0628ff4917f618746b332100f7cc3ba4825886dfd8</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>ARTIFACT_TEST_INSTALLATION=&lt;fresh build of this worktree&gt; local Windows amd64 run 2026-10-18</div><div class="field"><span class="label">Summary</span>Passes with the real built engine: identity succeeds in a checkout with no store and store.lock is created; with initialize_store=False the same call raises NO_LOCAL_STORE and creates nothing.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-03 -->
+
+<!-- CA:BEGIN:T-04 -->
+<article class="record" id="T-04" data-ca-symbol="T-04" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-04">T-04</a><h3>Protocol documentation</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/windows-store-init.html#AC-07">SPEC-WINDOWS-STORE-INIT#AC-07</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li><li><a href="#T-02">T-02</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>The named test passes.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>docs/artifacts/PROTOCOL.md</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_bridge.py</code></td></tr><tr><td>modify</td><td><code>.github/scripts/test_artifact_conformance.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the PROTOCOL.md paragraph and remove the test.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Add test_protocol_documents_init_store asserting PROTOCOL.md names init-store, its created/present result and the one-time retry.</li><li>Extend the NO_LOCAL_STORE paragraph and the operation family table.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_bridge.py&#34;,&#34;-v&#34;,&#34;-k&#34;,&#34;test_protocol_documents_init_store&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Each named bridge test runs and passes against a freshly built payload.</div><div class="field"><span class="label">Availability</span>proposed</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><ul class="items"><li>test_protocol_documents_init_store</li></ul></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>End-to-end client read, protocol docs and 3.2.0 version surfaces done; named checks pass locally. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_artifact_bridge.py&#34;,&#34;-v&#34;,&#34;-k&#34;,&#34;test_protocol_documents_init_store&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-19T00:07:15Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>a3e5652a5f648829bf23e356422e214e9e4b6b54815659279f441eb4fd6fc30a</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>ARTIFACT_TEST_INSTALLATION=&lt;fresh build of this worktree&gt; local Windows amd64 run 2026-10-18</div><div class="field"><span class="label">Summary</span>Passes; with the PROTOCOL.md paragraph stashed the same test fails.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-04 -->
+
+<!-- CA:BEGIN:T-05 -->
+<article class="record" id="T-05" data-ca-symbol="T-05" data-ca-kind="tasks"><div class="record-head"><a class="id" href="#T-05">T-05</a><h3>Version the release surfaces</h3><span class="badge">Implementation complete (checks not assessed)</span></div><div class="field"><span class="label">Checkpoint</span>CP-02</div><div class="field"><span class="label">Acceptance criteria</span><ul class="items"><li><a href="../specs/windows-store-init.html#AC-04">SPEC-WINDOWS-STORE-INIT#AC-04</a></li><li><a href="../specs/windows-store-init.html#AC-06">SPEC-WINDOWS-STORE-INIT#AC-06</a></li></ul></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#T-01">T-01</a></li><li><a href="#T-02">T-02</a></li><li><a href="#T-03">T-03</a></li><li><a href="#T-04">T-04</a></li></ul></div><div class="field"><span class="label">Done when</span><ul class="items"><li>Both checks pass.</li></ul></div><div class="field"><span class="label">Execution scope</span>CP-02</div><div class="field"><span class="label">Paths</span><div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody><tr><td>modify</td><td><code>plugins/ca/.claude-plugin/plugin.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/.codex-plugin/plugin.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/package.json</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/package.json</code></td></tr><tr><td>modify</td><td><code>package.json</code></td></tr><tr><td>modify</td><td><code>README.md</code></td></tr><tr><td>modify</td><td><code>CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/CHANGELOG.md</code></td></tr><tr><td>modify</td><td><code>core/pysrc/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca/hooks/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/hooks/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/hooks/hostapi.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca/hooks/_host.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-codex/hooks/_host.py</code></td></tr><tr><td>modify</td><td><code>plugins/ca-pi/hooks/_host.py</code></td></tr></tbody></table></div></div><div class="field"><span class="label">Rollback</span>Revert the version and changelog edits.</div><div class="field"><span class="label">Source refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Steps</span><ul class="items"><li>Advance ca to 3.2.0, ca-codex to 0.20.0 and ca-pi to 0.21.0 (new protocol operation), with matching adapter versions, README badge and changelog sections.</li></ul></div><div class="field"><span class="label">Verification</span><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_badge_consistency.py&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>Badge, manifest and changelog versions agree.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-host-packages.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Assertion</span>The generated root package manifest matches the Pi package.</div><div class="field"><span class="label">Availability</span>existing</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Expected exit</span>0</div><div class="field"><span class="label">Required tests</span><span class="missing">None recorded</span></div></div></div><details><summary>Execution record</summary><div class="fields"><div class="field"><span class="label">Evidence refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Reason</span>End-to-end client read, protocol docs and 3.2.0 version surfaces done; named checks pass locally. Implementation completion only; verification and review are not assessed.</div><div class="field"><span class="label">State</span>DONE</div></div></details><details><summary>Reported command checks (not independently verified)</summary><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;.github/scripts/test_badge_consistency.py&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>0</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-19T00:07:44Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>000d74d790db72ac8098bda430ae79746b3b85bd36d9a59e7bf79374134390cd</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local Windows amd64 run 2026-10-18</div><div class="field"><span class="label">Summary</span>Badge, manifest and changelog versions agree at ca 3.2.0 (12 tests OK).</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div><div class="fields"><div class="field"><span class="label">Command arguments (not executed by this tool)</span><pre><code>[&#34;python&#34;,&#34;tools/build-host-packages.py&#34;,&#34;--check&#34;]</code></pre></div><div class="field"><span class="label">Command index</span>1</div><div class="field"><span class="label">Cwd</span>.</div><div class="field"><span class="label">Declared command</span>true</div><div class="field"><span class="label">Definition current</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Evidence assessed</span>false</div><div class="field"><span class="label">Exit code</span>0</div><div class="field"><span class="label">History trimmed</span>false</div><div class="field"><span class="label">Named tests verified</span>false</div><div class="field"><span class="label">Origin</span>tool_result</div><div class="field"><span class="label">Provenance</span>caller_reported</div><div class="field"><span class="label">Recorded at</span>2026-10-19T00:07:45Z</div><div class="field"><span class="label">Recorded scoped inputs sha256</span>000d74d790db72ac8098bda430ae79746b3b85bd36d9a59e7bf79374134390cd</div><div class="field"><span class="label">Reported outcome</span>pass</div><div class="field"><span class="label">Scope coverage</span>declared_task_paths_and_known_build_inputs_only</div><div class="field"><span class="label">Source</span>local Windows amd64 run 2026-10-18</div><div class="field"><span class="label">Summary</span>Root package.json matches the Pi package at 0.21.0.</div><div class="field"><span class="label">Worktree freshness</span>unassessed</div></div></details></article>
+<!-- CA:END:T-05 -->
+</section><section class="group" id="group-checkpoints"><a class="back" href="#main-content">Top</a><h2>Checkpoints</h2>
+<!-- CA:BEGIN:CP-01 -->
+<article class="record" id="CP-01" data-ca-symbol="CP-01" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-01">CP-01</a><h3>Engine and bridge</h3></div><div class="field"><span class="label">Depends on</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Exit</span>init-store and the bridge retry pass their named tests.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-01">T-01</a></li><li><a href="#T-02">T-02</a></li></ul></div></article>
+<!-- CA:END:CP-01 -->
+
+<!-- CA:BEGIN:CP-02 -->
+<article class="record" id="CP-02" data-ca-symbol="CP-02" data-ca-kind="checkpoints"><div class="record-head"><a class="id" href="#CP-02">CP-02</a><h3>Proof, docs and release surfaces</h3></div><div class="field"><span class="label">Depends on</span><ul class="items"><li><a href="#CP-01">CP-01</a></li></ul></div><div class="field"><span class="label">Exit</span>End-to-end read, documentation and version checks pass.</div><div class="field"><span class="label">Tasks</span><ul class="items"><li><a href="#T-03">T-03</a></li><li><a href="#T-04">T-04</a></li><li><a href="#T-05">T-05</a></li></ul></div></article>
+<!-- CA:END:CP-02 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2><span class="missing">None recorded</span></section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span><span class="missing">Not yet supplied</span></div><div class="field"><span class="label">Observed date</span>2026-10-18</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group" id="group-criterion_dispositions"><a class="back" href="#main-content">Top</a><h2>Criterion dispositions</h2><span class="missing">None recorded</span></section><section class="group" id="group-verification_inputs"><a class="back" href="#main-content">Top</a><h2>Verification inputs</h2><div class="fields"><div class="field"><span class="label">Exclude directories</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Roots</span><ul class="items"><li>core</li><li>docs</li><li>.github</li><li>plugins</li><li>tools</li><li>README.md</li><li>CHANGELOG.md</li><li>package.json</li></ul></div></div></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: 615997a1b229db52abb42da29edd700e5c7ab4645d2698af757efa39087fd466<br>Model SHA-256: af412ea15c1527d1221ed6afa55b77f6a318254c5eff98c00b862d16ce5cf9e9</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "PLAN-WINDOWS-STORE-INIT",
+  "execution": {
+    "prerequisite_evidence": {},
+    "prerequisites": {},
+    "scopes": {},
+    "task_check_observations": {
+      "T-01": [
+        {
+          "argv": [
+            "go",
+            "test",
+            "-buildvcs=false",
+            "-count=1",
+            "-run",
+            "^(TestInitStoreCreatesOnlyLockMetadata|TestInitStoreIsIdempotent|TestFreshStoreObservationsReportNoLocalStore)$",
+            "./internal/operations/"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "996fd2c006f0201c53941933098ae228db657891b4522ec064f722cb317ae00b",
+          "cwd": "core/artifacts",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-18T23:40:54Z",
+          "recording_operation_id": "check-T-01-764822895af3",
+          "scoped_inputs_sha256": "5806f18ee6c7a782b6e0a77f88ab3abc003845ff97051f35a03daac6d8b0f426",
+          "source": "local Windows amd64 run 2026-10-18",
+          "source_normative_sha256": "a23eefbbe5101c6f4829d00fe6b1b05ec854da0e4989e33927e0cf22322505bb",
+          "summary": "All three named engine tests pass; dropping the writer-lock call fails TestInitStoreCreatesOnlyLockMetadata (mutant killed).",
+          "task_subject_sha256": "32cfe04eaaeb15100dbc0666e803fd2846aac74b4f4f9c7d57039cf00213e42c"
+        },
+        {
+          "argv": [
+            "go",
+            "test",
+            "-buildvcs=false",
+            "-count=1",
+            "-run",
+            "^(TestInitStoreCreatesOnlyLockMetadata|TestInitStoreIsIdempotent|TestFreshStoreObservationsReportNoLocalStore)$",
+            "./internal/operations/"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "3c7660abd94bed048179ba553a6fc278926f157b4c294add333a4da733601b1c",
+          "cwd": "core/artifacts",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-19T00:38:48Z",
+          "recording_operation_id": "check-T-01-7efd7f9e1503",
+          "scoped_inputs_sha256": "2b9189fca39b8561dbe53d1172de8253ea73d16852a4b3617ca2003050885265",
+          "source": "local Windows amd64 run 2026-10-18 after the Linux fix",
+          "source_normative_sha256": "68d8632e3e931e54f13264d0372583e45a3d60bd20339b02f7bb262c8f75ccf5",
+          "summary": "Pass on Windows after init-store moved to the store's per-platform LockMetadataPresent; Linux and darwin cross-vet clean. Hosted Linux previously failed both tests because Linux flocks the repository directory and creates no store.lock; Linux now expects present.",
+          "task_subject_sha256": "32cfe04eaaeb15100dbc0666e803fd2846aac74b4f4f9c7d57039cf00213e42c"
+        }
+      ],
+      "T-02": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_artifact_bridge.py",
+            "-v",
+            "-k",
+            "test_no_local_store_initializes_then_retries_once",
+            "-k",
+            "test_refused_initialization_keeps_no_local_store"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "1b7a7e0efc7017fb1be244946e19b262fa7519b599fa9ff1170aea08c904ef67",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-19T00:07:10Z",
+          "recording_operation_id": "check-T-02-e9639da42d8e",
+          "scoped_inputs_sha256": "b4aba8184373a539ec74357998df5d9af742470ea12542f64df21ed8267821ea",
+          "source": "ARTIFACT_TEST_INSTALLATION=\u003cfresh build of this worktree\u003e local Windows amd64 run 2026-10-18",
+          "source_normative_sha256": "a23eefbbe5101c6f4829d00fe6b1b05ec854da0e4989e33927e0cf22322505bb",
+          "summary": "Both pass; before the bridge change the same run failed one and errored the other. Full bridge suite 21/21 OK; sync-core --check OK.",
+          "task_subject_sha256": "25c86c5becd89daeff0e423964097c398e86d958a852e4631eeae88b7551a083"
+        }
+      ],
+      "T-03": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_artifact_bridge.py",
+            "-v",
+            "-k",
+            "test_fresh_checkout_identity_through_client"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "797b049861c698cbff1e12629e770d5ec642f0f4ed7dc668f7ead90145c57076",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-19T00:07:12Z",
+          "recording_operation_id": "check-T-03-ec6215595842",
+          "scoped_inputs_sha256": "a6ea9b1ae7d21d27a9172c0628ff4917f618746b332100f7cc3ba4825886dfd8",
+          "source": "ARTIFACT_TEST_INSTALLATION=\u003cfresh build of this worktree\u003e local Windows amd64 run 2026-10-18",
+          "source_normative_sha256": "a23eefbbe5101c6f4829d00fe6b1b05ec854da0e4989e33927e0cf22322505bb",
+          "summary": "Passes with the real built engine: identity succeeds in a checkout with no store and store.lock is created; with initialize_store=False the same call raises NO_LOCAL_STORE and creates nothing.",
+          "task_subject_sha256": "4e767bf136ce7dd3cf9f1a2dd9942ff38be47e37b53bd2fa6010d3a4da6cb1d3"
+        }
+      ],
+      "T-04": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_artifact_bridge.py",
+            "-v",
+            "-k",
+            "test_protocol_documents_init_store"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "91f2ee16a6a15ce98c6bc1fcaec93b5bfe58068d1831f7409feac42b440672b7",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-19T00:07:15Z",
+          "recording_operation_id": "check-T-04-db7966d5785f",
+          "scoped_inputs_sha256": "a3e5652a5f648829bf23e356422e214e9e4b6b54815659279f441eb4fd6fc30a",
+          "source": "ARTIFACT_TEST_INSTALLATION=\u003cfresh build of this worktree\u003e local Windows amd64 run 2026-10-18",
+          "source_normative_sha256": "a23eefbbe5101c6f4829d00fe6b1b05ec854da0e4989e33927e0cf22322505bb",
+          "summary": "Passes; with the PROTOCOL.md paragraph stashed the same test fails.",
+          "task_subject_sha256": "8a74963047c8f07dc9832d56686a5f7d1beb06c4ac18b679f3c88dd82cacec3f"
+        }
+      ],
+      "T-05": [
+        {
+          "argv": [
+            "python",
+            ".github/scripts/test_badge_consistency.py"
+          ],
+          "command_index": 0,
+          "criterion_subject_sha256": "582f338363c7d6cc0a9b8c711a2a3760c8b8fc683156e4a41439836a5d8cb116",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-19T00:07:44Z",
+          "recording_operation_id": "check-T-05-b9a7796c6484",
+          "scoped_inputs_sha256": "000d74d790db72ac8098bda430ae79746b3b85bd36d9a59e7bf79374134390cd",
+          "source": "local Windows amd64 run 2026-10-18",
+          "source_normative_sha256": "a23eefbbe5101c6f4829d00fe6b1b05ec854da0e4989e33927e0cf22322505bb",
+          "summary": "Badge, manifest and changelog versions agree at ca 3.2.0 (12 tests OK).",
+          "task_subject_sha256": "2866733feda6bf0cce3f34bf0d3bedfef4c381aa6f7a6432927577ca0dae5877"
+        },
+        {
+          "argv": [
+            "python",
+            "tools/build-host-packages.py",
+            "--check"
+          ],
+          "command_index": 1,
+          "criterion_subject_sha256": "582f338363c7d6cc0a9b8c711a2a3760c8b8fc683156e4a41439836a5d8cb116",
+          "cwd": ".",
+          "exit_code": 0,
+          "history_trimmed": false,
+          "origin": "tool_result",
+          "outcome": "pass",
+          "provenance": "caller_reported",
+          "recorded_at": "2026-10-19T00:07:45Z",
+          "recording_operation_id": "check-T-05-9622cc4a651d",
+          "scoped_inputs_sha256": "000d74d790db72ac8098bda430ae79746b3b85bd36d9a59e7bf79374134390cd",
+          "source": "local Windows amd64 run 2026-10-18",
+          "source_normative_sha256": "a23eefbbe5101c6f4829d00fe6b1b05ec854da0e4989e33927e0cf22322505bb",
+          "summary": "Root package.json matches the Pi package at 0.21.0.",
+          "task_subject_sha256": "2866733feda6bf0cce3f34bf0d3bedfef4c381aa6f7a6432927577ca0dae5877"
+        }
+      ]
+    },
+    "tasks": {
+      "T-01": {
+        "evidence_refs": [],
+        "reason": "init-store engine op and bridge retry implemented; named engine and bridge tests pass locally. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-02": {
+        "evidence_refs": [],
+        "reason": "init-store engine op and bridge retry implemented; named engine and bridge tests pass locally. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-03": {
+        "evidence_refs": [],
+        "reason": "End-to-end client read, protocol docs and 3.2.0 version surfaces done; named checks pass locally. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-04": {
+        "evidence_refs": [],
+        "reason": "End-to-end client read, protocol docs and 3.2.0 version surfaces done; named checks pass locally. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      },
+      "T-05": {
+        "evidence_refs": [],
+        "reason": "End-to-end client read, protocol docs and 3.2.0 version surfaces done; named checks pass locally. Implementation completion only; verification and review are not assessed.",
+        "state": "DONE"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "af412ea15c1527d1221ed6afa55b77f6a318254c5eff98c00b862d16ce5cf9e9",
+    "normative_sha256": "615997a1b229db52abb42da29edd700e5c7ab4645d2698af757efa39087fd466",
+    "symbol_count": 7
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": null,
+      "observed_date": "2026-10-18",
+      "repository": null
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "init-store and the bridge retry pass their named tests.",
+        "id": "CP-01",
+        "tasks": [
+          "T-01",
+          "T-02"
+        ],
+        "title": "Engine and bridge"
+      },
+      {
+        "depends_on": [
+          "CP-01"
+        ],
+        "exit": "End-to-end read, documentation and version checks pass.",
+        "id": "CP-02",
+        "tasks": [
+          "T-03",
+          "T-04",
+          "T-05"
+        ],
+        "title": "Proof, docs and release surfaces"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [],
+    "retired_symbols": [],
+    "sections": [],
+    "sources": [],
+    "spec_ref": {
+      "artifact_id": "SPEC-WINDOWS-STORE-INIT",
+      "binding_mode": "draft_preview",
+      "normative_sha256": "68d8632e3e931e54f13264d0372583e45a3d60bd20339b02f7bb262c8f75ccf5"
+    },
+    "summary": "Engine init-store operation, bridge init-then-retry, end-to-end proof, protocol docs and versions.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-WINDOWS-STORE-INIT#AC-01",
+          "SPEC-WINDOWS-STORE-INIT#AC-02",
+          "SPEC-WINDOWS-STORE-INIT#AC-03"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "The three named tests pass.",
+          "Reads still return NO_LOCAL_STORE on a fresh Windows store."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-01",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/protocol.go"
+          },
+          {
+            "action": "modify",
+            "path": "core/artifacts/internal/operations/engine.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/init_store_test.go"
+          }
+        ],
+        "rollback": "Remove the operation registration, the engine branch and the new test file.",
+        "source_refs": [],
+        "steps": [
+          "Write TestInitStoreCreatesOnlyLockMetadata and TestInitStoreIsIdempotent; watch both fail on the unknown operation.",
+          "Register init-store with a protocol-only request schema; it is not a journaled mutation.",
+          "In Run, handle init-store before the observation branch: record whether store.lock existed, take the exclusive writer lock through f.Lock, release it, and return store=created or store=present.",
+          "Keep TestFreshStoreObservationsReportNoLocalStore unchanged and passing."
+        ],
+        "title": "Engine init-store operation",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-buildvcs=false",
+              "-count=1",
+              "-run",
+              "^(TestInitStoreCreatesOnlyLockMetadata|TestInitStoreIsIdempotent|TestFreshStoreObservationsReportNoLocalStore)$",
+              "./internal/operations/"
+            ],
+            "assertion": "Each named engine test runs and passes.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestInitStoreCreatesOnlyLockMetadata",
+              "TestInitStoreIsIdempotent",
+              "TestFreshStoreObservationsReportNoLocalStore"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-WINDOWS-STORE-INIT#AC-04",
+          "SPEC-WINDOWS-STORE-INIT#AC-05"
+        ],
+        "depends_on": [
+          "T-01"
+        ],
+        "done_when": [
+          "Both named tests pass.",
+          "python tools/sync-core.py --check passes."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-02",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_artifactlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/hooks/_artifactlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/hooks/_artifactlib.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/hooks/_artifactlib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_bridge.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_conformance.py"
+          }
+        ],
+        "rollback": "Revert _artifactlib.py and its generated copies and remove the two tests.",
+        "source_refs": [],
+        "steps": [
+          "Write the two bridge tests with a recording stand-in for the native child; watch them fail.",
+          "Add initialize_store (default True) to ArtifactClient; split the single native exchange out of call().",
+          "On NO_LOCAL_STORE from an operation other than init-store: when enabled, call init-store once; on success retry the original request once; on any init failure raise NO_LOCAL_STORE naming the refused initialization.",
+          "Regenerate the plugin copies with tools/sync-core.py and list the new tests in the conformance suite's expected names."
+        ],
+        "title": "Bridge init-then-retry on NO_LOCAL_STORE",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_bridge.py",
+              "-v",
+              "-k",
+              "test_no_local_store_initializes_then_retries_once",
+              "-k",
+              "test_refused_initialization_keeps_no_local_store"
+            ],
+            "assertion": "Each named bridge test runs and passes against a freshly built payload.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_no_local_store_initializes_then_retries_once",
+              "test_refused_initialization_keeps_no_local_store"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-WINDOWS-STORE-INIT#AC-06"
+        ],
+        "depends_on": [
+          "T-01",
+          "T-02"
+        ],
+        "done_when": [
+          "The named test passes with a freshly built payload."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-03",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_bridge.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_conformance.py"
+          }
+        ],
+        "rollback": "Remove the test.",
+        "source_refs": [],
+        "steps": [
+          "Add test_fresh_checkout_identity_through_client: create a spec with the real built engine, delete .codearbiter/.artifacts, call identity through ArtifactClient, and assert the artifact_id and that store.lock exists.",
+          "Confirm it fails with initialize_store=False on Windows as the negative control."
+        ],
+        "title": "Real fresh-checkout read through the client",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_bridge.py",
+              "-v",
+              "-k",
+              "test_fresh_checkout_identity_through_client"
+            ],
+            "assertion": "Each named bridge test runs and passes against a freshly built payload.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_fresh_checkout_identity_through_client"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-WINDOWS-STORE-INIT#AC-07"
+        ],
+        "depends_on": [
+          "T-01",
+          "T-02"
+        ],
+        "done_when": [
+          "The named test passes."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-04",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "docs/artifacts/PROTOCOL.md"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_bridge.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_conformance.py"
+          }
+        ],
+        "rollback": "Revert the PROTOCOL.md paragraph and remove the test.",
+        "source_refs": [],
+        "steps": [
+          "Add test_protocol_documents_init_store asserting PROTOCOL.md names init-store, its created/present result and the one-time retry.",
+          "Extend the NO_LOCAL_STORE paragraph and the operation family table."
+        ],
+        "title": "Protocol documentation",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_bridge.py",
+              "-v",
+              "-k",
+              "test_protocol_documents_init_store"
+            ],
+            "assertion": "Each named bridge test runs and passes against a freshly built payload.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": [
+              "test_protocol_documents_init_store"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-WINDOWS-STORE-INIT#AC-04",
+          "SPEC-WINDOWS-STORE-INIT#AC-06"
+        ],
+        "depends_on": [
+          "T-01",
+          "T-02",
+          "T-03",
+          "T-04"
+        ],
+        "done_when": [
+          "Both checks pass."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-05",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "plugins/ca/.claude-plugin/plugin.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/.codex-plugin/plugin.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/package.json"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/package.json"
+          },
+          {
+            "action": "modify",
+            "path": "package.json"
+          },
+          {
+            "action": "modify",
+            "path": "README.md"
+          },
+          {
+            "action": "modify",
+            "path": "CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/CHANGELOG.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/hooks/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/hooks/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/hooks/hostapi.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca/hooks/_host.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-codex/hooks/_host.py"
+          },
+          {
+            "action": "modify",
+            "path": "plugins/ca-pi/hooks/_host.py"
+          }
+        ],
+        "rollback": "Revert the version and changelog edits.",
+        "source_refs": [],
+        "steps": [
+          "Advance ca to 3.2.0, ca-codex to 0.20.0 and ca-pi to 0.21.0 (new protocol operation), with matching adapter versions, README badge and changelog sections."
+        ],
+        "title": "Version the release surfaces",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_badge_consistency.py"
+            ],
+            "assertion": "Badge, manifest and changelog versions agree.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "tools/build-host-packages.py",
+              "--check"
+            ],
+            "assertion": "The generated root package manifest matches the Pi package.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      }
+    ],
+    "title": "Explicit store initialization for fresh checkouts",
+    "verification_inputs": {
+      "exclude_directories": [],
+      "roots": [
+        "core",
+        "docs",
+        ".github",
+        "plugins",
+        "tools",
+        "README.md",
+        "CHANGELOG.md",
+        "package.json"
+      ]
+    }
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "../specs/windows-store-init.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 16,
+  "schema_version": "0.3.2",
+  "slug": "windows-store-init"
+}
+</script>
+</body></html>
