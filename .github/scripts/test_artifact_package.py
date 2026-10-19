@@ -1321,20 +1321,27 @@ class PackageTests(unittest.TestCase):
                     positions := token.NewFileSet()
                     parsed, err := parser.ParseFile(positions, path, nil, 0)
                     if err != nil { return err }
-                    // The process exception pins one reviewed fixed-probe function,
-                    // never a file/package. Any edit requires explicit re-review.
+                    // The process exception pins the reviewed fixed-probe function and
+                    // the environment filter it delegates to, never a file/package.
+                    // Any edit to either requires explicit re-review.
                     var reviewedGit *ast.FuncDecl
                     relative, err := filepath.Rel(os.Args[1], path)
                     if err != nil { return err }
                     if filepath.ToSlash(relative) == "internal/evidence/completion_workspace.go" {
+                        reviewedProbe := map[string]string{
+                            "completionGitText": "9ff4682eb45857e6a1dee8cb2a517a04a4cd89b98edf7506b3cfe8beee973d84",
+                            "completionGitEnv": "bb214ce0faba321f4459695985ea58219bd530cf6e8c3a0714295c55dd35ac4c",
+                        }
                         for _, declaration := range parsed.Decls {
                             fn, ok := declaration.(*ast.FuncDecl)
-                            if !ok || fn.Name.Name != "completionGitText" { continue }
+                            if !ok { continue }
+                            expected, pinned := reviewedProbe[fn.Name.Name]
+                            if !pinned { continue }
                             var normalized bytes.Buffer
                             if err := format.Node(&normalized, positions, fn); err != nil { return err }
                             digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
-                            if digest == "bda95669da96ff24e4c7560bea7cf8b147b7bc320775a1267fb7d51f930b9ab5" { reviewedGit = fn
-                            } else { findings = append(findings, path+" has unreviewed Git probe "+digest) }
+                            if digest != expected { findings = append(findings, path+" has unreviewed Git probe "+fn.Name.Name+" "+digest)
+                            } else if fn.Name.Name == "completionGitText" { reviewedGit = fn }
                         }
                     }
                     reviewedResolvers := map[*ast.CallExpr]bool{}
