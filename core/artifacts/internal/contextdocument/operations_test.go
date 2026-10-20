@@ -468,7 +468,7 @@ func TestContextMutationAdmission(t *testing.T) {
 	})
 
 	t.Run("unowned_or_unsupported_provenance_is_preserved", func(t *testing.T) {
-		for _, previous := range [][]byte{nil, []byte(`{"schema":1,"doc":"CONTEXT","created":"2026-09-27","interview_derived":false,"entries":[]}`), []byte(`{"schema":99}`)} {
+		for index, previous := range [][]byte{nil, []byte(`{"schema":1,"doc":"CONTEXT","created":"2026-09-27","interview_derived":false,"entries":[]}`), []byte(`{"schema":99}`)} {
 			f, done := mutationFixture(t, "unsupported")
 			mutationWrite(t, f, doc, old)
 			if previous != nil {
@@ -486,8 +486,11 @@ func TestContextMutationAdmission(t *testing.T) {
 			}
 			if previous != nil {
 				adopt := mutationRequest(t, "adopt", old, previous, "context-owner-0002")
-				if _, err := Apply(f, adopt, fixtureMutationAuthority(t, adopt)); fault.Code(err) != "OWNERSHIP_REQUIRED" {
-					t.Fatalf("present provenance adopted: %v", err)
+				_, err := ApplyOrdinary(f, adopt)
+				if index == 1 && err != nil {
+					t.Fatalf("explicit legacy adoption failed: %v", err)
+				} else if index != 1 && fault.Code(err) != "OWNERSHIP_REQUIRED" {
+					t.Fatalf("unsupported provenance adopted: %v", err)
 				}
 			}
 			done()

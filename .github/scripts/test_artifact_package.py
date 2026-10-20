@@ -243,9 +243,10 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(capabilities["repository_context"], {
             "source_present": True,
             "kind_registered": True,
-            "host_default_enabled": False,
-            "qualification": "package-required",
+            "host_default_enabled": True,
+            "qualification": "native-tested-package",
             "mutation_available": True,
+            "permission_model": "host-owned",
         })
         self.assertEqual(capabilities["public_registrations_added"], 0)
         self.assertEqual(PACKAGER.ARTIFACT_PLATFORMS, BUILDER.QUALIFIED_CI_PLATFORMS)
@@ -267,10 +268,10 @@ class PackageTests(unittest.TestCase):
                                  (INSTALLATION / binary_name).read_bytes())
                 installed = ArtifactClient(repository, payload).call("capabilities")
                 self.assertTrue(installed["repository_context"]["kind_registered"])
-                self.assertEqual(installed["repository_context"]["qualification"], "package-required")
+                self.assertEqual(installed["repository_context"]["qualification"], "native-tested-package")
 
     def test_t018_context_kind_package_admission_negative_controls(self):
-        """Installed context remains unavailable; generic artifact routes cannot write it."""
+        """Malformed context requests and generic artifact routes cannot overwrite guidance."""
         repository = self.base / "context-kind-negative"
         context_root = repository / ".codearbiter"
         context_root.mkdir(parents=True)
@@ -282,9 +283,8 @@ class PackageTests(unittest.TestCase):
         client = ArtifactClient(repository, INSTALLATION)
         with mock.patch.object(client, "workflow_preflight", return_value={
                 "resources_available": True, "host": "codex"}):
-            with self.assertRaisesRegex(_artifactlib.ArtifactError,
-                                        "CONTEXT_WORKFLOW_UNAVAILABLE"):
-                client.call("context-evidence-context", {})
+            with self.assertRaisesRegex(_artifactlib.ArtifactError, "INVALID_MODEL: required field absent"):
+                client.call("context-preview", {})
         for operation, request in (
                 ("create", {"operation_id": "context-create-0001",
                             "artifact_id": "CONTEXT-CONTEXT", "kind": "context",
@@ -1260,7 +1260,7 @@ class PackageTests(unittest.TestCase):
                         "func:*FS.nativeLock": "4257871b4f5aefb0d58d26bcd93a25765f42d7accebdfcc6aed6b7327e922f78",
                         "func:*FS.ObservationLock": "c312af695e1311316c01218a19866c68425fc42dcdd0d630eb0bfb383fd94ea3",
                         "func:pinLockObject": "2cfc594a3c76ba879f90ce71c5cd42fb7fac8c48fd4e019699cc6183b421c377",
-                        "func:*FS.windowsLock": "a3efeaf347472e06b99dcebaafe83bf1942fbc5f9fa65df9132a7115fab3b88c",
+                        "func:*FS.windowsLock": "7e4b3cfaf3e3a80d777ef8c91a1fbecc13694860fb3558812b535f9cc160f8b9",
                     },
                     references: map[string][]string{
                         "kernel32": {"var:kernel32"},
@@ -1321,20 +1321,34 @@ class PackageTests(unittest.TestCase):
                     positions := token.NewFileSet()
                     parsed, err := parser.ParseFile(positions, path, nil, 0)
                     if err != nil { return err }
-                    // The process exception pins one reviewed fixed-probe function,
-                    // never a file/package. Any edit requires explicit re-review.
+                    // The process exception pins the reviewed fixed-probe function and
+                    // the environment filter it delegates to, never a file/package.
+                    // Any edit to either requires explicit re-review.
                     var reviewedGit *ast.FuncDecl
                     relative, err := filepath.Rel(os.Args[1], path)
                     if err != nil { return err }
                     if filepath.ToSlash(relative) == "internal/evidence/completion_workspace.go" {
+                        reviewedProbe := map[string]string{
+                            "completionGitText": "5d233f0d699008c3973452171ece24915948aa37db804b0f434fe8e401c6eabe",
+                            "completionGitEnv": "bb214ce0faba321f4459695985ea58219bd530cf6e8c3a0714295c55dd35ac4c",
+                        }
+                        found := map[string]int{}
                         for _, declaration := range parsed.Decls {
                             fn, ok := declaration.(*ast.FuncDecl)
-                            if !ok || fn.Name.Name != "completionGitText" { continue }
+                            if !ok { continue }
+                            expected, pinned := reviewedProbe[fn.Name.Name]
+                            if !pinned { continue }
+                            found[fn.Name.Name]++
                             var normalized bytes.Buffer
                             if err := format.Node(&normalized, positions, fn); err != nil { return err }
                             digest := fmt.Sprintf("%x", sha256.Sum256(normalized.Bytes()))
-                            if digest == "bda95669da96ff24e4c7560bea7cf8b147b7bc320775a1267fb7d51f930b9ab5" { reviewedGit = fn
-                            } else { findings = append(findings, path+" has unreviewed Git probe "+digest) }
+                            if digest != expected { findings = append(findings, path+" has unreviewed Git probe "+fn.Name.Name+" "+digest)
+                            } else if fn.Name.Name == "completionGitText" { reviewedGit = fn }
+                        }
+                        // Each pinned name must be exactly one reviewed function; a
+                        // function-valued variable of the same name is never pinned.
+                        for name := range reviewedProbe {
+                            if found[name] != 1 { reviewedGit = nil; findings = append(findings, path+" lacks the reviewed Git probe function "+name) }
                         }
                     }
                     reviewedResolvers := map[*ast.CallExpr]bool{}

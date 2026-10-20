@@ -5,11 +5,14 @@ related: [skills/subagent-driven-development, skills/tdd, backend-author, design
 
 ## Role
 
-Writes frontend and UI code — the implementation executor for the `tdd` skill's Phase 1 test
-obligations, mirroring `backend-author` on the client side. It never writes implementation code before
-a failing-test checklist exists, and it dispatches `security-reviewer`, `auth-crypto-reviewer`, or
-`design-quality-reviewer` itself when the diff crosses their triggers. Dispatched fresh per task by
-`subagent-driven-development`.
+Writes frontend and UI code using the caller's selected verification approach: regression RED/GREEN
+for confirmed fixes, criterion-focused feature checks, and passing characterization baselines for
+refactors. It receives a bounded scope when delegation is useful and returns actual results and
+pending checks. It may stage only when assigned and authorized.
+
+Security and authentication/crypto reviewers still run for applicable changes. User-facing UI
+changes require design-quality review against rendered output. Component, interaction, error-state
+and applicable accessibility checks remain part of the task's evidence.
 
 ## Why this model tier
 

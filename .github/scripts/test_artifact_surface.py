@@ -21,17 +21,18 @@ POLICY_STARTUP_FIXTURES = (
 )
 # Historical artifact-policy baseline is immutable. PR843 separately reviewed
 # the resident routing body; PR872 reviewed initialized-state parsing and bounded
-# context-coverage notices. Keep both content pins separate from the pilot.
+# context-coverage notices. PR983 aligns resident sprint guidance with assistive
+# execution. Keep current content pins separate from the historical pilot.
 STARTUP_CONTENT_SHA256 = {
-    "core/surface/arbiter.md": "4bbe2beb49d1026271025d2553709728af1b300a9fdabd7c9d80978925faeb14",
+    "core/surface/arbiter.md": "a938c8e6e8849c1859c0c56c558c60ede1c7b12ec3a069181a06215ce2072e49",
     "core/pysrc/session-start.py": "2cc0d575e3f85824a3eba4b21e54cca9d0285f4ce4bf8c41e5331344c18c9c80",
 }
 
-ARTIFACT_GUIDANCE_PATHS = (
-    "core/surface/includes/artifacts.md",
-    "plugins/ca/includes/artifacts.md",
-    "plugins/ca-codex/includes/artifacts.md",
-    "plugins/ca-pi/includes/artifacts.md",
+HISTORICAL_ATTESTATION_GUIDANCE_PATHS = (
+    "core/surface/includes/artifacts-attestation.md",
+    "plugins/ca/includes/artifacts-attestation.md",
+    "plugins/ca-codex/includes/artifacts-attestation.md",
+    "plugins/ca-pi/includes/artifacts-attestation.md",
 )
 
 
@@ -229,18 +230,18 @@ class ArtifactSurfaceTest(unittest.TestCase):
             "event, but codeArbiter has no Pi-native authority adapter. Under Pi do not arm this\n"
             "adapter"
         )
-        for relative in ARTIFACT_GUIDANCE_PATHS:
+        for relative in HISTORICAL_ATTESTATION_GUIDANCE_PATHS:
             text = (ROOT / relative).read_text(encoding="utf-8")
             self.assertIn(warning, text, relative)
 
     def test_authority_guidance_names_the_codex_only_production_seam(self) -> None:
-        for relative in ARTIFACT_GUIDANCE_PATHS:
+        for relative in HISTORICAL_ATTESTATION_GUIDANCE_PATHS:
             text = (ROOT / relative).read_text(encoding="utf-8")
             self.assertIn("Verification and review authority below is supported on Codex and Claude Code", text, relative)
             self.assertNotIn("Codex-only", text, relative)
             self.assertNotIn("corroborated exit 0", text, relative)
         host_notes = (ROOT / "core/surface/includes/codex-host-notes.md").read_text(encoding="utf-8")
-        self.assertIn("`verify` command shown in `artifacts.md`", host_notes)
+        self.assertIn("`verify` command shown in `artifacts-attestation.md`", host_notes)
         self.assertNotIn("wrapper command returned by the", host_notes)
 
     def test_policy_baseline_is_in_candidate_history(self) -> None:

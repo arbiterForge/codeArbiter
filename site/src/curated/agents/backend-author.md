@@ -5,15 +5,18 @@ related: [skills/subagent-driven-development, skills/tdd, frontend-author, infra
 
 ## Role
 
-Writes backend and server-side code — the implementation executor for the `tdd` skill's Phase 1 test
-obligations. It never writes implementation code before a failing-test checklist exists, and it
-dispatches `security-reviewer`, `auth-crypto-reviewer`, `migration-reviewer`, or `dependency-reviewer`
-itself when the diff crosses their triggers. Dispatched fresh per task by `subagent-driven-development`
-(and by `dispatching-parallel-agents` for a batch of independent backend tasks).
+Writes backend and server-side code using the caller's selected verification approach: regression
+RED/GREEN for confirmed fixes, criterion-focused feature checks, and passing characterization
+baselines for refactors. It receives a bounded scope when delegation is useful and returns actual
+results and pending checks. It may stage only when assigned and authorized.
+
+Required security, authentication/crypto, migration and dependency reviewers still run when the
+diff crosses their triggers. Input validation, error handling and project coverage requirements
+apply regardless of the verification approach.
 
 ## Why this model tier
 
-Ships `model: sonnet`. Writing correct server-side code test-first — input validation, ORM usage,
+Ships `model: sonnet`. Writing correct server-side code — input validation, ORM usage,
 framework conventions — needs implementation-grade reasoning, not just fact-gathering, which is why it
 sits above the haiku-tier read-only reviewers.
 

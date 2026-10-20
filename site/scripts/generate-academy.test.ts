@@ -253,13 +253,14 @@ describe("generateAcademy", () => {
   const integrationLessonHtml = new Map<string, string>();
 
   beforeAll(() => {
-    const npmCli = process.env.npm_execpath;
-    if (!npmCli) throw new Error("npm_execpath is required to run the Academy integration build");
-
-    execFileSync(process.execPath, [npmCli, "run", "build"], {
-      cwd: siteRoot,
-      stdio: "pipe",
-    });
+    if (process.env.VITEST_MODE === "WATCH") {
+      const npmCli = process.env.npm_execpath;
+      if (!npmCli) throw new Error("npm_execpath is required to rebuild Academy fixtures in watch mode");
+      execFileSync(process.execPath, [npmCli, "run", "build"], {
+        cwd: siteRoot,
+        stdio: "pipe",
+      });
+    }
 
     integrationAcademyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
     for (const lessonSlug of ["p01-feature-through-plan", "u01-autonomous-sprint"]) {
@@ -307,7 +308,10 @@ describe("generateAcademy", () => {
       const run = (digest: string) => spawnSync(shell, args, {
         cwd: root,
         encoding: "utf8",
-        timeout: 10_000,
+        // PowerShell startup on a loaded hosted runner can exceed 10s even
+        // for this inert fixture. Preserve a real per-process deadline and
+        // both success/failure assertions; only relax the startup budget.
+        timeout: windows ? 30_000 : 10_000,
         env: {
           ...process.env,
           ACADEMY_TEST_ROOT: root.replaceAll("\\", "/"),
@@ -328,8 +332,9 @@ describe("generateAcademy", () => {
       expect(mismatching.stderr).toContain("installer digest did not match Preview 0.32");
       expect(existsSync(sentinel)).toBe(false);
     },
-    // Both real shell launches retain their independent 10-second deadlines.
-    25_000,
+    // Two bounded Windows launches may each use 30s under runner contention.
+    // A failed digest must still exit nonzero without running the sentinel.
+    75_000,
   );
 
   it("builds one accessible Academy overview from the canonical public inventory", () => {

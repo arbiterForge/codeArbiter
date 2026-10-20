@@ -43,6 +43,14 @@ type Entry struct {
 	SourceRelationship  *SourceRelationship
 	MapEntry            *MapEntry
 	ConstraintReference *ConstraintReference
+	Document            *DocumentContent
+}
+
+// DocumentContent is an explicit replacement of one of the five context
+// documents, not an executable command or a general repository file writer.
+type DocumentContent struct {
+	Markdown     string
+	EvidenceRefs []string
 }
 
 type Identity struct {
@@ -176,6 +184,7 @@ func validateEntry(value any) (Entry, error) {
 		return Entry{}, err
 	}
 	keys := map[string][]string{
+		"document":             {"id", "kind", "markdown", "evidence_refs"},
 		"identity":             {"id", "kind", "field", "value", "evidence_refs"},
 		"fact":                 {"id", "kind", "field", "value", "state", "source_ref", "consumer_ref", "evidence_refs"},
 		"command":              {"id", "kind", "invocation", "cwd", "prerequisites", "verification", "evidence_refs"},
@@ -204,6 +213,12 @@ func validateEntry(value any) (Entry, error) {
 	}
 	entry := Entry{ID: id, Kind: kind}
 	switch kind {
+	case "document":
+		body, ok := m["markdown"].(string)
+		if !ok || len(body) == 0 || len(body) > 128*1024 || !utf8.ValidString(body) || strings.ContainsRune(body, 0) {
+			return Entry{}, fmt.Errorf("document requires bounded UTF-8 Markdown without NUL")
+		}
+		entry.Document = &DocumentContent{body, evidence}
 	case "identity":
 		field, e1 := text(m, "field", 64)
 		value, e2 := text(m, "value", 512)
@@ -411,7 +426,7 @@ func Validate(data []byte) (Document, error) {
 		if err != nil {
 			return Document{}, err
 		}
-		if !contract.kinds[entry.Kind] || seen[entry.ID] {
+		if entry.Kind != "document" && !contract.kinds[entry.Kind] || seen[entry.ID] || entry.Kind == "document" && len(values) != 1 {
 			return Document{}, fmt.Errorf("entry kind or ID is invalid for document")
 		}
 		seen[entry.ID] = true

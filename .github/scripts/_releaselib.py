@@ -67,6 +67,7 @@
 #   UnknownKeyError, DuplicateKeyError, DuplicateTargetError,
 #   InvalidBooleanError, MultipleBlocksError, DelimiterInValueError,
 #   MissingRequiredKeyError, FileExistsNoBlockError
+#   SEMVER (compiled semantic-version pattern)
 #   semver_key(value) -> tuple | None
 #   semver_greater(current, base) -> bool
 #   notes_heading_matches(notes_text, tag) -> bool
@@ -82,6 +83,7 @@
 # Public API (this repo's DATA -- RELEASE_TARGETS derived from the declared
 # file; see the module comment above):
 #   RELEASE_TARGETS, MERGE_READINESS_CHECK
+#   release_tag_prefixes() -> dict[str, str]   (derived from the declared file)
 #   last_tag_select(tags, prefix="v") -> str
 #   select_release_target(*confirmations) -> str   (declared order)
 #   select-target-named CLI subcommand (A-4.2, order-independent) -- NOT an
@@ -302,6 +304,7 @@ def _read(path):
 def main(argv):
     """CLI dispatch. Subcommands:
       last-tag                                 stdin=tags -> prints selected tag / <none>
+      tag-prefix <target>                     prints the declared target's tag prefix
       notes-match <tag> <notes_file>           exit 0 iff first heading == tag
       dates-consistent <changelog> <tagmsg>    exit 0 iff the two dates agree
       classify <tag_exists> <tag_sha> <head_sha> <tag_version> <manifest_version> <release_nondraft>
@@ -338,8 +341,8 @@ def main(argv):
     import sys
     if not argv:
         sys.stderr.write(
-            "usage: _releaselib.py {last-tag|notes-match|dates-consistent|classify"
-            "|select-target|merge-readiness|peel-tag} ...\n")
+            "usage: _releaselib.py {last-tag|tag-prefix|notes-match|dates-consistent|classify"
+            "|select-target|select-target-named|merge-readiness|peel-tag|auto-eligible} ...\n")
         return 2
     cmd, rest = argv[0], argv[1:]
     if cmd == "last-tag" and len(rest) <= 1:

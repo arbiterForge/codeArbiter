@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Structural tests for the commit-gate provenance auto-heal wiring (AC-14).
+"""Tests for provenance auto-heal and current context evidence wiring.
 
-These are prose/command-doc assertions — content-presence checks that make the
-spec's acceptance criteria (AC-14) executable and CI-enforced.
+Prose assertions preserve the workflow boundaries; read-only v2 assessment
+checks the enrolled code map's actual source and document identities. Temporary
+negative fixtures are not current repository or host-qualification evidence.
 
 Assertions are deliberately COARSE — durable marker phrases, not exact wording —
 so ordinary copy edits do not break the test.  Copy quality is carried by review,
@@ -16,13 +17,19 @@ Extending this harness (later tasks T-18..T-21):
 Run: python .github/scripts/test_provenance_wiring.py
 Run (filtered): python .github/scripts/test_provenance_wiring.py commit_gate_heal
 """
+import copy
 import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "plugins/ca/hooks"))
+
+import _contextsnapshotlib as snapshots  # noqa: E402
+import _provenancelib as provenance  # noqa: E402
 
 
 def read_repo(relative_path):
@@ -193,18 +200,21 @@ def test_context_creation_provenance():
         "agents/scout.md: Output Template must reference 'git hash-object' (AC-17)",
     )
 
-    # --- context-creation SKILL.md Phase 2: git hash-object per cited file ------
+    # Context evidence records its actual method; the decision-variance recipe
+    # above is not a required collector for ordinary context inspection.
     phase2_start = skill.find("## Phase 2")
     phase3_start = skill.find("## Phase 3")
     if phase2_start == -1 or phase3_start == -1:
         check(False, "context-creation SKILL.md: Phase 2 or Phase 3 section not found")
         return
     phase2 = skill[phase2_start:phase3_start]
-    check(
-        "git hash-object" in phase2,
-        "context-creation SKILL.md Phase 2: must mention 'git hash-object' "
-        "per cited file (AC-17)",
-    )
+    words = " ".join(phase2.split())
+    for phrase in ("searched scope and predicates", "path/line citation",
+                   "digest and its method", "observed/inferred/unknown",
+                   "git-blob-normalized-sha1", "sha256-raw",
+                   "not verify a claim's meaning", "Never forward secret values"):
+        check(phrase in words,
+              f"context-creation evidence must retain {phrase!r}")
 
     # --- context-creation SKILL.md Phase 5: provenance per derived doc + code-map.md ---
     phase5_start = skill.find("## Phase 5")
@@ -222,32 +232,21 @@ def test_context_creation_provenance():
         "code-map.md" in phase5,
         "context-creation SKILL.md Phase 5: must mention synthesizing 'code-map.md' (AC-17)",
     )
+    words = " ".join(phase5.split())
+    for phrase in ("context-preview", "context-apply", "preview_ref",
+                   "preview_sha256", "each selected document and its v2",
+                   "Never write either side of this pair directly",
+                   "does not stand in for semantic review"):
+        check(phrase in words, f"context native-writer contract must retain {phrase!r}")
 
 
-# ---- AC-18: decompose writes provenance stubs + code-map stub (T-19) ----------
-def test_decompose_provenance_stub():
-    skill = read_repo("plugins/ca/skills/decompose/SKILL.md")
-
-    # write_stub or "provenance stub" must appear
-    check(
-        any(phrase in skill for phrase in ["write_stub", "provenance stub"]),
-        "decompose SKILL.md: must mention 'write_stub' or 'provenance stub' "
-        "(AC-18: greenfield stubs written via _provenancelib.write_stub)",
-    )
-
-    # interview_derived must appear
-    check(
-        "interview_derived" in skill,
-        "decompose SKILL.md: must mention 'interview_derived' "
-        "(AC-18: stubs carry interview_derived: true)",
-    )
-
-    # code-map stub must appear
-    check(
-        "code-map" in skill,
-        "decompose SKILL.md: must mention a 'code-map' stub "
-        "(AC-18: greenfield code-map.md stub written alongside provenance stubs)",
-    )
+def test_decompose_native_population():
+    skill = read_repo("core/surface/skills/decompose/SKILL.md")
+    for phrase in ("--context-draft", "--context-apply", "--context-finalize",
+                   "v2 provenance", "plans/decomposition/", "code-map",
+                   "decision-lifecycle", "taskwrite.py"):
+        check(phrase in skill, f"greenfield population must retain {phrase!r}")
+    check("write_stub" not in skill, "greenfield population requires paired v2 provenance")
 
 
 # ---- AC-16: code-map is read-on-demand (T-20) ---------------------------------
@@ -334,9 +333,16 @@ def test_context_check_command():
         any(phrase in skill.lower() for phrase in ["report", "stale"]),
         "context-check SKILL.md: must contain 'report' or 'stale' (AC-19)",
     )
+    words = " ".join(skill.split())
+    for phrase in ("Never change an unselected derived document",
+                   "exact expected document/provenance hashes",
+                   "selected fields", "preview_ref", "preview_sha256",
+                   "rechecks", "under its lock", "semantic: unverified",
+                   "verified_fresh: false", "never authorizes raw Write/Edit fallback"):
+        check(phrase in words, f"context-check must retain {phrase!r}")
 
 
-def test_context_creation_scout_isolation():
+def test_context_creation_bounded_optional_delegation():
     skill = read_repo("plugins/ca/skills/context-creation/SKILL.md")
     codex_skill = read_repo("plugins/ca-codex/routines/context-creation/SKILL.md")
     scout = read_repo("plugins/ca/agents/scout.md")
@@ -347,7 +353,7 @@ def test_context_creation_scout_isolation():
     codex_phase2_start = codex_skill.find("## Phase 2")
     codex_phase3_start = codex_skill.find("## Phase 3")
     if min(phase2_start, phase3_start, codex_phase2_start, codex_phase3_start) == -1:
-        check(False, "context-creation scout-isolation sections must exist")
+        check(False, "context-creation bounded-inspection sections must exist")
         return
     phase2 = skill[phase2_start:phase3_start]
     codex_phase2 = codex_skill[codex_phase2_start:codex_phase3_start]
@@ -355,69 +361,187 @@ def test_context_creation_scout_isolation():
 
     for host, phase in (("Claude", phase2), ("Codex", codex_phase2)):
         phase_words = " ".join(phase.lower().split())
-        check(
-            all(phrase in phase_words for phrase in (
-                "block before dispatch unless", "fresh child identity",
-                "host-enforced read-only containment", "no inline fallback",
-            )),
-            f"{host} context-creation Phase 2 must require a qualified isolated "
-            "child profile and block inline fallback",
-        )
-    check(
-        "inline one scope" not in codex_phase2.lower(),
-        "Codex context-creation must not claim inline scopes preserve report-only isolation",
-    )
+        for phrase in (
+            "direct bounded inspection or optional scoped agents",
+            "six categories do not require six agents or parallel execution",
+            "actual host permissions", "excluded paths and secret-handling rules",
+            "finite path/category assignment", "current source identity",
+            "output limit and stopping condition", "failed, partial and conflicting",
+            "not evidence of containment or independent verification",
+            "separately required containment policy still applies",
+            "failed or missing work never counts as inspected coverage",
+        ):
+            check(phrase in phase_words,
+                  f"{host} bounded context inspection must retain {phrase!r}")
+        for obsolete in ("block before dispatch unless", "no inline fallback"):
+            check(obsolete not in phase_words,
+                  f"{host} ordinary context inspection must not require {obsolete!r}")
     check(
         "under ~50 files, `decision-variance` scans inline" in scout_words
-        and "`context-creation` dispatches its six fixed, isolated scout assignments" in scout_words
-        and "`context-creation` must block before dispatch" in scout_words,
-        "scout charter must scope the small-repo shortcut away from context-creation",
+        and "direct bounded inspection or optional scoped agents" in scout_words
+        and "six logical categories do not require six children" in scout_words,
+        "scout charter must distinguish decision-variance sizing from optional context agents",
     )
+    for phrase in ("do not modify files, execute repository scripts or spawn further agents",
+                   "not evidence of containment", "do not invent an envelope or receipt",
+                   "do not turn a missing report or an incomplete search into a negative finding"):
+        check(phrase in scout_words, f"scout evidence boundary must retain {phrase!r}")
+    notes_words = " ".join(codex_notes.lower().split())
     check(
-        "context-creation" in codex_notes.lower()
-        and "must not run inline" in codex_notes.lower(),
-        "Codex host notes must record the context-creation exception to inline fallback",
+        "context inspection may run directly or use optional scoped agents" in notes_words
+        and "a role label does not prove isolation or verification" in notes_words
+        and "never label self-review independent" in notes_words,
+        "Codex host notes must support direct inspection without false independence claims",
     )
 
 
-def test_code_map_installable_manifest_claims_are_current():
-    """The code-map provenance must describe and hash the current host manifests."""
+def record_snapshot(record, root=ROOT):
+    """Acquire only the source identities declared by this enrolled v2 record."""
+    evidence = [item for field in record["fields"] for claim in field["claims"]
+                for item in claim["evidence"]]
+    return snapshots.context_snapshot(
+        root,
+        source_paths=sorted({item["path"] for item in evidence if item["kind"] == "content"}),
+        membership=sorted({(item["predicate"], tuple(item["scope_paths"]))
+                           for item in evidence if item["kind"] == "membership"}),
+        target_paths=(record["document"]["path"],),
+    )
+
+
+def test_code_map_provenance_identities_are_current():
+    """Native v2 adoption binds actual document/source bytes, not frozen prose."""
     record = json.loads(read_repo(".codearbiter/.provenance/code-map.json"))
-    entries = {entry["path"]: entry for entry in record["entries"]}
-    manifests = {
-        "plugins/ca/.claude-plugin/plugin.json": "Claude Code plugin manifest for ca",
-        "plugins/ca-codex/.codex-plugin/plugin.json": (
-            "Codex CLI plugin manifest for ca-codex"
-        ),
-        "plugins/ca-pi/package.json": "npm package manifest for ca-pi",
-    }
-    for path, claim_prefix in manifests.items():
+    valid = provenance.valid_provenance_record(record) and record.get("schema") == 2
+    check(valid and record.get("doc") == "code-map", "code-map must retain valid enrolled v2 provenance")
+    if not valid:
+        return
+    status = provenance.assess_context_provenance(
+        ROOT / ".codearbiter/.provenance", ["code-map"], record_snapshot(record))
+    check(status["coverage"] == "complete" and status["identity"] == "current"
+          and status["documents"] == {"code-map": "v2_current"},
+          f"code-map document/source identities must match current bytes: {status}")
+    check(status["semantic"] == "unverified" and not status["verified_fresh"],
+          "current source/document identities must not manufacture semantic verification")
+
+
+def test_code_map_provenance_rejects_stale_or_incomplete_evidence():
+    """A fixture probe cannot make stale, malformed or legacy evidence current."""
+    good = json.loads(read_repo(".codearbiter/.provenance/code-map.json"))
+    snapshot = record_snapshot(good)
+    stale_document = copy.deepcopy(good)
+    stale_document["document"]["digest"] = "0" * 64
+    stale_source = copy.deepcopy(good)
+    stale_source["fields"][0]["claims"][0]["evidence"][0]["digest"] = "0" * 64
+    empty = copy.deepcopy(good)
+    empty["fields"][0]["claims"][0]["evidence"] = []
+    wrong_method = copy.deepcopy(good)
+    wrong_method["document"]["digest_method"] = "git-blob-normalized-sha1"
+    for name, record in (("document drift", stale_document), ("source drift", stale_source),
+                         ("missing evidence", empty), ("wrong digest method", wrong_method),
+                         ("legacy stub", provenance.new_record("code-map"))):
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / "code-map.json").write_text(json.dumps(record), encoding="utf-8")
+            status = provenance.assess_context_provenance(
+                directory, ["code-map"], snapshot,
+                snapshot_probe=lambda _: {"source_current": True, "targets_current": True})
+        check(status["identity"] != "current"
+              and status["documents"].get("code-map") != "v2_current",
+              f"{name} must not count as current v2 evidence")
+        check(status["semantic"] == "unverified" and not status["verified_fresh"],
+              f"{name} must not become semantic proof")
+
+
+def test_code_map_manifest_ownership_matches_sources():
+    """The coarse map points to current manifest owners without pinning versions."""
+    text = read_repo(".codearbiter/code-map.md")
+    entries = dict(re.findall(r"^- `([^`]+)` [—–-]+ (.+)$", text, re.MULTILINE))
+    for path, owner in (("plugins/ca/.claude-plugin/plugin.json", "Claude"),
+                        ("plugins/ca-codex/.codex-plugin/plugin.json", "Codex")):
         manifest = json.loads(read_repo(path))
-        entry = entries[path]
-        claims = [claim.get("claim", "") for claim in entry["claims"]]
-        check(
-            any(
-                claim_names_version(claim, claim_prefix, manifest["version"])
-                for claim in claims
-            ),
-            f"code-map provenance claim for {path} must name v{manifest['version']}",
-        )
-        expected_hash = subprocess.run(
-            ["git", "hash-object", "--", path],
-            cwd=ROOT,
-            capture_output=True,
-            check=True,
-            text=True,
-        ).stdout.strip()
-        check(
-            entry["hash"] == expected_hash,
-            f"code-map provenance hash for {path} must match {expected_hash}",
-        )
+        root = str(Path(path).parent.parent.as_posix()) + "/"
+        role = entries.get(root, "")
+        check(Path(root).name == manifest["name"] and f"{owner} manifest" in role,
+              f"code-map host ownership must match the actual manifest at {path}")
+    pi = json.loads(read_repo("plugins/ca-pi/package.json"))
+    for extension in pi["pi"]["extensions"]:
+        directory = (Path("plugins/ca-pi") / extension).parent.as_posix() + "/"
+        check("Built" in entries.get(directory, "") and "Pi" in entries[directory],
+              f"code-map must locate the built Pi extension declared in {extension}")
+    check("owning manifests and catalogs" in " ".join(text.split()),
+          "the coarse map must direct mutable version/catalog queries to their owners")
+
+
+def test_context_provenance_preserves_checkout_bytes():
+    """A real autocrlf checkout preserves bound bytes; genuine edits stay stale."""
+    record_paths = [f".codearbiter/.provenance/{doc}.json"
+                    for doc in provenance.V2_DOCUMENTS]
+    records = [json.loads(read_repo(path)) for path in record_paths]
+    if not all(provenance.valid_provenance_record(record)
+               and record.get("schema") == 2 for record in records):
+        raise ValueError("checkout fixture requires valid enrolled v2 records")
+    sources = {item["path"] for record in records for field in record["fields"]
+               for claim in field["claims"] for item in claim["evidence"]
+               if item["kind"] == "content"}
+    paths = sorted(sources | set(record_paths) | {".gitattributes"}
+                   | {record["document"]["path"] for record in records})
+    expected = {path: (ROOT / path).read_bytes() for path in paths}
+    with tempfile.TemporaryDirectory(prefix="ca-context-checkout-") as directory:
+        checkout = Path(directory).resolve()
+
+        def git(*args, **kwargs):
+            return subprocess.run(["git", "-C", str(checkout), *args],
+                                  check=True, capture_output=True, **kwargs)
+
+        # Index the actual selected worktree bytes, including uncommitted
+        # attributes or native provenance updates. Never substitute HEAD's
+        # older records or change the source repository's index/configuration.
+        git("init", "--quiet")
+        git("config", "core.autocrlf", "false")
+        for path, raw in expected.items():
+            target = checkout / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+        git("add", "--", *paths)
+        git("config", "core.autocrlf", "true")
+        # Force materialization through Git's filters rather than letting its
+        # unchanged-index stat cache retain the bytes used to seed the fixture.
+        for path in paths:
+            (checkout / path).unlink()
+        git("checkout-index", "--force", "--all")
+        for path, raw in expected.items():
+            check((checkout / path).read_bytes() == raw,
+                  f"autocrlf checkout must preserve exact context/evidence bytes: {path}")
+
+        store = checkout / ".codearbiter/.provenance"
+        for record in records:
+            snapshot = record_snapshot(record, checkout)
+            status = provenance.assess_context_provenance(store, [record["doc"]], snapshot)
+            check(status["coverage"] == "complete" and status["identity"] == "current"
+                  and status["documents"] == {record["doc"]: "v2_current"},
+                  f"unaltered autocrlf checkout must retain current {record['doc']} identity")
+            check(status["semantic"] == "unverified" and not status["verified_fresh"],
+                  "byte-preserving checkout must not manufacture semantic verification")
+        record = next(record for record in records if record["doc"] == "code-map")
+        source = next(item["path"] for field in record["fields"]
+                      for claim in field["claims"] for item in claim["evidence"]
+                      if item["kind"] == "content")
+        for path in (record["document"]["path"], source):
+            before = (checkout / path).read_bytes()
+            snapshot = record_snapshot(record, checkout)
+            (checkout / path).write_bytes(before + b"\nActual content edit.\n")
+            status = provenance.assess_context_provenance(store, ["code-map"], snapshot)
+            check(status["identity"] == "stale"
+                  and status["documents"].get("code-map") == "v2_stale"
+                  and not status["verified_fresh"],
+                  f"real edit must remain stale after byte-preserving checkout: {path}")
+            (checkout / path).write_bytes(before)
 
 
 def test_code_map_manifest_claim_rejects_version_prefix_collision():
-    """A longer version cannot satisfy the exact manifest-version contract."""
+    """Retained legacy version claims still need exact matching when present."""
     claim = "npm package manifest for ca-pi (v0.14.30, @arbiterforge/ca-pi)"
+    check(claim_names_version(claim, "npm package manifest for ca-pi", "0.14.30"),
+          "an exact legacy manifest version must match")
     check(
         not claim_names_version(claim, "npm package manifest for ca-pi", "0.14.3"),
         "code-map provenance version matching must reject longer prefix collisions",
@@ -446,7 +570,17 @@ REQUIRED_FILES = [
     "plugins/ca/hooks/session-start.py",
     "plugins/ca/skills/context-check/SKILL.md",
     "plugins/ca/commands/context-check.md",
+    ".codearbiter/code-map.md",
     ".codearbiter/.provenance/code-map.json",
+    ".codearbiter/CONTEXT.md",
+    ".codearbiter/.provenance/CONTEXT.json",
+    ".codearbiter/tech-stack.md",
+    ".codearbiter/.provenance/tech-stack.json",
+    ".codearbiter/coding-standards.md",
+    ".codearbiter/.provenance/coding-standards.json",
+    ".codearbiter/security-controls.md",
+    ".codearbiter/.provenance/security-controls.json",
+    ".gitattributes",
     "plugins/ca/.claude-plugin/plugin.json",
     "plugins/ca-codex/.codex-plugin/plugin.json",
     "plugins/ca-pi/package.json",
@@ -456,11 +590,14 @@ TESTS = [
     test_commit_gate_heal_phase,
     # --- APPEND NEW TESTS HERE --------------------------------------------------
     test_context_creation_provenance,
-    test_context_creation_scout_isolation,
-    test_decompose_provenance_stub,
+    test_context_creation_bounded_optional_delegation,
+    test_decompose_native_population,
     test_code_map_read_on_demand,
     test_context_check_command,
-    test_code_map_installable_manifest_claims_are_current,
+    test_code_map_provenance_identities_are_current,
+    test_code_map_provenance_rejects_stale_or_incomplete_evidence,
+    test_code_map_manifest_ownership_matches_sources,
+    test_context_provenance_preserves_checkout_bytes,
     test_code_map_manifest_claim_rejects_version_prefix_collision,
 ]
 # ---------------------------------------------------------------------------

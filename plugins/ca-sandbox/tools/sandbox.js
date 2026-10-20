@@ -858,7 +858,7 @@ var FailureLog = class {
   }
 };
 function listingFingerprint(code, message) {
-  const shape = message.replace(/"[^"]*"/g, '"<url>"').replace(/https?:\/\/\S+/g, "<url>").replace(/\d+/g, "<n>");
+  const shape = message.replace(/"[^"]*"/g, '"<url>"').replace(/\bhttps?:\/\/\S+/g, "<url>").replace(/\b\d+\b/g, "<n>");
   return `listing\0${code}\0${shape}`;
 }
 function oneLine(stderr) {

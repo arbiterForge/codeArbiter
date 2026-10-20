@@ -24,6 +24,10 @@ Findings are surfaced by severity (CRITICAL/HIGH/MEDIUM/LOW), file:line, remedia
 security findings — the specific control in `.codearbiter/security-controls.md` they map to. Raw
 per-reviewer output is never consumed directly; only the triaged, aggregated verdict is.
 
+Select context for the actual review scope. Missing optional provenance or a code map permits
+focused source inspection. Resolve a genuinely missing task-critical requirement or conflicting
+instruction before the affected review; an unrelated stale aggregate does not block every unit.
+
 Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
 host-provided agent threads. Exact static-package and route-closure checks gate release. A bounded
 0.9.4 receipt proves one exact installed-charter review. The inline fallback applies only where the

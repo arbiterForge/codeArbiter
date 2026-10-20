@@ -790,7 +790,7 @@ var ENV = {
 var git = (args, cwd) => run("git", args, cwd);
 var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 var ARTIFACT_PROTOCOL = "codearbiter.artifact-api/0.1.0";
-var ARTIFACT_SCHEMA_VERSION = "0.3.1";
+var ARTIFACT_SCHEMA_VERSION = "0.3.2";
 var ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0";
 var ARTIFACT_MAX_RESPONSE = 65536;
 function artifactPlatform() {

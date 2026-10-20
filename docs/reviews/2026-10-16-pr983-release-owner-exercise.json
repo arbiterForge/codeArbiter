@@ -1,0 +1,48 @@
+{
+  "format": "bounded-release-owner-exercise/1",
+  "started_utc": "2026-10-16T13:43:04.484592+00:00",
+  "completed_utc": "2026-10-16T13:43:10.567051+00:00",
+  "source_head": "809e2d75b18fb7a93bc0f682b3a1e1d69ba13e52",
+  "input_hashes": {
+    "plugins/ca/skills/release/SKILL.md": "693f5dabc5d351ba375494ee9993933fbc9dc8bd8ee427e532444579450bdd2b",
+    "plugins/ca/hooks/_releaselib.py": "bde7b9e3479552b5b91c29aad56f47cc870addad4052fef672ca63dee9611228",
+    "plugins/ca/hooks/_gitexec.py": "6dc323512f8a50b2a82a8ff63cd5eb2d1e98aefb9dafcc802b8053a2bc838d68",
+    "plugins/ca/hooks/releasehash.py": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+    "plugins/ca/includes/anti-slop-design/core.md": "7212c7639dd33bfa454205c24172b4f051e03a378f7fe4089b57784fddd47e00",
+    "plugins/ca/includes/anti-slop-design/medium-documents.md": "9ae58fc327d0c60f1acdc9dc6c81314147665c4feea4d08972be2e4d1f79b748"
+  },
+  "input_hashes_unchanged": true,
+  "skill": "plugins/ca/skills/release/SKILL.md",
+  "prior_proof_reports_read": false,
+  "outcomes": [
+    {
+      "scenario": "ambiguous-target",
+      "exit_code": 66,
+      "repository_bytes_unchanged": true
+    },
+    {
+      "scenario": "complete-dry-run",
+      "exit_code": 0,
+      "repository_bytes_unchanged": true
+    },
+    {
+      "scenario": "missing-footer-dry-run",
+      "exit_code": 1,
+      "repository_bytes_unchanged": true
+    },
+    {
+      "scenario": "separate-step5-unreleased-placement",
+      "result": "pass",
+      "unreleased_body_preserved": true,
+      "prior_releases_preserved": true,
+      "notes_match_exit": 0
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Fixture-only local commits/tags established before exercise.",
+    "No remote refs fetched; no hosted CI, publication, release signing or release authorization tested.",
+    "Declared rebuild/generate/pre-tag commands were listed only; no confirmations or markers minted.",
+    "Step5 was a separately authorized placement simulation; no manifest bump, commit-gate or Phase2/3 execution."
+  ]
+}

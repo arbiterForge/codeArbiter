@@ -337,4 +337,94 @@ class BridgeTests(unittest.TestCase):
         if os.name != "nt":
             self.assertTrue(executable.stat().st_mode & stat.S_IXUSR)
 
+class HostArchitectureTests(unittest.TestCase):
+    """#986: the binary's architecture comes from the OS, never ambient state."""
+
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.root=physical_test_directory(self.tmp.name)/"repo";self.root.mkdir()
+
+    def test_windows_read_works_without_wmi_or_processor_environment(self):
+        # A read-only Windows sandbox can block WMI and strip PROCESSOR_*, and
+        # platform.machine() then answers "". The bridge must still select the
+        # native binary. Elsewhere platform.machine() reads uname, which no
+        # environment reaches, so the same stripped read must work unchanged.
+        stripped={k:v for k,v in os.environ.items() if not k.upper().startswith("PROCESSOR_")}
+        blind=mock.patch("platform.machine",return_value="") if platform.system()=="Windows" else mock.patch.dict(os.environ,{})
+        with mock.patch.dict(os.environ,stripped,clear=True), blind:
+            caps=ArtifactClient(self.root,INSTALLATION).call("capabilities")
+        self.assertEqual(caps["public_registrations_added"],0)
+
+    def test_unanswered_windows_architecture_fails_closed(self):
+        with mock.patch("platform.system",return_value="Windows"),                 mock.patch("_artifactlib._windows_native_architecture",return_value=None),                 mock.patch("platform.machine",return_value="AMD64"):
+            with self.assertRaises(ArtifactError) as got:
+                ArtifactClient(self.root,INSTALLATION).call("capabilities")
+        self.assertEqual(got.exception.code,"UNSUPPORTED_PLATFORM")
+
+
+class StoreInitTests(unittest.TestCase):
+    """A fresh checkout has no local store; the bridge initializes it once, explicitly."""
+
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.root=physical_test_directory(self.tmp.name)/"repo";self.root.mkdir()
+
+    def scripted(self, answers, **options):
+        client=ArtifactClient(self.root,INSTALLATION,**options)
+        calls=[]
+        def exchange(operation, request, permit_invalid=False):
+            calls.append(operation)
+            answer=answers.pop(0)
+            if isinstance(answer,ArtifactError):
+                raise answer
+            return answer
+        client._exchange=exchange
+        return client,calls
+
+    def test_no_local_store_initializes_then_retries_once(self):
+        identity={"artifact_id":"SPEC-BRIDGE","revision":1}
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent"),{"store":"created"},identity])
+        self.assertEqual(client.call("identity",{"artifact_id":"SPEC-BRIDGE"}),identity)
+        self.assertEqual(calls,["identity","init-store","identity"])
+
+    def test_refused_initialization_keeps_no_local_store(self):
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent"),ArtifactError("LOCK_FAILED","read-only")])
+        with self.assertRaises(ArtifactError) as raised:
+            client.call("identity",{"artifact_id":"SPEC-BRIDGE"})
+        self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+        self.assertIn("LOCK_FAILED",str(raised.exception))
+        self.assertEqual(calls,["identity","init-store"])
+        # A retried read that still finds no store is not retried again.
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent"),{"store":"created"},ArtifactError("NO_LOCAL_STORE","absent")])
+        with self.assertRaises(ArtifactError) as raised:
+            client.call("identity",{"artifact_id":"SPEC-BRIDGE"})
+        self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+        self.assertEqual(calls,["identity","init-store","identity"])
+        # Disabled initialization never writes.
+        client,calls=self.scripted([ArtifactError("NO_LOCAL_STORE","absent")],initialize_store=False)
+        with self.assertRaises(ArtifactError) as raised:
+            client.call("identity",{"artifact_id":"SPEC-BRIDGE"})
+        self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+        self.assertEqual(calls,["identity"])
+
+    def test_fresh_checkout_identity_through_client(self):
+        client=ArtifactClient(self.root,INSTALLATION)
+        client.call("create",{"operation_id":"store-init-spec-create","artifact_id":"SPEC-BRIDGE","kind":"spec","slug":"bridge","title":"Bridge fixture","summary":"Incomplete draft."})
+        store=self.root/".codearbiter"/".artifacts"
+        shutil.rmtree(store)
+        if platform.system()=="Windows":
+            with self.assertRaises(ArtifactError) as raised:
+                ArtifactClient(self.root,INSTALLATION,initialize_store=False).call("identity",{"artifact_id":"SPEC-BRIDGE"})
+            self.assertEqual(raised.exception.code,"NO_LOCAL_STORE")
+            self.assertFalse(store.exists())
+        self.assertEqual(client.call("identity",{"artifact_id":"SPEC-BRIDGE"})["artifact_id"],"SPEC-BRIDGE")
+        if platform.system()!="Linux":  # Linux locks the repository directory itself.
+            self.assertTrue((store/"store.lock").is_file())
+
+    def test_protocol_documents_init_store(self):
+        text=(REPO/"docs/artifacts/PROTOCOL.md").read_text(encoding="utf-8")
+        self.assertRegex(text,r'`init-store`[\s\S]{0,600}"store": "created"[\s\S]{0,300}"store": "present"')
+        self.assertRegex(text,r"NO_LOCAL_STORE[\s\S]{0,900}`init-store`\s+once[\s\S]{0,300}retr(y|ies)\s+the\s+(original\s+)?(read|request|call)\s+once")
+
+
 if __name__=="__main__":unittest.main(verbosity=2)

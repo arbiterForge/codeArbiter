@@ -99,6 +99,7 @@ type Task struct {
 	Rollback       string    `json:"rollback,omitempty"`
 	SourceRefs     []string  `json:"source_refs,omitempty"`
 	ExecutionScope string    `json:"execution_scope"`
+	SharedInputs   []string  `json:"shared_inputs,omitempty"`
 }
 type Checkpoint struct {
 	ID        string   `json:"id"`
@@ -112,6 +113,8 @@ type Prerequisite struct {
 	Title       string   `json:"title"`
 	Requirement string   `json:"requirement"`
 	SourceRefs  []string `json:"source_refs"`
+	Kind        string   `json:"kind,omitempty"`
+	TaskRefs    []string `json:"task_refs,omitempty"`
 }
 type SpecRef struct {
 	ArtifactID      string `json:"artifact_id"`
@@ -185,6 +188,35 @@ type CriterionDisposition struct {
 	CriterionRef string `json:"criterion_ref"`
 	Disposition  string `json:"disposition"`
 	Rationale    string `json:"rationale"`
+}
+type PrerequisiteObservation struct {
+	Outcome          string `json:"outcome"`
+	Summary          string `json:"summary"`
+	Source           string `json:"source"`
+	Origin           string `json:"origin"`
+	Provenance       string `json:"provenance"`
+	RecordedAt       string `json:"recorded_at"`
+	DefinitionSHA256 string `json:"definition_sha256"`
+}
+type TaskCheckObservation struct {
+	Argv                   []string `json:"argv"`
+	CWD                    string   `json:"cwd"`
+	CommandIndex           int64    `json:"command_index,omitempty"`
+	Outcome                string   `json:"outcome"`
+	ExitCode               int64    `json:"exit_code,omitempty"`
+	Summary                string   `json:"summary"`
+	Source                 string   `json:"source"`
+	Origin                 string   `json:"origin"`
+	OutputExcerpt          string   `json:"output_excerpt,omitempty"`
+	RecordedAt             string   `json:"recorded_at"`
+	Provenance             string   `json:"provenance"`
+	TaskSubjectSHA256      string   `json:"task_subject_sha256"`
+	SourceNormativeSHA256  string   `json:"source_normative_sha256"`
+	HistoryTrimmed         bool     `json:"history_trimmed"`
+	CriterionSubjectSHA256 string   `json:"criterion_subject_sha256,omitempty"`
+	ScopedInputsSHA256     string   `json:"scoped_inputs_sha256,omitempty"`
+	ScopeUnassessedReason  string   `json:"scope_unassessed_reason,omitempty"`
+	RecordingOperationID   string   `json:"recording_operation_id,omitempty"`
 }
 type Spec struct {
 	RetiredSymbols []Retired      `json:"retired_symbols"`

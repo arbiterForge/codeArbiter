@@ -22,7 +22,7 @@ Enforcement itself is gated on one file in here: `CONTEXT.md`. Everything else d
 only matters once that file carries `arbiter: enabled`.
 
 This page documents every stock path the scaffold or a governed lane produces or reads. Some appear
-only while a flow is active or after the owning feature first runs (`.decompose-draft/`,
+when the owning workflow first needs them (`plans/decomposition/`,
 `.markers/`, `.provenance/`, `spikes/`, `reports/`); those lifecycles are noted below.
 
 ## Project plans are not feature execution plans
@@ -37,23 +37,23 @@ Feature/sprint specifications and execution plans are a different layer. New ful
 a same-slug typed HTML pair when the installed package has its qualified native capability;
 existing Markdown pairs remain on their exact legacy path; small-lane work remains inline with
 its triage record. [Review specifications and plans](/guides/review-artifacts/) explains the
-human review, approval and recovery boundaries.
+review, progress and recovery boundaries.
 
 ## At a glance
 
 | Path | Written by | Read by | Editable by hand? |
 |---|---|---|---|
-| `CONTEXT.md` | `/ca:init`, `/ca:decompose`, `/ca:create-context` | every enforcement hook (`arbiter_active()`), the orchestrator | Yes, but the frontmatter is guarded (see below) |
-| `code-map.md` | `/ca:create-context`, `/ca:decompose`, commit-gate provenance heal | feature/task orientation, context checks | Yes; refresh source-backed claims through `/ca:context-check` |
+| `CONTEXT.md` | `/ca:init`; context workflows through the native writer | every enforcement hook (`arbiter_active()`), the orchestrator | No: use the context writer; preserve activation frontmatter |
+| `code-map.md` | Context workflows through the native writer | feature/task orientation, context checks | No: refresh selected claims through `/ca:context-check` |
 | `open-tasks.md` | `/ca:task` only | `/ca:status`, the statusline, `SessionStart` | No: guarded to `/ca:task` (hook `H-22`, helper-only) |
 | `done-tasks.md` | `/ca:task archive`, `/ca:standup`'s per-item archival sweep | the permanent record; read on demand | No: guarded (hook `H-22`, append-only) |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
 | `specs/*.md` | Legacy feature/sprint workflows already owned by Markdown | `writing-plans`, `/ca:status` | Yes |
 | `plans/01-architecture-breakdown.md`, `02-phased-build-plan.md`, `03-task-backlog.md` | Greenfield `decompose` | Human project review, `reconcile` | Review through the owning project-planning procedure; preserve exact filenames |
-| Other legacy `plans/*.md` | `writing-plans` for an existing Markdown spec | `executing-plans`, `subagent-driven-development`, `/ca:status` | Legacy format only; preserve approved scope and execution state |
+| Other legacy `plans/*.md` | `writing-plans` for an existing Markdown spec | `executing-plans`, `subagent-driven-development`, `/ca:status` | Preserve the selected format, agreed scope and execution state |
 | `specs/*.html`, `plans/*.html` | New full-lane feature/sprint workflows through the internal typed-artifact engine (default) | The same workflow readers through validated, scoped reads | No: use typed engine operations |
-| `.decompose-draft/` | `/ca:decompose` while an interview is in progress | `/ca:decompose` on resume | No need: temporary resumable interview state |
+| `plans/decomposition/` | `/ca:decompose` | Interview resume and context provenance | Preserve the recorded answers and decisions through the owning workflow |
 | `checkpoints/*.md` | `checkpoint-aggregator` agent (`/ca:checkpoint`) | `/ca:audit`, `/ca:status`-adjacent reads | Yes |
 | `audits/*.md` | `/ca:audit` | humans (report only) | Yes |
 | `reports/` | `/ca:tribunal` and named handoff/evidence workflows | the owning workflow on resume, humans | Yes, but not while an owning run is in flight |
@@ -63,8 +63,8 @@ human review, approval and recovery boundaries.
 | `gate-events.log` | every `block()`/`remind()`/`warn()` call in the hooks | (durable sink; no reader ships yet) | No: append-only, guarded (H-05) |
 | `.markers/` | `security-pass.py`, `migration-pass.py`, `prompt-submit.py` (mode marker), `/ca:adr` | the commit-gate hooks (`pre-bash.py`, `pre-write.py`, `pre-edit.py`) | No: guarded, and hand-writing one is friction and an audit trail, not a proof (see below) |
 | `.provenance/*.json` | `context-creation`, `decompose`, `context-check` (re-scout/re-baseline) | `SessionStart` (drift line), `commit-gate` (auto-heal) | Not by hand: regenerate via `/ca:context-check` |
-| `security-controls.md`, `tech-stack.md`, `coding-standards.md` | `/ca:create-context` or `/ca:decompose`, kept current by hand or `/ca:context-check` | every reviewer agent, the crypto/secret gates | Yes |
-| `last-checkpoint` | `checkpoint-aggregator` agent | `/ca:status`, the statusline (overrides-since-checkpoint) | Not normally: it's a counter, not a note |
+| `security-controls.md`, `tech-stack.md`, `coding-standards.md` | Context workflows through the native writer | reviewer agents, the crypto/secret gates | No: update selected content with its paired provenance |
+| `last-checkpoint` | `/ca:checkpoint` after its report is written | `/ca:status`, the statusline (overrides-since-checkpoint) | Not normally: it's a counter, not a note |
 | `spikes/*.md` | `/ca:spike` | humans, `/ca:feature` (seeds `brainstorming`) | Yes |
 
 ## CONTEXT.md
@@ -99,9 +99,8 @@ frontmatter are both in place, the orchestrator persona loads on every session i
 
 **Writers:** `/ca:init` (scaffold), `/ca:decompose` and `/ca:create-context` (populate + lock).
 **Readers:** every enforcement hook, the `SessionStart` injector, the statusline.
-**Editable by hand?** The prose body, yes. The frontmatter is guarded: a Write/Edit that would
-flip `arbiter: enabled` off, or corrupt the block, is blocked (`pre-write.py`/`pre-edit.py`,
-issue #159). The file that turns every gate off can't itself be edited past the gate.
+**Editable by hand?** No. Context changes use native preview/apply with paired provenance;
+the protected writer preserves activation frontmatter and the initialization marker.
 **Delete it:** codeArbiter goes fully dormant in this repo on the next session (no persona, no
 enforcement, nothing loads). The rest of `.codearbiter/` is untouched on disk; recreating
 `CONTEXT.md` (or running `/ca:init` again) reactivates it against whatever state remains.
@@ -117,7 +116,7 @@ paths move. `/ca:context-check` reports that drift and offers re-scout, re-basel
 
 **Writers:** `/ca:create-context`, `/ca:decompose`, and provenance auto-heal.
 **Readers:** feature/task planning and context-check flows.
-**Editable by hand?** Yes, but source claims should be re-proven.
+**Editable by hand?** No. Update selected claims and their provenance through the native writer.
 **Delete it:** governed lanes fall back to repository discovery; enforcement remains active.
 
 ## open-tasks.md
@@ -189,20 +188,20 @@ to cover a file stop firing, and `/ca:adr-status` has nothing to report.
 
 ## specs/
 
-One canonical file per feature/campaign spec, written by the `brainstorming` skill once a spec is
-approved (`/ca:feature`, `/ca:sprint`). New full-lane workflows use typed `.html`; existing `.md`
-authority remains on its legacy path. `writing-plans` reads an approved spec to derive its task
-plan, and `/ca:status` lists supported legacy slugs alongside their plans during the current
-RA-11 compatibility window.
+One canonical feature specification maintained by `brainstorming` under the user's existing
+authorization. It captures the intended outcome, criteria and unresolved decisions.
+New full-lane workflows use typed `.html`; existing Markdown pairs retain their representation.
+`writing-plans` derives tasks from the specification, and `/ca:status` reports actual progress
+and verification without treating draft status as a permission gate.
 
 **Writers:** `brainstorming`. **Readers:** `writing-plans`, `/ca:status`.
 **Editable by hand?** Markdown only. Use typed engine operations for HTML so its model and view
 remain one authority.
-**Delete it:** the governing requirements are lost. Typed execution binds the plan to its spec
-and authority records, so a missing specification cannot be treated as a self-contained plan.
+**Delete it:** the governing requirements are lost. A plan binds to its specification, so a
+missing specification cannot be treated as a self-contained plan.
 Preserve remaining files and recover known bytes through version control or the recorded
 transaction. A legacy plan's text may remain readable, but that is not proof that the lost spec
-or its approval can be reconstructed. Do not restart the pair in a different format.
+can be reconstructed. Do not restart the pair in a different format.
 
 ## plans/
 
@@ -212,7 +211,8 @@ specification.
 New full-lane plans use typed `.html`; existing Markdown specs continue to matching `.md` plans.
 Each task carries an exact file path and a verification step that maps to a `tdd` obligation.
 `executing-plans` and `subagent-driven-development` consume it task by task; `/ca:status` reports
-the ACCEPTED-vs-total count for an in-progress plan.
+implementation completion and verification separately, retaining `DONE` and historical
+`ACCEPTED` labels.
 
 **Writers:** `writing-plans`. **Readers:** `executing-plans`, `subagent-driven-development`,
 `/ca:status`. **Editable by hand?** Markdown only; HTML uses typed engine operations. Editing a
@@ -248,19 +248,19 @@ remain coherent. **Delete it:** a governing typed artifact is lost; recover it
 from version control or the recorded transaction rather than silently restarting
 as Markdown.
 
-## .decompose-draft/
+## plans/decomposition/
 
-Temporary, resumable state for a greenfield decomposition interview. Each completed layer is
-persisted here before the final project documents are assembled, so a closed session can continue
-without repeating accepted answers.
+Durable source evidence for the greenfield interview. `_session.md` records the active phase,
+remaining questions and actual confirmations; layer files retain answers, trade-offs and
+unresolved decisions. Resume from the first unfinished step without repeating settled questions.
 
-The directory is working state, not a second project context. A successful decomposition consumes
-the draft into the normal scaffold and removes the temporary directory.
+Context documents cite these retained files. Keep them after initialization so provenance still
+resolves. Finalization checks the required project outputs and all five document/provenance pairs.
 
 **Writers/readers:** `/ca:decompose` only.
 **Editable by hand?** No useful reason; resume through the command.
-**Delete it:** an unfinished interview loses its saved progress and must restart. A completed
-scaffold is unaffected because the directory should already be gone.
+**Delete it:** interview history and cited provenance sources are lost. Recover known bytes
+before resuming dependent work.
 
 ## checkpoints/
 
@@ -268,7 +268,8 @@ One dated report per `/ca:checkpoint` sweep (`YYYY-MM-DD.md`), written by the
 `checkpoint-aggregator` agent from the finding-triage and decision-challenger output. Findings are
 classified by severity; the ones blocking the current change are called out, the rest recorded
 for later. `/ca:tribunal`'s deep-audit output is a distinct artifact (`reports/<run-id>/`, below).
-Checkpoints are the lean, routine sweep.
+Reports retain the review-start UTC time, full source commit and dirty-tree observation so
+an audit can resolve its window. The separate `last-checkpoint` file remains an override counter.
 
 **Writers:** `checkpoint-aggregator`. **Readers:** humans (the report is the deliverable);
 `/ca:audit` pulls still-open findings from the most recent one. **Editable by hand?** Yes, though
@@ -416,29 +417,25 @@ enforcement is weakened; you just lose the standing "already checked" credit.
 
 ## .provenance/
 
-Per-doc JSON evidence files (`<doc>.json` for `tech-stack`, `coding-standards`,
-`security-controls`, `CONTEXT`, and similar derived docs), created the first time
-`context-creation` or `decompose` populates `.codearbiter/`. Each record lists the source paths
-that backed the doc's claims, a content hash per path (via `git hash-object`, so a line-ending
-normalization never false-flags as drift), and the specific claim each source line supports.
-`SessionStart` diffs the recorded hashes against the current ones and surfaces a one-line drift
-count when a tracked source has moved since the doc was last baselined; commit-gate can auto-heal
-the affected doc from there.
+One v2 JSON record for each of `CONTEXT`, `code-map`, `tech-stack`, `coding-standards` and
+`security-controls`, written atomically with its Markdown document. Records bind exact document
+bytes and the source evidence for their claims using declared digest methods, including raw
+SHA-256 for content. Coverage, identity freshness and semantic review remain distinct results.
+`SessionStart` reports missing or stale evidence; `/ca:context-check` audits it and refreshes
+explicitly selected documents through native preview/apply.
 
 **Writers:** `context-creation`, `decompose`, and `context-check`'s re-scout/re-baseline actions.
 **Readers:** `SessionStart` (the drift line), commit-gate (auto-heal worklist).
-**Editable by hand?** Not usefully: a hand-edited hash wouldn't match anything real. Regenerate
-it through `/ca:context-check` instead. **Delete it:** drift detection goes silent for every doc
-that lost its record (no false positives, but no warning either), until the doc is re-scouted or
-re-baselined and a fresh provenance file is written.
+**Editable by hand?** No. Use the paired context writer. **Delete it:** coverage becomes
+incomplete; the missing record does not establish current or semantically verified context.
 
 ## Other scaffold docs
 
 `/ca:init` creates the activation file, open boards, override log, and checkpoint counter. It then
 routes an existing codebase to `/ca:create-context` or a greenfield repository to `/ca:decompose`.
 Those context-building flows produce `security-controls.md`, `tech-stack.md`, and
-`coding-standards.md`. They are living reference documents, not audit logs: hand-editable, read by every
-reviewer agent (`security-controls.md` especially: the crypto-compliance and secret-handling gates
+`coding-standards.md`. These living references are maintained with paired provenance through the
+native writer and read by reviewer agents (`security-controls.md` especially: the crypto-compliance and secret-handling gates
 read it before every review, and it's level 1 in the conflict hierarchy). `last-checkpoint` is a
 one-line counter (the override count at the time of the last `/ca:checkpoint`) that the statusline
 and `/ca:status` use to compute "overrides since last checkpoint." It's a counter, not a note, so

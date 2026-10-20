@@ -4,6 +4,21 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- Correct the marketplace description to explain the existing nixpacks and generated-Dockerfile build paths. Prepare the 0.1.7 metadata patch so marketplace installs receive the corrected description.
+
+## [0.1.9] - 2026-10-18 - Listing-failure dedup
+
+### Fixed
+- **One unreachable daemon is reported once even when its errors carry unquoted URLs or counts.** The listing fingerprint's word boundaries held literal backspace bytes, so its unquoted-URL and number rules never matched. Two listing errors that differed only in such a URL or count were each reported as a separate failure.
+
+## [0.1.8] - 2026-10-16 - Marketplace metadata correction
+
+### Fixed
+- Correct the marketplace description to explain the existing nixpacks and generated-Dockerfile build paths. Prepare the 0.1.8 metadata patch so marketplace installs receive the corrected description.
+
 ## [0.1.6] - 2026-09-04 - Image-build stage diagnostics
 
 ### Fixed

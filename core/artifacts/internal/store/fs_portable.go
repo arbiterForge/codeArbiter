@@ -76,8 +76,20 @@ func (f *FS) Close() error { return f.root.Close() }
 
 func native(rel string) string { return filepath.FromSlash(rel) }
 
+// openRead opens name relative to r for reading with nonblockOpen, so the open
+// itself cannot wait on a FIFO; callers then refuse anything that is not the
+// regular file or directory they expected.
+func openRead(r *os.Root, name string) (*os.File, error) {
+	return r.OpenFile(name, os.O_RDONLY|nonblockOpen, 0)
+}
+
 // check rejects existing symlink/reparse components. Missing tail components
 // are permitted only for create paths; os.Root independently prevents escape.
+// linkModes marks a path component as a link. A Windows junction reports
+// ModeIrregular rather than ModeSymlink on current Go, and one that stays inside
+// the root passes os.Root containment, so both bits are refused here (#909).
+const linkModes = os.ModeSymlink | os.ModeIrregular
+
 func (f *FS) check(rel string, allowMissing bool) error {
 	if !validate.Path(rel, true) {
 		return fault.New("UNSAFE_PATH", "invalid repository path")
@@ -104,7 +116,7 @@ func (f *FS) check(rel string, allowMissing bool) error {
 			}
 			return e
 		}
-		if info.Mode()&os.ModeSymlink != 0 {
+		if info.Mode()&linkModes != 0 {
 			return fault.New("UNSAFE_PATH", "symlink or reparse point encountered in repository path")
 		}
 		if i < len(parts)-1 && !info.IsDir() {
@@ -141,7 +153,7 @@ func (f *FS) Read(rel string, limit int64) ([]byte, error) {
 		return nil, e
 	}
 	f.Stats.fileOpen()
-	file, e := f.root.Open(native(rel))
+	file, e := openRead(f.root, native(rel))
 	if e != nil {
 		if os.IsNotExist(e) {
 			return nil, os.ErrNotExist
@@ -204,7 +216,7 @@ func (f *FS) ListUnfollowed(rel string) ([]os.DirEntry, error) {
 		return nil, e
 	}
 	f.Stats.dirOpen()
-	d, e := f.root.Open(native(rel))
+	d, e := openRead(f.root, native(rel))
 	if e != nil {
 		return nil, e
 	}
@@ -345,7 +357,7 @@ func (d *Dir) ReadEntry(entry os.DirEntry, limit int64) ([]byte, os.FileInfo, er
 		d.f.readHook(d.rel+"/"+name, true)
 	}
 	d.f.Stats.fileOpen()
-	file, e := d.root.Open(name)
+	file, e := openRead(d.root, name)
 	if e != nil {
 		if os.IsNotExist(e) {
 			return nil, nil, os.ErrNotExist
@@ -365,6 +377,22 @@ func (d *Dir) ReadEntry(entry os.DirEntry, limit int64) ([]byte, os.FileInfo, er
 		return nil, nil, fault.New("UNSAFE_PATH", "entry changed while being opened")
 	}
 	return d.f.readOpened(file, limit, d.root, name)
+}
+
+// Current re-checks, without following, that name in d still resolves to the
+// very directory sub anchors. A scan that reuses a cached anchor calls it at each
+// reuse, so the handle never outlives a swap of the name it was opened under.
+func (d *Dir) Current(name string, sub *Dir) error {
+	if e := entryName(name); e != nil {
+		return e
+	}
+	d.f.Stats.entryCheck()
+	li, e := d.root.Lstat(name)
+	hi, e2 := sub.root.Stat(".")
+	if e != nil || e2 != nil || !li.IsDir() || li.Mode()&linkModes != 0 || !os.SameFile(hi, li) {
+		return fault.New("CONCURRENT_CHANGE", "directory changed after it was anchored")
+	}
+	return nil
 }
 
 // Has reports whether name exists in the directory under any spelling the
@@ -389,7 +417,7 @@ func (f *FS) List(rel string) ([]os.DirEntry, error) {
 		return nil, e
 	}
 	for _, entry := range out {
-		if entry.Type()&os.ModeSymlink != 0 {
+		if entry.Type()&linkModes != 0 {
 			return nil, fault.New("UNSAFE_PATH", "symlink or reparse point encountered in scanned directory")
 		}
 	}
@@ -501,7 +529,7 @@ func (f *FS) Stat(rel string) (os.FileInfo, error) {
 		return nil, e
 	}
 	f.Stats.fileOpen()
-	file, e := f.root.Open(native(rel))
+	file, e := openRead(f.root, native(rel))
 	if e != nil {
 		return nil, e
 	}
@@ -515,7 +543,7 @@ func (f *FS) syncDir(rel string) error {
 		// native rename implementation; directory handles cannot be Sync'ed by os.
 		return nil
 	}
-	d, e := f.root.Open(native(rel))
+	d, e := openRead(f.root, native(rel))
 	if e != nil {
 		return e
 	}
@@ -530,8 +558,12 @@ func (f *FS) lockFile() (*os.File, error) {
 	if e := f.check(meta, false); e != nil {
 		return nil, e
 	}
-	return f.root.OpenFile(native(meta+"/store.lock"), os.O_RDWR|os.O_CREATE, 0600)
+	return f.root.OpenFile(native(meta+"/store.lock"), os.O_RDWR|os.O_CREATE|nonblockOpen, 0600)
 }
+
+// LockMetadataPresent reports whether the store lock file exists; the first
+// writer lock creates it.
+func (f *FS) LockMetadataPresent() (bool, error) { return f.Exists(meta + "/store.lock") }
 
 // implemented by the native lock file for each supported platform.
 func (f *FS) Lock(exclusive bool, timeout time.Duration) (func(), error) {

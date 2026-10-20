@@ -58,6 +58,14 @@ class WindowsNestedNpmLaunchTest(unittest.TestCase):
             self.assertEqual(options["cwd"], str(self.cwd))
             self.assertLessEqual(options["timeout_seconds"], 15)
 
+    def test_probes_never_contact_the_registry(self):
+        # A fresh npm profile otherwise runs the update check, a registry
+        # request that can outlast the probe's bound on a slow network.
+        self._qualify()
+        self.assertEqual(len(self.calls), 2)
+        for _argv, options in self.calls:
+            self.assertEqual(options["env"].get("npm_config_update_notifier"), "false")
+
     def test_existing_global_cli_redirect_is_rejected(self):
         redirected = self.root / "global" / "node_modules" / "npm" / "bin" / "npm-cli.js"
         redirected.parent.mkdir(parents=True)

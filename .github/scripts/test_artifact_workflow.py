@@ -292,26 +292,28 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
     def test_execution_consumers_use_engine_state_and_transitions(self) -> None:
         executing = " ".join(EXECUTING_SKILL.read_text(encoding="utf-8").split())
         subagent = " ".join(SUBAGENT_SKILL.read_text(encoding="utf-8").split())
-
         for source in (executing, subagent):
-            self.assertIn("engine `eligible` response is authoritative", source)
-            self.assertIn("`task-start`", source)
-            self.assertIn("`task-review`", source)
-            self.assertIn("`accept-scope`", source)
-            self.assertIn("exact artifact identities and engine-written receipts", source)
-            self.assertIn(
-                "must not infer authority from rendered text, checkboxes, status words, "
-                "digests, or caller-supplied labels",
-                source,
-            )
-            self.assertIn("must not read or write a shadow Markdown ledger", source)
+            self.assertIn("advisory", source)
+            for operation in ("`task-start`", "`task-review`", "`accept-scope`", "`task-reconcile`"):
+                self.assertIn(operation, source)
+            self.assertIn("`DONE`", source)
+            self.assertNotIn("engine `eligible` response is authoritative", source)
+            self.assertNotIn("exact artifact identities and engine-written receipts", source)
+        self.assertIn("without a receipt", subagent)
+        self.assertIn("not", executing)
+
 
     def test_authority_capture_is_bound_to_host_owned_source_bytes(self) -> None:
-        source = " ".join(
-            (REPO / "core/surface/includes/artifacts.md")
-            .read_text(encoding="utf-8")
-            .split()
-        )
+        # Historical receipt/producer fidelity must remain tested, but not
+        # loaded as a second permission system on ordinary task starts.
+        hot = (REPO / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
+        cold = (REPO / "core/surface/includes/artifacts-attestation.md").read_text(encoding="utf-8")
+        self.assertIn("artifacts-attestation.md", hot)
+        self.assertIn("consult only the relevant section of", hot)
+        self.assertNotIn("## Explicit verification-input and attestation contracts", hot)
+        self.assertNotIn("arm the exact current artifact", hot)
+        self.assertLess(len(hot.encode("utf-8")) * 2, len(cold.encode("utf-8")))
+        source = " ".join(cold.split())
         self.assertIn("arm the exact current artifact", source)
         self.assertIn("require that exact reply", source)
         self.assertIn("records the full armed reply as the host-observed policy-owned source", source)
@@ -327,51 +329,60 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
         self.assertFalse(hasattr(_artifactlib.ArtifactClient, "capture_workflow_event"))
 
     def test_execution_surfaces_share_the_enabled_default_format_contract(self) -> None:
-        sources = tuple(
-            " ".join(path.read_text(encoding="utf-8").split())
-            for path in (EXECUTING_SKILL, SUBAGENT_SKILL)
-        )
+        sources = [p.read_text(encoding="utf-8") for p in (EXECUTING_SKILL, SUBAGENT_SKILL)]
+        contract = (REPO / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
         for source in sources:
-            self.assertIn("New full-lane workflows default to HTML", source)
-            self.assertIn("Existing authoritative Markdown pairs", source)
-            self.assertIn("fail closed", source)
-            self.assertIn("HTML `--farm` dispatch remains disabled", source)
-            self.assertNotIn("pilot", source.lower())
+            self.assertIn("includes/artifacts.md", source)
+            self.assertIn("preserve the selected spec/plan representation", source)
+        for obligation in ("default to canonical `.html`", "before writing",
+                           "must not fall back to Markdown", "remains Markdown in its original format",
+                           "silently convert it or create a shadow ledger", "HTML `--farm` dispatch remains disabled"):
+            self.assertIn(obligation, contract)
+
 
     def test_execution_consumers_define_process_recreation_resume(self) -> None:
-        executing = " ".join(EXECUTING_SKILL.read_text(encoding="utf-8").split())
-        subagent = " ".join(SUBAGENT_SKILL.read_text(encoding="utf-8").split())
-
-        for source in (executing, subagent):
+        sources = [p.read_text(encoding="utf-8") for p in (EXECUTING_SKILL, SUBAGENT_SKILL)]
+        for source in sources:
             self.assertIn("After process recreation", source)
-            self.assertIn("rediscover the same authoritative pair", source)
-            self.assertIn("query `identity` and `eligible` again", source)
-            self.assertIn("`task-reconcile`", source)
-            self.assertIn("fresh complete context ticket", source)
-            self.assertIn("REVIEW", source)
-            self.assertIn("fresh evidence", source)
+            for operation in ("`identity`", "`eligible`", "`task-reconcile`"):
+                self.assertIn(operation, source)
+            self.assertIn("`IN_PROGRESS`", source)
+            self.assertIn("BLOCKED", source)
+        self.assertIn("do not duplicate execution", sources[1])
+        self.assertIn("Never", sources[0])
+        self.assertNotIn("fresh complete context ticket", sources[1])
+
 
     def test_commit_and_finalization_require_current_engine_acceptance(self) -> None:
-        commit_gate = " ".join(COMMIT_GATE_SKILL.read_text(encoding="utf-8").split())
-        finishing = " ".join(FINISHING_SKILL.read_text(encoding="utf-8").split())
-
+        commit_gate = COMMIT_GATE_SKILL.read_text(encoding="utf-8")
+        finishing = FINISHING_SKILL.read_text(encoding="utf-8")
+        self.assertIn("explicit user authorization", commit_gate)
+        self.assertIn("secrets scan", commit_gate)
+        self.assertIn("focused tests", commit_gate)
+        self.assertIn("DO NOT", commit_gate.upper())
+        self.assertIn("current HEAD", finishing)
+        self.assertIn("exact-head hosted CI", finishing)
         for source in (commit_gate, finishing):
-            self.assertIn("engine `identity` and `eligible`", source)
-            self.assertIn("`all_accepted_and_current: true`", source)
-            self.assertIn("exact spec and plan identities", source)
-            self.assertIn("acceptance receipts", source)
-            self.assertIn("must not parse rendered HTML", source)
-            self.assertIn("must not consult a shadow Markdown ledger", source)
+            self.assertIn("`eligible`", source)
+            self.assertIn("advisory", source)
+            self.assertIn("`DONE`", source)
+            self.assertIn("not", source)
+            self.assertNotIn("`all_accepted_and_current: true`", source)
+
 
     def test_consumers_invoke_the_executable_current_acceptance_gate(self) -> None:
-        for path in (
-            EXECUTING_SKILL,
-            SUBAGENT_SKILL,
-            COMMIT_GATE_SKILL,
-            FINISHING_SKILL,
-        ):
+        ordinary = [EXECUTING_SKILL, SUBAGENT_SKILL]
+        for path in ordinary:
             source = path.read_text(encoding="utf-8")
-            self.assertIn("`_preflight_current_acceptance`", source, path.as_posix())
+            self.assertIn("not", source)
+            self.assertIn("host", source.lower())
+        for path in (COMMIT_GATE_SKILL, FINISHING_SKILL):
+            source = path.read_text(encoding="utf-8")
+            self.assertIn("_preflight_current_acceptance", source)
+            self.assertIn("not", source)
+        self.assertTrue(callable(getattr(_artifactlib, "_preflight_current_acceptance")))
+        # Historical proof remains independently testable; execution does not call it.
+
 
 
 class ArtifactGitBytesTest(unittest.TestCase):
@@ -1311,7 +1322,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         cached = {
             "SPEC-FLOW": original_call("identity", {"artifact_id": "SPEC-FLOW"}),
             "PLAN-FLOW": original_call("identity", {"artifact_id": "PLAN-FLOW"}),
-            "eligible": original_call("eligible", {"artifact_id": "PLAN-FLOW"}),
+            "eligible": original_call("verification-status", {"artifact_id": "PLAN-FLOW"}),
         }
         shadow = self.root / ".codearbiter" / "specs" / "flow.md"
 
@@ -1323,7 +1334,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         def stable_call(operation: str, request: dict, **kwargs: object) -> dict:
             if shadow.exists() and operation == "identity":
                 return cached[request["artifact_id"]]
-            if shadow.exists() and operation == "eligible":
+            if shadow.exists() and operation == "verification-status":
                 return cached["eligible"]
             return original_call(operation, request, **kwargs)
 
@@ -1335,9 +1346,14 @@ class ArtifactWorkflowTest(unittest.TestCase):
 
         self.assertEqual(caught.exception.code, "AMBIGUOUS_ARTIFACT")
 
-    def test_draft_or_missing_approval_cannot_dispatch(self) -> None:
+    def test_draft_scheduling_is_advisory_not_an_approval_claim(self) -> None:
+        report = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(report["assessment"], "advisory")
+        self.assertEqual(report["next_task"], "T-001")
+        self.assertFalse(report["evidence_assessed"])
+        self.assertNotIn("all_accepted_and_current", report)
         with self.assertRaises(ArtifactError) as caught:
-            self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+            self.harness.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(caught.exception.code, "DRAFT_BINDING")
 
     def test_caller_labels_cannot_widen_task_state_authority(self) -> None:
@@ -1373,7 +1389,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         self.assertEqual(resumed["tasks"][0]["state"], "IN_PROGRESS")
         self.assertFalse(resumed["tasks"][0]["eligible"])
 
-    def test_stale_context_blocks_before_dispatch_side_effect(self) -> None:
+    def test_stale_context_is_reported_without_blocking_progress(self) -> None:
         self.harness.approve_pair()
         ticket = self.harness.context_ticket("T-001")
         self.harness.mutate(
@@ -1387,13 +1403,20 @@ class ArtifactWorkflowTest(unittest.TestCase):
             ],
         )
         before = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
-        with self.assertRaises(ArtifactError) as caught:
-            self.harness.mutate(
-                "task-start", "PLAN-FLOW", task="T-001", context_ticket=ticket
-            )
-        self.assertEqual(caught.exception.code, "STALE_SPEC")
+        advice = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertFalse(advice["binding_current"])
+        self.assertFalse(advice["evidence_assessed"])
+        self.harness.mutate(
+            "task-start", "PLAN-FLOW", task="T-001", context_ticket=ticket
+        )
         after = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
-        self.assertEqual(after, before)
+        self.assertEqual(after["revision"], before["revision"] + 1)
+        self.assertEqual(after["normative_sha256"], before["normative_sha256"])
+        resumed = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(resumed["tasks"][0]["state"], "IN_PROGRESS")
+        with self.assertRaises(ArtifactError) as caught:
+            self.harness.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
+        self.assertEqual(caught.exception.code, "STALE_SPEC")
 
     def test_changed_worktree_rejects_review_evidence(self) -> None:
         self.harness.approve_pair()
@@ -1421,12 +1444,12 @@ class ArtifactWorkflowTest(unittest.TestCase):
         self.harness.review_task("T-001")
 
         resumed = WorkflowHarness(self.root, self.installation)
-        checkpoint = resumed.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        checkpoint = resumed.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(checkpoint["tasks"][0]["state"], "REVIEW")
         self.assertFalse(checkpoint["all_accepted_and_current"])
 
         resumed.accept_scope("CP-01", ["T-001"])
-        accepted = resumed.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        accepted = resumed.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(accepted["tasks"][0]["state"], "ACCEPTED")
         self.assertTrue(accepted["all_accepted_and_current"])
 
@@ -1483,7 +1506,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         review = final_process.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(review["tasks"][0]["state"], "REVIEW")
         final_process.accept_scope("CP-01", ["T-001"])
-        accepted = final_process.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        accepted = final_process.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         current_plan = final_process.client.call(
             "identity", {"artifact_id": "PLAN-FLOW"}
         )

@@ -6,12 +6,128 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.17.5] - 2026-10-15
+## [0.20.7] - 2026-10-19
 
 ### Fixed
 
-- Distinguish inert PowerShell evidence from actual verifier wrapper calls (#970).
-- Preserve refusal of selected malformed and compound wrappers and exact authorization/corroboration checks.
+- The authority verifier selector rejected inert shell input that merely mentioned `artifact-authority.py`, such as a PowerShell here-string piped to a validator, with `UNSUPPORTED_HOST_SEAM: verifier wrapper command is malformed`. When quoting does not parse, it now refuses only if the parsed command prefix really is the `python artifact-authority.py [verify]` wrapper. Malformed and compound wrapper calls are still refused (#970).
+
+## [0.20.6] - 2026-10-19
+
+### Fixed
+
+- Engine model-validation errors now name what the schema accepts. A closed-enum refusal lists the allowed values (for example, applicability `mode` accepts `"conditional"`, `"unconditional"`, `"invariant"` and `"not_applicable"`), and an unknown key lists the record's allowed fields. Before, both said only that the value was refused, so the accepted spelling had to be found in the schema files. The list stays within the 512-byte public diagnostic limit.
+
+## [0.20.5] - 2026-10-19
+
+### Fixed
+
+- The H-05 (audit logs), H-11 (ADRs) and H-18 (`CONTEXT.md`) shell guards blocked any interpreter command that merely named a protected path, so a read-only `python -c` read, an issue body citing the path, or an `ArtifactClient` request whose record text named an audit log was refused as a write. Their interpreter legs now block only when the command shows write intent after the interpreter (a write, delete, copy, move or in-place edit call, a non-read `open` mode, PowerShell content cmdlets, or dynamic execution such as `exec`, `eval` or `subprocess`), or when the interpreter is handed a script or module argument. H-18 also lets a `sed` without `-i` or a `w` command read `CONTEXT.md` (#997, #911).
+
+## [0.20.4] - 2026-10-19
+
+### Fixed
+
+- On Windows the artifact bridge read its binary's architecture through `platform.machine()`, which asks WMI and then the `PROCESSOR_*` environment variables. A read-only sandbox can block WMI and strip that environment, so reads failed with `UNSUPPORTED_PLATFORM: unsupported architecture`. The bridge now asks the kernel (`IsWow64Process2`) for the native machine, consults no environment, and still fails closed when the OS gives no answer (#986).
+
+## [0.20.3] - 2026-10-19
+
+### Fixed
+
+- Evidence snapshots open each bound farm projection once, from the walk's own read, and no longer list directories ahead of the walk when farm bindings exist. A stale binding no longer opens its projection twice (#962).
+- A snapshot re-checks a cached directory anchor against its parent's current entry each time it reuses it, and caps the anchor cache at 512 handles so a very wide root policy fails with `MAX_INPUTS` instead of exhausting file descriptors (#962).
+- On macOS the store opens files and directories non-blocking, so a FIFO planted in place of a listed file is refused instead of hanging the scan (#962).
+- Git membership probes drop environment-injected Git configuration (`GIT_CONFIG_PARAMETERS`, `GIT_CONFIG` and `GIT_CONFIG_KEY_n`/`VALUE_n` pairs) except the bridge's resolved `core.excludesFile` (#962).
+- A root below the top level of an enclosing Git work tree, such as a monorepo package, now uses that work tree's membership scoped to the root instead of reading every file from disk. Ignored files there no longer count as inputs, so existing receipts for such roots go stale once. A root the enclosing work tree ignores fails closed (#962).
+
+## [0.20.2] - 2026-10-18
+
+### Fixed
+
+- On Windows, verification through an npm workspace intermittently failed with `UNSUPPORTED_EXECUTABLE: nested npm launch qualification failed`. The qualification probe ran npm with a minimal environment, so a fresh npm profile also made a registry update check, which could exceed the probe's 15-second limit or print a notice. The probe now disables npm's update notifier and stays offline.
+
+## [0.20.1] - 2026-10-18
+
+### Fixed
+
+- A plan could claim verification coverage for a task path under `.git/`, although the evidence snapshot never hashes `.git`. Such paths now report `UNCOVERED_INPUT` (#908).
+- On Windows, a directory junction inside the repository was not refused by the store's link checks, because current Go reports junctions as irregular files rather than symlinks. Junctions are now refused like symlinks (#909).
+
+## [0.20.0] - 2026-10-18
+
+### Added
+
+- A new `init-store` engine operation creates a checkout's local artifact store metadata on purpose, and only that. On Windows, a fresh clone or worktree reports `NO_LOCAL_STORE` on every read until the store exists; the host bridge now runs `init-store` once and retries the read once, so `/feature` and `/sprint` resume work in a new checkout. Reads themselves still never write, and a read-only checkout still gets `NO_LOCAL_STORE`.
+
+## [0.19.1] - 2026-10-18
+
+### Fixed
+
+- A spec whose design had only one sane approach recorded its SMARTS rationale with not-applicable filler for every rationale part, because the rationale convention listed all parts unconditionally. The convention now applies the multi-part rationale only when a comparison ran; a single-option choice records exactly one block, its one-line statement and reason. Found by a live `/feature` run.
+- The SMARTS rationale convention and the spec-compliance reviewer no longer describe the rationale as belonging to an "approved" spec, since 3.0.0 retired spec approval.
+
+## [0.19.0] - 2026-10-17
+
+### Added
+
+- SMARTS is now the six-lens design-quality rubric for material engineering solution choices, not only architectural variance. Workflows pick a depth (scan, comparison or delegated decision); SMARTS itself grants no approval and is not a command.
+- A fifth verdict, `Unknown`, records missing evidence with its missing observation and whether it is decision-critical. A decision-critical `Unknown` blocks a strong recommendation and the selection of the option that carries it, and never stands in for user approval, a prerequisite or security authority. The engine validates the `smarts-plan-method/0.2.0` record while historical `0.1.0` receipts keep their four-verdict contract.
+- SMARTS runs only where a material choice exists: brainstorming compares approaches when two or more are materially plausible (a single approach gets one line and no table), the `/feature` small lane scans only a material choice, `/fix` compares remediation strategies only after root cause, and refactor compares only distinct strategies. Writing-plans routes undecided design choices back to brainstorming, and verification checks the change against a recorded rationale for material invalidation only.
+- Specs carry a concise SMARTS design rationale (`SEC-SMARTS`), and the per-lens historical detail loads lazily from `includes/smarts/lenses.md`.
+
+## [0.18.0] - 2026-10-14
+
+### Changed
+
+- Keep routine artifact context assistive and smaller: move optional strict
+  legacy receipt, approval, and recovery reference procedures out of the
+  default artifact include. Load them only when an explicit proof/old-state
+  consumer needs them. No artifact permission gate or model reviewer is added.
+
+- Keep command-result applicability aligned with the exact referenced
+  acceptance criteria and bounded task/shared source inputs plus known build
+  controls. Distinguish `scoped_changed`, `scoped_unchanged` and
+  `unassessed` without pretending that a partial fingerprint proves tests,
+  shared imports or independent review.
+- Record mixed 0.3.1/0.3.2 engine compatibility and fail-closed old-client
+  behavior in disposable cross-binary fixtures; preserve historical files,
+  receipts and post-upgrade edits rather than promising a destructive downgrade.
+- Normal feature/sprint execution guidance uses advisory plan state and real
+  checks instead of mandatory artifact approval codes or per-task reviewer fleets.
+  Recorded-intent conflicts and material ADR supersession remain visible without
+  becoming an additional permission protocol.
+- Add read-only `task-context` to deliver one bounded task and its directly
+  referenced criteria/dependencies/prerequisites without an evidence snapshot,
+  reviewer dispatch, or persistent context ticket. Stale and oversized requests
+  fail explicitly; this is not a host-qualification claim.
+- Start the assistive state-engine overhaul in PR #983: native work tracking no
+  longer requires artifact approval codes or context tickets.
+- Record task-scoped prerequisite observations and completed implementation
+  batches separately from verified acceptance, with compact symbol reads and
+  human-readable HTML. New records use schema 0.3.2; historical reads retain
+  their bytes and evidence.
+- Native plan authoring no longer requires artifact approval or every future
+  reviewer/verification adapter; generated planning guidance uses coherent work
+  units rather than mandatory five-minute slices.
+- Explicit batch reviews can select fresh passing reruns of still-reviewed work
+  without recreating each task review. Original evidence remains distinct, and
+  source/support/workspace integrity is still checked.
+- Align runtime adapter identities and the second Codex package manifest with
+  the unreleased candidate versions.
+- Retire *unanswered* paired-approval and ARMED prerequisite prompts
+  through existing internal helpers without obtaining another code; submitted
+  pairs and confirmed prerequisites retain exact recovery, while old standalone
+  approvals fail closed rather than guessing that no user replied.
+- Retire unanswered legacy reconciliation prompts with an explicit superseded
+  disposition, without a new approval code. Committed or uncertain attempts
+  retain exact replay/recovery; no task state or evidence is forged by cleanup.
+- Preserve ordinary task command results as bounded, caller-reported
+  pass/fail/skip/unknown observations. Definition drift is visible, source
+  freshness remains explicitly unassessed, and no review/approval is invented.
+- Canonicalize macOS temporary-directory aliases before validating the native
+  reconciliation root, retaining the existing unsafe-path/attempt refusals.
+- This is an unreleased source candidate. Host-workflow conversion, full upgrade
+  qualification, and publication remain tracked by the overhaul PR.
 
 ## [0.17.4] - 2026-10-13
 

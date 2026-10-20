@@ -1128,13 +1128,14 @@ def build_index(root):
         extra = []
         client = ArtifactClient(root, helper_installation(__file__))
         for entry in client.index("spec"):
-            authority = entry["authority"]
-            if authority["authority_verified"] and entry.get("governs"):
+            state = entry["authority"].get("state")
+            if state in ("draft", "ready", "approved") and entry.get("governs"):
                 extra.append({
                     "spec": entry["artifact_id"],
                     "path": entry["path"],
                     "globs": entry["governs"],
                     "artifact_html": True,
+                    "governance_state": state,
                     "revision": entry.get("revision"),
                     "model_sha256": entry.get("model_sha256"),
                     "normative_sha256": entry.get("normative_sha256"),
@@ -1165,22 +1166,35 @@ def spec_pointers(rel, index):
     if not isinstance(index, list):
         return _artifact_legacy_spec_pointers(rel, index)
     warnings = [item for item in index if isinstance(item, dict) and item.get("artifact_diagnostic")]
-    normal = [item for item in index if not isinstance(item, dict) or not item.get("artifact_diagnostic")]
+    normal = [item for item in index if not isinstance(item, dict) or
+              not item.get("artifact_html") and not item.get("artifact_diagnostic")]
     result = _artifact_legacy_spec_pointers(rel, normal)
+    for item in index:
+        if (not isinstance(item, dict) or not item.get("artifact_html") or
+                item.get("governance_state") not in ("draft", "ready", "approved")):
+            continue
+        if isinstance(rel, str) and any(fnmatch.fnmatch(rel, glob) for glob in item.get("globs", [])):
+            result.append({"tier": "specs", "text": (
+                "spec {} ({}) — advisory context for this file; read {}. "
+                "This pointer grants no approval or execution authority."
+            ).format(item["spec"], item["governance_state"], item["path"])})
     if warnings:
         warning = warnings[0]
         code = warning["artifact_diagnostic"]
         if warning.get("artifact_diagnostic_kind") == "capability":
             text = (
                 "HTML artifact capability unavailable (" + code + "). Repair or reinstall "
-                "the pinned artifact payload. Source inspection and unrelated legacy Markdown "
-                "may continue; HTML planning/execution must stop until resolved."
+                "the pinned artifact payload. Stop only operations that require this capability. "
+                "Independent authorized work may continue. "
+                "Do not bypass the error with raw artifact writes."
             )
         else:
             text = (
                 "HTML specification is invalid or unreadable (" + code + "). Inspect the "
-                "engine diagnostic and repair-preview before any repair. Source inspection may "
-                "continue; HTML planning/execution must stop until resolved."
+                "engine diagnostic and repair-preview before repairing the affected artifact. "
+                "Stop only operations that depend on the affected artifact. "
+                "Independent authorized work may continue. "
+                "Do not bypass the error with raw artifact writes."
             )
         result.append({"tier": "artifact-diagnostic", "text": text})
     return result

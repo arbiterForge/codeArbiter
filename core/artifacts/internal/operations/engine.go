@@ -41,13 +41,33 @@ type Engine struct {
 // may overlap. New operations remain exclusive until explicitly classified.
 func sharedObservation(op string, r object) bool {
 	switch op {
-	case "snapshot", "identity", "outline", "read-batch", "plan-verification":
+	case "snapshot", "identity", "outline", "read-batch", "plan-verification", "eligible", "task-context", "verification-status":
 		return true
 	case "read":
 		return model.S(r["mode"]) == "exact"
 	default:
 		return false
 	}
+}
+
+// initStore creates the lock metadata this platform's reads require through
+// the ordinary writer lock, the same path a first mutation takes, and writes
+// nothing else. Linux locks the repository directory and reports present.
+// Reads never initialize the store; a host calls this explicitly instead.
+func initStore(f *store.FS) (any, error) {
+	present, e := f.LockMetadataPresent()
+	if e != nil {
+		return nil, e
+	}
+	unlock, e := f.Lock(true, 2*time.Second)
+	if e != nil {
+		return nil, e
+	}
+	unlock()
+	if present {
+		return object{"store": "present"}, nil
+	}
+	return object{"store": "created"}, nil
 }
 
 func Identity(d *model.Document, p string) object {
@@ -65,7 +85,7 @@ func Run(root, op string, input object) (any, error) {
 		_, contextContract := kind.Lookup("context")
 		contextCodec, contextCodecFound := kind.Codecs()["context"]
 		contextRegistered := contextContract && contextCodecFound && contextCodec.Optional && contextCodec.Representation == kind.Markdown
-		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": false, "qualification": "package-required", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
+		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "repository_context": object{"source_present": true, "kind_registered": contextRegistered, "host_default_enabled": true, "qualification": "native-tested-package", "permission_model": "host-owned", "mutation_available": store.NativeWrites && contextRegistered}, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
 	}
 	if op == "schema" {
 		switch model.S(r["name"]) {
@@ -90,6 +110,9 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	defer f.Close()
+	if op == "init-store" {
+		return initStore(f)
+	}
 	var unlock func()
 	if runtime.GOOS == "windows" && (op == "index" || sharedObservation(op, r)) {
 		locker, ok := any(f).(existingStoreObservationLocker)
@@ -139,6 +162,9 @@ func Run(root, op string, input object) (any, error) {
 	}
 	if op == "context-evidence-context" {
 		return engine.contextEvidenceContext(r)
+	}
+	if op == "context-preview" || op == "context-finalize-preview" {
+		return engine.contextOrdinaryPreview(r, op == "context-finalize-preview")
 	}
 	if op == "context-finalize-evidence-context" {
 		return engine.contextFinalizationEvidenceContext(r)
@@ -220,6 +246,8 @@ func Run(root, op string, input object) (any, error) {
 	switch op {
 	case "evidence-context":
 		return engine.evidenceContext(r, entry)
+	case "task-check":
+		return engine.recordTaskCheck(r, entry)
 	case "export":
 		return engine.export(r, entry)
 	case "identity":
@@ -356,6 +384,13 @@ func Run(root, op string, input object) (any, error) {
 		return engine.bind(r, entry)
 	case "eligible":
 		return engine.eligible(d)
+	case "task-context":
+		if model.S(r["model_sha256"]) != d.Hash() {
+			return nil, fault.New("STALE_CURSOR", "task context requires the current plan model identity")
+		}
+		return engine.taskContext(d, model.S(r["task"]), budget)
+	case "verification-status":
+		return engine.verificationStatus(d)
 	case "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite":
 		return engine.progress(op, r, entry)
 	case "farm-project":

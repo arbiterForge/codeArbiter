@@ -14,7 +14,7 @@ import test_artifact_installed_host as installed
 ROOT = Path(__file__).resolve().parents[2]
 DECLARATION = ROOT / ".github/fixtures/context-onboarding/installed-cells.json"
 FORMAT = "codearbiter.context-installed-cells/0.1.0"
-REQUIRED = frozenset({"claude", "codex"})
+REQUIRED = frozenset({"claude", "codex", "pi"})
 
 
 def load_cell(path: Path) -> dict:
@@ -87,6 +87,7 @@ class InstalledContextQualification(unittest.TestCase):
             "recovery": "pass", "disabled": "refused", "missing": "refused",
         })
         self.assertEqual(result["proof_kind"], "candidate-preflight")
+        self.assertEqual(result["authority_evidence_mode"], "none-required-or-created")
         self.assertFalse(result["live_qualified"])
 
     def test_t044_rejects_missing_candidate_identity(self):

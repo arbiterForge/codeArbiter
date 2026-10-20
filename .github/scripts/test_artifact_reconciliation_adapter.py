@@ -354,7 +354,7 @@ class ReconciliationTest(unittest.TestCase):
                          [n for n, _ in before if n == "task-reconcile"])
 
     def test_documented_recovery_commands_are_directly_runnable(self):
-        source = (HERE.parent.parent / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
+        source = (HERE.parent.parent / "core/surface/includes/artifacts-attestation.md").read_text(encoding="utf-8")
         command = 'python "{{PLUGIN_ROOT}}/hooks/artifact-reconcile.py" --root "{{PROJECT_DIR}}" --artifact-id <plan-id>'
         self.assertIn(command + ' --cancel --prompt "<exact returned reply>"', source)
         self.assertIn(command + " --cancel-orphan", source)
@@ -493,6 +493,386 @@ class ReconciliationTest(unittest.TestCase):
         self.assertTrue(result["reconciled"])
         self.assertEqual(len(self.client.reconciled_requests), 1)
         self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+
+    def test_assistive_supersede_unanswered_reconciliation_without_approval_code(self):
+        armed = self.arm_task()
+        original = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        before = dict(self.client.identity)
+        result = self.adapter.supersede_unanswered_reconciliation(
+            self.root, "PLAN-EXAMPLE",
+            reason="The user already authorized implementation; retire the redundant request.",
+        )
+        self.assertEqual(result["disposition"], "unanswered_prompt_superseded")
+        self.assertTrue(result["superseded"])
+        self.assertFalse(result["authority_granted"])
+        self.assertFalse(result["mutation_attempted"])
+        self.assertEqual(result["target_id"], "T-001")
+        self.assertFalse(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+        self.assertEqual(before, self.client.identity)
+        self.assertFalse(any(name in {"task-reconcile", "capture-observation"}
+                             for name, _ in self.client.calls))
+        replacement = self.arm_task("after-supersession-token")
+        self.assertNotEqual(armed["reply"], replacement["reply"])
+        self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE")["operation"],
+                         original["operation"])
+
+    def test_assistive_supersession_validates_the_canonical_root(self):
+        # macOS temporary roots commonly enter through the /var system alias.
+        # The canonical physical directory must be checked, not rejected solely
+        # because the host's system path prefix is an alias.  No pending
+        # mutation is permitted and the request still needs its bound route.
+        self.arm_task("canonical-root-supersede-token")
+        original = self.adapter._artifactlib._trusted_directory
+        inspected = []
+        def verify(path, code):
+            inspected.append(Path(path))
+            return original(path, code)
+        with mock.patch.object(self.adapter._artifactlib, "_trusted_directory", side_effect=verify):
+            self.assertTrue(self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="Retire unanswered prompt only.",
+            )["superseded"])
+        self.assertEqual(inspected, [self.root.resolve(strict=True)])
+        self.assertFalse(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+
+    def test_assistive_supersession_rejects_symlinked_selected_root(self):
+        # A macOS parent directory alias is legitimate; the *repository root*
+        # itself must not be a symlink to a different directory.
+        armed = self.arm_task("symlink-root-token")
+        linked = self.root.parent / (self.root.name + "-linked")
+        try:
+            linked.symlink_to(self.root, target_is_directory=True)
+        except (NotImplementedError, OSError) as exc:
+            self.skipTest(f"platform cannot create a symlink: {exc}")
+        with self.assertRaisesRegex(RuntimeError, "root cannot be a linked"):
+            self.adapter.supersede_unanswered_reconciliation(
+                linked, "PLAN-EXAMPLE", reason="Only the canonical selected repo may retire this prompt.",
+            )
+        self.assertIsNotNone(self.adapter._load(self.root, "PLAN-EXAMPLE"))
+        self.assertEqual(self.root.resolve(), self.routes.resolve("reconciliation", armed["reply"]))
+        linked.unlink()
+
+    def test_assistive_supersession_requires_a_bounded_reason_and_matching_id(self):
+        self.arm_task()
+        for reason in ("", "  ", "x" * 2049, 6, None):
+            with self.subTest(reason=str(reason)[:30]):
+                with self.assertRaisesRegex(RuntimeError, "nonblank supersession reason"):
+                    self.adapter.supersede_unanswered_reconciliation(
+                        self.root, "PLAN-EXAMPLE", reason=reason,
+                    )
+        with self.assertRaisesRegex(RuntimeError, "valid artifact"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "../OTHER", reason="Retire the old request.",
+            )
+        self.assertTrue(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+        self.assertIsNotNone(self.adapter._load(self.root, "PLAN-EXAMPLE"))
+
+    def test_assistive_supersession_refuses_missing_or_different_route_binding(self):
+        armed = self.arm_task()
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        self.routes.unregister(self.root, "reconciliation", "PLAN-EXAMPLE")
+        with self.assertRaisesRegex(RuntimeError, "binding differ|route is unavailable"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="Retire an idle request.",
+            )
+        self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+        self.routes.register(
+            self.root, "reconciliation", "PLAN-EXAMPLE", "another unauthorized prompt",
+            binding_sha256="f" * 64,
+        )
+        with self.assertRaisesRegex(RuntimeError, "binding differ"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="Retire an idle request.",
+            )
+        self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+
+    def test_assistive_supersession_recovers_legacy_unanswered_marker_only(self):
+        armed = self.arm_task()
+        current = self.adapter._pending_path(self.root, "PLAN-EXAMPLE")
+        legacy = self.root / self.adapter.LEGACY_PENDING_DIR / "PLAN-EXAMPLE.json"
+        legacy.parent.mkdir(parents=True)
+        current.rename(legacy)
+        self.assertTrue(self.adapter.supersede_unanswered_reconciliation(
+            self.root, "PLAN-EXAMPLE",
+            reason="Historical confirmation prompt is not part of current progress.",
+        )["superseded"])
+        self.assertFalse(legacy.exists())
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+        self.assertEqual(self.client.identity["revision"], 3)
+
+    def test_assistive_supersession_never_erases_in_flight_attempt(self):
+        armed = self.arm_task()
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"],
+                host="codex", session_id="uncertain-after-submission",
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        path = self.adapter._attempt_path(self.root, pending)
+        self.assertTrue(path.is_file())
+        with self.assertRaisesRegex(RuntimeError, "in-flight reconciliation"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="No second approval ceremony.",
+            )
+        self.assertTrue(path.is_file())
+        self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+        replay = self.adapter.recover_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE",
+        )
+        self.assertTrue(replay["committed"])
+        requests = [r for op, r in self.client.calls if op == "task-reconcile"]
+        self.assertEqual(requests[0], requests[1])
+
+    def interrupt_captured_stop(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="BLOCKED", reason="The user stopped this task.",
+            assessment="Keep the explicit stop.", token="captured-stop-token",
+        )
+        with mock.patch.object(self.adapter, "_write_attempt", side_effect=OSError("attempt write interrupted")):
+            with self.assertRaisesRegex(OSError, "attempt write interrupted"):
+                self.adapter.consume_reconciliation(
+                    self.root, self.client, armed["reply"], host="codex", session_id="captured-stop",
+                )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        self.assertIsNone(self.adapter._load_attempt(self.root, pending))
+        self.assertFalse(any(op == "task-reconcile" for op, _ in self.client.calls))
+        return armed, pending
+
+    def test_assistive_supersession_preserves_reply_captured_before_attempt(self):
+        armed, pending = self.interrupt_captured_stop()
+        history = {p: p.read_bytes() for p in (self.root / ".codearbiter/.artifacts").rglob("*.json")}
+        with self.assertRaisesRegex(RuntimeError, "observed.*reconciliation"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="Retire only an unanswered question.",
+            )
+        self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+        self.assertEqual(self.routes.resolve("reconciliation", armed["reply"]), self.root.resolve())
+        self.assertEqual({p: p.read_bytes() for p in history}, history)
+        # Retaining the original prompt/marker leaves the genuine reply
+        # retryable; cleanup never manufactures or silently drops its stop.
+        result = self.adapter.consume_reconciliation(
+            self.root, self.client, armed["reply"], host="codex", session_id="captured-stop",
+        )
+        self.assertTrue(result["reconciled"])
+        requests = [r for op, r in self.client.calls if op == "task-reconcile"]
+        self.assertEqual(len(requests), 1)
+        self.assertEqual(requests[0]["state"], "BLOCKED")
+
+    def test_legacy_cancellation_preserves_reply_captured_before_attempt(self):
+        armed, pending = self.interrupt_captured_stop()
+        with self.assertRaisesRegex(RuntimeError, "observed.*reconciliation"):
+            self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])
+        self.routes.unregister(self.root, "reconciliation", "PLAN-EXAMPLE")
+        with self.assertRaisesRegex(RuntimeError, "observed.*reconciliation"):
+            self.adapter.cancel_orphaned_reconciliation(self.root, "PLAN-EXAMPLE")
+        self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+
+    def test_recovery_cli_reuses_reply_captured_before_attempt_without_a_new_prompt(self):
+        armed, pending = self.interrupt_captured_stop()
+        captured = [request for op, request in self.client.calls if op == "capture-observation"]
+        history = {p: p.read_bytes() for p in (self.root / ".codearbiter/.artifacts").rglob("*.json")}
+        specification = importlib.util.spec_from_file_location(
+            "artifact_reconcile_captured_cli", HERE.parent.parent / "core/pysrc/artifact-reconcile.py",
+        )
+        cli = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(cli)
+        with mock.patch.object(cli._artifactlib, "helper_installation", return_value=self.root), \
+                mock.patch.object(cli._artifactlib, "ArtifactClient", return_value=self.client), \
+                mock.patch.object(self.adapter._artifactauthoritylib, "capture_user_prompt", side_effect=AssertionError("no new host event")), \
+                redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(cli.main([
+                "--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE", "--recover",
+            ]), 0)
+        self.assertTrue(json.loads(output.getvalue())["committed"])
+        requests = [request for op, request in self.client.calls if op == "task-reconcile"]
+        self.assertEqual(requests, [self.adapter._mutation_request(
+            pending, ".codearbiter/.artifacts/receipts/" + "4" * 64 + ".json",
+        )])
+        self.assertEqual([r for op, r in self.client.calls if op == "capture-observation"], captured * 2)
+        self.assertEqual({p: p.read_bytes() for p in history}, history)
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+
+    def test_captured_reply_recovery_preserves_missing_or_mismatched_source(self):
+        armed, pending = self.interrupt_captured_stop()
+        directory = self.root / self.adapter.SOURCE_DIR
+        original_path, = directory.iterdir()
+        original = original_path.read_bytes()
+        event = json.loads(original)
+        variants = (
+            None,
+            {**event, "payload": {**event["payload"], "target_state": "PENDING"}},
+            {**event, "source_text": armed["reply"] + "x"},
+            {**event, "subject": {**event["subject"], "record_id": "T-OTHER"}},
+            {**event, "observation_sha256": "f" * 64},
+            {**event, "observation_ref": []},
+        )
+        for variant in variants:
+            with self.subTest(event=variant):
+                original_path.unlink()
+                changed_path = None
+                if variant is not None:
+                    raw = self.adapter._canonical(variant)
+                    changed_path = directory / (hashlib.sha256(raw).hexdigest() + ".json")
+                    changed_path.write_bytes(raw)
+                try:
+                    with self.assertRaisesRegex(RuntimeError, "source is missing or ambiguous"):
+                        self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+                    self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+                    self.assertIsNone(self.adapter._load_attempt(self.root, pending))
+                    self.assertEqual(self.routes.resolve("reconciliation", armed["reply"]), self.root.resolve())
+                    self.assertFalse(any(op == "task-reconcile" for op, _ in self.client.calls))
+                finally:
+                    if changed_path is not None:
+                        changed_path.unlink()
+                    original_path.write_bytes(original)
+
+    def test_captured_reply_recovery_preserves_ambiguous_sources(self):
+        armed, pending = self.interrupt_captured_stop()
+        with mock.patch.object(self.adapter, "_write_attempt", side_effect=OSError("attempt write interrupted")):
+            with self.assertRaisesRegex(OSError, "attempt write interrupted"):
+                self.adapter.consume_reconciliation(
+                    self.root, self.client, armed["reply"], host="codex", session_id="second-observer",
+                )
+        history = {p: p.read_bytes() for p in (self.root / ".codearbiter/.artifacts").rglob("*.json")}
+        with self.assertRaisesRegex(RuntimeError, "source is missing or ambiguous"):
+            self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+        self.assertIsNone(self.adapter._load_attempt(self.root, pending))
+        self.assertEqual({p: p.read_bytes() for p in history}, history)
+        self.assertFalse(any(op == "task-reconcile" for op, _ in self.client.calls))
+
+    def test_assistive_supersession_ignores_unrelated_and_stale_observations(self):
+        armed = self.arm_task()
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True)
+        subject = {"artifact_id": "PLAN-EXAMPLE", "record_id": "T-001", "normative_sha256": "2" * 64}
+        for other_subject, prompt_hash in (
+            ({**subject, "artifact_id": "PLAN-OTHER"}, pending["prompt_sha256"]),
+            ({**subject, "record_id": "T-OTHER"}, pending["prompt_sha256"]),
+            (subject, "f" * 64),
+        ):
+            observation = {
+                "format": "codearbiter.observation/0.2.0", "kind": "reconciliation",
+                "producer_profile": "host-user-prompt/0.1.0", "subject": other_subject,
+                "producer_result": {"prompt_sha256": prompt_hash},
+            }
+            raw = self.adapter._canonical(observation)
+            (directory / (hashlib.sha256(raw).hexdigest() + ".json")).write_bytes(raw)
+        before = {p: p.read_bytes() for p in directory.iterdir()}
+        self.assertTrue(self.adapter.supersede_unanswered_reconciliation(
+            self.root, "PLAN-EXAMPLE", reason="No reply to this armed request exists.",
+        )["superseded"])
+        self.assertEqual({p: p.read_bytes() for p in directory.iterdir()}, before)
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+
+    def test_assistive_supersession_preserves_pending_when_observation_store_is_uncertain(self):
+        armed = self.arm_task()
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True)
+        for name, raw in (
+            ("incomplete.tmp", b"{}"),
+            ("a" * 64 + ".json", b"{"),
+            ("a" * 64 + ".json", b"{}"),
+            ("a" * 64 + ".json", b"x" * 65537),
+        ):
+            with self.subTest(name=name, size=len(raw)):
+                path = directory / name
+                path.write_bytes(raw)
+                try:
+                    with self.assertRaisesRegex(RuntimeError, "observation"):
+                        self.adapter.supersede_unanswered_reconciliation(
+                            self.root, "PLAN-EXAMPLE", reason="Do not erase uncertain historical replies.",
+                        )
+                    self.assertEqual(self.adapter._load(self.root, "PLAN-EXAMPLE"), pending)
+                    self.assertEqual(self.routes.resolve("reconciliation", armed["reply"]), self.root.resolve())
+                    self.assertEqual(path.read_bytes(), raw)
+                finally:
+                    path.unlink()
+
+    def test_assistive_supersession_bounds_observation_enumeration(self):
+        self.arm_task()
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True)
+        for i in range(513):
+            (directory / f"{i:064x}.json").write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "too many.*observations"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="The cleanup scan must stay bounded.",
+            )
+        self.assertTrue(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+
+    def test_assistive_supersession_rejects_linked_observation_file(self):
+        self.arm_task()
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True)
+        target = self.root / "outside-observation.json"
+        target.write_bytes(b"{}")
+        linked = directory / (hashlib.sha256(b"{}").hexdigest() + ".json")
+        try:
+            linked.symlink_to(target)
+        except (NotImplementedError, OSError) as exc:
+            self.skipTest(f"platform cannot create a symlink: {exc}")
+        with self.assertRaisesRegex(RuntimeError, "observation"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="Do not follow observation links.",
+            )
+        self.assertTrue(self.adapter._pending_path(self.root, "PLAN-EXAMPLE").exists())
+        self.assertEqual(target.read_bytes(), b"{}")
+
+    def test_assistive_supersession_does_not_hide_dual_marker_ambiguity(self):
+        self.arm_task()
+        pending = self.adapter._pending_path(self.root, "PLAN-EXAMPLE")
+        legacy = self.root / self.adapter.LEGACY_PENDING_DIR / "PLAN-EXAMPLE.json"
+        legacy.parent.mkdir(parents=True)
+        legacy.write_bytes(pending.read_bytes())
+        with self.assertRaisesRegex(RuntimeError, "ambiguous reconciliation state"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-EXAMPLE", reason="Retire unanswered marker.",
+            )
+        self.assertTrue(legacy.exists())
+        self.assertTrue(pending.exists())
+
+    def test_assistive_supersession_cli_is_code_free_and_refuses_mixed_actions(self):
+        armed = self.arm_task("supersede-cli-token")
+        specification = importlib.util.spec_from_file_location(
+            "artifact_reconcile_supersede_cli",
+            HERE.parent.parent / "core/pysrc/artifact-reconcile.py",
+        )
+        cli = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(cli)
+        base = ["--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE"]
+        for extra in (
+            ["--supersede"],
+            ["--supersede", "--reason", " "],
+            ["--supersede", "--reason", "Retire.", "--cancel"],
+            ["--supersede", "--reason", "Retire.", "--recover"],
+            ["--supersede", "--reason", "Retire.", "--cancel-orphan"],
+            ["--supersede", "--reason", "Retire.", "--prompt", armed["reply"]],
+            ["--supersede", "--reason", "Retire.", "--target-id", "T-001"],
+            ["--supersede", "--reason", "Retire.", "--operation", "task-reconcile"],
+        ):
+            with self.subTest(extra=extra), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as caught:
+                    cli.main(base + extra)
+                self.assertEqual(caught.exception.code, 2)
+        self.assertIsNotNone(self.adapter._load(self.root, "PLAN-EXAMPLE"))
+        with redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(cli.main(base + [
+                "--supersede", "--reason",
+                "Resume existing authorized work without requiring a new code.",
+            ]), 0)
+        result = json.loads(output.getvalue())
+        self.assertEqual(result["disposition"], "unanswered_prompt_superseded")
+        self.assertFalse(result["authority_granted"])
+        self.assertNotIn("reply", result)
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+        self.assertFalse(any(name in {"task-reconcile", "capture-observation"}
+                             for name, _ in self.client.calls))
 
     def test_pending_request_can_be_cancelled_and_rearmed_before_mutation(self):
         armed = self.adapter.arm_reconciliation(
@@ -971,6 +1351,34 @@ class NativeReconciliationTest(unittest.TestCase):
     def test_ascii_task_reconciliation_uses_native_capture(self):
         self.create_plan(task_text="The task's named test passes.")
         self.assert_native_task_reconciled(self.arm_task()["reply"])
+
+    def test_captured_stop_survives_attempt_write_failure_and_cleanup(self):
+        self.create_plan()
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-FLOW", "T-001", "task-reconcile",
+            target_state="BLOCKED", reason="The fixture user stopped this task.",
+            assessment="Preserve the observed stop.", token="native-captured-stop",
+        )
+        with mock.patch.object(self.adapter, "_write_attempt", side_effect=OSError("attempt write interrupted")):
+            with self.assertRaisesRegex(OSError, "attempt write interrupted"):
+                self.consume(armed["reply"])
+        pending = self.adapter._load(self.root, "PLAN-FLOW")
+        self.assertIsNone(self.adapter._load_attempt(self.root, pending))
+        event, _ = self.captured_event_and_context()
+        self.assertEqual(event["payload"]["target_state"], "BLOCKED")
+        with self.assertRaisesRegex(RuntimeError, "observed.*reconciliation"):
+            self.adapter.supersede_unanswered_reconciliation(
+                self.root, "PLAN-FLOW", reason="Only retire an unanswered request.",
+            )
+        self.assertEqual(self.adapter._load(self.root, "PLAN-FLOW"), pending)
+        history = {p: p.read_bytes() for dirname in ("observations", "authority-sources", "receipts")
+                   for p in (self.root / ".codearbiter/.artifacts" / dirname).glob("*.json")}
+        with mock.patch.object(self.adapter._artifactauthoritylib, "capture_user_prompt", side_effect=AssertionError("no new host event")):
+            self.assertTrue(self.adapter.recover_reconciliation(self.root, self.client, "PLAN-FLOW")["committed"])
+        self.assertEqual({p: p.read_bytes() for p in history}, history)
+        self.assertEqual(self.client.call("eligible", {
+            "artifact_id": "PLAN-FLOW",
+        })["tasks"][0]["state"], "BLOCKED")
 
     def test_unicode_scope_reconciliation_uses_native_capture_without_task_hash(self):
         self.create_plan(task_text="The task's named test passes.", scope_text="Scope\u2019s baseline")

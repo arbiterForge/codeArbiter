@@ -665,8 +665,13 @@ export default function registerCaptureProvider(pi: any) {
     )
     reader: threading.Thread | None = None
     stderr_reader: threading.Thread | None = None
-    stderr_tail = ""
+    # Stderr is diagnostic only: drain raw bytes so malformed UTF-8 cannot stop
+    # the reader and let a full pipe stall the child. Protocol stdout stays strict.
+    stderr_bytes = b""
     stderr_error: Exception | None = None
+
+    def stderr_tail() -> str:
+        return stderr_bytes.decode("utf-8", errors="replace")[-2000:]
     try:
         if process.stdin is None or process.stdout is None or process.stderr is None:
             raise AssertionError("Pi RPC did not expose standard streams")
@@ -685,11 +690,11 @@ export default function registerCaptureProvider(pi: any) {
         reader.start()
 
         def read_stderr() -> None:
-            nonlocal stderr_tail, stderr_error
+            nonlocal stderr_bytes, stderr_error
             assert process.stderr is not None
             try:
-                while chunk := process.stderr.read(4096):
-                    stderr_tail = (stderr_tail + chunk)[-2000:]
+                while chunk := process.stderr.buffer.read1(4096):
+                    stderr_bytes = (stderr_bytes + chunk)[-8000:]
             except Exception as error:
                 stderr_error = error
 
@@ -767,7 +772,7 @@ export default function registerCaptureProvider(pi: any) {
         except subprocess.TimeoutExpired as error:
             raise AssertionError(
                 f"Pi RPC did not exit within 30 seconds of stdin EOF; received {len(records)} records; "
-                f"stderr tail={stderr_tail!r}; "
+                f"stderr tail={stderr_tail()!r}; "
                 f"shutdown trace={rpc_shutdown_diagnostics(shutdown_trace)}"
             ) from error
         reader.join(timeout=5)
@@ -784,15 +789,15 @@ export default function registerCaptureProvider(pi: any) {
             if line is not None:
                 records.append(decode(line))
         if returncode != 0:
-            raise AssertionError(f"Pi RPC exited {returncode}: {stderr_tail}")
+            raise AssertionError(f"Pi RPC exited {returncode}: {stderr_tail()}")
         if not any(record.get("id") == "commands" for record in records):
-            raise AssertionError(f"Pi RPC did not answer get_commands: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not answer get_commands: {records!r}; stderr={stderr_tail()}")
         if invoke_read_context and not any(record.get("id") == "state" for record in records):
-            raise AssertionError(f"Pi RPC did not answer get_state: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not answer get_state: {records!r}; stderr={stderr_tail()}")
         if (invoke_alias or invoke_doctor or invoke_read_context) and not any(record.get("id") == "capture" for record in records):
-            raise AssertionError(f"Pi RPC did not capture the alias turn: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not capture the alias turn: {records!r}; stderr={stderr_tail()}")
         if invoke_enforcement_fault and not any(record.get("type") == "agent_settled" for record in records):
-            raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail}")
+            raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail()}")
         return records
     finally:
         cleanup_errors: list[str] = []
@@ -2277,6 +2282,35 @@ class PiPackageTests(unittest.TestCase):
         self.assertIn("trusted-executables.identity", hook)
         self.assertIn('export CODEARBITER_GIT_EXECUTABLE="$G"', hook)
 
+    def test_rpc_stderr_survives_malformed_utf8_and_pipe_saturation(self):
+        # Malformed UTF-8 followed by more stderr than a pipe holds must not stop
+        # the drain: a stalled child would surface as a shutdown timeout instead
+        # of its real exit status and stderr tail.
+        root_code = (
+            "import json, sys; "
+            "sys.stderr.buffer.write(b'\\xff\\xfe' + b'x' * (1 << 18)); sys.stderr.buffer.flush(); "
+            "print(json.dumps({'id': 'commands', 'type': 'response'}), flush=True); "
+            "sys.stdin.read(); "
+            "sys.stderr.buffer.write(b'tail-marker \\xff'); sys.stderr.buffer.flush(); "
+            "raise SystemExit(3)"
+        )
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-stderr-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            cwd.mkdir()
+            started = time.monotonic()
+            with self.assertRaises(AssertionError) as raised:
+                run_rpc_commands(
+                    cwd,
+                    root / "agent",
+                    root / "home",
+                    _rpc_command=[sys.executable, "-c", root_code],
+                )
+            message = str(raised.exception)
+            self.assertTrue(message.startswith("Pi RPC exited 3: "), message[:300])
+            self.assertTrue(message.endswith("tail-marker \ufffd"), message[-300:])
+            self.assertLess(time.monotonic() - started, 20)
+
     def test_rpc_decode_failure_terminates_process_tree_and_reader(self):
         observed: list[tuple[subprocess.Popen[str], threading.Thread]] = []
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-cleanup-") as directory:
@@ -3544,7 +3578,7 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertEqual(producer_cold_receipt_keys(), helper.COLD_FIELDS)
         self.assertEqual(producer_installed_workflow_format(), helper.INSTALLED_WORKFLOW_FORMAT)
 
-    def test_exact_cold_matrix_rejects_schema_duplicate_and_member_digest_drift(self):
+    def test_context_qualified_pi_receipt_is_accepted_and_exact_matrix_rejects_schema_duplicate_and_member_digest_drift(self):
         helper = self._helper()
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); trusted = root / "trusted"; packages = root / "packages"
@@ -3558,10 +3592,16 @@ class NpmPublishContractTest(unittest.TestCase):
             cohort = {"promotion_receipt_sha256": "c" * 64, "packages": {}}
             binary = b"binary"; binary_sha = hashlib.sha256(binary).hexdigest()
             for host, prefix in prefixes.items():
-                manifest = json.dumps({"binaries": {
+                manifest_data = {"binaries": {
                     platform: {"file": "artifact-bin", "sha256": binary_sha}
                     for platform in platforms
-                }}, separators=(",", ":")).encode()
+                }}
+                if host == "pi":
+                    manifest_data["context_qualification"] = {
+                        platform: {"source_commit": "a" * 40, "binary_sha256": binary_sha}
+                        for platform in platforms
+                    }
+                manifest = json.dumps(manifest_data, separators=(",", ":")).encode()
                 manifest_sha = hashlib.sha256(manifest).hexdigest()
                 archive_path = packages / f"{host}.tgz"
                 with tarfile.open(archive_path, "w:gz") as archive:
@@ -3604,6 +3644,12 @@ class NpmPublishContractTest(unittest.TestCase):
                         "commit_proof": True, "finalization_proof": True,
                         "all_accepted_and_current": True, "markdown_shadow_count": 0,
                     }
+                    if host == "pi":
+                        receipt.update({
+                            "context_workflow_scope": "candidate-preflight",
+                            "context_installed_tests": helper.CONTEXT_COLD_TESTS,
+                            "context_installed_output_sha256": "f" * 64,
+                        })
                     (cell / "artifact-package-cold.json").write_text(json.dumps(receipt))
             (packages / "artifact-package-cohort.json").write_text(json.dumps(cohort))
             (trusted / "tools" / "build-host-packages.py").write_text(
@@ -3617,7 +3663,10 @@ class NpmPublishContractTest(unittest.TestCase):
                           workflow_sha="a" * 40)
             with mock.patch.object(helper, "validate_release_source_binding"):
                 helper.verify_release_cohort(**kwargs)
-            first = next(cold_root.glob("*/artifact-package-cold.json"))
+            first = next(
+                path for path in sorted(cold_root.glob("*/artifact-package-cold.json"))
+                if json.loads(path.read_text())["host"] == "claude"
+            )
             original = json.loads(first.read_text())
             for mutation, message in (
                 ({**original, "extra": True}, "schema is not exact"),

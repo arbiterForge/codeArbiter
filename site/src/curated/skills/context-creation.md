@@ -2,41 +2,43 @@
 entity: skills/context-creation
 related: [commands/create-context, decompose]
 gates:
-  - gate: pre-flight confirmation
-    when: before any scout is dispatched
-    effect: the project must be an uninitialized brownfield codebase with real source present; if there is no source it routes to decompose instead
-  - gate: gap interview
-    when: after synthesis
-    effect: every low-confidence inference must be resolved with you or explicitly deferred before project docs are written
-  - gate: initialization lock
+  - gate: repository selection
+    when: before population
+    effect: existing source uses brownfield inspection; initialized context uses selected refresh; a new project uses decompose
+  - gate: safe context write
+    when: applying a selected preview
+    effect: current source and target identities must match, and unowned human content must remain unchanged
+  - gate: initialization completion
     when: at the end
-    effect: the project is not marked initialized until every required document exists and is non-empty
+    effect: required documents and provenance pairs must be valid before the writer records the marker
 ---
 
 ## What it does
 
-This is the brownfield back-fill: it wraps an existing codebase in project state without
-guessing at it. Invoked by the create-context command, or automatically at startup when the
-project has real source code but no initialized project state yet, it reads the codebase through
-several parallel scouts, drafts the project's foundational documents from what they find, and
-resolves anything uncertain with you before locking the project as initialized.
+Build source-backed project context from an existing repository through direct bounded
+inspection or optional scoped agents. It keeps actual host permissions and project-owned
+constraints in force without requiring a special scout profile or per-document approval receipt.
+A role label, matching source hash or successful write does not certify semantics or containment.
 
 ## Phases
 
-1. Confirm the project is a genuine, uninitialized brownfield case with meaningful source present.
-2. Dispatch six parallel scouts — tech stack, infrastructure, architecture, security posture,
-   testing, and data model — each reporting file paths, line numbers, and named values only.
-3. Synthesize every surviving project document from the scout reports, tagging each claim high,
-   medium, or low confidence and turning any low-confidence gap into a numbered open question.
-4. Resolve every open question with you, one targeted question at a time.
-5. Write the finished documents to disk, along with a provenance record and a coarse concern map.
-6. Lock the project as initialized and hand back to normal operation.
+1. Confirm the intended uninitialized repository and meaningful source. Initialized repositories
+   use selected refresh instead of repeating population.
+2. Inspect six logical categories: stack, infrastructure, architecture, security, tests and data.
+   Six categories do not require six agents. Record inspected scope, citations, digests and gaps.
+3. Draft five content documents: `CONTEXT.md`, `tech-stack.md`, `coding-standards.md`,
+   `security-controls.md` and `code-map.md`. Separate observations, inferences and actual decisions.
+4. Ask only material user-owned questions that evidence and existing authorization cannot settle.
+   Unknowns stay visible; unrelated uncertainty does not stop independent work.
+5. Inspect the safe writer's proposed document/provenance changes and apply selected previews.
+   Preserve existing human content, task/question boards, audit history and real user stops.
+6. Read back the valid output pairs and complete the native initialization transaction.
 
 ## Exits
 
-A completed run leaves every foundational project document populated and the project marked
-initialized, ready for feature work. It never proceeds past the interview with an unresolved gap,
-and it refuses to run at all if the project is already initialized or has no real source to
-extract from.
+Report the coverage, changes, unknowns and actual checks. Initialization records populated
+context, not verified tests or a certified host. No artifact approval ceremony is required for
+already-authorized work. A real host denial or unsupported writer shape still stops that action.
 
-For the complete source-traced sequence and its actual endpoint, use [the operator guide](/guides/understand-an-existing-project/) and [Compare workflow routes](/concepts/workflow-routes/).
+Use [the operator guide](/guides/understand-an-existing-project/) and
+[Compare workflow routes](/concepts/workflow-routes/) for the full route.

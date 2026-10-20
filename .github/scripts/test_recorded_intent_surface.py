@@ -135,6 +135,27 @@ class TestSmartsStepZero(SurfaceCase):
                        r"(?i)never bulk-read `?plans/`? or `?decisions/`?",
                        "the index-first loading rule is normative (consumer cost bound)")
 
+    def test_step_zero_scope_unchanged_after_core_rewrite(self):
+        # The SMARTS design-quality rewrite changed everything around Step 0 and
+        # nothing inside it: the section is pinned
+        # byte-for-byte on every copy, so a later core edit cannot quietly
+        # rescope ADR-0025 or drop an exemption.
+        import hashlib
+        for rel in SMARTS_COPIES:
+            with self.subTest(copy=rel):
+                match = re.search(r"(?ms)^## Step 0[^\n]*\n.*?(?=^## )", read(rel))
+                self.assertIsNotNone(match, f"{rel}: no Step 0 section")
+                self.assertEqual(hashlib.sha256(match.group(0).encode("utf-8")).hexdigest(),
+                                 "38626d5389992bc066d89dc96ecfbc8ee899764a2901c1236fdbc04227be1d78",
+                                 f"{rel}: Step 0 scope and exemptions must stay unchanged")
+        # writing-plans is outside Step 0's scope: it must not re-run the
+        # recorded-intent check or re-score a choice the spec already decided.
+        plans = read("core/surface/skills/writing-plans/SKILL.md")
+        for pattern in (r"Step 0", r"(?i)recorded[- ]intent", r"intent: (per|silent)", r"ADR-0025",
+                        r"(?i)re-?scor"):
+            with self.subTest(pattern=pattern):
+                self.assertNotRegex(plans, pattern, "writing-plans runs no recorded-intent rescore")
+
     def test_fail_soft_sentence(self):
         self.assert_on(SMARTS_COPIES,
                        r"(?i)intent: silent — no decomposition record",
@@ -142,9 +163,9 @@ class TestSmartsStepZero(SurfaceCase):
 
 
 class TestSprintIntentRead(SurfaceCase):
-    def test_read_runs_before_spec_approval_and_is_fail_soft(self):
+    def test_recorded_intent_precedes_spec_shaping_without_approval(self):
         self.assert_on(SPRINT_COPIES,
-                       r"(?i)recorded-intent read — BEFORE spec approval, fail-soft",
+                       r"(?i)recorded-intent read — BEFORE first material spec shaping, fail-soft",
                        "the intent read precedes Phase 1 approval")
         self.assert_on(SPRINT_COPIES,
                        r"(?is)absent\s+`plans/` or `decisions/`.{0,120}never a STOP",
@@ -155,7 +176,7 @@ class TestSprintIntentRead(SurfaceCase):
                        r"(?i)contradict an accepted ADR or a recorded deferral",
                        "the contradiction hard gate must be in the NEVER list")
         self.assert_on(SPRINT_COPIES,
-                       r"(?i)re-evaluation trigger has occurred is reopened",
+                       r"(?is)re-evaluation trigger has occurred.{0,75}reopened",
                        "valve: an occurred trigger reopens, it is not a contradiction")
         self.assert_on(SPRINT_COPIES,
                        r"(?i)one stop per record per sprint",
@@ -215,10 +236,10 @@ class TestBrainstormingTouches(SurfaceCase):
 
     def test_phase2_ADR_conformance_with_supersession_pairing(self):
         self.assert_on(BRAINSTORMING_COPIES,
-                       r"(?i)surfaced WITH the ADR citation, never silently dropped",
+                       r"(?i)surfaced WITH the ADR\s+citation, never silently dropped",
                        "a contradicting candidate surfaces with its citation")
         self.assert_on(BRAINSTORMING_COPIES,
-                       r"(?i)paired with a supersession fork via `/adr`",
+                       r"(?i)paired with\s+a supersession fork via `/adr`",
                        "recommending a contradiction requires the supersession fork")
         self.assert_on(BRAINSTORMING_COPIES,
                        r"(?i)only sane approach, that IS the fork",

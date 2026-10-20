@@ -382,8 +382,13 @@ func TestObservationLockRefusesMissingUnsafeAndSwappedState(t *testing.T) {
 		name, want string
 		setup      func(*testing.T, *FS)
 	}{
-		{"missing-metadata", "LOCK_FAILED", func(t *testing.T, f *FS) {}},
-		{"missing-lock", "LOCK_FAILED", func(t *testing.T, f *FS) {
+		{"missing-metadata", "NO_LOCAL_STORE", func(t *testing.T, f *FS) {}},
+		{"missing-artifacts", "NO_LOCAL_STORE", func(t *testing.T, f *FS) {
+			if err := os.Mkdir(filepath.Join(f.Root, ".codearbiter"), 0700); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{"missing-lock", "NO_LOCAL_STORE", func(t *testing.T, f *FS) {
 			if err := os.MkdirAll(filepath.Join(f.Root, filepath.FromSlash(meta)), 0700); err != nil {
 				t.Fatal(err)
 			}

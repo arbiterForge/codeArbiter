@@ -110,6 +110,28 @@ class ApprovalAdapterTest(unittest.TestCase):
                 host="claude", session_id="session-lenient",
             )
 
+    def test_retirement_refuses_unverifiable_legacy_single_approval(self):
+        armed = self.adapter.arm_user_approval(
+            self.root, self.client, "SPEC-EXAMPLE", token="legacy-unanswered-token",
+        )
+        original = (self.root / self.adapter.PENDING).read_bytes()
+        for reason in (" ", "x" * 2049, 3):
+            with self.subTest(reason=str(reason)[:20]), self.assertRaisesRegex(
+                self.adapter.ApprovalError, "INVALID_RETIREMENT"
+            ):
+                self.adapter.retire_unanswered_user_approval(
+                    self.root, "SPEC-EXAMPLE", reason=reason,
+                )
+        with self.assertRaises(self.adapter.ApprovalError) as caught:
+            self.adapter.retire_unanswered_user_approval(
+                self.root, "SPEC-EXAMPLE",
+                reason="Old single-artifact prompt may be unsubmitted.",
+            )
+        self.assertEqual(caught.exception.code, "LEGACY_APPROVAL_RECOVERY_REQUIRED")
+        self.assertEqual((self.root / self.adapter.PENDING).read_bytes(), original)
+        self.assertEqual(self.root.resolve(), self.routes.resolve("approval", armed["reply"]))
+        self.assertNotIn("approve", [operation for operation, _ in self.client.calls])
+
     def test_pi_generic_prompt_label_cannot_approve(self):
         """A transformed Pi input event is not original native dialog input."""
         armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="synthetic-pi-token")
@@ -1251,6 +1273,121 @@ class SprintPairIntegrationTest(unittest.TestCase):
             self.approval.cancel_user_approval(self.root, "PLAN-FLOW")
         self.assertTrue(self.pair.resume(self.root, self.h.client, "PLAN-FLOW")["approved"])
 
+    def test_unanswered_paired_approval_retires_without_another_code(self):
+        armed = self.arm()
+        before = self.identities()
+        old_sources = list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+        result = self.approval.retire_unanswered_user_approval(
+            self.root, "PLAN-FLOW",
+            reason="Existing owner direction already authorized ordinary work.",
+        )
+        self.assertEqual(result["disposition"], "unanswered_prompt_superseded")
+        self.assertFalse(result["authority_granted"])
+        self.assertFalse(result["mutation_attempted"])
+        self.assertNotIn("receipt", result)
+        self.assertEqual(before, self.identities())
+        self.assertEqual(old_sources, list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json")))
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+        self.assertIsNone(self.routes.resolve("approval", armed["reply"]))
+        # Retirement is not approval and never manufactures a new method grant.
+        self.assertFalse(any(item["authority"]["authority_verified"] for item in self.identities()))
+        # The original approved behavior remains independently callable if
+        # a real human decision was explicitly requested later.
+        replacement = self.arm()
+        self.assertIsInstance(replacement["reply"], str)
+
+    def test_observed_pair_reply_before_submission_is_not_unanswered(self):
+        armed = self.arm()
+        before_identity = self.identities()
+        pending = self.approval._load_pending(self.root)
+        old_bytes = (self.root / self.approval.PENDING).read_bytes()
+        # A host actually reported this exact reply and published its first
+        # immutable source, then crashed before writing the submission marker.
+        # This is not an unanswered question, even without an engine call.
+        recorded = self.pair._source(
+            self.root, pending, "spec", armed["reply"], "codex", "crashed-before-submission",
+        )
+        observed_path = self.root / recorded["source_ref"]
+        self.assertTrue(observed_path.is_file())
+        self.assertIsNone(self.pair._submission(self.root, pending))
+        with self.assertRaisesRegex(RuntimeError, "SUBMITTED_APPROVAL"):
+            self.approval.retire_unanswered_user_approval(
+                self.root, "PLAN-FLOW",
+                reason="A reply source was already published and must not be erased.",
+            )
+        self.assertEqual((self.root / self.approval.PENDING).read_bytes(), old_bytes)
+        self.assertTrue(observed_path.is_file())
+        self.assertEqual(self.root.resolve(), self.routes.resolve("approval", armed["reply"]))
+        self.assertEqual(self.identities(), before_identity,
+                         "an observed reply without durable submission changed native authority")
+
+    def test_tampered_immutable_observation_blocks_retirement(self):
+        self.arm()
+        pending_bytes = (self.root / self.approval.PENDING).read_bytes()
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True, exist_ok=True)
+        bogus = directory / ("f" * 64 + ".json")
+        bogus.write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "SUBMISSION_RECOVERY_REQUIRED"):
+            self.approval.retire_unanswered_user_approval(
+                self.root, "PLAN-FLOW",
+                reason="A tampered observation is not proof of no user reply.",
+            )
+        self.assertEqual((self.root / self.approval.PENDING).read_bytes(), pending_bytes)
+        self.assertEqual(bogus.read_text(encoding="utf-8"), "{}")
+
+    def test_oversized_observation_inventory_refuses_retirement_without_scanning_all(self):
+        self.arm()
+        pending_bytes = (self.root / self.approval.PENDING).read_bytes()
+        directory = self.root / ".codearbiter/.artifacts/observations"
+        directory.mkdir(parents=True, exist_ok=True)
+        for index in range(513):
+            (directory / (f"{index:064x}.json")).write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "too many historical observations"):
+            self.approval.retire_unanswered_user_approval(
+                self.root, "PLAN-FLOW",
+                reason="Observation inventory is too large to establish an unanswered prompt.",
+            )
+        self.assertEqual((self.root / self.approval.PENDING).read_bytes(), pending_bytes)
+
+    def test_submitted_paired_approval_must_recover_instead_of_retiring(self):
+        armed = self.arm()
+        original = self.h.client.call
+        def lose_after_commit(operation, request=None, **kwargs):
+            result = original(operation, request, **kwargs)
+            if operation == "sprint-approve":
+                raise self.lib.ArtifactError("EXECUTION_FAILED", "response lost after committed write")
+            return result
+        with mock.patch.object(self.h.client, "call", side_effect=lose_after_commit):
+            with self.assertRaisesRegex(RuntimeError, "EXECUTION_FAILED"):
+                self.consume(armed["reply"])
+        pending = (self.root / self.approval.PENDING).read_bytes()
+        with self.assertRaisesRegex(RuntimeError, "SUBMITTED_APPROVAL"):
+            self.approval.retire_unanswered_user_approval(
+                self.root, "PLAN-FLOW", reason="Do not guess whether work committed.",
+            )
+        self.assertEqual((self.root / self.approval.PENDING).read_bytes(), pending)
+        recovered = self.pair.resume(self.root, self.h.client, "PLAN-FLOW")
+        self.assertTrue(recovered["approved"])
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+
+    def test_paired_retirement_cli_requires_reason_and_does_not_load_native_client(self):
+        self.arm()
+        original = self.identities()
+        # The CLI path is in the canonical approval helper; no separate
+        # executable or model tool is necessary.
+        with mock.patch.object(self.approval._artifactlib, "ArtifactClient",
+                               side_effect=AssertionError("retirement should not open a writer")):
+            with mock.patch("builtins.print") as printed:
+                self.assertEqual(self.approval.main([
+                    "retire", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                    "--reason", "Retire old prompt; no user answer observed.",
+                ]), 0)
+        payload = json.loads(printed.call_args.args[0])
+        self.assertEqual(payload["disposition"], "unanswered_prompt_superseded")
+        self.assertEqual(self.identities(), original)
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+
     def test_cancel_before_reply_retains_no_authority(self):
         self.arm()
         self.assertTrue(self.approval.cancel_user_approval(self.root, "PLAN-FLOW")["cancelled"])
@@ -1266,7 +1403,7 @@ class SprintPairIntegrationTest(unittest.TestCase):
         self.assertNotEqual(before["steps"], after["steps"])
         self.assertEqual({k: v for k, v in before.items() if k != "steps"}, {k: v for k, v in after.items() if k != "steps"})
         self.assertTrue(self.h.client.call("validate", {"artifact_id": "PLAN-FLOW", "gate": "approved"})["valid"])
-        self.assertFalse(self.h.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"])
+        self.assertFalse(self.h.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"])
         self.assertFalse((self.root / self.approval.PENDING).exists())
 
     def test_no_delegation_and_scope_expansion_refused(self):
@@ -1285,7 +1422,7 @@ class SprintPairIntegrationTest(unittest.TestCase):
             self.h.mutate("smarts-apply", "PLAN-FLOW", grant_receipt=result["grant_receipt"], decision=decision)
         self.assertEqual(self.identities(), before)
 
-    def test_preview_is_explicit_and_does_not_relax_feature_preflight(self):
+    def test_draft_for_pair_is_compatibility_not_authoring_permission(self):
         from test_artifact_authoring import WorkflowHarness
         root = self.root.parent / "preview"
         root.mkdir()
@@ -1293,13 +1430,13 @@ class SprintPairIntegrationTest(unittest.TestCase):
         spec = h.create_spec()
         selected = self.lib._select_authoring_route(root, "flow", workflow="sprint", lane="full", client=h.client)
         kwargs = {"spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": spec["normative_sha256"]}
-        with self.assertRaisesRegex(RuntimeError, "AUTHORITY_UNVERIFIED"):
-            self.lib._preflight_plan_authoring(selected, h.client, **kwargs)
-        target = self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs)
-        self.assertFalse(target.exists())
+        target = self.lib._preflight_plan_authoring(selected, h.client, **kwargs)
+        self.assertEqual(target, self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs))
         selected["workflow"] = "feature"
+        self.assertEqual(target, self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs))
+        self.assertFalse(target.exists())
         with self.assertRaisesRegex(RuntimeError, "INVALID_ROUTE"):
-            self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs)
+            self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair="true", **kwargs)
 
     def test_hook_routes_pair_reply_from_another_working_directory(self):
         armed = self.arm()

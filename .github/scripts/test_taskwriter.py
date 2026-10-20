@@ -441,6 +441,39 @@ class TaskwriteCliTest(unittest.TestCase):
         with open(p, encoding="utf-8") as f:
             self.assertIn("-rf important task", f.read())
 
+    def test_harvest_documented_add_preserves_origin_and_dash_leading_description(self):
+        import contextlib
+        import io
+        import re
+        import shlex
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+
+        harvest = (Path(REPO) / "core/surface/includes/harvest.md").read_text(
+            encoding="utf-8"
+        )
+        example = re.search(r"`\{\{CMD:task\}\} (add [^`]+)`", harvest)
+        self.assertIsNotNone(example, "harvest has no executable task-add example")
+        desc, origin = "-rf follow-up work", "checkpoint-2026-10-16#M-1"
+        argv = shlex.split(example.group(1).replace("<desc>", desc).replace("<origin>", origin))
+        with tempfile.TemporaryDirectory() as root:
+            board = Path(root) / ".codearbiter/open-tasks.md"
+            board.parent.mkdir()
+            board.write_text("# Open tasks\n\n## In-flight\n", encoding="utf-8")
+            output = io.StringIO()
+            with mock.patch.object(taskwrite_mod, "project_root", return_value=root), \
+                    contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+                try:
+                    result = taskwrite_mod.main(argv)
+                except SystemExit as exc:
+                    result = exc.code
+            self.assertEqual(result, 0, output.getvalue())
+            after = board.read_text(encoding="utf-8")
+            self.assertIn(f"- [ ] {desc}  (from {origin})", after)
+            self.assertEqual(tb.count_in_flight(after), 1)
+            self.assertEqual(tb.lint_board(after), [])
+
     def test_add_creates_missing_section_and_classifies(self):
         import taskwrite
         d, p = self._board()

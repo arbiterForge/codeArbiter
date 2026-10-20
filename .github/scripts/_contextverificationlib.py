@@ -357,7 +357,7 @@ def _bind_candidate_package(
         if (release_data.get("format") != "codearbiter.artifact-release/0.1.0"
                 or not isinstance(release_data.get("version"), str)
                 or release_data.get("protocol") != "codearbiter.artifact-api/0.1.0"
-                or release_data.get("schema_version") != "0.3.1"):
+                or release_data.get("schema_version") != "0.3.2"):
             raise VerificationError("candidate release manifest has unsupported metadata")
         if not isinstance(release_data.get("binaries"), dict):
             raise VerificationError("candidate release manifest binaries are malformed")

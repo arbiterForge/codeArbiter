@@ -1,8 +1,17 @@
 # Internal artifact protocol
 
-Product `v0.1.0` candidate · protocol `codearbiter.artifact-api/0.1.0` · schema `0.3.1` · renderer `codearbiter-html/0.1.0`.
+Product `v0.1.0` candidate · protocol `codearbiter.artifact-api/0.1.0` · schema `0.3.2` · renderer `codearbiter-html/0.1.0`.
 
 This is an internal subprocess contract, not a proposal for another public command. No operation executes code, shell snippets or verification commands stored in the documents.
+
+## In-progress assistive overhaul
+
+ADR-0043 changes the native scheduling/progress contract described below. This is
+an implementation slice on the overhaul PR, not a released-host claim. The
+remaining execution-caller, evidence-applicability, migration, and package compatibility
+work remains tracked in [the implementation handoff](../plans/assistive-state-engine-overhaul.md)
+and [its progress record](../plans/assistive-state-engine-progress.md). Do not
+publish a partial engine/caller conversion.
 
 ## Invocation and envelopes
 
@@ -15,15 +24,44 @@ Supply one UTF-8 JSON object carrying the exact `protocol` value. Standard outpu
 
 Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a partial response. Unknown fields and operations fail; there is no `force` field and no permissive passthrough. Query `schema` for the current closed request shape rather than guessing flags.
 
+On Windows, `index` and shared read-only observations (including `identity` and
+`eligible`) return `NO_LOCAL_STORE` when `.codearbiter/`, `.codearbiter/.artifacts/`,
+or `store.lock` is missing. This identifies absent or incomplete local metadata,
+including in a fresh clone or worktree; it does not report lock contention or an
+empty artifact catalog. These reads create nothing and do not proceed without a
+lock. Normal authorized mutations initialize lock metadata through the existing
+writer path. Existing-store access failures remain `LOCK_FAILED`, contention
+remains `LOCK_TIMEOUT`, and unsafe objects remain `UNSAFE_PATH`.
+
+`init-store` initializes that metadata on purpose. It takes the ordinary writer
+lock, which creates `.codearbiter/.artifacts/` and `store.lock` when they are
+absent, and writes nothing else: no artifact, journal or receipt. Its request
+carries only `protocol`. The result is `{"store": "created"}` when it created the
+metadata and `{"store": "present"}` when the store already existed, in which case
+nothing changes. Linux locks the repository directory itself, needs no lock
+metadata, and always reports `{"store": "present"}`. It is not a journaled
+mutation and is safe to repeat.
+
+The packaged bridge (`ArtifactClient`) uses it for fresh checkouts. When a call
+fails with NO_LOCAL_STORE, the client runs `init-store` once and then retries the
+original request once. If initialization is refused, as in a read-only checkout,
+the call raises `NO_LOCAL_STORE` naming the refused initialization; a retry that
+still finds no store is not retried again. A client constructed with
+`initialize_store=False` never initializes and surfaces `NO_LOCAL_STORE` directly.
+
+Lock initialization does not restore receipts referenced by committed plans.
+Missing local evidence remains missing; copying tracked artifacts into a fresh
+worktree does not establish their referenced verification or approval history.
+
 ## Operation families
 
 | Family | Operations |
 |---|---|
-| Discovery | `capabilities`, `schema`, `index`, `outline`, `identity` |
-| Content | `create`, `apply`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
-| Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
-| Authority | `capture`, `approve`, `plan-bind`, `prerequisite`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
-| Execution ledger | `snapshot`, `eligible`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
+| Discovery | `capabilities`, `schema`, `index`, `outline`, `identity`, `task-context` |
+| Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
+| Integrity/recovery | `repair-preview`, `repair-apply`, `recover`, `init-store` |
+| Explicit attestation | `capture`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
+| Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-check`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 
@@ -33,11 +71,55 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 
 `artifact_id` and record IDs are stable semantic addresses. Normative content has a separate hash from the full model and rendered file bytes. A document revision increments on state/presentation changes as well as content edits; identity plus hash is the concurrency token. Hashes do not identify a human approver.
 
-A plan's `spec_ref` binds the exact normative specification digest. The initial mode is `draft_preview`. `plan-bind` requires the approved current spec and validates coverage. The newly bound plan must receive its own applicable approval. Initial combined sprint review is the explicit exception to the sequential order: both documents remain ready drafts until one source-bound `sprint-approve` transaction projects the approved binding and commits both approvals. It cannot replace already-started or previously approved work. Normative changes invalidate approval; history is preserved.
+A plan's `spec_ref` binds the exact normative specification digest. The initial mode is `draft_preview`. Ordinary `plan-bind` selects the current structurally valid specification and validates references and coverage without requiring approval. If the selected source has a genuine current approval, its `approved_source` provenance is retained; otherwise the binding remains `draft_preview`. Binding does not mint an approval or reset unrelated task progress. Explicit legacy evidence claims still validate their own approvals. Initial combined sprint review is the explicit exception to the sequential order: both documents remain ready drafts until one source-bound `sprint-approve` transaction projects the approved binding and commits both approvals. It cannot replace already-started or previously approved work. Normative changes invalidate approval; history is preserved.
 
 Each canonical HTML contains one authoritative embedded JSON model, inline presentation and generated record boundaries. Normal readers revalidate its structure, hashes and exact renderer correspondence. Human-only HTML edits produce `RENDER_DRIFT`; they are not silently interpreted as semantic edits.
 
 The canonical JSON domain intentionally permits only safe-range integers, booleans, strings, null, arrays and objects. Duplicate keys, invalid UTF-8, unpaired surrogates, fractional/exponent numbers, excessive depth and trailing data are rejected. It is a restricted canonical subset, **not** a general arbitrary-number RFC 8785 implementation. The schema evaluator similarly supports only the declared vocabulary used by the packaged schemas; it is not a general-purpose Draft 2020-12 library. Unknown schema keywords fail initialization.
+
+## Small default workflow; historical proof on demand
+
+The canonical model-facing `core/surface/includes/artifacts.md` owns ordinary
+authoring, structured retrieval, factual prerequisites, reported checks, and
+safe progress. It is intentionally compact. The much larger strict historical
+receipt, authority-producer, and legacy pending-request procedures are now in
+`core/surface/includes/artifacts-attestation.md`, loaded only when an actual
+claim, explicit human checkpoint, historical recovery, or independently
+applicable host/publication control requires that specific protocol.
+
+The split is a **presentation/context optimization**, not a new permission
+mode or an engine semantics change. Every original section is retained;
+the existing native evidence and recovery validators remain unchanged. The
+new reference is regenerated into Claude/Codex/Pi alongside the default
+include. Normal tasks do **not** need to consume legacy evidence machinery to
+read a task, update a plan, run a relevant check, or record `DONE`. Genuine
+user denials, sandbox policies, unsafe writes, and commit/release boundaries
+remain independently enforceable.
+
+## Authoring is not an authority preflight
+
+The installation-pinned bridge checks the actual native writer capability before
+new HTML authoring. `_select_authoring_route` does not require the installed
+approval/verifier/reviewer inventory. `_preflight_plan_authoring` resolves the
+exact spec artifact, same-slug target, normative digest, current model identity,
+and structural validity; it does not demand an approved or fully ready spec.
+Drafts can therefore expose missing work without inventing answers to pass an
+approval boundary. Namespace conflicts and a changed source remain actual errors.
+
+The `draft_for_pair` keyword is accepted for compatibility and checked as a
+boolean, but no longer grants a special authoring mode. An explicit historical
+paired-approval operation still validates its own original attestation contract.
+`workflow_preflight()` retains that explicit inventory for consumers that really
+use it, including the separate context workflow; it does not decide whether the
+native spec/plan writer may author a draft. Native Pi writer admission is not
+proof of a complete live Pi workflow, farm support, or changed maturity.
+
+The generated writing-plans skill uses this contract. It plans coherent units of
+work rather than mandatory five-minute task slices, records real constraints and
+criteria, treats ready diagnostics as guidance, and does not arm approval codes
+or verify future runner support simply to draft a plan. Broader sprint/execution
+caller conversion remains separate work on this PR, not a claim established by
+the drafting skill alone.
 
 ## Draft authoring and typed modification
 
@@ -94,9 +176,300 @@ This operation joins only the existing shared-observation allowlist under the
 unchanged two-second lock timeout. It creates no context ticket, authority source,
 receipt or artifact, and retains writer exclusion and existing admission checks.
 
-Contextual `read` includes the selected record, applicable dependencies and governing context from the contributing documents. Follow every `next_cursor` until `context_complete: true`. Cursor identity includes contributing model and receipt/event bytes, not just the requested plan. A record is never silently cut in half; an oversized indivisible record fails with a specific diagnostic. The final context ticket is required by `task-start` and becomes stale when its contributing context changes. Delivery of context is not proof the model understood it.
+Contextual `read` includes the selected record, applicable dependencies and governing context from the contributing documents. Follow every `next_cursor` until `context_complete: true`. Cursor identity includes contributing model and receipt/event bytes, not just the requested plan. A record is never silently cut in half; an oversized indivisible record fails with a specific diagnostic. The final context ticket describes that delivery and becomes stale when its contributing context changes. `task-start` no longer requires or validates the ticket; the optional field is accepted only for caller compatibility and grants no authority. Delivery of context is not proof the model understood it.
 
 Cursors and completion tickets are SHA-256 names for engine-written cooperative delivery receipts under `.codearbiter/.artifacts/context-tokens/`. They are not authentication secrets and do not claim resistance to an unrestricted same-user filesystem writer. A digest without its corresponding engine-written receipt is rejected.
+
+## Compact task-context retrieval
+
+`task-context` is a read-only request with `artifact_id` (plan ID),
+`task` (symbol ID), the exact current `model_sha256`, and optional
+`budget` (4,096 to 65,536 bytes, 16,384 default). It returns a bounded
+`assessment: advisory` packet: the task's implementation fields and
+declared checks, criterion summaries actually referenced by that task,
+current dependency states, scoped prerequisite observations, unknown
+legacy-prerequisite applicability, and matching plan/source identities.
+
+The packet intentionally has `context_complete: false`: unrelated
+requirements, decisions, source files and complete verification results
+were **not** fetched. Retrieve additional symbols only where relevant;
+never treat omission as proof of absence. `binding_current: false` is
+visible and needs source reconciliation. A changed plan hash returns
+`STALE_CURSOR`; missing/retired tasks and dangling references fail
+without fabricated content. A packet too large for its requested budget
+fails `RECORD_TOO_LARGE` without partially returning a record.
+
+No source snapshot, authority receipt, reviewer, context ticket, test
+execution, workspace scan, or persisted cache is created by this read.
+The engine's normal transaction/pending-record checks still apply before
+informational reads. It is not a permission-granting or verified-acceptance
+operation and does not claim model comprehension or independent test proof.
+
+## Advisory scheduling and ordinary progress
+
+`eligible` returns scheduling advice from the recorded task states and explicit
+task dependencies. Its result is labeled `assessment: advisory` and
+`evidence_assessed: false`. It returns `next_task`, per-task `waiting_on`, current
+recorded reasons, binding currency, and compact prerequisite assessments.
+Prerequisite rows retain IDs, scoped task references and recorded status, with
+`details_omitted: true`; full titles, requirements and observations remain in
+exact symbol reads. The response has `context_complete: false`, `tasks_total`,
+`tasks_omitted`, `prerequisites_total` and `prerequisites_omitted`. Rows that
+cannot fit within the CLI response limit are omitted without changing the
+global `next_task` decision. Use `outline` for symbol IDs and `read` with
+`mode: exact` for prerequisite details, task definitions and reported checks.
+`task-context` provides task state and reason. These reads retain their own
+response bounds: an indivisible oversized record or reason can still produce
+`RECORD_TOO_LARGE`. No stored content is truncated.
+Legacy prerequisites have `scope: unspecified`; they are neither silently
+satisfied nor automatically treated as plan-wide permission gates. The caller
+must assess their actual applicability. Checkpoint order alone does not require
+reverification of earlier work. A task in `BLOCKED` or already `IN_PROGRESS` is
+not proposed as a new start.
+
+This query performs no source snapshot and validates no approval or review
+receipt chain. It deliberately does not return `all_accepted_and_current` or a
+verification-input digest. `verification-status` owns those explicit legacy
+evidence-assessment fields and retains the real receipt/freshness checks.
+Its per-task `current_evidence` describes receipt freshness separately from
+`has_conflicting_check_reports` and `conflicting_check_reports`. A failed
+declared command with matching task/criterion definitions remains a conflict
+until a later matching caller-reported pass has unchanged declared source
+inputs. Ad-hoc reports, skipped/unknown checks, obsolete definitions and
+changed source inputs cannot erase a current failure. Unbound failures are
+shown with `worktree_freshness: unassessed`. These reports remain
+`caller_reported`, with incomplete source coverage; they never become receipts.
+A failing unindexed report also conflicts with each current declared command
+whose `argv` and `cwd` match exactly, under the same task/criterion and source
+applicability checks. Its summary uses `matched_command_index` and
+`command_match: exact_argv_cwd`; the original report stays unindexed. Unrelated
+ad-hoc failures do not conflict, and unindexed passes do not acquire declared
+success semantics.
+Existing verification captures also record the hashes of up to 16 retained
+task reports. A successful, currently applicable verification receipt can
+supersede reports included in its captured boundary and older report history;
+attaching a receipt later does not cover reports made after that capture.
+Capture retains the issued report boundary while revalidating source and
+normative identities; reports made after issuance neither replace that boundary
+nor invalidate otherwise current evidence. Old pending contexts without a
+boundary remain capturable without acquiring an ordering claim.
+New reports include the engine-owned `recording_operation_id`, so repeated
+identical outcomes remain distinct even within the same clock second.
+Historical reports and evidence contexts remain readable; a context without
+the optional boundary does not establish report ordering.
+`check_reports_total`, `check_reports_ignored`, `check_reports_superseded`, `check_history_bounded` and
+`check_history_unassessed` disclose retained history and its limits. If history
+was trimmed and a declared command has no retained applicable pass/fail,
+absence of contrary reports remains unassessed. `all_accepted_and_current`
+requires fresh acceptance receipts, no unresolved conflicting reports and no
+such history uncertainty. Recording a current recovery report can resolve a
+conflict without changing progress, deleting receipts or repeating approvals
+and reviews. Full report content remains available through exact task reads. Do
+not substitute its result back into ordinary task selection. The Python
+acceptance-proof helper uses that evidence query, retaining its legacy result
+key `eligible` only for existing proof consumers pending the caller overhaul.
+
+`task-start` uses ordinary CAS and journaled writes to record a `PENDING` task as
+`IN_PROGRESS`. It does not require approvals, a context ticket, or a source
+snapshot. A new start of running/stopped work is refused to avoid duplicate
+dispatch or silently clearing a stop; an identical operation ID safely replays.
+
+`task-review` without receipts records implementation reported ready for review
+as `REVIEW`, with an explicit reason that verification and review were not
+assessed. It does not create a test result or review receipt. Supplying receipts
+instead makes an explicit evidence claim: both verification and review receipts
+are required together and must pass their existing validators. A completion hash
+without both receipts is invalid. The first receipted review initializes a
+scope's evidence baseline; that baseline is not represented as a pre-work source
+snapshot. `task-reconcile` may update progress with a reason without a receipt;
+an explicitly supplied receipt is still checked. Callers must inspect actual
+work and honor user stop/deny instructions before reconciling or redispatching.
+
+Historical evidence and unrelated progress are preserved. `REVIEW` alone means
+neither tests passed nor an independent review occurred. Subject-scoped evidence applicability and active host instruction conversion
+remain subsequent work in this same PR. The next section describes the implemented
+prerequisite and implementation-completion operations, not installed-host qualification.
+
+## Ordinary command-level check observations
+
+`task-check` is a CAS/journaled plan mutation, separate from historical
+`verification-status` acceptance proof. Supply current
+`artifact_id`, `operation_id`, `expected` revision/model digest,
+`task`, and a closed `check` object like:
+
+```json
+{
+  "task": "T-001",
+  "check": {
+    "argv": ["go", "test", "./..."],
+    "cwd": ".",
+    "outcome": "fail",
+    "exit_code": 1,
+    "summary": "A relevant test assertion failed.",
+    "source": "Current session: command tool result.",
+    "origin": "tool_result"
+  }
+}
+```
+
+This is an example observation fragment, **not a command to execute or
+a real test result**. Actual `outcome` is `pass`, `fail`, `skip`, or
+`unknown`. `exit_code` is required for a reported pass; skipped/unrun
+checks cannot invent a code. A provided `command_index` must name and
+match an existing verification definition's exact `argv` and `cwd`;
+a pass must use its declared successful exit code. An ad-hoc result omits
+that index and **cannot** assert that named tests passed. Each result may
+carry at most 1,024 characters of bounded, inert `output_excerpt`.
+
+The engine never executes these arguments, runs a collector, dispatches
+reviewers, or mints a verification receipt. It adds a native recording
+timestamp, `provenance: caller_reported`, current spec normative digest,
+task-subject digest (verification commands, paths, `shared_inputs` and
+references) and the exact *referenced* normative criterion digest.
+Historical records without the newer criterion digest retain their old
+whole-spec applicability semantics; they are never silently narrowed.
+Real permission checks remain host-owned.
+The latest result is visible in model-facing `task-context`, exact/batch
+symbol reads, and escaped human-readable HTML. The task packet shows only
+the latest three notes and reports omitted counts. The document keeps
+the latest sixteen, with earlier observations preserved in existing
+transaction before-images. No second ledger or cache is created.
+
+`definition_current` means only that the recorded check definition and
+referenced normative criteria still match. A different spec summary or an
+unrelated criterion change no longer restarts this task's assessment; a
+changed referenced requirement does. A stale plan/spec binding is always
+reported separately, never silently refreshed. Older observations preserve
+their original whole-spec applicability rules. Without an external spec
+(e.g. when rendering a standalone HTML artifact), criterion applicability
+remains unknown rather than falsely current or stale.
+
+`task-check` also attempts a **bounded, read-only, optional scoped-input
+fingerprint** for the task's repository-relative `paths` and explicitly
+declared `shared_inputs`. Known build-control files at the repository root
+and the verification command's working directories (for example `go.mod`,
+package manifests/lockfiles, `tsconfig.json` and `pyproject.toml`) are
+included with both present and absent states. A directory task path hashes
+its immediate/nested members, so additions, deletions and renames affect
+the result. It does not run code or execute the declared test.
+
+The scope is bounded to 256 visited entries, depth 12, 2 MiB per file,
+and 12 MiB total. It refuses unsafe generated state paths, symlink/reparse
+inputs and ambiguous or changing handles through the existing rooted
+filesystem. If no declared task/shared source actually exists or a limit
+is exceeded, recording **continues** with `scope_unassessed_reason`;
+no fake digest is generated. The model-facing `task-context` read checks
+the source subset again and reports `worktree_freshness` as:
+
+- `scoped_unchanged`: only the selected bounded inputs match.
+- `scoped_changed`: selected source/configuration bytes or membership changed;
+  refresh the affected checks, not unrelated task reviewers.
+- `unassessed`: missing historical fingerprint, empty/unsafe/unbounded
+  source selection, or inability to make a safe observation.
+
+**Every scope result has `scope_complete: false`.** This is not full
+import/build dependency closure, named-test attestation or proof that an
+external service is unchanged. Exact/batch symbol reads and HTML, which
+lack the live rooted source/spec pair, continue displaying explicitly
+unassessed status. An earlier pass never conceals the latest
+failure/skipped/unknown report, and reported checks do not change
+`PENDING`/`DONE` to `ACCEPTED`.
+
+This optional execution-field addition is inside the **unpublished
+schema 0.3.2 candidate**; it is never silently written to a 0.3.0/0.3.1
+artifact without the native version upgrade. Mixed installed-package
+rollback and complete subject/file impact analysis remain unqualified.
+
+## Scoped prerequisite observations and implementation completion
+
+Artifact schema **0.3.2** adds optional `kind: fact | decision` and `task_refs`
+to prerequisite definitions. `task_refs` names the active tasks that actually need
+that prerequisite. Omitted legacy scope remains `unspecified`, never an inferred
+plan-wide permission gate. Classify a legacy requirement using an ordinary typed
+`apply` before recording its result. Task references must resolve; do not narrow
+a prerequisite's scope merely to hide a real dependency.
+
+The existing `prerequisite` operation accepts a closed `observation` request as an
+alternative to its historical receipt form. Supply the ordinary `protocol`,
+`artifact_id`, `operation_id`, current `expected` revision/model digest, and
+`prerequisite` ID, followed by:
+
+```json
+{
+  "observation": {
+    "outcome": "satisfied",
+    "summary": "The service probe returned its expected healthy response.",
+    "source": "Current session: the actual service-probe result.",
+    "origin": "tool_result"
+  }
+}
+```
+
+This is the observation fragment, not a complete command or an executed result.
+Use the actual result, never copy the example as evidence. Outcomes are
+`satisfied`, `unsatisfied`, or `unknown`; origins are `tool_result`,
+`user_statement`, or `agent_report`. The native engine assigns the recording time,
+`provenance: caller_reported`, and a definition digest. It does not authenticate
+a conversation, execute the source string, produce authority receipts, or invoke
+reviewers. A resolved `decision` needs a reported `user_statement`; an agent's
+opinion or an automated check cannot be mislabeled as the user's choice. Actual
+host permissions and explicit user stops remain outside this bookkeeping.
+
+Recording an observation changes no legacy authority flag. A newer negative or
+unknown observation cannot fall back to an older positive receipt. The explicit
+legacy proof query rejects substituting reported information for authority;
+ordinary scheduling uses the recorded facts without invoking that proof query.
+Prior observations remain in transaction before-images, and the latest observation
+is retained when its prerequisite is retired.
+
+Applicability is specific to the prerequisite definition: changing its kind,
+requirement, task scope, or source references marks the observation as applying to
+an older definition. Changing its title or an unrelated task method does not.
+`definition_current` means the definition still matches, **not** that an external
+service is live or the result was independently verified. The timestamp, source,
+and reported origin remain visible so the agent can decide whether a new check
+is useful. Only explicitly affected tasks get `waiting_prerequisites` advice;
+independent work remains available. Advice is not a new permission barrier.
+
+Exact and batch symbol reads include `prerequisite_assessment`, with the existing
+whole-record response budget and explicit context-incomplete label. They neither
+parse presentation HTML nor load authority chains. The same assessment is
+available in a collapsed, escaped HTML section on new-schema artifacts.
+
+`accept-scope` with `scope` and a nonblank `reason`, **without a receipt**, records
+an implementation batch as `DONE`. Members must have recorded implementation in
+progress, ready for review, or complete; a pending/stopped member is not silently
+marked done. `DONE` explicitly means implementation complete, checks not assessed.
+It makes recorded dependencies available without inventing acceptance or test
+results. Existing evidence and genuinely accepted members are retained. The
+historical receipt form remains an explicit proof operation; callers cannot mix
+its receipt/completion fields with the ordinary progress form.
+
+Old 0.3.0/0.3.1 artifacts remain readable without rewriting their bytes. Introducing
+new fields or `DONE` writes schema 0.3.2 through the existing CAS/journal path.
+New semantics cannot be stored under an old schema label, and an old engine does
+not silently accept the new version. Full mixed-installed-client upgrade and
+obsolete-prompt recovery remain T07; this source compatibility is not that claim.
+
+## Reruns and retained task reviews
+
+An explicit completed task review retains the exact verification run it actually
+inspected. Do not rewrite that old receipt or pretend it reviewed a newer run.
+When a new scope review selects a fresh passing rerun, the native engine now
+checks whether the prior task review still covers the current subject, whether
+the selected rerun matches its own recorded workspace, whether its normalized
+workspace closure matches the still-reviewed work, and whether all supporting
+material is retained. When those checks hold, a different run/receipt identity
+alone does not require another task review.
+
+The new scope review records the newly selected run and makes its own assessment.
+The old task review and original run stay unchanged. Changed source, requirements,
+selected support, wrong workspace, or a corrupt run-owned closure do not qualify
+for reuse. A failing selected verification is not accepted merely because an
+older run passed. This is not a general claim that all checks outside a task's
+path list are independent: broader source-scoped applicability remains T04 work.
+Nor does it remove the initial per-task review requirement from this explicit
+legacy proof path; normal orchestration is being converted separately in T05.
 
 ## Cooperative approval and evidence
 
@@ -108,11 +481,114 @@ A verification payload names the input digest, specification digest, task digest
 
 `snapshot` derives an input identity from file bytes, executable flags, directory membership, normative documents and declared platform/toolchain identity. Engine-generated outputs are excluded only when their output contracts validate. Whole `.codearbiter` is never excluded. Two matching scans reject ordinary concurrent changes. Default input roots cover the repository except Git metadata; large repositories need a reviewed explicit policy. External compiler/environment dependencies and existing host-generated outputs require a complete policy/adapter inventory before production rollout.
 
-Snapshot input identity is ship-set membership (ADR-0042). In a git work tree the members are the git index entries present on disk, plus untracked non-ignored files within the plan's input roots, minus the plan's excludes. A deleted index entry is absent, a gitlink counts as its pointer only, and executable flags come from the index mode. One fixed exemption exists: `.codearbiter/gate-events.log` is never counted in any snapshot, whatever the plan says, and it stays tracked as the audit trail. Every other `.codearbiter` path still counts. Outside a git work tree, membership is read from the filesystem (`membership: filesystem`). The root must be the top level of its work tree: a root that is a subdirectory of one has no `.git` of its own and counts as outside git; a git probe that fails inside a work tree fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE` and never falls back to the filesystem. An unmerged git index (conflicted paths) also makes a snapshot fail closed until the conflict is resolved. The manifest format is `codearbiter.verification-inputs/0.2.0`, which records membership; receipts bound to a 0.1.0 manifest read as stale. Within one operation each evidence object is validated at most once and scans are bounded. Raw reads are reused only up to a 64 MiB per-operation retained-byte budget, past which an object can be read again, but validation is never skipped.
+Snapshot input identity is ship-set membership (ADR-0042). In a git work tree the members are the git index entries present on disk, plus untracked non-ignored files within the plan's input roots, minus the plan's excludes. A deleted index entry is absent, a gitlink counts as its pointer only, and executable flags come from the index mode. One fixed exemption exists: `.codearbiter/gate-events.log` is never counted in any snapshot, whatever the plan says, and it stays tracked as the audit trail. Every other `.codearbiter` path still counts when it is a ship-set member. A gitignored, untracked `.codearbiter` file is not a member, so it does not change the identity; track it to make it an input. Outside a git work tree, membership is read from the filesystem (`membership: filesystem`). A root below the top level of a work tree, such as a monorepo package, uses that work tree's membership scoped to the root, so the enclosing `.gitignore` applies there too. If the enclosing work tree ignores the root itself, the snapshot fails closed. A git probe that fails inside a work tree fails closed with `INPUT_MEMBERSHIP_UNAVAILABLE` and never falls back to the filesystem. An unmerged git index (conflicted paths) also makes a snapshot fail closed until the conflict is resolved. Membership probes accept one piece of environment-injected Git configuration: the bridge's resolved `core.excludesFile`, passed as `GIT_CONFIG_COUNT=1` with an absolute value. `GIT_CONFIG_PARAMETERS`, `GIT_CONFIG` and any other `GIT_CONFIG_KEY_n`/`GIT_CONFIG_VALUE_n` pair are dropped. Configuration files selected by `GIT_CONFIG_GLOBAL`, `GIT_CONFIG_SYSTEM` and `GIT_CONFIG_NOSYSTEM` still apply. A root policy that needs more than 512 anchored directories, such as hundreds of roots under distinct parents, fails with `MAX_INPUTS`; consolidate the roots under fewer common parents. The manifest format is `codearbiter.verification-inputs/0.2.0`, which records membership; receipts bound to a 0.1.0 manifest read as stale. Within one operation each evidence object is validated at most once and scans are bounded. Raw reads are reused only up to a 64 MiB per-operation retained-byte budget, past which an object can be read again, but validation is never skipped.
 
-Within one checkpoint, a predecessor in `REVIEW` can unblock a dependent after current verification and spec review. Across checkpoint scopes, dependencies need current accepted-scope evidence. After all tasks reach `REVIEW`, reverify against the current combined input state and perform the scope quality review. `accept-scope` records the entire scope together. A later source change marks evidence stale without pretending earlier work never happened. Interrupted `IN_PROGRESS` tasks and changed scope baselines require explicit reconciliation.
+For advisory scheduling, a predecessor recorded as `REVIEW` or `ACCEPTED` can make its explicit dependent available without treating either label as current verification. Explicit legacy scope-acceptance claims remain separate: after all member tasks reach `REVIEW`, their current evidence and the scope quality review are checked. `accept-scope` records the entire scope together. A later source change marks evidence stale without pretending earlier work never happened. Interrupted work needs inspection and a reasoned progress update, not another artifact approval. Changed legacy evidence baselines still have their explicit scope-reconciliation operation while the remaining overhaul is implemented.
 
 The outer `/feature` human checkpoint and host scheduling policies are not replaced by this ledger. The current overlay does not complete all those entry-point integrations.
+
+## Unanswered legacy prompt supersession (adapter; not a native permission)
+
+The canonical Python approval helper also offers internal
+`retire --root <repo> --artifact-id <plan> --reason <text>` for the
+historical **0.2 paired approval** only. It uses the existing serialized
+pair-cancellation handler and refuses a durable reply/submission.
+The old observer publishes immutable source observations *before* writing
+the submission record; retirement also scans at most 513 names in the
+bounded observations directory and checks exact content hashes, frozen
+pending contexts and prompt identity. A matching observed reply, corrupt
+immutable record, or over-limit directory fails closed. This scan runs
+**only on explicit legacy prompt retirement**, never on normal task
+selection, context reads or work progress.
+An old **0.1 single approval** cannot distinguish an unanswered prompt
+from a lost committed response and deliberately fails with
+`LEGACY_APPROVAL_RECOVERY_REQUIRED`. It must be inspected rather than
+automatically deleted.
+
+The canonical prerequisite helper offers
+`retire --root <repo> --artifact-id <plan> --prerequisite-id <id>
+--reason <text>` only for the validated **ARMED** state. Its existing
+per-artifact cross-process lock rejects `CONFIRMED` and `CAPTURED`
+states, which retain exact-source recovery. Both return a non-authorizing
+superseded disposition, without a new native API operation or another
+state store. They are *manual, narrow legacy recovery helpers*; normal
+execution never needs a new artifact approval/prerequisite code.
+
+The existing `artifact-reconcile.py` host helper has an explicit
+`--supersede --reason <nonblank-text>` path for a previously armed,
+**unanswered** task/scope reconciliation prompt. It takes only the repository
+root and plan artifact ID; **no old user code or exact prompt string** is
+required. It reads a validated bounded pending record under the existing
+per-artifact transition lock, verifies its prompt-route binding, and refuses
+any durable mutation attempt, ambiguous marker location or unsafe root.
+It reports `disposition: unanswered_prompt_superseded`,
+`mutation_attempted: false`, and `authority_granted: false`.
+
+This operation cancels obsolete *question routing*, **not actual work** or
+an accepted user decision. It does not mutate native artifacts, snapshots,
+receipts or the durable transaction log. A possible prior mutation must be
+replayed under the exact stored ID via `--recover`; the accepted
+`REVISION_CONFLICT`/`OPERATION_ROLLED_BACK` noncommit results remain a
+closed set. The preexisting exact-prompt `--cancel` operation remains
+available for other historical consumers. A missing route, an already
+submitted attempt, or a conflicted legacy/current marker is an error, not
+proof of noncommit. The helper never launches a verifier or renews a
+prerequisite. A normal resumed task uses identity + advisory state and
+receipt-free progress instead.
+
+This is a **partial T07 transition**: mixed installed-client compatibility,
+approval/prerequisite pending-marker recovery, and package rollback after
+new edits still require separate qualification. It is not a new public
+command or an all-prompt cleanup service.
+
+## Historical schema 0.3.1 to assistive 0.3.2: exact-byte upgrade/rollback
+
+An old 0.3.0/0.3.1 HTML spec/plan is read without rewriting its source bytes.
+The first journaled mutation that introduces 0.3.2-only observations,
+`shared_inputs`, or `DONE` records writes the **same artifact ID**, preserved
+task states, evidence history and new schema identity. An identical operation
+ID replays the same committed operation; it never runs the work a second time.
+The before-image is retained in the engine's existing transaction history.
+
+**Do not run two engine generations against one repository concurrently.**
+An older 0.3.1 client fails closed with `UNSUPPORTED_VERSION` once it
+encounters a new-format member of the canonical pair; it cannot continue
+writing other artifacts in that repository. This is intentional, not missing
+data or a reason to downgrade the HTML schema label. Update the installed
+cohort to the compatible engine/bridge and active caller resources first.
+No automatic Markdown conversion or reapproval is part of this cutover.
+
+For a rollback *before subsequent changes*, preserve the candidate's
+journal and exact pre-upgrade files. Restore old files only after checking
+there have been **no newer edits** and no uncertain mutation to recover.
+Never simply copy an old backup over a changed plan. The native
+`migration-rollback` API applies only to an explicitly reviewed,
+completed **Markdown-to-HTML** cutover; it refuses an edited candidate and
+is **not** a general schema-downgrade method.
+
+After any 0.3.2 write or change to task/source evidence, prefer forward
+recovery with the compatible engine. Use `identity`, `task-context`,
+exact/batch symbol reads, and a standalone `export` to
+`.codearbiter/exports/<name>.html` before considering any manual
+migration. The export records its source hash and cannot replace the
+canonical pair. Retain all receipts/history and make an explicit new
+reviewed forward migration if older tooling must be restored. A previous
+binary's refusal is safer than silently discarding modern state.
+
+A reproducible disposable compatibility probe is
+`python tools/test-artifact-mixed-schema.py --old <0.3.1-binary>
+--candidate <0.3.2-binary>`. The binaries must be exact trusted versions;
+the probe creates no project-wide state. It checks old reads preserving
+bytes, a retained user stop, one journaled new observation and idempotent
+replay, older-client rejection, source ID/history, and unchanged canonical
+bytes after an export. The probe is fixture evidence, **not** live host,
+security or distribution qualification.
+
+This compatibility rule does not silently retire submitted approval or
+prerequisite markers. A historical answered or in-flight request must use
+its owner-specific exact-operation recovery; only *unanswered* legacy
+reconciliation questions can use the separately documented code-free
+supersession. Never fabricate user consent or delete unknown state.
 
 ## Filesystem and recovery
 

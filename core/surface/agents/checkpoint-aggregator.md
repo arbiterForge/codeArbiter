@@ -16,6 +16,7 @@ Explicit writer in the checkpoint pipeline. Consume the verdict-aggregator outpu
 1. `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — the `stage:` value.
 2. The complete verdict-aggregator output from the current checkpoint run.
 3. `{{PROJECT_DIR}}/.codearbiter/checkpoints/` — existing checkpoint documents (to avoid a duplicate).
+4. The caller's observed reviewed commit, UTC review-start time, and worktree dirty flag. Retain missing values as unknown; do not substitute the current time or commit for an earlier reviewed state.
 
 ## Process
 
@@ -42,6 +43,12 @@ After writing, list the `### DEFERRABLE` findings as follow-up harvest candidate
 ## Checkpoint Document Structure
 
 ```markdown
+---
+source_commit: <full reviewed commit SHA or null>
+recorded_at: <UTC review-start timestamp or null>
+worktree_dirty: <true, false, or null>
+---
+
 # Checkpoint — YYYY-MM-DD
 
 ## Project state

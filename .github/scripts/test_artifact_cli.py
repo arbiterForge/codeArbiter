@@ -215,6 +215,49 @@ class CliTests(unittest.TestCase):
                 "operation_id": "cli-draft-rebind", "expected": self.expected(plan),
                 "binding_mode": "draft_preview", "spec_expected": self.expected(spec)}
 
+    def test_eligible_bounded_prerequisites(self):
+        _, plan = self.initial_draft_pair()
+        changes = [{"op": "record.add", "collection": "prerequisites", "record": {
+            "id": f"GATE-{index:02}", "title": "Local test service", "kind": "fact",
+            "requirement": "r" * 1024, "task_refs": ["T-001"], "source_refs": [],
+        }} for index in range(16)]
+        plan = self.successful("apply", {
+            "artifact_id": plan["artifact_id"], "operation_id": "cli-add-prerequisites",
+            "expected": self.expected(plan), "changes": changes,
+        })
+        for index in range(16):
+            plan = self.successful("prerequisite", {
+                "artifact_id": plan["artifact_id"], "operation_id": f"cli-fact-{index}",
+                "expected": self.expected(plan), "prerequisite": f"GATE-{index:02}",
+                "observation": {"outcome": "satisfied", "origin": "tool_result",
+                                "summary": "s" * 2048, "source": "c" * 1024},
+            })
+        before = self.files()
+        advice = self.successful("eligible", {"artifact_id": plan["artifact_id"]})
+        self.assertEqual(advice["next_task"], "T-001")
+        self.assertFalse(advice["context_complete"])
+        self.assertEqual(len(advice["prerequisites"]), 16)
+        self.assertEqual(advice["prerequisites_omitted"], 0)
+        self.assertTrue(all(row["details_omitted"] for row in advice["prerequisites"]))
+        exact = self.successful("read", {
+            "artifact_id": plan["artifact_id"], "symbol": "GATE-00", "mode": "exact",
+        })["prerequisite_assessment"]
+        self.assertEqual(exact["requirement"], "r" * 1024)
+        self.assertEqual(exact["observation"]["summary"], "s" * 2048)
+        self.assertEqual(self.files(), before)
+
+    def test_ordinary_draft_bind_records_source_without_approval(self):
+        spec, plan = self.initial_draft_pair()
+        request = {"artifact_id": plan["artifact_id"], "spec_id": spec["artifact_id"],
+                   "operation_id": "cli-ordinary-draft-bind", "expected": self.expected(plan)}
+        rebound = self.successful("plan-bind", request)
+        self.assertEqual(rebound["revision"], plan["revision"] + 1)
+        ready = self.successful("validate", {"artifact_id": plan["artifact_id"], "gate": "ready"})
+        self.assertTrue(ready["valid"])
+        self.assertFalse(ready["authority"]["authority_verified"])
+        replay = self.successful("plan-bind", request)
+        self.assertTrue(replay["transaction"]["replay"])
+
     def test_initial_draft_pair_can_rebind_after_spec_revision(self):
         spec, plan = self.initial_draft_pair()
         self.successful("apply", {
@@ -234,13 +277,6 @@ class CliTests(unittest.TestCase):
         self.assertEqual([row["code"] for row in envelope["result"]["diagnostics"]],
                          ["STALE_SPEC"])
         request = self.draft_bind_request(spec, plan)
-        default = {key: value for key, value in request.items()
-                   if key not in ("binding_mode", "spec_expected")}
-        before = self.files()
-        result, envelope = self.invoke("plan-bind", default)
-        self.assert_error(result, envelope, "AUTHORITY_UNVERIFIED")
-        self.assertEqual(self.files(), before)
-
         result, envelope = self.invoke("plan-bind", request)
         self.assertEqual(result.returncode, 0, envelope)
         rebound = envelope["result"]
@@ -273,7 +309,11 @@ class CliTests(unittest.TestCase):
         for header in headers.values():
             self.assertEqual(header["governance"]["state"], "draft")
             self.assertEqual(header["governance"]["approvals"], [])
-        result, envelope = self.invoke("eligible", {"artifact_id": plan["artifact_id"]})
+        advice = self.successful("eligible", {"artifact_id": plan["artifact_id"]})
+        self.assertEqual(advice["assessment"], "advisory")
+        self.assertEqual(advice["next_task"], "T-001")
+        self.assertFalse(advice["evidence_assessed"])
+        result, envelope = self.invoke("verification-status", {"artifact_id": plan["artifact_id"]})
         self.assert_error(result, envelope, "DRAFT_BINDING")
         after = self.files()
         replay = self.successful("plan-bind", request)

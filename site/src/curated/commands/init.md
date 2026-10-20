@@ -15,7 +15,7 @@ gates:
 This is how a repository opts into codeArbiter for the first time. It writes the root-level state
 directory with the activation flag and a set of empty tracking files — nothing more. The `CONTEXT.md`
 it creates is deliberately a stub, not a finished project doc, so the very next thing that has to
-happen is populating it: an existing codebase routes to the brownfield scout that reads the code and
+happen is populating it: an existing codebase routes to bounded brownfield inspection with optional agents that reads the code and
 drafts the real docs, while a from-scratch project routes to the layered architect interview instead.
 Until that populator runs and writes its own completion marker, the rest of the pipeline stays
 blocked — `/ca:feature` and the other lanes need `tech-stack.md` and `security-controls.md` to exist

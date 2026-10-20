@@ -27,7 +27,7 @@ _BRIDGE_IMPORTS = frozenset({
     "platform", "re", "stat", "subprocess", "tempfile", "threading", "typing",
 })
 _CTYPES_ATTRIBUTES = frozenset({
-    "WinDLL", "c_uint32", "c_void_p", "c_wchar_p", "get_last_error",
+    "WinDLL", "c_uint16", "c_uint32", "c_void_p", "c_wchar_p", "get_last_error",
 })
 _PROCESS_ESCAPE_CALLS = frozenset({
     "execl", "execle", "execlp", "execlpe", "execv", "execve", "execvp",
@@ -43,6 +43,8 @@ _NETWORK_AUDIT_EVENTS = frozenset({
 })
 _KERNEL32_PROCEDURES = frozenset({
     "CloseHandle", "CreateFileW", "GetFileAttributesW",
+    # Read-only native-machine query for binary selection (#986).
+    "IsWow64Process2",
 })
 
 
@@ -696,13 +698,13 @@ class Workflow:
         self.mutate("accept-scope", plan["artifact_id"], scope="CP-01", receipt=receipt)
 
 
-def context_provenance(document: bytes, source: bytes, *, review: str) -> dict:
+def context_provenance(document: bytes, source: bytes) -> dict:
     return {
         "schema": 2, "doc": "CONTEXT", "created": "2026-09-27",
         "document": {"path": ".codearbiter/CONTEXT.md", "digest_method": "sha256-raw",
                      "digest": hashlib.sha256(document).hexdigest()},
         "fields": [{"id": "FIELD-NAME", "owner_ref": "project_name", "claims": [{
-            "id": "CLAIM-NAME", "semantic_review": {"state": "reviewed", "reference": review},
+            "id": "CLAIM-NAME", "semantic_review": {"state": "unreviewed", "reference": None},
             "evidence": [{"kind": "content", "path": "source.txt",
                           "digest_method": "sha256-raw",
                           "digest": hashlib.sha256(source).hexdigest()}],
@@ -729,58 +731,16 @@ def context_request(root: Path, *, mode: str) -> tuple[dict, bytes]:
             {"entry_id": "FIELD-NAME", "anchor": "project_name"}],
         "expected_document_sha256": None if mode == "create" else hashlib.sha256(target.read_bytes()).hexdigest(),
         "expected_provenance_sha256": None if mode == "create" else hashlib.sha256(prior.read_bytes()).hexdigest(),
-        "proposed_provenance": context_provenance(rendered, source,
-                                                   review="fixture:" + mode),
+        "proposed_provenance": context_provenance(rendered, source),
     }
     return request, rendered
-
-
-def context_fixture_receipt(client, root: Path, preview: dict, prompt: str) -> tuple[str, dict]:
-    """Stage a labeled synthetic observation; this is not host user authority."""
-    issued = client.call("context-evidence-context", {
-        **preview, "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
-    })
-    payload = {"preview_binding_sha256": issued["preview_binding_sha256"]}
-    producer = {"host": "fixture", "session_id": "cold-context",
-                "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest()}
-    observation = {
-        "format": "codearbiter.observation/0.2.0", "kind": "context_approval",
-        "subject": issued["subject"], "context_ref": issued["context_ref"],
-        "context_sha256": issued["context_sha256"],
-        "payload_sha256": canonical_hash(payload),
-        "producer_profile": "host-user-context-preview/0.1.0",
-        "producer_run_id": "fixture:cold-context", "producer_result": producer,
-        "producer_result_sha256": canonical_hash(producer),
-    }
-    def source(subdirectory: str, value: dict) -> tuple[str, str]:
-        raw = canonical_bytes(value)
-        digest = hashlib.sha256(raw).hexdigest()
-        relative = f".codearbiter/.artifacts/{subdirectory}/{digest}.json"
-        destination = root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with destination.open("xb") as stream:
-            stream.write(raw)
-        return relative, digest
-    observation_ref, observation_sha = source("observations", observation)
-    event = {
-        "format": "codearbiter.workflow-event/0.2.0", "kind": "context_approval",
-        "authority_kind": "user_workflow", "subject": issued["subject"],
-        "actor": "synthetic cold verifier", "origin": "fixture:UserPromptSubmit:cold-context",
-        "verdict": "approved", "payload": payload, "source_text": prompt,
-        "observation_ref": observation_ref, "observation_sha256": observation_sha,
-    }
-    source_ref, source_sha = source("authority-sources", event)
-    receipt = client.call("capture-observation", {
-        "source_ref": source_ref, "source_sha256": source_sha,
-    })["receipt"]
-    return receipt, issued
 
 
 def context_phase(args, bridge, installation: Path) -> dict[str, object]:
     client = bridge.context_writer_client(args.repository)
     admitted = client.require_context_workflow()
-    if admitted["qualification"] != "packaged-candidate":
-        raise AssertionError("installed context package admission did not bind candidate evidence")
+    if admitted["permission_model"] != "host-owned":
+        raise AssertionError("installed context writer did not advertise host-owned permissions")
     target = args.repository / ".codearbiter" / "CONTEXT.md"
     provenance = args.repository / ".codearbiter" / ".provenance" / "CONTEXT.json"
     if args.phase in {"context-create", "context-update"}:
@@ -792,14 +752,16 @@ def context_phase(args, bridge, installation: Path) -> dict[str, object]:
         if operation != "preview" or admitted_request != request:
             raise AssertionError("installed public context writer changed preview scope")
         before = target.read_bytes() if target.exists() else None
-        prompt = f"approve-context CONTEXT-CONTEXT fixture-{mode}-token"
-        receipt, issued = context_fixture_receipt(client, args.repository, request, prompt)
-        context = json.loads((args.repository / issued["context_ref"]).read_bytes())
+        issued = client.call("context-preview", request)
+        if issued.get("evidence_assessed") is not False or "reply" in issued or "receipt" in issued:
+            raise AssertionError("ordinary preview manufactured approval or evidence assessment")
+        context = json.loads((args.repository / issued["preview_ref"]).read_bytes())
         expected_before = base64.b64decode(context["before_document_base64"]) if context["before_document_base64"] is not None else None
         if expected_before != before:
             raise AssertionError("native context read did not match exact preimage")
         operation, admitted_request = bridge.validate_context_writer_request({
-            "operation": "apply", "receipt": receipt,
+            "operation": "apply", "preview_ref": issued["preview_ref"],
+            "preview_sha256": issued["preview_sha256"],
         })
         if operation != "apply":
             raise AssertionError("installed public context writer changed apply scope")
@@ -809,7 +771,9 @@ def context_phase(args, bridge, installation: Path) -> dict[str, object]:
         if target.read_bytes() != rendered:
             raise AssertionError("native context rendered bytes differ from preview")
         if provenance.read_bytes() != canonical_bytes(request["proposed_provenance"]):
-            raise AssertionError("native context provenance differs from approved proposal")
+            raise AssertionError("native context provenance differs from exact proposal")
+        if list((args.repository / ".codearbiter" / ".artifacts" / "receipts").glob("*.json")):
+            raise AssertionError("ordinary context write manufactured an approval receipt")
         return {"mode": mode, "state": applied["transaction"]["state"],
                 "document_sha256": hashlib.sha256(rendered).hexdigest(),
                 "operation_id": request["operation_id"], "read_preimage": True}
@@ -822,28 +786,132 @@ def context_phase(args, bridge, installation: Path) -> dict[str, object]:
     raise AssertionError("unsupported context phase")
 
 
+def assistive_phase(args, bridge, installation: Path) -> dict[str, object]:
+    """Ordinary cold-installed flow; no historical approval/reviewer route.
+
+    Deliberately separate from the older exact-attestation lifecycle below:
+    both must still pass, but a normal task needn't earn an approval receipt.
+    """
+    workflow = Workflow(
+        bridge, args.repository, installation, args.phase, args.host, args.plugin_root,
+    )
+    client = workflow.client
+    if args.phase == "assistive-progress":
+        selected = bridge._select_authoring_route(
+            args.repository, "flow", workflow="feature", lane="full", client=client,
+        )
+        if selected["format"] != "html":
+            raise AssertionError("installed native authoring did not select HTML")
+        spec = spec_normative()
+        client.call("create", {
+            "operation_id": workflow.operation_id("create-spec"),
+            "artifact_id": "SPEC-FLOW", "kind": "spec", "slug": "flow",
+            "title": spec["title"], "summary": spec["summary"], "normative": spec,
+        })
+        source = client.call("identity", {"artifact_id": "SPEC-FLOW"})
+        # Re-resolve the namespace after creating the spec. An earlier
+        # empty-route snapshot does not establish a plan-authoring target.
+        selected = bridge._select_authoring_route(
+            args.repository, "flow", workflow="feature", lane="full", client=client,
+        )
+        target = bridge._preflight_plan_authoring(
+            selected, client, spec_artifact_id="SPEC-FLOW",
+            spec_normative_sha256=source["normative_sha256"],
+        )
+        if target.exists():
+            raise AssertionError("plan preflight unexpectedly wrote a plan")
+        plan = plan_normative(source["normative_sha256"])
+        client.call("create", {
+            "operation_id": workflow.operation_id("create-plan"),
+            "artifact_id": "PLAN-FLOW", "kind": "plan", "slug": "flow",
+            "title": plan["title"], "summary": plan["summary"],
+            "spec_id": "SPEC-FLOW", "normative": plan,
+        })
+        workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
+        advice = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        if (
+            advice["assessment"] != "advisory"
+            or advice["evidence_assessed"] is not False
+            or advice["next_task"] != "T-001"
+        ):
+            raise AssertionError("draft work was blocked or disguised as verified proof")
+        before = client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        packet = client.call("task-context", {
+            "artifact_id": "PLAN-FLOW", "task": "T-001",
+            "model_sha256": before["model_sha256"],
+        })
+        if (
+            packet["task"]["id"] != "T-001"
+            or packet["binding_current"] is not True
+            or packet["evidence_assessed"] is not False
+            or packet["context_complete"] is not False
+            or len(packet["criteria"]) != 1
+        ):
+            raise AssertionError("task context omitted its actual constraints or claimed authority")
+
+        start_request = {
+            "artifact_id": "PLAN-FLOW",
+            "operation_id": workflow.operation_id("task-start"),
+            "expected": {
+                "revision": before["revision"], "model_sha256": before["model_sha256"],
+            },
+            "task": "T-001",
+        }
+        client.call("task-start", start_request)
+        start_replay = client.call("task-start", start_request)
+        if start_replay["transaction"]["replay"] is not True:
+            raise AssertionError("installed ordinary progress replay dispatched duplicate work")
+        workflow.mutate("task-check", "PLAN-FLOW", task="T-001", check={
+            "cwd": ".", "argv": ["python", "--version"], "outcome": "unknown",
+            "summary": "Cold fixture did not execute the proposed verification command.",
+            "source": "Installed candidate fixture: no command result or passing tests.",
+            "origin": "agent_report",
+        })
+        workflow.mutate("task-review", "PLAN-FLOW", task="T-001")
+        workflow.mutate(
+            "accept-scope", "PLAN-FLOW", scope="CP-01",
+            reason="Fixture implementation reported complete; tests and review unassessed.",
+        )
+        return {"progress": "recorded", "evidence_claimed": False}
+    if args.phase == "assistive-readback":
+        plan_identity = client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        packet = client.call("task-context", {
+            "artifact_id": "PLAN-FLOW", "task": "T-001",
+            "model_sha256": plan_identity["model_sha256"],
+        })
+        checks = packet["reported_checks"]
+        if (
+            packet["state"] != "DONE"
+            or packet["evidence_assessed"] is not False
+            or packet["context_complete"] is not False
+            or not checks or checks[-1]["reported_outcome"] != "unknown"
+            or checks[-1]["evidence_assessed"] is not False
+        ):
+            raise AssertionError("restarted ordinary workflow promoted progress to proof")
+        receipts = args.repository / ".codearbiter" / ".artifacts" / "receipts"
+        if receipts.exists() and any(receipts.rglob("*.json")):
+            raise AssertionError("ordinary progress minted a historical authority receipt")
+        for collection in ("specs", "plans"):
+            where = args.repository / ".codearbiter" / collection
+            if list(where.glob("*.md")):
+                raise AssertionError("installed HTML workflow created a Markdown shadow")
+        return {"progress": "DONE", "check_outcome": "unknown", "authority_receipts": 0}
+    raise AssertionError("unsupported assistive installed-host phase")
+
+
 def phase_run(args, bridge, installation: Path) -> dict[str, object]:
+    if args.phase.startswith("assistive-"):
+        return assistive_phase(args, bridge, installation)
     if args.phase.startswith("context-"):
         return context_phase(args, bridge, installation)
     workflow = Workflow(
         bridge, args.repository, installation, args.phase, args.host, args.plugin_root
     )
     if args.phase == "author-dispatch":
-        if args.host == "pi":
-            # Pi has no production authority chain. Prove refusal BEFORE any
-            # artifact exists; the remaining Pi lifecycle is the explicitly
-            # synthetic engine fixture, not a production routing exception.
-            try:
-                bridge._select_authoring_route(args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
-            except bridge.ArtifactError as error:
-                if error.code != "HOST_WORKFLOW_UNAVAILABLE":
-                    raise
-            else:
-                raise AssertionError("Pi production authoring was incorrectly admitted")
-            if any((args.repository / ".codearbiter" / part).exists() for part in ("specs", "plans")):
-                raise AssertionError("refused Pi authoring created artifact paths")
-        else:
-            bridge._select_authoring_route(args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
+        selected = bridge._select_authoring_route(
+            args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
+        if selected["format"] != "html":
+            raise AssertionError("native authoring did not select the canonical HTML path")
         spec = spec_normative()
         workflow.client.call("create", {"operation_id": workflow.operation_id("create-spec"), "artifact_id": "SPEC-FLOW", "kind": "spec", "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
         if workflow.client.call("validate", {"artifact_id": "SPEC-FLOW", "gate": "ready"}, permit_invalid=True)["valid"] is not True:
@@ -886,17 +954,18 @@ def phase_run(args, bridge, installation: Path) -> dict[str, object]:
         if workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["tasks"][0]["state"] != "REVIEW":
             raise AssertionError("review state was not preserved across process recreation")
         workflow.accept()
-        return {"accepted": workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"]}
+        return {"accepted": workflow.client.call("verification-status", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"]}
     if args.phase in {"commit-proof", "finalization-proof"}:
         proof = bridge._preflight_current_acceptance(bridge._resolve_workflow_pair(args.repository, "flow"), workflow.client, spec_artifact_id="SPEC-FLOW", plan_artifact_id="PLAN-FLOW")
         return {"proof": proof["eligible"]["all_accepted_and_current"], "plan_sha256": proof["plan_identity"]["normative_sha256"]}
     raise AssertionError(f"unknown phase: {args.phase}")
 
 
-def child(args, phase: str) -> dict[str, object]:
+def child(args, phase: str, *, repository: Path | None = None) -> dict[str, object]:
     command = [sys.executable, "-I", "-B", str(Path(__file__).resolve()),
                "--host", args.host, "--plugin-root", str(args.plugin_root),
-               "--repository", str(args.repository), "--expected-binary-sha256",
+               "--repository", str(repository if repository is not None else args.repository),
+               "--expected-binary-sha256",
                args.expected_binary_sha256, "--phase", phase]
     if args.context_kind:
         command.extend(("--context-kind", "--development-root", str(args.development_root)))
@@ -959,6 +1028,24 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
         "# Installed-host workflow fixture\n",
         encoding="utf-8",
     )
+    # Prove the new everyday journey independently of the retained historical
+    # attestation contract, in a sibling scratch repository. No new host,
+    # provider, approval token, verifier, or test-only storage is introduced.
+    assistive_root = args.repository.parent / "assistive-workflow"
+    assistive_root.mkdir()
+    assistive_state = assistive_root / ".codearbiter"
+    assistive_state.mkdir()
+    (assistive_state / "CONTEXT.md").write_text(
+        "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n"
+        "# Cold installed assistive workflow fixture\n", encoding="utf-8",
+    )
+    started = child(args, "assistive-progress", repository=assistive_root)
+    restarted = child(args, "assistive-readback", repository=assistive_root)
+    if started != {"progress": "recorded", "evidence_claimed": False} or restarted != {
+        "progress": "DONE", "check_outcome": "unknown", "authority_receipts": 0,
+    }:
+        raise AssertionError("installed ordinary progress did not survive a fresh process")
+
     first = child(args, "author-dispatch")
     resumed = child(args, "reconcile-review")
     if resumed["ticket"] == first["ticket"]:
@@ -982,8 +1069,6 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
 
 
 def orchestrate_context(args, installation: Path) -> dict[str, object]:
-    if args.host == "pi":
-        raise AssertionError("Pi context authority is not supported")
     bridge = load_bridge(args.plugin_root)
     if not all((args.plugin_root / "hooks" / name).is_file() for name in (
             "_contextreportlib.py", "_contextsnapshotlib.py", "_contextselectlib.py")):
@@ -1008,10 +1093,17 @@ def orchestrate_context(args, installation: Path) -> dict[str, object]:
     disabled_manifest = args.repository / "disabled-manifest"
     disabled_manifest.mkdir()
     release = json.loads((installation / "release.json").read_text(encoding="utf-8"))
-    release.pop("context_qualification", None)
+    for entry in release["binaries"].values():
+        entry["native_tested"] = False
+        shutil.copy2(installation / entry["file"], disabled_manifest / entry["file"])
     (disabled_manifest / "release.json").write_text(json.dumps(release), encoding="utf-8")
-    if bridge._context_release_qualified(disabled_manifest):
-        raise AssertionError("source-only package was incorrectly context-qualified")
+    try:
+        bridge.ArtifactClient(args.repository, disabled_manifest).call("context-preview", {})
+    except bridge.ArtifactError as error:
+        if error.code != "UNVERIFIED_PLATFORM":
+            raise AssertionError("untested native package reported the wrong diagnostic") from error
+    else:
+        raise AssertionError("untested native package admitted an ordinary context preview")
     try:
         bridge.ArtifactClient(args.repository, args.repository / "missing-installation")
     except bridge.ArtifactError as error:
@@ -1027,7 +1119,7 @@ def orchestrate_context(args, installation: Path) -> dict[str, object]:
         "candidate_manifest_sha256": args.candidate_manifest_sha256,
         "outcomes": {"read": "pass", "create": "committed", "update": "committed",
                      "recovery": "pass", "disabled": "refused", "missing": "refused"},
-        "authority_evidence_mode": "synthetic-fixture",
+        "authority_evidence_mode": "none-required-or-created",
         "proof_kind": "candidate-preflight", "live_qualified": False,
     }
 
@@ -1043,7 +1135,7 @@ def main() -> int:
     parser.add_argument("--candidate-commit")
     parser.add_argument("--candidate-tree")
     parser.add_argument("--candidate-manifest-sha256")
-    parser.add_argument("--phase", choices=("author-dispatch", "reconcile-review", "accept", "commit-proof", "finalization-proof", "context-create", "context-update", "context-recover"))
+    parser.add_argument("--phase", choices=("assistive-progress", "assistive-readback", "author-dispatch", "reconcile-review", "accept", "commit-proof", "finalization-proof", "context-create", "context-update", "context-recover"))
     args = parser.parse_args()
     args.plugin_root = args.plugin_root.resolve(strict=True)
     args.repository = args.repository.resolve(strict=True)

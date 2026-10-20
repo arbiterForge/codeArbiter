@@ -31,6 +31,7 @@ func (f *FS) Close() error                             { return nil }
 func (f *FS) Lock(bool, time.Duration) (func(), error) { return nil, unsupported() }
 func (f *FS) Read(string, int64) ([]byte, error)       { return nil, unsupported() }
 func (f *FS) Exists(string) (bool, error)              { return false, unsupported() }
+func (f *FS) LockMetadataPresent() (bool, error)       { return false, unsupported() }
 func (f *FS) List(string) ([]os.DirEntry, error)       { return nil, unsupported() }
 func (f *FS) Mkdir(string) error                       { return unsupported() }
 func (f *FS) create(string, []byte, uint32) error      { return unsupported() }
@@ -50,4 +51,5 @@ func (d *Dir) OpenSub(os.DirEntry) (*Dir, error) { return nil, unsupported() }
 func (d *Dir) ReadEntry(os.DirEntry, int64) ([]byte, os.FileInfo, error) {
 	return nil, nil, unsupported()
 }
-func (d *Dir) Has(string) (bool, error) { return false, unsupported() }
+func (d *Dir) Has(string) (bool, error)   { return false, unsupported() }
+func (d *Dir) Current(string, *Dir) error { return unsupported() }

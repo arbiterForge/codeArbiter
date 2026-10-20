@@ -3838,7 +3838,7 @@ class ClaudeEndToEndTest(unittest.TestCase):
                         verification_receipt=verification, review_receipt=review)
         quality = self._review("CP-01", "quality_review", "e2e-quality-reviewer", "e2e-quality-launch")
         workflow.mutate("accept-scope", "PLAN-FLOW", scope="CP-01", receipt=quality)
-        eligible = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        eligible = client.call("verification-status", {"artifact_id": "PLAN-FLOW"})
         self.assertTrue(eligible["all_accepted_and_current"], eligible)
 
     def _native_codex_review(self, record_id, activity, _agent_id, tool_use_id, *_model):

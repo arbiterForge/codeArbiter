@@ -26,51 +26,29 @@ An initialized refresh is routed through `/ca:status drift` and the existing
 `context-check` owner after an explicit scoped or full selection; `--brownfield`
 keeps its initial-population lock.
 
-### Brownfield host prerequisites
+### Brownfield preparation
 
-For repositories with existing source, every scaffold and populator step in
-the Procedure below is conditional on observing these prerequisites first.
-This applies to both `--brownfield` and the default auto-detection route.
-When qualification is unavailable or unknown, stop here and issue the handoff
-described below. Do not execute the later Procedure steps or enter brownfield
-population through the When NOT to use section.
+Confirm the intended repository, existing state, selected outcome and actual
+host permissions before activation. Scaffolding enables governance and may
+install Git hooks; it does not prove context correctness or host enforcement.
+For existing source, use bounded inspection and the safe installed context
+writer in `${CLAUDE_PLUGIN_ROOT}/skills/context-creation/SKILL.md`. Scoped agents are
+optional. Ordinary native Windows work does not require a special scout sandbox,
+profile attestation or per-document artifact approval.
 
-Scaffolding enables governance and may install Git hooks before population.
-It does not qualify the host for context extraction. Before selecting
-`--brownfield` or automatically routing existing source to brownfield
-population, inspect the installed
-context-creation containment profile in
-`${CLAUDE_PLUGIN_ROOT}/skills/context-creation/SKILL.md`, under that exact heading.
-The active host needs an observed context-specific child profile with enforced
-read-only containment and report delivery, plus the existing native context
-writer and approval support. Ordinary unrestricted collaboration agents on
-Codex desktop/Windows do not satisfy that requirement. The repository-only
-Claude preparation fixture is neither a shipped consumer route nor proof of
-a qualified host.
-
-When these prerequisites are unavailable or unknown, report the missing
-capability before invoking the scaffolder. Keep a fresh repository unactivated
-and retain every byte of any existing partial state. Name the loaded package,
-observed host limitation or explicitly unknown qualification, selected
-population route and next missing prerequisite in the handoff; leave
-unobserved qualification and prior operation identities
-unknown. Resume on a host only after fresh containment and writer qualification,
-using the existing interrupted-population recovery procedure. No supported
-destination is implied by this guidance.
-
-This is a workflow preflight. The low-level scaffolder has no native scout
-capability attestation input and does not enforce or prove this assessment.
-Its successful exit, `--check` inventory or enabled stub never establishes
-population readiness. Do not fabricate a profile, receipt, context document
-or initialization sentinel to pass the later gates.
+If a real host permission or the installed safe writer is unavailable, report
+the exact operation and retain current state. Continue independent authorized
+inspection; do not fabricate a profile, receipt, context document or initialized
+marker. Successful scaffold or `--check` output is inventory, not evidence that
+population or a live host probe completed.
 
 The two flags are mutually exclusive and neither may combine with `--check`. `--stage N` may
-accompany one only while `.codearbiter/CONTEXT.md` is absent: after any required brownfield preflight,
+accompany one only while `.codearbiter/CONTEXT.md` is absent: after checking the repository and host permissions,
 scaffold at that stage, then enter the
 selected workflow. When an uninitialized stub already exists, skip the refusing scaffolder and enter
 the selected workflow directly. An initialized marker or source-shape mismatch retains the selected
 legacy workflow's BLOCK. Without an explicit strategy, continue with the unchanged auto-detection
-procedure below only after any required brownfield preflight.
+procedure below under the same repository and host permissions.
 <!-- catalog-command-modes:end -->
 
 ## Procedure
@@ -105,7 +83,7 @@ below remain in force for repositories that already opted in.
    `open-tasks.md`, `open-questions.md`, `overrides.log` (audit header), and `last-checkpoint` (`0`).
 
 3. **Then route to the populator** — the stub is not yet usable:
-   - **Source code already exists** in the repo → route to `/ca:create-context` (brownfield: scouts
+   - **Source code already exists** in the repo → route to `/ca:create-context` (brownfield: bounded inspection and optional agents
      read the codebase and synthesize the full context, writing the initialization sentinel).
    - **Greenfield** (no meaningful source) → route to `/ca:decompose` (layered interview).
 

@@ -20,23 +20,22 @@ Read these, or STOP and surface the gap — never guess a command:
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test, lint, and secrets-scan invocations. Stop if missing; do not guess.
 - `{{PLUGIN_ROOT}}/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - A git repository must be present and `git status` available.
-- The `tdd` skill must have cleared all six phases for any new or modified feature code in the staged set. If `tdd` is incomplete, STOP and surface the gap.
-- The discovered authoritative spec/plan pair, when this commit belongs to a
-  `/feature` or `/sprint` pipeline. For HTML, load
-  `{{PLUGIN_ROOT}}/includes/artifacts.md`; use the engine `identity` and `eligible`
-  results, and treat the exact spec and plan identities plus the acceptance
-  receipts bound in engine state as the commit proof. Require
-  `all_accepted_and_current: true` before this gate can commit completed plan
-  work. The gate must not parse rendered HTML and must not consult a shadow
-  Markdown ledger. Displayed state, checkboxes, hashes, or caller-supplied
-  labels cannot substitute for current engine acceptance.
+- Read the scoped obligations and observed evidence under `{{PLUGIN_ROOT}}/skills/tdd/SKILL.md`. Confirmed fixes require regression RED/GREEN; features require current criterion-focused checks; refactors require passing characterization/parity evidence. Apply the relevant coverage and lint requirements. Resolve missing evidence for the staged change using its selected verification approach.
+- The discovered authoritative spec/plan pair, when relevant to this commit. For HTML,
+  load `{{PLUGIN_ROOT}}/includes/artifacts.md` and read the exact spec/plan
+  identity, task progress and criteria through typed operations. `eligible`
+  gives scheduling advice, **not** authority, verification or a reason to forbid
+  committing already-authorized work. `REVIEW` and `DONE` describe work
+  progress, not independent checks.
 
-For that HTML pair, invoke the installed bridge's
-`_preflight_current_acceptance` with the exact `_resolve_workflow_pair` result,
-the repository-bound client, and the spec/plan IDs returned by the engine. Use
-its returned identities and receipts as the proof for this gate. A refusal is a
-BLOCK before staging or committing; never construct an equivalent proof from
-caller metadata.
+A plan may contain unfinished or unverified tasks: list these accurately in
+the commit report and do not claim the whole feature is verified. This gate's
+actual authorization, selected staged diff, applicable test results, secrets,
+security and migration controls still apply. Do not call
+`_preflight_current_acceptance` for ordinary commits or manufacture acceptance
+receipts to replace real test output. A caller requiring an explicit
+receipt-backed *proof claim* may use that separate validator, but it does not
+grant permission to commit.
 
 ## Phase 1 — Permission · gate: BLOCK
 
@@ -75,20 +74,24 @@ Gate: the staged set is type-homogeneous with a single type and scope.
 Read the test, lint, and secrets-scan commands from `tech-stack.md`, then apply
 `{{PLUGIN_ROOT}}/includes/verification-boundary.md`:
 
-- Run the impact-bounded local tests that directly cover the staged paths and obligations. Any failure blocks. Repository-wide and cross-platform suites belong to exact-head hosted CI before merge, not this commit gate.
-- Run lint, and the type-check if the project is statically typed. Zero errors.
+- Establish impact-bounded local test results that directly cover the staged paths and obligations. Reuse inspected results while their relevant source, inputs and command match; run missing or affected checks. Any unresolved failure blocks. Repository-wide and cross-platform suites belong to exact-head hosted CI before merge.
+- Establish current lint results, and type-check results if the project is statically typed. Reuse applicable observed results under the same source/input rule. Zero errors.
 - Run the secrets scan on ALL staged files, regardless of commit type. Any finding blocks.
 - **Security gates (mandatory routing):** if the staged diff touches crypto/TLS or secret patterns, route it through `crypto-compliance` (`{{PLUGIN_ROOT}}/skills/crypto-compliance/SKILL.md`) and/or `secret-handling` (`{{PLUGIN_ROOT}}/skills/secret-handling/SKILL.md`) — they scan against `security-controls.md` and, on pass, record the diff-bound marker `.codearbiter/.markers/security-gate-passed` (via `hooks/security-pass.py`). This is not optional: the PreToolUse commit hook **H-09b/H-10b blocks the commit** until that gate pass is recorded AND covers every sensitive line being committed.
 - **Migration gate (mandatory routing):** if the staged set contains a database migration (Phase 3 flags it; the detection rule is `_hooklib.is_migration_path` — default migration globs, extendable/narrowable via a `migration-paths` block in `security-controls.md`), dispatch the `migration-reviewer` agent (`{{PLUGIN_ROOT}}/agents/migration-reviewer.md`). **On a genuine PASS only**, record the content-bound marker `.codearbiter/.markers/migration-gate-passed` by resolving the interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python` — never `python3 X || python X`, which reruns X on any nonzero exit (#577) — and running `"$PY" "{{PLUGIN_ROOT}}/hooks/migration-pass.py"`. This is not optional: the PreToolUse commit hook **H-14 blocks the commit** until the pass is recorded AND covers every migration file being committed (by content digest, no freshness window — an edit to a reviewed migration re-blocks). This closes the bare-`/commit` / small-lane gap from issue #77. On a BLOCK, do not record the pass.
 - **CI/deploy review (mandatory routing, no marker gate):** if the staged set touches a CI/CD workflow (`_hooklib.is_ci_path` — defaults extendable via a `ci-paths` block in `security-controls.md`) or a deployment/IaC manifest (`_hooklib.is_deploy_path` — `deploy-paths` block), dispatch the `security-reviewer` agent (`{{PLUGIN_ROOT}}/agents/security-reviewer.md`). This is the enforcement point the advisory `post-write-edit` reminders **H-15/H-16** point to, and it closes the bare-`/commit` / small-lane gap for CI/deploy (the `/review`, `/pr`, `/checkpoint`, and sprint lanes already dispatch it). Unlike crypto/secret/migration there is **no commit-block marker** — a CI workflow runs only once merged and IaC bites only on apply, so a BLOCK-level finding halts the commit via Phase 6 review, but routine CI/deploy edits are not gated per-commit. Act on the findings by severity; do not record a marker.
 
-Record each result (PASS / BLOCK) for the report.
+Required specialized review may reuse an existing review of the same source,
+requirements, findings and verification inputs. Dispatch only missing or affected
+review work. Required security and migration markers must still cover the actual
+staged content; a prior review does not waive their writers or hook checks.
+Record each result (PASS / BLOCK), its source and whether it was reused or run.
 
 Gate: the applicable focused tests, lint/type-check, secrets scan, and specialized gates all PASS. Any failure halts the commit until fixed and re-run. This gate does not claim that exhaustive hosted CI has run; `finishing-a-development-branch` proves that separately before merge.
 
 ## Phase 5 — Behavioral proof · gate: BLOCK
 
-Apply the shared fresh-run discipline in `{{PLUGIN_ROOT}}/includes/fresh-verification.md`, with
+Apply the current-evidence rules in `{{PLUGIN_ROOT}}/includes/fresh-verification.md`, with
 **the spec's acceptance criterion** as the target — prove the behavior against the spec, not against a
 self-report.
 
@@ -97,15 +100,47 @@ self-report.
   HTML, use the exact criterion and task records returned by symbol-scoped
   engine `read`; never scrape the rendered document. If none exists, derive the
   smallest command that exercises the claimed behavior.
-- Run it fresh in this phase, read its output and exit code, and confirm the observed behavior matches the spec's acceptance criteria. A mismatch, or an unverifiable claim, blocks.
+- Inspect the applicable output and exit code and confirm the observed behavior matches the spec's acceptance criteria. Reuse the Phase 4 or implementation result when it already proves that criterion on unchanged relevant inputs. Run a separate proving command only when existing evidence is missing, affected or insufficient. A mismatch or unverifiable claim blocks.
 
 **Stakes:** a behavioral-proof mismatch means the change does not do what the spec claims — state what would ship broken if this passed ("the retry path never fires; a transient error would hang the caller"), not just "proof mismatch." That gap is exactly what a green-looking suite hides.
 
-Gate: the change is proven to do what it claimed by fresh evidence — command output and exit code read in this phase. A self-reported "it works" does not pass.
+Gate: inspected current command output and exit code prove the claimed behavior. The phase change alone does not require another run. A self-reported "it works" does not pass.
 
 ## Phase 5.5 — Provenance auto-heal (conditional)
 
-Compute the heal worklist from the staged set via `_provenancelib.heal_worklist(staged_paths, provenance, current_hashes)` — the subset of staged paths that are `drift_trigger:true` provenance entries whose recorded hash has diverged or is absent. **Empty worklist → skip this phase entirely; most commits pay nothing** (cost guarantee: ordinary commits touching no provenance source do zero re-scout work).
+Partition the loaded records by schema. Select only recorded content paths or
+membership scopes/predicates intersecting staged sources. Commits touching no
+recorded source do no re-scout work. An empty legacy worklist says nothing about v2.
+Include deleted paths and both sides of renames in `staged_paths`, for example
+with `git diff --cached --name-only --no-renames`.
+
+**Managed v2 pairs:** acquire one bounded snapshot covering the selected documents'
+recorded dependencies and target preimages. Call `assess_context_provenance` for
+those document IDs with its action-boundary snapshot probe, then reuse that
+snapshot and assessment in
+`_provenancelib.v2_heal_worklist(staged_paths, provenance, snapshot, assessment)`.
+Its `claims` identify the affected document, field, claim and staged source paths;
+they select inspection work, not permission to write. These paths are staged triggers;
+inspect the selected claims' complete recorded evidence before refreshing their fields,
+including any changed unstaged dependency. Preserve uninspected claims and bindings.
+Report `unknown` entries and defer that document's automatic
+update; do not label it fresh or block independent commit work.
+
+When inspected claims still hold, prepare an `update` of the selected owned fields
+with unchanged content and current source evidence. When a claim changed, propose
+the bounded content correction for Phase 6 review. Use the typed `context-preview`
+and `context-apply` procedure in
+`{{PLUGIN_ROOT}}/skills/context-check/SKILL.md`, retaining exact expected pair hashes,
+the returned preview reference/digest and all unselected bytes. Reuse the existing
+maintenance authorization; do not enter a second approval cycle. Native apply
+rechecks the source and pair identities and writes both files together. Read back
+the result. Never pass v2 records to `rebaseline` or write them directly. Stage the
+resulting pair by explicit paths and secrets-scan every newly staged file.
+
+**Legacy v1 records:** compute the heal worklist via
+`_provenancelib.heal_worklist(staged_paths, provenance, current_hashes)` — staged
+`drift_trigger:true` entries whose hash diverged or is absent. An empty v1 worklist
+skips only this legacy branch.
 
 Non-empty worklist → call `_provenancelib.compute_drift(provenance, current_hashes)` to retain the document/source mapping. For each stale document in that drift report, get its record as `doc_provenance` and call `_provenancelib.changed_scope(doc_provenance, drift)`. Intersect that document's drifted paths with the worklist; skip a document when the intersection is empty. The hash map can omit unstaged paths, so a missing entry outside the worklist must not broaden this commit's re-scout. Confirm that every selected worklist path maps to at least one stale document after this filtering; if a record is malformed or the mapping is incomplete, STOP and report the gap rather than treating the path as fresh.
 
@@ -217,7 +252,7 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT run `git add -A`, `git add .`, or any wildcard staging.
 - MUST NOT commit while any test is failing, any lint error stands, or any secret is present.
 - MUST NOT turn exhaustive repository-wide or cross-platform CI into a local prerequisite when the shared `verification-boundary` assigns it to exact-head hosted CI.
-- MUST NOT accept a self-reported "it works" — prove the behavior against the spec with a fresh command run (Phase 5) before committing.
+- MUST prove the behavior against the spec with inspected current evidence (Phase 5); a self-reported "it works" is insufficient.
 - MUST NOT skip, disable, or work around any automated gate.
 - MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.

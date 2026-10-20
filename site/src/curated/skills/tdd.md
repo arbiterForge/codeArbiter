@@ -2,48 +2,56 @@
 entity: skills/tdd
 related: [commands/feature, commands/fix, commands/refactor, commit-gate]
 gates:
-  - gate: obligation scan
-    when: before any code is written
-    effect: every verifiable claim about the change — spec, contract, or security — must be listed with a source and status before implementation starts
-  - gate: red
-    when: before implementation
-    effect: a failing test must exist for every obligation, failing for the right reason, with every affected pre-existing test still green
-  - gate: obligation verify
-    when: after the implementation is green
-    effect: every obligation must move to a genuinely covered state backed by a real passing test, or the workflow loops back to write one
+  - gate: verification approach
+    when: before changing code
+    effect: map required behavior and applicable constraints to meaningful proving checks, selecting the approach appropriate to the work
+  - gate: regression baseline
+    when: repairing a confirmed code defect
+    effect: observe a named regression failing for the target defect before repair, then passing with unchanged assertions
+  - gate: verification
+    when: assessing the completed change
+    effect: required behavioral checks, coverage metrics and applicable lint/type checks must pass; missing or failed evidence remains outstanding
 ---
 
 ## What it does
 
-This is the test-first gate — no feature code exists before it clears its first phase. The
-feature command routes here after your spec is approved, and the fix and refactor commands route
-here directly. It turns the spec (or the fix's regression obligation) into a list of concrete,
-verifiable claims, forces a failing test for each one before any implementation, then verifies
-coverage and cleanliness before the change is eligible for the commit gate.
+Verifies feature, fix and refactor work against explicit obligations. Select the verification
+approach before changing code and report the sequence actually observed.
+
+| Work | Evidence |
+|---|---|
+| Confirmed fix | A named regression fails for the defect before repair and passes afterward. Reuse an adequate current failing test. |
+| Feature | Prefer test-first checks; existing implementation can be assessed with current criterion-focused tests and meaningful negative controls where needed. |
+| Refactor or coverage backfill | Run characterization tests before restructuring; initially passing tests establish the baseline. |
+| Documentation or non-executable change | Use relevant reference, generation, schema or rendering validation, and explain inapplicable test or coverage phases. |
 
 ## Phases
 
-1. Derive every obligation the change must satisfy from the spec, the contract, and — where
-   relevant — the security boundary, before any code is written.
-2. Write a failing test for each obligation, confirming it fails for the right reason and that
-   every affected pre-existing test still passes.
-3. Write the minimum implementation that satisfies those tests, without weakening any assertion.
-4. Walk the obligation list again, moving each to genuinely covered by a real passing test, or
-   looping back to write one for anything missing.
-5. Confirm coverage meets the project's current maturity-scaled threshold.
-6. Run lint and type-checking with zero errors outstanding.
-
-The contributor loop uses impact-bounded local verification. Exhaustive exact-head hosted CI remains
-mandatory before merge.
+1. Map each required claim to its source and proving check, including applicable contract and
+   security boundaries.
+2. Run the selected baseline. For a fix, an import, setup or unrelated failure is not target RED.
+   Use isolated negative controls when useful; never damage correct production behavior to get RED.
+3. Implement the scoped change and run affected checks. For fixes, keep assertions unchanged
+   between RED and GREEN; material fixture or setup changes require renewed target RED against
+   the broken source. Preserve characterization assertions through refactors.
+4. Check the obligations against actual results and review the combined change at the scope its
+   risks warrant. Reuse results only while the relevant source and inputs still match.
+5. Apply the project's coverage profile, required metrics and critical-path requirements. Report
+   unavailable hosts as unmeasured and use the declared no-tooling rule when applicable.
+6. Run applicable lint and type checks. Return commands, working directories, observed results
+   and pending checks to the caller.
 
 ## Exits
 
-A clean run leaves every obligation covered, coverage at threshold, and lint clean — clearing the
-path to the commit gate. Any obligation that cannot be tied to a real test, or any test whose
-assertion had to be weakened to pass, keeps the change from moving forward.
+Unexplained failures and untested requirements remain outstanding. Correct affected work and rerun
+its checks without weakening assertions, lowering coverage requirements or suppressing security
+checks. The commit owner uses this evidence for the selected changes; exact-head hosted CI remains
+required before merge. Implementation, verification, review and release are distinct results.
 
-## Where this sits in a complete change
+Use the available host for relevant live checks; ordinary work does not require installing or
+switching to another host. Maintainer CI checks adapter compatibility. Report a host denial once
+and continue unaffected authorized work; do not keep retrying or search for a host that will pass.
 
-[Test-first evidence](/concepts/test-first/) follows TDD inside a feature task and traces
-its caller through scope review, human checkpoint, commit and PR preparation. TDD is
-not an isolated stage after completed authoring, and local green is not scope acceptance.
+[Test-first evidence](/concepts/test-first/) follows verification within a change and its delivery
+handoff. Direct implementation reads relevant context; actual delegation receives a bounded
+packet. An advisory delivery result does not require another retry.

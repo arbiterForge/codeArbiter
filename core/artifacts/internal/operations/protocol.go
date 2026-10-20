@@ -48,14 +48,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -91,7 +91,7 @@ func RequestSchema(op string) (object, error) {
 		add("completion_context_ref", text(), false)
 		add("completion_context_sha256", digestType(), false)
 		add("verification_command_bindings", observation.QualifiedCommandBindingsSchema(), false)
-	case "context-evidence-context":
+	case "context-evidence-context", "context-preview":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("mode", enum("create", "adopt", "update"), true)
 		add("document_id", enum("CONTEXT", "tech-stack", "coding-standards", "security-controls", "code-map"), true)
@@ -102,16 +102,27 @@ func RequestSchema(op string) (object, error) {
 		add("expected_document_sha256", maybeHash, true)
 		add("expected_provenance_sha256", maybeHash, true)
 		add("proposed_provenance", object{"type": "object"}, true)
-		add("prompt_sha256", digestType(), true)
-	case "context-finalize-evidence-context":
+		if op == "context-evidence-context" {
+			add("prompt_sha256", digestType(), true)
+		}
+	case "context-finalize-evidence-context", "context-finalize-preview":
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("mode", enum("finalize"), true)
 		add("document_id", enum("CONTEXT"), true)
 		add("target_path", enum(".codearbiter/CONTEXT.md"), true)
 		add("expected", object{"type": "object"}, true)
-		add("prompt_sha256", digestType(), true)
+		if op == "context-finalize-evidence-context" {
+			add("prompt_sha256", digestType(), true)
+		}
 	case "context-apply":
-		add("receipt", text(), true)
+		legacy := closed(object{"protocol": enum(Protocol), "receipt": text()}, "protocol", "receipt")
+		ordinary := closed(object{"protocol": enum(Protocol), "preview_ref": text(), "preview_sha256": digestType()}, "protocol", "preview_ref", "preview_sha256")
+		add("receipt", text(), false)
+		add("preview_ref", text(), false)
+		add("preview_sha256", digestType(), false)
+		request := closed(p)
+		request["oneOf"] = []any{ordinary, legacy}
+		return request, nil
 	case "migration-preview", "migration-apply":
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")
@@ -127,7 +138,7 @@ func RequestSchema(op string) (object, error) {
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("model_sha256", digestType(), true)
 		add("target", text(), true)
-	case "capabilities":
+	case "capabilities", "init-store":
 	case "schema":
 		schemaNames := append([]string{"common"}, activeArtifactKinds()...)
 		schemaNames = append(schemaNames, "operation", "receipt", "event", "evidence_context", "observation", "verification", "spec_review", "quality_review")
@@ -210,7 +221,7 @@ func RequestSchema(op string) (object, error) {
 	case "smarts-apply":
 		cas()
 		add("grant_receipt", text(), true)
-		add("decision", observation.DecisionSchema(), true)
+		add("decision", observation.DecisionSchemaV2(), true)
 	case "approve":
 		cas()
 		add("receipt", text(), true)
@@ -230,18 +241,52 @@ func RequestSchema(op string) (object, error) {
 		request := closed(p)
 		request["oneOf"] = []any{approved, closed(p, required...)}
 		return request, nil
-	case "eligible":
+	case "eligible", "verification-status":
 		artifact()
+	case "task-context":
+		artifact()
+		add("task", idType(), true)
+		add("model_sha256", digestType(), true)
+		budget()
 	case "task-start":
 		cas()
 		add("task", idType(), true)
-		add("context_ticket", text(), true)
+		add("context_ticket", text(), false)
+	case "task-check":
+		cas()
+		add("task", idType(), true)
+		// Preserve signed process status/signal reports and unsigned Windows
+		// DWORD exits without truncating them to a POSIX shell status byte.
+		check := closed(object{
+			"argv":           object{"type": "array", "items": object{"type": "string", "minLength": int64(1), "maxLength": int64(512)}, "minItems": int64(1), "maxItems": int64(24)},
+			"cwd":            object{"type": "string", "minLength": int64(1), "maxLength": int64(512)},
+			"command_index":  object{"type": "integer", "minimum": int64(0), "maximum": int64(128)},
+			"outcome":        enum("pass", "fail", "skip", "unknown"),
+			"exit_code":      object{"type": "integer", "minimum": int64(-2147483648), "maximum": int64(4294967295)},
+			"summary":        object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
+			"source":         object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
+			"origin":         enum("tool_result", "agent_report"),
+			"output_excerpt": object{"type": "string", "maxLength": int64(1024)},
+		}, "argv", "cwd", "outcome", "summary", "source", "origin")
+		add("check", check, true)
 	case "task-review":
 		cas()
 		add("task", idType(), true)
-		add("verification_receipt", text(), true)
-		add("review_receipt", text(), true)
+		add("verification_receipt", text(), false)
+		add("review_receipt", text(), false)
 		add("completion_sha256", digestType(), false)
+		// Advertise the same two closed shapes enforced at runtime: progress
+		// alone, or an explicit evidence claim carrying both real receipts.
+		progressProperties := object{}
+		for key, value := range p {
+			if key != "verification_receipt" && key != "review_receipt" && key != "completion_sha256" {
+				progressProperties[key] = value
+			}
+		}
+		claimedRequired := append(append([]string{}, required...), "verification_receipt", "review_receipt")
+		request := closed(p)
+		request["oneOf"] = []any{closed(progressProperties, required...), closed(p, claimedRequired...)}
+		return request, nil
 	case "task-block":
 		cas()
 		add("task", idType(), true)
@@ -249,7 +294,7 @@ func RequestSchema(op string) (object, error) {
 	case "task-reconcile":
 		cas()
 		add("task", idType(), true)
-		add("receipt", text(), true)
+		add("receipt", text(), false)
 		add("state", enum("PENDING", "REVIEW", "BLOCKED"), true)
 		add("reason", text(), true)
 	case "scope-reconcile":
@@ -259,12 +304,47 @@ func RequestSchema(op string) (object, error) {
 	case "accept-scope":
 		cas()
 		add("scope", idType(), true)
-		add("receipt", text(), true)
-		add("completion_sha256", digestType(), false)
+		legacy := object{}
+		for key, value := range p {
+			legacy[key] = value
+		}
+		legacy["receipt"], legacy["completion_sha256"] = text(), digestType()
+		proofRequired := append(append([]string{}, required...), "receipt")
+		add("reason", object{"type": "string", "minLength": int64(1), "maxLength": int64(2048)}, true)
+		properties := object{}
+		for key, value := range legacy {
+			properties[key] = value
+		}
+		properties["reason"] = p["reason"]
+		request := closed(properties)
+		request["oneOf"] = []any{closed(legacy, proofRequired...), closed(p, required...)}
+		return request, nil
 	case "prerequisite":
 		cas()
 		add("prerequisite", idType(), true)
-		add("receipt", text(), true)
+		legacy := object{}
+		for key, value := range p {
+			legacy[key] = value
+		}
+		legacy["receipt"] = text()
+		observation := closed(object{
+			"outcome": enum("satisfied", "unsatisfied", "unknown"),
+			"summary": object{"type": "string", "minLength": int64(1), "maxLength": int64(2048)},
+			"source":  object{"type": "string", "minLength": int64(1), "maxLength": int64(1024)},
+			"origin":  enum("tool_result", "user_statement", "agent_report"),
+		}, "outcome", "summary", "source", "origin")
+		add("observation", observation, true)
+		properties := object{}
+		for key, value := range p {
+			properties[key] = value
+		}
+		properties["receipt"] = text()
+		request := closed(properties)
+		request["oneOf"] = []any{
+			closed(legacy, append(append([]string{}, required[:len(required)-1]...), "receipt")...),
+			closed(p, required...),
+		}
+		return request, nil
 	case "farm-project":
 		cas()
 		add("scope", idType(), true)

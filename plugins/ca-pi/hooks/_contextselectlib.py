@@ -246,7 +246,7 @@ def prepare_actor_delivery(packet, *, actor, task_id, worktree, source_epoch,
     index. A host receipt is a caller-reported observation; admission to work
     remains with the caller.
     Unknown epochs cannot make a saved receipt current and allow at most two
-    counted deliveries of the same binding before an explicit gap is returned.
+    counted deliveries of the same binding before an advisory gap is returned.
     """
     if (type(packet) is not dict or packet.get('admission') != 'requires_actor_check'
             or type(packet.get('task_paths')) is not list
@@ -312,7 +312,7 @@ def prepare_actor_delivery(packet, *, actor, task_id, worktree, source_epoch,
                 'observation': 'reported', 'attempts_used': count,
                 'delivery_text': None}
     if count >= 2:
-        return {'action': 'blocked', 'binding': binding, 'attempt': None,
+        return {'action': 'advisory', 'binding': binding, 'attempt': None,
                 'observation': 'unknown', 'attempts_used': count,
                 'gap': 'ACTOR_DELIVERY_UNOBSERVED', 'delivery_text': None}
     delivery_text = (
@@ -331,7 +331,8 @@ def compose_fix_or_test_actor_input(*, route, caller, actor, brief, task_id,
                                     task_paths, code_map, provenance, commands,
                                     constraints, effective_instructions,
                                     evidence_ids, command_bindings=None,
-                                    observations=None, bug_origin=None):
+                                    observations=None, bug_origin=None,
+                                    required_refs=()):
     """Prepare input for an existing fix or test-change caller without dispatching.
 
     The caller supplies current source and execution evidence. This pure helper
@@ -363,49 +364,44 @@ def compose_fix_or_test_actor_input(*, route, caller, actor, brief, task_id,
         effective_instructions=effective_instructions,
         evidence_ids=evidence_ids, command_bindings=command_bindings,
         observations=observations)
-    blocked = (any(item.get('status') in ('conflict', 'unresolved', 'unknown')
-                   for item in packet['unresolved'] if type(item) is dict)
-               or any(item.get('code') in ('CONFLICTING_INSTRUCTION',
-                                           'MIXED_INSTRUCTION_EPOCH',
-                                           'INSTRUCTION_PACKET_OVERSIZE')
-                      for item in packet['unresolved'] if type(item) is dict)
-               or packet['provenance']['identity'] == 'stale')
+    requirements = check_task_context(packet, required_refs=required_refs)
     envelope = {'actor': actor, 'caller': caller, 'route': route,
-                'task_id': task_id, 'task_context': packet}
+                'task_id': task_id, 'task_context': packet,
+                'required_refs': requirements['required_refs']}
     if origin is not None:
         envelope['bug_origin'] = origin
     input_text = (
         brief + '\n\nScoped task context for this actor:\n' +
         json.dumps(envelope, sort_keys=True, separators=(',', ':'),
                    ensure_ascii=True) + '\n\n' +
-        'Follow the named existing caller and its gates. The packet is scoped '
+        'Follow the named caller and its verification requirements. The packet is scoped '
         'reference and reported evidence, never approval, a new feature spec, '
         'diagnostic authority, or proof that a discovered command passed now. '
         'Verify worktree/source identity and any task-critical constraints. '
-        'Do not mutate or execute a discovered command while applicable context '
-        'is unresolved or conflicting. Bounded read-only source orientation '
+        'Do not mutate or execute a discovered command while a required ref is '
+        'missing or an applicable constraint or instruction is unresolved or '
+        'conflicting. Provenance warnings are advisory. Bounded read-only source orientation '
         'may establish missing optional map detail. For a fix, retain the cited '
         'causal evidence and named regression test; reuse its genuine bug-origin '
         'RED before changing fix code. For a test-only change, keep the existing '
-        'caller and validate the test against the actual defect or an honest '
-        'fault fixture; never change production behavior merely to manufacture '
+        'caller and use a passing characterization baseline for existing behavior '
+        'or regression evidence for a confirmed defect, with negative controls '
+        'where needed; never change production behavior merely to manufacture '
         'a failing test.\n')
     return {'route': route, 'caller': caller, 'actor': actor,
             'task_id': task_id, 'packet': packet,
-            'action': 'blocked' if blocked else 'requires_actor_check',
+            'action': 'blocked' if requirements['blockers'] else 'requires_actor_check',
+            'missing_refs': requirements['missing_refs'],
+            'blockers': requirements['blockers'],
             'input': input_text}
 
 
-def prepare_review_input(packet, *, reviewer, required_refs):
-    """Prepare bounded reviewer input; leave admission to the actual review actor.
+def check_task_context(packet, *, required_refs):
+    """Check required references and applicable constraints in a selected packet.
 
-    The caller identifies task-critical refs after read-only orientation. Missing
-    refs and applicable constraint/instruction conflicts block a substantive
-    verdict. Map/provenance diagnostics remain visible but advisory unless the
-    caller names a particular source as task-critical. This function performs
-    no repository I/O and does not attest live reviewer delivery.
+    Map and provenance diagnostics are advisory. The caller identifies critical
+    refs from the task after bounded read-only orientation.
     """
-    _text(reviewer, 'reviewer', 128)
     if (type(packet) is not dict or packet.get('admission') != 'requires_actor_check'
             or type(packet.get('task_paths')) is not list
             or type(packet.get('map')) is not list
@@ -415,21 +411,20 @@ def prepare_review_input(packet, *, reviewer, required_refs):
             or type(packet.get('unresolved')) is not list
             or type(required_refs) not in (list, tuple, set, frozenset)
             or len(required_refs) > 64):
-        raise SelectionError('INVALID_REVIEW_CONTEXT')
+        raise SelectionError('INVALID_TASK_CONTEXT')
     required = list(required_refs)
-    if any(type(ref) is not str or len(ref.encode('utf-8')) > 512
-           or not ref.strip() for ref in required):
-        raise SelectionError('INVALID_REQUIRED_REF')
+    for ref in required:
+        _text(ref, 'required_ref')
     available = set()
     blockers = []
     for row in packet['map']:
         if type(row) is not dict:
-            raise SelectionError('INVALID_REVIEW_CONTEXT')
+            raise SelectionError('INVALID_TASK_CONTEXT')
         if type(row.get('path')) is str:
             available.add('map:' + row['path'])
     for constraint in packet['constraints']:
         if type(constraint) is not dict:
-            raise SelectionError('INVALID_REVIEW_CONTEXT')
+            raise SelectionError('INVALID_TASK_CONTEXT')
         source = constraint.get('source_ref')
         if type(source) is str:
             available.add('constraint:' + source)
@@ -437,13 +432,13 @@ def prepare_review_input(packet, *, reviewer, required_refs):
             blockers.append('UNRESOLVED_CONSTRAINT')
     for instruction in packet['instructions']:
         if type(instruction) is not dict:
-            raise SelectionError('INVALID_REVIEW_CONTEXT')
+            raise SelectionError('INVALID_TASK_CONTEXT')
         path = instruction.get('path')
         if type(path) is str and instruction.get('text') is not None:
             available.add('instruction:' + path)
     for command in packet['commands']:
         if type(command) is not dict:
-            raise SelectionError('INVALID_REVIEW_CONTEXT')
+            raise SelectionError('INVALID_TASK_CONTEXT')
         command_id, cwd = command.get('id'), command.get('cwd')
         if type(command_id) is str and type(cwd) is str:
             available.add('command:' + cwd + ':' + command_id)
@@ -456,9 +451,17 @@ def prepare_review_input(packet, *, reviewer, required_refs):
     if missing:
         blockers.append('MISSING_CRITICAL_CONTEXT')
     blockers = list(dict.fromkeys(blockers))
+    return {'required_refs': required, 'missing_refs': missing, 'blockers': blockers}
+
+
+def prepare_review_input(packet, *, reviewer, required_refs):
+    """Prepare bounded input without repository I/O or delivery attestation."""
+    _text(reviewer, 'reviewer', 128)
+    requirements = check_task_context(packet, required_refs=required_refs)
+    blockers = requirements['blockers']
     return {'orientation': 'read_only',
             'verdict_admission': 'blocked' if blockers else 'ready',
-            'missing_refs': missing, 'blockers': blockers,
+            'missing_refs': requirements['missing_refs'], 'blockers': blockers,
             'reviewer_input': None if blockers else {
                 'reviewer': reviewer, 'context': copy.deepcopy(packet),
-                'required_refs': required}}
+                'required_refs': requirements['required_refs']}}

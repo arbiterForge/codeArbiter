@@ -11,6 +11,11 @@ boundaries from `.codearbiter/` before writing, and dispatches `security-reviewe
 staging) whenever a change touches network policy, IAM, or a container security context. Dispatched by
 `subagent-driven-development` once the relevant planning phase has completed.
 
+Use the caller's selected verification approach: genuine target RED/GREEN for confirmed fixes,
+criterion-focused checks for features, and passing characterization baselines for refactors.
+Return observed commands, working directories, results and pending checks; stage only when
+assigned and authorized. Project security boundaries and required reviews remain effective.
+
 ## Why this model tier
 
 Ships `model: sonnet`. IaC idempotency, least-privilege IAM, and network-policy correctness are
