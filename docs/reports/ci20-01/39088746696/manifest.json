@@ -1,0 +1,12 @@
+{
+  "files": {
+    "ci-native-platform.yml.gz": "a1cf0ef1741afb3e3c513b600c45b1345d059baeaa267e52bab4e2e2a173f67d",
+    "ci.yml.gz": "dd4f3467d1db81df5dfa45df1cba2b7df342c9f407c99e77032a95264abaa912",
+    "jobs-pages.json.gz": "645921867f2655856de7e814300c293f9ad4b9d2e1203a031ef2484c1b4bf974",
+    "run.json.gz": "252e6c5d465bab521ba546c98a1e2f6e72451fe1ac27f3f87bfaac288ef1cf13"
+  },
+  "format": "codearbiter.ci-critical-path-inputs/1",
+  "head_sha": "16983f5017b39e35de2f90994e30fcd60730e82c",
+  "repository": "arbiterForge/codeArbiter",
+  "run_id": 39088746696
+}

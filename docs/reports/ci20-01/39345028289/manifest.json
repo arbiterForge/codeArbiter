@@ -1,0 +1,11 @@
+{
+  "files": {
+    "ci.yml.gz": "c273a197d49615b3121f9bf69fcf5215441e454d374538f4f31473fb2733cb82",
+    "jobs-pages.json.gz": "ef80fa71c1edc8f5cbb3161def3033305f24f4e5584073473593ff0eaa66cecf",
+    "run.json.gz": "603664a9ab7c9e3cea8bdc172be38bc1b159f1b573b585fed44908b0356b3be7"
+  },
+  "format": "codearbiter.ci-critical-path-inputs/1",
+  "head_sha": "849a3cf6fa6f4fdf3256cd3095c92499e9c4ec77",
+  "repository": "arbiterForge/codeArbiter",
+  "run_id": 39345028289
+}
