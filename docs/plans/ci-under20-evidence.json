@@ -1,0 +1,225 @@
+{
+  "date": "2026-10-19",
+  "repository": "arbiterForge/codeArbiter",
+  "pr": 993,
+  "inspected_pr_head": "16983f5017b39e35de2f90994e30fcd60730e82c",
+  "inspected_main": "0539563484b2b487be77a3370d2952acb579fd2c",
+  "repository_changes": false,
+  "evidence_type": "Read-only metadata analysis and unexecuted dependency simulations; not a performance implementation or hosted speedup claim",
+  "observations": [
+    {
+      "run_id": 39088746696,
+      "head": "16983f5017b39e35de2f90994e30fcd60730e82c",
+      "actual_seconds": 3583,
+      "jobs": 113,
+      "successful_jobs": 113,
+      "queue_free_replay_seconds": 1271,
+      "total_runner_seconds": 17282,
+      "macos_runner_seconds": 4619,
+      "macos_jobs": 22,
+      "observed_peak_jobs_in_this_run": 17
+    },
+    {
+      "run_id": 39069528962,
+      "actual_seconds": 1439,
+      "jobs": 125,
+      "successful_jobs": 125,
+      "queue_free_replay_seconds": 1264,
+      "total_runner_seconds": 19751,
+      "macos_runner_seconds": 5388,
+      "macos_jobs": 26,
+      "observed_peak_jobs_in_this_run": 20
+    },
+    {
+      "run_id": 39071349661,
+      "actual_seconds": 1724,
+      "jobs": 125,
+      "successful_jobs": 125,
+      "queue_free_replay_seconds": 1291,
+      "total_runner_seconds": 20704,
+      "macos_runner_seconds": 5886,
+      "macos_jobs": 26,
+      "observed_peak_jobs_in_this_run": 20
+    },
+    {
+      "run_id": 39310829347,
+      "head": "0539563484b2b487be77a3370d2952acb579fd2c",
+      "actual_seconds": 3376,
+      "jobs": 83,
+      "successful_jobs": 77,
+      "skipped_jobs": 6,
+      "queue_free_replay_seconds": 2803,
+      "total_runner_seconds": 23927,
+      "macos_runner_seconds": 6566,
+      "macos_jobs": 14,
+      "observed_peak_jobs_in_this_run": 20
+    }
+  ],
+  "actual_critical_path": {
+    "run_id": 39088746696,
+    "chain": [
+      {
+        "job_id": 117560735332,
+        "stage": "Impact selection",
+        "work_seconds": 10,
+        "ready_to_start_seconds": 72
+      },
+      {
+        "job_id": 117560982178,
+        "stage": "Intel macOS candidate",
+        "work_seconds": 310,
+        "ready_to_start_seconds": 654
+      },
+      {
+        "job_id": 117563917362,
+        "stage": "Intel macOS conformance",
+        "work_seconds": 453,
+        "ready_to_start_seconds": 1139
+      },
+      {
+        "job_id": 117568647048,
+        "stage": "Intel macOS platform join",
+        "work_seconds": 10,
+        "ready_to_start_seconds": 15
+      },
+      {
+        "job_id": 117568714907,
+        "stage": "ARM macOS final qualification",
+        "work_seconds": 65,
+        "ready_to_start_seconds": 596
+      },
+      {
+        "job_id": 117570602669,
+        "stage": "Package assembly",
+        "work_seconds": 51,
+        "ready_to_start_seconds": 2
+      },
+      {
+        "job_id": 117570759964,
+        "stage": "ARM macOS Codex cold package",
+        "work_seconds": 48,
+        "ready_to_start_seconds": 150
+      },
+      {
+        "job_id": 117571362253,
+        "stage": "Merge readiness",
+        "work_seconds": 4,
+        "ready_to_start_seconds": 3
+      }
+    ],
+    "work_seconds": 951,
+    "ready_to_start_seconds": 2631,
+    "gate_completed_seconds": 3582,
+    "workflow_settlement_seconds": 1
+  },
+  "method": {
+    "dependencies": "Parse the exact source-commit workflow and local reusable workflow. Expand all observed matrix and nested jobs and their actual needs dependencies. Check that starts do not precede prerequisite completion.",
+    "zero_queue": "Retain each observed started_at-to-completed_at job duration, including setup and cleanup. Set start to the maximum simulated predecessor completion. This is a counterfactual with unlimited immediately available capacity; duration changes under altered contention are not modeled.",
+    "actual_chain": "Walk backward from the actual final job, selecting the predecessor with latest actual completion. Ready-to-start delay includes scheduling and provisioning, not a claim that every second was caused by a configured concurrency limit.",
+    "resource_classification": "Sum actual job execution intervals. Classify macOS by job.labels beginning macos, not by platform names in job titles; platform-named Ubuntu joins are not counted as macOS.",
+    "pagination": "All pages of each job collection were read and row count checked against total_count."
+  },
+  "modeled_options": [
+    {
+      "name": "Current PR, zero queue",
+      "seconds": 1271,
+      "executed": false,
+      "work_chain_seconds": [
+        10,
+        506,
+        515,
+        5,
+        112,
+        51,
+        68,
+        4
+      ]
+    },
+    {
+      "name": "Early CI-only build and parallel independent verification",
+      "seconds": 1084,
+      "executed": false,
+      "assumed_early_build_seconds_range": [
+        90,
+        180
+      ],
+      "all_original_builder_duration_retained_as_required_independent_work": true,
+      "other_job_durations_unchanged": true,
+      "work_chain_seconds": [
+        10,
+        787,
+        52,
+        112,
+        51,
+        68,
+        4
+      ]
+    },
+    {
+      "name": "Early build plus lightweight qualification join",
+      "seconds": 987,
+      "executed": false,
+      "assumed_early_build_seconds": 120,
+      "assumed_final_qualification_seconds": 15,
+      "all_original_builder_duration_retained_as_required_independent_work": true,
+      "work_chain_seconds": [
+        10,
+        787,
+        52,
+        15,
+        51,
+        68,
+        4
+      ]
+    }
+  ],
+  "capacity_math": {
+    "input_workload_run_id": 39088746696,
+    "single_run_runner_minutes": 288.03333333333336,
+    "single_run_macos_minutes": 76.98333333333333,
+    "two_same_time_runs_with_20_total_slots_lower_bound_minutes": 28.803333333333335,
+    "two_same_time_runs_with_5_macos_slots_lower_bound_minutes": 30.793333333333333,
+    "two_runs_in_20_minutes_required_average_total_slots": 28.803333333333335,
+    "two_runs_in_20_minutes_required_average_macos_slots": 7.698333333333333,
+    "actual_organization_limits_verified": false,
+    "recommended_capacity_request": {
+      "total": 60,
+      "macos": 15,
+      "approved": false
+    }
+  },
+  "current_main_hotspot": {
+    "run_id": 39310829347,
+    "windows_amd64_instrumented_operations_package_seconds": 494.584,
+    "windows_arm64_instrumented_operations_package_seconds": 454.268,
+    "artifact_sha256": {
+      "windows_amd64": "4f69d4005d6ff74f880223fe43025a393fd5c5dac7737ed9d0db335b22ba6510",
+      "windows_arm64": "49c89a9c266e428be20db9ea121f05c0fc2ae0641448b871661472700797b05d"
+    },
+    "verification": "Downloaded statement artifacts were SHA-256 checked against GitHub metadata; package durations came from unit.log. No new test execution was performed."
+  },
+  "boundaries": [
+    "These are summaries of complete retrieved metadata, not raw full job API dumps.",
+    "No repository, PR, workflow run, account setting, release, or Project Source was changed.",
+    "The actual organization concurrency allowance was not established from a peak count or public documentation.",
+    "Build-only test artifacts must not claim native_tested or published qualification; ordinary installed-candidate rejection remains intact.",
+    "The modeled early-admission and lightweight-qualification contracts require implementation and negative testing; the proposed timings are not demonstrated.",
+    "Current-main additions must be reconciled and remeasured; historical PR timings do not qualify current-main behavior.",
+    "A failed, cancelled, partial, warm-only, queued-before-measurement or reduced-coverage run does not count as target achievement."
+  ],
+  "source_references": [
+    "arbiterForge/codeArbiter@16983f5017b39e35de2f90994e30fcd60730e82c:.github/workflows/ci.yml",
+    "arbiterForge/codeArbiter@16983f5017b39e35de2f90994e30fcd60730e82c:.github/workflows/ci-native-platform.yml",
+    "arbiterForge/codeArbiter@16983f5017b39e35de2f90994e30fcd60730e82c:.github/scripts/artifact_ci.py",
+    "arbiterForge/codeArbiter@0539563484b2b487be77a3370d2952acb579fd2c:tools/build-artifacts.py",
+    "arbiterForge/codeArbiter@0539563484b2b487be77a3370d2952acb579fd2c:.github/scripts/test_suite_hermeticity.py",
+    "arbiterForge/codeArbiter@0539563484b2b487be77a3370d2952acb579fd2c:core/pysrc/_artifactlib.py"
+  ],
+  "public_reference_urls": [
+    "https://docs.github.com/en/actions/reference/limits",
+    "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+    "https://docs.github.com/en/actions/concepts/runners/larger-runners",
+    "https://go.dev/doc/build-cover",
+    "https://pkg.go.dev/cmd/go"
+  ]
+}
