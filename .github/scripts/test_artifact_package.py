@@ -118,6 +118,19 @@ class PackageTests(unittest.TestCase):
                 + b"\nimport ctypes\nctypes.WinDLL('kernel32').CreateProcessW\n",
                 "unreviewed kernel32 procedure",
             ),
+            (
+                bridge
+                + b"\nimport ctypes\nctypes.WinDLL('kernel32').GetProcAddress\n",
+                "unreviewed kernel32 procedure",
+            ),
+            (
+                bridge + b"\nimport ctypes\nlibrary = ctypes.WinDLL('kernel32')\n",
+                "unconstrained native-library handle",
+            ),
+            (
+                bridge + b"\nimport ctypes\nctypes.memmove(0, 0, 1)\n",
+                "unreviewed native-library access",
+            ),
             (bridge + b"\neval('1 + 1')\n", "dynamic code/import escape"),
         )
         for candidate, diagnostic in cases:

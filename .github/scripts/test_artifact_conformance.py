@@ -62,6 +62,13 @@ EXPECTED_SUITES = {
         "test_unanswered_windows_architecture_fails_closed",
         "test_fresh_checkout_identity_through_client",
         "test_protocol_documents_init_store",
+        "test_windows_empty_machine_uses_native_architecture",
+        "test_windows_empty_machine_preserves_payload_integrity_checks",
+        "test_windows_selects_native_not_emulated_architecture",
+        "test_windows_native_query_failure_or_unsupported_cpu_refuses",
+        "test_windows_native_api_unavailable_refuses",
+        "test_unix_platform_aliases_do_not_probe_windows",
+        "test_unknown_platform_or_unix_architecture_never_probes_windows",
     },
     "test_artifact_authoring.py": {
         "test_installed_intent_cli_accepts_native_empty_diagnostics",
@@ -486,6 +493,11 @@ class ArtifactConformanceTest(unittest.TestCase):
                 for name, status in matches:
                     if name == "test_unix_parent_swap_after_validation_cannot_redirect_creation" and platform.system() == "Windows":
                         self.assertTrue(status.startswith("skipped "), (name, status))
+                    elif name in {
+                            "test_windows_empty_machine_uses_native_architecture",
+                            "test_windows_empty_machine_preserves_payload_integrity_checks",
+                    } and platform.system() != "Windows":
+                        self.assertEqual(status, "skipped 'requires the real Windows architecture API'", (name, status))
                     else:
                         self.assertEqual(status, "ok", (name, status))
                 self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
