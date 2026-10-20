@@ -171,6 +171,26 @@ func ValidateWith(s any, v any) []fault.Error {
 	validate(s, v, "", 0, &out)
 	return out
 }
+
+// listing joins allowed values for a diagnostic, kept well inside the 512-byte
+// public message limit.
+func listing(values []string) string {
+	const limit = 400
+	var b strings.Builder
+	for i, v := range values {
+		sep := ""
+		if i > 0 {
+			sep = ", "
+		}
+		if b.Len()+len(sep)+len(v) > limit {
+			fmt.Fprintf(&b, "%s… (%d more)", sep, len(values)-i)
+			break
+		}
+		b.WriteString(sep + v)
+	}
+	return b.String()
+}
+
 func add(out *[]fault.Error, path, msg string) {
 	if len(*out) < 128 {
 		*out = append(*out, fault.Error{Code: "INVALID_MODEL", Field: path, Message: msg})
@@ -262,7 +282,13 @@ func validateWithPatterns(s, v any, path string, depth int, out *[]fault.Error, 
 			}
 		}
 		if !valid {
-			add(out, path, "value outside closed enumeration")
+			allowed := make([]string, 0, len(es))
+			for _, e := range es {
+				if b, err := canonical.Marshal(e); err == nil {
+					allowed = append(allowed, string(b))
+				}
+			}
+			add(out, path, "value outside closed enumeration; allowed: "+listing(allowed))
 		}
 	}
 	for _, key := range []string{"oneOf", "anyOf", "allOf"} {
@@ -299,7 +325,13 @@ func validateWithPatterns(s, v any, path string, depth int, out *[]fault.Error, 
 			if sub, ok := props[k]; ok {
 				validateWithPatterns(sub, value, p, depth+1, out, patterns)
 			} else if sub, ok := m["additionalProperties"]; ok {
-				validateWithPatterns(sub, value, p, depth+1, out, patterns)
+				if sub == false && len(props) > 0 {
+					// Name the fields this record does accept, so a caller can
+					// correct the key without reading the schema files.
+					add(out, p, "additional value not permitted; allowed fields: "+listing(canonical.Keys(props)))
+				} else {
+					validateWithPatterns(sub, value, p, depth+1, out, patterns)
+				}
 			}
 		}
 	case []any:

@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.2.6] - 2026-10-19
+
+### Fixed
+
+- Engine model-validation errors now name what the schema accepts. A closed-enum refusal lists the allowed values (for example, applicability `mode` accepts `"conditional"`, `"unconditional"`, `"invariant"` and `"not_applicable"`), and an unknown key lists the record's allowed fields. Before, both said only that the value was refused, so the accepted spelling had to be found in the schema files. The list stays within the 512-byte public diagnostic limit.
+
 ## [3.2.5] - 2026-10-19
 
 ### Fixed
