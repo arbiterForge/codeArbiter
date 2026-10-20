@@ -12,11 +12,33 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.2.6] - 2026-10-19
+
+### Fixed
+
+- Engine model-validation errors now name what the schema accepts. A closed-enum refusal lists the allowed values (for example, applicability `mode` accepts `"conditional"`, `"unconditional"`, `"invariant"` and `"not_applicable"`), and an unknown key lists the record's allowed fields. Before, both said only that the value was refused, so the accepted spelling had to be found in the schema files. The list stays within the 512-byte public diagnostic limit.
+
+## [3.2.5] - 2026-10-19
+
+### Fixed
+
+- The H-05 (audit logs), H-11 (ADRs) and H-18 (`CONTEXT.md`) shell guards blocked any interpreter command that merely named a protected path, so a read-only `python -c` read, an issue body citing the path, or an `ArtifactClient` request whose record text named an audit log was refused as a write. Their interpreter legs now block only when the command shows write intent after the interpreter (a write, delete, copy, move or in-place edit call, a non-read `open` mode, PowerShell content cmdlets, or dynamic execution such as `exec`, `eval` or `subprocess`), or when the interpreter is handed a script or module argument. H-18 also lets a `sed` without `-i` or a `w` command read `CONTEXT.md` (#997, #911).
+
 ## [3.2.4] - 2026-10-19
 
 ### Fixed
 
-- ArtifactClient now queries the native Windows host architecture when Python returns empty architecture metadata, allowing supported hosts to read artifacts while retaining package integrity and native qualification checks (#986).
+- On Windows the artifact bridge read its binary's architecture through `platform.machine()`, which asks WMI and then the `PROCESSOR_*` environment variables. A read-only sandbox can block WMI and strip that environment, so reads failed with `UNSUPPORTED_PLATFORM: unsupported architecture`. The bridge now asks the kernel (`IsWow64Process2`) for the native machine, consults no environment, and still fails closed when the OS gives no answer (#986).
+
+## [3.2.3] - 2026-10-19
+
+### Fixed
+
+- Evidence snapshots open each bound farm projection once, from the walk's own read, and no longer list directories ahead of the walk when farm bindings exist. A stale binding no longer opens its projection twice (#962).
+- A snapshot re-checks a cached directory anchor against its parent's current entry each time it reuses it, and caps the anchor cache at 512 handles so a very wide root policy fails with `MAX_INPUTS` instead of exhausting file descriptors (#962).
+- On macOS the store opens files and directories non-blocking, so a FIFO planted in place of a listed file is refused instead of hanging the scan (#962).
+- Git membership probes drop environment-injected Git configuration (`GIT_CONFIG_PARAMETERS`, `GIT_CONFIG` and `GIT_CONFIG_KEY_n`/`VALUE_n` pairs) except the bridge's resolved `core.excludesFile` (#962).
+- A root below the top level of an enclosing Git work tree, such as a monorepo package, now uses that work tree's membership scoped to the root instead of reading every file from disk. Ignored files there no longer count as inputs, so existing receipts for such roots go stale once. A root the enclosing work tree ignores fails closed (#962).
 
 ## [3.2.2] - 2026-10-18
 

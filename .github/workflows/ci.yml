@@ -420,6 +420,9 @@ jobs:
               - 'plugins/ca/includes/artifacts.md'
               - 'plugins/ca-codex/includes/artifacts.md'
               - 'plugins/ca-pi/includes/artifacts.md'
+              - 'plugins/ca/includes/artifacts-attestation.md'
+              - 'plugins/ca-codex/includes/artifacts-attestation.md'
+              - 'plugins/ca-pi/includes/artifacts-attestation.md'
               - 'docs/artifacts/**'
               # A historical proof correction still produces an exact-head
               # package cohort for normal automatic-release eligibility.
@@ -3236,6 +3239,24 @@ jobs:
               --verbose \
               --exit-code 1
 
+  control-bytes:
+    name: "[CHECK] | [REPO] | Control bytes"
+    # A file-writing tool can turn an escape such as `\b` or `\x01` inside a
+    # string literal into the raw byte. The file still parses, so tests and
+    # review miss it: a regex holding a literal backspace silently matches
+    # nothing (#995, #996). Repo-wide and always-on, like license-consistency:
+    # any tracked text file can carry one.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - name: Test the control-byte check
+        run: python3 .github/scripts/test_control_bytes.py
+      - name: Reject control bytes in tracked text files
+        run: python3 .github/scripts/check_control_bytes.py .
+
   documentation-contract:
     name: "[CHECK] | [REPO] | Documentation contract"
     # Repository documentation is a cross-cutting public interface: validate
@@ -3404,11 +3425,12 @@ jobs:
       - surface
       - prose-codex
       - secret-scan
+      - control-bytes
     runs-on: ubuntu-latest
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
           artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"
           artifact_coverage_result="${{ needs['artifact-coverage'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"

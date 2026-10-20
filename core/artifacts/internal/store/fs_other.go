@@ -51,4 +51,5 @@ func (d *Dir) OpenSub(os.DirEntry) (*Dir, error) { return nil, unsupported() }
 func (d *Dir) ReadEntry(os.DirEntry, int64) ([]byte, os.FileInfo, error) {
 	return nil, nil, unsupported()
 }
-func (d *Dir) Has(string) (bool, error) { return false, unsupported() }
+func (d *Dir) Has(string) (bool, error)   { return false, unsupported() }
+func (d *Dir) Current(string, *Dir) error { return unsupported() }

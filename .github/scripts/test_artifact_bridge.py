@@ -93,22 +93,22 @@ class EngineTimeoutTests(unittest.TestCase):
 class PlatformSelectionTests(unittest.TestCase):
     def kernel(self, native, emulated=0, success=True):
         kernel = mock.Mock()
-        kernel.GetCurrentProcess.return_value = -1
 
         def query(handle, process_machine, native_machine):
-            self.assertEqual(handle, -1)
-            process_machine._obj.value = emulated
-            native_machine._obj.value = native
+            import ctypes
+            self.assertEqual(handle.value, ctypes.c_void_p(-1).value)
+            process_machine[0] = emulated
+            native_machine[0] = native
             return success
 
         kernel.IsWow64Process2.side_effect = query
         return kernel
 
-    def test_windows_empty_machine_selects_native_not_emulated_architecture(self):
+    def test_windows_selects_native_not_emulated_architecture(self):
         for native, emulated, expected in ((0x8664, 0x014C, "amd64"), (0xAA64, 0x8664, "arm64")):
             with self.subTest(native=native), \
                     mock.patch("_artifactlib.platform.system", return_value="Windows"), \
-                    mock.patch("_artifactlib.platform.machine", return_value=""), \
+                    mock.patch("_artifactlib.platform.machine", side_effect=AssertionError("Windows must query the kernel")), \
                     mock.patch("ctypes.WinDLL", return_value=self.kernel(native, emulated), create=True):
                 self.assertEqual(ArtifactClient._binary_name(), f"ca-artifact-windows-{expected}.exe")
 
@@ -116,7 +116,7 @@ class PlatformSelectionTests(unittest.TestCase):
         for native, success in ((0x8664, False), (0, True), (0x014C, True), (0xFFFF, True)):
             with self.subTest(native=native, success=success), \
                     mock.patch("_artifactlib.platform.system", return_value="Windows"), \
-                    mock.patch("_artifactlib.platform.machine", return_value=""), \
+                    mock.patch("_artifactlib.platform.machine", return_value="AMD64"), \
                     mock.patch.dict(os.environ, {"PROCESSOR_ARCHITECTURE": "AMD64"}), \
                     mock.patch("ctypes.WinDLL", return_value=self.kernel(native, success=success), create=True):
                 with self.assertRaises(ArtifactError) as raised:
@@ -124,7 +124,7 @@ class PlatformSelectionTests(unittest.TestCase):
                 self.assertEqual(raised.exception.code, "UNSUPPORTED_PLATFORM")
 
     def test_windows_native_api_unavailable_refuses(self):
-        for failure in (OSError("loader unavailable"), AttributeError("API unavailable")):
+        for failure in (ImportError("ctypes unavailable"), OSError("loader unavailable"), AttributeError("API unavailable")):
             with self.subTest(failure=type(failure).__name__), \
                     mock.patch("_artifactlib.platform.system", return_value="Windows"), \
                     mock.patch("_artifactlib.platform.machine", return_value=""), \
@@ -133,18 +133,18 @@ class PlatformSelectionTests(unittest.TestCase):
                     ArtifactClient._binary_name()
                 self.assertEqual(raised.exception.code, "UNSUPPORTED_PLATFORM")
 
-    def test_existing_platform_aliases_do_not_probe_windows(self):
-        for system, prefix, suffix in (("Linux", "linux", ""), ("Darwin", "darwin", ""), ("Windows", "windows", ".exe")):
+    def test_unix_platform_aliases_do_not_probe_windows(self):
+        for system, prefix in (("Linux", "linux"), ("Darwin", "darwin")):
             for machine, arch in (("x86_64", "amd64"), ("AMD64", "amd64"), ("aarch64", "arm64"), ("ARM64", "arm64")):
                 with self.subTest(system=system, machine=machine), \
                         mock.patch("_artifactlib.platform.system", return_value=system), \
                         mock.patch("_artifactlib.platform.machine", return_value=machine), \
                         mock.patch("ctypes.WinDLL", create=True) as loader:
-                    self.assertEqual(ArtifactClient._binary_name(), f"ca-artifact-{prefix}-{arch}{suffix}")
+                    self.assertEqual(ArtifactClient._binary_name(), f"ca-artifact-{prefix}-{arch}")
                     loader.assert_not_called()
 
-    def test_unknown_platform_or_nonempty_architecture_never_falls_back(self):
-        for system, machine in (("Linux", ""), ("Darwin", ""), ("Other", "AMD64"), ("Windows", "mips")):
+    def test_unknown_platform_or_unix_architecture_never_probes_windows(self):
+        for system, machine in (("Linux", ""), ("Darwin", ""), ("Linux", "mips"), ("Darwin", "mips"), ("Other", "AMD64")):
             with self.subTest(system=system, machine=machine), \
                     mock.patch("_artifactlib.platform.system", return_value=system), \
                     mock.patch("_artifactlib.platform.machine", return_value=machine), \
@@ -438,6 +438,31 @@ class BridgeTests(unittest.TestCase):
         self.assertEqual(executable.read_bytes(), b"verified executable bytes")
         if os.name != "nt":
             self.assertTrue(executable.stat().st_mode & stat.S_IXUSR)
+
+class HostArchitectureTests(unittest.TestCase):
+    """#986: the binary's architecture comes from the OS, never ambient state."""
+
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
+        self.root=physical_test_directory(self.tmp.name)/"repo";self.root.mkdir()
+
+    def test_windows_read_works_without_wmi_or_processor_environment(self):
+        # A read-only Windows sandbox can block WMI and strip PROCESSOR_*, and
+        # platform.machine() then answers "". The bridge must still select the
+        # native binary. Elsewhere platform.machine() reads uname, which no
+        # environment reaches, so the same stripped read must work unchanged.
+        stripped={k:v for k,v in os.environ.items() if not k.upper().startswith("PROCESSOR_")}
+        blind=mock.patch("platform.machine",return_value="") if platform.system()=="Windows" else mock.patch.dict(os.environ,{})
+        with mock.patch.dict(os.environ,stripped,clear=True), blind:
+            caps=ArtifactClient(self.root,INSTALLATION).call("capabilities")
+        self.assertEqual(caps["public_registrations_added"],0)
+
+    def test_unanswered_windows_architecture_fails_closed(self):
+        with mock.patch("platform.system",return_value="Windows"),                 mock.patch("_artifactlib._windows_native_architecture",return_value=None),                 mock.patch("platform.machine",return_value="AMD64"):
+            with self.assertRaises(ArtifactError) as got:
+                ArtifactClient(self.root,INSTALLATION).call("capabilities")
+        self.assertEqual(got.exception.code,"UNSUPPORTED_PLATFORM")
+
 
 class StoreInitTests(unittest.TestCase):
     """A fresh checkout has no local store; the bridge initializes it once, explicitly."""

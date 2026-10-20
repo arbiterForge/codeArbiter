@@ -42,23 +42,61 @@ func inputReadError(rel string, err error) error {
 	return err
 }
 
+// internalOutputs returns every engine-generated output path, including each
+// farm projection whose current bytes match a binding's base hash.
 func internalOutputs(f *store.FS) (map[string]bool, error) {
-	anch := newAnchors(f)
-	defer anch.Close()
-	return internalOutputsWith(f, anch)
-}
-
-func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
-	out, e := f.Infrastructure()
+	out, projections, e := internalOutputsWith(f)
 	if e != nil {
 		return nil, e
+	}
+	for projection, bases := range projections {
+		b, e := f.Read(projection, canonical.MaxBytes)
+		if e == nil && bases[farmProjectionBase(b)] {
+			out[projection] = true
+		}
+	}
+	return out, nil
+}
+
+// farmProjectionBase hashes a plan projection with its host-specific meta fields
+// removed, the base a farm binding records. It is empty when b is not a
+// canonical object.
+func farmProjectionBase(b []byte) string {
+	v, e := canonical.Object(b)
+	if e != nil {
+		return ""
+	}
+	base, e := canonical.Clone(v)
+	if e != nil {
+		return ""
+	}
+	meta := model.M(base["meta"])
+	delete(meta, "model")
+	delete(meta, "apiBaseUrl")
+	baseBytes, e := canonical.Marshal(base)
+	if e != nil {
+		return ""
+	}
+	return canonical.BytesHash(baseBytes)
+}
+
+// internalOutputsWith validates the reserved output root and returns its output
+// paths. Farm projections are not read here: it returns each bound projection
+// path with the base hashes its bindings accept, and the caller decides when it
+// reads the projection. A snapshot decides while its walk reads the file anyway,
+// so a projection is opened once and no directory is listed ahead of the walk.
+func internalOutputsWith(f *store.FS) (map[string]bool, map[string]map[string]bool, error) {
+	projections := map[string]map[string]bool{}
+	out, e := f.Infrastructure()
+	if e != nil {
+		return nil, nil, e
 	}
 	dirs, e := f.List(authority.Root)
 	if os.IsNotExist(e) {
-		return out, nil
+		return out, projections, nil
 	}
 	if e != nil {
-		return nil, e
+		return nil, nil, e
 	}
 	// Two phases (ADR-0042 AC-08): every reserved output directory is read once
 	// into this reference-to-bytes index, then each receipt chain is validated from
@@ -91,19 +129,19 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 				// already rejected links/reparse points.
 				info, e := f.Stat(authority.Root + "/store.lock")
 				if e != nil || !info.Mode().IsRegular() || info.Size() != 0 {
-					return nil, fault.New("INVALID_OUTPUT", "invalid native cooperative lock file")
+					return nil, nil, fault.New("INVALID_OUTPUT", "invalid native cooperative lock file")
 				}
 				out[authority.Root+"/store.lock"] = true
 				continue
 			}
-			return nil, fault.New("UNRECOGNIZED_OUTPUT", "file in reserved artifact output root")
+			return nil, nil, fault.New("UNRECOGNIZED_OUTPUT", "file in reserved artifact output root")
 		}
 		switch d.Name() {
 		case "transactions", "history":
 			continue
 		case "authority-sources", "events", "receipts", "context-tokens", "evidence-contexts", "observations", "farm-bindings", "farm-seals", "farm-markers":
 		default:
-			return nil, fault.New("UNRECOGNIZED_OUTPUT", "unrecognized reserved output directory")
+			return nil, nil, fault.New("UNRECOGNIZED_OUTPUT", "unrecognized reserved output directory")
 		}
 		ordered = append(ordered, d)
 	}
@@ -114,30 +152,30 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 		// among the entries is an error.
 		sub, e := f.OpenDir(authority.Root + "/" + d.Name())
 		if e != nil {
-			return nil, e
+			return nil, nil, e
 		}
 		defer sub.Close()
 		entries, e := sub.Entries()
 		if e != nil {
-			return nil, e
+			return nil, nil, e
 		}
 		for _, entry := range entries {
 			if entry.Type()&os.ModeSymlink != 0 {
-				return nil, fault.New("UNSAFE_PATH", "symlink or reparse point encountered in scanned directory")
+				return nil, nil, fault.New("UNSAFE_PATH", "symlink or reparse point encountered in scanned directory")
 			}
 		}
 		for _, entry := range entries {
 			p := authority.Root + "/" + d.Name() + "/" + entry.Name()
 			if entry.IsDir() {
-				return nil, fault.New("UNRECOGNIZED_OUTPUT", "nested reserved output directory")
+				return nil, nil, fault.New("UNRECOGNIZED_OUTPUT", "nested reserved output directory")
 			}
 			b, _, e := sub.ReadEntry(entry, canonical.MaxBytes)
 			if e != nil {
-				return nil, e
+				return nil, nil, e
 			}
 			h := strings.TrimSuffix(entry.Name(), ".json")
 			if !strings.HasSuffix(entry.Name(), ".json") || canonical.BytesHash(b) != h {
-				return nil, fault.New("INVALID_OUTPUT", "generated output filename does not match its bytes")
+				return nil, nil, fault.New("INVALID_OUTPUT", "generated output filename does not match its bytes")
 			}
 			referenced := false
 			switch d.Name() {
@@ -149,7 +187,7 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 				if referenced {
 					retained += len(b)
 					if retained > MaxInputTotal {
-						return nil, fault.At("MAX_BYTES", "", "verification_inputs", "reserved receipt chain evidence exceeds the retained-byte limit")
+						return nil, nil, fault.At("MAX_BYTES", "", "verification_inputs", "reserved receipt chain evidence exceeds the retained-byte limit")
 					}
 					index[p] = b
 					if d.Name() != "receipts" {
@@ -171,7 +209,7 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 			} else if d.Name() == "events" || d.Name() == "authority-sources" {
 				v, e := canonical.Object(b)
 				if e != nil {
-					return nil, e
+					return nil, nil, e
 				}
 				if referenced {
 					if d.Name() == "events" && model.S(v["format"]) == "codearbiter.workflow-event/0.2.0" {
@@ -183,19 +221,19 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 					// marker a chain check honors.
 					memo.Count(d.Name(), h)
 					if es := schema.ValidateWith(authority.EventSchema(), v); len(es) > 0 {
-						return nil, &es[0]
+						return nil, nil, &es[0]
 					}
 					memo.Mark(d.Name()+":schema", h)
 				}
 			} else if d.Name() == "context-tokens" {
 				v, e := canonical.Object(b)
 				if e != nil || model.S(v["format"]) != "codearbiter.context-token/0.1.0" {
-					return nil, fault.New("INVALID_OUTPUT", "invalid generated context receipt")
+					return nil, nil, fault.New("INVALID_OUTPUT", "invalid generated context receipt")
 				}
 			} else if d.Name() == "evidence-contexts" || d.Name() == "observations" {
 				v, e := canonical.Object(b)
 				if e != nil {
-					return nil, fault.New("INVALID_OUTPUT", "invalid generated evidence object")
+					return nil, nil, fault.New("INVALID_OUTPUT", "invalid generated evidence object")
 				}
 				contract := observation.ContextSchema()
 				if d.Name() == "observations" {
@@ -208,7 +246,7 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 				} else if _, done := memo.Held(d.Name(), h); !done {
 					memo.Count(d.Name(), h)
 					if es := schema.ValidateWith(contract, v); len(es) > 0 {
-						return nil, &es[0]
+						return nil, nil, &es[0]
 					}
 					memo.Mark(d.Name(), h)
 				}
@@ -221,35 +259,23 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 					expected = "codearbiter.farm-marker/0.1.0"
 				}
 				if e != nil || model.S(v["format"]) != expected {
-					return nil, fault.New("INVALID_OUTPUT", "invalid generated farm receipt")
+					return nil, nil, fault.New("INVALID_OUTPUT", "invalid generated farm receipt")
 				}
 				if d.Name() == "farm-markers" {
 					projection := model.S(v["projection_path"])
 					if len(v) != 2 || !validate.Path(projection, false) || !strings.HasPrefix(projection, ".codearbiter/plans/") || !strings.HasSuffix(projection, ".plan.json") || strings.Count(projection, "/") != 2 {
-						return nil, fault.New("INVALID_OUTPUT", "farm marker names an unsafe projection")
+						return nil, nil, fault.New("INVALID_OUTPUT", "farm marker names an unsafe projection")
 					}
 				}
 				if d.Name() == "farm-bindings" {
 					projection := model.S(v["projection_path"])
 					if !validate.Path(projection, false) || !strings.HasPrefix(projection, ".codearbiter/plans/") || !strings.HasSuffix(projection, ".plan.json") {
-						return nil, fault.New("INVALID_OUTPUT", "farm binding names an unsafe projection")
+						return nil, nil, fault.New("INVALID_OUTPUT", "farm binding names an unsafe projection")
 					}
-					projectionBytes, readErr := anch.read(projection, canonical.MaxBytes)
-					if readErr == nil {
-						projectionValue, parseErr := canonical.Object(projectionBytes)
-						if parseErr == nil {
-							base, cloneErr := canonical.Clone(projectionValue)
-							if cloneErr == nil {
-								meta := model.M(base["meta"])
-								delete(meta, "model")
-								delete(meta, "apiBaseUrl")
-								baseBytes, marshalErr := canonical.Marshal(base)
-								if marshalErr == nil && canonical.BytesHash(baseBytes) == model.S(v["base_sha256"]) {
-									out[projection] = true
-								}
-							}
-						}
+					if projections[projection] == nil {
+						projections[projection] = map[string]bool{}
 					}
+					projections[projection][model.S(v["base_sha256"])] = true
 				}
 			}
 			out[p] = true
@@ -264,7 +290,7 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 	}
 	for _, p := range receipts {
 		if _, e := authority.InspectMemo(memo, p, index[p], lookup); e != nil {
-			return nil, e
+			return nil, nil, e
 		}
 	}
 	// A retained object that no chain check reached (an observation behind a
@@ -284,7 +310,7 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 		}
 		v, e := canonical.Object(index[p])
 		if e != nil {
-			return nil, fault.New("INVALID_OUTPUT", "invalid generated evidence object")
+			return nil, nil, fault.New("INVALID_OUTPUT", "invalid generated evidence object")
 		}
 		contract := observation.ContextSchema()
 		switch dir {
@@ -295,11 +321,11 @@ func internalOutputsWith(f *store.FS, anch *anchors) (map[string]bool, error) {
 		}
 		memo.Count(dir, h)
 		if es := schema.ValidateWith(contract, v); len(es) > 0 {
-			return nil, &es[0]
+			return nil, nil, &es[0]
 		}
 		memo.Mark(marker, h)
 	}
-	return out, nil
+	return out, projections, nil
 }
 
 // outputRank orders reserved output directories so that each is read after the
@@ -340,19 +366,25 @@ type shipSet struct {
 var lstatDotGit = os.Lstat
 
 // shipSetMembers returns the git-defined ship set for a git work tree: index
-// entries present on disk plus untracked, non-ignored files. It returns nil
-// for roots that are not git work trees, which keep the filesystem walk. All
-// argv is fixed by completionGitText probes.
+// entries present on disk plus untracked, non-ignored files. A root below the
+// top level of an enclosing work tree (a monorepo package, say) uses that work
+// tree's membership scoped to the root: Git run from a subdirectory lists only
+// the paths beneath it, relative to it. It returns nil only for roots with no
+// work tree at all, which keep the filesystem walk. All argv is fixed by
+// completionGitText probes.
 func shipSetMembers(f *store.FS) (*shipSet, error) {
+	nested := false
 	if _, statErr := lstatDotGit(filepath.Join(f.Root, ".git")); statErr != nil {
-		if os.IsNotExist(statErr) {
-			return nil, nil
+		if !os.IsNotExist(statErr) {
+			// A .git that cannot be inspected is not proof there is no repository.
+			return nil, fault.New("WORKSPACE_DRIFT", "root .git cannot be inspected")
 		}
-		// A .git that cannot be inspected is not proof there is no repository.
-		return nil, fault.New("WORKSPACE_DRIFT", "root .git cannot be inspected")
+		enclosed, err := enclosingWorkTree(f.Root)
+		if err != nil || !enclosed {
+			return nil, err
+		}
+		nested = true
 	}
-	// A present but fake or empty .git makes git search upward and answer for an
-	// enclosing repository; the resolved top-level must be this root itself.
 	realRoot, err := filepath.EvalSymlinks(f.Root)
 	if err != nil {
 		return nil, fault.New("WORKSPACE_DRIFT", "input root cannot be resolved")
@@ -361,7 +393,22 @@ func shipSetMembers(f *store.FS) (*shipSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !completionSamePath(top, realRoot) {
+	if nested {
+		if !completionStrictlyWithin(top, realRoot) {
+			return nil, fault.New("WORKSPACE_DRIFT", "Git top-level does not contain the input root")
+		}
+		// An ignored root has no ship set at all, which would leave every
+		// file uncounted; that is not a membership the evidence can rest on.
+		ignored, err := completionGitText(f.Root, completionGitRootIgnored)
+		if err != nil {
+			return nil, err
+		}
+		if ignored != "" {
+			return nil, fault.New("WORKSPACE_DRIFT", "the input root is ignored by its enclosing Git work tree; stop ignoring it there or run git init in the root")
+		}
+	} else if !completionSamePath(top, realRoot) {
+		// A present but fake or empty .git makes git search upward and answer
+		// for an enclosing repository; the resolved top-level must be this root.
 		return nil, fault.New("WORKSPACE_DRIFT", "Git top-level is not the input root")
 	}
 	index, err := completionGitText(f.Root, completionGitIndex)
@@ -452,6 +499,35 @@ func shipSetMembers(f *store.FS) (*shipSet, error) {
 		add(p)
 	}
 	return set, nil
+}
+
+// enclosingWorkTree reports whether any ancestor of root holds a .git entry, so
+// root lies inside a work tree it does not itself top. An ancestor that cannot be
+// inspected fails closed rather than reading as no repository.
+func enclosingWorkTree(root string) (bool, error) {
+	real, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return false, fault.New("WORKSPACE_DRIFT", "input root cannot be resolved")
+	}
+	for dir := filepath.Dir(real); ; dir = filepath.Dir(dir) {
+		if _, err := lstatDotGit(filepath.Join(dir, ".git")); err == nil {
+			return true, nil
+		} else if !os.IsNotExist(err) {
+			return false, fault.New("WORKSPACE_DRIFT", "an enclosing .git cannot be inspected")
+		}
+		if filepath.Dir(dir) == dir {
+			return false, nil
+		}
+	}
+}
+
+// completionStrictlyWithin reports whether inner lies strictly below outer.
+func completionStrictlyWithin(outer, inner string) bool {
+	if runtime.GOOS == "windows" {
+		outer, inner = strings.ToLower(outer), strings.ToLower(inner)
+	}
+	rel, err := filepath.Rel(filepath.Clean(outer), filepath.Clean(inner))
+	return err == nil && rel != "." && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel)
 }
 
 // gitlinkCommit returns the commit identifying a submodule or embedded repo at
@@ -549,14 +625,30 @@ type anchor struct {
 }
 
 // anchors memoizes, for the duration of ONE scan, the directories that more than
-// one consumer of that scan reaches: the ancestors of explicit roots, the
-// directory holding farm-binding projections and the normative artifact
-// directories. Each is anchored once and listed once; later consumers reuse the
+// one consumer of that scan reaches: the ancestors of explicit roots and the
+// normative artifact directories. Each is anchored once and listed once; later consumers reuse the
 // anchor and the listing. It is created per scan and closed with it, never shared
 // across scans or operations.
+//
+// The cache is capped at maxAnchors handles: plan roots are unbounded in number,
+// and an uncapped cache could exhaust file descriptors on a very wide policy.
+// A reused anchor is re-checked against its parent's current entry, so the cache
+// saves the open and the listing but never the identity check.
 type anchors struct {
 	f *store.FS
 	m map[string]*anchor
+}
+
+const maxAnchors = 512
+
+// keep caches a for rel, or closes it and fails closed when the cache is full.
+func (s *anchors) keep(rel string, a *anchor) error {
+	if len(s.m) >= maxAnchors {
+		a.dir.Close()
+		return fault.At("MAX_INPUTS", "", "verification_inputs.roots", fmt.Sprintf("input roots need more than %d anchored directories; consolidate verification_inputs.roots under fewer common parents", maxAnchors))
+	}
+	s.m[rel] = a
+	return nil
 }
 
 func newAnchors(f *store.FS) *anchors { return &anchors{f: f, m: map[string]*anchor{}} }
@@ -594,7 +686,9 @@ func (s *anchors) top() (*anchor, error) {
 	if e != nil {
 		return nil, e
 	}
-	s.m["."] = a
+	if e := s.keep(".", a); e != nil {
+		return nil, e
+	}
 	return a, nil
 }
 
@@ -604,6 +698,9 @@ func (s *anchors) top() (*anchor, error) {
 func (s *anchors) child(parent *anchor, parentRel, seg string) (*anchor, string, error) {
 	rel := path.Join(parentRel, seg)
 	if a, ok := s.m[rel]; ok {
+		if e := parent.dir.Current(seg, a.dir); e != nil {
+			return nil, "", e
+		}
 		return a, "", nil
 	}
 	entry := parent.byName[seg]
@@ -625,7 +722,9 @@ func (s *anchors) child(parent *anchor, parentRel, seg string) (*anchor, string,
 	if e != nil {
 		return nil, "", e
 	}
-	s.m[rel] = a
+	if e := s.keep(rel, a); e != nil {
+		return nil, "", e
+	}
 	return a, "", nil
 }
 
@@ -651,20 +750,6 @@ func (s *anchors) get(rel string) (*anchor, error) {
 		cur, at = next, path.Join(at, seg)
 	}
 	return cur, nil
-}
-
-// read reads one regular file relative to its anchored directory.
-func (s *anchors) read(rel string, limit int64) ([]byte, error) {
-	a, e := s.get(path.Dir(rel))
-	if e != nil {
-		return nil, e
-	}
-	entry := a.byName[path.Base(rel)]
-	if entry == nil {
-		return nil, os.ErrNotExist
-	}
-	b, _, e := a.dir.ReadEntry(entry, limit)
-	return b, e
 }
 
 // resolveRoot canonicalizes an explicit plan root segment by segment and returns
@@ -719,7 +804,7 @@ func resolveRoot(anch *anchors, root string) (*anchor, os.DirEntry, error) {
 func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 	anch := newAnchors(f)
 	defer anch.Close()
-	outputs, e := internalOutputsWith(f, anch)
+	outputs, projections, e := internalOutputsWith(f)
 	if e != nil {
 		return nil, e
 	}
@@ -820,6 +905,9 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 	var walk func(*store.Dir, []os.DirEntry, string) error
 	descend := func(parent *store.Dir, entry os.DirEntry, p string) error {
 		if a, ok := anch.m[p]; ok {
+			if e := parent.Current(entry.Name(), a.dir); e != nil {
+				return e
+			}
 			return walk(a.dir, a.entries, p)
 		}
 		sub, e := parent.OpenSub(entry)
@@ -834,7 +922,9 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 			if e != nil {
 				return e
 			}
-			anch.m[p] = held
+			if e := anch.keep(p, held); e != nil {
+				return e
+			}
 			return walk(held.dir, held.entries, p)
 		}
 		defer sub.Close()
@@ -871,6 +961,22 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 			if outputs[p] {
 				continue
 			}
+			// A bound farm projection is an output only while its bytes match a
+			// binding's base. Decide from the one read the walk makes anyway, and
+			// hash those same bytes when no binding accepts them.
+			var held []byte
+			var heldInfo os.FileInfo
+			holding := false
+			if bases := projections[p]; bases != nil && !entry.IsDir() {
+				b, info, e := dir.ReadEntry(entry, MaxInputFile)
+				if e != nil {
+					return inputReadError(p, e)
+				}
+				if len(b) <= canonical.MaxBytes && bases[farmProjectionBase(b)] {
+					continue
+				}
+				held, heldInfo, holding = b, info, true
+			}
 			names = append(names, entry.Name())
 			if commit, ok := set.gitlinkCommit(p); ok {
 				// Submodule: the checked-out commit is the whole identity; its
@@ -884,9 +990,12 @@ func snapshotOnce(f *store.FS, plan *model.Document) (map[string]any, error) {
 				}
 				continue
 			}
-			b, info, e := dir.ReadEntry(entry, MaxInputFile)
-			if e != nil {
-				return inputReadError(p, e)
+			b, info := held, heldInfo
+			if !holding {
+				var e error
+				if b, info, e = dir.ReadEntry(entry, MaxInputFile); e != nil {
+					return inputReadError(p, e)
+				}
 			}
 			total += len(b)
 			if total > MaxInputTotal {
