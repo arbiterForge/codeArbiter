@@ -219,6 +219,43 @@ def check_taskwrite_audit_arguments(fixture):
                  "H-22", "task helper does not exempt protected-state write verbs")
 
 
+def check_debug_validation_data(fixture):
+    helper = os.path.join(HOOKS, "debug-handoff.py").replace("\\", "/")
+    tail = f"C:/Python314/python.exe -B '{helper}' validate"
+    body = json.dumps({"evidence": "python source; write .codearbiter/decisions/0043-example.md",
+                       "context": "Remove-Item .codearbiter/CONTEXT.md",
+                       "history": "truncate .codearbiter/overrides.log"})
+    command = f"@'\n{body}\n'@ | {tail}"
+    for target in (".codearbiter/decisions/0043-example.md", ".codearbiter/CONTEXT.md",
+                   ".codearbiter/overrides.log"):
+        packet = json.dumps({"source": f"python evidence: write {target}"})
+        expect_allow(fixture, f"@'\n{packet}\n'@ | {tail}", f"protected-path citation is data: {target}")
+    expect_allow(fixture, command, "literal diagnostic packet is input data")
+    expect_allow(fixture, command.replace("\n", "\r\n"), "CRLF diagnostic packet is input data")
+    for altered in (
+        command.replace(helper, os.path.join(fixture, "debug-handoff.py").replace("\\", "/")),
+        command.replace(helper, "debug-handoff.py"),
+        command.replace(" validate", " validate --extra"),
+        command.replace(" -B ", " -c "),
+        command.replace("@'\n", '@"\n').replace("\n'@", '\n"@'),
+        command + "; Remove-Item .codearbiter/decisions/0043-example.md",
+        command + " | Invoke-Expression",
+        command + " > .codearbiter/decisions/0043-example.md",
+        "Write-Output harmless\n" + command,
+        command.replace("'@ |", "'@\nRemove-Item .codearbiter/decisions/0043-example.md\n'@ |"),
+        f"@'\npython write .codearbiter/decisions/0043-example.md\n'@ | {tail}",
+        f"@'\ntext\r'@; Remove-Item .codearbiter/decisions/0043-example.md\r@'\nmore\n'@ | {tail}",
+        *(f"@'\ntext\n{quote}@; Remove-Item .codearbiter/decisions/0043-example.md\n@'\nmore\n'@ | {tail}"
+          for quote in "\u2018\u2019\u201a\u201b"),
+    ):
+        result = run_hook(fixture, altered)
+        check(result.returncode == 2 and "BLOCKED" in result.stderr,
+              "untrusted or executable validator lookalike stays guarded", result.stderr[:300])
+    oversized = f"@'\n{json.dumps({'data': 'x' * 65536})}\n'@ | {tail}"
+    check(pre_bash._bashguardlib._debug_validation_command_view(oversized) == oversized,
+          "oversized validator input keeps raw view", "bounded JSON parsing was bypassed")
+
+
 def main():
     for s in (sys.stdout, sys.stderr):
         try:
@@ -232,6 +269,7 @@ def main():
         fx = make_fixture(base, "feat/work")        # the normal case: a feature branch
         fx_main = make_fixture(base, "main")        # only for on-main push/commit cases
         check_taskwrite_audit_arguments(fx)
+        check_debug_validation_data(fx)
 
         # ---- H-03: staging must name explicit files --------------------------
         for cmd in ("git add -A", "git add .", "git add --all", "git add -u",
@@ -1048,6 +1086,11 @@ def main():
 
 
 if __name__ == "__main__":
+    if "--debug-validation-only" in sys.argv:
+        with tempfile.TemporaryDirectory(prefix="ca-debug-validation-guard-") as base:
+            check_debug_validation_data(make_fixture(base, "feat/debug-validation"))
+        print(f"{checks} checks; {len(failures)} failures")
+        sys.exit(bool(failures))
     if "--taskwrite-only" in sys.argv:
         with tempfile.TemporaryDirectory(prefix="ca-taskwrite-guard-") as base:
             check_taskwrite_audit_arguments(make_fixture(base, "feat/taskwrite"))

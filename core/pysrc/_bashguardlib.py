@@ -75,6 +75,7 @@
 #                                         on a shell mutation of a registered
 #                                         protected-state file
 
+import json
 import os
 import re
 import subprocess
@@ -1844,6 +1845,58 @@ def _check_h14_migration(commit, add, cwd, root):
                           f"bypass a migration gate, /override logs the exception.")
 
 
+def _debug_validation_command_view(cmd):
+    """Exclude literal stdin data only for this package's read-only validator.
+
+    Accept one PowerShell single-quoted here-string piped to the exact installed
+    helper with literal ``-B ... validate`` argv. Everything else keeps the raw
+    guard view: expandable strings, wrappers, other helpers, extra commands,
+    redirections and early terminators cannot become an exemption.
+    """
+    # PowerShell accepts lone CR newlines and curly single-quote terminators.
+    # Keep those forms raw rather than missing an early terminator and hiding
+    # executable code. JSON can represent these data characters with escapes.
+    if re.search(r"\r(?!\n)|[\u2018-\u201b]", cmd):
+        return cmd
+    opening = re.match(r"\A@'\r?\n", cmd)
+    if opening is None:
+        return cmd
+    closing = re.search(r"(?m)^[ \t]*'@", cmd[opening.end():])
+    if closing is None or closing.group() != "'@":
+        return cmd
+    body = cmd[opening.end():opening.end() + closing.start()]
+    try:
+        if len(body.encode("utf-8")) > 65536 or not isinstance(json.loads(body), dict):
+            return cmd
+    except (ValueError, UnicodeError, RecursionError):
+        return cmd
+    tail = cmd[opening.end() + closing.end():].strip()
+    if not tail.startswith("|"):
+        return cmd
+    invocation = tail[1:].strip()
+    if re.search(r"[\r\n;&|<>`$%!^*?{}\[\]()]", invocation):
+        return cmd
+    tokens, end = [], 0
+    for match in re.finditer(r'''(?:[^\s'"\x00]|'[^']*'|"[^"]*")+''', invocation):
+        if invocation[end:match.start()].strip():
+            return cmd
+        token = match.group()
+        if len(token) >= 2 and token[0] == token[-1] and token[0] in "\"'":
+            token = token[1:-1]
+        tokens.append(token)
+        end = match.end()
+    if invocation[end:].strip() or len(tokens) != 4 or tokens[1] != "-B" or tokens[3] != "validate":
+        return cmd
+    executable = tokens[0].replace("\\", "/").rsplit("/", 1)[-1]
+    if not re.fullmatch(r"(?:python(?:[23](?:\.\d+)*)?|py)(?:\.exe)?", executable, re.I):
+        return cmd
+    helper = tokens[2]
+    known = os.path.join(os.path.dirname(os.path.abspath(__file__)), "debug-handoff.py")
+    if not os.path.isabs(helper) or os.path.normcase(os.path.normpath(helper)) != os.path.normcase(known):
+        return cmd
+    return invocation
+
+
 def run_guards(payload, root, ti):
     """Run every H-NN gate against `ti` (the already host-normalized Bash/
     PowerShell tool_input — see pre-bash.py's `_run`, which resolves it via
@@ -1853,7 +1906,7 @@ def run_guards(payload, root, ti):
     sys.exit(0). This is the composed body pre-bash.py's `_run` used to run
     inline (issue #320) — moved here verbatim, split into one function per
     gate, each still carrying its H-NN ID."""
-    cmd = ti.get("command", "") or ""
+    cmd = _debug_validation_command_view(ti.get("command", "") or "")
 
     # Heredoc bodies are stdin text, not arguments — match the git command over
     # a body-stripped view so message content (which may contain `;`/`|`/`&`,
