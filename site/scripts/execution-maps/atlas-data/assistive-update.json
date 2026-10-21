@@ -304,8 +304,8 @@
     },
     {
       "path": "core/pysrc/_approvallib.py",
-      "blob": "7f8efe8f462a3c1fc98f5c50fd449f7d03c4ef3d",
-      "summary": "The existing paired approval adapter can retire a genuinely unanswered 0.2 sprint-pair request using its serialized cancellation lock and submission check; a submitted decision must replay, while old standalone approval 0.1 intentionally refuses automatic retirement.",
+      "blob": "f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13",
+      "summary": "Ordinary approval and sprint instructions bypass legacy capture without changing pending history or inventing authority. Explicit legacy replies retain exact matching. The paired adapter can retire a genuinely unanswered 0.2 sprint-pair request using its serialized cancellation lock and submission check; submitted decisions must replay, while standalone approval 0.1 refuses automatic retirement.",
       "nodes": [
         "f-approval",
         "f-recovery",
@@ -315,8 +315,8 @@
     },
     {
       "path": "core/pysrc/_prerequisitelib.py",
-      "blob": "200eb5eff23b78b810dd8fd9a7615a0e3352df7f",
-      "summary": "The existing prerequisite adapter can retire only a validated ARMED pending question under its original per-plan OS lock. Confirmed or captured decisions are not disposable; no authority receipt or new native permission API is created.",
+      "blob": "124e82479efdf836aebfcd00746d94a84fbd8a48",
+      "summary": "Ordinary prerequisite instructions bypass legacy capture. The existing adapter can retire only a validated ARMED pending question under its original per-plan OS lock. Confirmed or captured decisions are not disposable; no authority receipt or new native permission API is created.",
       "nodes": [
         "f-selection",
         "f-recovery",

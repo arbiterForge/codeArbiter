@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [3.2.7] - 2026-10-21
+
+### Fixed
+
+- Ordinary approval, sprint, prerequisite, and reconciliation instructions no longer enter legacy reply-code capture. Historical requests and actual host permissions retain their checks.
+- Bounded literal JSON sent to the installed read-only diagnostic validator no longer triggers protected-state write guards merely by citing source paths. Ambiguous or executable shell forms remain guarded.
+
 ## [3.2.6] - 2026-10-19
 
 ### Fixed
