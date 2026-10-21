@@ -245,15 +245,14 @@ PR's ordinary hosted jobs own the complete platform suites and numeric coverage.
 
 ## Next executable work
 
-1. Finish the affected integration checks, update PR #983, and complete its
-   current-head CI, numeric coverage and installed-package fixtures.
-2. Record the actual hosted results against the pushed source.
-   Retain the scoped earlier model evidence. No additional live-host trial or
-   user host configuration is required for this completion.
-3. After authorized merge/publication, verify exact distributed package,
-   marketplace, website and derivative bytes. Publication is not performed by
-   this implementation task; no published tag is moved.
+1. Complete [PR #1016](https://github.com/arbiterForge/codeArbiter/pull/1016)'s
+   remaining hook cleanup and exact-head CI. The overhaul itself already merged;
+   do not restart its approval or implementation process.
+2. Preserve the earlier test/model evidence at its stated source scope. New
+   hook behavior still requires its own passing checks; a merged branch is not
+   proof of current installed-package behavior.
+3. After separately authorized publication, inspect exact package, marketplace
+   and website bytes. No tag or release is changed by this cleanup.
 
-The Git repository retains earlier slice evidence and prior versions of this
-status file. The active instructions and this tracker intentionally contain
-only current operational facts.
+Prior implementation/test details above are historical, commit-bound evidence.
+Current follow-up work belongs to #1016 and the repository's open issues.
