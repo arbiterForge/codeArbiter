@@ -1852,6 +1852,112 @@ def _check_h14_migration(commit, add, cwd, root):
                           f"bypass a migration gate, /override logs the exception.")
 
 
+def _literal_python_read_view(cmd):
+    """Recognize only isolated, literal Python read diagnostics on stdin.
+
+    This is a closed read grammar, not an exemption for Python/subprocess.
+    Unknown code, import shadowing, shell expansion, and extra commands keep
+    the original guard view. Equivalent literal read commands still traverse
+    every gate. No code is executed or filesystem state consulted here.
+    """
+    if "\n" not in cmd or " -I" not in cmd:
+        return cmd
+    try:
+        if len(cmd.encode("utf-8")) > 32768:
+            return cmd
+    except UnicodeError:
+        return cmd
+    if re.search(r"\r(?!\n)|[\x00\u2018-\u201b]", cmd):
+        return cmd
+    text = cmd.replace("\r\n", "\n")
+    # -I excludes workspace/PYTHONPATH modules: otherwise an apparent
+    # standard-library import could execute a project-authored replacement.
+    invocation = r"(?:python(?:3(?:\.\d+)*)?|py)(?:\.exe)? -I(?: -B)? -"
+    fallback = cmd
+    match = re.fullmatch(
+        r"@'\n(?P<body>[\s\S]*?)\n'@[ \t]*\|[ \t]*(?P<invoke>" + invocation + r")[ \t]*\n?", text)
+    if match:
+        body = match["body"]
+        # The consumer appears after its script in PowerShell. If the
+        # read grammar refuses it, expose that consumer before the intact
+        # source too, so interpreter/write guards cannot miss an earlier path.
+        fallback = match["invoke"] + "\n" + cmd
+        if re.search(r"(?m)^[ \t]*'@", body):
+            return cmd
+    else:
+        match = re.fullmatch(
+            invocation + r"[ \t]+<<(?P<quote>['\"])(?P<end>[A-Za-z_][A-Za-z0-9_]{0,31})"
+            r"(?P=quote)[ \t]*\n(?P<body>[\s\S]*?)\n(?P=end)[ \t]*\n?", text)
+        if not match:
+            return cmd
+        body = match["body"]
+        if any(line == match["end"] for line in body.splitlines()):
+            return cmd
+    # Ordinary commands pay no AST import/parse cost.
+    import ast
+    try:
+        tree = ast.parse(body)
+    except (SyntaxError, ValueError, RecursionError):
+        return fallback
+    if len(tree.body) > 32 or sum(1 for _ in ast.walk(tree)) > 256:
+        return fallback
+
+    def literal(node):
+        return node.value if isinstance(node, ast.Constant) and isinstance(node.value, str) else None
+
+    def read_path(node):
+        value = literal(node)
+        if value is not None and re.fullmatch(
+            r"\.codearbiter/(?:overrides\.log|CONTEXT\.md|decisions/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:md|jsonl))",
+            value,
+        ):
+            return value
+        return None
+
+    imports, reads = set(), []
+    for statement in tree.body:
+        if (isinstance(statement, ast.Import) and len(statement.names) == 1
+                and statement.names[0].name == "subprocess" and statement.names[0].asname is None):
+            imports.add("subprocess")
+            continue
+        if (isinstance(statement, ast.ImportFrom) and statement.level == 0
+                and statement.module == "pathlib" and len(statement.names) == 1
+                and statement.names[0].name == "Path" and statement.names[0].asname is None):
+            imports.add("Path")
+            continue
+        if not (isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Call)
+                and isinstance(statement.value.func, ast.Name) and statement.value.func.id == "print"
+                and len(statement.value.args) == 1 and not statement.value.keywords):
+            return fallback
+        call = statement.value.args[0]
+        if not isinstance(call, ast.Call) or not isinstance(call.func, ast.Attribute):
+            return fallback
+        owner = call.func.value
+        if (isinstance(owner, ast.Name) and owner.id == "subprocess" and "subprocess" in imports
+                and call.func.attr == "check_output" and len(call.args) == 1
+                and isinstance(call.args[0], (ast.List, ast.Tuple)) and len(call.keywords) == 1
+                and call.keywords[0].arg == "text" and isinstance(call.keywords[0].value, ast.Constant)
+                and call.keywords[0].value.value is True):
+            args = [literal(value) for value in call.args[0].elts]
+            if (len(args) != 3 or args[:2] != ["git", "show"] or args[2] is None
+                    or not args[2].startswith("HEAD:") or not read_path(ast.Constant(args[2][5:]))):
+                return fallback
+            reads.append(" ".join(args))
+            continue
+        if (isinstance(owner, ast.Call) and isinstance(owner.func, ast.Name)
+                and owner.func.id == "Path" and "Path" in imports
+                and len(owner.args) == 1 and not owner.keywords and not call.args):
+            path = read_path(owner.args[0])
+            allowed = call.func.attr in {"exists", "is_file", "read_text"} and not call.keywords
+            if call.func.attr == "read_text" and len(call.keywords) == 1:
+                allowed = call.keywords[0].arg == "encoding" and literal(call.keywords[0].value) == "utf-8"
+            if path is not None and allowed:
+                reads.append("cat " + path)
+                continue
+        return fallback
+    return "\n".join(reads) if reads else fallback
+
+
 def _debug_validation_command_view(cmd):
     """Exclude literal stdin data only for this package's read-only validator.
 
@@ -1914,6 +2020,7 @@ def run_guards(payload, root, ti):
     inline (issue #320) — moved here verbatim, split into one function per
     gate, each still carrying its H-NN ID."""
     cmd = _debug_validation_command_view(ti.get("command", "") or "")
+    cmd = _literal_python_read_view(cmd)
 
     # Heredoc bodies are stdin text, not arguments — match the git command over
     # a body-stripped view so message content (which may contain `;`/`|`/`&`,

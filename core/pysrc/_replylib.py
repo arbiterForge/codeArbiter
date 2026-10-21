@@ -430,10 +430,12 @@ def _capture_attempt(raw, route: str) -> bool:
             continue
         token = fields[-1][0].rstrip(",.!?")
         if CODE_RE.fullmatch(token.upper()):
-            if not token.isalpha() or token.isupper():
+            if not token.isalpha():
                 return True
-            # Lowercase words such as "data" overlap the code alphabet.
-            # Preserve case-insensitive *armed* codes without capturing prose.
+            # Ordinary words overlap the code alphabet in EVERY casing:
+            # "Approve DATA migration" is not a protocol request. Only a
+            # retained matching code makes an all-letter token diagnostic.
+            # Exact armed replies remain case-insensitive; prose is not repaired.
             if any(value.get("route") == route
                    and value.get("short_reply", "").rsplit(" ", 1)[-1] == token.upper()
                    for _path, value, _alive in _entries()):

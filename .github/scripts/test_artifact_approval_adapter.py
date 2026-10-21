@@ -192,6 +192,21 @@ class ApprovalAdapterTest(unittest.TestCase):
         self.assertEqual(json.loads(source.read_text(encoding="utf-8"))["source_text"], armed["reply"])
         self.assertIn("matches no armed request", self.replies.expand(armed["short_reply"])["notice"])
 
+    def test_uppercase_prose_does_not_disturb_an_unrelated_armed_request(self):
+        with mock.patch.object(self.replies.secrets, "choice", side_effect=list("ZZZZ")):
+            armed = self.adapter.arm_user_approval(
+                self.root, self.client, "SPEC-EXAMPLE", token="fixed-unrelated-code",
+            )
+        pending = (self.root / self.adapter.PENDING).read_bytes()
+        calls = list(self.client.calls)
+        for prompt in ("Approve DATA", "Approve DATA migration", "Approve READ access", "APPROVE DATA MIGRATION"):
+            with self.subTest(prompt=prompt):
+                self.assertEqual(self.hook(prompt), "")
+        self.assertEqual((self.root / self.adapter.PENDING).read_bytes(), pending)
+        self.assertEqual(self.client.calls, calls)
+        self.assertFalse((self.root / ".codearbiter/.markers/reply-diagnostics.log").exists())
+        self.assertIn("workflow approval recorded", self.hook(armed["short_reply"]))
+
     def test_padded_full_reply_from_hook_approves(self):
         armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-pad")
         text = self.hook("\u200b\u00a0`" + armed["reply"] + "`\r\n")
@@ -200,8 +215,9 @@ class ApprovalAdapterTest(unittest.TestCase):
     def test_hook_reports_misses_instead_of_silence(self):
         armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-miss")
         before = list(self.client.calls)
+        unknown = "K7MQ" if armed["code"] != "K7MQ" else "J8NR"
         cases = {
-            "  approve ZZZZ": "matches no armed request",
+            f"  approve {unknown}": "matches no armed request",
             f"approve SPEC-OTHER {armed['code']}": "belongs to SPEC-EXAMPLE",
             armed["reply"] + ", please": "Send only the reply line",
             "approve SPEC-EXAMPLE wrong-token-value": "Send only the reply line",
@@ -320,12 +336,13 @@ class ApprovalAdapterTest(unittest.TestCase):
         self.assertEqual(decision["permissionDecision"], "deny")
 
     def test_near_miss_log_is_bounded_escaped_and_only_when_active(self):
-        self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-log")
+        armed = self.adapter.arm_user_approval(self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-log")
+        unknown = "K7MQ" if armed["code"] != "K7MQ" else "J8NR"
         log = self.root / ".codearbiter/.markers/reply-diagnostics.log"
-        self.hook("approve ZZZZ\u200b")
+        self.hook(f"approve {unknown}\u200b")
         self.assertFalse(log.exists())
         (self.root / ".codearbiter" / "CONTEXT.md").write_text("---\nfixture: active\n---\n", encoding="utf-8")
-        self.hook("approve ZZZZ\u200b " + "pasted-text " * 60)
+        self.hook(f"approve {unknown}\u200b " + "pasted-text " * 60)
         line = log.read_text(encoding="ascii")
         self.assertIn("U+200B", line)
         self.assertLess(len(line), 1400)

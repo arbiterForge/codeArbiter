@@ -231,9 +231,14 @@ class OrdinaryPromptTest(unittest.TestCase):
 
     CASES = {
         "approval": ("Approve", "approve.", "`approve`", "Approve plan", "approve the plan", "Approve the sprint", "approve and execute the sprint",
-                     "approve-sprint", "approve-sprint delegate", "do not approve", "Stop"),
-        "prerequisite": ("satisfy-prerequisite", "satisfy-prerequisite by checking the tool", "Stop"),
-        "reconciliation": ("Reconcile", "reconcile data", "reconcile the plan", "reconcile-task", "reconcile-scope", "Stop"),
+                     "approve-sprint", "approve-sprint delegate", "do not approve", "Stop",
+                     "Approve DATA", "Approve DATA migration", "Approve READ access",
+                     "APPROVE DATA MIGRATION", "Approve the TASK", "Approve the TEST",
+                     "approve-sprint delegate DATA", "approve-sprint delegate DATA migration"),
+        "prerequisite": ("satisfy-prerequisite", "satisfy-prerequisite by checking the tool", "Stop",
+                         "satisfy-prerequisite DATA", "satisfy-prerequisite DATA migration"),
+        "reconciliation": ("Reconcile", "reconcile data", "reconcile the plan", "reconcile-task", "reconcile-scope", "Stop",
+                           "Reconcile DATA", "reconcile TASK results", "reconcile pending DATA"),
     }
 
     def test_ordinary_prompts_are_unchanged_and_not_capture_attempts(self):
@@ -291,9 +296,39 @@ class OrdinaryPromptTest(unittest.TestCase):
                 with self.subTest(route=route, prompt=prompt), mock.patch.object(
                     replies, "expand", side_effect=lambda value: {"text": value, "notice": ""}
                 ), mock.patch.object(replies, "_entries", return_value=[
-                    (None, {"route": route, "full_reply": replies.canonicalize(prompt).split(",")[0]}, True)
+                    (None, {"route": route, "short_reply": "reply ZZZZ",
+                            "full_reply": replies.canonicalize(prompt).split(",")[0]}, True)
                 ]):
                     self.assertTrue(replies.prepare(prompt, route)["attempted"])
+
+    def test_retained_all_letter_codes_preserve_case_and_near_miss_checks(self):
+        replies = importlib.import_module("_replylib")
+        root = Path(self.temp.name) / "armed"
+        (root / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("DATA")):
+            issued = replies.issue_code(root, "approval", "SPEC-X", FULL,
+                                        names=["SPEC-X"], short_prefix=["approve"])
+        self.assertEqual(issued["code"], "DATA")
+        for prompt in ("approve DATA", "Approve data", "APPROVE DaTa", "approve DATA."):
+            with self.subTest(prompt=prompt):
+                self.assertEqual(replies.prepare(prompt, "approval"),
+                                 {"text": FULL, "notice": "", "attempted": True})
+        for prompt in ("Approve DATA migration", "approve DATA, please"):
+            with self.subTest(prompt=prompt):
+                prepared = replies.prepare(prompt, "approval")
+                self.assertTrue(prepared["attempted"])
+                self.assertNotEqual(prepared["text"], FULL)
+        self.assertFalse(replies.prepare("reconcile DATA", "reconciliation")["attempted"])
+        replies.retire_code(root, "approval", "SPEC-X")
+        self.assertFalse(replies.prepare("Approve DATA migration", "approval")["attempted"])
+
+    def test_unrecognized_mixed_codes_remain_diagnostic_not_authority(self):
+        replies = importlib.import_module("_replylib")
+        for prompt in ("Approve K7MQ", "approve k7mq extra"):
+            with self.subTest(prompt=prompt):
+                result = replies.prepare(prompt, "approval")
+                self.assertTrue(result["attempted"])
+                self.assertNotEqual(result["text"], FULL)
 
     def test_long_words_without_a_retained_request_are_ordinary_prose(self):
         replies = importlib.import_module("_replylib")

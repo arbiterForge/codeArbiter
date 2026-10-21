@@ -453,6 +453,7 @@ jobs:
               - '.github/scripts/test_artifact_prerequisite_adapter.py'
               - '.github/scripts/test_artifact_reconciliation_adapter.py'
               - '.github/scripts/test_replylib.py'
+              - '.github/scripts/test_literal_python_reads.py'
               - '.github/scripts/test_artifact_authoring.py'
               - '.github/scripts/test_smarts_engine_contract.py'
               - '.github/scripts/test_artifact_installed_host.py'
@@ -678,6 +679,8 @@ jobs:
         run: python .github/scripts/test_artifact_reconciliation_adapter.py
       - name: Test forgiving authority reply capture and short codes
         run: python .github/scripts/test_replylib.py
+      - name: Literal read-only Python diagnostics and refusal controls
+        run: python .github/scripts/test_literal_python_reads.py
       - name: Test cross-kind reference and workflow conformance
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
