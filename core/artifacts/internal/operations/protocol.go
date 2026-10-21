@@ -229,8 +229,8 @@ func RequestSchema(op string) (object, error) {
 		cas()
 		add("spec_id", idType(), true)
 		add("changes", changesType(), false)
-		// The ordinary approved-source request is unchanged. Draft rebinding
-		// is a separate closed shape with explicit source compare-and-swap.
+		// Preserve the ordinary request and the explicit draft refresh shape,
+		// which additionally checks source compare-and-swap.
 		approvedProperties := object{}
 		for key, value := range p {
 			approvedProperties[key] = value

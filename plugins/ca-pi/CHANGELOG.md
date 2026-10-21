@@ -11,6 +11,7 @@ All notable changes to `ca-pi` are documented in this file.
 - Ordinary approval, sprint, prerequisite, and reconciliation instructions no longer enter legacy reply-code capture. Historical requests and actual host permissions retain their checks.
 - Bounded literal JSON sent to the installed read-only diagnostic validator no longer triggers protected-state write guards merely by citing source paths. Ambiguous or executable shell forms remain guarded.
 - Explicit staging in a multiline batch no longer borrows flags from later commands. Every staging command retains wildcard, directory, continuation, and working-directory checks.
+- Explicit draft source refreshes now preserve started work and historical evidence instead of requiring an untouched initial approval pair. Source and plan revision checks and historical approval boundaries remain intact.
 
 ## [0.21.6] - 2026-10-19
 

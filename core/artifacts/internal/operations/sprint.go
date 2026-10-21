@@ -21,8 +21,8 @@ func equalValue(a, b any) bool {
 	return e == nil && f == nil && x == y
 }
 
-// initialDraftPair is the shared non-authorizing boundary for current-source
-// draft rebinding and the later initial combined approval preview.
+// initialDraftPair bounds historical initial combined approval previews.
+// Ordinary source maintenance preserves existing work without this ceremony.
 func initialDraftPair(plan, spec *model.Document) error {
 	if plan.Kind() != "plan" || spec.Kind() != "spec" {
 		return fault.New("WRONG_KIND", "initial pair requires a plan and its specification")

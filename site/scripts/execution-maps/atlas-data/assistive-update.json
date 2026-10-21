@@ -259,7 +259,7 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "08927e5c40af9e2c5b9e97f137e1c186ad89fea6",
+      "blob": "d1878ff1f4b481ad21c9aeae4aa2ed42d93eef4b",
       "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected. The historical smarts-apply request accepts the 0.2.0 SMARTS decision record. init-store takes a protocol-only request.",
       "nodes": [
         "f-verify",
@@ -335,8 +335,8 @@
     },
     {
       "path": "core/surface/includes/artifacts-attestation.md",
-      "blob": "9c261559f19b716125de1f7f9aa8bd4e02597e8c",
-      "summary": "The optional reference retains the strict historical evidence inputs without replacing the original task review, including paired approval, captured decisions and in-flight recovery. Its verify command requires literal absolute paths; linked agent subdirectories remain unsupported for strict authority review. These limitations apply to requested attestation, not ordinary task start.",
+      "blob": "81d72c2f2e927bf4bf91acb305a0ad981aebbb09",
+      "summary": "The optional reference retains strict historical evidence inputs without replacing ordinary work. Explicit draft source refresh preserves progressed plans and history with both CAS bindings; initial approval restrictions remain on historical paired attestation. Its verify command requires literal absolute paths; linked agent subdirectories remain unsupported for strict authority review. These limitations apply to requested attestation, not ordinary task start.",
       "nodes": [
         "f-approval",
         "f-recovery",
@@ -674,8 +674,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/lifecycle.go",
-      "blob": "0a40a9e6c50f1b1da06967dc806eef117f7d5a16",
-      "summary": "Dependency invalidation preserves an independently BLOCKED task and its reason. Changed ancestry remains visible without replacing a recorded user stop. Verification summaries disclose applicable conflicting caller reports separately from receipt freshness; later successful verification covers only reports present when its context was issued.",
+      "blob": "9e9f5f3d7160b7dd59dc6ff4f01de01738118637",
+      "summary": "Explicit draft source refresh retains both source CAS components and same-pair identity without requiring an unstarted plan. Existing progress, approvals and evidence are preserved without asserting current authority. Dependency invalidation preserves an independently BLOCKED task and its reason. Verification summaries disclose conflicting caller reports separately from receipt freshness; later successful verification covers only reports present when its context was issued.",
       "nodes": [
         "f-recovery",
         "c-decisions",
