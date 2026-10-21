@@ -13,8 +13,8 @@ beforeAll(()=>{atlas=loadAtlas(root);});
 describe('assistive candidate versus retained historical routes',()=>{
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('3a8b6e0d18de66ff7148424bd4864e2409587986');
-    expect(update.changes).toHaveLength(64);
+    expect(update.revision).toBe('3549ed56f5d5849116aef8d5e946423d8ee677fc');
+    expect(update.changes).toHaveLength(67);
     expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
     const objects=execFileSync('git',['--no-replace-objects','cat-file','--batch'],{
       cwd:root,input:update.changes.map(change=>`${change.blob}\n`).join(''),maxBuffer:4*1024*1024,
