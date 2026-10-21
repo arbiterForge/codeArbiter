@@ -22,6 +22,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from contextlib import redirect_stderr
+from io import StringIO
+from unittest.mock import patch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -256,6 +259,96 @@ def check_debug_validation_data(fixture):
           "oversized validator input keeps raw view", "bounded JSON parsing was bypassed")
 
 
+def check_staging_command_boundaries(fixture):
+    """Separate staging argv from later commands without losing later adds."""
+    helper = os.path.join(HOOKS, "preview.py")
+    lines = [
+        "git add -- package.json docs/compatibility/st1-source-manifest.json "
+        "campaign-unity/docs/FIRST-SESSION-VALIDATION.md",
+        f'"{sys.executable}" -B "{helper}" secrets',
+        "git diff --cached --check",
+        "git commit -m 'test(last-stand): run geometry regressions in the check chain' "
+        "-m 'Include the scrolling and high-DPI regressions in hosted CI.'",
+        "git push -u origin codex/last-stand-first-session-polish",
+    ]
+    for separator in ("\n", "\r\n", "\r"):
+        expect_allow(fixture, separator.join(lines),
+                     f"H-03 explicit staging batch: {separator!r}")
+        expect_allow(fixture, "git add notes.txt" + separator +
+                     "git status -u",
+                     f"H-03 does not borrow later command arguments: {separator!r}")
+        expect_allow(fixture, "git add 'multi" + separator +
+                     "line.txt'" + separator + "git push -u origin feat/work",
+                     f"H-03 retains quoted multiline filename: {separator!r}")
+        expect_block(fixture, "git add 'multi" + separator + "line.txt' -A",
+                     "H-03", f"H-03 flag after multiline quote: {separator!r}")
+
+    for separator in ("\n", "\r\n", "\r", "; ", " && ", " | "):
+        for unsafe in ("-A", "--all", "-u", "--update", "src/"):
+            expect_block(fixture, "git add notes.txt" + separator + "git add " + unsafe,
+                         "H-03", f"H-03 later staging stays checked: {separator!r} {unsafe}")
+        expect_block(fixture, "sh -c 'git add notes.txt" + separator + "git add -A'",
+                     "H-03", f"H-03 quoted executor retains later add: {separator!r}")
+
+    for continuation in ("\\\n", "\\\r\n", "`\n", "`\r\n", "`\r", "^\n", "^\r\n"):
+        expect_block(fixture, "git add notes.txt " + continuation + " -A",
+                     "H-03", f"H-03 continued staging flag: {continuation!r}")
+        expect_block(fixture, "git add -" + continuation + "A",
+                     "H-03", f"H-03 continued flag token: {continuation!r}")
+        expect_block(fixture, 'git add "-' + continuation + 'A"',
+                     "H-03", f"H-03 quoted continued flag: {continuation!r}")
+        expect_allow(fixture, "git add notes.txt " + continuation + " src/app.py",
+                     f"H-03 continued explicit paths: {continuation!r}")
+
+    with tempfile.TemporaryDirectory(prefix="ca-add-cwd-") as other:
+        os.mkdir(os.path.join(other, "only-here"))
+        expect_block(fixture, f'git add notes.txt\ngit -C "{other}" add only-here',
+                     "H-03", "H-03 resolves each add's own -C directory")
+        expect_allow(fixture, f'git -C "{other}" add notes.txt\ngit add only-here',
+                     "H-03 later add does not inherit earlier -C")
+
+    for command in ("bash <\\\n<EOF\ngit add -A\nEOF",
+                    "ba\\\nsh <<EOF\ngit add -A\nEOF"):
+        expect_block(fixture, command, "H-03", "H-03 continued shell heredoc stays executable")
+
+    # Windows cannot create these POSIX literal directory names. Stub only
+    # directory existence; exercise the complete command-to-guard boundary.
+    guards = pre_bash._bashguardlib
+    real_isdir = os.path.isdir
+    for quote in ("'", '"'):
+        for continuation in ("\\\n", "`\n", "^\n"):
+            literal = "literal" + continuation + "folder"
+            directory = os.path.join(fixture, literal)
+            for suffix in ("", "\ncat <<EOF\ninert body\nEOF"):
+                diagnostic = StringIO()
+                with patch.object(guards.os.path, "isdir", side_effect=lambda p:
+                                  p == directory or real_isdir(p)), \
+                        patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": fixture}), \
+                        redirect_stderr(diagnostic):
+                    try:
+                        guards.run_guards({"cwd": fixture}, fixture, {"command":
+                            "git add " + quote + literal + quote + suffix})
+                    except SystemExit as result:
+                        code = result.code
+                check(code == 2 and "[H-03]" in diagnostic.getvalue(),
+                      "H-03 quoted literal directory stays checked",
+                      f"literal={literal!r} quote={quote!r} suffix={suffix!r} exit={code}")
+            directory = os.path.normpath(os.path.join(fixture, literal, "only-here"))
+            diagnostic = StringIO()
+            with patch.object(guards.os.path, "isdir", side_effect=lambda p:
+                              p == directory or real_isdir(p)), \
+                    patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": fixture}), \
+                    redirect_stderr(diagnostic):
+                try:
+                    guards.run_guards({"cwd": fixture}, fixture, {"command":
+                        "git -C " + quote + literal + quote + " add only-here"})
+                except SystemExit as result:
+                    code = result.code
+            check(code == 2 and "[H-03]" in diagnostic.getvalue(),
+                  "H-03 quoted literal -C directory stays checked",
+                  f"literal={literal!r} quote={quote!r} exit={code}")
+
+
 def main():
     for s in (sys.stdout, sys.stderr):
         try:
@@ -270,6 +363,7 @@ def main():
         fx_main = make_fixture(base, "main")        # only for on-main push/commit cases
         check_taskwrite_audit_arguments(fx)
         check_debug_validation_data(fx)
+        check_staging_command_boundaries(fx)
 
         # ---- H-03: staging must name explicit files --------------------------
         for cmd in ("git add -A", "git add .", "git add --all", "git add -u",
@@ -1086,6 +1180,11 @@ def main():
 
 
 if __name__ == "__main__":
+    if "--staging-boundaries-only" in sys.argv:
+        with tempfile.TemporaryDirectory(prefix="ca-staging-boundaries-") as base:
+            check_staging_command_boundaries(make_fixture(base, "feat/staging-boundaries"))
+        print(f"{checks} checks; {len(failures)} failures")
+        sys.exit(bool(failures))
     if "--debug-validation-only" in sys.argv:
         with tempfile.TemporaryDirectory(prefix="ca-debug-validation-guard-") as base:
             check_debug_validation_data(make_fixture(base, "feat/debug-validation"))

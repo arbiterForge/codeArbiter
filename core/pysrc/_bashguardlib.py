@@ -247,7 +247,12 @@ ARGS = r"(?P<args>(?:\"[^\"]*\"|'[^']*'|[^|;&])*)"
 COMMIT_SUBCOMMAND = r"commit(?:-(?!graph(?![-\w]))[\w-]+)?(?![-\w])"
 COMMIT_RE = re.compile(GIT + r"\s+" + COMMIT_SUBCOMMAND + ARGS)
 PUSH_RE = re.compile(GIT + r"\s+push\b" + ARGS)
-ADD_RE = re.compile(GIT + r"\s+add\b" + ARGS)
+# Staging argv ends at an unquoted command newline. Keep quoted multiline
+# filenames intact; otherwise a later `git push -u` becomes a wildcard add.
+# run_guards inspects EVERY match, so narrowing the first capture cannot hide
+# a later unsafe add. Commit/push parsing retains its existing contract.
+ADD_ARGS = r"(?P<args>(?:\"[^\"]*\"|'[^']*'|[^|;&\r\n])*)"
+ADD_RE = re.compile(GIT + r"\s+add\b" + ADD_ARGS)
 # #485 AC-4, the audit of the sibling matchers. Neither needs the same
 # treatment, and both were left alone deliberately:
 #
@@ -1481,10 +1486,12 @@ def _check_h03_wildcard_add(add, cwd):
     src/ just as surely as `git add -A` does."""
     if not add:
         return
-    if WILDCARD_ADD_RE.search(add.group("args")):
+    args = add.group("args")
+    if (WILDCARD_ADD_RE.search(args)
+            or _has_literal_flag(args, {"-A", "--all", "-u", "--update"})):
         block("H-03", "'git add -A' / 'git add .' / 'git add --all' / 'git add -u' "
                       "are prohibited. Stage files explicitly (commit-gate skill).")
-    why = add_violation(add.group("args"), cwd)
+    why = add_violation(args, cwd)
     if why:
         block("H-03", f"Wildcard staging is prohibited — {why} stages a "
                       f"non-explicit file set. Stage files explicitly, one path "
@@ -1958,9 +1965,25 @@ def run_guards(payload, root, ti):
         heredoc_shell_fallback and PUSH_RE.search(cmd))
     _check_push_gates(push, cwd)
 
-    add = ADD_RE.search(git_view) or (
-        heredoc_shell_fallback and ADD_RE.search(cmd))
-    _check_h03_wildcard_add(add, cwd)
+    # Preserve quoted literal paths AND check executable continuations inside
+    # nested/double quotes. Outside quotes, join POSIX/PowerShell/cmd escapes
+    # so a split flag remains one argv item. Neither view changes other guards.
+    quoted_staging = re.sub(r'''("[^"]*"|'[^']*')|[\\`^](?:\r\n|\n|\r)''',
+                            lambda match: match.group(1) or "", cmd)
+    joined_staging = re.sub(r"[\\`^](?:\r\n|\n|\r)", "", cmd)
+    adds = []
+    for staging_cmd in dict.fromkeys((quoted_staging, joined_staging)):
+        # Continuations can form the heredoc operator or shell name itself.
+        # Re-evaluate execution per view, without rewriting quoted paths again.
+        staging_view = HEREDOC_RE.sub(r"\3 ", staging_cmd)
+        adds.extend(ADD_RE.finditer(staging_view))
+        if "<<" in staging_cmd and (
+                _heredoc_fed_to_shell(staging_cmd) or _has_shell_executor(staging_cmd)):
+            adds.extend(ADD_RE.finditer(staging_cmd))
+    for staging in adds:
+        _check_h03_wildcard_add(staging, git_cwd(staging.group(0), exec_root))
+    # Commit security/migration checks still see that the batch stages files.
+    add = adds[0] if adds else None
     _check_h05_audit_log(cmd)
     _check_h11_decisions(cmd)
     _check_h18_context_md(cmd)
