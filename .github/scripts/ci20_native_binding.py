@@ -32,7 +32,7 @@ PLATFORMS = frozenset({
 REQUIRED_STAGES = frozenset({
     "changes",
     "artifact-native-build", "artifact-native-default",
-    "artifact-native-coverage", "artifact-native-context",
+    "artifact-native-coverage",
     "artifact-native-bridges", "artifact-authority",
     "artifact-coverage",
 })

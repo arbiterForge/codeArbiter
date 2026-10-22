@@ -153,13 +153,26 @@ class TimedResult(unittest.TextTestResult):
         super().stopTest(test)
 
 
+def group_indexes(count: int, groups: int, group: int) -> list[int]:
+    """The partition indexes one of `groups` jobs runs; together they cover every index once."""
+    if not 1 <= groups <= count or not 0 <= group < groups:
+        raise ValueError("authority group is out of range")
+    return [index for index in range(count) if index % groups == group]
+
+
+def plan_digest(shards: list[list[unittest.TestCase]]) -> str:
+    plan = [[case.id() for case in shard] for shard in shards]
+    return hashlib.sha256(json.dumps(plan, separators=(",", ":")).encode()).hexdigest()
+
+
 def coverage_problems(codes: list[int], reports: list[dict[str, Any] | None],
-                      expected: list[str]) -> list[str]:
-    """Every reason concurrent shard results do not prove the complete population."""
+                      expected: list[str], plan_sha256: str | None = None) -> list[str]:
+    """Every reason concurrent shard results do not prove the expected population."""
     problems = [f"shard {i} exited {code}" for i, code in enumerate(codes) if code]
     problems += [f"shard {i} wrote no observation" for i, report in enumerate(reports) if report is None]
     present = [report for report in reports if report is not None]
-    if len({report["plan_sha256"] for report in present}) > 1:
+    plans = {report["plan_sha256"] for report in present}
+    if len(plans) > 1 or (plan_sha256 is not None and plans - {plan_sha256}):
         problems.append("shards disagree on the partition plan")
     selected = [test for report in present for test in report["selected_ids"]]
     if len(selected) != len(set(selected)) or sorted(selected) != sorted(expected):
@@ -169,24 +182,28 @@ def coverage_problems(codes: list[int], reports: list[dict[str, Any] | None],
     return problems
 
 
-def run_all(count: int, expected: list[str]) -> bool:
+def run_all(count: int, expected: list[str], indexes: list[int] | None = None,
+            plan_sha256: str | None = None) -> bool:
     """Run every shard as a concurrent child on this host and prove complete coverage.
 
     One runner per platform uses its own cores instead of four queued runners
     repeating checkout, toolchain and candidate setup. Each child keeps process
     isolation; the parent accepts only identical plans whose selections cover
     the discovered population exactly once and whose every child passed.
+    A platform may split the plan across jobs; each job then runs and proves
+    only its own indexes against the same plan.
     """
+    indexes = list(range(count)) if indexes is None else indexes
     import subprocess
     import tempfile
     with tempfile.TemporaryDirectory(prefix="authority-shards-") as raw:
-        reports = [Path(raw) / f"shard-{index}.json" for index in range(count)]
-        logs = [Path(raw) / f"shard-{index}.log" for index in range(count)]
+        reports = [Path(raw) / f"shard-{index}.json" for index in indexes]
+        logs = [Path(raw) / f"shard-{index}.log" for index in indexes]
         children = []
-        for index in range(count):
+        for slot, index in enumerate(indexes):
             env = dict(os.environ, AUTHORITY_SHARD=str(index), AUTHORITY_SHARD_COUNT=str(count),
-                       AUTHORITY_TIMING_OUTPUT=str(reports[index]))
-            with logs[index].open("wb") as log:
+                       AUTHORITY_TIMING_OUTPUT=str(reports[slot]))
+            with logs[slot].open("wb") as log:
                 children.append(subprocess.Popen([sys.executable, str(Path(__file__).resolve())],
                                                  env=env, stdout=log, stderr=subprocess.STDOUT))
         # Bound each child below the job timeout so a hung shard still yields
@@ -203,15 +220,15 @@ def run_all(count: int, expected: list[str]) -> bool:
                     log.write(b"\nauthority shard timed out and was terminated\n")
                 codes.append(-1)
         loaded: list[dict[str, Any] | None] = []
-        for index in range(count):
-            print(f"::group::authority shard {index}/{count} (exit {codes[index]})", flush=True)
-            print(logs[index].read_text(encoding="utf-8", errors="replace"), flush=True)
+        for slot, index in enumerate(indexes):
+            print(f"::group::authority shard {index}/{count} (exit {codes[slot]})", flush=True)
+            print(logs[slot].read_text(encoding="utf-8", errors="replace"), flush=True)
             print("::endgroup::", flush=True)
             try:
-                loaded.append(json.loads(reports[index].read_text(encoding="utf-8")))
+                loaded.append(json.loads(reports[slot].read_text(encoding="utf-8")))
             except (OSError, ValueError):
                 loaded.append(None)
-    problems = coverage_problems(codes, loaded, expected)
+    problems = coverage_problems(codes, loaded, expected, plan_sha256)
     present = [report for report in loaded if report is not None]
     slowest = sorted((o for report in present for o in report["observations"]), key=lambda o: -o["seconds"])[:10]
     print("slowest authority cases: " + ", ".join(f"{o['id'].rsplit('.', 1)[-1]} {o['seconds']:.1f}s" for o in slowest),
@@ -226,12 +243,17 @@ def main() -> None:
     if os.environ.get("AUTHORITY_SHARD") == "all":
         try:
             count = int(os.environ.get("AUTHORITY_SHARD_COUNT", "4"))
+            groups = int(os.environ.get("AUTHORITY_GROUPS", "1"))
+            group = int(os.environ.get("AUTHORITY_GROUP", "0"))
+            indexes = group_indexes(count, groups, group)
             cases = discover()
-            partition(cases, count, load_weights())  # Refuse an invalid count before any child starts.
-            expected = [case.id() for case in cases]
+            # Refuses an invalid count before any child starts.
+            shards, _ = partition(cases, count, load_weights())
+            expected = [case.id() for index in indexes for case in shards[index]]
         except (OSError, ValueError) as error:
             raise SystemExit(str(error)) from error
-        if not run_all(count, expected):
+        print(f"authority group {group}/{groups}: partitions {indexes} of {count}", flush=True)
+        if not run_all(count, expected, indexes, plan_digest(shards)):
             raise SystemExit(1)
         return
     try:
@@ -255,7 +277,7 @@ def main() -> None:
         "format": "codearbiter.authority-shard-observation/1",
         "shard": index, "shard_count": count,
         "discovered_count": len(cases), "selected_ids": plan[index],
-        "plan_sha256": hashlib.sha256(json.dumps(plan, separators=(",", ":")).encode()).hexdigest(),
+        "plan_sha256": plan_digest(shards),
         "tests_run": result.testsRun, "skipped": len(result.skipped),
         "passed": bool(passed), "observations": result.observations,
     }

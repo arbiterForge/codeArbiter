@@ -519,7 +519,7 @@ jobs:
   # This is NOT a release candidate and does not replace artifact-engine.
   artifact-engine:
     name: "[CHECK] | [CORE] | Structured artifact  <${{ matrix.expected_platform }}>"
-    needs: [changes, artifact-native-build, artifact-native-default, artifact-native-coverage, artifact-native-context, artifact-native-bridges, artifact-authority, artifact-coverage]
+    needs: [changes, artifact-native-build, artifact-native-default, artifact-native-coverage, artifact-native-bridges, artifact-authority, artifact-coverage]
     if: ${{ !cancelled() && needs.changes.outputs.artifacts == 'true' }}
     runs-on: ${{ matrix.os }}
     # Split native verification; every original check retains its platform budget.
@@ -551,15 +551,14 @@ jobs:
             expected_platform: darwin/arm64
             artifact_binary: ca-artifact-darwin-arm64
     steps:
+      # The issuer needs the checked-out HEAD, Python and the pinned Go tool;
+      # it runs no Node and reads no history.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 22.19.0
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.27.1"
@@ -679,7 +678,7 @@ jobs:
           include-hidden-files: false
           overwrite: false
   artifact-native-default:
-    name: "[CHECK] | [CORE] | Default native and Linux checks <${{ matrix.expected_platform }}>"
+    name: "[CHECK] | [CORE] | Default native, storage and context checks <${{ matrix.expected_platform }}>"
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
@@ -763,6 +762,33 @@ jobs:
       - name: Verify ship-set evidence-input behavior
         if: matrix.os == 'ubuntu-24.04'
         run: python .github/scripts/test_ship_set_inputs.py
+      # Storage, recovery and context checks share this runner rather than
+      # queueing a separate native job per platform at the start of the run.
+      - name: Verify named native storage and recovery contract
+        run: python .github/scripts/test_artifact_native.py
+      - name: Verify the finite context Go test bridge
+        run: python .github/scripts/test_context_verification.py
+      - name: Verify named context document Go cases
+        env:
+          CONTEXT_NATIVE_OBSERVATION_OUTPUT: ${{ runner.temp }}/context-native-observation.json
+        run: python .github/scripts/test_context_native.py
+      - name: Reject missing and nonisolated installed context candidates
+        run: >-
+          python .github/scripts/test_context_installed.py
+          InstalledContextQualification.test_t044_rejects_missing_candidate_identity
+          InstalledContextQualification.test_t044_rejects_nonisolated_environment
+          -v
+      - name: Verify context workflow with the pinned Go toolchain
+        run: python .github/scripts/test_context_workflow.py
+      - name: Preserve native context observation from its execution owner
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci20-native-context-${{ matrix.os }}
+          path: ${{ runner.temp }}/context-native-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
   artifact-native-coverage:
     name: "[CHECK] | [CORE] | Instrumented native coverage <${{ matrix.expected_platform }}>"
     needs: changes
@@ -830,82 +856,6 @@ jobs:
         with:
           name: artifact-statements-${{ matrix.os }}
           path: ${{ runner.temp }}/artifact-statements
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: false
-          overwrite: false
-  artifact-native-context:
-    name: "[CHECK] | [CORE] | Native storage and context checks <${{ matrix.expected_platform }}>"
-    needs: changes
-    if: needs.changes.outputs.artifacts == 'true'
-    runs-on: ${{ matrix.os }}
-    # Split native verification; every original check retains its platform budget.
-    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}
-    permissions:
-      contents: read
-    env:
-      GOTOOLCHAIN: local
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            artifact_binary: ca-artifact-linux-amd64
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            artifact_binary: ca-artifact-linux-arm64
-          - os: windows-2025
-            expected_platform: windows/amd64
-            artifact_binary: ca-artifact-windows-amd64.exe
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            artifact_binary: ca-artifact-windows-arm64.exe
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            artifact_binary: ca-artifact-darwin-amd64
-          - os: macos-26
-            expected_platform: darwin/arm64
-            artifact_binary: ca-artifact-darwin-arm64
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14"
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 22.19.0
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: "1.27.1"
-          check-latest: false
-          cache: false
-          go-download-base-url: https://go.dev/dl
-      - name: Verify exact Go toolchain
-        run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
-      - name: Verify named native storage and recovery contract
-        run: python .github/scripts/test_artifact_native.py
-      - name: Verify the finite context Go test bridge
-        run: python .github/scripts/test_context_verification.py
-      - name: Verify named context document Go cases
-        env:
-          CONTEXT_NATIVE_OBSERVATION_OUTPUT: ${{ runner.temp }}/context-native-observation.json
-        run: python .github/scripts/test_context_native.py
-      - name: Reject missing and nonisolated installed context candidates
-        run: >-
-          python .github/scripts/test_context_installed.py
-          InstalledContextQualification.test_t044_rejects_missing_candidate_identity
-          InstalledContextQualification.test_t044_rejects_nonisolated_environment
-          -v
-      - name: Verify context workflow with the pinned Go toolchain
-        run: python .github/scripts/test_context_workflow.py
-      - name: Preserve native context observation from its execution owner
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ci20-native-context-${{ matrix.os }}
-          path: ${{ runner.temp }}/context-native-observation.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -3729,7 +3679,6 @@ jobs:
       - artifact-native-build
       - artifact-native-default
       - artifact-native-coverage
-      - artifact-native-context
       - artifact-native-bridges
       - artifact-authority
       - artifact-browser
@@ -3770,7 +3719,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-context'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
           artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"
           artifact_coverage_result="${{ needs['artifact-coverage'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"

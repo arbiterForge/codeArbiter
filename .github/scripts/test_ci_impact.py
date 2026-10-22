@@ -3645,7 +3645,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("Bind the candidate to this exact-host native result", qualifier)
         self.assertIn("Preserve the exact native candidate and qualification receipt", qualifier)
         for group in ("artifact-native-build", "artifact-native-default",
-                      "artifact-native-coverage", "artifact-native-context",
+                      "artifact-native-coverage",
                       "artifact-native-bridges"):
             job = jobs[group]
             self.assertIn("fail-fast: false", job)
@@ -3654,7 +3654,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         for script in ("test_artifact_conformance.py", "test_artifact_approval_adapter.py",
                        "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py"):
             self.assertIn(script, jobs["artifact-native-bridges"])
-        self.assertIn("test_artifact_native.py", jobs["artifact-native-context"])
+        self.assertIn("test_artifact_native.py", jobs["artifact-native-default"])
 
     def test_artifact_consumer_closure_selects_exactly_one_declared_native_cell(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
@@ -3683,7 +3683,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("artifact-engine", jobs)
         job = "\n".join(jobs[name] for name in (
             "artifact-engine", "artifact-native-build", "artifact-native-default",
-            "artifact-native-context", "artifact-native-bridges"))
+            "artifact-native-bridges"))
         self.assertIn("ci20_native_binding.py gate", jobs["artifact-engine"])
         self.assertIn("ci20_native_binding.py stamp", jobs["artifact-native-build"])
 
@@ -4159,7 +4159,7 @@ class ContextImpactClosureTest(unittest.TestCase):
     def _assert_context_closure(self, ci, impact):
         jobs = workflow_jobs(ci)
         hooks = jobs["hooks"]
-        engine = jobs["artifact-native-context"]
+        engine = jobs["artifact-native-default"]
         bridges = jobs["artifact-native-bridges"]
         qualifier = jobs["artifact-engine"]
         cold = jobs["artifact-package-cold"]
@@ -4176,7 +4176,7 @@ class ContextImpactClosureTest(unittest.TestCase):
             command = f"python .github/scripts/{script}"
             index = run_step_index(engine, command)
             self.assertGreaterEqual(index, 0, command)
-            self.assertIn("artifact-native-context",
+            self.assertIn("artifact-native-default",
                           qualifier.split("    needs:", 1)[1].splitlines()[0])
         self.assertIn('go-version: "1.27.1"', engine)
         self.assertIn("needs: [changes, artifact-package-assembly]", cold)
@@ -4249,8 +4249,8 @@ class ContextImpactClosureTest(unittest.TestCase):
             with self.subTest(removed=before):
                 self.assertIn(before, ci)
                 if before == 'go-version: "1.27.1"':
-                    start = ci.index(chr(10) + "  artifact-native-context:" + chr(10))
-                    end = ci.index(chr(10) + "  artifact-native-bridges:" + chr(10), start)
+                    start = ci.index(chr(10) + "  artifact-native-default:" + chr(10))
+                    end = ci.index(chr(10) + "  artifact-native-coverage:" + chr(10), start)
                     engine = ci[start:end]
                     self.assertEqual(engine.count(before), 1)
                     changed = ci[:start] + engine.replace(before, after, 1) + ci[end:]
@@ -4277,7 +4277,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         self.assertNotIn("continue-on-error:", qualifier)
         self.assertIn("fail-fast: false", qualifier)
         for name in ("artifact-native-build", "artifact-native-default",
-                     "artifact-native-coverage", "artifact-native-context",
+                     "artifact-native-coverage",
                      "artifact-native-bridges"):
             block = jobs[name]
             self.assertIn('go-version: "1.27.1"', block)
@@ -4286,7 +4286,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
             for platform in ("linux/amd64", "linux/arm64", "windows/amd64",
                              "windows/arm64", "darwin/amd64", "darwin/arm64"):
                 self.assertIn("expected_platform: " + platform, block)
-        self.assertIn("test_artifact_native.py", jobs["artifact-native-context"])
+        self.assertIn("test_artifact_native.py", jobs["artifact-native-default"])
         for script in ("test_artifact_approval_adapter.py",
                        "test_artifact_prerequisite_adapter.py",
                        "test_artifact_reconciliation_adapter.py",

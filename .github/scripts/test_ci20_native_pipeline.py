@@ -28,17 +28,15 @@ OWNERS = {
         "Verify artifact consumer inventory closure",
         "Verify SMARTS engine contract by exact test name",
         "Verify ship-set evidence-input behavior",
+        "Verify named native storage and recovery contract",
+        "Verify the finite context Go test bridge", "Verify named context document Go cases",
+        "Reject missing and nonisolated installed context candidates",
+        "Verify context workflow with the pinned Go toolchain",
     ),
     "artifact-native-coverage": (
         "Exercise the actual CLI with native statement instrumentation",
         "Collect native unit and executable statement coverage",
         "Preserve the native statement profiles",
-    ),
-    "artifact-native-context": (
-        "Verify named native storage and recovery contract",
-        "Verify the finite context Go test bridge", "Verify named context document Go cases",
-        "Reject missing and nonisolated installed context candidates",
-        "Verify context workflow with the pinned Go toolchain",
     ),
     "artifact-native-bridges": (
         "Create locked reference-validation environment",
@@ -250,6 +248,19 @@ class ShardContract(unittest.TestCase):
         for label, (codes, reports, problem) in cases.items():
             with self.subTest(label=label):
                 self.assertTrue(any(problem in found for found in authority.coverage_problems(codes, reports, expected)))
+        self.assertEqual(authority.coverage_problems([0, 0], good, expected, "p"), [])
+        self.assertTrue(any("disagree" in found for found in authority.coverage_problems([0, 0], good, expected, "q")))
+
+    def test_split_jobs_cover_every_partition_exactly_once(self):
+        for count, groups in ((4, 1), (8, 2), (8, 3), (5, 5)):
+            with self.subTest(count=count, groups=groups):
+                covered = [index for group in range(groups)
+                           for index in authority.group_indexes(count, groups, group)]
+                self.assertEqual(sorted(covered), list(range(count)))
+                self.assertTrue(all(authority.group_indexes(count, groups, group) for group in range(groups)))
+        for count, groups, group in ((4, 0, 0), (4, 5, 0), (8, 2, 2), (8, 2, -1)):
+            with self.subTest(count=count, groups=groups, group=group), self.assertRaises(ValueError):
+                authority.group_indexes(count, groups, group)
 
 
 class WorkflowContract(unittest.TestCase):
