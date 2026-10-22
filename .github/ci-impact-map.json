@@ -76,6 +76,30 @@
   ],
   "edges": [
     {
+      "glob": ".github/scripts/run_artifact_authority_shard.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/fixtures/artifact-authority-timings.json",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/scripts/test_ci20_native_pipeline.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
+      "glob": ".github/scripts/ci20_native_binding.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
       "glob": ".github/scripts/test_ci20_correspondence.py",
       "checks": [
         "artifact-engine"

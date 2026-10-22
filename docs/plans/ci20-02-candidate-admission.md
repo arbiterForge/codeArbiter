@@ -187,3 +187,88 @@ strict qualification.
 ## CI20-04 exact-byte correspondence (implementation batch)
 
 The package assembly job now waits for both six-platform provisional producer and direct-test groups, downloads same-run unqualified binaries, and refuses packaging unless the six provisional binary bytes exactly match the six existing native-tested candidate bytes. The read-only CI20 correspondence checker requires exact source, run, workflow, platform, build flags, module/tool identities, release manifests, native-tested receipts, and context observations; it explicitly records that this check is not qualification. Existing artifact-engine qualification and the full release package/cold-test gates remain authoritative. Eleven correspondence negative controls and 108 impact tests passed locally. A replay using all twelve actual hosted archives from run 39542204174 passed six-of-six byte correspondence; the GitHub Actions checkout source was the PR merge commit 20fa81a5, not the PR branch head. This is exact-byte evidence, not a completed successful CI run or a demonstrated under-20-minute latency.
+
+
+## CI20-04: Parallel native verification and strict qualification (implementation candidate)
+
+This batch restructures the **development** CI graph without changing installed
+product behavior, package formats, native admission rules, license, or release
+channels. This is **not** a claim of an achieved twenty-minute run.
+
+After impact selection, each of the six supported native platforms has four
+independent owners that start without waiting on the others:
+
+- `artifact-native-build` executes the existing `tools/build-artifacts.py`
+  **without** `--skip-tests`: native, uncached CGO-disabled Go tests and vet
+  complete **before** its `native_tested: true` manifest is written. Its
+  candidate is transferred within the same Actions run, along with source,
+  run/attempt, module, Go executable, manifest and binary digests.
+- `artifact-native-default` retains the distinct original default Go
+  configuration, vet, Linux race, generated types, public surfaces, SMARTS,
+  consumer and ship-set identity tests; original Linux-only selections remain.
+- `artifact-native-coverage` retains the real instrumented CLI execution,
+  native statement collection and six separate coverage profiles. The complete
+  coverage union and existing statement floor remain required.
+- `artifact-native-context` retains native persistence/recovery checks,
+  finite named context cases, installed-input refusals and context workflow.
+  Its real source/tool-bound context observation is uploaded separately.
+
+`artifact-native-bridges` and four exhaustive,
+historically duration-balanced `artifact-authority` shards per platform
+consume the **actually tested** builder artifact after the entire
+`artifact-native-build` matrix passes. They do **not** compile an independent
+candidate or treat a provisional test binary as an installed payload.
+The new shard partition preserves whole Python test classes for their
+fixtures, discovers every current test (including newly added regressions),
+requires nonempty complete disjoint membership, runs real tests, and records
+per-case outcomes and timing. Historical Windows ARM64 timings from run
+`39039950454` are strictly scheduling hints, not current measured facts.
+
+The six-platform `artifact-engine` becomes a **strict final issuer** rather
+than a serialized implementation-test suite. It requires all declared native,
+provisional, authority and coverage job groups to have succeeded, checks
+the exact downloaded tested candidate and finite context observation, and
+then executes the original `tools/build-artifacts.py --qualify-existing`
+under the original exact-host `artifact-engine` identity. It still uploads
+the same `artifact-native-${{ matrix.os }}` payload and qualification receipt
+for downstream browser, host assembly, exact-byte correspondence and all
+eighteen cold host/package checks. The protected
+`[GATE ] | [REPO] | Merge readiness` remains the required aggregate.
+Every newly introduced required job is registered in both its `needs` and
+required-result list. Missing, failed, cancelled, pending or improperly
+skipped native verification cannot qualify a release payload.
+
+The tested-candidate metadata is an **unkeyed same-run substitution check**,
+not a signature and not an independent native test result. GitHub-hosted
+job-status checks provide the execution boundary. Consumer roles are
+allowlisted. Earlier successful producer attempts may be reused only by
+later consumers of the same commit and workflow run; other runs, changed
+Go/module/binary bytes and additional files are refused.
+
+The accompanying `test_ci20_native_pipeline.py` includes gate-failure
+negative controls, exact producer/consumer admission refusal, deterministic
+complete four-way shard coverage, current-source workflow ownership,
+full native coverage and both gate registrations, and paginated (>100)
+hosted check retrieval. The existing CI impact, provenance, release, context,
+SMARTS and ship-set contract suites remain part of the verification set.
+Any prior contract references to the old single-owner workflow are migrated
+to the **actual** step owner, not deleted to conceal a missing test.
+
+**Host verification required after publication:** six native tested builds;
+all six default, coverage, context and bridge cells; all 24 authority shards;
+six strict final qualification receipts; complete coverage union; browser
+qualification; package assembly and all 18 cold package tests; protected
+merge gate and applicable separate CodeQL/review checks. Record total
+trigger-to-final-completion time, queue delay, exact commit and legitimate
+impact-selected skips. Old successful PR #993 timings and provisional
+byte equality from #1013 prove neither this run nor a general performance
+guarantee.
+
+**Capacity boundary:** this graph may increase the number of short runners,
+especially macOS. If the real end-to-end path is not under twenty minutes,
+inspect the longest actual dependency chain **and runner queueing** before
+adding concurrency, changing shard count, or requesting paid capacity.
+Org-level concurrency settings and paid runners remain approval-gated.
+A complete green run is required before merging. Rollback is a normal
+revert of the workflow/test/binding/provenance change together; ordinary
+installed project state is unaffected.

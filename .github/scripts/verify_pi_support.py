@@ -328,26 +328,44 @@ def _hosted_checks_match(check_runs: Any, commit: str) -> bool:
 
 
 def _load_hosted_checks(root: Path, commit: str) -> bool:
+    """Inspect the full check-run population, not an incomplete first page."""
     gh = shutil.which("gh")
     if gh is None:
         return False
-    completed = subprocess.run(
-        [
-            gh, "api", "--method", "GET",
-            "-H", "Accept: application/vnd.github+json",
-            f"repos/{{owner}}/{{repo}}/commits/{commit}/check-runs",
-            "-f", "per_page=100",
-        ],
-        cwd=root, capture_output=True, text=True, encoding="utf-8", errors="replace",
-        timeout=30, check=False,
-    )
-    if completed.returncode != 0:
-        return False
     try:
-        document = json.loads(completed.stdout)
-    except json.JSONDecodeError:
+        result = subprocess.run(
+            [gh, "api", "--method", "GET", "--paginate", "--slurp",
+             "-H", "Accept: application/vnd.github+json",
+             f"repos/{{owner}}/{{repo}}/commits/{commit}/check-runs",
+             "-f", "per_page=100"],
+            cwd=root, capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=30, check=False,
+        )
+        if result.returncode != 0:
+            return False
+        pages = json.loads(result.stdout)
+    except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError):
         return False
-    return isinstance(document, dict) and _hosted_checks_match(document.get("check_runs"), commit)
+    if not isinstance(pages, list) or not pages:
+        return False
+    checks = []
+    expected_counts = set()
+    for page in pages:
+        if (not isinstance(page, dict)
+                or type(page.get("total_count")) is not int
+                or not isinstance(page.get("check_runs"), list)
+                or page["total_count"] < 0):
+            return False
+        expected_counts.add(page["total_count"])
+        checks.extend(page["check_runs"])
+    if expected_counts != {len(checks)}:
+        return False
+    identifiers = [check.get("id") if isinstance(check, dict) else None
+                   for check in checks]
+    if (any(type(value) is not int for value in identifiers)
+            or len(set(identifiers)) != len(identifiers)):
+        return False
+    return _hosted_checks_match(checks, commit)
 
 
 def _generation_idempotency(root: Path) -> bool:
