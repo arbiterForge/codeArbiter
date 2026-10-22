@@ -1689,6 +1689,38 @@ class PiHostLocksTest(unittest.TestCase):
                 waits = {"recovers": [15], "exhausted": [15, 45], "malformed-is-not-retried": []}[label]
                 self.assertEqual([call.args[0] for call in sleep.call_args_list], waits)
 
+    def test_install_signature_audit_retries_and_reports_its_last_failure(self):
+        helper = load_helper()
+        clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})
+        inventory = json.dumps({"dependencies": {PACKAGE: {"version": SUPPORTED_VERSION}}})
+        for label, codes, error in (
+            ("recovers", [1, 0], None),
+            ("exhausted", [1] * helper.AUDIT_ATTEMPTS, "signatures failed after 3 attempts: .*keys endpoint 503"),
+        ):
+            pending, calls = list(codes), []
+
+            def run(command, **kwargs):
+                if command[1:3] == ["audit", "signatures"]:
+                    self.assertFalse(kwargs["check"])
+                    calls.append(command)
+                    return SimpleNamespace(stdout="", stderr="npm error keys endpoint 503",
+                                           returncode=pending.pop(0))
+                if command[1:3] == ["ls", "--all"]:
+                    return SimpleNamespace(stdout=inventory, returncode=0)
+                return SimpleNamespace(stdout=clean, returncode=0)
+            with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-sig-") as raw, \
+                    mock.patch.object(helper.subprocess, "run", side_effect=run), \
+                    mock.patch.object(helper.time, "sleep") as sleep:
+                root = Path(raw)
+                if error is None:
+                    helper._audit_install(root, root, SUPPORTED_VERSION)
+                else:
+                    with self.assertRaisesRegex(ValueError, error):
+                        helper._audit_install(root, root, SUPPORTED_VERSION)
+                self.assertEqual(len(calls), len(codes))
+                self.assertEqual([call.args[0] for call in sleep.call_args_list],
+                                 {"recovers": [15], "exhausted": [15, 45]}[label])
+
     def test_install_audit_rejects_wrong_installed_pi_version(self):
         helper = load_helper()
         clean = json.dumps({"auditReportVersion": 2, "vulnerabilities": {}, "metadata": {}})

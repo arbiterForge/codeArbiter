@@ -1048,19 +1048,27 @@ def _audit_install(
                 raise ValueError(f"npm audit registry error after {attempt} attempts: {registry_error}")
             time.sleep(AUDIT_BACKOFF_SECONDS[attempt - 1])
         _check_audit_findings(completed.stdout, allowed, destination)
-    checks = [
-        [npm, "audit", "signatures", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
-        [npm, "ls", "--all", "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
-    ]
-    for command in checks:
+    # A bad signature fails every attempt; only a transient registry or key
+    # fetch failure can pass on a later one. The last failure is reported.
+    signatures = [npm, "audit", "signatures", "--ignore-scripts", *cache_args, "--prefix", str(destination)]
+    for attempt in range(1, AUDIT_ATTEMPTS + 1):
         completed = subprocess.run(
-            command, cwd=cwd, check=True, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
+            signatures, cwd=cwd, check=False, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
         )
-        if command[1:3] == ["ls", "--all"]:
-            inventory = json.loads(completed.stdout)
-            agent = inventory.get("dependencies", {}).get(PACKAGE, {})
-            if not isinstance(agent, dict) or agent.get("version") != version:
-                raise ValueError("installed Pi dependency tree does not match the exact reviewed version")
+        if completed.returncode == 0:
+            break
+        if attempt == AUDIT_ATTEMPTS:
+            detail = " ".join(((completed.stderr or "") + " " + (completed.stdout or "")).split())[-400:]
+            raise ValueError(f"npm audit signatures failed after {attempt} attempts: {detail or 'no output'}")
+        time.sleep(AUDIT_BACKOFF_SECONDS[attempt - 1])
+    completed = subprocess.run(
+        [npm, "ls", "--all", "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
+        cwd=cwd, check=True, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
+    )
+    inventory = json.loads(completed.stdout)
+    agent = inventory.get("dependencies", {}).get(PACKAGE, {})
+    if not isinstance(agent, dict) or agent.get("version") != version:
+        raise ValueError("installed Pi dependency tree does not match the exact reviewed version")
 
 
 def capture_candidate(version: str, output: Path) -> dict[str, str]:
