@@ -5756,6 +5756,10 @@ class CodexNativeV2HookTest(unittest.TestCase):
                     self.assertEqual(first_state, "REJECTED", (first_state, final_state))
                     self.assertEqual(final_state, "REJECTED")
                     self._no_authority(armed)
+                    # The competing request belongs to this case only. Left
+                    # registered, every later case's hook observation would
+                    # reload it, so the matrix would grow quadratically.
+                    (self.adapter._registry_root() / (other["request_id"] + ".json")).unlink()
 
 
 
