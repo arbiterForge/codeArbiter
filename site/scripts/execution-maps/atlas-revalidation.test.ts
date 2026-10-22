@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS } from './atlas';
+import { loadAtlas, originalAtlas, retainsReviewedChangelog, REVALIDATED_AT, DRAFT_PREVIEW_SOURCE_BLOBS, UNITTEST_COLLECTOR_BLOB, BROWNFIELD_SOURCE_BLOBS, LEGACY_CODE_MAP_SOURCE_BLOBS, CONTEXT_MAINTENANCE_SOURCE_BLOBS, RUNTIME_COMPATIBILITY_SOURCE_BLOBS, INERT_VERIFIER_SOURCE_BLOBS, ASSISTIVE_SOURCE_BLOBS, SMARTS_INTEGRATION_SOURCE_BLOBS } from './atlas';
 import { geometryRecord, invocation, REVIEWED_AT, type HostDescriptor } from './atlas-model';
 import { commandMetadata } from './atlas-command';
 import packetPreparationSnapshot from './atlas-data/packet-preparation-review.json';
@@ -311,7 +311,7 @@ describe('atlas source compatibility revalidation', () => {
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
-    expect(git('hash-object', '--', path).trim()).toBe(RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]);
+    expect(git('hash-object', '--', path).trim()).toBe(INERT_VERIFIER_SOURCE_BLOBS[path]);
     expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
       .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
     expect(retainsReviewedChangelog(readFileSync(new URL('../../../CHANGELOG.md', import.meta.url), 'utf8'),
@@ -428,6 +428,26 @@ describe('atlas source compatibility revalidation', () => {
     }
   });
 
+  it('binds the #970 inert verifier change as a selector-only edit', () => {
+    const path = 'core/pysrc/_artifactauthoritylib.py';
+    expect(INERT_VERIFIER_SOURCE_BLOBS).toEqual({
+      [path]: '685327a043aac850145fbb875b21371c0c16acae',
+    });
+    const before = git('--no-replace-objects', 'cat-file', 'blob', RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]).split('\n');
+    const after = git('--no-replace-objects', 'cat-file', 'blob', INERT_VERIFIER_SOURCE_BLOBS[path]).split('\n');
+    // S32's cited range and everything before the selector helpers is byte-identical.
+    const firstChange = after.findIndex((line, index) => line !== before[index]);
+    expect(firstChange).toBeGreaterThan(190);
+    expect(after[firstChange]).toBe('def _command_lexer(command: str) -> shlex.shlex:');
+    // The changed region ends inside _verification_selector; later code is retained.
+    const afterStart = after.indexOf('    wrapper_start = _verification_wrapper_start(tokens)');
+    const beforeStart = before.indexOf('    wrapper_start = (');
+    const beforeEnd = before.indexOf('    )', beforeStart);
+    expect(afterStart).toBeGreaterThan(firstChange);
+    expect(beforeStart).toBeGreaterThan(firstChange);
+    expect(after.slice(afterStart + 1)).toEqual(before.slice(beforeEnd + 1));
+  });
+
   it('retains the exact historical legacy delivery documents separately from current maintenance', () => {
     for (const [path, blob] of Object.entries(LEGACY_CODE_MAP_SOURCE_BLOBS)) {
       expect(git('rev-parse', `${legacyDeliveryReview}:${path}`).trim()).toBe(blob);
@@ -497,7 +517,7 @@ describe('atlas source compatibility revalidation', () => {
     const owners = Object.entries({...DRAFT_PREVIEW_SOURCE_BLOBS, ...BROWNFIELD_SOURCE_BLOBS, ...LEGACY_CODE_MAP_SOURCE_BLOBS,
       ...CONTEXT_MAINTENANCE_SOURCE_BLOBS,
       'core/pysrc/_artifactauthoritylib.py': UNITTEST_COLLECTOR_BLOB,
-      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS});
+      ...RUNTIME_COMPATIBILITY_SOURCE_BLOBS, ...INERT_VERIFIER_SOURCE_BLOBS, ...ASSISTIVE_SOURCE_BLOBS, ...SMARTS_INTEGRATION_SOURCE_BLOBS});
     // One tracked-path query and one strict offline blob batch preserve exact
     // byte checks without three Git launches per owner on Windows.
     const ownerPaths = owners.map(([path]) => path).sort();

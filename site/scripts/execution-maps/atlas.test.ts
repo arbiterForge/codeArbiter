@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,SMARTS_INTEGRATION_SOURCE_BLOBS} from './atlas';
+import {loadAtlas,loadAtlasTheme,originalAtlas,checkReviewedSource,REVALIDATED_AT,DRAFT_PREVIEW_SOURCE_BLOBS,UNITTEST_COLLECTOR_BLOB,BROWNFIELD_SOURCE_BLOBS,LEGACY_CODE_MAP_SOURCE_BLOBS,CONTEXT_MAINTENANCE_SOURCE_BLOBS,RUNTIME_COMPATIBILITY_SOURCE_BLOBS,INERT_VERIFIER_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,SMARTS_INTEGRATION_SOURCE_BLOBS} from './atlas';
 import {commandMetadata} from './atlas-command';
 import {REVIEWED_AT,validateAtlas,geometryRecord} from './atlas-model';
 import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
@@ -112,7 +112,7 @@ describe('atlas source and original-composition regression contract',{timeout:30
         ['--no-replace-objects','cat-file','blob',UNITTEST_COLLECTOR_BLOB],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries({...BROWNFIELD_SOURCE_BLOBS,...LEGACY_CODE_MAP_SOURCE_BLOBS}))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries(CONTEXT_MAINTENANCE_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
-      for(const [path,blob] of Object.entries(RUNTIME_COMPATIBILITY_SOURCE_BLOBS))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
+      for(const [path,blob] of Object.entries({...RUNTIME_COMPATIBILITY_SOURCE_BLOBS,...INERT_VERIFIER_SOURCE_BLOBS}))writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
       for(const [path,blob] of Object.entries({...ASSISTIVE_SOURCE_BLOBS,...SMARTS_INTEGRATION_SOURCE_BLOBS})) {
         mkdirSync(dirname(join(dir,path)),{recursive:true});
         writeFileSync(join(dir,path),execFileSync('git',['--no-replace-objects','cat-file','blob',blob],{cwd:dir,env:fixtureEnv}));
@@ -153,6 +153,13 @@ describe('atlas source and original-composition regression contract',{timeout:30
         writeFileSync(file,Buffer.concat([reviewed,Buffer.from('\nUnreviewed assistive change.\n')]));
         expect(()=>loadAtlas(dir)).toThrow(`Atlas source changed: ${path}`);
       } finally {writeFileSync(file,reviewed);}
+    });
+    it.each(Object.keys(INERT_VERIFIER_SOURCE_BLOBS))('refuses further drift of the inert verifier owner %s',path=>{
+      const file=join(dir,path),reviewed=readFileSync(file);
+      try{
+        writeFileSync(file,Buffer.concat([reviewed,Buffer.from('\nUnreviewed selector change.\n')]));
+        expect(()=>loadAtlas(dir)).toThrow(`Atlas source changed: ${path}`);
+      }finally{writeFileSync(file,reviewed);}
     });
     it.each(Object.keys(RUNTIME_COMPATIBILITY_SOURCE_BLOBS))('refuses further drift of the runtime compatibility owner %s',path=>{
       // The unchanged fixture is positively checked once above by the
