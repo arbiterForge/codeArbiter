@@ -334,11 +334,6 @@ jobs:
               - '.github/scripts/test_go_test_parallel.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/scripts/run_artifact_authority_shard.py'
-              - '.github/scripts/ci20_correspondence.py'
-              - '.github/scripts/test_ci20_correspondence.py'
-              - '.github/scripts/ci20_candidate.py'
-              - '.github/scripts/test_ci20_candidate.py'
-              - '.github/scripts/ci20_direct_tests.py'
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
               # The site CVE gate's accepted-advisory judge and its only guard.
@@ -409,11 +404,6 @@ jobs:
               - '.github/scripts/test_go_test_parallel.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/scripts/run_artifact_authority_shard.py'
-              - '.github/scripts/ci20_correspondence.py'
-              - '.github/scripts/test_ci20_correspondence.py'
-              - '.github/scripts/ci20_candidate.py'
-              - '.github/scripts/test_ci20_candidate.py'
-              - '.github/scripts/ci20_direct_tests.py'
               # Fresh automatic publication requires an exact-head package
               # cohort even when the change is only release intent/version.
               - 'plugins/ca/.claude-plugin/plugin.json'
@@ -527,118 +517,9 @@ jobs:
 
   # CI20-03: a distinct, explicitly UNQUALIFIED native test-input lane.
   # This is NOT a release candidate and does not replace artifact-engine.
-  artifact-ci-build:
-    name: "[CHECK] | [CORE] | CI20 provisional native <${{ matrix.expected_platform }}>"
-    needs: changes
-    if: needs.changes.outputs.artifacts == 'true'
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            artifact_label: ubuntu-24.04
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            artifact_label: ubuntu-24.04-arm
-          - os: windows-2025
-            expected_platform: windows/amd64
-            artifact_label: windows-2025
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            artifact_label: windows-11-arm
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            artifact_label: macos-15-intel
-          - os: macos-26
-            expected_platform: darwin/arm64
-            artifact_label: macos-26
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14"
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: "1.27.1"
-          check-latest: false
-          cache: false
-          go-download-base-url: https://go.dev/dl
-      - name: Compile exact-source unqualified native test input
-        run: python .github/scripts/ci20_candidate.py build --candidate "${{ runner.temp }}/ci20-test-input"
-      - name: Preserve this run's unqualified native input
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ci20-test-input-${{ matrix.artifact_label }}
-          path: ${{ runner.temp }}/ci20-test-input
-          if-no-files-found: error
-          retention-days: 2
-          include-hidden-files: false
-          overwrite: false
-
-  # Direct binary tests may run against provisional bytes, not an installed
-  # ArtifactClient or qualified release manifest. All six platforms are required.
-  artifact-ci-direct-tests:
-    name: "[CHECK] | [CORE] | CI20 direct native <${{ matrix.expected_platform }}>"
-    needs: [changes, artifact-ci-build]
-    if: needs.changes.outputs.artifacts == 'true' && needs.artifact-ci-build.result == 'success'
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
-    permissions:
-      actions: read
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            artifact_label: ubuntu-24.04
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            artifact_label: ubuntu-24.04-arm
-          - os: windows-2025
-            expected_platform: windows/amd64
-            artifact_label: windows-2025
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            artifact_label: windows-11-arm
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            artifact_label: macos-15-intel
-          - os: macos-26
-            expected_platform: darwin/arm64
-            artifact_label: macos-26
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14"
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: "1.27.1"
-          check-latest: false
-          cache: false
-          go-download-base-url: https://go.dev/dl
-      - name: Download same-run provisional test input
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: ci20-test-input-${{ matrix.artifact_label }}
-          path: ${{ runner.temp }}/ci20-test-input
-      - name: Verify unqualified identity and exercise direct executable
-        run: python .github/scripts/ci20_direct_tests.py --candidate "${{ runner.temp }}/ci20-test-input"
-
   artifact-engine:
     name: "[CHECK] | [CORE] | Structured artifact  <${{ matrix.expected_platform }}>"
-    needs: [changes, artifact-ci-build, artifact-ci-direct-tests, artifact-native-build, artifact-native-default, artifact-native-coverage, artifact-native-context, artifact-native-bridges, artifact-authority, artifact-coverage]
+    needs: [changes, artifact-native-build, artifact-native-default, artifact-native-coverage, artifact-native-context, artifact-native-bridges, artifact-authority, artifact-coverage]
     if: ${{ !cancelled() && needs.changes.outputs.artifacts == 'true' }}
     runs-on: ${{ matrix.os }}
     # Split native verification; every original check retains its platform budget.
@@ -1157,7 +1038,7 @@ jobs:
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
   artifact-authority:
-    name: "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}> shard ${{ matrix.shard }}"
+    name: "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}>"
     needs: [changes, artifact-native-build]
     if: needs.changes.outputs.artifacts == 'true' && needs.artifact-native-build.result == 'success'
     runs-on: ${{ matrix.os }}
@@ -1172,76 +1053,16 @@ jobs:
         include:
           - os: ubuntu-24.04
             expected_platform: linux/amd64
-            shard: 0
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            shard: 1
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            shard: 2
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            shard: 3
           - os: ubuntu-24.04-arm
             expected_platform: linux/arm64
-            shard: 0
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            shard: 1
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            shard: 2
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            shard: 3
           - os: windows-2025
             expected_platform: windows/amd64
-            shard: 0
-          - os: windows-2025
-            expected_platform: windows/amd64
-            shard: 1
-          - os: windows-2025
-            expected_platform: windows/amd64
-            shard: 2
-          - os: windows-2025
-            expected_platform: windows/amd64
-            shard: 3
           - os: windows-11-arm
             expected_platform: windows/arm64
-            shard: 0
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            shard: 1
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            shard: 2
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            shard: 3
           - os: macos-15-intel
             expected_platform: darwin/amd64
-            shard: 0
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            shard: 1
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            shard: 2
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            shard: 3
           - os: macos-26
             expected_platform: darwin/arm64
-            shard: 0
-          - os: macos-26
-            expected_platform: darwin/arm64
-            shard: 1
-          - os: macos-26
-            expected_platform: darwin/arm64
-            shard: 2
-          - os: macos-26
-            expected_platform: darwin/arm64
-            shard: 3
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -1267,30 +1088,20 @@ jobs:
           --candidate "${{ runner.temp }}/artifact-candidate"
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
-      - name: Run exhaustive authority shard
+      # All four duration-balanced partitions run as concurrent isolated children
+      # on this one runner; the parent proves exact, complete, passing coverage.
+      - name: Run exhaustive authority partitions
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-          AUTHORITY_SHARD: ${{ matrix.shard }}
+          AUTHORITY_SHARD: all
           AUTHORITY_SHARD_COUNT: "4"
-          AUTHORITY_TIMING_OUTPUT: ${{ runner.temp }}/ci20-authority-timing.json
         run: python .github/scripts/run_artifact_authority_shard.py
-
       - name: Recheck tested candidate after authority coverage
         run: >-
           python .github/scripts/ci20_native_binding.py verify
           --candidate "${{ runner.temp }}/artifact-candidate"
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
-      - name: Preserve exhaustive shard membership and actual case timings
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ci20-authority-timings-${{ matrix.os }}-${{ matrix.shard }}
-          path: ${{ runner.temp }}/ci20-authority-timing.json
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: false
-          overwrite: false
   artifact-browser:
     name: "[CHECK] | [CORE] | Structured artifact browser qualification"
     needs: [changes, artifact-engine]
@@ -1429,8 +1240,8 @@ jobs:
 
   artifact-package-assembly:
     name: "[CHECK] | [CORE] | Structured artifact package assembly"
-    needs: [changes, artifact-engine, artifact-ci-build, artifact-ci-direct-tests]
-    if: needs.changes.outputs.artifacts == 'true' && needs.artifact-engine.result == 'success' && needs.artifact-ci-build.result == 'success' && needs.artifact-ci-direct-tests.result == 'success'
+    needs: [changes, artifact-engine]
+    if: needs.changes.outputs.artifacts == 'true' && needs.artifact-engine.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -1449,31 +1260,6 @@ jobs:
           pattern: artifact-native-*
           path: ${{ runner.temp }}/artifact-native
           merge-multiple: false
-      - name: Download same-run unqualified native inputs for correspondence
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          pattern: ci20-test-input-*
-          path: ${{ runner.temp }}/ci20-early
-          merge-multiple: false
-      - name: Require exact six-platform provisional-to-native byte correspondence
-        env:
-          CI20_EARLY_ROOT: ${{ runner.temp }}/ci20-early
-          CI20_NATIVE_ROOT: ${{ runner.temp }}/artifact-native
-          CI20_CORRESPONDENCE: ${{ runner.temp }}/ci20-correspondence.json
-        run: >-
-          python .github/scripts/ci20_correspondence.py
-          --early-root "$CI20_EARLY_ROOT"
-          --qualified-root "$CI20_NATIVE_ROOT"
-          --report "$CI20_CORRESPONDENCE"
-      - name: Preserve CI-only byte-correspondence observation
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ci20-byte-correspondence
-          path: ${{ runner.temp }}/ci20-correspondence.json
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: false
-          overwrite: false
       - name: Assemble the provenance-bound host payload overlay
         id: assemble
         env:
@@ -1758,10 +1544,6 @@ jobs:
           python-version: "3.x"
       - name: Validate impact-map fallback, receipt, and name contracts
         run: python .github/scripts/test_ci_impact.py
-      - name: Validate CI20 unqualified test-input admission and refusal
-        run: python .github/scripts/test_ci20_candidate.py
-      - name: Verify six-platform CI20 candidate byte-correspondence rejection
-        run: python .github/scripts/test_ci20_correspondence.py
       - name: Validate strict parallel native qualification and shard coverage
         run: python .github/scripts/test_ci20_native_pipeline.py
       - name: Validate the site CVE gate's accepted-advisory judge
@@ -2703,7 +2485,8 @@ jobs:
   hooks:
     name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"
     # Windows runs independent command groups on fresh runners. Linux/macOS
-    # retain their original order. No existing command is removed or repeated.
+    # retain their original order. The hermetic isolation run is the hook
+    # suite's only execution; no other command is removed or repeated.
     # MR-10: proves host-specific interpreter fallback on every OS - REAL (no
     # double execution), STUB (preferred interpreter fails), PY2 (`python`
     # exists but is not Python 3; ca must fall back and preserve exit-2 blocks),
@@ -2725,8 +2508,6 @@ jobs:
         include:
           - os: windows-latest
             partition: contracts
-          - os: windows-latest
-            partition: functional
           - os: windows-latest
             partition: isolation
     runs-on: ${{ matrix.os }}
@@ -3191,12 +2972,6 @@ jobs:
         # session+file -> first injects, second silent), .codearbiter/ self-read
         # silent allow, fail-open on malformed stdin, miss, and dormant-repo paths.
         run: python .github/scripts/test_pre_read.py
-      - name: Run the hooks/tests unittest suite
-        if: matrix.partition == 'all' || matrix.partition == 'functional'
-        # plugins/ca/hooks/tests/ - the hook enforcement + helper logic. Ran only
-        # locally per CONTRIBUTING; wired here so the guards are mechanically
-        # enforced. Stdlib-only, cross-platform (discovered on every matrix OS).
-        run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
       - name: Enforce suite hermeticity (issues #442, #462)
         if: matrix.partition == 'all' || matrix.partition == 'isolation'
         # The suite used to mutate the DEVELOPER'S REAL HOME - rewriting
@@ -3208,9 +2983,11 @@ jobs:
         #
         # This runs each suite under a PRISTINE redirected home seeded with a
         # stale-but-real settings.json, and asserts that home comes back
-        # byte-identical and the run emits no ResourceWarning. It runs the hook
-        # suite once with warning capture plus before/after home snapshots. The
-        # independent direct discovery invocation remains in its own slice.
+        # byte-identical and the run emits no ResourceWarning. This is the
+        # plugins/ca/hooks/tests suite's only CI execution: every discovered
+        # module runs once, in its own child and pristine home, a few at a time,
+        # and must pass with at least one test. A separate plain discovery run
+        # would repeat the same population.
         run: python .github/scripts/test_suite_hermeticity.py
       - name: Run ADR identity + supersession contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
@@ -3951,8 +3728,6 @@ jobs:
       - artifact-native-coverage
       - artifact-native-context
       - artifact-native-bridges
-      - artifact-ci-build
-      - artifact-ci-direct-tests
       - artifact-authority
       - artifact-browser
       - artifact-coverage
@@ -3992,7 +3767,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-context'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-ci-build'].result }} ${{ needs['artifact-ci-direct-tests'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-context'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
           artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"
           artifact_coverage_result="${{ needs['artifact-coverage'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"

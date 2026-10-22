@@ -39,8 +39,10 @@ offenders escaped notice on the maintainer's machine.
 
 from __future__ import annotations
 
+import concurrent.futures
 import hashlib
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -126,6 +128,53 @@ def run_suite(command: list[str], home: Path) -> subprocess.CompletedProcess[str
     )
 
 
+HOOK_TESTS = REPO / "plugins/ca/hooks/tests"
+RAN = re.compile(r"^Ran (\d+) tests? in ", re.M)
+# Scheduling order only: the longest observed modules start first so the
+# queue does not end on one of them. Discovery still owns membership.
+SLOW_FIRST = (
+    "test_contextmergelib", "test_crypto_context", "test_release_workflow_followup",
+    "test_append_only_conflict", "test_tribunal_run", "test_tribunal_workflow",
+    "test_pre_edit", "test_doctor",
+)
+
+
+def _text(value: str | bytes | None) -> str:
+    return value.decode("utf-8", "replace") if isinstance(value, bytes) else (value or "")
+
+
+def hook_modules() -> list[str]:
+    return sorted(path.stem for path in HOOK_TESTS.glob("test_*.py"))
+
+
+def run_hook_modules(modules: list[str], workers: int | None = None,
+                     start: str = "plugins/ca/hooks/tests", top: str | None = None) -> dict[str, tuple]:
+    """Run each module in a separate child and pristine home; return results and snapshots.
+
+    The start directory is the import root, exactly as in a plain `discover -s`
+    run, so each module imports its sibling helpers without relying on an
+    earlier module having extended sys.path."""
+    def one(module: str) -> tuple[str, tuple]:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            seeded_home(home)
+            before = snapshot(home)
+            command = [sys.executable, "-W", "always::ResourceWarning", "-m", "unittest",
+                       "discover", "-s", start, "-p", f"{module}.py", *(["-t", top] if top else [])]
+            try:
+                result = run_suite(command, home)
+            except subprocess.TimeoutExpired as expired:
+                # A wedged module is that module's failure, reported with its output.
+                result = subprocess.CompletedProcess(
+                    command, -1, _text(expired.stdout), _text(expired.stderr) + "\nchild timed out")
+            return module, (result, before, snapshot(home))
+    order = sorted(modules, key=lambda m: (SLOW_FIRST.index(m) if m in SLOW_FIRST else len(SLOW_FIRST), m))
+    # Hosted runners have three or four cores; more children only contend.
+    default = min(4, max(2, os.cpu_count() or 2))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers or default) as pool:
+        return dict(pool.map(one, order))
+
+
 class TestSuitesStayInsideTheirTempDirs(unittest.TestCase):
     maxDiff = None
 
@@ -198,51 +247,48 @@ class TestTheSuiteLeaksNoHandlesOrProcesses(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # One child execution supplies both observations. Class fixtures are
-        # recreated on each unittest suite run; no module-level result cache.
-        with tempfile.TemporaryDirectory() as directory:
-            home = Path(directory)
-            seeded_home(home)
-            cls.before = snapshot(home)
-            cls.result = run_suite(
-                [sys.executable, "-W", "always::ResourceWarning", "-m", "unittest",
-                 "discover", "-s", "plugins/ca/hooks/tests", "-p", "test_*.py", "-t", "."],
-                home,
-            )
-            cls.after = snapshot(home)
+        # This is the CI's only execution of the complete ca hook suite. Each
+        # discovered module runs in its own child with its own pristine home,
+        # several at once, so an unclean module is named and the runner's cores
+        # are used. Class fixtures are recreated on each run; no result cache.
+        cls.results = run_hook_modules(hook_modules())
+
+    def test_every_hook_module_ran_and_passed(self):
+        self.assertEqual(sorted(self.results), hook_modules())
+        for module, (result, _before, _after) in sorted(self.results.items()):
+            with self.subTest(module=module):
+                self.assertEqual(result.returncode, 0, f"{module} failed:\n{result.stdout}\n{result.stderr}")
+                ran = RAN.search(result.stderr)
+                self.assertTrue(ran and int(ran[1]) > 0, f"{module} ran no tests:\n{result.stderr[-4000:]}")
 
     def test_ca_hook_suite_leaves_the_user_home_byte_identical(self):
-        result, before, after = self.result, self.before, self.after
-        self.assertEqual(
-            result.returncode,
-            0,
-            result.stdout[-4000:] + result.stderr[-4000:],
-        )
-        created = sorted(set(after) - set(before))
-        removed = sorted(set(before) - set(after))
-        modified = sorted(
-            key for key in set(before) & set(after) if before[key] != after[key]
-        )
-        self.assertEqual(
-            (created, removed, modified),
-            ([], [], []),
-            "ca hook suite mutated redirected HOME: "
-            f"created={created}, removed={removed}, modified={modified}",
-        )
+        for module, (_result, before, after) in sorted(self.results.items()):
+            created = sorted(set(after) - set(before))
+            removed = sorted(set(before) - set(after))
+            modified = sorted(
+                key for key in set(before) & set(after) if before[key] != after[key]
+            )
+            with self.subTest(module=module):
+                self.assertEqual(
+                    (created, removed, modified),
+                    ([], [], []),
+                    f"{module} mutated redirected HOME: "
+                    f"created={created}, removed={removed}, modified={modified}",
+                )
 
     def test_the_ca_hook_suite_emits_no_resource_warnings(self):
-        result = self.result
-        self.assertEqual(result.returncode, 0, result.stderr[-4000:])
-        warnings = [
-            line.strip()
-            for line in (result.stdout + result.stderr).splitlines()
-            if "ResourceWarning" in line and self.ADVICE not in line
-        ]
-        self.assertEqual(
-            warnings, [],
-            "the hook suite leaked a handle or a process. On Windows these turn a "
-            "later teardown into an intermittent ERROR:\n  " + "\n  ".join(warnings),
-        )
+        for module, (result, _before, _after) in sorted(self.results.items()):
+            warnings = [
+                line.strip()
+                for line in (result.stdout + result.stderr).splitlines()
+                if "ResourceWarning" in line and self.ADVICE not in line
+            ]
+            with self.subTest(module=module):
+                self.assertEqual(
+                    warnings, [],
+                    f"{module} leaked a handle or a process. On Windows these turn a "
+                    "later teardown into an intermittent ERROR:\n  " + "\n  ".join(warnings),
+                )
 
 
 class TestTheGuardItselfCanFail(unittest.TestCase):
@@ -266,6 +312,35 @@ class TestTheGuardItselfCanFail(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertNotEqual(before, after, "the detector did not notice a write to ~")
         self.assertIn(".codearbiter/ledger.json", set(after) - set(before))
+
+    def test_the_parallel_module_run_attributes_each_defect_to_its_module(self):
+        modules = {
+            "test_clean": "import unittest\nclass T(unittest.TestCase):\n    def test_ok(self): pass\n",
+            "test_fails": "import unittest\nclass T(unittest.TestCase):\n    def test_no(self): self.fail('red')\n",
+            "test_writes_home": ("import os, pathlib, unittest\nclass T(unittest.TestCase):\n"
+                                 "    def test_w(self): (pathlib.Path(os.path.expanduser('~')) / 'stray').write_text('x')\n"),
+            "test_empty": "import unittest\n",
+            "test_leaks": ("import unittest\nclass T(unittest.TestCase):\n"
+                           "    def test_l(self): open(__file__)\n"),
+        }
+        with tempfile.TemporaryDirectory() as top:
+            package = Path(top) / "suite"
+            package.mkdir()
+            (package / "__init__.py").write_text("", encoding="utf-8")
+            for name, body in modules.items():
+                (package / f"{name}.py").write_text(body, encoding="utf-8")
+            results = run_hook_modules(sorted(modules), workers=3, start=str(package), top=top)
+        self.assertEqual(sorted(results), sorted(modules))
+        code = {name: result.returncode for name, (result, _, _) in results.items()}
+        self.assertEqual(code["test_clean"], 0)
+        self.assertNotEqual(code["test_fails"], 0)
+        ran = {name: RAN.search(result.stderr) for name, (result, _, _) in results.items()}
+        self.assertEqual(ran["test_empty"][1], "0")
+        _, before, after = results["test_writes_home"]
+        self.assertEqual(sorted(set(after) - set(before)), ["stray"])
+        self.assertEqual(results["test_clean"][1], results["test_clean"][2])
+        self.assertIn("ResourceWarning", results["test_leaks"][0].stderr)
+        self.assertNotIn("ResourceWarning", results["test_clean"][0].stderr)
 
     def test_a_suite_that_modifies_the_seeded_settings_is_caught(self):
         with tempfile.TemporaryDirectory() as directory:

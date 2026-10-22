@@ -1,6 +1,6 @@
 # CI20-02 — CI-only native test-input admission and qualification contract
 
-**Status:** provisional producer/verifier and six-platform direct-test CI lane implemented; NOT an accepted ADR, installed-product feature, qualified release pipeline, or evidence that the twenty-minute goal is achieved.
+**Status:** the provisional (state P) lane described below was implemented, measured and then **retired** in favor of reusing the genuinely module-tested candidate; see "CI20-05: capacity-bound restructure" at the end. This is not an accepted ADR, an installed-product feature, a qualified release pipeline, or evidence that the twenty-minute goal is achieved. Sections between this line and that one are retained as the historical record of the batches that preceded it.
 
 **Owning source:** `arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a` (development baseline).
 **Plan:** [CI under twenty minutes](https://github.com/arbiterForge/codeArbiter/pull/1011) in plan-only PR #1011.
@@ -272,3 +272,55 @@ Org-level concurrency settings and paid runners remain approval-gated.
 A complete green run is required before merging. Rollback is a normal
 revert of the workflow/test/binding/provenance change together; ordinary
 installed project state is unaffected.
+
+## CI20-05: capacity-bound restructure (supersedes the provisional lane)
+
+**Measured constraint.** The organization runs GitHub Free: 20 concurrent
+standard jobs, of which at most 5 may be macOS. Hosted run `39714614860`
+(head `b98efa72`) executed 138 jobs, 393 runner-minutes and 111 macOS
+runner-minutes, and most native jobs waited 13-30 minutes to start. Under
+those limits the total and macOS workload, not the dependency chain, set
+the floor: 393 / 20 is about 20 minutes and 111 / 5 about 22 minutes before
+any job waits on another. Each additional job also repeats checkout,
+toolchain installation and artifact transfer, 16-24% of runner time. The
+maintainer chose to remain on the free plan and reduce workload rather than
+buy or self-host capacity.
+
+**Provisional lane retired (deliberate deviation from CI20-02/03).** Every
+consumer that could start early (adapters, authority, packages) needs an
+installation whose manifest records `native_tested: true`; admitting
+provisional bytes there would require the ordinary-admission change this
+contract forbids. With the tested candidate shared directly, the early
+build therefore had no consumer except a capabilities smoke and a byte
+comparison against the same tested bytes. It cost twelve jobs (four on
+macOS) plus a late download in package assembly. `artifact-ci-build`,
+`artifact-ci-direct-tests`, `ci20_candidate.py`, `ci20_direct_tests.py`,
+`ci20_correspondence.py`, their suites, both merge-gate registrations,
+path filters and impact-map rows were removed together. Package assembly
+keeps its existing authoritative manifest, receipt and host-package
+verification; the removed correspondence check was a read-only observation
+over those same bytes. No installed admission or qualification rule changed.
+
+**In-job process parallelism replaces extra jobs.**
+
+- `tools/go_test_parallel.py` compiles each Go test binary once and runs
+  exact-name chunks as isolated processes, because several fixtures call
+  `t.Setenv` and cannot use `t.Parallel`. Discovery owns membership: every
+  listed test, example and fuzz seed must report exactly one pass or skip.
+  The default, CGO-disabled builder and Linux race configurations each still
+  run their complete population. Hosted Windows default tests fell from 24.6
+  to 9.9 runner-minutes and the tested build from 18.8 to 9.6.
+- Authority runs one job per platform; its four duration-balanced partitions
+  run as concurrent child processes, each bounded below the job timeout.
+  The parent accepts only identical partition plans whose selections cover
+  the discovered population exactly once and whose every child passed.
+  Per-shard timing uploads were removed: 24 extra artifact transfers, one of
+  which failed on a network error and failed qualification on all six hosts.
+- The hook suite previously ran twice per host: a plain discovery step and
+  again inside the hermeticity guard. The hermetic run is now its only
+  execution; each module runs in its own child and pristine home, a few at a
+  time, and must pass with at least one test. The Windows `functional` cell
+  was removed.
+
+Overlapping-run acceptance (CI20-07) remains the maintainer's decision once
+these measurements are complete; it is not redefined here.

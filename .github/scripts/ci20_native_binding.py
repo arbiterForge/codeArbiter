@@ -30,7 +30,7 @@ PLATFORMS = frozenset({
     "darwin/amd64", "darwin/arm64",
 })
 REQUIRED_STAGES = frozenset({
-    "changes", "artifact-ci-build", "artifact-ci-direct-tests",
+    "changes",
     "artifact-native-build", "artifact-native-default",
     "artifact-native-coverage", "artifact-native-context",
     "artifact-native-bridges", "artifact-authority",

@@ -3768,11 +3768,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("artifact-package-assembly", jobs)
         assembly = jobs["artifact-package-assembly"]
         for control in (
-            "needs: [changes, artifact-engine, artifact-ci-build, artifact-ci-direct-tests]",
-            "needs.artifact-ci-build.result == 'success'",
-            "needs.artifact-ci-direct-tests.result == 'success'",
-            "ci20_correspondence.py",
-            "pattern: ci20-test-input-*",
+            "needs: [changes, artifact-engine]",
             "needs.artifact-engine.result == 'success'",
             "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2",
             "pattern: artifact-native-*",

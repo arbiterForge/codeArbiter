@@ -153,8 +153,87 @@ class TimedResult(unittest.TextTestResult):
         super().stopTest(test)
 
 
+def coverage_problems(codes: list[int], reports: list[dict[str, Any] | None],
+                      expected: list[str]) -> list[str]:
+    """Every reason concurrent shard results do not prove the complete population."""
+    problems = [f"shard {i} exited {code}" for i, code in enumerate(codes) if code]
+    problems += [f"shard {i} wrote no observation" for i, report in enumerate(reports) if report is None]
+    present = [report for report in reports if report is not None]
+    if len({report["plan_sha256"] for report in present}) > 1:
+        problems.append("shards disagree on the partition plan")
+    selected = [test for report in present for test in report["selected_ids"]]
+    if len(selected) != len(set(selected)) or sorted(selected) != sorted(expected):
+        problems.append("shard selections do not cover the discovered population exactly once")
+    if any(report.get("passed") is not True for report in present):
+        problems.append("a shard did not pass")
+    return problems
+
+
+def run_all(count: int, expected: list[str]) -> bool:
+    """Run every shard as a concurrent child on this host and prove complete coverage.
+
+    One runner per platform uses its own cores instead of four queued runners
+    repeating checkout, toolchain and candidate setup. Each child keeps process
+    isolation; the parent accepts only identical plans whose selections cover
+    the discovered population exactly once and whose every child passed.
+    """
+    import subprocess
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="authority-shards-") as raw:
+        reports = [Path(raw) / f"shard-{index}.json" for index in range(count)]
+        logs = [Path(raw) / f"shard-{index}.log" for index in range(count)]
+        children = []
+        for index in range(count):
+            env = dict(os.environ, AUTHORITY_SHARD=str(index), AUTHORITY_SHARD_COUNT=str(count),
+                       AUTHORITY_TIMING_OUTPUT=str(reports[index]))
+            with logs[index].open("wb") as log:
+                children.append(subprocess.Popen([sys.executable, str(Path(__file__).resolve())],
+                                                 env=env, stdout=log, stderr=subprocess.STDOUT))
+        # Bound each child below the job timeout so a hung shard still yields
+        # every partition's log instead of the runner discarding them all.
+        deadline = time.monotonic() + float(os.environ.get("AUTHORITY_CHILD_TIMEOUT_SECONDS", "2100"))
+        codes = []
+        for index, child in enumerate(children):
+            try:
+                codes.append(child.wait(timeout=max(0.0, deadline - time.monotonic())))
+            except subprocess.TimeoutExpired:
+                child.kill()
+                child.wait()
+                with logs[index].open("ab") as log:
+                    log.write(b"\nauthority shard timed out and was terminated\n")
+                codes.append(-1)
+        loaded: list[dict[str, Any] | None] = []
+        for index in range(count):
+            print(f"::group::authority shard {index}/{count} (exit {codes[index]})", flush=True)
+            print(logs[index].read_text(encoding="utf-8", errors="replace"), flush=True)
+            print("::endgroup::", flush=True)
+            try:
+                loaded.append(json.loads(reports[index].read_text(encoding="utf-8")))
+            except (OSError, ValueError):
+                loaded.append(None)
+    problems = coverage_problems(codes, loaded, expected)
+    present = [report for report in loaded if report is not None]
+    slowest = sorted((o for report in present for o in report["observations"]), key=lambda o: -o["seconds"])[:10]
+    print("slowest authority cases: " + ", ".join(f"{o['id'].rsplit('.', 1)[-1]} {o['seconds']:.1f}s" for o in slowest),
+          flush=True)
+    for problem in problems:
+        print(f"authority shards FAILED: {problem}", flush=True)
+    return not problems
+
+
 def main() -> None:
     """Execute one complete shard and emit its membership and actual outcomes."""
+    if os.environ.get("AUTHORITY_SHARD") == "all":
+        try:
+            count = int(os.environ.get("AUTHORITY_SHARD_COUNT", "4"))
+            cases = discover()
+            partition(cases, count, load_weights())  # Refuse an invalid count before any child starts.
+            expected = [case.id() for case in cases]
+        except (OSError, ValueError) as error:
+            raise SystemExit(str(error)) from error
+        if not run_all(count, expected):
+            raise SystemExit(1)
+        return
     try:
         index = int(os.environ["AUTHORITY_SHARD"])
         count = int(os.environ.get("AUTHORITY_SHARD_COUNT", "4"))

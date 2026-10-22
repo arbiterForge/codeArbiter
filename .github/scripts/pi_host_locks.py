@@ -980,6 +980,8 @@ def _installed_versions(destination: Path, nodes: object, name: str) -> set[str]
 
 
 AUDIT_ATTEMPTS = 3
+# Registry advisory outages last minutes, not milliseconds; back off between attempts.
+AUDIT_BACKOFF_SECONDS = (15, 45)
 
 
 def _audit_registry_error(stdout: str) -> str | None:
@@ -1044,6 +1046,7 @@ def _audit_install(
             # findings or a malformed inventory still fails on the first read.
             if attempt == AUDIT_ATTEMPTS:
                 raise ValueError(f"npm audit registry error after {attempt} attempts: {registry_error}")
+            time.sleep(AUDIT_BACKOFF_SECONDS[attempt - 1])
         _check_audit_findings(completed.stdout, allowed, destination)
     checks = [
         [npm, "audit", "signatures", "--ignore-scripts", *cache_args, "--prefix", str(destination)],

@@ -12,12 +12,14 @@ import sys
 import unittest
 from pathlib import Path
 
+# The hermetic isolation run is the hook suite's only execution; a plain
+# discovery step would repeat the same population and must not return.
 DIRECT = 'python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"'
 ISOLATION = 'python .github/scripts/test_suite_hermeticity.py'
 GUARD = 'python .github/scripts/test_hook_ci_partition.py'
 # sha256(compact JSON of the ordered pre-partition command list). This binds
-# the guard to all 70 reviewed command steps without duplicating the workflow here.
-COMMANDS_SHA256 = 'd120613d9f6fe980baf33b17034bb1d0fef68dafa5f923506f2bb383d56c1e13'
+# the guard to all 69 reviewed command steps without duplicating the workflow here.
+COMMANDS_SHA256 = '2fb26e58f4d2079daaf6b7ecdeb085143dec4050b0738ce3d6c4eeb777c80e21'
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
         exclude:
@@ -26,8 +28,6 @@ MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: windows-latest
             partition: contracts
-          - os: windows-latest
-            partition: functional
           - os: windows-latest
             partition: isolation
 '''
@@ -75,10 +75,10 @@ def validate(
     expected_counts: dict[str, int] | None = None,
 ) -> dict[str,int]:
     if expected_counts is None:
-        expected_counts={'contracts':68,'functional':1,'isolation':1,'guard':1,'setup':2}
+        expected_counts={'contracts':68,'isolation':1,'guard':1,'setup':2}
     block=job_block(text,'hooks')
     pre=block.split('    steps:\n',1)[0]
-    require(pre.count(MATRIX)==1,'Expected exactly the reviewed five-cell matrix')
+    require(pre.count(MATRIX)==1,'Expected exactly the reviewed four-cell matrix')
     # No additional matrix members/axes may silently create empty cells.
     matrix_tail=pre.split('      matrix:\n',1)[1].split('    runs-on:',1)[0]
     require(matrix_tail == MATRIX, 'Matrix includes unreviewed cells or axes')
@@ -87,7 +87,7 @@ def validate(
     require('    runs-on: ${{ matrix.os }}\n' in pre,'Native operating systems must remain native')
     require('    timeout-minutes: 20\n' in pre,'Hook cells must retain the bounded 20-minute ceiling')
     require('continue-on-error:' not in block,'Required hook checks cannot soften failures')
-    counters={'contracts':0,'functional':0,'isolation':0,'guard':0,'setup':0}
+    counters={'contracts':0,'isolation':0,'guard':0,'setup':0}
     commands=[]
     for step in step_blocks(block):
         cmd=command(step)
@@ -104,8 +104,9 @@ def validate(
             counters['guard']+=1
             require(not predicates,'Partition validator must run in every cell')
             continue
+        require(cmd!=DIRECT,'The hermetic run already executes the complete hook suite')
         commands.append(cmd)
-        kind='functional' if cmd==DIRECT else 'isolation' if cmd==ISOLATION else 'contracts'
+        kind='isolation' if cmd==ISOLATION else 'contracts'
         counters[kind]+=1
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
         require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
@@ -124,29 +125,30 @@ def fixture() -> str:
     pre+='      - uses: actions/checkout@'+'1'*40+'\n        with:\n          fetch-depth: 0\n          fetch-tags: true\n          persist-credentials: false\n'
     pre+='      - uses: actions/setup-python@'+'2'*40+'\n'
     pre+='      - name: guard\n        run: '+GUARD+'\n'
-    for kind,cmd in [('contracts','python contract.py'),('functional',DIRECT),('isolation',ISOLATION)]:
+    for kind,cmd in [('contracts','python contract.py'),('isolation',ISOLATION)]:
         pre+=f"      - name: {kind}\n        if: matrix.partition == 'all' || matrix.partition == '{kind}'\n        run: {cmd}\n"
     return pre+"  ci-passed:\n    needs:\n      - hooks\n    steps:\n      - run: echo '${{ needs.hooks.result }}'\n"
 
 
 class PartitionContractTests(unittest.TestCase):
-    fixture_digest=command_digest(['python contract.py',DIRECT,ISOLATION])
-    fixture_counts={'contracts':1,'functional':1,'isolation':1,'guard':1,'setup':2}
+    fixture_digest=command_digest(['python contract.py',ISOLATION])
+    fixture_counts={'contracts':1,'isolation':1,'guard':1,'setup':2}
     def bad(self, before: str, after: str):
         with self.assertRaises(ValueError): validate(fixture().replace(before,after,1),self.fixture_digest,self.fixture_counts)
-    def test_valid_five_cell_contract(self): self.assertEqual(validate(fixture(),self.fixture_digest,self.fixture_counts)['functional'],1)
+    def test_valid_four_cell_contract(self): self.assertEqual(validate(fixture(),self.fixture_digest,self.fixture_counts)['isolation'],1)
     def test_missing_partition_fails(self): self.bad('            partition: isolation\n','')
     def test_wrong_windows_exclusion_fails(self): self.bad('partition: all','partition: contracts')
     def test_extra_axis_fails(self): self.bad('    runs-on:','        extra: [x]\n    runs-on:')
-    def test_wrong_functional_route_fails(self): self.bad("|| matrix.partition == 'functional'","|| matrix.partition == 'isolation'")
+    def test_wrong_isolation_route_fails(self): self.bad("|| matrix.partition == 'isolation'","|| matrix.partition == 'contracts'")
     def test_unassigned_contract_fails(self): self.bad("        if: matrix.partition == 'all' || matrix.partition == 'contracts'\n",'')
     def test_guard_cannot_be_skipped(self): self.bad('      - name: guard\n','      - name: guard\n        if: false\n')
-    def test_softened_check_fails(self): self.bad('      - name: functional\n','      - name: functional\n        continue-on-error: true\n')
+    def test_softened_check_fails(self): self.bad('      - name: isolation\n','      - name: isolation\n        continue-on-error: true\n')
     def test_missing_full_history_fails(self): self.bad('fetch-depth: 0','fetch-depth: 1')
     def test_missing_tags_fails(self): self.bad('fetch-tags: true','fetch-tags: false')
     def test_lost_gate_dependency_fails(self): self.bad('      - hooks\n','')
     def test_lost_gate_result_fails(self): self.bad('needs.hooks.result','needs.other.result')
-    def test_missing_direct_suite_fails(self): self.bad(DIRECT,'python different.py')
+    def test_missing_hermetic_suite_fails(self): self.bad(ISOLATION,'python different.py')
+    def test_repeated_plain_suite_fails(self): self.bad('python contract.py',DIRECT)
     def test_fail_fast_cannot_be_enabled(self): self.bad('fail-fast: false','fail-fast: true')
     def test_timeout_ceiling_cannot_expand(self): self.bad('timeout-minutes: 20','timeout-minutes: 30')
     def test_deleted_contract_command_fails(self): self.bad("      - name: contracts\n        if: matrix.partition == 'all' || matrix.partition == 'contracts'\n        run: python contract.py\n",'')

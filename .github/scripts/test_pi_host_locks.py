@@ -1677,7 +1677,8 @@ class PiHostLocksTest(unittest.TestCase):
                     return SimpleNamespace(stdout=inventory, returncode=0)
                 return SimpleNamespace(stdout="", returncode=0)
             with self.subTest(label=label), tempfile.TemporaryDirectory(prefix="ca-pi-audit-") as raw, \
-                    mock.patch.object(helper.subprocess, "run", side_effect=run):
+                    mock.patch.object(helper.subprocess, "run", side_effect=run), \
+                    mock.patch.object(helper.time, "sleep") as sleep:
                 root = Path(raw)
                 if error is None:
                     helper._audit_install(root, root, SUPPORTED_VERSION)
@@ -1685,6 +1686,8 @@ class PiHostLocksTest(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, error):
                         helper._audit_install(root, root, SUPPORTED_VERSION)
                 self.assertEqual(len(calls), audits)
+                waits = {"recovers": [15], "exhausted": [15, 45], "malformed-is-not-retried": []}[label]
+                self.assertEqual([call.args[0] for call in sleep.call_args_list], waits)
 
     def test_install_audit_rejects_wrong_installed_pi_version(self):
         helper = load_helper()

@@ -162,7 +162,7 @@ class GenuineNativeCandidateContract(unittest.TestCase):
                 self.assertEqual(binding.verify(
                     self.candidate, self.record_path, "windows/amd64"), stamped)
         self.assertEqual((self.candidate / "release.json").read_bytes(), before)
-        with mock.patch.dict(binding.os.environ, GITHUB_JOB="artifact-ci-build"):
+        with mock.patch.dict(binding.os.environ, GITHUB_JOB="artifact-browser"):
             with self.assertRaises(ValueError):
                 binding.verify(self.candidate, self.record_path, "windows/amd64")
 
@@ -233,6 +233,24 @@ class ShardContract(unittest.TestCase):
         self.assertIn(extra.id(), [case.id() for part in parts for case in part])
         self.assertNotIn(authority.class_id(extra), self.weights)
 
+    def test_concurrent_shard_results_must_prove_the_whole_population(self):
+        expected = ["a.T.test_1", "a.T.test_2", "b.U.test_3"]
+        good = [{"plan_sha256": "p", "selected_ids": ["a.T.test_1", "a.T.test_2"], "passed": True},
+                {"plan_sha256": "p", "selected_ids": ["b.U.test_3"], "passed": True}]
+        self.assertEqual(authority.coverage_problems([0, 0], good, expected), [])
+        cases = {
+            "child exit": ([0, 1], good, "shard 1 exited 1"),
+            "missing observation": ([0, 0], [good[0], None], "shard 1 wrote no observation"),
+            "plan disagreement": ([0, 0], [good[0], dict(good[1], plan_sha256="q")], "disagree"),
+            "dropped test": ([0, 0], [good[0], dict(good[1], selected_ids=[])], "exactly once"),
+            "repeated test": ([0, 0], [good[0], dict(good[1], selected_ids=["b.U.test_3", "a.T.test_1"])],
+                              "exactly once"),
+            "unpassed shard": ([0, 0], [good[0], dict(good[1], passed=False)], "did not pass"),
+        }
+        for label, (codes, reports, problem) in cases.items():
+            with self.subTest(label=label):
+                self.assertTrue(any(problem in found for found in authority.coverage_problems(codes, reports, expected)))
+
 
 class WorkflowContract(unittest.TestCase):
     @classmethod
@@ -293,8 +311,11 @@ class WorkflowContract(unittest.TestCase):
         self.assertIn("actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1", authority_job)
         self.assertIn("node-version: 22.19.0", authority_job)
         for platform in SIX:
-            self.assertEqual(authority_job.count("expected_platform: " + platform), 4)
+            self.assertEqual(authority_job.count("expected_platform: " + platform), 1)
+        self.assertIn("AUTHORITY_SHARD: all", authority_job)
         self.assertIn('AUTHORITY_SHARD_COUNT: "4"', authority_job)
+        self.assertNotIn("matrix.shard", authority_job)
+        self.assertNotIn("upload-artifact", authority_job)
         aggregate = self.jobs["ci-passed"]
         for owner in OWNERS:
             self.assertIn("\n      - " + owner + "\n", aggregate)
@@ -303,7 +324,10 @@ class WorkflowContract(unittest.TestCase):
         self.assertIn("needs['artifact-authority'].result", aggregate)
         self.assertIn("name: artifact-native-${{ matrix.os }}", self.jobs["artifact-engine"])
         self.assertIn("needs: [changes, artifact-package-assembly]", self.jobs["artifact-package-cold"])
-        self.assertIn("ci20_correspondence.py", self.jobs["artifact-package-assembly"])
+        # Consumers reuse the module-tested candidate; no untested early build or
+        # provisional byte-correspondence job remains in the graph.
+        self.assertNotIn("artifact-ci-build", self.ci)
+        self.assertNotIn("ci20_correspondence.py", self.ci)
 
     def test_early_ci_executes_new_proofs(self):
         self.assertIn("run: python .github/scripts/test_ci20_native_pipeline.py",

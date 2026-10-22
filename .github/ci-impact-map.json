@@ -100,36 +100,6 @@
       ]
     },
     {
-      "glob": ".github/scripts/test_ci20_correspondence.py",
-      "checks": [
-        "artifact-engine"
-      ]
-    },
-    {
-      "glob": ".github/scripts/ci20_correspondence.py",
-      "checks": [
-        "artifact-engine"
-      ]
-    },
-    {
-      "glob": ".github/scripts/ci20_candidate.py",
-      "checks": [
-        "artifact-engine"
-      ]
-    },
-    {
-      "glob": ".github/scripts/test_ci20_candidate.py",
-      "checks": [
-        "artifact-engine"
-      ]
-    },
-    {
-      "glob": ".github/scripts/ci20_direct_tests.py",
-      "checks": [
-        "artifact-engine"
-      ]
-    },
-    {
       "glob": "core/artifacts/**",
       "checks": [
         "artifact-engine",
