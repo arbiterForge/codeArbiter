@@ -1,6 +1,19 @@
 # codeArbiter: complete CI under 20 minutes
 
-**Status:** PROPOSED IMPLEMENTATION PLAN; performance target not achieved.
+**Status (2026-10-22):** CI20-01 through CI20-06 were delivered by
+[#1013](https://github.com/arbiterForge/codeArbiter/pull/1013). Complete solo runs went from
+43 minutes to 21-26 minutes, and from 340 to about 230 runner-minutes, with every platform,
+population and qualification boundary kept. The implementation contract and its deviations
+from this plan are recorded in [`ci20-02-candidate-admission.md`](ci20-02-candidate-admission.md):
+the provisional lane was retired, and receipts come from recorded bindings (CI20-04b).
+
+**CI20-07 is not met, and the maintainer accepted that.** On the GitHub Free plan (5 concurrent
+macOS jobs), two overlapping runs need about 26 minutes of macOS capacity before any dependency
+waits. Follow-ups are [#1021](https://github.com/arbiterForge/codeArbiter/issues/1021) and
+[#1020](https://github.com/arbiterForge/codeArbiter/issues/1020). The text below is the original
+plan, kept unchanged as the record that the work was measured against.
+
+**Original status:** PROPOSED IMPLEMENTATION PLAN; performance target not achieved.
 **Scope:** `arbiterForge/codeArbiter` only. This delivery changes documentation only.
 **Owner:** repository maintainer; execution may be delegated to a CLI implementation agent.
 **Planning date:** October 19, 2026, America/New_York.
