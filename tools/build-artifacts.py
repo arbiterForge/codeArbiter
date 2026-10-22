@@ -117,7 +117,7 @@ def write_qualification(candidate: Path, destination: Path,
 
     On the native host, the host's own `go env` and Go executable bind the
     receipt. With `native_binding`, a single issuer qualifies each platform
-    from that platform's same-run stamp instead (plan CI20-04)."""
+    from that platform's same-run stamp instead (plan CI20-04b)."""
     source_commit = os.environ.get("GITHUB_SHA", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     workflow_ref = os.environ.get("GITHUB_WORKFLOW_REF", "")

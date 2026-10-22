@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 import unittest.mock
 
@@ -117,6 +118,52 @@ class RealModule(unittest.TestCase):
         self.assertIn("FAILED before running tests", result.stdout)
         self.assertNotIn("Traceback", result.stderr)
 
+    def run_in_process(self, root: Path, **limits: float) -> tuple[int, str]:
+        runner = load_runner()
+        hints = root / "hints.json"
+        hints.write_text(json.dumps({"format": "codearbiter.go-test-timings/1", "tests": {}}), encoding="utf-8")
+        argv = ["go_test_parallel", "--module", str(root), "--jobs", "2", "--hints", str(hints),
+                "--timeout", "1s"]
+        out = io.StringIO()
+        env = dict(os.environ, GOFLAGS="", GOTOOLCHAIN="local", GOWORK="off")
+        with contextlib.ExitStack() as stack:
+            for name, value in limits.items():
+                stack.enter_context(unittest.mock.patch.object(runner, name, value))
+            stack.enter_context(unittest.mock.patch.object(sys, "argv", argv))
+            stack.enter_context(unittest.mock.patch.dict(os.environ, env))
+            stack.enter_context(contextlib.redirect_stdout(out))
+            code = runner.main()
+        return code, out.getvalue()
+
+    # TestMain hangs before m.Run, where -test.timeout cannot reach it.
+    HANG_RUN = ('package b\nimport ("flag"; "os"; "testing"; "time")\n'
+                'func TestMain(m *testing.M) { flag.Parse()\n'
+                '  if flag.Lookup("test.list").Value.String() == "" { time.Sleep(time.Hour) }\n'
+                '  os.Exit(m.Run()) }\n')
+    HANG_LIST = ('package b\nimport ("flag"; "os"; "testing"; "time")\n'
+                 'func TestMain(m *testing.M) { flag.Parse()\n'
+                 '  if flag.Lookup("test.list").Value.String() != "" { time.Sleep(time.Hour) }\n'
+                 '  os.Exit(m.Run()) }\n')
+
+    def test_a_chunk_hung_before_its_tests_start_is_killed_and_fails(self):
+        files = dict(self.PASSING)
+        files["b/main_test.go"] = self.HANG_RUN
+        started = time.monotonic()
+        code, out = self.run_in_process(self.module(files), CHUNK_MARGIN_SECONDS=2.0)
+        self.assertLess(time.monotonic() - started, 300, "the hung chunk was not killed")
+        self.assertEqual(code, 1, out)
+        self.assertIn("chunk exceeded 3s and was terminated", out)
+        self.assertIn("not passed: ['TestB']", out)
+
+    def test_a_listing_that_hangs_fails_cleanly(self):
+        files = dict(self.PASSING)
+        files["b/main_test.go"] = self.HANG_LIST
+        started = time.monotonic()
+        code, out = self.run_in_process(self.module(files), LIST_TIMEOUT_SECONDS=3.0)
+        self.assertLess(time.monotonic() - started, 300, "the hung listing was not killed")
+        self.assertEqual(code, 1, out)
+        self.assertIn("FAILED before running tests", out)
+
     def test_a_chunking_defect_cannot_drop_a_discovered_test(self):
         runner = load_runner()
         root = self.module(self.PASSING)
@@ -175,6 +222,15 @@ class Chunking(unittest.TestCase):
                 path.write_text(json.dumps(document), encoding="utf-8")
                 with self.subTest(document=document), self.assertRaises(ValueError):
                     runner.load_hints(path)
+
+    def test_go_durations_bound_each_chunk(self):
+        runner = load_runner()
+        for value, seconds in (("20m", 1200), ("90s", 90), ("1h30m", 5400), ("1.5s", 1.5)):
+            with self.subTest(value=value):
+                self.assertEqual(runner.duration_seconds(value), seconds)
+        for value in ("20", "", "m", "20x", "20m junk", "-5s"):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                runner.duration_seconds(value)
 
 
 if __name__ == "__main__":

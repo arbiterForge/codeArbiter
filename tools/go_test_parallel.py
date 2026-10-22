@@ -30,11 +30,25 @@ from pathlib import Path
 HINTS = Path(__file__).with_name("go-test-timings.json")
 TERMINAL = {"pass", "fail", "skip"}
 TARGET_CHUNK_SECONDS = 20.0
+# `-test.timeout` starts only inside the test binary; these bound the steps
+# around it (compiling, listing, and a binary that hangs before m.Run).
+BUILD_TIMEOUT_SECONDS = 1800.0
+LIST_TIMEOUT_SECONDS = 600.0
+CHUNK_MARGIN_SECONDS = 120.0
 
 
 def go(args: list[str], cwd: Path, env: dict[str, str]) -> str:
     return subprocess.run(["go", *args], cwd=cwd, env=env, check=True,
-                          capture_output=True, text=True, encoding="utf-8").stdout
+                          capture_output=True, text=True, encoding="utf-8",
+                          timeout=BUILD_TIMEOUT_SECONDS).stdout
+
+
+def duration_seconds(value: str) -> float:
+    """Seconds in a Go duration such as `20m`, `90s` or `1h30m`."""
+    parts = re.findall(r"(\d+(?:\.\d+)?)(h|m|s)", value)
+    if not parts or "".join(number + unit for number, unit in parts) != value:
+        raise ValueError(f"unsupported Go duration: {value!r}")
+    return sum(float(number) * {"h": 3600, "m": 60, "s": 1}[unit] for number, unit in parts)
 
 
 def load_hints(path: Path) -> dict[str, float]:
@@ -53,7 +67,8 @@ def load_hints(path: Path) -> dict[str, float]:
 
 def discover(binary: Path, package_dir: Path, env: dict[str, str]) -> list[str]:
     listed = subprocess.run([str(binary), "-test.list", ".*"], cwd=package_dir, env=env, check=True,
-                            capture_output=True, text=True, encoding="utf-8").stdout.split()
+                            capture_output=True, text=True, encoding="utf-8",
+                            timeout=LIST_TIMEOUT_SECONDS).stdout.split()
     return [name for name in listed if re.match(r"^(Test|Example|Fuzz)", name)]
 
 
@@ -71,17 +86,31 @@ def chunk(package: str, names: list[str], hints: dict[str, float], workers: int)
     return [(sorted(b), t) for b, t in zip(bins, totals) if b]
 
 
+def _text(value: str | bytes | None) -> str:
+    return value.decode("utf-8", "replace") if isinstance(value, bytes) else (value or "")
+
+
 def run_chunk(binary: Path, package: str, package_dir: Path, names: list[str],
-              extra: list[str], env: dict[str, str]) -> tuple[dict[str, str], str, int, float]:
+              extra: list[str], env: dict[str, str],
+              timeout: float | None = None) -> tuple[dict[str, str], str, int, float]:
     pattern = "^(" + "|".join(re.escape(name) for name in names) + ")$"
-    command = ["go", "tool", "test2json", "-t", "-p", package, str(binary),
-               "-test.v=test2json", "-test.count=1", "-test.run", pattern, *extra]
+    # The test binary is the direct child so a timeout kills the process that
+    # holds the pipes; its test2json stream is converted afterwards.
+    command = [str(binary), "-test.v=test2json", "-test.count=1", "-test.run", pattern, *extra]
     started = time.monotonic()
-    completed = subprocess.run(command, cwd=package_dir, env=env, capture_output=True,
-                               text=True, encoding="utf-8", errors="replace")
+    try:
+        completed = subprocess.run(command, cwd=package_dir, env=env, capture_output=True, timeout=timeout)
+        raw, stderr, code = completed.stdout, _text(completed.stderr), completed.returncode
+    except subprocess.TimeoutExpired as expired:
+        # A wedged chunk fails with whatever it reported before being killed.
+        raw, code = expired.stdout or b"", -1
+        stderr = _text(expired.stderr) + f"\nchunk exceeded {timeout:.0f}s and was terminated\n"
+    stdout = subprocess.run(["go", "tool", "test2json", "-t", "-p", package], input=raw,
+                            cwd=package_dir, env=env, capture_output=True, check=True,
+                            timeout=LIST_TIMEOUT_SECONDS).stdout.decode("utf-8", "replace")
     outcomes: dict[str, str] = {}
     output: list[str] = []
-    for line in completed.stdout.splitlines():
+    for line in stdout.splitlines():
         try:
             event = json.loads(line)
         except ValueError:
@@ -95,13 +124,13 @@ def run_chunk(binary: Path, package: str, package_dir: Path, names: list[str],
                 outcomes[test] = "repeated"
             else:
                 outcomes[test] = action
-    return outcomes, "\n".join(output) + completed.stderr, completed.returncode, time.monotonic() - started
+    return outcomes, "\n".join(output) + stderr, code, time.monotonic() - started
 
 
 def main() -> int:
     try:
         return run()
-    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+    except (OSError, ValueError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
         detail = getattr(error, "stderr", None) or ""
         print(f"go-test-parallel: FAILED before running tests: {error}\n{detail}"[-20000:], flush=True)
         return 1
@@ -118,6 +147,7 @@ def run() -> int:
     if not 1 <= args.jobs <= 64:
         raise SystemExit("--jobs must be between 1 and 64")
     module = args.module.resolve()
+    chunk_timeout = duration_seconds(args.timeout) + CHUNK_MARGIN_SECONDS
     env = dict(os.environ)
     hints = load_hints(args.hints)
     packages = json.loads("[" + ",".join(
@@ -147,7 +177,7 @@ def run() -> int:
         failed = False
         with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
             futures = {pool.submit(run_chunk, binary, package, directory, names,
-                                   [f"-test.timeout={args.timeout}"], env): (package, names)
+                                   [f"-test.timeout={args.timeout}"], env, chunk_timeout): (package, names)
                        for _, binary, package, directory, names in work}
             for future in concurrent.futures.as_completed(futures):
                 package, names = futures[future]

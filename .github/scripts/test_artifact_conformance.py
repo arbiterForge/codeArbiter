@@ -41,6 +41,8 @@ CURRENT_GOLDEN = {
     },
 }
 
+# Below the 30-minute bridges job limit, so one hung suite reports itself.
+SUITE_TIMEOUT_SECONDS = 1200.0
 EXPECTED_SUITES = {
     "test_artifact_bridge.py": {
         "test_real_cli_draft_and_index", "test_tampered_view_is_not_readable",
@@ -479,10 +481,19 @@ class ArtifactConformanceTest(unittest.TestCase):
 
         def run(script: str) -> subprocess.CompletedProcess[str]:
             print(f"conformance suite start: {script}", flush=True)
-            return subprocess.run(
-                [sys.executable, str(REPO / ".github/scripts" / script)], cwd=REPO, env=environment,
-                capture_output=True, text=True, encoding="utf-8", errors="replace", check=False,
-            )
+            command = [sys.executable, str(REPO / ".github/scripts" / script)]
+            try:
+                return subprocess.run(
+                    command, cwd=REPO, env=environment, capture_output=True, text=True,
+                    encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS,
+                )
+            except subprocess.TimeoutExpired as expired:
+                # A hung suite fails on its own, with its partial output, below the job limit.
+                partial = [value.decode("utf-8", "replace") if isinstance(value, bytes) else (value or "")
+                           for value in (expired.stdout, expired.stderr)]
+                return subprocess.CompletedProcess(
+                    command, -1, partial[0],
+                    partial[1] + f"\nsuite exceeded {SUITE_TIMEOUT_SECONDS:.0f}s and was terminated\n")
         # The suites are independent processes over the same read-only candidate;
         # running them concurrently uses the runner's cores. The candidate's
         # identity is checked before and after the whole snapshot.

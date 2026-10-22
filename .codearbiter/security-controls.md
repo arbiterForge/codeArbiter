@@ -192,7 +192,7 @@ native stages' success (`ci20_native_binding.py gate`), and each native
 consumer's on-host `verify` of the builder's stamp against that host's Go
 toolchain. The issuer re-binds run, source, module, platform, toolchain and
 bytes. Keep those consumer `verify` steps unconditional on every platform;
-contract: `docs/plans/ci20-02-candidate-admission.md`, CI20-04.
+contract: `docs/plans/ci20-02-candidate-admission.md`, CI20-04b.
 
 Bounded requests/reads, stable IDs, exact revisions, safe HTML escaping,
 transaction journals, before-images, operation replay and no-follow filesystem

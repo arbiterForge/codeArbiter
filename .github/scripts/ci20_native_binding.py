@@ -39,7 +39,7 @@ REQUIRED_STAGES = frozenset({
 })
 CONSUMERS = frozenset({"artifact-native-bridges", "artifact-authority", "artifact-engine"})
 # The single receipt issuer runs on Linux and checks each native stamp without
-# that platform's host; see docs/plans/ci20-02-candidate-admission.md, CI20-04.
+# that platform's host; see docs/plans/ci20-02-candidate-admission.md, CI20-04b.
 ISSUER = "artifact-engine"
 TOOLCHAIN = "go1.27.1"
 RUNNERS = {

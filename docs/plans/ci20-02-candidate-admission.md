@@ -1,6 +1,6 @@
 # CI20-02 — CI-only native test-input admission and qualification contract
 
-**Status:** the provisional (state P) lane described below was implemented, measured and then **retired** in favor of reusing the genuinely module-tested candidate; see "CI20-05: capacity-bound restructure" at the end. This is not an accepted ADR, an installed-product feature, a qualified release pipeline, or evidence that the twenty-minute goal is achieved. Sections between this line and that one are retained as the historical record of the batches that preceded it.
+**Status:** the provisional (state P) lane described below was implemented, measured and then **retired** in favor of reusing the genuinely module-tested candidate; see "CI20-05: capacity-bound restructure" and, for the current receipt issuer, "CI20-04b: recorded-binding qualification" (both at the end; the earlier CI20-04 sections are superseded). This is not an accepted ADR, an installed-product feature, a qualified release pipeline, or evidence that the twenty-minute goal is achieved. Sections between this line and that one are retained as the historical record of the batches that preceded it.
 
 **Owning source:** `arbiterForge/codeArbiter@0badb588dc1179b06e13db1ca5322590962b586a` (development baseline).
 **Plan:** [CI under twenty minutes](https://github.com/arbiterForge/codeArbiter/pull/1011) in plan-only PR #1011.
@@ -340,7 +340,7 @@ over those same bytes. No installed admission or qualification rule changed.
   production authority library is the remaining systemic cost; it is a
   product change outside this CI contract.
 
-## CI20-04: recorded-binding qualification (plan §4.2)
+## CI20-04b: recorded-binding qualification (plan §4.2), the current receipt contract
 
 **Problem.** Six final `artifact-engine` jobs, one per native host, each
 started a fresh runner, installed Python and Go, re-verified the shared
