@@ -22,7 +22,6 @@ OWNERS = {
         "Build native qualified candidate",
     ),
     "artifact-native-default": (
-        "Test artifact engine", "Vet artifact engine",
         "Race-test Linux persistence paths",
         "Verify generated artifact types", "Verify artifact public-surface baseline",
         "Verify artifact consumer inventory closure",
@@ -280,8 +279,16 @@ class WorkflowContract(unittest.TestCase):
         self.assertIn("python tools/build-artifacts.py --output", self.jobs["artifact-native-build"])
 
     def test_full_coverage_and_platform_specific_checks_stay_required(self):
-        self.assertIn("python tools/go_test_parallel.py --module core/artifacts --timeout 20m", self.jobs["artifact-native-default"])
-        self.assertIn("go vet -buildvcs=false ./...", self.jobs["artifact-native-default"])
+        # The tested build owns the complete module population and vet; a
+        # second full run elsewhere in the same run is duplicate work.
+        builder = (REPO / "tools/build-artifacts.py").read_text(encoding="utf-8")
+        self.assertIn('str(repo / "tools/go_test_parallel.py"), "--module", str(module)', builder)
+        self.assertIn('subprocess.run(["go", "vet", "./..."], cwd=module, env=env, check=True)', builder)
+        self.assertIn("if not args.skip_tests:", builder)
+        for owner, text in self.jobs.items():
+            with self.subTest(job=owner):
+                self.assertNotIn("--module core/artifacts --timeout", text)
+                self.assertNotIn("go vet", text)
         self.assertIn("python tools/go_test_parallel.py --module core/artifacts --build-flag=-race", self.jobs["artifact-native-default"])
         self.assertIn("test_smarts_engine_contract.py", self.jobs["artifact-native-default"])
         self.assertIn("test_ship_set_inputs.py", self.jobs["artifact-native-default"])

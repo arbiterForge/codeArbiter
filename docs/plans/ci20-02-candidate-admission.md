@@ -321,6 +321,24 @@ over those same bytes. No installed admission or qualification rule changed.
   execution; each module runs in its own child and pristine home, a few at a
   time, and must pass with at least one test. The Windows `functional` cell
   was removed.
+- Native storage and context checks moved onto the default native runner
+  (six fewer start-of-run jobs, two of them macOS).
+- The bridges job runs its five independent suites (three host-owned
+  adapters, reply capture and conformance under the locked interpreter) as
+  concurrent processes; each must still exit 0, report OK and run tests.
+- The guard-logic matrix, ca-codex adapter parity and dual-host store suites
+  ran directly and again under the hermeticity guard. They now run only
+  there, side by side, each in a pristine home.
+- The complete Go module population and vet ran in the tested build and
+  again in the default job on the same host. The tested build, whose success
+  every consumer and the qualifier require, is now their only owner.
+- One authority matrix (20 cases, two profiles) never released its
+  competing requests, so every later hook observation reloaded all of them,
+  each through a git subprocess (132 seconds per copy on hosted Windows
+  ARM). Releasing them per case cut a local copy from about 49 to about 18
+  seconds. The per-load git subprocess in the
+  production authority library is the remaining systemic cost; it is a
+  product change outside this CI contract.
 
 Overlapping-run acceptance (CI20-07) remains the maintainer's decision once
 these measurements are complete; it is not redefined here.
