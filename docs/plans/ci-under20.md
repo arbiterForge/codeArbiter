@@ -189,7 +189,10 @@ is approved; do not expose release secrets to untrusted PR code.
 
 ## 5. Execution tasks and dependency order
 
-All tasks are pending. Implementation ownership below is a role, not an assertion that
+> **Historical: do not execute.** These tasks are the plan as written on October 19.
+> CI20-01 through CI20-06 are complete (#1013). The only open work is in #1021 and #1020.
+
+As originally planned, all tasks were pending. Implementation ownership below is a role, not an assertion that
 work has been assigned or completed. Prefer one coherent implementation PR with reviewable
 internal commits; this plan-only PR must not acquire code or workflow changes.
 
@@ -357,7 +360,11 @@ method limitations and official reference URLs. It is frozen historical input: a
 exact-head evidence separately rather than silently replacing its historical observations.
 The assessment's earlier `05395634` main identity is not relabeled as the plan PR base.
 
-**Next execution step:** CI20-01, followed by reviewed CI-only input and qualification
-contracts; begin capacity discovery in parallel, but obtain separate approval before
-external requests, account changes or spending. No implementation task is completed by
-opening or merging this plan.
+**Next execution step (current):** the follow-ups in
+[#1021](https://github.com/arbiterForge/codeArbiter/issues/1021) and
+[#1020](https://github.com/arbiterForge/codeArbiter/issues/1020). CI20-01 through CI20-06 are
+done; do not repeat them. Any capacity change, such as paid or self-hosted runners, still needs
+separate maintainer approval.
+
+*Original next step, historical:* CI20-01, followed by reviewed CI-only input and qualification
+contracts; capacity discovery in parallel.
