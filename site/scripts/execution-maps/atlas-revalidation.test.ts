@@ -311,7 +311,9 @@ describe('atlas source compatibility revalidation', () => {
     ]);
     const path = 'core/pysrc/_artifactauthoritylib.py';
     expect(git('rev-parse', `${runtimeCompatibilityBaseline}:${path}`).trim()).toBe(UNITTEST_COLLECTOR_BLOB);
-    expect(git('hash-object', '--', path).trim()).toBe(RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]);
+    // Historical runtime pin remains tested below; the current hook owner
+    // has a later exact binding in the assistive source record.
+    expect(git('hash-object', '--', path).trim()).toBe(ASSISTIVE_SOURCE_BLOBS[path] ?? RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]);
     expect(git('cat-file', 'blob', UNITTEST_COLLECTOR_BLOB).split('\n').slice(0, 190))
       .toEqual(git('show', `${nativeV2Review}:${path}`).split('\n').slice(0, 190));
     expect(retainsReviewedChangelog(readFileSync(new URL('../../../CHANGELOG.md', import.meta.url), 'utf8'),

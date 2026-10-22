@@ -218,5 +218,135 @@ class ShortCodeTest(unittest.TestCase):
         self.assertEqual(self.lib.expand("please continue"), {"text": "please continue", "notice": ""})
 
 
+class OrdinaryPromptTest(unittest.TestCase):
+    """Legacy capture must not turn ordinary user intent into another permission gate."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        for module in ("_replylib", "_artifactpromptlib"):
+            patch = mock.patch.object(importlib.import_module(module), "REGISTRY_PARENT", Path(self.temp.name))
+            patch.start()
+            self.addCleanup(patch.stop)
+
+    CASES = {
+        "approval": ("Approve", "approve.", "`approve`", "Approve plan", "approve the plan", "Approve the sprint", "approve and execute the sprint",
+                     "approve-sprint", "approve-sprint delegate", "do not approve", "Stop",
+                     "Approve DATA", "Approve DATA migration", "Approve READ access",
+                     "APPROVE DATA MIGRATION", "Approve the TASK", "Approve the TEST",
+                     "approve-sprint delegate DATA", "approve-sprint delegate DATA migration"),
+        "prerequisite": ("satisfy-prerequisite", "satisfy-prerequisite by checking the tool", "Stop",
+                         "satisfy-prerequisite DATA", "satisfy-prerequisite DATA migration"),
+        "reconciliation": ("Reconcile", "reconcile data", "reconcile the plan", "reconcile-task", "reconcile-scope", "Stop",
+                           "Reconcile DATA", "reconcile TASK results", "reconcile pending DATA"),
+    }
+
+    def test_ordinary_prompts_are_unchanged_and_not_capture_attempts(self):
+        replies = importlib.import_module("_replylib")
+        for route, prompts in self.CASES.items():
+            for prompt in prompts:
+                with self.subTest(route=route, prompt=prompt):
+                    self.assertEqual(replies.prepare(prompt, route),
+                                     {"text": prompt, "notice": "", "attempted": False})
+
+    def test_ordinary_prompts_never_enter_legacy_capture_or_change_pending_history(self):
+        replies = importlib.import_module("_replylib")
+        routes = importlib.import_module("_artifactpromptlib")
+        for route, prompts in self.CASES.items():
+            adapter = importlib.import_module({"approval": "_approvallib", "prerequisite": "_prerequisitelib",
+                                               "reconciliation": "_reconciliationlib"}[route])
+            for host in ("claude", "codex", "pi"):
+                for pending in (False, True):
+                    with tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory)
+                        markers = root / ".codearbiter/.markers"
+                        markers.mkdir(parents=True)
+                        if pending:
+                            # A retained, even unreadable, historical request must not capture prose.
+                            (markers / "pending-user-approval.json").write_bytes(b"retained history")
+                        before = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                        with mock.patch.object(routes, "resolve", return_value=None) as resolve, \
+                                mock.patch.object(replies, "expand", wraps=replies.expand) as expand, \
+                                mock.patch.object(replies, "record_near_miss") as miss, \
+                                mock.patch.object(adapter._artifactlib, "ArtifactClient") as client:
+                            for prompt in prompts:
+                                with self.subTest(route=route, host=host, pending=pending, prompt=prompt):
+                                    self.assertEqual(adapter.consume_from_hook(
+                                        root=root, plugin_root=root, prompt=prompt, host=host,
+                                        session_id="ordinary-intent-fixture"), "")
+                            resolve.assert_not_called()
+                            expand.assert_not_called()
+                            miss.assert_not_called()
+                            client.assert_not_called()
+                        self.assertEqual(before, {str(p.relative_to(root)): p.read_bytes()
+                                                  for p in root.rglob("*") if p.is_file()})
+
+    def test_explicit_legacy_replies_remain_capture_attempts(self):
+        replies = importlib.import_module("_replylib")
+        cases = {
+            "approval": ("approve ZZZZ", FULL, FULL + ", please", "approve ZZZZ extra",
+                         "approve-sprint delegate K7MQ", f"approve-sprint SPEC-X PLAN-X delegate-methods {TOKEN}"),
+            "prerequisite": ("satisfy-prerequisite ZZZZ", f"satisfy-prerequisite PLAN-X PRE-X {TOKEN}"),
+            "reconciliation": ("reconcile ZZZZ", "reconcile pending ZZZZ",
+                               f"reconcile-task PLAN-X TASK-X BLOCKED {TOKEN}",
+                               f"reconcile-scope PLAN-X TASK-X {TOKEN}"),
+        }
+        for route, prompts in cases.items():
+            for prompt in prompts:
+                with self.subTest(route=route, prompt=prompt), mock.patch.object(
+                    replies, "expand", side_effect=lambda value: {"text": value, "notice": ""}
+                ), mock.patch.object(replies, "_entries", return_value=[
+                    (None, {"route": route, "short_reply": "reply ZZZZ",
+                            "full_reply": replies.canonicalize(prompt).split(",")[0]}, True)
+                ]):
+                    self.assertTrue(replies.prepare(prompt, route)["attempted"])
+
+    def test_retained_all_letter_codes_preserve_case_and_near_miss_checks(self):
+        replies = importlib.import_module("_replylib")
+        root = Path(self.temp.name) / "armed"
+        (root / ".codearbiter").mkdir(parents=True)
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("DATA")):
+            issued = replies.issue_code(root, "approval", "SPEC-X", FULL,
+                                        names=["SPEC-X"], short_prefix=["approve"])
+        self.assertEqual(issued["code"], "DATA")
+        for prompt in ("approve DATA", "Approve data", "APPROVE DaTa", "approve DATA."):
+            with self.subTest(prompt=prompt):
+                self.assertEqual(replies.prepare(prompt, "approval"),
+                                 {"text": FULL, "notice": "", "attempted": True})
+        for prompt in ("Approve DATA migration", "approve DATA, please"):
+            with self.subTest(prompt=prompt):
+                prepared = replies.prepare(prompt, "approval")
+                self.assertTrue(prepared["attempted"])
+                self.assertNotEqual(prepared["text"], FULL)
+        self.assertFalse(replies.prepare("reconcile DATA", "reconciliation")["attempted"])
+        replies.retire_code(root, "approval", "SPEC-X")
+        self.assertFalse(replies.prepare("Approve DATA migration", "approval")["attempted"])
+
+    def test_unrecognized_mixed_codes_remain_diagnostic_not_authority(self):
+        replies = importlib.import_module("_replylib")
+        for prompt in ("Approve K7MQ", "approve k7mq extra"):
+            with self.subTest(prompt=prompt):
+                result = replies.prepare(prompt, "approval")
+                self.assertTrue(result["attempted"])
+                self.assertNotEqual(result["text"], FULL)
+
+    def test_long_words_without_a_retained_request_are_ordinary_prose(self):
+        replies = importlib.import_module("_replylib")
+        routes = importlib.import_module("_artifactpromptlib")
+        with mock.patch.object(replies, "_entries", return_value=[]), \
+                mock.patch.object(routes, "resolve", return_value=None):
+            for prompt in ("approve the implementation", "Approve this specification"):
+                with self.subTest(prompt=prompt):
+                    self.assertEqual(replies.prepare(prompt, "approval"),
+                                     {"text": prompt, "notice": "", "attempted": False})
+
+    def test_full_token_route_without_a_short_code_remains_supported(self):
+        replies = importlib.import_module("_replylib")
+        routes = importlib.import_module("_artifactpromptlib")
+        with mock.patch.object(replies, "_entries", return_value=[]), \
+                mock.patch.object(routes, "resolve", return_value=Path("legacy-repository")):
+            self.assertTrue(replies.prepare(FULL, "approval")["attempted"])
+
+
 if __name__ == "__main__":
     unittest.main()

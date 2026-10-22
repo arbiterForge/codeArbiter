@@ -422,8 +422,8 @@ describe("Pi activation", () => {
       // must never invent a path the caller did not name.
       const projectRoot = "/home/dev/secret-probe";
       const report = [
-        "codearbiter-benign-0",
-        "codearbiter-benign-99",
+        "\u0001codearbiter-benign-0\u0001",
+        "\u0001codearbiter-benign-99\u0001",
         `package: ${projectRoot}`,
       ].join("\n");
       const block = renderPiDoctorReportBlock(report, [projectRoot]);

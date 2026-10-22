@@ -979,6 +979,23 @@ def _installed_versions(destination: Path, nodes: object, name: str) -> set[str]
     return versions
 
 
+AUDIT_ATTEMPTS = 3
+# Registry advisory outages last minutes, not milliseconds; back off between attempts.
+AUDIT_BACKOFF_SECONDS = (15, 45)
+
+
+def _audit_registry_error(stdout: str) -> str | None:
+    """npm's bulk-advisory failure report (`{"error": {...}}`), summarized; else None."""
+    try:
+        report = json.loads(stdout)
+    except ValueError:
+        return None
+    error = report.get("error") if isinstance(report, dict) and "vulnerabilities" not in report else None
+    if not isinstance(error, dict):
+        return None
+    return " ".join(str(error.get(key, "")) for key in ("code", "summary")).strip()[:200] or "unspecified"
+
+
 def _check_audit_findings(stdout: str, accepted: set[tuple[str, str, str]], destination: Path) -> None:
     """ADR-0041: an installed finding passes only when its GHSA, package and installed version are accepted."""
     try:
@@ -1014,27 +1031,44 @@ def _audit_install(
     npm_environment = _npm_environment(destination)
     allowed = {(item["ghsa"], item["package"], item["version"]) for item in accepted}
     for scope in (["--omit=dev"], []):
-        # npm audit exits 1 whenever it reports findings; anything else is a failure.
-        completed = subprocess.run(
-            [npm, "audit", *scope, "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
-            cwd=cwd, check=False, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
-        )
-        if getattr(completed, "returncode", 0) not in (0, 1):
-            raise ValueError("npm audit did not complete")
+        for attempt in range(1, AUDIT_ATTEMPTS + 1):
+            # npm audit exits 1 whenever it reports findings; anything else is a failure.
+            completed = subprocess.run(
+                [npm, "audit", *scope, "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
+                cwd=cwd, check=False, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
+            )
+            if getattr(completed, "returncode", 0) not in (0, 1):
+                raise ValueError("npm audit did not complete")
+            registry_error = _audit_registry_error(completed.stdout)
+            if registry_error is None:
+                break
+            # Only npm's own registry-error report is retried; a report with
+            # findings or a malformed inventory still fails on the first read.
+            if attempt == AUDIT_ATTEMPTS:
+                raise ValueError(f"npm audit registry error after {attempt} attempts: {registry_error}")
+            time.sleep(AUDIT_BACKOFF_SECONDS[attempt - 1])
         _check_audit_findings(completed.stdout, allowed, destination)
-    checks = [
-        [npm, "audit", "signatures", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
-        [npm, "ls", "--all", "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
-    ]
-    for command in checks:
+    # A bad signature fails every attempt; only a transient registry or key
+    # fetch failure can pass on a later one. The last failure is reported.
+    signatures = [npm, "audit", "signatures", "--ignore-scripts", *cache_args, "--prefix", str(destination)]
+    for attempt in range(1, AUDIT_ATTEMPTS + 1):
         completed = subprocess.run(
-            command, cwd=cwd, check=True, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
+            signatures, cwd=cwd, check=False, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
         )
-        if command[1:3] == ["ls", "--all"]:
-            inventory = json.loads(completed.stdout)
-            agent = inventory.get("dependencies", {}).get(PACKAGE, {})
-            if not isinstance(agent, dict) or agent.get("version") != version:
-                raise ValueError("installed Pi dependency tree does not match the exact reviewed version")
+        if completed.returncode == 0:
+            break
+        if attempt == AUDIT_ATTEMPTS:
+            detail = " ".join(((completed.stderr or "") + " " + (completed.stdout or "")).split())[-400:]
+            raise ValueError(f"npm audit signatures failed after {attempt} attempts: {detail or 'no output'}")
+        time.sleep(AUDIT_BACKOFF_SECONDS[attempt - 1])
+    completed = subprocess.run(
+        [npm, "ls", "--all", "--json", "--ignore-scripts", *cache_args, "--prefix", str(destination)],
+        cwd=cwd, check=True, capture_output=True, text=True, encoding="utf-8", env=npm_environment,
+    )
+    inventory = json.loads(completed.stdout)
+    agent = inventory.get("dependencies", {}).get(PACKAGE, {})
+    if not isinstance(agent, dict) or agent.get("version") != version:
+        raise ValueError("installed Pi dependency tree does not match the exact reviewed version")
 
 
 def capture_candidate(version: str, output: Path) -> dict[str, str]:

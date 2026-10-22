@@ -103,8 +103,11 @@ func (e *Engine) bind(r object, entry repository.Entry) (any, error) {
 		if model.I(expected["revision"]) != s.Doc.Revision() || model.S(expected["model_sha256"]) != s.Doc.Hash() {
 			return nil, fault.New("REVISION_CONFLICT", "expected source revision AND model identity must match the current specification")
 		}
-		if err = initialDraftPair(d, s.Doc); err != nil {
-			return nil, err
+		// A current-source refresh is ordinary maintenance, even after work
+		// starts. Initial approval restrictions belong to initialPair only.
+		ref := model.M(d.Norm()["spec_ref"])
+		if s.Doc.ID() != model.S(ref["artifact_id"]) || model.S(s.Doc.Data["slug"]) != model.S(d.Data["slug"]) {
+			return nil, fault.New("PAIR_MISMATCH", "source refresh must name the exact canonical same-slug pair")
 		}
 		if err = validate.Error(validate.Ready(s.Doc, nil)); err != nil {
 			return nil, err

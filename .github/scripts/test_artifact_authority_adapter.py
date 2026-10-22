@@ -581,6 +581,55 @@ class AuthorityAdapterTest(unittest.TestCase):
                     "tool_name": "exec_command", "tool_input": {"cmd": command},
                 }))
 
+    def test_inert_powershell_here_string_is_not_verifier_authority(self):
+        command = (
+            "@'\n"
+            "# artifact-authority.py's source is inert.\n"
+            "'@ | python -B -\n"
+        )
+        try:
+            selected = self.adapter._verification_selector({
+                "tool_name": "exec_command", "tool_input": {"cmd": command},
+            })
+        except self.adapter.AuthorityError as exc:
+            self.fail(f"inert PowerShell source was classified as verifier authority: {exc}")
+        self.assertIsNone(selected)
+
+    def test_inert_powershell_wrapper_text_is_not_verifier_authority(self):
+        command = (
+            "@'\n"
+            "python artifact-authority.py verify --root 'unfinished\n"
+            "'@ | Write-Output\n"
+        )
+        try:
+            selected = self.adapter._verification_selector({
+                "tool_name": "exec_command", "tool_input": {"cmd": command},
+            })
+        except self.adapter.AuthorityError as exc:
+            self.fail(f"inert wrapper text was classified as verifier authority: {exc}")
+        self.assertIsNone(selected)
+
+    def test_selected_verifier_wrapper_with_unterminated_quotes_is_refused(self):
+        for interpreter in ("python", "python.exe", "python3", "py.exe"):
+            for tail in ('verify --root "unfinished', "'verify", "verify --root . --request-id '" + "a" * 64):
+                command = f'{interpreter} "{CORE_PYSRC / "artifact-authority.py"}" {tail}'
+                with self.subTest(command=command), self.assertRaisesRegex(
+                    self.adapter.AuthorityError, "UNSUPPORTED_HOST_SEAM.*malformed"
+                ):
+                    self.adapter._verification_selector({
+                        "tool_name": "exec_command", "tool_input": {"cmd": command},
+                    })
+
+    def test_selected_verifier_script_with_unterminated_quote_is_refused(self):
+        for interpreter in ("python", "python.exe", "python3", "py.exe"):
+            command = f'{interpreter} "{CORE_PYSRC / "artifact-authority.py"}'
+            with self.subTest(command=command), self.assertRaisesRegex(
+                self.adapter.AuthorityError, "UNSUPPORTED_HOST_SEAM.*malformed"
+            ):
+                self.adapter._verification_selector({
+                    "tool_name": "exec_command", "tool_input": {"cmd": command},
+                })
+
     def test_terminal_authority_requests_leave_no_global_registry_pointer(self):
         for state in ("CAPTURED", "REJECTED", "FAILED", "ABANDONED"):
             with self.subTest(state=state):
@@ -5756,6 +5805,10 @@ class CodexNativeV2HookTest(unittest.TestCase):
                     self.assertEqual(first_state, "REJECTED", (first_state, final_state))
                     self.assertEqual(final_state, "REJECTED")
                     self._no_authority(armed)
+                    # The competing request belongs to this case only. Left
+                    # registered, every later case's hook observation would
+                    # reload it, so the matrix would grow quadratically.
+                    (self.adapter._registry_root() / (other["request_id"] + ".json")).unlink()
 
 
 

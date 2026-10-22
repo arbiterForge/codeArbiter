@@ -75,6 +75,7 @@
 #                                         on a shell mutation of a registered
 #                                         protected-state file
 
+import json
 import os
 import re
 import subprocess
@@ -246,7 +247,12 @@ ARGS = r"(?P<args>(?:\"[^\"]*\"|'[^']*'|[^|;&])*)"
 COMMIT_SUBCOMMAND = r"commit(?:-(?!graph(?![-\w]))[\w-]+)?(?![-\w])"
 COMMIT_RE = re.compile(GIT + r"\s+" + COMMIT_SUBCOMMAND + ARGS)
 PUSH_RE = re.compile(GIT + r"\s+push\b" + ARGS)
-ADD_RE = re.compile(GIT + r"\s+add\b" + ARGS)
+# Staging argv ends at an unquoted command newline. Keep quoted multiline
+# filenames intact; otherwise a later `git push -u` becomes a wildcard add.
+# run_guards inspects EVERY match, so narrowing the first capture cannot hide
+# a later unsafe add. Commit/push parsing retains its existing contract.
+ADD_ARGS = r"(?P<args>(?:\"[^\"]*\"|'[^']*'|[^|;&\r\n])*)"
+ADD_RE = re.compile(GIT + r"\s+add\b" + ADD_ARGS)
 # #485 AC-4, the audit of the sibling matchers. Neither needs the same
 # treatment, and both were left alone deliberately:
 #
@@ -1480,10 +1486,12 @@ def _check_h03_wildcard_add(add, cwd):
     src/ just as surely as `git add -A` does."""
     if not add:
         return
-    if WILDCARD_ADD_RE.search(add.group("args")):
+    args = add.group("args")
+    if (WILDCARD_ADD_RE.search(args)
+            or _has_literal_flag(args, {"-A", "--all", "-u", "--update"})):
         block("H-03", "'git add -A' / 'git add .' / 'git add --all' / 'git add -u' "
                       "are prohibited. Stage files explicitly (commit-gate skill).")
-    why = add_violation(add.group("args"), cwd)
+    why = add_violation(args, cwd)
     if why:
         block("H-03", f"Wildcard staging is prohibited — {why} stages a "
                       f"non-explicit file set. Stage files explicitly, one path "
@@ -1844,6 +1852,164 @@ def _check_h14_migration(commit, add, cwd, root):
                           f"bypass a migration gate, /override logs the exception.")
 
 
+def _literal_python_read_view(cmd):
+    """Recognize only isolated, literal Python read diagnostics on stdin.
+
+    This is a closed read grammar, not an exemption for Python/subprocess.
+    Unknown code, import shadowing, shell expansion, and extra commands keep
+    the original guard view. Equivalent literal read commands still traverse
+    every gate. No code is executed or filesystem state consulted here.
+    """
+    if "\n" not in cmd or " -I" not in cmd:
+        return cmd
+    try:
+        if len(cmd.encode("utf-8")) > 32768:
+            return cmd
+    except UnicodeError:
+        return cmd
+    if re.search(r"\r(?!\n)|[\x00\u2018-\u201b]", cmd):
+        return cmd
+    text = cmd.replace("\r\n", "\n")
+    # -I excludes workspace/PYTHONPATH modules: otherwise an apparent
+    # standard-library import could execute a project-authored replacement.
+    invocation = r"(?:python(?:3(?:\.\d+)*)?|py)(?:\.exe)? -I(?: -B)? -"
+    fallback = cmd
+    match = re.fullmatch(
+        r"@'\n(?P<body>[\s\S]*?)\n'@[ \t]*\|[ \t]*(?P<invoke>" + invocation + r")[ \t]*\n?", text)
+    if match:
+        body = match["body"]
+        # The consumer appears after its script in PowerShell. If the
+        # read grammar refuses it, expose that consumer before the intact
+        # source too, so interpreter/write guards cannot miss an earlier path.
+        fallback = match["invoke"] + "\n" + cmd
+        if re.search(r"(?m)^[ \t]*'@", body):
+            return cmd
+    else:
+        match = re.fullmatch(
+            invocation + r"[ \t]+<<(?P<quote>['\"])(?P<end>[A-Za-z_][A-Za-z0-9_]{0,31})"
+            r"(?P=quote)[ \t]*\n(?P<body>[\s\S]*?)\n(?P=end)[ \t]*\n?", text)
+        if not match:
+            return cmd
+        body = match["body"]
+        if any(line == match["end"] for line in body.splitlines()):
+            return cmd
+    # Ordinary commands pay no AST import/parse cost.
+    import ast
+    try:
+        tree = ast.parse(body)
+    except (SyntaxError, ValueError, RecursionError):
+        return fallback
+    if len(tree.body) > 32 or sum(1 for _ in ast.walk(tree)) > 256:
+        return fallback
+
+    def literal(node):
+        return node.value if isinstance(node, ast.Constant) and isinstance(node.value, str) else None
+
+    def read_path(node):
+        value = literal(node)
+        if value is not None and re.fullmatch(
+            r"\.codearbiter/(?:overrides\.log|CONTEXT\.md|decisions/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:md|jsonl))",
+            value,
+        ):
+            return value
+        return None
+
+    imports, reads = set(), []
+    for statement in tree.body:
+        if (isinstance(statement, ast.Import) and len(statement.names) == 1
+                and statement.names[0].name == "subprocess" and statement.names[0].asname is None):
+            imports.add("subprocess")
+            continue
+        if (isinstance(statement, ast.ImportFrom) and statement.level == 0
+                and statement.module == "pathlib" and len(statement.names) == 1
+                and statement.names[0].name == "Path" and statement.names[0].asname is None):
+            imports.add("Path")
+            continue
+        if not (isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Call)
+                and isinstance(statement.value.func, ast.Name) and statement.value.func.id == "print"
+                and len(statement.value.args) == 1 and not statement.value.keywords):
+            return fallback
+        call = statement.value.args[0]
+        if not isinstance(call, ast.Call) or not isinstance(call.func, ast.Attribute):
+            return fallback
+        owner = call.func.value
+        if (isinstance(owner, ast.Name) and owner.id == "subprocess" and "subprocess" in imports
+                and call.func.attr == "check_output" and len(call.args) == 1
+                and isinstance(call.args[0], (ast.List, ast.Tuple)) and len(call.keywords) == 1
+                and call.keywords[0].arg == "text" and isinstance(call.keywords[0].value, ast.Constant)
+                and call.keywords[0].value.value is True):
+            args = [literal(value) for value in call.args[0].elts]
+            if (len(args) != 3 or args[:2] != ["git", "show"] or args[2] is None
+                    or not args[2].startswith("HEAD:") or not read_path(ast.Constant(args[2][5:]))):
+                return fallback
+            reads.append(" ".join(args))
+            continue
+        if (isinstance(owner, ast.Call) and isinstance(owner.func, ast.Name)
+                and owner.func.id == "Path" and "Path" in imports
+                and len(owner.args) == 1 and not owner.keywords and not call.args):
+            path = read_path(owner.args[0])
+            allowed = call.func.attr in {"exists", "is_file", "read_text"} and not call.keywords
+            if call.func.attr == "read_text" and len(call.keywords) == 1:
+                allowed = call.keywords[0].arg == "encoding" and literal(call.keywords[0].value) == "utf-8"
+            if path is not None and allowed:
+                reads.append("cat " + path)
+                continue
+        return fallback
+    return "\n".join(reads) if reads else fallback
+
+
+def _debug_validation_command_view(cmd):
+    """Exclude literal stdin data only for this package's read-only validator.
+
+    Accept one PowerShell single-quoted here-string piped to the exact installed
+    helper with literal ``-B ... validate`` argv. Everything else keeps the raw
+    guard view: expandable strings, wrappers, other helpers, extra commands,
+    redirections and early terminators cannot become an exemption.
+    """
+    # PowerShell accepts lone CR newlines and curly single-quote terminators.
+    # Keep those forms raw rather than missing an early terminator and hiding
+    # executable code. JSON can represent these data characters with escapes.
+    if re.search(r"\r(?!\n)|[\u2018-\u201b]", cmd):
+        return cmd
+    opening = re.match(r"\A@'\r?\n", cmd)
+    if opening is None:
+        return cmd
+    closing = re.search(r"(?m)^[ \t]*'@", cmd[opening.end():])
+    if closing is None or closing.group() != "'@":
+        return cmd
+    body = cmd[opening.end():opening.end() + closing.start()]
+    try:
+        if len(body.encode("utf-8")) > 65536 or not isinstance(json.loads(body), dict):
+            return cmd
+    except (ValueError, UnicodeError, RecursionError):
+        return cmd
+    tail = cmd[opening.end() + closing.end():].strip()
+    if not tail.startswith("|"):
+        return cmd
+    invocation = tail[1:].strip()
+    if re.search(r"[\r\n;&|<>`$%!^*?{}\[\]()]", invocation):
+        return cmd
+    tokens, end = [], 0
+    for match in re.finditer(r'''(?:[^\s'"\x00]|'[^']*'|"[^"]*")+''', invocation):
+        if invocation[end:match.start()].strip():
+            return cmd
+        token = match.group()
+        if len(token) >= 2 and token[0] == token[-1] and token[0] in "\"'":
+            token = token[1:-1]
+        tokens.append(token)
+        end = match.end()
+    if invocation[end:].strip() or len(tokens) != 4 or tokens[1] != "-B" or tokens[3] != "validate":
+        return cmd
+    executable = tokens[0].replace("\\", "/").rsplit("/", 1)[-1]
+    if not re.fullmatch(r"(?:python(?:[23](?:\.\d+)*)?|py)(?:\.exe)?", executable, re.I):
+        return cmd
+    helper = tokens[2]
+    known = os.path.join(os.path.dirname(os.path.abspath(__file__)), "debug-handoff.py")
+    if not os.path.isabs(helper) or os.path.normcase(os.path.normpath(helper)) != os.path.normcase(known):
+        return cmd
+    return invocation
+
+
 def run_guards(payload, root, ti):
     """Run every H-NN gate against `ti` (the already host-normalized Bash/
     PowerShell tool_input — see pre-bash.py's `_run`, which resolves it via
@@ -1853,7 +2019,8 @@ def run_guards(payload, root, ti):
     sys.exit(0). This is the composed body pre-bash.py's `_run` used to run
     inline (issue #320) — moved here verbatim, split into one function per
     gate, each still carrying its H-NN ID."""
-    cmd = ti.get("command", "") or ""
+    cmd = _debug_validation_command_view(ti.get("command", "") or "")
+    cmd = _literal_python_read_view(cmd)
 
     # Heredoc bodies are stdin text, not arguments — match the git command over
     # a body-stripped view so message content (which may contain `;`/`|`/`&`,
@@ -1905,9 +2072,25 @@ def run_guards(payload, root, ti):
         heredoc_shell_fallback and PUSH_RE.search(cmd))
     _check_push_gates(push, cwd)
 
-    add = ADD_RE.search(git_view) or (
-        heredoc_shell_fallback and ADD_RE.search(cmd))
-    _check_h03_wildcard_add(add, cwd)
+    # Preserve quoted literal paths AND check executable continuations inside
+    # nested/double quotes. Outside quotes, join POSIX/PowerShell/cmd escapes
+    # so a split flag remains one argv item. Neither view changes other guards.
+    quoted_staging = re.sub(r'''("[^"]*"|'[^']*')|[\\`^](?:\r\n|\n|\r)''',
+                            lambda match: match.group(1) or "", cmd)
+    joined_staging = re.sub(r"[\\`^](?:\r\n|\n|\r)", "", cmd)
+    adds = []
+    for staging_cmd in dict.fromkeys((quoted_staging, joined_staging)):
+        # Continuations can form the heredoc operator or shell name itself.
+        # Re-evaluate execution per view, without rewriting quoted paths again.
+        staging_view = HEREDOC_RE.sub(r"\3 ", staging_cmd)
+        adds.extend(ADD_RE.finditer(staging_view))
+        if "<<" in staging_cmd and (
+                _heredoc_fed_to_shell(staging_cmd) or _has_shell_executor(staging_cmd)):
+            adds.extend(ADD_RE.finditer(staging_cmd))
+    for staging in adds:
+        _check_h03_wildcard_add(staging, git_cwd(staging.group(0), exec_root))
+    # Commit security/migration checks still see that the batch stages files.
+    add = adds[0] if adds else None
     _check_h05_audit_log(cmd)
     _check_h11_decisions(cmd)
     _check_h18_context_md(cmd)

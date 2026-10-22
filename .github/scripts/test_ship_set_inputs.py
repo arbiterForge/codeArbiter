@@ -179,7 +179,7 @@ def _ci_block(text: str, start: str, end: str) -> str:
 class ShipSetInputs(unittest.TestCase):
     def test_suite_wired_into_ci(self):
         text = (REPO / CI_WORKFLOW).read_text(encoding="utf-8")
-        job = _ci_block(text, "\n  artifact-engine:\n", "\n  artifact-browser:\n")
+        job = _ci_block(text, "\n  artifact-native-default:\n", "\n  artifact-native-coverage:\n")
         self.assertIn("if: needs.changes.outputs.artifacts == 'true'", job)
         self.assertIn(SUITE_COMMAND, job)
         self.assertLess(job.index("Verify exact Go toolchain"), job.index(SUITE_COMMAND))

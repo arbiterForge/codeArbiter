@@ -950,6 +950,8 @@ def consume_from_hook(
     prepared = _replylib.prepare(raw, "prerequisite")
     prompt = prepared["text"]
     attempted = prepared["attempted"]
+    if not attempted:
+        return ""
     if prepared["notice"]:
         _replylib.record_near_miss(root, raw, "code")
         return prepared["notice"]

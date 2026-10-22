@@ -2759,7 +2759,7 @@ class DebugSuiteRegistrationTest(unittest.TestCase):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(ci)
         assignments = {
-            "test_debug_handoff.py": "artifact-engine",
+            "test_debug_handoff.py": "artifact-native-bridges",
             "test_debug_workflow.py": "hooks",
             "test_debug_helper_invocation.py": "hooks",
             "test_debug_package.py": "hooks",
@@ -2768,12 +2768,12 @@ class DebugSuiteRegistrationTest(unittest.TestCase):
         for suite, job_id in assignments.items():
             with self.subTest(suite=suite):
                 self.assertTrue((REPO_ROOT / ".github/scripts" / suite).is_file())
-                command = f".github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/{suite}'" if job_id == "artifact-engine" else f"python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/{suite}"
+                command = f".github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/{suite}'" if job_id == "artifact-native-bridges" else f"python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/{suite}"
                 self.assertEqual(jobs[job_id].count(command), 1)
                 self.assertNotIn("continue-on-error: true", jobs[job_id])
         self.assertIn("[os.environ['ARTIFACT_CONFORMANCE_PYTHON'], "
                       "'.github/scripts/test_ci_impact.py', '--run-debug-suite', "
-                      "'.github/scripts/test_debug_handoff.py']", jobs["artifact-engine"])
+                      "'.github/scripts/test_debug_handoff.py']", jobs["artifact-native-bridges"])
         self.assertIn("matrix.partition == 'all' || matrix.partition == 'contracts'", jobs["hooks"])
         self.assertIn('python-version: "3.x"', jobs["hooks"])
 
@@ -3560,7 +3560,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
     """The structured-artifact engine is a required six-platform package gate."""
 
     def test_candidate_suites_have_one_qualified_execution(self):
-        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-engine"]
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        job = jobs["artifact-native-bridges"]
         source = (REPO_ROOT / ".github/scripts/test_artifact_conformance.py").read_text(encoding="utf-8")
         assignment = next(
             node for node in ast.parse(source).body
@@ -3582,10 +3583,20 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)", source)
         for script in expected:
             self.assertNotIn(f"run: python .github/scripts/{script}", job)
-        conformance = "'.github/scripts/test_artifact_conformance.py'"
-        self.assertEqual(job.count(conformance), 1)
-        self.assertLess(job.index(conformance),
-                        job.index('--qualify-existing "${{ runner.temp }}/artifact-candidate"'))
+        self.assertEqual(job.count("test_artifact_conformance.py"), 1)
+        self.assertEqual(bridge_suite_arguments(job), [
+            ".github/scripts/test_artifact_approval_adapter.py",
+            ".github/scripts/test_artifact_prerequisite_adapter.py",
+            ".github/scripts/test_artifact_reconciliation_adapter.py",
+            ".github/scripts/test_replylib.py",
+            ".github/scripts/test_literal_python_reads.py",
+            "--interpreter-env", "ARTIFACT_CONFORMANCE_PYTHON",
+            ".github/scripts/test_artifact_conformance.py",
+        ])
+        qualifier = jobs["artifact-engine"]
+        self.assertIn("artifact-native-bridges", qualifier.split("    needs:", 1)[1].splitlines()[0])
+        self.assertLess(qualifier.index("ci20_native_binding.py gate"),
+                        qualifier.index("ci20_native_binding.py qualify-recorded"))
 
     def test_native_statement_collector_alone_starts_push_ci(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -3593,7 +3604,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
     def test_native_statement_coverage_is_complete_and_merge_required(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
-        engine = jobs["artifact-engine"]
+        engine = jobs["artifact-native-coverage"]
         for command in (
             "python .github/scripts/test_artifact_cli.py --coverage-output",
             "python tools/artifact-coverage.py collect",
@@ -3605,13 +3616,13 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("artifact-coverage", jobs)
         coverage = jobs["artifact-coverage"]
         for control in (
-            "needs: [changes, artifact-engine]", "!cancelled()",
+            "needs: [changes, artifact-native-coverage]", "!cancelled()",
             "needs.changes.outputs.artifacts == 'true'",
             "runs-on: ubuntu-24.04", "pattern: artifact-statements-*",
             "merge-multiple: false", "artifact-coverage.py", "summarize",
             "--minimum-statements", '"70"', "--require-integration",
             "python .github/scripts/test_artifact_coverage.py",
-            "needs.artifact-engine.result", '!= success',
+            "needs.artifact-native-coverage.result", '!= success',
         ):
             self.assertIn(control, coverage)
         self.assertNotIn("self-hosted", coverage)
@@ -3634,24 +3645,36 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn("artifact-engine", {check.id for check in selected.selected})
 
     def test_native_qualification_has_a_bounded_platform_job_budget(self):
-        # Retain the measured 45m Intel macOS and Windows budgets;
-        # all other platforms keep 30m and every suite remains required.
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
-        job = jobs["artifact-engine"]
-        self.assertEqual(
-            re.findall(r"(?m)^    timeout-minutes: (.+)$", job),
-            ["${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}"],
-        )
-        self.assertIn("fail-fast: false", job)
-        self.assertNotIn("continue-on-error:", job)
-        for required in ("test_artifact_conformance.py",
-                         "Bind the candidate to this exact-host native result",
-                         "Preserve the exact native candidate and qualification receipt"):
-            self.assertIn(required, job)
+        qualifier = jobs["artifact-engine"]
+        self.assertEqual(re.findall(r"(?m)^    timeout-minutes: (.+)$", qualifier), ["15"])
+        self.assertIn("ci20_native_binding.py gate", qualifier)
+        # One Linux issuer qualifies all six platforms from recorded native
+        # results (plan CI20-04); no native runner is held to issue receipts.
+        self.assertIn("ci20_native_binding.py qualify-recorded", qualifier)
+        self.assertIn("Bind each candidate to its recorded native result", qualifier)
+        self.assertIn("    runs-on: ubuntu-24.04\n", qualifier)
+        self.assertNotIn("matrix", qualifier)
+        self.assertNotIn("setup-go", qualifier)
+        for runner, platform in RECORDED_RUNNERS:
+            self.assertEqual(qualifier.count(
+                "Preserve the exact native candidate and qualification receipt (" + platform + ")"), 1)
+            self.assertEqual(qualifier.count("name: artifact-native-" + runner + "\n"), 1)
+        for group in ("artifact-native-build", "artifact-native-default",
+                      "artifact-native-coverage",
+                      "artifact-native-bridges"):
+            job = jobs[group]
+            self.assertIn("fail-fast: false", job)
+            self.assertNotIn("continue-on-error:", job)
+            self.assertIn('go-version: "1.27.1"', job)
+        for script in ("test_artifact_conformance.py", "test_artifact_approval_adapter.py",
+                       "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py"):
+            self.assertIn(script, jobs["artifact-native-bridges"])
+        self.assertIn("test_artifact_native.py", jobs["artifact-native-default"])
 
     def test_artifact_consumer_closure_selects_exactly_one_declared_native_cell(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
-        job = jobs["artifact-engine"]
+        job = jobs["artifact-native-default"]
         declared_cells = re.findall(r"(?m)^          - os: ([^\s]+)$", job)
         step = re.search(
             r"(?ms)^      - name: Verify artifact consumer inventory closure\n"
@@ -3674,7 +3697,11 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(ci)
         self.assertIn("artifact-engine", jobs)
-        job = jobs["artifact-engine"]
+        job = "\n".join(jobs[name] for name in (
+            "artifact-engine", "artifact-native-build", "artifact-native-default",
+            "artifact-native-bridges"))
+        self.assertIn("ci20_native_binding.py gate", jobs["artifact-engine"])
+        self.assertIn("ci20_native_binding.py stamp", jobs["artifact-native-build"])
 
         self.assertIn("needs: changes", job)
         self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
@@ -3714,15 +3741,14 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "go-download-base-url: https://go.dev/dl",
             "GOTOOLCHAIN: local",
             "subprocess.check_output(['go', 'env', 'GOVERSION']",
-            'go test -buildvcs=false -timeout=20m ./...',
-            'go vet -buildvcs=false ./...',
-            'go test -buildvcs=false -race ./...',
+            'python tools/go_test_parallel.py --module core/artifacts --build-flag=-race',
             'python .github/scripts/test_artifact_native.py',
             'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
-            'python .github/scripts/test_artifact_approval_adapter.py',
-            'python .github/scripts/test_artifact_prerequisite_adapter.py',
+            'python .github/scripts/run_concurrent_suites.py',
+            '.github/scripts/test_artifact_approval_adapter.py',
+            '.github/scripts/test_artifact_prerequisite_adapter.py',
             'python .github/scripts/test_artifact_consumers.py',
-            "'.github/scripts/test_artifact_conformance.py'",
+            "--interpreter-env ARTIFACT_CONFORMANCE_PYTHON\n          .github/scripts/test_artifact_conformance.py",
             'python .github/scripts/test_artifact_surface.py',
             "ARTIFACT_CONFORMANCE_PYTHON",
             "--isolated",
@@ -3731,19 +3757,20 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "--require-hashes",
             "--no-deps",
             ".github/requirements/artifact-conformance-py314.lock",
-            '--qualify-existing "${{ runner.temp }}/artifact-candidate"',
-            'name: artifact-native-${{ matrix.os }}',
+            "ci20_native_binding.py qualify-recorded",
+            "name: artifact-native-macos-26",
         ):
             self.assertIn(control, job)
-        qualification_position = job.index('--qualify-existing "${{ runner.temp }}/artifact-candidate"')
+        qualification_position = jobs["artifact-engine"].index(
+            "ci20_native_binding.py qualify-recorded")
         for proving_step in (
-            "go test -buildvcs=false -timeout=20m ./...",
-            "go vet -buildvcs=false ./...",
             "python .github/scripts/test_artifact_native.py",
-            "'.github/scripts/test_artifact_conformance.py'",
+            ".github/scripts/test_artifact_conformance.py",
         ):
-            self.assertLess(job.index(proving_step), qualification_position, proving_step)
-        self.assertGreater(job.index("name: artifact-native-${{ matrix.os }}"),
+            self.assertIn(proving_step, job)
+        self.assertLess(jobs["artifact-engine"].index("ci20_native_binding.py gate"),
+                        qualification_position)
+        self.assertGreater(jobs["artifact-engine"].index("name: artifact-native-ubuntu-24.04\n"),
                            qualification_position)
         self.assertNotIn("continue-on-error", job)
         builder = (REPO_ROOT / "tools" / "build-artifacts.py").read_text(encoding="utf-8")
@@ -3792,9 +3819,20 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         cold = jobs["artifact-package-cold"]
         self.assertIn("needs: [changes, artifact-package-assembly]", cold)
         self.assertIn("needs.artifact-package-assembly.result == 'success'", cold)
-        self.assertEqual(cold.count("host: claude"), 6)
-        self.assertEqual(cold.count("host: codex"), 6)
-        self.assertEqual(cold.count("host: pi"), 6)
+        # One job per platform; each host runs as its own isolated step with its
+        # own receipt artifact, and a failing host never hides the others.
+        self.assertNotIn("matrix.host", cold)
+        for binding in ('--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
+                        '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
+                        '--cold-platform "${{ matrix.platform }}"',
+                        'needs.artifact-package-assembly.outputs.promotion-receipt-sha256'):
+            self.assertEqual(cold.count(binding), 3, binding)
+        for host in ("claude", "codex", "pi"):
+            self.assertEqual(cold.count(f'--cold-host "{host}"'), 1)
+            self.assertEqual(cold.count(f"id: cold_{host}"), 1)
+            self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
+            self.assertIn(f'--cold-receipt "${{{{ runner.temp }}}}/cold-{host}/artifact-package-cold.json"', cold)
+            self.assertIn(f"name: artifact-package-cold-${{{{ matrix.platform_token }}}}-{host}-${{{{ github.sha }}}}", cold)
         for runner, platform_name in (
             ("ubuntu-24.04", "linux/amd64"),
             ("ubuntu-24.04-arm", "linux/arm64"),
@@ -3804,10 +3842,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             ("macos-26", "darwin/arm64"),
         ):
             self.assertEqual(
-                len(re.findall(rf"(?m)^\s+- os: {re.escape(runner)}$", cold)), 3
+                len(re.findall(rf"(?m)^\s+- os: {re.escape(runner)}$", cold)), 1
             )
             self.assertEqual(
-                len(re.findall(rf"(?m)^\s+platform: {re.escape(platform_name)}$", cold)), 3
+                len(re.findall(rf"(?m)^\s+platform: {re.escape(platform_name)}$", cold)), 1
             )
         for control in (
             "name: artifact-host-payloads-${{ github.sha }}",
@@ -3815,11 +3853,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             '--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
             '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
             '--source-repo .',
-            '--cold-host "${{ matrix.host }}"',
             '--cold-platform "${{ matrix.platform }}"',
             'needs.artifact-package-assembly.outputs.promotion-receipt-sha256',
-            'name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}',
-            "Cold-execute the complete exact-package installed-host workflow",
             "retention-days: 14",
         ):
             self.assertIn(control, cold)
@@ -3938,8 +3973,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("${{ needs['artifact-authority'].result }}", aggregate)
         authority = jobs["artifact-authority"]
         self.assertIn("run_artifact_authority_shard.py", authority)
-        self.assertIn("AUTHORITY_SHARD: ${{ matrix.shard }}", authority)
-        self.assertEqual(authority.count("            shard: "), 12)
+        # One job per platform runs all partitions as concurrent bounded children.
+        self.assertIn("AUTHORITY_SHARD: all", authority)
+        self.assertNotIn("matrix.shard", authority)
+        self.assertEqual(authority.count("            expected_platform: "), 6)
         self.assertNotIn("continue-on-error", authority)
         self.assertRegex(aggregate, r"(?m)^      - artifact-browser$")
         self.assertRegex(aggregate, r"(?m)^      - artifact-package-assembly$")
@@ -3949,7 +3986,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("${{ needs['artifact-package-assembly'].result }}", aggregate)
         self.assertIn("${{ needs['artifact-package-cold'].result }}", aggregate)
 
-        engine = jobs["artifact-engine"]
+        engine = jobs["artifact-native-bridges"]
         self.assertIn("Generate review examples with the native candidate", engine)
         self.assertIn("python tools/create-artifact-examples.py", engine)
         self.assertIn('${{ runner.temp }}/artifact-review', engine)
@@ -4135,7 +4172,9 @@ class ContextImpactClosureTest(unittest.TestCase):
     def _assert_context_closure(self, ci, impact):
         jobs = workflow_jobs(ci)
         hooks = jobs["hooks"]
-        engine = jobs["artifact-engine"]
+        engine = jobs["artifact-native-default"]
+        bridges = jobs["artifact-native-bridges"]
+        qualifier = jobs["artifact-engine"]
         cold = jobs["artifact-package-cold"]
         aggregate = jobs["ci-passed"]
         for script in (
@@ -4149,9 +4188,9 @@ class ContextImpactClosureTest(unittest.TestCase):
                        "test_context_workflow.py"):
             command = f"python .github/scripts/{script}"
             index = run_step_index(engine, command)
-            self.assertGreater(index, run_step_index(engine, "go test -buildvcs=false -timeout=20m ./..."), command)
-            self.assertLess(index, engine.splitlines().index(
-                '          --qualify-existing "${{ runner.temp }}/artifact-candidate"'), command)
+            self.assertGreaterEqual(index, 0, command)
+            self.assertIn("artifact-native-default",
+                          qualifier.split("    needs:", 1)[1].splitlines()[0])
         self.assertIn('go-version: "1.27.1"', engine)
         self.assertIn("needs: [changes, artifact-package-assembly]", cold)
         self.assertIn("needs.artifact-package-assembly.result == 'success'", cold)
@@ -4179,10 +4218,11 @@ class ContextImpactClosureTest(unittest.TestCase):
                       ".github/scripts/test_greenfield_context.py",
                      ".github/scripts/test_context_workflow.py"):
             self.assertIn(path, paths_filter(ci, "artifacts"))
-        greenfield = run_step_index(engine, "python .github/scripts/test_greenfield_context.py")
-        self.assertGreater(greenfield, run_step_index(engine,
-            'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"'))
-        step = self._greenfield_step(engine)
+        greenfield = run_step_index(bridges, "python .github/scripts/test_greenfield_context.py")
+        self.assertGreaterEqual(greenfield, 0)
+        self.assertLess(bridges.index("ci20_native_binding.py verify"),
+                        bridges.index("run: python .github/scripts/test_greenfield_context.py"))
+        step = self._greenfield_step(bridges)
         environments = re.findall(r"(?m)^        env:\n((?:          [^\n]*\n)*)", step)
         self.assertEqual(len(environments), 1)
         self.assertIn("          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate\n",
@@ -4198,13 +4238,13 @@ class ContextImpactClosureTest(unittest.TestCase):
     def test_greenfield_candidate_binding_negative_controls(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         impact = module.load_map(REPO_ROOT / ".github/ci-impact-map.json")
-        step = self._greenfield_step(workflow_jobs(ci)["artifact-engine"])
+        step = self._greenfield_step(workflow_jobs(ci)["artifact-native-bridges"])
         binding = "          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate\n"
         self.assertIn(binding, step)
         for replacement in ("", binding.replace("/artifact-candidate", "/different-candidate")):
             with self.subTest(binding=replacement or "removed"):
                 changed = ci.replace(step, step.replace(binding, replacement), 1)
-                self.assertIn(binding, workflow_jobs(changed)["artifact-engine"])
+                self.assertIn(binding, workflow_jobs(changed)["artifact-native-bridges"])
                 with self.assertRaises(AssertionError):
                     self._assert_context_closure(changed, impact)
 
@@ -4221,8 +4261,17 @@ class ContextImpactClosureTest(unittest.TestCase):
         ):
             with self.subTest(removed=before):
                 self.assertIn(before, ci)
+                if before == 'go-version: "1.27.1"':
+                    start = ci.index(chr(10) + "  artifact-native-default:" + chr(10))
+                    end = ci.index(chr(10) + "  artifact-native-coverage:" + chr(10), start)
+                    engine = ci[start:end]
+                    self.assertEqual(engine.count(before), 1)
+                    changed = ci[:start] + engine.replace(before, after, 1) + ci[end:]
+                else:
+                    # Every host step must keep the binding; replace them all.
+                    changed = ci.replace(before, after)
                 with self.assertRaises(AssertionError):
-                    self._assert_context_closure(ci.replace(before, after, 1), impact)
+                    self._assert_context_closure(changed, impact)
         missing_host_edge = module.ImpactMap(
             checks=impact.checks,
             edges=tuple(edge for edge in impact.edges
@@ -4234,29 +4283,79 @@ class ContextImpactClosureTest(unittest.TestCase):
 
 class NativeQualificationTimeBudgetTest(unittest.TestCase):
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
-        source = CI_WORKFLOW.read_text(encoding="utf-8")
-        block = source.split("\n  artifact-engine:\n", 1)[1].split("\n  artifact-authority:\n", 1)[0]
-        authority = source.split("\n  artifact-authority:\n", 1)[1].split("\n  artifact-browser:\n", 1)[0]
-        # Retain the measured 45m Intel macOS and Windows budgets;
-        # all other platforms keep 30m and every suite remains required.
-        self.assertIn(
-            "    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}",
-            block,
-        )
-        for script in ("test_artifact_native.py",
-                       "test_artifact_approval_adapter.py",
-                       "test_artifact_prerequisite_adapter.py", "test_artifact_reconciliation_adapter.py",
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        qualifier = jobs["artifact-engine"]
+        self.assertIn("timeout-minutes: 15", qualifier)
+        self.assertIn("ci20_native_binding.py gate", qualifier)
+        self.assertNotIn("continue-on-error:", qualifier)
+        self.assertNotIn("strategy:", qualifier)
+        for name in ("artifact-native-build", "artifact-native-default",
+                     "artifact-native-coverage",
+                     "artifact-native-bridges"):
+            block = jobs[name]
+            self.assertIn('go-version: "1.27.1"', block)
+            self.assertIn("fail-fast: false", block)
+            self.assertNotIn("continue-on-error:", block)
+            for platform in ("linux/amd64", "linux/arm64", "windows/amd64",
+                             "windows/arm64", "darwin/amd64", "darwin/arm64"):
+                self.assertIn("expected_platform: " + platform, block)
+        self.assertIn("test_artifact_native.py", jobs["artifact-native-default"])
+        for script in ("test_artifact_approval_adapter.py",
+                       "test_artifact_prerequisite_adapter.py",
+                       "test_artifact_reconciliation_adapter.py",
                        "test_artifact_conformance.py"):
-            self.assertIn(script, block)
-        self.assertIn("run_artifact_authority_shard.py", authority)
+            self.assertIn(script, jobs["artifact-native-bridges"])
+        authority = jobs["artifact-authority"]
+        self.assertEqual(authority.count("            expected_platform: "), 6)
+        self.assertIn("AUTHORITY_SHARD: all", authority)
         self.assertIn("timeout-minutes: 45", authority)
-        self.assertNotIn("continue-on-error:", authority)
         self.assertIn("fail-fast: false", authority)
-        self.assertNotIn("continue-on-error:", block)
-        self.assertIn("fail-fast: false", block)
-        for platform in ("linux/amd64", "linux/arm64", "windows/amd64",
-                         "windows/arm64", "darwin/amd64", "darwin/arm64"):
-            self.assertIn("expected_platform: " + platform, block)
+        self.assertNotIn("continue-on-error:", authority)
+
+
+
+RECORDED_RUNNERS = (('ubuntu-24.04', 'linux/amd64'), ('ubuntu-24.04-arm', 'linux/arm64'), ('windows-2025', 'windows/amd64'), ('windows-11-arm', 'windows/arm64'), ('macos-15-intel', 'darwin/amd64'), ('macos-26', 'darwin/arm64'))
+
+
+def bridge_suite_arguments(job: str) -> list[str]:
+    """Return the suite arguments of the bridges job's single concurrent step."""
+    step = re.search(
+        r"(?ms)^      - name: Test host-owned bridges, reply capture and cross-kind conformance\n"
+        r"(?P<body>.*?)(?=^      - name:|\Z)",
+        job,
+    )
+    if step is None or "run: >-\n" not in step.group("body"):
+        return []
+    command = step.group("body").split("run: >-\n", 1)[1].split()
+    if command[:2] != ["python", ".github/scripts/run_concurrent_suites.py"]:
+        return []
+    return command[2:]
+
+
+class SuiteEntrypointTest(unittest.TestCase):
+    """A suite CI runs as `python <file>` must execute its tests when run that way.
+
+    PR #1013 briefly lost this file's own entry point: `python test_ci_impact.py`
+    then defined 108 tests, ran none, and exited 0, so the impact job and the
+    debug-suite step passed while measuring nothing.
+    """
+
+    ENTRY = re.compile(r"(?m)^if __name__\s*==\s*['\"]__main__['\"]\s*:")
+    INVOKED = re.compile(
+        r"python3? (?:-[A-Za-z]\S* )*((?:\.github/scripts|tools|plugins/\S+?)/test[_-][A-Za-z0-9_.-]+\.py)")
+
+    def test_every_directly_invoked_suite_has_an_entry_point(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        invoked = sorted(set(self.INVOKED.findall(ci)))
+        self.assertGreater(len(invoked), 50)
+        missing = [path for path in invoked
+                   if not self.ENTRY.search((REPO_ROOT / path).read_text(encoding="utf-8"))]
+        self.assertEqual(missing, [])
+
+    def test_the_guard_recognizes_a_missing_entry_point(self):
+        self.assertIsNone(self.ENTRY.search("class T(unittest.TestCase):\n    pass\n"))
+        self.assertIsNotNone(self.ENTRY.search("if __name__=='__main__':\n    main()\n"))
+        self.assertIsNotNone(self.ENTRY.search('if __name__ == "__main__":\n    unittest.main()\n'))
 
 
 if __name__ == "__main__":

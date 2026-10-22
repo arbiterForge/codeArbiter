@@ -151,10 +151,12 @@ def validate_live_candidate_run(marker, evidence):
             "[CHECK] | [CORE] | Structured artifact  <"
         ))) != 6:
             raise ValueError("live candidate does not have six successful native qualifications")
+        # Historical runs used one job per platform and host (18); current runs
+        # use one job per platform whose three isolated host steps must all pass (6).
         if len(_successful_jobs(jobs, prefix=(
             "[CHECK] | [CORE] | Structured artifact cold package  <"
-        ))) != 18:
-            raise ValueError("live candidate does not have eighteen successful cold qualifications")
+        ))) not in (6, 18):
+            raise ValueError("live candidate does not have every cold host qualification")
         return candidate
 
     run = evidence
@@ -745,8 +747,21 @@ class PublicCodexDocsTest(unittest.TestCase):
                     validate_live_candidate_run(marker, corrupted)
         missing_cold = copy.deepcopy(evidence)
         missing_cold["jobs"]["jobs"].pop()
-        with self.assertRaisesRegex(ValueError, "eighteen"):
+        with self.assertRaisesRegex(ValueError, "every cold host qualification"):
             validate_live_candidate_run(marker, missing_cold)
+        per_platform = copy.deepcopy(evidence)
+        per_platform["jobs"]["jobs"] = per_platform["jobs"]["jobs"][:-12]
+        self.assertEqual(candidate, validate_live_candidate_run(marker, per_platform))
+        for removed in (1, 2):
+            with self.subTest(per_platform_missing=removed):
+                short = copy.deepcopy(per_platform)
+                del short["jobs"]["jobs"][-removed:]
+                with self.assertRaisesRegex(ValueError, "every cold host qualification"):
+                    validate_live_candidate_run(marker, short)
+        failed_cold = copy.deepcopy(per_platform)
+        failed_cold["jobs"]["jobs"][-1]["conclusion"] = "failure"
+        with self.assertRaisesRegex(ValueError, "non-successful"):
+            validate_live_candidate_run(marker, failed_cold)
         missing_head = copy.deepcopy(evidence)
         missing_head["pull_commits"] = [{"sha": "e" * 40}]
         with self.assertRaisesRegex(ValueError, "absent from the pull-request history"):
