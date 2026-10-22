@@ -3754,7 +3754,11 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("artifact-package-assembly", jobs)
         assembly = jobs["artifact-package-assembly"]
         for control in (
-            "needs: [changes, artifact-engine]",
+            "needs: [changes, artifact-engine, artifact-ci-build, artifact-ci-direct-tests]",
+            "needs.artifact-ci-build.result == 'success'",
+            "needs.artifact-ci-direct-tests.result == 'success'",
+            "ci20_correspondence.py",
+            "pattern: ci20-test-input-*",
             "needs.artifact-engine.result == 'success'",
             "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2",
             "pattern: artifact-native-*",
@@ -4221,8 +4225,16 @@ class ContextImpactClosureTest(unittest.TestCase):
         ):
             with self.subTest(removed=before):
                 self.assertIn(before, ci)
+                if before == 'go-version: "1.27.1"':
+                    start = ci.index(chr(10) + "  artifact-engine:" + chr(10))
+                    end = ci.index(chr(10) + "  artifact-authority:" + chr(10), start)
+                    engine = ci[start:end]
+                    self.assertEqual(engine.count(before), 1)
+                    changed = ci[:start] + engine.replace(before, after, 1) + ci[end:]
+                else:
+                    changed = ci.replace(before, after, 1)
                 with self.assertRaises(AssertionError):
-                    self._assert_context_closure(ci.replace(before, after, 1), impact)
+                    self._assert_context_closure(changed, impact)
         missing_host_edge = module.ImpactMap(
             checks=impact.checks,
             edges=tuple(edge for edge in impact.edges
