@@ -72,6 +72,8 @@ on:
       # required native-host contract even when a change touches no plugin.
       - "docs/artifacts/**"
       - "tools/build-artifacts.py"
+      - "tools/go_test_parallel.py"
+      - "tools/go-test-timings.json"
       - "tools/test-artifact-mixed-schema.py"
       - "tools/artifact-coverage.py"
       - "tools/install-artifact-payload.py"
@@ -327,6 +329,13 @@ jobs:
               - 'plugins/ca-codex/generated/**'
               - 'plugins/ca-pi/generated/**'
             impact:
+              - '.github/scripts/ci20_native_binding.py'
+              - '.github/scripts/test_ci20_native_pipeline.py'
+              - '.github/scripts/test_go_test_parallel.py'
+              - '.github/scripts/run_concurrent_suites.py'
+              - '.github/scripts/test_run_concurrent_suites.py'
+              - '.github/fixtures/artifact-authority-timings.json'
+              - '.github/scripts/run_artifact_authority_shard.py'
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
               # The site CVE gate's accepted-advisory judge and its only guard.
@@ -392,6 +401,13 @@ jobs:
               - '**/*.json'
               - '.github/workflows/ci.yml'
             artifacts:
+              - '.github/scripts/ci20_native_binding.py'
+              - '.github/scripts/test_ci20_native_pipeline.py'
+              - '.github/scripts/test_go_test_parallel.py'
+              - '.github/scripts/run_concurrent_suites.py'
+              - '.github/scripts/test_run_concurrent_suites.py'
+              - '.github/fixtures/artifact-authority-timings.json'
+              - '.github/scripts/run_artifact_authority_shard.py'
               # Fresh automatic publication requires an exact-head package
               # cohort even when the change is only release intent/version.
               - 'plugins/ca/.claude-plugin/plugin.json'
@@ -437,6 +453,8 @@ jobs:
               - 'site/src/content/docs/**'
               - 'site/src/curated/**'
               - 'tools/build-artifacts.py'
+              - 'tools/go_test_parallel.py'
+              - 'tools/go-test-timings.json'
               - 'tools/test-artifact-mixed-schema.py'
               - 'tools/artifact-coverage.py'
               - 'tools/build-host-packages.py'
@@ -502,15 +520,368 @@ jobs:
           include-hidden-files: false
           overwrite: false
 
+  # CI20-03: a distinct, explicitly UNQUALIFIED native test-input lane.
+  # This is NOT a release candidate and does not replace artifact-engine.
   artifact-engine:
-    name: "[CHECK] | [CORE] | Structured artifact  <${{ matrix.expected_platform }}>"
+    name: "[CHECK] | [CORE] | Structured artifact qualification"
+    needs: [changes, artifact-native-build, artifact-native-default, artifact-native-coverage, artifact-native-bridges, artifact-authority, artifact-coverage]
+    if: ${{ !cancelled() && needs.changes.outputs.artifacts == 'true' }}
+    # One Linux issuer qualifies all six platforms from their same-run native
+    # stamps (plan CI20-04): no native runner is allocated only to issue a receipt.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      # The issuer needs the checked-out HEAD and Python; it runs no Go or
+      # Node and reads no history.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Require every native verification stage to have passed
+        env:
+          NATIVE_RESULTS: ${{ toJSON(needs) }}
+        run: python .github/scripts/ci20_native_binding.py gate
+      - name: Download the native-tested candidates and context observations from this run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: ci20-native-*
+          path: ${{ runner.temp }}/native
+      - name: Bind each candidate to its recorded native result
+        env:
+          NATIVE_ROOT: ${{ runner.temp }}/native
+        run: python .github/scripts/ci20_native_binding.py qualify-recorded
+      - name: Preserve the exact native candidate and qualification receipt (linux/amd64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-ubuntu-24.04
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (linux/arm64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-ubuntu-24.04-arm
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04-arm/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04-arm/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (windows/amd64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-windows-2025
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-windows-2025/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-windows-2025/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (windows/arm64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-windows-11-arm
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-windows-11-arm/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-windows-11-arm/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (darwin/amd64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-macos-15-intel
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-macos-15-intel/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-macos-15-intel/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (darwin/arm64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-macos-26
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-macos-26/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-macos-26/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
+  artifact-native-build:
+    name: "[CHECK] | [CORE] | Tested native candidate build <${{ matrix.expected_platform }}>"
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    # Intel macOS run 36321825183 and Windows ARM runs 37148496781
-    # and 37150510062, plus Windows x64 run 37184973120, exhausted 30m
-    # after earlier suites passed.
-    # Preserve all suites and per-test timeouts; allow those hosts 45m.
+    # Split native verification; every original check retains its platform budget.
+    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}
+    permissions:
+      contents: read
+    env:
+      GOTOOLCHAIN: local
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            expected_platform: linux/amd64
+            artifact_binary: ca-artifact-linux-amd64
+          - os: ubuntu-24.04-arm
+            expected_platform: linux/arm64
+            artifact_binary: ca-artifact-linux-arm64
+          - os: windows-2025
+            expected_platform: windows/amd64
+            artifact_binary: ca-artifact-windows-amd64.exe
+          - os: windows-11-arm
+            expected_platform: windows/arm64
+            artifact_binary: ca-artifact-windows-arm64.exe
+          - os: macos-15-intel
+            expected_platform: darwin/amd64
+            artifact_binary: ca-artifact-darwin-amd64
+          - os: macos-26
+            expected_platform: darwin/arm64
+            artifact_binary: ca-artifact-darwin-arm64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.19.0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Verify exact Go toolchain
+        run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
+      - name: Build native qualified candidate
+        run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
+      - name: Bind the module-tested binary, source, host and toolchain
+        run: >-
+          python .github/scripts/ci20_native_binding.py stamp
+          --candidate "${{ runner.temp }}/artifact-candidate"
+          --metadata "${{ runner.temp }}/ci20-native-tested.json"
+          --platform "${{ matrix.expected_platform }}"
+      - name: Share the real tested candidate with this workflow run
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci20-native-tested-${{ matrix.os }}
+          path: |
+            ${{ runner.temp }}/artifact-candidate
+            ${{ runner.temp }}/ci20-native-tested.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+  artifact-native-default:
+    name: "[CHECK] | [CORE] | Default native, storage and context checks <${{ matrix.expected_platform }}>"
+    needs: changes
+    if: needs.changes.outputs.artifacts == 'true'
+    runs-on: ${{ matrix.os }}
+    # Split native verification; every original check retains its platform budget.
+    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}
+    permissions:
+      contents: read
+    env:
+      GOTOOLCHAIN: local
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            expected_platform: linux/amd64
+            artifact_binary: ca-artifact-linux-amd64
+          - os: ubuntu-24.04-arm
+            expected_platform: linux/arm64
+            artifact_binary: ca-artifact-linux-arm64
+          - os: windows-2025
+            expected_platform: windows/amd64
+            artifact_binary: ca-artifact-windows-amd64.exe
+          - os: windows-11-arm
+            expected_platform: windows/arm64
+            artifact_binary: ca-artifact-windows-arm64.exe
+          - os: macos-15-intel
+            expected_platform: darwin/amd64
+            artifact_binary: ca-artifact-darwin-amd64
+          - os: macos-26
+            expected_platform: darwin/arm64
+            artifact_binary: ca-artifact-darwin-arm64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.19.0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Verify exact Go toolchain
+        run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
+      # The complete module test population and vet run once per platform, in
+      # the tested native build (tools/build-artifacts.py), whose success every
+      # consumer and the final qualifier require. Repeating them here doubled
+      # the Go suite's runner time and held a macOS slot at the start of the run.
+      - name: Verify the parallel Go runner refuses incomplete populations
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_go_test_parallel.py
+      - name: Verify the concurrent suite runner refuses failed and empty suites
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_run_concurrent_suites.py
+      - name: Race-test Linux persistence paths
+        if: matrix.os == 'ubuntu-24.04'
+        run: python tools/go_test_parallel.py --module core/artifacts --build-flag=-race
+      - name: Verify generated artifact types
+        if: matrix.os == 'ubuntu-24.04'
+        run: python tools/generate-artifact-types.py --check
+      - name: Verify artifact public-surface baseline
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_artifact_surface.py
+      - name: Verify artifact consumer inventory closure
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_artifact_consumers.py
+      - name: Verify SMARTS engine contract by exact test name
+        # The suite requires a pass event for each named Go test and fails
+        # closed on a host without WSL, so it runs on the Linux cells only;
+        # the other cells already run the full module above.
+        if: startsWith(matrix.os, 'ubuntu-')
+        run: python .github/scripts/test_smarts_engine_contract.py
+      # Ship-set evidence-input identity (ADR-0042) and the 600 s prompt-submit
+      # timeout. Linux only: the wrapper cross-runs Linux-only packages via WSL
+      # on other hosts, which hosted macOS/Windows runners do not provide; the
+      # same Go tests already run natively on every platform in the tested build.
+      - name: Verify ship-set evidence-input behavior
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_ship_set_inputs.py
+      # Storage, recovery and context checks share this runner rather than
+      # queueing a separate native job per platform at the start of the run.
+      - name: Verify named native storage and recovery contract
+        run: python .github/scripts/test_artifact_native.py
+      - name: Verify the finite context Go test bridge
+        run: python .github/scripts/test_context_verification.py
+      - name: Verify named context document Go cases
+        env:
+          CONTEXT_NATIVE_OBSERVATION_OUTPUT: ${{ runner.temp }}/context-native-observation.json
+        run: python .github/scripts/test_context_native.py
+      - name: Reject missing and nonisolated installed context candidates
+        run: >-
+          python .github/scripts/test_context_installed.py
+          InstalledContextQualification.test_t044_rejects_missing_candidate_identity
+          InstalledContextQualification.test_t044_rejects_nonisolated_environment
+          -v
+      - name: Verify context workflow with the pinned Go toolchain
+        run: python .github/scripts/test_context_workflow.py
+      - name: Preserve native context observation from its execution owner
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci20-native-context-${{ matrix.os }}
+          path: ${{ runner.temp }}/context-native-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+  artifact-native-coverage:
+    name: "[CHECK] | [CORE] | Instrumented native coverage <${{ matrix.expected_platform }}>"
+    needs: changes
+    if: needs.changes.outputs.artifacts == 'true'
+    runs-on: ${{ matrix.os }}
+    # Split native verification; every original check retains its platform budget.
+    timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}
+    permissions:
+      contents: read
+    env:
+      GOTOOLCHAIN: local
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            expected_platform: linux/amd64
+            artifact_binary: ca-artifact-linux-amd64
+          - os: ubuntu-24.04-arm
+            expected_platform: linux/arm64
+            artifact_binary: ca-artifact-linux-arm64
+          - os: windows-2025
+            expected_platform: windows/amd64
+            artifact_binary: ca-artifact-windows-amd64.exe
+          - os: windows-11-arm
+            expected_platform: windows/arm64
+            artifact_binary: ca-artifact-windows-arm64.exe
+          - os: macos-15-intel
+            expected_platform: darwin/amd64
+            artifact_binary: ca-artifact-darwin-amd64
+          - os: macos-26
+            expected_platform: darwin/arm64
+            artifact_binary: ca-artifact-darwin-arm64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.19.0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Verify exact Go toolchain
+        run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
+      - name: Exercise the actual CLI with native statement instrumentation
+        run: >-
+          python .github/scripts/test_artifact_cli.py --coverage-output
+          "${{ runner.temp }}/artifact-cli-statements.out"
+      - name: Collect native unit and executable statement coverage
+        run: >-
+          python tools/artifact-coverage.py collect
+          --module-root core/artifacts
+          --output "${{ runner.temp }}/artifact-statements"
+          --expect-platform "${{ matrix.expected_platform }}"
+          --extra-profile "${{ runner.temp }}/artifact-cli-statements.out"
+      - name: Preserve the native statement profiles
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-statements-${{ matrix.os }}
+          path: ${{ runner.temp }}/artifact-statements
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+  artifact-native-bridges:
+    name: "[CHECK] | [CORE] | Native adapters and conformance <${{ matrix.expected_platform }}>"
+    needs: [changes, artifact-native-build]
+    if: needs.changes.outputs.artifacts == 'true' && needs.artifact-native-build.result == 'success'
+    runs-on: ${{ matrix.os }}
+    # Split native verification; every original check retains its platform budget.
     timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}
     permissions:
       contents: read
@@ -564,50 +935,17 @@ jobs:
           exe=root/('Scripts/python.exe' if os.name=='nt' else 'bin/python');
           subprocess.run([str(exe),'-m','pip','install','--isolated','--require-virtualenv','--disable-pip-version-check','--no-input','--no-cache-dir','--only-binary=:all:','--require-hashes','--no-deps','--index-url','https://pypi.org/simple','-r','.github/requirements/artifact-conformance-py314.lock'],check=True);
           pathlib.Path(os.environ['GITHUB_ENV']).open('a',encoding='utf-8').write('ARTIFACT_CONFORMANCE_PYTHON='+str(exe)+'\n')"
-      - name: Test artifact engine
-        working-directory: core/artifacts
-        run: go test -buildvcs=false -timeout=20m ./...
-      - name: Vet artifact engine
-        working-directory: core/artifacts
-        run: go vet -buildvcs=false ./...
-      - name: Exercise the actual CLI with native statement instrumentation
-        run: >-
-          python .github/scripts/test_artifact_cli.py --coverage-output
-          "${{ runner.temp }}/artifact-cli-statements.out"
-      - name: Collect native unit and executable statement coverage
-        run: >-
-          python tools/artifact-coverage.py collect
-          --module-root core/artifacts
-          --output "${{ runner.temp }}/artifact-statements"
-          --expect-platform "${{ matrix.expected_platform }}"
-          --extra-profile "${{ runner.temp }}/artifact-cli-statements.out"
-      - name: Preserve the native statement profiles
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - name: Download the actual native-tested candidate from this run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: artifact-statements-${{ matrix.os }}
-          path: ${{ runner.temp }}/artifact-statements
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: false
-          overwrite: false
-      - name: Verify named native storage and recovery contract
-        run: python .github/scripts/test_artifact_native.py
-      - name: Verify the finite context Go test bridge
-        run: python .github/scripts/test_context_verification.py
-      - name: Verify named context document Go cases
-        env:
-          CONTEXT_NATIVE_OBSERVATION_OUTPUT: ${{ runner.temp }}/context-native-observation.json
-        run: python .github/scripts/test_context_native.py
-      - name: Reject missing and nonisolated installed context candidates
+          name: ci20-native-tested-${{ matrix.os }}
+          path: ${{ runner.temp }}
+      - name: Verify tested candidate bytes, source and native toolchain
         run: >-
-          python .github/scripts/test_context_installed.py
-          InstalledContextQualification.test_t044_rejects_missing_candidate_identity
-          InstalledContextQualification.test_t044_rejects_nonisolated_environment
-          -v
-      - name: Verify context workflow with the pinned Go toolchain
-        run: python .github/scripts/test_context_workflow.py
-      - name: Build native qualified candidate
-        run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
+          python .github/scripts/ci20_native_binding.py verify
+          --candidate "${{ runner.temp }}/artifact-candidate"
+          --metadata "${{ runner.temp }}/ci20-native-tested.json"
+          --platform "${{ matrix.expected_platform }}"
       - name: Verify protected greenfield population with the candidate
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
@@ -639,78 +977,30 @@ jobs:
           python tools/create-artifact-examples.py
           --binary "${{ runner.temp }}/artifact-candidate/${{ matrix.artifact_binary }}"
           --output "${{ runner.temp }}/artifact-review"
-      - name: Race-test Linux persistence paths
-        if: matrix.os == 'ubuntu-24.04'
-        working-directory: core/artifacts
-        run: go test -buildvcs=false -race ./...
-      - name: Verify generated artifact types
-        if: matrix.os == 'ubuntu-24.04'
-        run: python tools/generate-artifact-types.py --check
-      - name: Verify artifact public-surface baseline
-        if: matrix.os == 'ubuntu-24.04'
-        run: python .github/scripts/test_artifact_surface.py
-      - name: Verify artifact consumer inventory closure
-        if: matrix.os == 'ubuntu-24.04'
-        run: python .github/scripts/test_artifact_consumers.py
-      - name: Verify SMARTS engine contract by exact test name
-        # The suite requires a pass event for each named Go test and fails
-        # closed on a host without WSL, so it runs on the Linux cells only;
-        # the other cells already run the full module above.
-        if: startsWith(matrix.os, 'ubuntu-')
-        run: python .github/scripts/test_smarts_engine_contract.py
-      # Ship-set evidence-input identity (ADR-0042) and the 600 s prompt-submit
-      # timeout. Linux only: the wrapper cross-runs Linux-only packages via WSL
-      # on other hosts, which hosted macOS/Windows runners do not provide; the
-      # same Go tests already run natively on every cell in "Test artifact engine".
-      - name: Verify ship-set evidence-input behavior
-        if: matrix.os == 'ubuntu-24.04'
-        run: python .github/scripts/test_ship_set_inputs.py
-      - name: Test host-owned artifact approval capture
+      - name: Test host-owned bridges, reply capture and cross-kind conformance
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_approval_adapter.py
-      - name: Test host-owned artifact prerequisite capture
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_prerequisite_adapter.py
-      - name: Test host-owned artifact reconciliation capture
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_reconciliation_adapter.py
-      - name: Test forgiving authority reply capture and short codes
-        run: python .github/scripts/test_replylib.py
-      - name: Literal read-only Python diagnostics and refusal controls
-        run: python .github/scripts/test_literal_python_reads.py
-      - name: Test cross-kind reference and workflow conformance
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_artifact_conformance.py'], check=True)"
+        run: >-
+          python .github/scripts/run_concurrent_suites.py
+          .github/scripts/test_artifact_approval_adapter.py
+          .github/scripts/test_artifact_prerequisite_adapter.py
+          .github/scripts/test_artifact_reconciliation_adapter.py
+          .github/scripts/test_replylib.py
+          .github/scripts/test_literal_python_reads.py
+          --interpreter-env ARTIFACT_CONFORMANCE_PYTHON
+          .github/scripts/test_artifact_conformance.py
       - name: Test debug handoff model against the locked reference interpreter
         run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)"
-      - name: Bind the candidate to this exact-host native result
-        env:
-          EXPECTED_ARTIFACT_PLATFORM: ${{ matrix.expected_platform }}
+      - name: Recheck native candidate after bridge and conformance tests
         run: >-
-          python tools/build-artifacts.py
-          --qualify-existing "${{ runner.temp }}/artifact-candidate"
-          --qualification-output "${{ runner.temp }}/artifact-qualification.json"
-          --context-native-observation "${{ runner.temp }}/context-native-observation.json"
-      - name: Preserve the exact native candidate and qualification receipt
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: artifact-native-${{ matrix.os }}
-          path: |
-            ${{ runner.temp }}/artifact-candidate
-            ${{ runner.temp }}/artifact-qualification.json
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: false
-          overwrite: false
-
+          python .github/scripts/ci20_native_binding.py verify
+          --candidate "${{ runner.temp }}/artifact-candidate"
+          --metadata "${{ runner.temp }}/ci20-native-tested.json"
+          --platform "${{ matrix.expected_platform }}"
   artifact-authority:
-    name: "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}> shard ${{ matrix.shard }}"
-    needs: changes
-    if: needs.changes.outputs.artifacts == 'true'
+    name: "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}>"
+    needs: [changes, artifact-native-build]
+    if: needs.changes.outputs.artifacts == 'true' && needs.artifact-native-build.result == 'success'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     permissions:
@@ -723,59 +1013,55 @@ jobs:
         include:
           - os: ubuntu-24.04
             expected_platform: linux/amd64
-            shard: 0
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            shard: 1
           - os: ubuntu-24.04-arm
             expected_platform: linux/arm64
-            shard: 0
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            shard: 1
           - os: windows-2025
             expected_platform: windows/amd64
-            shard: 0
-          - os: windows-2025
-            expected_platform: windows/amd64
-            shard: 1
           - os: windows-11-arm
             expected_platform: windows/arm64
-            shard: 0
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            shard: 1
           - os: macos-15-intel
             expected_platform: darwin/amd64
-            shard: 0
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            shard: 1
           - os: macos-26
             expected_platform: darwin/arm64
-            shard: 0
-          - os: macos-26
-            expected_platform: darwin/arm64
-            shard: 1
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.19.0
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.27.1"
           check-latest: false
           cache: false
           go-download-base-url: https://go.dev/dl
-      - name: Build native candidate for authority tests
-        run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
-      - name: Run exhaustive authority shard
+      - name: Download the actual native-tested candidate from this run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ci20-native-tested-${{ matrix.os }}
+          path: ${{ runner.temp }}
+      - name: Verify tested candidate bytes, source and native toolchain
+        run: >-
+          python .github/scripts/ci20_native_binding.py verify
+          --candidate "${{ runner.temp }}/artifact-candidate"
+          --metadata "${{ runner.temp }}/ci20-native-tested.json"
+          --platform "${{ matrix.expected_platform }}"
+      # All four duration-balanced partitions run as concurrent isolated children
+      # on this one runner; the parent proves exact, complete, passing coverage.
+      - name: Run exhaustive authority partitions
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-          AUTHORITY_SHARD: ${{ matrix.shard }}
+          AUTHORITY_SHARD: all
+          AUTHORITY_SHARD_COUNT: "4"
         run: python .github/scripts/run_artifact_authority_shard.py
-
+      - name: Recheck tested candidate after authority coverage
+        run: >-
+          python .github/scripts/ci20_native_binding.py verify
+          --candidate "${{ runner.temp }}/artifact-candidate"
+          --metadata "${{ runner.temp }}/ci20-native-tested.json"
+          --platform "${{ matrix.expected_platform }}"
   artifact-browser:
     name: "[CHECK] | [CORE] | Structured artifact browser qualification"
     needs: [changes, artifact-engine]
@@ -839,7 +1125,7 @@ jobs:
 
   artifact-coverage:
     name: "[CHECK] | [CORE] | Native Go statement coverage"
-    needs: [changes, artifact-engine]
+    needs: [changes, artifact-native-coverage]
     if: ${{ !cancelled() && needs.changes.outputs.artifacts == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -851,7 +1137,7 @@ jobs:
     steps:
       - name: Require successful native execution on every platform
         env:
-          ENGINE_RESULT: ${{ needs.artifact-engine.result }}
+          ENGINE_RESULT: ${{ needs.artifact-native-coverage.result }}
         run: |
           if [ "$ENGINE_RESULT" != success ]; then
             echo "::error::native coverage requires every engine platform to succeed: $ENGINE_RESULT"
@@ -1069,7 +1355,7 @@ jobs:
           overwrite: false
 
   artifact-package-cold:
-    name: "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }} · ${{ matrix.host }}>"
+    name: "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>"
     needs: [changes, artifact-package-assembly]
     if: needs.changes.outputs.artifacts == 'true' && needs.artifact-package-assembly.result == 'success'
     runs-on: ${{ matrix.os }}
@@ -1084,75 +1370,21 @@ jobs:
           - os: ubuntu-24.04
             platform: linux/amd64
             platform_token: linux-amd64
-            host: claude
-          - os: ubuntu-24.04
-            platform: linux/amd64
-            platform_token: linux-amd64
-            host: codex
-          - os: ubuntu-24.04
-            platform: linux/amd64
-            platform_token: linux-amd64
-            host: pi
           - os: ubuntu-24.04-arm
             platform: linux/arm64
             platform_token: linux-arm64
-            host: claude
-          - os: ubuntu-24.04-arm
-            platform: linux/arm64
-            platform_token: linux-arm64
-            host: codex
-          - os: ubuntu-24.04-arm
-            platform: linux/arm64
-            platform_token: linux-arm64
-            host: pi
           - os: windows-2025
             platform: windows/amd64
             platform_token: windows-amd64
-            host: claude
-          - os: windows-2025
-            platform: windows/amd64
-            platform_token: windows-amd64
-            host: codex
-          - os: windows-2025
-            platform: windows/amd64
-            platform_token: windows-amd64
-            host: pi
           - os: windows-11-arm
             platform: windows/arm64
             platform_token: windows-arm64
-            host: claude
-          - os: windows-11-arm
-            platform: windows/arm64
-            platform_token: windows-arm64
-            host: codex
-          - os: windows-11-arm
-            platform: windows/arm64
-            platform_token: windows-arm64
-            host: pi
           - os: macos-15-intel
             platform: darwin/amd64
             platform_token: darwin-amd64
-            host: claude
-          - os: macos-15-intel
-            platform: darwin/amd64
-            platform_token: darwin-amd64
-            host: codex
-          - os: macos-15-intel
-            platform: darwin/amd64
-            platform_token: darwin-amd64
-            host: pi
           - os: macos-26
             platform: darwin/arm64
             platform_token: darwin-arm64
-            host: claude
-          - os: macos-26
-            platform: darwin/arm64
-            platform_token: darwin-arm64
-            host: codex
-          - os: macos-26
-            platform: darwin/arm64
-            platform_token: darwin-arm64
-            host: pi
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -1170,29 +1402,86 @@ jobs:
         with:
           name: artifact-release-packages-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-release-packages
-      - name: Cold-execute the complete exact-package installed-host workflow
+      # Three hosts share this platform's runner. Each cold execution builds its
+      # own isolated home, caches, temp and npm configuration and runs the binary
+      # with an empty environment, so sharing the runner does not warm the next.
+      - name: Create one isolated receipt directory per host
+        run: python -c "import os,sys; [os.makedirs(os.path.join(sys.argv[1], 'cold-' + h)) for h in ('claude', 'codex', 'pi')]" "${{ runner.temp }}"
+      - name: Cold-execute the complete exact-package claude workflow
+        id: cold_claude
+        if: ${{ !cancelled() }}
         run: >-
           python tools/build-host-packages.py
           --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
           --cold-package-root "${{ runner.temp }}/artifact-release-packages"
           --source-repo .
-          --cold-host "${{ matrix.host }}"
+          --cold-host "claude"
           --cold-platform "${{ matrix.platform }}"
           --trusted-source-commit "${{ github.sha }}"
           --trusted-workflow ".github/workflows/ci.yml"
           --trusted-workflow-run "${{ github.run_id }}"
           --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
-          --cold-receipt "${{ runner.temp }}/artifact-package-cold.json"
-      - name: Preserve the exact cold-execution cell receipt
+          --cold-receipt "${{ runner.temp }}/cold-claude/artifact-package-cold.json"
+      - name: Preserve the exact claude cold-execution receipt
+        if: ${{ !cancelled() && steps.cold_claude.outcome == 'success' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}
-          path: ${{ runner.temp }}/artifact-package-cold.json
+          name: artifact-package-cold-${{ matrix.platform_token }}-claude-${{ github.sha }}
+          path: ${{ runner.temp }}/cold-claude/artifact-package-cold.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
           overwrite: false
-
+      - name: Cold-execute the complete exact-package codex workflow
+        id: cold_codex
+        if: ${{ !cancelled() }}
+        run: >-
+          python tools/build-host-packages.py
+          --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
+          --cold-package-root "${{ runner.temp }}/artifact-release-packages"
+          --source-repo .
+          --cold-host "codex"
+          --cold-platform "${{ matrix.platform }}"
+          --trusted-source-commit "${{ github.sha }}"
+          --trusted-workflow ".github/workflows/ci.yml"
+          --trusted-workflow-run "${{ github.run_id }}"
+          --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
+          --cold-receipt "${{ runner.temp }}/cold-codex/artifact-package-cold.json"
+      - name: Preserve the exact codex cold-execution receipt
+        if: ${{ !cancelled() && steps.cold_codex.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-package-cold-${{ matrix.platform_token }}-codex-${{ github.sha }}
+          path: ${{ runner.temp }}/cold-codex/artifact-package-cold.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Cold-execute the complete exact-package pi workflow
+        id: cold_pi
+        if: ${{ !cancelled() }}
+        run: >-
+          python tools/build-host-packages.py
+          --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
+          --cold-package-root "${{ runner.temp }}/artifact-release-packages"
+          --source-repo .
+          --cold-host "pi"
+          --cold-platform "${{ matrix.platform }}"
+          --trusted-source-commit "${{ github.sha }}"
+          --trusted-workflow ".github/workflows/ci.yml"
+          --trusted-workflow-run "${{ github.run_id }}"
+          --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
+          --cold-receipt "${{ runner.temp }}/cold-pi/artifact-package-cold.json"
+      - name: Preserve the exact pi cold-execution receipt
+        if: ${{ !cancelled() && steps.cold_pi.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-package-cold-${{ matrix.platform_token }}-pi-${{ github.sha }}
+          path: ${{ runner.temp }}/cold-pi/artifact-package-cold.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
   host-descriptors:
     name: "[CHECK] | [CORE] | Host descriptor contract"
     needs: changes
@@ -1218,6 +1507,8 @@ jobs:
           python-version: "3.x"
       - name: Validate impact-map fallback, receipt, and name contracts
         run: python .github/scripts/test_ci_impact.py
+      - name: Validate strict parallel native qualification and shard coverage
+        run: python .github/scripts/test_ci20_native_pipeline.py
       - name: Validate the site CVE gate's accepted-advisory judge
         run: python .github/scripts/test_npm_audit_gate.py
       - name: Validate the version gates' shipped-payload scope
@@ -1863,11 +2154,17 @@ jobs:
         run: |
           policy="$(python .github/scripts/pi_promotion.py policy)"
           version="$(python -c 'import json,sys; print(json.loads(sys.argv[1])["last_verified"])' "$policy")"
+          # Semver gate BEFORE the value becomes shell text below: the policy
+          # file is repo content, so on pull_request runs it is PR-controlled
+          # input and must never reach a later run: block unvalidated.
+          python -c 'import re,sys; sys.exit(0 if re.fullmatch(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", sys.argv[1]) else 3)' "$version"
           echo "resolved pinned Pi version: $version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Install reviewed Pi host graph (isolated, scripts disabled)
         working-directory: .
-        run: python .github/scripts/pi_host_locks.py install --version ${{ steps.pinned.outputs.version }} --prefix "$RUNNER_TEMP/pi-host-${{ steps.pinned.outputs.version }}"
+        env:
+          PI_PINNED_VERSION: ${{ steps.pinned.outputs.version }}
+        run: python .github/scripts/pi_host_locks.py install --version "$PI_PINNED_VERSION" --prefix "$RUNNER_TEMP/pi-host-$PI_PINNED_VERSION"
       - name: Install reviewed toolchain (scripts disabled)
         run: npm ci --ignore-scripts
       - name: Audit (CVE gate - fail on HIGH)
@@ -2151,7 +2448,8 @@ jobs:
   hooks:
     name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"
     # Windows runs independent command groups on fresh runners. Linux/macOS
-    # retain their original order. No existing command is removed or repeated.
+    # retain their original order. The hermetic isolation run is the hook
+    # suite's only execution; no other command is removed or repeated.
     # MR-10: proves host-specific interpreter fallback on every OS - REAL (no
     # double execution), STUB (preferred interpreter fails), PY2 (`python`
     # exists but is not Python 3; ca must fall back and preserve exit-2 blocks),
@@ -2173,8 +2471,6 @@ jobs:
         include:
           - os: windows-latest
             partition: contracts
-          - os: windows-latest
-            partition: functional
           - os: windows-latest
             partition: isolation
     runs-on: ${{ matrix.os }}
@@ -2355,13 +2651,6 @@ jobs:
       - name: Run cold-install interpreter matrix
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_hooks_cold_install.py
-      - name: Run ca-codex host-adapter parity suite
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # ADR-0011 M2: Codex payload normalization, apply_patch envelope
-        # parsing, project_root resolution, and cross-host blocked-verdict
-        # parity (H-05/H-11/H-18/H-19/H-20/H-21) via real subprocess
-        # invocations of each plugin's vendored pre-write.py/pre-bash.py.
-        run: python .github/scripts/test_codex_adapter.py
       - name: Validate public Codex documentation
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Public claims stay pinned to the verified host/version evidence,
@@ -2377,18 +2666,6 @@ jobs:
         # all three by one, and nothing said so. A test nobody runs is not a
         # gate, it is a file.
         run: python .github/scripts/test_public_pi_docs.py
-      - name: Run dual-host shared-store contract
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # ADR-0012: sequential initialization shares one store; concurrency is
-        # asserted only for append-only gate events, never RMW state or the
-        # repo-global dev marker.
-        run: python .github/scripts/test_dual_host_store.py
-      - name: Run guard-logic matrix
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # The cold-install matrix proves the interpreter plumbing; this proves
-        # the guard decisions themselves - every blocked spelling of
-        # H-01/02/03/05/11/09b blocks, every legitimate spelling still allows.
-        run: python .github/scripts/test_hook_guards.py
       - name: Run repository-qualified cleanup proof evaluator tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The evaluator is deliberately not wired into a live cleanup route yet,
@@ -2639,12 +2916,6 @@ jobs:
         # session+file -> first injects, second silent), .codearbiter/ self-read
         # silent allow, fail-open on malformed stdin, miss, and dormant-repo paths.
         run: python .github/scripts/test_pre_read.py
-      - name: Run the hooks/tests unittest suite
-        if: matrix.partition == 'all' || matrix.partition == 'functional'
-        # plugins/ca/hooks/tests/ - the hook enforcement + helper logic. Ran only
-        # locally per CONTRIBUTING; wired here so the guards are mechanically
-        # enforced. Stdlib-only, cross-platform (discovered on every matrix OS).
-        run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
       - name: Enforce suite hermeticity (issues #442, #462)
         if: matrix.partition == 'all' || matrix.partition == 'isolation'
         # The suite used to mutate the DEVELOPER'S REAL HOME - rewriting
@@ -2656,9 +2927,15 @@ jobs:
         #
         # This runs each suite under a PRISTINE redirected home seeded with a
         # stale-but-real settings.json, and asserts that home comes back
-        # byte-identical and the run emits no ResourceWarning. It runs the hook
-        # suite once with warning capture plus before/after home snapshots. The
-        # independent direct discovery invocation remains in its own slice.
+        # byte-identical and the run emits no ResourceWarning. This is the
+        # plugins/ca/hooks/tests suite's only CI execution: every discovered
+        # module runs once, in its own child and pristine home, a few at a time,
+        # and must pass with at least one test. A separate plain discovery run
+        # would repeat the same population.
+        # The guard-logic matrix (H-01/02/03/05/11/09b block and allow
+        # spellings), the ca-codex host-adapter parity suite (ADR-0011 M2) and
+        # the dual-host shared-store contract (ADR-0012) likewise execute only
+        # here, side by side, each in its own pristine home.
         run: python .github/scripts/test_suite_hermeticity.py
       - name: Run ADR identity + supersession contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
@@ -3394,6 +3671,10 @@ jobs:
       - tag-immutability
       - changes
       - artifact-engine
+      - artifact-native-build
+      - artifact-native-default
+      - artifact-native-coverage
+      - artifact-native-bridges
       - artifact-authority
       - artifact-browser
       - artifact-coverage
@@ -3433,7 +3714,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-native-build'].result }} ${{ needs['artifact-native-default'].result }} ${{ needs['artifact-native-coverage'].result }} ${{ needs['artifact-native-bridges'].result }} ${{ needs['artifact-authority'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-coverage'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }} ${{ needs['control-bytes'].result }}"
           artifact_coverage_required="${{ needs.changes.outputs.artifacts }}"
           artifact_coverage_result="${{ needs['artifact-coverage'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"

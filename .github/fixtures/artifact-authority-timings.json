@@ -1,0 +1,82 @@
+{
+  "format": "codearbiter.authority-timing-hints/1",
+  "source_commit": "0312358ff7f84ade3855fdf670ba0b2117fb8e9b",
+  "run_id": "39039950454",
+  "job_ids": [
+    "117418643650",
+    "117418643661"
+  ],
+  "platform": "windows/arm64",
+  "method": "Adjacent completed unittest log timestamps, including fixture setup gaps. Scheduling hints, not percentile benchmarks. Discovery, not this file, owns test membership. Revalidate on each current hosted run; unknown classes have positive defaults and cannot be excluded.",
+  "classes": {
+    "test_artifact_authority_adapter.AuthorityAdapterTest": {
+      "seconds": 148.553,
+      "tests": 86
+    },
+    "test_artifact_authority_adapter.AuthorityStateRaceTest": {
+      "seconds": 13.325,
+      "tests": 9
+    },
+    "test_artifact_authority_adapter.ClaudeAuthorityAdapterTest": {
+      "seconds": 85.598,
+      "tests": 48
+    },
+    "test_artifact_authority_adapter.ClaudeEndToEndTest": {
+      "seconds": 181.613,
+      "tests": 8
+    },
+    "test_artifact_authority_adapter.ClaudeHookRegistrationTest": {
+      "seconds": 1.794,
+      "tests": 3
+    },
+    "test_artifact_authority_adapter.CodexNativeProtocolCompletionTransportTest": {
+      "seconds": 40.504,
+      "tests": 7
+    },
+    "test_artifact_authority_adapter.CodexNativeProtocolHookTest": {
+      "seconds": 196.429,
+      "tests": 16
+    },
+    "test_artifact_authority_adapter.CodexNativeV1HookTest": {
+      "seconds": 121.298,
+      "tests": 27
+    },
+    "test_artifact_authority_adapter.CodexNativeV2CompletionTransportTest": {
+      "seconds": 41.446,
+      "tests": 7
+    },
+    "test_artifact_authority_adapter.CodexNativeV2HookTest": {
+      "seconds": 166.297,
+      "tests": 10
+    },
+    "test_artifact_authority_adapter.CodexV2NativeHookTest": {
+      "seconds": 4.188,
+      "tests": 4
+    },
+    "test_artifact_authority_adapter.CompletionBridgeEnvironmentTest": {
+      "seconds": 0.051,
+      "tests": 6
+    },
+    "test_artifact_authority_adapter.CompletionReviewTransportTest": {
+      "seconds": 61.439,
+      "tests": 18
+    },
+    "test_artifact_authority_adapter.NativeReviewTransportTest": {
+      "seconds": 152.415,
+      "tests": 10
+    },
+    "test_artifact_git_excludes.CompletionGitExcludesTest": {
+      "seconds": 0.501,
+      "tests": 2
+    },
+    "test_artifact_npm_nested_launch.NestedNpmPrefixContextTest": {
+      "seconds": 0.004,
+      "tests": 1
+    },
+    "test_artifact_npm_nested_launch.WindowsNestedNpmLaunchTest": {
+      "seconds": 0.063,
+      "tests": 8
+    }
+  },
+  "historical_only": true
+}
