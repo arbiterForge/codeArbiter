@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for sharing one guarded child-suite observation."""
+"""Regression tests for the guarded per-module hook-suite observation."""
 from __future__ import annotations
 
 import importlib.util
@@ -26,30 +26,33 @@ def load_guard():
     return module
 
 
-class SingleObservationTests(unittest.TestCase):
+class PerModuleObservationTests(unittest.TestCase):
     def exercise(self, case: str = "good", repeat: int = 1):
+        """Run the guard class with a stub child; `case` damages exactly one module."""
         module = load_guard()
+        modules = module.hook_modules()
+        self.assertGreater(len(modules), 1)
+        target = modules[len(modules) // 2]
         calls = []
         results = []
 
         def child(command, home):
             calls.append(command)
-            if case == "write":
+            damaged = command[-1] == f"{target}.py"
+            if damaged and case == "write":
                 (home / "unexpected").write_text("bad", encoding="utf-8")
-            if case == "modify":
+            if damaged and case == "modify":
                 (home / ".claude/settings.json").write_text("{}", encoding="utf-8")
-            if case == "delete":
+            if damaged and case == "delete":
                 (home / ".claude/settings.json").unlink()
-            if case == "directory":
+            if damaged and case == "directory":
                 (home / "unexpected").mkdir()
-            if case == "timeout":
+            if damaged and case == "timeout":
                 raise subprocess.TimeoutExpired(command, 900)
-            warning = "ResourceWarning: seeded leak\n" if case == "warning" else ""
+            warning = "ResourceWarning: seeded leak\n" if damaged and case == "warning" else ""
+            ran = "Ran 0 tests in 0.000s\n" if damaged and case == "empty" else "Ran 2 tests in 0.010s\n"
             return subprocess.CompletedProcess(
-                command,
-                1 if case == "failure" else 0,
-                "",
-                warning,
+                command, 1 if damaged and case == "failure" else 0, "", warning + ran,
             )
 
         with mock.patch.object(module, "run_suite", side_effect=child):
@@ -58,42 +61,33 @@ class SingleObservationTests(unittest.TestCase):
                     module.TestTheSuiteLeaksNoHandlesOrProcesses
                 )
                 results.append(unittest.TextTestRunner(stream=io.StringIO()).run(suite))
-        return calls, results
+        return modules, calls, results
 
     def assert_bad_observation(self, case: str):
-        calls, results = self.exercise(case)
-        self.assertEqual(len(calls), 1)
-        self.assertFalse(results[0].wasSuccessful())
+        modules, calls, results = self.exercise(case)
+        self.assertEqual(len(calls), len(modules))
+        self.assertFalse(results[0].wasSuccessful(), case)
 
-    def test_two_assertions_share_one_execution(self):
-        calls, results = self.exercise()
-        self.assertEqual(len(calls), 1)
-        self.assertEqual(results[0].testsRun, 2)
+    def test_each_module_runs_once_and_the_assertions_share_it(self):
+        modules, calls, results = self.exercise()
+        self.assertEqual(sorted(command[-1] for command in calls), sorted(f"{m}.py" for m in modules))
+        self.assertEqual(results[0].testsRun, 3)
         self.assertTrue(results[0].wasSuccessful())
 
     def test_warning_configuration_and_discovery_are_explicit(self):
-        calls, _ = self.exercise()
+        modules, calls, _ = self.exercise()
+        first = sorted(calls, key=lambda command: command[-1])[0]
         self.assertEqual(
-            calls[0],
+            first,
             [
-                sys.executable,
-                "-W",
-                "always::ResourceWarning",
-                "-m",
-                "unittest",
-                "discover",
-                "-s",
-                "plugins/ca/hooks/tests",
-                "-p",
-                "test_*.py",
-                "-t",
-                ".",
+                sys.executable, "-W", "always::ResourceWarning", "-m", "unittest",
+                "discover", "-s", "plugins/ca/hooks/tests", "-p", f"{sorted(modules)[0]}.py",
             ],
         )
 
     def test_new_suite_run_does_not_reuse_old_result(self):
-        calls, results = self.exercise(repeat=2)
-        self.assertEqual(len(calls), 2)
+        modules, calls, results = self.exercise(repeat=2)
+        self.assertEqual(len(calls), 2 * len(modules))
         self.assertTrue(all(result.wasSuccessful() for result in results))
 
     def test_home_file_creation_fails(self):
@@ -116,6 +110,9 @@ class SingleObservationTests(unittest.TestCase):
 
     def test_child_timeout_fails(self):
         self.assert_bad_observation("timeout")
+
+    def test_module_that_runs_no_tests_fails(self):
+        self.assert_bad_observation("empty")
 
 
 if __name__ == "__main__":

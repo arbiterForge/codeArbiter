@@ -3806,9 +3806,20 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         cold = jobs["artifact-package-cold"]
         self.assertIn("needs: [changes, artifact-package-assembly]", cold)
         self.assertIn("needs.artifact-package-assembly.result == 'success'", cold)
-        self.assertEqual(cold.count("host: claude"), 6)
-        self.assertEqual(cold.count("host: codex"), 6)
-        self.assertEqual(cold.count("host: pi"), 6)
+        # One job per platform; each host runs as its own isolated step with its
+        # own receipt artifact, and a failing host never hides the others.
+        self.assertNotIn("matrix.host", cold)
+        for binding in ('--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
+                        '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
+                        '--cold-platform "${{ matrix.platform }}"',
+                        'needs.artifact-package-assembly.outputs.promotion-receipt-sha256'):
+            self.assertEqual(cold.count(binding), 3, binding)
+        for host in ("claude", "codex", "pi"):
+            self.assertEqual(cold.count(f'--cold-host "{host}"'), 1)
+            self.assertEqual(cold.count(f"id: cold_{host}"), 1)
+            self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
+            self.assertIn(f'--cold-receipt "${{{{ runner.temp }}}}/cold-{host}/artifact-package-cold.json"', cold)
+            self.assertIn(f"name: artifact-package-cold-${{{{ matrix.platform_token }}}}-{host}-${{{{ github.sha }}}}", cold)
         for runner, platform_name in (
             ("ubuntu-24.04", "linux/amd64"),
             ("ubuntu-24.04-arm", "linux/arm64"),
@@ -3818,10 +3829,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             ("macos-26", "darwin/arm64"),
         ):
             self.assertEqual(
-                len(re.findall(rf"(?m)^\s+- os: {re.escape(runner)}$", cold)), 3
+                len(re.findall(rf"(?m)^\s+- os: {re.escape(runner)}$", cold)), 1
             )
             self.assertEqual(
-                len(re.findall(rf"(?m)^\s+platform: {re.escape(platform_name)}$", cold)), 3
+                len(re.findall(rf"(?m)^\s+platform: {re.escape(platform_name)}$", cold)), 1
             )
         for control in (
             "name: artifact-host-payloads-${{ github.sha }}",
@@ -3829,11 +3840,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             '--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
             '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
             '--source-repo .',
-            '--cold-host "${{ matrix.host }}"',
             '--cold-platform "${{ matrix.platform }}"',
             'needs.artifact-package-assembly.outputs.promotion-receipt-sha256',
-            'name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}',
-            "Cold-execute the complete exact-package installed-host workflow",
             "retention-days: 14",
         ):
             self.assertIn(control, cold)
@@ -3952,8 +3960,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("${{ needs['artifact-authority'].result }}", aggregate)
         authority = jobs["artifact-authority"]
         self.assertIn("run_artifact_authority_shard.py", authority)
-        self.assertIn("AUTHORITY_SHARD: ${{ matrix.shard }}", authority)
-        self.assertEqual(authority.count("            shard: "), 24)
+        # One job per platform runs all partitions as concurrent bounded children.
+        self.assertIn("AUTHORITY_SHARD: all", authority)
+        self.assertNotIn("matrix.shard", authority)
+        self.assertEqual(authority.count("            expected_platform: "), 6)
         self.assertNotIn("continue-on-error", authority)
         self.assertRegex(aggregate, r"(?m)^      - artifact-browser$")
         self.assertRegex(aggregate, r"(?m)^      - artifact-package-assembly$")
@@ -4245,7 +4255,8 @@ class ContextImpactClosureTest(unittest.TestCase):
                     self.assertEqual(engine.count(before), 1)
                     changed = ci[:start] + engine.replace(before, after, 1) + ci[end:]
                 else:
-                    changed = ci.replace(before, after, 1)
+                    # Every host step must keep the binding; replace them all.
+                    changed = ci.replace(before, after)
                 with self.assertRaises(AssertionError):
                     self._assert_context_closure(changed, impact)
         missing_host_edge = module.ImpactMap(
@@ -4282,7 +4293,41 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
                        "test_artifact_conformance.py"):
             self.assertIn(script, jobs["artifact-native-bridges"])
         authority = jobs["artifact-authority"]
-        self.assertEqual(authority.count("            shard: "), 24)
+        self.assertEqual(authority.count("            expected_platform: "), 6)
+        self.assertIn("AUTHORITY_SHARD: all", authority)
         self.assertIn("timeout-minutes: 45", authority)
         self.assertIn("fail-fast: false", authority)
         self.assertNotIn("continue-on-error:", authority)
+
+
+
+class SuiteEntrypointTest(unittest.TestCase):
+    """A suite CI runs as `python <file>` must execute its tests when run that way.
+
+    PR #1013 briefly lost this file's own entry point: `python test_ci_impact.py`
+    then defined 108 tests, ran none, and exited 0, so the impact job and the
+    debug-suite step passed while measuring nothing.
+    """
+
+    ENTRY = re.compile(r"(?m)^if __name__\s*==\s*['\"]__main__['\"]\s*:")
+    INVOKED = re.compile(
+        r"python3? (?:-[A-Za-z]\S* )*((?:\.github/scripts|tools|plugins/\S+?)/test[_-][A-Za-z0-9_.-]+\.py)")
+
+    def test_every_directly_invoked_suite_has_an_entry_point(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        invoked = sorted(set(self.INVOKED.findall(ci)))
+        self.assertGreater(len(invoked), 50)
+        missing = [path for path in invoked
+                   if not self.ENTRY.search((REPO_ROOT / path).read_text(encoding="utf-8"))]
+        self.assertEqual(missing, [])
+
+    def test_the_guard_recognizes_a_missing_entry_point(self):
+        self.assertIsNone(self.ENTRY.search("class T(unittest.TestCase):\n    pass\n"))
+        self.assertIsNotNone(self.ENTRY.search("if __name__=='__main__':\n    main()\n"))
+        self.assertIsNotNone(self.ENTRY.search('if __name__ == "__main__":\n    unittest.main()\n'))
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 3 and sys.argv[1] == "--run-debug-suite":
+        raise SystemExit(run_debug_suite(Path(sys.argv[2])))
+    unittest.main()

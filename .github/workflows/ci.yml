@@ -1395,7 +1395,7 @@ jobs:
           overwrite: false
 
   artifact-package-cold:
-    name: "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }} · ${{ matrix.host }}>"
+    name: "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>"
     needs: [changes, artifact-package-assembly]
     if: needs.changes.outputs.artifacts == 'true' && needs.artifact-package-assembly.result == 'success'
     runs-on: ${{ matrix.os }}
@@ -1410,75 +1410,21 @@ jobs:
           - os: ubuntu-24.04
             platform: linux/amd64
             platform_token: linux-amd64
-            host: claude
-          - os: ubuntu-24.04
-            platform: linux/amd64
-            platform_token: linux-amd64
-            host: codex
-          - os: ubuntu-24.04
-            platform: linux/amd64
-            platform_token: linux-amd64
-            host: pi
           - os: ubuntu-24.04-arm
             platform: linux/arm64
             platform_token: linux-arm64
-            host: claude
-          - os: ubuntu-24.04-arm
-            platform: linux/arm64
-            platform_token: linux-arm64
-            host: codex
-          - os: ubuntu-24.04-arm
-            platform: linux/arm64
-            platform_token: linux-arm64
-            host: pi
           - os: windows-2025
             platform: windows/amd64
             platform_token: windows-amd64
-            host: claude
-          - os: windows-2025
-            platform: windows/amd64
-            platform_token: windows-amd64
-            host: codex
-          - os: windows-2025
-            platform: windows/amd64
-            platform_token: windows-amd64
-            host: pi
           - os: windows-11-arm
             platform: windows/arm64
             platform_token: windows-arm64
-            host: claude
-          - os: windows-11-arm
-            platform: windows/arm64
-            platform_token: windows-arm64
-            host: codex
-          - os: windows-11-arm
-            platform: windows/arm64
-            platform_token: windows-arm64
-            host: pi
           - os: macos-15-intel
             platform: darwin/amd64
             platform_token: darwin-amd64
-            host: claude
-          - os: macos-15-intel
-            platform: darwin/amd64
-            platform_token: darwin-amd64
-            host: codex
-          - os: macos-15-intel
-            platform: darwin/amd64
-            platform_token: darwin-amd64
-            host: pi
           - os: macos-26
             platform: darwin/arm64
             platform_token: darwin-arm64
-            host: claude
-          - os: macos-26
-            platform: darwin/arm64
-            platform_token: darwin-arm64
-            host: codex
-          - os: macos-26
-            platform: darwin/arm64
-            platform_token: darwin-arm64
-            host: pi
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -1496,29 +1442,86 @@ jobs:
         with:
           name: artifact-release-packages-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-release-packages
-      - name: Cold-execute the complete exact-package installed-host workflow
+      # Three hosts share this platform's runner. Each cold execution builds its
+      # own isolated home, caches, temp and npm configuration and runs the binary
+      # with an empty environment, so sharing the runner does not warm the next.
+      - name: Create one isolated receipt directory per host
+        run: python -c "import os,sys; [os.makedirs(os.path.join(sys.argv[1], 'cold-' + h)) for h in ('claude', 'codex', 'pi')]" "${{ runner.temp }}"
+      - name: Cold-execute the complete exact-package claude workflow
+        id: cold_claude
+        if: ${{ !cancelled() }}
         run: >-
           python tools/build-host-packages.py
           --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
           --cold-package-root "${{ runner.temp }}/artifact-release-packages"
           --source-repo .
-          --cold-host "${{ matrix.host }}"
+          --cold-host "claude"
           --cold-platform "${{ matrix.platform }}"
           --trusted-source-commit "${{ github.sha }}"
           --trusted-workflow ".github/workflows/ci.yml"
           --trusted-workflow-run "${{ github.run_id }}"
           --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
-          --cold-receipt "${{ runner.temp }}/artifact-package-cold.json"
-      - name: Preserve the exact cold-execution cell receipt
+          --cold-receipt "${{ runner.temp }}/cold-claude/artifact-package-cold.json"
+      - name: Preserve the exact claude cold-execution receipt
+        if: ${{ !cancelled() && steps.cold_claude.outcome == 'success' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}
-          path: ${{ runner.temp }}/artifact-package-cold.json
+          name: artifact-package-cold-${{ matrix.platform_token }}-claude-${{ github.sha }}
+          path: ${{ runner.temp }}/cold-claude/artifact-package-cold.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
           overwrite: false
-
+      - name: Cold-execute the complete exact-package codex workflow
+        id: cold_codex
+        if: ${{ !cancelled() }}
+        run: >-
+          python tools/build-host-packages.py
+          --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
+          --cold-package-root "${{ runner.temp }}/artifact-release-packages"
+          --source-repo .
+          --cold-host "codex"
+          --cold-platform "${{ matrix.platform }}"
+          --trusted-source-commit "${{ github.sha }}"
+          --trusted-workflow ".github/workflows/ci.yml"
+          --trusted-workflow-run "${{ github.run_id }}"
+          --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
+          --cold-receipt "${{ runner.temp }}/cold-codex/artifact-package-cold.json"
+      - name: Preserve the exact codex cold-execution receipt
+        if: ${{ !cancelled() && steps.cold_codex.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-package-cold-${{ matrix.platform_token }}-codex-${{ github.sha }}
+          path: ${{ runner.temp }}/cold-codex/artifact-package-cold.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Cold-execute the complete exact-package pi workflow
+        id: cold_pi
+        if: ${{ !cancelled() }}
+        run: >-
+          python tools/build-host-packages.py
+          --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
+          --cold-package-root "${{ runner.temp }}/artifact-release-packages"
+          --source-repo .
+          --cold-host "pi"
+          --cold-platform "${{ matrix.platform }}"
+          --trusted-source-commit "${{ github.sha }}"
+          --trusted-workflow ".github/workflows/ci.yml"
+          --trusted-workflow-run "${{ github.run_id }}"
+          --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
+          --cold-receipt "${{ runner.temp }}/cold-pi/artifact-package-cold.json"
+      - name: Preserve the exact pi cold-execution receipt
+        if: ${{ !cancelled() && steps.cold_pi.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-package-cold-${{ matrix.platform_token }}-pi-${{ github.sha }}
+          path: ${{ runner.temp }}/cold-pi/artifact-package-cold.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
   host-descriptors:
     name: "[CHECK] | [CORE] | Host descriptor contract"
     needs: changes

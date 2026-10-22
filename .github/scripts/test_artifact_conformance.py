@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import concurrent.futures
 import hashlib
 import os
 from pathlib import Path
@@ -475,14 +476,24 @@ class ArtifactConformanceTest(unittest.TestCase):
         self.assertIsNotNone(INSTALLATION)
         environment = dict(os.environ, ARTIFACT_TEST_INSTALLATION=str(INSTALLATION))
         self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
+
+        def run(script: str) -> subprocess.CompletedProcess[str]:
+            print(f"conformance suite start: {script}", flush=True)
+            return subprocess.run(
+                [sys.executable, str(REPO / ".github/scripts" / script)], cwd=REPO, env=environment,
+                capture_output=True, text=True, encoding="utf-8", errors="replace", check=False,
+            )
+        # The suites are independent processes over the same read-only candidate;
+        # running them concurrently uses the runner's cores. The candidate's
+        # identity is checked before and after the whole snapshot.
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(EXPECTED_SUITES), os.cpu_count() or 2)) as pool:
+            results = dict(zip(EXPECTED_SUITES, pool.map(run, EXPECTED_SUITES)))
         for script, expected in EXPECTED_SUITES.items():
             with self.subTest(script=script):
-                self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)
-                print(f"conformance suite start: {script}", flush=True)
-                result = self.run_checked(
-                    [sys.executable, str(REPO / ".github/scripts" / script)],
-                    env=environment,
-                )
+                result = results[script]
+                if result.returncode != 0:
+                    self.fail(f"{script} exited {result.returncode}\nstdout:\n{result.stdout[-8000:]}\n"
+                              f"stderr:\n{result.stderr[-8000:]}")
                 output = result.stderr + result.stdout
                 matches = re.findall(r"(?m)^(test_[a-z0-9_]+) \([^\r\n]+\) \.\.\. (ok|skipped .+)$", output)
                 names = [name for name, _ in matches]
