@@ -471,6 +471,7 @@ jobs:
               - '.github/scripts/test_artifact_prerequisite_adapter.py'
               - '.github/scripts/test_artifact_reconciliation_adapter.py'
               - '.github/scripts/test_replylib.py'
+              - '.github/scripts/test_literal_python_reads.py'
               - '.github/scripts/test_artifact_authoring.py'
               - '.github/scripts/test_smarts_engine_contract.py'
               - '.github/scripts/test_artifact_installed_host.py'
@@ -985,6 +986,7 @@ jobs:
           .github/scripts/test_artifact_prerequisite_adapter.py
           .github/scripts/test_artifact_reconciliation_adapter.py
           .github/scripts/test_replylib.py
+          .github/scripts/test_literal_python_reads.py
           --interpreter-env ARTIFACT_CONFORMANCE_PYTHON
           .github/scripts/test_artifact_conformance.py
       - name: Test debug handoff model against the locked reference interpreter

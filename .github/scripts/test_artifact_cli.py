@@ -446,7 +446,7 @@ class CliTests(unittest.TestCase):
             self.assertNotEqual(current["plan_context"]["context_sha256"], old_context["plan_context"]["context_sha256"])
             self.assertFalse(self.successful("identity", {"artifact_id": plan["artifact_id"]})["authority"]["authority_verified"])
 
-    def test_draft_rebind_rejects_authority_and_execution_source_fixtures(self):
+    def test_historical_approval_and_source_identity_refusals(self):
         from test_artifact_authoring import refusal_only_model_container
         spec, plan = self.initial_draft_pair()
         # Add the prerequisite through the real typed API before constructing
@@ -509,9 +509,17 @@ class CliTests(unittest.TestCase):
                 current_spec = self.successful("identity", {"artifact_id": "SPEC-INITIAL"})
                 current_plan = self.successful("identity", {"artifact_id": "PLAN-INITIAL"})
                 before = self.files()
-                result, envelope = self.invoke("plan-bind", {
-                    **self.draft_bind_request(current_spec, current_plan), "operation_id": f"cli-refusal-bind-{number}",
-                })
+                if code == "PAIR_MISMATCH":
+                    result, envelope = self.invoke("plan-bind", {
+                        **self.draft_bind_request(current_spec, current_plan), "operation_id": f"cli-refusal-bind-{number}",
+                    })
+                else:
+                    # Initial-approval restrictions belong to the historical
+                    # attestation operation, not ordinary source maintenance.
+                    result, envelope = self.invoke("sprint-approval-context", {
+                        "artifact_id": current_plan["artifact_id"], "spec_id": current_spec["artifact_id"],
+                        "delegate_methods": False, "prompt_sha256": "a" * 64,
+                    })
                 self.assert_error(result, envelope, code)
                 self.assertEqual(self.files(), before)
                 self.assertFalse(any("/authority-sources/" in path or "/observations/" in path or "/receipts/" in path

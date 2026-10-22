@@ -406,19 +406,72 @@ DIAGNOSTICS = Path(".codearbiter/.markers/reply-diagnostics.log")
 DIAGNOSTICS_CAP = 256 * 1024
 
 
+def _capture_attempt(raw, route: str) -> bool:
+    """Recognize an explicit legacy reply, not an ordinary leading verb.
+
+    Keep near-miss diagnostics for a coded/token reply with appended prose,
+    without repairing that prose into an accepted reply. Merely saying
+    ``Approve`` or ``reconcile the plan`` must not start legacy capture.
+    """
+    if not isinstance(raw, str) or not raw or len(raw) > MAX_INPUT:
+        return False
+    words = _clean(raw).split(" ")
+    verb = words[0].lower()
+    if SHORT_ROUTE.get(verb) != route:
+        return False
+    for (candidate, count), shape in GRAMMAR.items():
+        if candidate != verb or len(words) < count:
+            continue
+        fields = list(zip(words[1:count], shape))
+        if any((kind == "I" and not ID_RE.fullmatch(word))
+               or (kind == "M" and word.lower() not in MODES)
+               or (kind == "S" and word.upper() not in STATES)
+               for word, kind in fields[:-1]):
+            continue
+        token = fields[-1][0].rstrip(",.!?")
+        if CODE_RE.fullmatch(token.upper()):
+            if not token.isalpha():
+                return True
+            # Ordinary words overlap the code alphabet in EVERY casing:
+            # "Approve DATA migration" is not a protocol request. Only a
+            # retained matching code makes an all-letter token diagnostic.
+            # Exact armed replies remain case-insensitive; prose is not repaired.
+            if any(value.get("route") == route
+                   and value.get("short_reply", "").rsplit(" ", 1)[-1] == token.upper()
+                   for _path, value, _alive in _entries()):
+                return True
+            continue
+        if "I" in shape and re.fullmatch(r"[A-Za-z0-9_-]{12,128}", token):
+            # The long form's ID/token grammar also fits natural prose such
+            # as "approve the implementation". Require a retained request
+            # for its named subject before classifying it as a near miss.
+            prefix = canonicalize(" ".join(words[:count])).rsplit(" ", 1)[0]
+            if any(value.get("route") == route
+                   and value.get("full_reply", "").rsplit(" ", 1)[0] == prefix
+                   for _path, value, _alive in _entries()):
+                return True
+            # Old full-token routes can predate the short-code registry.
+            import _artifactpromptlib
+            try:
+                return _artifactpromptlib.resolve(route, canonicalize(raw)) is not None
+            except _artifactpromptlib.PromptRouteError:
+                # Let the adapter report the ambiguous legacy route through
+                # its existing capture-failure boundary, never approve it.
+                return True
+    return False
+
+
 def prepare(raw, route: str) -> dict[str, object]:
     """The text an adapter should match, plus a notice owned by ``route``.
 
-    ``attempted`` is true when the prompt is reply-shaped for this route, so
-    the adapter reports a miss instead of staying silent.
+    Only explicit legacy replies enter capture. Ordinary user intent stays
+    byte-for-byte unchanged and never becomes a request for another code.
     """
+    if not _capture_attempt(raw, route):
+        return {"text": raw, "notice": "", "attempted": False}
     canonical = canonicalize(raw)
-    first = canonical.split(" ", 1)[0] if isinstance(canonical, str) and canonical is not raw else ""
-    if not first and looks_like_reply(raw):
-        first = _clean(raw).split(" ", 1)[0].lower()
-    mine = SHORT_ROUTE.get(first) == route
-    expanded = expand(canonical) if mine else {"text": canonical, "notice": ""}
-    return {"text": expanded["text"], "notice": expanded["notice"] if mine else "", "attempted": mine}
+    expanded = expand(canonical)
+    return {"text": expanded["text"], "notice": expanded["notice"], "attempted": True}
 
 
 def miss_notice(example: str) -> str:

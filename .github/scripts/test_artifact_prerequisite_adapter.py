@@ -163,7 +163,8 @@ class PrerequisiteAdapterTest(unittest.TestCase):
         self.hook_fixture()
         armed = self.arm(now=int(time.time()))
         before = list(self.client.calls)
-        self.assertIn("matches no armed request", self.hook("satisfy-prerequisite ZZZZ"))
+        unknown = "K7MQ" if armed["code"] != "K7MQ" else "J8NR"
+        self.assertIn("matches no armed request", self.hook(f"satisfy-prerequisite {unknown}"))
         self.assertIn("belongs to PLAN-EXAMPLE GATE-APPROVAL",
                       self.hook(f"satisfy-prerequisite PLAN-OTHER GATE-APPROVAL {armed['code']}"))
         self.assertIn("Send only the reply line", self.hook(armed["reply"] + " please"))
@@ -171,13 +172,25 @@ class PrerequisiteAdapterTest(unittest.TestCase):
         self.assertEqual(self.client.calls, before)
 
     def test_delayed_short_reply_is_accepted_once_within_24_hours(self):
-        self.hook_fixture()
-        with mock.patch.object(time, "time", return_value=1000):
+        replies = self.hook_fixture()
+        with mock.patch.object(time, "time", return_value=1000), mock.patch.object(
+                replies.secrets, "choice", side_effect=list("K7MQ")):
             armed = self.arm()
         with mock.patch.object(time, "time", return_value=1000 + 23 * 60 * 60):
             self.assertIn("workflow prerequisite recorded", self.hook(armed["short_reply"]))
             self.assertIn("matches no armed request", self.hook(armed["short_reply"]))
         self.assertEqual([name for name, _ in self.client.calls].count("prerequisite"), 1)
+
+    def test_retired_all_letter_code_is_plain_input_and_never_reapplies(self):
+        replies = self.hook_fixture()
+        with mock.patch.object(replies.secrets, "choice", side_effect=list("DATA")):
+            armed = self.arm(now=int(time.time()))
+        self.assertIn("workflow prerequisite recorded", self.hook(armed["short_reply"]))
+        calls = list(self.client.calls)
+        self.assertEqual(self.hook(armed["short_reply"]), "")
+        self.assertEqual(self.hook(armed["short_reply"] + " migration"), "")
+        self.assertEqual(self.client.calls, calls)
+        self.assertEqual([name for name, _ in calls].count("prerequisite"), 1)
 
     def test_reply_code_and_returned_deadline_match_the_request(self):
         replies = self.hook_fixture()

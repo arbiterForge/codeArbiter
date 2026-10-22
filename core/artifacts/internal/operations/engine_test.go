@@ -495,6 +495,40 @@ func TestArtifactLifecycle(t *testing.T) {
 		t.Fatal("progress invalidated normative/input identity")
 	}
 }
+func TestDraftSourceRefreshPreservesHistoricalEvidence(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	h.approvePair()
+	h.start("T-001")
+	h.review("T-001")
+	h.start("T-002")
+	h.review("T-002")
+	h.accept("CP-01")
+	h.mut("task-block", "PLAN-EXAMPLE", object{"task": "T-003", "reason": "User stopped the remaining task."})
+	before, spec := h.doc("PLAN-EXAMPLE"), h.doc("SPEC-EXAMPLE")
+	approvals := model.M(before.Data["governance"])["approvals"]
+	if len(model.A(approvals)) == 0 || len(model.A(state(before, "T-001")["evidence_refs"])) == 0 ||
+		len(model.M(model.M(before.Data["execution"])["scopes"])) == 0 {
+		t.Fatal("fixture lacks historical approval, task evidence or scope evidence")
+	}
+	h.mut("plan-bind", before.ID(), object{
+		"spec_id": spec.ID(), "binding_mode": "draft_preview",
+		"spec_expected": object{"revision": spec.Revision(), "model_sha256": spec.Hash()},
+	})
+	after := h.doc(before.ID())
+	if !equalValue(before.Data["execution"], after.Data["execution"]) ||
+		!equalValue(approvals, model.M(after.Data["governance"])["approvals"]) || h.doc(spec.ID()).Hash() != spec.Hash() {
+		t.Fatal("ordinary draft refresh rewrote existing history or the source specification")
+	}
+	if model.M(after.Data["governance"])["state"] != "draft" ||
+		model.M(after.Norm()["spec_ref"])["binding_mode"] != "draft_preview" {
+		t.Fatal("draft refresh asserted current approval")
+	}
+	if _, err := h.request("verification-status", object{"artifact_id": after.ID()}); fault.Code(err) != "DRAFT_BINDING" {
+		t.Fatalf("historical records became current acceptance after refresh: %v", err)
+	}
+}
+
 func TestOptionalOffsetsDefaultToZero(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()

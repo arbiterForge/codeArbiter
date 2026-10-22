@@ -1,5 +1,5 @@
 {
-  "revision": "3a8b6e0d18de66ff7148424bd4864e2409587986",
+  "revision": "3549ed56f5d5849116aef8d5e946423d8ee677fc",
   "title": "Assistive workflow: source-bound implementation",
   "summary": "An agreed outcome becomes a maintained plan, direct or delegated implementation, proportional verification and an honest delivery report. Task context and dependency advice support progress; real user stops and host permissions remain effective. Greenfield and brownfield population use the paired native writer and exact finalization. Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims.",
   "changes": [
@@ -259,7 +259,7 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "08927e5c40af9e2c5b9e97f137e1c186ad89fea6",
+      "blob": "d1878ff1f4b481ad21c9aeae4aa2ed42d93eef4b",
       "summary": "The closed task-check request accepts bounded command observations matched to plan definitions. Ordinary context-preview and context-finalize-preview omit prompt identity; context-apply accepts an exact preview reference and digest. Invalid requests, changed preimages and stale CAS writes remain rejected. The historical smarts-apply request accepts the 0.2.0 SMARTS decision record. init-store takes a protocol-only request.",
       "nodes": [
         "f-verify",
@@ -304,8 +304,8 @@
     },
     {
       "path": "core/pysrc/_approvallib.py",
-      "blob": "7f8efe8f462a3c1fc98f5c50fd449f7d03c4ef3d",
-      "summary": "The existing paired approval adapter can retire a genuinely unanswered 0.2 sprint-pair request using its serialized cancellation lock and submission check; a submitted decision must replay, while old standalone approval 0.1 intentionally refuses automatic retirement.",
+      "blob": "f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13",
+      "summary": "Ordinary approval and sprint instructions bypass legacy capture without changing pending history or inventing authority. Explicit legacy replies retain exact matching. The paired adapter can retire a genuinely unanswered 0.2 sprint-pair request using its serialized cancellation lock and submission check; submitted decisions must replay, while standalone approval 0.1 refuses automatic retirement.",
       "nodes": [
         "f-approval",
         "f-recovery",
@@ -315,8 +315,8 @@
     },
     {
       "path": "core/pysrc/_prerequisitelib.py",
-      "blob": "200eb5eff23b78b810dd8fd9a7615a0e3352df7f",
-      "summary": "The existing prerequisite adapter can retire only a validated ARMED pending question under its original per-plan OS lock. Confirmed or captured decisions are not disposable; no authority receipt or new native permission API is created.",
+      "blob": "124e82479efdf836aebfcd00746d94a84fbd8a48",
+      "summary": "Ordinary prerequisite instructions bypass legacy capture. The existing adapter can retire only a validated ARMED pending question under its original per-plan OS lock. Confirmed or captured decisions are not disposable; no authority receipt or new native permission API is created.",
       "nodes": [
         "f-selection",
         "f-recovery",
@@ -335,8 +335,8 @@
     },
     {
       "path": "core/surface/includes/artifacts-attestation.md",
-      "blob": "9c261559f19b716125de1f7f9aa8bd4e02597e8c",
-      "summary": "The optional reference retains the strict historical evidence inputs without replacing the original task review, including paired approval, captured decisions and in-flight recovery. Its verify command requires literal absolute paths; linked agent subdirectories remain unsupported for strict authority review. These limitations apply to requested attestation, not ordinary task start.",
+      "blob": "81d72c2f2e927bf4bf91acb305a0ad981aebbb09",
+      "summary": "The optional reference retains strict historical evidence inputs without replacing ordinary work. Explicit draft source refresh preserves progressed plans and history with both CAS bindings; initial approval restrictions remain on historical paired attestation. Its verify command requires literal absolute paths; linked agent subdirectories remain unsupported for strict authority review. These limitations apply to requested attestation, not ordinary task start.",
       "nodes": [
         "f-approval",
         "f-recovery",
@@ -674,8 +674,8 @@
     },
     {
       "path": "core/artifacts/internal/operations/lifecycle.go",
-      "blob": "0a40a9e6c50f1b1da06967dc806eef117f7d5a16",
-      "summary": "Dependency invalidation preserves an independently BLOCKED task and its reason. Changed ancestry remains visible without replacing a recorded user stop. Verification summaries disclose applicable conflicting caller reports separately from receipt freshness; later successful verification covers only reports present when its context was issued.",
+      "blob": "9e9f5f3d7160b7dd59dc6ff4f01de01738118637",
+      "summary": "Explicit draft source refresh retains both source CAS components and same-pair identity without requiring an unstarted plan. Existing progress, approvals and evidence are preserved without asserting current authority. Dependency invalidation preserves an independently BLOCKED task and its reason. Verification summaries disclose conflicting caller reports separately from receipt freshness; later successful verification covers only reports present when its context was issued.",
       "nodes": [
         "f-recovery",
         "c-decisions",
@@ -727,6 +727,36 @@
         "c-store",
         "b-refresh",
         "b-refreshed"
+      ]
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "blob": "cda8ac462374c2461fdc92bbd4e33be4d5ba1347",
+      "summary": "Ordinary uppercase words such as Approve DATA migration remain ordinary input. All-letter capture codes require a matching retained request; real armed replies, mismatches and user stops preserve their original handling.",
+      "nodes": [
+        "f-approval",
+        "f-recovery",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/pysrc/_artifactauthoritylib.py",
+      "blob": "685327a043aac850145fbb875b21371c0c16acae",
+      "summary": "Only an actual verifier wrapper executable/script prefix selects authority handling. Inert PowerShell data mentioning the filename is not a verifier call; malformed real verifier invocations still fail closed.",
+      "nodes": [
+        "f-verify",
+        "f-recovery",
+        "c-proof"
+      ]
+    },
+    {
+      "path": "core/pysrc/_bashguardlib.py",
+      "blob": "6b7c4222ad8393f9df8f21240583230b595ec1f7",
+      "summary": "Bounded isolated Python stdin diagnostics may read literal protected paths or git show HEAD objects. Unknown code, mutable calls, shell expansion and extra commands retain the guard checks; ordinary commands avoid AST parsing.",
+      "nodes": [
+        "f-recovery",
+        "c-read",
+        "c-proof"
       ]
     }
   ]

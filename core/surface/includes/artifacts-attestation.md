@@ -93,24 +93,27 @@ approval, dispatch, acceptance, commit proof, or finalization. This is the
 repository's cooperative same-user attestation model, not cryptographic identity
 proof or protection from an unrestricted same-user filesystem writer.
 
-For ordinary sequential planning, create a plan as `draft_preview`, consume existing criterion IDs,
-then `plan-bind` to the approved spec and approve the plan through its existing workflow. Initial
-combined HTML sprint review uses the explicit paired path below instead of separate approvals.
-A normative change invalidates its approval. Rebinding is explicit and preserves
-history; it does not waive coverage or permit silent reinterpretation.
+For ordinary planning and resume, create or maintain a plan as `draft_preview` and
+consume existing criterion IDs. Source rebinding records the selected requirements;
+it does not require a new approval or reset existing work. A normative change can make
+historical evidence inapplicable. Preserve that history without relabeling it as current.
 
-When adversarial review revises a ready initial draft spec after its draft plan exists,
-query both current identities. The installed engine's explicit `plan-bind` request with
+When an in-scope correction revises the source spec, query both current identities.
+The installed engine's explicit `plan-bind` request with
 `binding_mode: draft_preview` requires the plan's existing `expected` CAS and the spec's
-`spec_expected` revision/model CAS. It rebinds only that same-ID, same-slug initial pair:
-both artifacts must remain unapproved drafts, tasks pending and unevidenced, prerequisites
-unsatisfied and unevidenced, and scopes empty. Optional typed plan corrections must leave
-both drafts fully ready. The binding remains `draft_preview`; this operation grants no
-approval, delegation, prerequisite satisfaction, execution or acceptance. Revalidate both
-current drafts, repeat the affected review and arm the exact combined approval afterward.
-Inspect the installed operation schema first. An engine without this explicit draft
-request reports a capability gap; never edit HTML, recreate the pair, substitute sequential
-approval or use ordinary approved-source `plan-bind` to repair it.
+`spec_expected` revision/model CAS. It refreshes only the existing same-ID, same-slug
+pair, including plans with started, reviewed, blocked or evidenced work. Optional typed
+plan corrections must leave both documents ready. Execution, stops, observations and
+historical approvals are retained; the refreshed plan has draft governance and a
+`draft_preview` binding. This operation grants no approval, delegation, prerequisite
+satisfaction, execution or acceptance. Revalidate the current pair and reassess only
+affected work and evidence. Do not arm combined approval for ordinary maintenance.
+
+Inspect the installed operation schema first. An engine that rejects this supported
+source refresh has a capability gap; retain the stale binding honestly while continuing
+unaffected authorized work. Never edit generated HTML, recreate the pair or erase history
+to satisfy a legacy initial-approval restriction. The historical initial combined approval
+path still requires an unapproved, unstarted and unevidenced initial pair.
 
 ## Historical paired approval and delegated methods
 

@@ -198,6 +198,58 @@ func TestAssistivePlanMaintenancePreservesProgressAndCAS(t *testing.T) {
 	f.assertNoAuthorityFiles()
 }
 
+func TestAssistiveDraftBindingPreservesProgressAndEvidence(t *testing.T) {
+	f := newAssistiveFixture(t)
+	addScopedPrerequisite(f, "fact")
+	f.mutate("prerequisite", prerequisiteReport("satisfied", "tool_result"))
+	f.mutate("task-start", object{"task": "T-001"})
+	reportFor(f, "fail", true)
+	f.mutate("task-review", object{"task": "T-001"})
+	f.mutate("task-start", object{"task": "T-002"})
+	f.mutate("task-block", object{"task": "T-003", "reason": "User stopped this task."})
+	f.call("apply", f.mutation("SPEC-EXAMPLE", object{"changes": []any{
+		object{"op": "header.update", "fields": object{"summary": "Current source after an in-scope correction."}},
+	}}))
+	spec, before := f.doc("SPEC-EXAMPLE"), f.doc("PLAN-EXAMPLE")
+	if f.call("eligible", object{"artifact_id": before.ID()})["binding_current"] != false {
+		t.Fatal("fixture did not stale the source binding")
+	}
+	request := f.mutation(before.ID(), object{
+		"spec_id": spec.ID(), "binding_mode": "draft_preview",
+		"spec_expected": object{"revision": spec.Revision(), "model_sha256": spec.Hash()},
+	})
+	f.call("plan-bind", request)
+	after := f.doc(before.ID())
+	if !equalValue(before.Data["execution"], after.Data["execution"]) ||
+		!equalValue(before.Data["governance"], after.Data["governance"]) {
+		t.Fatal("source refresh reset progress, stops, check history, prerequisites or approval history")
+	}
+	if after.Revision() != before.Revision()+1 || f.doc(spec.ID()).Hash() != spec.Hash() {
+		t.Fatal("source refresh changed the specification or failed to advance only the plan")
+	}
+	ref := model.M(after.Norm()["spec_ref"])
+	if ref["normative_sha256"] != spec.NormHash() || ref["binding_mode"] != "draft_preview" {
+		t.Fatalf("source refresh did not record the current non-authorizing binding: %v", ref)
+	}
+	if f.call("eligible", object{"artifact_id": before.ID()})["binding_current"] != true {
+		t.Fatal("refreshed binding remained stale")
+	}
+	f.call("plan-bind", request)
+	if f.doc(before.ID()).Hash() != after.Hash() {
+		t.Fatal("replay repeated the source refresh")
+	}
+	if _, err := f.request("sprint-approval-context", object{
+		"artifact_id": before.ID(), "spec_id": spec.ID(), "delegate_methods": false,
+		"prompt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+	}); fault.Code(err) != "INITIAL_APPROVAL_ONLY" {
+		t.Fatalf("ordinary refresh relaxed the historical initial approval boundary: %v", err)
+	}
+	if _, err := f.request("verification-status", object{"artifact_id": before.ID()}); err == nil {
+		t.Fatal("source refresh promoted reports to verified acceptance")
+	}
+	f.assertNoAuthorityFiles()
+}
+
 func TestAssistiveReportedReviewCannotMasqueradeAsReceiptedReview(t *testing.T) {
 	f := newAssistiveFixture(t)
 	f.mutate("task-start", object{"task": "T-001"})

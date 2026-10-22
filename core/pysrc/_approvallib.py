@@ -480,6 +480,8 @@ def consume_from_hook(*, root: str | Path, plugin_root: str | Path, prompt: str,
     prepared = _replylib.prepare(raw, "approval")
     prompt = prepared["text"]
     attempted = prepared["attempted"]
+    if not attempted:
+        return ""
 
     def missed(reason: str) -> str:
         _replylib.record_near_miss(root, raw, reason)

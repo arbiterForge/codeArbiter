@@ -3589,6 +3589,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             ".github/scripts/test_artifact_prerequisite_adapter.py",
             ".github/scripts/test_artifact_reconciliation_adapter.py",
             ".github/scripts/test_replylib.py",
+            ".github/scripts/test_literal_python_reads.py",
             "--interpreter-env", "ARTIFACT_CONFORMANCE_PYTHON",
             ".github/scripts/test_artifact_conformance.py",
         ])
