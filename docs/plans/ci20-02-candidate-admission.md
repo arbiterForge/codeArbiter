@@ -340,5 +340,67 @@ over those same bytes. No installed admission or qualification rule changed.
   production authority library is the remaining systemic cost; it is a
   product change outside this CI contract.
 
+## CI20-04: recorded-binding qualification (plan §4.2)
+
+**Problem.** Six final `artifact-engine` jobs, one per native host, each
+started a fresh runner, installed Python and Go, re-verified the shared
+candidate and issued its receipt. Measured run `39740864016` finished all
+native work at 17.9 minutes, then waited 5.1 minutes for a free macOS slot
+for the darwin/arm64 issuer alone. Plan §4.2 forbids allocating six native
+runners solely to issue receipts.
+
+**Change of receipt ownership.** One `artifact-engine` job on Linux issues
+all six receipts from records the native jobs already produced. The job id,
+the six `artifact-native-<runner>` artifact names and layouts, and the receipt
+format and fields are unchanged, so `build-host-packages.py`, browser
+qualification, assembly and cold installation read them as before. Only the
+issuer's host changes.
+
+**What native proof now rests on.** Each `artifact-native-build` job stamps
+(`ci20_native_binding.py stamp`) on its own host, after the complete module
+population and vet pass: the source commit, run, attempt, workflow, producer
+job, platform, Go version, the module digest, the Go executable's digest,
+and the manifest and binary digests. The bridges and authority jobs then
+verify that stamp on the same native platform against their own checkout,
+`go env` and Go executable before they consume the candidate. These records
+are unkeyed digests carried by GitHub's same-run artifact transport. They
+detect accidental cross-run, source, tool or byte substitution; they are not
+signatures or independent attestations. The trusted boundary is this
+workflow run, its required jobs and its artifact store.
+
+**Checks the issuer applies, per platform, before writing a receipt.**
+
+1. Every required native stage succeeded (`ci20_native_binding.py gate`,
+   unchanged): build, default, coverage, bridges, authority and coverage
+   union, with artifacts selected.
+2. The run identity is exact: GitHub Actions, this repository, this
+   workflow, job `artifact-engine`, the checked-out HEAD equals
+   `GITHUB_SHA`, and the tree is clean.
+3. The stamp has exactly the expected fields. Its format, source commit,
+   run, workflow, producer job and platform equal this run's values and
+   the platform being qualified. Its toolchain is `go1.27.1`. Its attempt is
+   a positive integer no later than this attempt: a retry may reuse a
+   successful earlier build of the same immutable source, never a future or
+   foreign one. Its module digest equals the issuer's own recomputation, which
+   is host-independent (identical on all six hosts in run `39737303418`). Its
+   Go digest is a SHA-256.
+4. The candidate is genuine: exactly `release.json` and one binary, the
+   manifest marks the platform `native_tested`, and the manifest and binary
+   digests equal the stamp's.
+5. The context observation has its exact fields and six passing cases. Its
+   module digest equals the stamp's, and its Go digest equals the stamp's Go
+   digest. Native observations and the tested candidate therefore come from
+   the same pinned toolchain on the same host type.
+6. Exactly six platforms are present, each once. A missing, extra or
+   duplicated tested or context artifact fails the job before any receipt
+   is written, and any refusal writes no receipt for that platform.
+
+The host-checked path (`--qualify-existing` without `--native-binding`)
+remains for an issuer running on the native host itself, and keeps its
+`go env` and local Go-executable checks.
+
+**Rollback.** Restore the six-cell matrix and remove `--native-binding`.
+Readers are unchanged, so no artifact migration is needed.
+
 Overlapping-run acceptance (CI20-07) remains the maintainer's decision once
 these measurements are complete; it is not redefined here.

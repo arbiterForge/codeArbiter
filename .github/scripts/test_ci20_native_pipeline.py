@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import importlib.util
 import json
+import re
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -48,8 +51,13 @@ OWNERS = {
         "Test debug handoff model against the locked reference interpreter",
     ),
     "artifact-engine": (
-        "Bind the candidate to this exact-host native result",
-        "Preserve the exact native candidate and qualification receipt",
+        "Bind each candidate to its recorded native result",
+        "Preserve the exact native candidate and qualification receipt (linux/amd64)",
+        "Preserve the exact native candidate and qualification receipt (linux/arm64)",
+        "Preserve the exact native candidate and qualification receipt (windows/amd64)",
+        "Preserve the exact native candidate and qualification receipt (windows/arm64)",
+        "Preserve the exact native candidate and qualification receipt (darwin/amd64)",
+        "Preserve the exact native candidate and qualification receipt (darwin/arm64)",
     ),
 }
 
@@ -90,7 +98,9 @@ class GateContract(unittest.TestCase):
             binding.require_stages(json.dumps(needs))
 
 
-class GenuineNativeCandidateContract(unittest.TestCase):
+class NativeCandidateFixture:
+    """A synthetic stamped candidate; mixed into contract test cases."""
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(prefix="ci20-tested-native-contract-")
         self.addCleanup(self.tmp.cleanup)
@@ -136,6 +146,8 @@ class GenuineNativeCandidateContract(unittest.TestCase):
         with mock.patch.dict(binding.os.environ, GITHUB_JOB=binding.PRODUCER):
             return binding.stamp(self.candidate, self.record_path, "windows/amd64")
 
+
+class GenuineNativeCandidateContract(NativeCandidateFixture, unittest.TestCase):
     def test_only_original_native_builder_can_stamp(self):
         with mock.patch.dict(binding.os.environ, GITHUB_JOB="artifact-engine"):
             with self.assertRaises(ValueError):
@@ -271,10 +283,14 @@ class WorkflowContract(unittest.TestCase):
                 self.assertEqual(sum(f"      - name: {name}\n" in body
                                      for body in self.jobs.values()), 1, name)
                 self.assertIn(f"      - name: {name}\n", text)
+            self.assertNotIn("continue-on-error:", text)
+            if owner == "artifact-engine":
+                # The single issuer names each platform in its receipt steps.
+                self.assertNotIn("strategy:", text)
+                continue
             for platform in SIX:
                 self.assertIn("expected_platform: " + platform, text, owner)
             self.assertIn("fail-fast: false", text)
-            self.assertNotIn("continue-on-error:", text)
         self.assertNotIn("--skip-tests", self.jobs["artifact-native-build"])
         self.assertIn("python tools/build-artifacts.py --output", self.jobs["artifact-native-build"])
 
@@ -301,21 +317,35 @@ class WorkflowContract(unittest.TestCase):
         self.assertIn("--require-integration", coverage)
 
     def test_tested_candidate_is_shared_and_gated_but_only_native_issuer_qualifies(self):
-        for owner in ("artifact-native-bridges", "artifact-authority", "artifact-engine"):
+        for owner in ("artifact-native-bridges", "artifact-authority"):
             text = self.jobs[owner]
             self.assertIn("ci20_native_binding.py verify", text)
             self.assertIn("ci20-native-tested-", text)
             self.assertNotIn("tools/build-artifacts.py --output", text)
         self.assertIn("ci20_native_binding.py stamp", self.jobs["artifact-native-build"])
         final = self.jobs["artifact-engine"]
+        self.assertNotIn("tools/build-artifacts.py --output", final)
         self.assertIn("NATIVE_RESULTS: ${{ toJSON(needs) }}", final)
         self.assertIn("ci20_native_binding.py gate", final)
+        self.assertIn("pattern: ci20-native-*", final)
         self.assertLess(final.index("ci20_native_binding.py gate"),
-                        final.index("--qualify-existing"))
-        self.assertLess(final.index("ci20_native_binding.py verify"),
-                        final.index("--qualify-existing"))
-        self.assertIn("ci20-native-context-", final)
-        self.assertIn("--context-native-observation", final)
+                        final.index("pattern: ci20-native-*"))
+        self.assertLess(final.index("pattern: ci20-native-*"),
+                        final.index("ci20_native_binding.py qualify-recorded"))
+        # The off-host issuer only checks the Go digest's shape; its soundness
+        # rests on each native consumer verifying the stamp on every platform.
+        for owner in ("artifact-native-bridges", "artifact-authority"):
+            steps = re.findall(r"(?ms)^      - name: [^\n]*\n(?:(?!^      - ).)*", self.jobs[owner])
+            verifies = [step for step in steps if "ci20_native_binding.py verify" in step]
+            self.assertGreaterEqual(len(verifies), 1, owner)
+            for step in verifies:
+                self.assertNotIn("        if:", step, owner)
+            self.assertNotIn("\n    if: matrix", self.jobs[owner])
+        # The issuer passes each platform's recorded binding and context
+        # observation to the protected emitter.
+        source = (REPO / ".github/scripts/ci20_native_binding.py").read_text(encoding="utf-8")
+        for argument in ('"--qualify-existing"', '"--native-binding"', '"--context-native-observation"'):
+            self.assertIn(argument, source)
         for group in binding.REQUIRED_STAGES:
             self.assertIn(group, final.split("    needs:", 1)[1].splitlines()[0])
         self.assertNotIn("CA_ARTIFACT_QUALIFICATION_JOB", final)
@@ -336,7 +366,8 @@ class WorkflowContract(unittest.TestCase):
             self.assertIn("needs['" + owner + "'].result", aggregate)
         self.assertIn("\n      - artifact-authority\n", aggregate)
         self.assertIn("needs['artifact-authority'].result", aggregate)
-        self.assertIn("name: artifact-native-${{ matrix.os }}", self.jobs["artifact-engine"])
+        for runner, platform in sorted(binding.RUNNERS.items()):
+            self.assertIn("name: artifact-native-" + runner + "\n", self.jobs["artifact-engine"])
         self.assertIn("needs: [changes, artifact-package-assembly]", self.jobs["artifact-package-cold"])
         # Consumers reuse the module-tested candidate; no untested early build or
         # provisional byte-correspondence job remains in the graph.
@@ -347,6 +378,228 @@ class WorkflowContract(unittest.TestCase):
         self.assertIn("run: python .github/scripts/test_ci20_native_pipeline.py",
                       self.jobs["ci-impact"])
 
+
+
+BUILDER_SPEC = importlib.util.spec_from_file_location("ci20_builder", REPO / "tools/build-artifacts.py")
+BUILDER = importlib.util.module_from_spec(BUILDER_SPEC)
+BUILDER_SPEC.loader.exec_module(BUILDER)
+
+
+class RecordedQualificationContract(NativeCandidateFixture, unittest.TestCase):
+    """CI20-04: one off-host issuer, bound to each platform's same-run stamp."""
+
+    RUN = {"source_commit": "a" * 40, "run_id": "234", "run_attempt": "1"}
+
+    def setUp(self):
+        super().setUp()
+        for name, value in (("run_identity", dict(self.RUN)), ("hash_go_module", "b" * 64)):
+            patched = mock.patch.object(binding, name, return_value=value)
+            patched.start()
+            self.addCleanup(patched.stop)
+        self.stamped = self.stamp()
+
+    def recorded(self, job="artifact-engine", platform="windows/amd64"):
+        with mock.patch.dict(binding.os.environ, GITHUB_JOB=job):
+            return binding.recorded(self.candidate, self.record_path, platform)
+
+    def test_only_the_issuer_accepts_an_exact_record(self):
+        self.assertEqual(self.recorded(), self.stamped)
+        for job in ("artifact-native-bridges", "artifact-authority", "artifact-native-build", ""):
+            with self.subTest(job=job), self.assertRaises(ValueError):
+                self.recorded(job=job)
+        with self.assertRaises(ValueError):
+            self.recorded(platform="darwin/arm64")
+
+    def test_every_changed_missing_or_extra_field_refuses(self):
+        for field in self.stamped:
+            if field == "run_attempt":
+                continue
+            self.record_path.write_text(json.dumps({**self.stamped, field: "changed"}))
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.recorded()
+        for field in self.stamped:
+            reduced = {key: value for key, value in self.stamped.items() if key != field}
+            self.record_path.write_text(json.dumps(reduced))
+            with self.subTest(missing=field), self.assertRaises(ValueError):
+                self.recorded()
+        self.record_path.write_text(json.dumps({**self.stamped, "native_proof": "PASS"}))
+        with self.assertRaises(ValueError):
+            self.recorded()
+
+    def test_retry_reuses_only_an_earlier_attempt_of_this_run(self):
+        with mock.patch.object(binding, "run_identity", return_value={**self.RUN, "run_attempt": "2"}):
+            self.assertEqual(self.recorded()["run_attempt"], "1")
+        self.record_path.write_text(json.dumps({**self.stamped, "run_attempt": "2"}))
+        with self.assertRaises(ValueError):
+            self.recorded()
+        self.record_path.write_text(json.dumps(self.stamped))
+        with mock.patch.object(binding, "run_identity", return_value={**self.RUN, "run_id": "235"}):
+            with self.assertRaises(ValueError):
+                self.recorded()
+
+    def test_source_module_and_byte_drift_refuse(self):
+        with mock.patch.object(binding, "run_identity", return_value={**self.RUN, "source_commit": "e" * 40}):
+            with self.assertRaises(ValueError):
+                self.recorded()
+        with mock.patch.object(binding, "hash_go_module", return_value="d" * 64):
+            with self.assertRaises(ValueError):
+                self.recorded()
+        self.binary.write_bytes(b"substituted after stamping")
+        with self.assertRaises(ValueError):
+            self.recorded()
+
+    def records(self, root, runners):
+        for runner in runners:
+            for kind in ("tested", "context"):
+                (root / f"ci20-native-{kind}-{runner}").mkdir()
+
+    def test_issuer_requires_exactly_one_tested_and_context_record_per_platform(self):
+        complete = sorted(binding.RUNNERS)
+        cases = {
+            "missing": complete[1:],
+            "extra": [*complete, "macos-14"],
+        }
+        for label, runners in cases.items():
+            with self.subTest(label), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.records(root, runners)
+                with mock.patch.object(binding.subprocess, "run") as run, \
+                        mock.patch.dict(binding.os.environ, GITHUB_JOB="artifact-engine"):
+                    with self.assertRaises(ValueError):
+                        binding.qualify_recorded(root)
+                    run.assert_not_called()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.records(root, complete)
+            (root / "ci20-native-context-macos-26").rmdir()
+            with mock.patch.object(binding.subprocess, "run") as run, \
+                    mock.patch.dict(binding.os.environ, GITHUB_JOB="artifact-engine"):
+                with self.assertRaises(ValueError):
+                    binding.qualify_recorded(root)
+                run.assert_not_called()
+
+    def test_issuer_qualifies_each_platform_with_its_own_records(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.records(root, binding.RUNNERS)
+            with mock.patch.object(binding.subprocess, "run") as run, \
+                    mock.patch.dict(binding.os.environ, GITHUB_JOB="artifact-bridges"):
+                with self.assertRaises(ValueError):
+                    binding.qualify_recorded(root)
+                run.assert_not_called()
+            with mock.patch.object(binding.subprocess, "run") as run, \
+                    mock.patch.dict(binding.os.environ, GITHUB_JOB="artifact-engine"):
+                receipts = binding.qualify_recorded(root)
+        self.assertEqual(len(receipts), 6)
+        seen = {}
+        for call in run.call_args_list:
+            command, environment = call.args[0], call.kwargs["env"]
+            self.assertTrue(call.kwargs["check"])
+            runner = Path(command[command.index("--qualify-existing") + 1]).parent.name.removeprefix(
+                "ci20-native-tested-")
+            seen[runner] = environment["EXPECTED_ARTIFACT_PLATFORM"]
+            self.assertEqual(Path(command[command.index("--native-binding") + 1]),
+                             root / f"ci20-native-tested-{runner}" / "ci20-native-tested.json")
+            self.assertEqual(Path(command[command.index("--context-native-observation") + 1]),
+                             root / f"ci20-native-context-{runner}" / "context-native-observation.json")
+        self.assertEqual(seen, binding.RUNNERS)
+
+
+class RecordedEmitterContract(NativeCandidateFixture, unittest.TestCase):
+    """The protected emitter takes host identity from the stamp only when recorded."""
+
+    def setUp(self):
+        super().setUp()
+        self.stamped = self.stamp()
+        self.environment = {
+            "GITHUB_ACTIONS": "true", "GITHUB_SHA": "a" * 40, "GITHUB_RUN_ID": "234",
+            "GITHUB_WORKFLOW_REF": "arbiterForge/codeArbiter/.github/workflows/ci.yml@refs/heads/main",
+            "GITHUB_JOB": "artifact-engine", "EXPECTED_ARTIFACT_PLATFORM": "windows/amd64",
+        }
+        self.module_sha256 = binding.hash_go_module(REPO / "core/artifacts")
+
+    def observation(self, go_sha256):
+        sys.path.insert(0, str(REPO / ".github/scripts"))
+        try:
+            import test_context_native as context
+        finally:
+            sys.path.remove(str(REPO / ".github/scripts"))
+        sources = {
+            "TestContextRepresentationBoundary": (context.SOURCE, context.SUBTESTS),
+            "TestContextDocumentContract": (context.DOCUMENT_SOURCE, context.DOCUMENT_SUBTESTS),
+            "TestContextMarkdownPreservation": (context.MARKDOWN_SOURCE, context.MARKDOWN_SUBTESTS),
+            "TestContextBoundedRender": (context.RENDER_SOURCE, context.RENDER_SUBTESTS),
+            "TestContextMutationAdmission": (context.MUTATION_SOURCE, context.MUTATION_SUBTESTS),
+            "TestContextRecoveryAndPaths": (context.RECOVERY_SOURCE, context.RECOVERY_SUBTESTS),
+        }
+        record = {
+            "format": "codearbiter.context-native-observation/0.1.0",
+            "module_sha256": self.module_sha256, "go_sha256": go_sha256,
+            "cases": [{"name": name, "subtests": list(subtests),
+                       "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                       "stdout_sha256": "1" * 64, "stderr_sha256": "2" * 64, "exit_code": 0}
+                      for name, (source, subtests) in sources.items()],
+        }
+        path = self.path / "context-native-observation.json"
+        path.write_text(json.dumps(record), encoding="utf-8")
+        return path
+
+    def emit(self, observation, recorded):
+        def checked_output(args, **_kwargs):
+            if args[:3] == ["git", "rev-parse", "HEAD"]:
+                return "a" * 40 + "\n"
+            raise AssertionError("an off-host issuer must not consult the local toolchain: %r" % (args,))
+        destination = self.path / "receipt.json"
+        if destination.exists():
+            destination.unlink()
+        with mock.patch.dict(BUILDER.os.environ, self.environment, clear=True), \
+                mock.patch.object(BUILDER.subprocess, "check_output", side_effect=checked_output), \
+                mock.patch.object(binding, "recorded", return_value=recorded) as check:
+            BUILDER.write_qualification(self.candidate, destination, observation, self.record_path)
+        check.assert_called_once_with(self.candidate, self.record_path, "windows/amd64")
+        return json.loads(destination.read_text(encoding="utf-8"))
+
+    def test_receipt_shape_is_unchanged_and_bound_to_the_recorded_go_tool(self):
+        stamped = {**self.stamped, "module_sha256": self.module_sha256}
+        receipt = self.emit(self.observation(stamped["go_sha256"]), stamped)
+        self.assertEqual(set(receipt), {
+            "format", "source_commit", "workflow", "run_id", "job", "platform",
+            "binary_sha256", "version", "protocol", "schema_version", "native_tests",
+            "context_native"})
+        self.assertEqual((receipt["job"], receipt["platform"]), ("artifact-engine", "windows/amd64"))
+        self.assertEqual(receipt["context_native"]["go_sha256"], stamped["go_sha256"])
+
+    def test_context_from_another_go_tool_or_none_refuses(self):
+        stamped = {**self.stamped, "module_sha256": self.module_sha256}
+        with self.assertRaisesRegex(ValueError, "source/tool identity"):
+            self.emit(self.observation("f" * 64), stamped)
+        with self.assertRaisesRegex(SystemExit, "requires the native context observation"):
+            self.emit(None, stamped)
+        self.assertFalse((self.path / "receipt.json").exists())
+
+    def test_host_path_still_requires_this_hosts_toolchain(self):
+        def host(goos, goarch):
+            def checked_output(args, **_kwargs):
+                if args[:3] == ["git", "rev-parse", "HEAD"]:
+                    return "a" * 40 + "\n"
+                return {("go", "env", "GOOS"): goos, ("go", "env", "GOARCH"): goarch}[tuple(args)] + "\n"
+            return checked_output
+        destination = self.path / "host-receipt.json"
+        with mock.patch.dict(BUILDER.os.environ, self.environment, clear=True), \
+                mock.patch.object(BUILDER.subprocess, "check_output", side_effect=host("darwin", "arm64")):
+            with self.assertRaisesRegex(SystemExit, "candidate platform does not match"):
+                BUILDER.write_qualification(self.candidate, destination)
+        self.assertFalse(destination.exists())
+        with mock.patch.dict(BUILDER.os.environ, self.environment, clear=True), \
+                mock.patch.object(BUILDER.subprocess, "check_output", side_effect=host("windows", "amd64")):
+            BUILDER.write_qualification(self.candidate, destination)
+        self.assertEqual(json.loads(destination.read_text(encoding="utf-8"))["platform"], "windows/amd64")
+
+    def test_platform_other_than_the_candidate_refuses(self):
+        self.environment["EXPECTED_ARTIFACT_PLATFORM"] = "darwin/arm64"
+        stamped = {**self.stamped, "module_sha256": self.module_sha256}
+        with self.assertRaisesRegex(SystemExit, "candidate platform does not match"):
+            self.emit(self.observation(stamped["go_sha256"]), stamped)
 
 
 class HostedCheckPaginationContract(unittest.TestCase):

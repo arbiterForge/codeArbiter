@@ -3595,7 +3595,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         qualifier = jobs["artifact-engine"]
         self.assertIn("artifact-native-bridges", qualifier.split("    needs:", 1)[1].splitlines()[0])
         self.assertLess(qualifier.index("ci20_native_binding.py gate"),
-                        qualifier.index('--qualify-existing "${{ runner.temp }}/artifact-candidate"'))
+                        qualifier.index("ci20_native_binding.py qualify-recorded"))
 
     def test_native_statement_collector_alone_starts_push_ci(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -3648,9 +3648,17 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         qualifier = jobs["artifact-engine"]
         self.assertEqual(re.findall(r"(?m)^    timeout-minutes: (.+)$", qualifier), ["15"])
         self.assertIn("ci20_native_binding.py gate", qualifier)
-        self.assertIn("ci20_native_binding.py verify", qualifier)
-        self.assertIn("Bind the candidate to this exact-host native result", qualifier)
-        self.assertIn("Preserve the exact native candidate and qualification receipt", qualifier)
+        # One Linux issuer qualifies all six platforms from recorded native
+        # results (plan CI20-04); no native runner is held to issue receipts.
+        self.assertIn("ci20_native_binding.py qualify-recorded", qualifier)
+        self.assertIn("Bind each candidate to its recorded native result", qualifier)
+        self.assertIn("    runs-on: ubuntu-24.04\n", qualifier)
+        self.assertNotIn("matrix", qualifier)
+        self.assertNotIn("setup-go", qualifier)
+        for runner, platform in RECORDED_RUNNERS:
+            self.assertEqual(qualifier.count(
+                "Preserve the exact native candidate and qualification receipt (" + platform + ")"), 1)
+            self.assertEqual(qualifier.count("name: artifact-native-" + runner + "\n"), 1)
         for group in ("artifact-native-build", "artifact-native-default",
                       "artifact-native-coverage",
                       "artifact-native-bridges"):
@@ -3748,12 +3756,12 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "--require-hashes",
             "--no-deps",
             ".github/requirements/artifact-conformance-py314.lock",
-            '--qualify-existing "${{ runner.temp }}/artifact-candidate"',
-            'name: artifact-native-${{ matrix.os }}',
+            "ci20_native_binding.py qualify-recorded",
+            "name: artifact-native-macos-26",
         ):
             self.assertIn(control, job)
         qualification_position = jobs["artifact-engine"].index(
-            '--qualify-existing "${{ runner.temp }}/artifact-candidate"')
+            "ci20_native_binding.py qualify-recorded")
         for proving_step in (
             "python .github/scripts/test_artifact_native.py",
             ".github/scripts/test_artifact_conformance.py",
@@ -3761,7 +3769,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn(proving_step, job)
         self.assertLess(jobs["artifact-engine"].index("ci20_native_binding.py gate"),
                         qualification_position)
-        self.assertGreater(jobs["artifact-engine"].index("name: artifact-native-${{ matrix.os }}"),
+        self.assertGreater(jobs["artifact-engine"].index("name: artifact-native-ubuntu-24.04\n"),
                            qualification_position)
         self.assertNotIn("continue-on-error", job)
         builder = (REPO_ROOT / "tools" / "build-artifacts.py").read_text(encoding="utf-8")
@@ -4279,7 +4287,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         self.assertIn("timeout-minutes: 15", qualifier)
         self.assertIn("ci20_native_binding.py gate", qualifier)
         self.assertNotIn("continue-on-error:", qualifier)
-        self.assertIn("fail-fast: false", qualifier)
+        self.assertNotIn("strategy:", qualifier)
         for name in ("artifact-native-build", "artifact-native-default",
                      "artifact-native-coverage",
                      "artifact-native-bridges"):
@@ -4303,6 +4311,9 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         self.assertIn("fail-fast: false", authority)
         self.assertNotIn("continue-on-error:", authority)
 
+
+
+RECORDED_RUNNERS = (('ubuntu-24.04', 'linux/amd64'), ('ubuntu-24.04-arm', 'linux/arm64'), ('windows-2025', 'windows/amd64'), ('windows-11-arm', 'windows/arm64'), ('macos-15-intel', 'darwin/amd64'), ('macos-26', 'darwin/arm64'))
 
 
 def bridge_suite_arguments(job: str) -> list[str]:

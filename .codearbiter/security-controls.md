@@ -186,6 +186,14 @@ Packaging/installers retain their platform-specific safe-path, no-follow and
 identity boundaries. Static source or fixture tests do not establish installed
 host permissions.
 
+CI qualification receipts are issued by one Linux `artifact-engine` job, not on
+each native host. Its trust basis is this run's artifact store, the required
+native stages' success (`ci20_native_binding.py gate`), and each native
+consumer's on-host `verify` of the builder's stamp against that host's Go
+toolchain. The issuer re-binds run, source, module, platform, toolchain and
+bytes. Keep those consumer `verify` steps unconditional on every platform;
+contract: `docs/plans/ci20-02-candidate-admission.md`, CI20-04.
+
 Bounded requests/reads, stable IDs, exact revisions, safe HTML escaping,
 transaction journals, before-images, operation replay and no-follow filesystem
 checks protect data integrity. Progress and reported checks must remain separate

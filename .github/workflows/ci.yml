@@ -522,90 +522,99 @@ jobs:
   # CI20-03: a distinct, explicitly UNQUALIFIED native test-input lane.
   # This is NOT a release candidate and does not replace artifact-engine.
   artifact-engine:
-    name: "[CHECK] | [CORE] | Structured artifact  <${{ matrix.expected_platform }}>"
+    name: "[CHECK] | [CORE] | Structured artifact qualification"
     needs: [changes, artifact-native-build, artifact-native-default, artifact-native-coverage, artifact-native-bridges, artifact-authority, artifact-coverage]
     if: ${{ !cancelled() && needs.changes.outputs.artifacts == 'true' }}
-    runs-on: ${{ matrix.os }}
-    # Split native verification; every original check retains its platform budget.
+    # One Linux issuer qualifies all six platforms from their same-run native
+    # stamps (plan CI20-04): no native runner is allocated only to issue a receipt.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
       contents: read
-    env:
-      GOTOOLCHAIN: local
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            expected_platform: linux/amd64
-            artifact_binary: ca-artifact-linux-amd64
-          - os: ubuntu-24.04-arm
-            expected_platform: linux/arm64
-            artifact_binary: ca-artifact-linux-arm64
-          - os: windows-2025
-            expected_platform: windows/amd64
-            artifact_binary: ca-artifact-windows-amd64.exe
-          - os: windows-11-arm
-            expected_platform: windows/arm64
-            artifact_binary: ca-artifact-windows-arm64.exe
-          - os: macos-15-intel
-            expected_platform: darwin/amd64
-            artifact_binary: ca-artifact-darwin-amd64
-          - os: macos-26
-            expected_platform: darwin/arm64
-            artifact_binary: ca-artifact-darwin-arm64
     steps:
-      # The issuer needs the checked-out HEAD, Python and the pinned Go tool;
-      # it runs no Node and reads no history.
+      # The issuer needs the checked-out HEAD and Python; it runs no Go or
+      # Node and reads no history.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: "1.27.1"
-          check-latest: false
-          cache: false
-          go-download-base-url: https://go.dev/dl
-      - name: Verify exact Go toolchain
-        run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
       - name: Require every native verification stage to have passed
         env:
           NATIVE_RESULTS: ${{ toJSON(needs) }}
         run: python .github/scripts/ci20_native_binding.py gate
-      - name: Download the actual native-tested candidate from this run
+      - name: Download the native-tested candidates and context observations from this run
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: ci20-native-tested-${{ matrix.os }}
-          path: ${{ runner.temp }}
-      - name: Verify tested candidate bytes, source and native toolchain
-        run: >-
-          python .github/scripts/ci20_native_binding.py verify
-          --candidate "${{ runner.temp }}/artifact-candidate"
-          --metadata "${{ runner.temp }}/ci20-native-tested.json"
-          --platform "${{ matrix.expected_platform }}"
-      - name: Download exact native context observation from its source job
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: ci20-native-context-${{ matrix.os }}
-          path: ${{ runner.temp }}
-      - name: Bind the candidate to this exact-host native result
+          pattern: ci20-native-*
+          path: ${{ runner.temp }}/native
+      - name: Bind each candidate to its recorded native result
         env:
-          EXPECTED_ARTIFACT_PLATFORM: ${{ matrix.expected_platform }}
-        run: >-
-          python tools/build-artifacts.py
-          --qualify-existing "${{ runner.temp }}/artifact-candidate"
-          --qualification-output "${{ runner.temp }}/artifact-qualification.json"
-          --context-native-observation "${{ runner.temp }}/context-native-observation.json"
-      - name: Preserve the exact native candidate and qualification receipt
+          NATIVE_ROOT: ${{ runner.temp }}/native
+        run: python .github/scripts/ci20_native_binding.py qualify-recorded
+      - name: Preserve the exact native candidate and qualification receipt (linux/amd64)
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: artifact-native-${{ matrix.os }}
+          name: artifact-native-ubuntu-24.04
           path: |
-            ${{ runner.temp }}/artifact-candidate
-            ${{ runner.temp }}/artifact-qualification.json
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (linux/arm64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-ubuntu-24.04-arm
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04-arm/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-ubuntu-24.04-arm/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (windows/amd64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-windows-2025
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-windows-2025/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-windows-2025/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (windows/arm64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-windows-11-arm
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-windows-11-arm/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-windows-11-arm/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (darwin/amd64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-macos-15-intel
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-macos-15-intel/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-macos-15-intel/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve the exact native candidate and qualification receipt (darwin/arm64)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-native-macos-26
+          path: |
+            ${{ runner.temp }}/native/ci20-native-tested-macos-26/artifact-candidate
+            ${{ runner.temp }}/native/ci20-native-tested-macos-26/artifact-qualification.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -648,6 +657,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
