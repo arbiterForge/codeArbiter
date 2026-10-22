@@ -185,7 +185,9 @@ class TestSuitesStayInsideTheirTempDirs(unittest.TestCase):
             before = snapshot(home)
             result = run_suite(command, home)
             after = snapshot(home)
+        self.assert_result_hermetic(name, result, before, after)
 
+    def assert_result_hermetic(self, name, result, before, after) -> None:
         self.assertEqual(
             result.returncode, 0,
             f"{name} did not pass under a redirected home:\n{result.stdout[-4000:]}\n{result.stderr[-4000:]}",
@@ -201,9 +203,27 @@ class TestSuitesStayInsideTheirTempDirs(unittest.TestCase):
         )
 
     def test_github_script_suites_leave_the_user_home_byte_identical(self):
-        for name, command in SUITES[1:]:
+        # This is these suites' only CI execution. Each has its own pristine
+        # home, so they run side by side; each is still judged on its own.
+        def one(suite):
+            name, command = suite
+            with tempfile.TemporaryDirectory() as directory:
+                home = Path(directory)
+                seeded_home(home)
+                before = snapshot(home)
+                result = run_suite(command, home)
+                return name, result, before, snapshot(home)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(SUITES) - 1) as pool:
+            outcomes = list(pool.map(one, SUITES[1:]))
+        for name, result, before, after in outcomes:
             with self.subTest(suite=name):
-                self.assert_home_untouched(name, command)
+                self.assert_result_hermetic(name, result, before, after)
+                # unittest reports "Ran N tests"; the guard matrix reports
+                # "N assertions, 0 failed". Either way, zero is not a pass.
+                output = result.stdout + result.stderr
+                ran = RAN.findall(output) or re.findall(r"^(\d+) assertions, 0 failed$", output, re.M)
+                self.assertTrue(ran and int(ran[-1]) > 0, f"{name} ran no tests")
 
     def test_color_suites_isolate_and_restore_ambient_no_color(self):
         # Color assertions must establish their own rendering environment;

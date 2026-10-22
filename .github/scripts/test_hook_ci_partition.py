@@ -18,8 +18,11 @@ DIRECT = 'python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"'
 ISOLATION = 'python .github/scripts/test_suite_hermeticity.py'
 GUARD = 'python .github/scripts/test_hook_ci_partition.py'
 # sha256(compact JSON of the ordered pre-partition command list). This binds
-# the guard to all 69 reviewed command steps without duplicating the workflow here.
-COMMANDS_SHA256 = '2fb26e58f4d2079daaf6b7ecdeb085143dec4050b0738ce3d6c4eeb777c80e21'
+# the guard to all 66 reviewed command steps without duplicating the workflow here.
+# The guard matrix, ca-codex adapter and dual-host store suites have no direct
+# step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
+HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
+COMMANDS_SHA256 = 'ff9e6661fdcabc4c0709920054afc68db414c0b1285919b9cf1db3e0ffb5f982'
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
         exclude:
@@ -75,7 +78,7 @@ def validate(
     expected_counts: dict[str, int] | None = None,
 ) -> dict[str,int]:
     if expected_counts is None:
-        expected_counts={'contracts':68,'isolation':1,'guard':1,'setup':2}
+        expected_counts={'contracts':65,'isolation':1,'guard':1,'setup':2}
     block=job_block(text,'hooks')
     pre=block.split('    steps:\n',1)[0]
     require(pre.count(MATRIX)==1,'Expected exactly the reviewed four-cell matrix')
@@ -162,6 +165,9 @@ def main() -> int:
     path=Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml'
     try:
         counts=validate(path.read_text(encoding='utf-8'))
+        hermetic=(path.parents[1]/'scripts/test_suite_hermeticity.py').read_text(encoding='utf-8')
+        for script in HERMETIC_ONLY:
+            require(f'".github/scripts/{script}"' in hermetic,f'{script} lost its only CI execution')
     except (OSError,ValueError) as error:
         print(f'Hook partition contract failed: {error}',file=sys.stderr)
         return 1

@@ -332,6 +332,8 @@ jobs:
               - '.github/scripts/ci20_native_binding.py'
               - '.github/scripts/test_ci20_native_pipeline.py'
               - '.github/scripts/test_go_test_parallel.py'
+              - '.github/scripts/run_concurrent_suites.py'
+              - '.github/scripts/test_run_concurrent_suites.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/scripts/run_artifact_authority_shard.py'
               - '.github/ci-impact-map.json'
@@ -402,6 +404,8 @@ jobs:
               - '.github/scripts/ci20_native_binding.py'
               - '.github/scripts/test_ci20_native_pipeline.py'
               - '.github/scripts/test_go_test_parallel.py'
+              - '.github/scripts/run_concurrent_suites.py'
+              - '.github/scripts/test_run_concurrent_suites.py'
               - '.github/fixtures/artifact-authority-timings.json'
               - '.github/scripts/run_artifact_authority_shard.py'
               # Fresh automatic publication requires an exact-head package
@@ -737,6 +741,9 @@ jobs:
       - name: Verify the parallel Go runner refuses incomplete populations
         if: matrix.os == 'ubuntu-24.04'
         run: python .github/scripts/test_go_test_parallel.py
+      - name: Verify the concurrent suite runner refuses failed and empty suites
+        if: matrix.os == 'ubuntu-24.04'
+        run: python .github/scripts/test_run_concurrent_suites.py
       - name: Race-test Linux persistence paths
         if: matrix.os == 'ubuntu-24.04'
         run: python tools/go_test_parallel.py --module core/artifacts --build-flag=-race
@@ -961,24 +968,17 @@ jobs:
           python tools/create-artifact-examples.py
           --binary "${{ runner.temp }}/artifact-candidate/${{ matrix.artifact_binary }}"
           --output "${{ runner.temp }}/artifact-review"
-      - name: Test host-owned artifact approval capture
+      - name: Test host-owned bridges, reply capture and cross-kind conformance
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_approval_adapter.py
-      - name: Test host-owned artifact prerequisite capture
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_prerequisite_adapter.py
-      - name: Test host-owned artifact reconciliation capture
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python .github/scripts/test_artifact_reconciliation_adapter.py
-      - name: Test forgiving authority reply capture and short codes
-        run: python .github/scripts/test_replylib.py
-      - name: Test cross-kind reference and workflow conformance
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-        run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_artifact_conformance.py'], check=True)"
+        run: >-
+          python .github/scripts/run_concurrent_suites.py
+          .github/scripts/test_artifact_approval_adapter.py
+          .github/scripts/test_artifact_prerequisite_adapter.py
+          .github/scripts/test_artifact_reconciliation_adapter.py
+          .github/scripts/test_replylib.py
+          --interpreter-env ARTIFACT_CONFORMANCE_PYTHON
+          .github/scripts/test_artifact_conformance.py
       - name: Test debug handoff model against the locked reference interpreter
         run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)"
       - name: Recheck native candidate after bridge and conformance tests
@@ -2641,13 +2641,6 @@ jobs:
       - name: Run cold-install interpreter matrix
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_hooks_cold_install.py
-      - name: Run ca-codex host-adapter parity suite
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # ADR-0011 M2: Codex payload normalization, apply_patch envelope
-        # parsing, project_root resolution, and cross-host blocked-verdict
-        # parity (H-05/H-11/H-18/H-19/H-20/H-21) via real subprocess
-        # invocations of each plugin's vendored pre-write.py/pre-bash.py.
-        run: python .github/scripts/test_codex_adapter.py
       - name: Validate public Codex documentation
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Public claims stay pinned to the verified host/version evidence,
@@ -2663,18 +2656,6 @@ jobs:
         # all three by one, and nothing said so. A test nobody runs is not a
         # gate, it is a file.
         run: python .github/scripts/test_public_pi_docs.py
-      - name: Run dual-host shared-store contract
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # ADR-0012: sequential initialization shares one store; concurrency is
-        # asserted only for append-only gate events, never RMW state or the
-        # repo-global dev marker.
-        run: python .github/scripts/test_dual_host_store.py
-      - name: Run guard-logic matrix
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # The cold-install matrix proves the interpreter plumbing; this proves
-        # the guard decisions themselves - every blocked spelling of
-        # H-01/02/03/05/11/09b blocks, every legitimate spelling still allows.
-        run: python .github/scripts/test_hook_guards.py
       - name: Run repository-qualified cleanup proof evaluator tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The evaluator is deliberately not wired into a live cleanup route yet,
@@ -2941,6 +2922,10 @@ jobs:
         # module runs once, in its own child and pristine home, a few at a time,
         # and must pass with at least one test. A separate plain discovery run
         # would repeat the same population.
+        # The guard-logic matrix (H-01/02/03/05/11/09b block and allow
+        # spellings), the ca-codex host-adapter parity suite (ADR-0011 M2) and
+        # the dual-host shared-store contract (ADR-0012) likewise execute only
+        # here, side by side, each in its own pristine home.
         run: python .github/scripts/test_suite_hermeticity.py
       - name: Run ADR identity + supersession contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'

@@ -45,11 +45,7 @@ OWNERS = {
         "Build the schema 0.3.1 compatibility client",
         "Verify two-client upgrade, complete restore and forward recovery",
         "Generate review examples with the native candidate",
-        "Test host-owned artifact approval capture",
-        "Test host-owned artifact prerequisite capture",
-        "Test host-owned artifact reconciliation capture",
-        "Test forgiving authority reply capture and short codes",
-        "Test cross-kind reference and workflow conformance",
+        "Test host-owned bridges, reply capture and cross-kind conformance",
         "Test debug handoff model against the locked reference interpreter",
     ),
     "artifact-engine": (

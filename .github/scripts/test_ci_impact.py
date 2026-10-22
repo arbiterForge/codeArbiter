@@ -3583,8 +3583,15 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertIn("self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)", source)
         for script in expected:
             self.assertNotIn(f"run: python .github/scripts/{script}", job)
-        conformance = "'.github/scripts/test_artifact_conformance.py'"
-        self.assertEqual(job.count(conformance), 1)
+        self.assertEqual(job.count("test_artifact_conformance.py"), 1)
+        self.assertEqual(bridge_suite_arguments(job), [
+            ".github/scripts/test_artifact_approval_adapter.py",
+            ".github/scripts/test_artifact_prerequisite_adapter.py",
+            ".github/scripts/test_artifact_reconciliation_adapter.py",
+            ".github/scripts/test_replylib.py",
+            "--interpreter-env", "ARTIFACT_CONFORMANCE_PYTHON",
+            ".github/scripts/test_artifact_conformance.py",
+        ])
         qualifier = jobs["artifact-engine"]
         self.assertIn("artifact-native-bridges", qualifier.split("    needs:", 1)[1].splitlines()[0])
         self.assertLess(qualifier.index("ci20_native_binding.py gate"),
@@ -3730,10 +3737,11 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             'python tools/go_test_parallel.py --module core/artifacts --build-flag=-race',
             'python .github/scripts/test_artifact_native.py',
             'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
-            'python .github/scripts/test_artifact_approval_adapter.py',
-            'python .github/scripts/test_artifact_prerequisite_adapter.py',
+            'python .github/scripts/run_concurrent_suites.py',
+            '.github/scripts/test_artifact_approval_adapter.py',
+            '.github/scripts/test_artifact_prerequisite_adapter.py',
             'python .github/scripts/test_artifact_consumers.py',
-            "'.github/scripts/test_artifact_conformance.py'",
+            "--interpreter-env ARTIFACT_CONFORMANCE_PYTHON\n          .github/scripts/test_artifact_conformance.py",
             'python .github/scripts/test_artifact_surface.py',
             "ARTIFACT_CONFORMANCE_PYTHON",
             "--isolated",
@@ -3752,7 +3760,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "python tools/go_test_parallel.py --module core/artifacts --timeout 20m",
             "go vet -buildvcs=false ./...",
             "python .github/scripts/test_artifact_native.py",
-            "'.github/scripts/test_artifact_conformance.py'",
+            ".github/scripts/test_artifact_conformance.py",
         ):
             self.assertIn(proving_step, job)
         self.assertLess(jobs["artifact-engine"].index("ci20_native_binding.py gate"),
@@ -4299,6 +4307,21 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         self.assertIn("fail-fast: false", authority)
         self.assertNotIn("continue-on-error:", authority)
 
+
+
+def bridge_suite_arguments(job: str) -> list[str]:
+    """Return the suite arguments of the bridges job's single concurrent step."""
+    step = re.search(
+        r"(?ms)^      - name: Test host-owned bridges, reply capture and cross-kind conformance\n"
+        r"(?P<body>.*?)(?=^      - name:|\Z)",
+        job,
+    )
+    if step is None or "run: >-\n" not in step.group("body"):
+        return []
+    command = step.group("body").split("run: >-\n", 1)[1].split()
+    if command[:2] != ["python", ".github/scripts/run_concurrent_suites.py"]:
+        return []
+    return command[2:]
 
 
 class SuiteEntrypointTest(unittest.TestCase):
